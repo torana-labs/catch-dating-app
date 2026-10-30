@@ -76,9 +76,6 @@ test("bounded plan outputs contain no changed-path inventory", () => {
     operations: {
       ciTargets: ["docs"],
       buildTargets: [],
-      releaseTargets: [],
-      releaseRoles: [],
-      deployGroups: [],
     },
   };
   const output = formatGithubOutputs(projectPlanOutputs({plan, graph}));
@@ -87,8 +84,7 @@ test("bounded plan outputs contain no changed-path inventory", () => {
   assert.match(output, /^docs=true$/m);
   assert.match(output, /^flutter=false$/m);
   assert.match(output, /^app_roles=\[\]$/m);
-  assert.match(output, /^release_targets=\[\]$/m);
-  assert.match(output, /^has_release_targets=false$/m);
+  assert.doesNotMatch(output, /^(?:release_targets|has_release_targets|release_roles|deploy_groups|deploy_required)=/m);
   assert.deepEqual(
     JSON.parse(output.match(/^docs_checkout=(.*)$/m)[1]),
     {
@@ -103,7 +99,7 @@ test("bounded plan outputs contain no changed-path inventory", () => {
   );
 });
 
-test("plan output derives roles and deployment authorization from bounded operations", () => {
+test("plan output derives roles from bounded build operations", () => {
   const plan = {
     mode: "main",
     full: false,
@@ -111,21 +107,13 @@ test("plan output derives roles and deployment authorization from bounded operat
     operations: {
       ciTargets: ["flutter_build_ios", "functions"],
       buildTargets: ["host-ios"],
-      releaseTargets: ["host-ios"],
-      releaseRoles: ["host"],
-      deployGroups: ["functions"],
     },
   };
   const output = projectPlanOutputs({plan, graph});
   assert.equal(output.flutter_build_ios, true);
   assert.equal(output.flutter_build_android, false);
   assert.equal(output.app_roles, '["host"]');
-  assert.equal(output.release_targets, '["host-ios"]');
-  assert.equal(output.has_release_targets, true);
-  assert.equal(output.release_roles, '["host"]');
-  assert.equal(output.has_release_roles, true);
-  assert.equal(output.deploy_groups, '["functions"]');
-  assert.equal(output.deploy_required, true);
+  assert.equal(output.build_targets, '["host-ios"]');
 });
 
 test("generator-only changes install their declared preflight dependencies without selecting contracts", () => {
@@ -134,7 +122,6 @@ test("generator-only changes install their declared preflight dependencies witho
   const output = projectPlanOutputs({plan, graph});
   assert.equal(output.contracts, false);
   assert.equal(output.preflight_functions_dependencies, true);
-  assert.equal(output.deploy_required, false);
 
   for (const changedPath of ["README.md", "tool/architecture/check_dependency_direction.mjs"]) {
     const unrelated = planAffected({graph, mode: "pr", changedPaths: [changedPath]});
@@ -160,9 +147,6 @@ test("output projection rejects incomplete plans and unsafe multiline values", (
         operations: {
           ciTargets: [],
           buildTargets: [],
-          releaseTargets: [],
-          releaseRoles: [],
-          deployGroups: [],
         },
       },
       graph,
@@ -187,9 +171,6 @@ test("output projection rejects an invalid checkout contract", () => {
         operations: {
           ciTargets: ["docs"],
           buildTargets: [],
-          releaseTargets: [],
-          releaseRoles: [],
-          deployGroups: [],
         },
       },
       graph: invalidGraph,

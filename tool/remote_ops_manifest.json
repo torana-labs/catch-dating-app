@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-10-17",
+  "updated": "2026-10-30",
   "description": "Consolidated inventory of remote operational surfaces. This file groups Firebase deploys, environment switching, data repair/backfill, App Check/security console work, CI gates, and App Store/TestFlight/Play release operations without changing the underlying tools.",
   "operations": [
     {
@@ -158,8 +158,6 @@
       ],
       "notes": [
         "Delivery promotes only the impact-authorized backend subset in this order: firestore:indexes, functions, firestore:rules, storage; Hosting, Remote Config, and Extensions remain separate owning workflows or explicit operations.",
-        "Manual Delivery dispatch is same-artifact recovery bound to the oldest pending successful same-repository main CI authority and a source/package-authorized terminal non-success Delivery attempt; CI workflow id, run number/id/attempt, source SHA, artifact ids, and digests are verified before recovery.",
-        "Automatic queue discovery scans artifact metadata once, verifies only the selected v4 cursor and oldest v3 successful-attempt authority, refuses cross-workflow-generation ordering, and requires the selected plan base SHA to equal the cursor source SHA.",
         "The target-aware environment preflight runs before dependency installation, allows metadata-only project, secret-version, and TTL reads, forbids secret payload access, and has no apply mode.",
         "Confirmed absence exits 1, indeterminate auth or metadata failures exit 2, and invalid invocation exits 64; every non-zero result blocks deployment.",
         "The Storage phase fails before deploy when its Firestore Rules service-agent IAM binding is missing.",
@@ -478,15 +476,28 @@
       ]
     },
     {
-      "id": "mobile-internal-stores",
+      "id": "mobile-releases",
       "category": "mobile-store",
-      "status": "transitional",
+      "status": "active",
       "safety": "remote-release-protected-internal",
       "environments": [
-        "prod-mobile"
+        "prod-mobile",
+        "prod-mobile-release"
       ],
-      "purpose": "Track the CI-authorized Consumer/Host signed-package producer, automatic exact-artifact TestFlight and recovery Play-internal promoter, store authentication, legacy Xcode Cloud retirement, and guarded Play enablement.",
+      "purpose": "Build, verify and upload Consumer/Host test builds to TestFlight and the Play internal track with fastlane, and promote a tested build to production only after reviewer approval.",
       "entrypoints": [
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/mobile-beta.yml"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/mobile-production.yml"
+        },
+        {
+          "kind": "config",
+          "ref": "fastlane/Fastfile"
+        },
         {
           "kind": "tool-id",
           "ref": "env:flutter"
@@ -494,22 +505,6 @@
         {
           "kind": "tool-id",
           "ref": "platform:app-targets"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "ci:mobile-release-package"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "ci:mobile-release-workflow"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "ci:mobile-promotion-core"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "ci:mobile-promotion-workflow"
         },
         {
           "kind": "tool-id",
@@ -521,31 +516,7 @@
         },
         {
           "kind": "tool-id",
-          "ref": "platform:mobile-build-number"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "platform:verify-app-store-build"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "platform:distribute-testflight-build"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "platform:verify-ios-processing-receipts"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "platform:probe-google-play-access"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "platform:upload-google-play-bundle"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "platform:xcode-cloud-workflow-state"
+          "ref": "platform:mobile-package-policy"
         },
         {
           "kind": "tool-id",
@@ -556,53 +527,35 @@
           "ref": "firebase:maps-config"
         },
         {
-          "kind": "workflow",
-          "ref": ".github/workflows/mobile-internal-release.yml"
-        },
-        {
-          "kind": "workflow",
-          "ref": ".github/workflows/mobile-internal-promote.yml"
-        },
-        {
           "kind": "doc",
           "ref": "docs/release_operations.md"
         },
         {
           "kind": "manual",
-          "ref": "App Store Connect TestFlight install/launch proof",
+          "ref": "App Store Connect automatic distribution to internal TestFlight groups",
           "owner": "docs/release_operations.md",
-          "ticket": "https://github.com/suvratgarg/catch-dating-app/issues/218",
-          "guardrail": "Automatic promotion assigns each exact VALID build only to existing internal groups with testers; close APP-TARGET-IOS-GITHUB-CUTOVER-001 only after live assignment receipts and install/launch proof exist."
+          "ticket": "https://github.com/torana-labs/catch-dating-app/issues/218",
+          "guardrail": "Testers receive builds only through internal groups with automatic distribution turned on; Mobile Beta never distributes externally."
         },
         {
           "kind": "manual",
-          "ref": "Google Play app records, app signing, publisher access, and internal testers",
+          "ref": "Google Play Consumer app record and its first hand upload",
           "owner": "docs/release_operations.md",
-          "ticket": "https://github.com/suvratgarg/catch-dating-app/issues/199",
-          "guardrail": "Every Android promotion must live-probe both package records, qa tracks, app-scoped edit access, and at least one Google Group tester per track. Play App Signing enrollment remains an owner prerequisite."
+          "ticket": "https://github.com/torana-labs/catch-dating-app/issues/199",
+          "guardrail": "Consumer joins PLAY_ROLES in mobile-beta.yml only after its Play record exists and its first bundle was uploaded by hand in Play Console."
         }
       ],
       "requiredChecks": [
-        "node tool/run.mjs check ci:mobile-release-package ci:mobile-release-workflow ci:mobile-promotion-core ci:mobile-promotion-workflow platform:app-targets platform:mobile-build-number platform:verify-ios-release-identity platform:verify-app-store-build platform:distribute-testflight-build platform:verify-android-release-identity platform:upload-google-play-bundle",
-        "Successful same-repository main CI authorities fan out only exact Consumer/Host role-platform targets under approval-free, main-only prod-mobile signing credentials; the producer automatically dispatches every authorized iOS target, while recovery dispatches remain available without rebuilding or resigning.",
-        "Each ephemeral iOS runner must import the same dedicated prod-mobile Apple Development PKCS#12, verify its team, fingerprint, and validity floor, and remove the decoded identity and temporary keychain after the job while leaving automatic signing enabled.",
-        "Verify iOS archive/export identity and Android AAB signature/certificate/compiled role/Firebase/Maps/version identity before package authority; verify the current producer attempt, exact artifact id/digest, packaged bytes, and store response before claiming internal delivery.",
-        "After each exact iOS upload claim is durable, assign the VALID build to every existing internal TestFlight group that already has testers; never create groups or alter tester membership automatically, and require relationship readback plus a 90-day distribution receipt.",
-        "Play publishing is limited to the qa track and forbidden for production.",
-        "Before any AAB upload, the promotion workflow creates an edit, reads qa and Google Group testers, and deletes the edit for both app records without uploading or committing.",
-        "Consumer requires HealthKit/Health Connect and public links; Host must not inherit them."
+        "node tool/run.mjs check platform:app-targets platform:verify-ios-release-identity platform:verify-android-release-identity platform:mobile-package-policy",
+        "Mobile Beta builds, verifies and uploads each build in one job from main under prod-mobile; it uploads only to TestFlight internal testing and the Play internal track.",
+        "Every beta build passes the live callable-dependency check, the iOS or Android identity verifier and the package policy before any upload.",
+        "Mobile Production runs only by manual dispatch from main in the reviewer-gated prod-mobile-release environment, and promotes an existing TestFlight build or internal-track version code without rebuilding."
       ],
       "notes": [
-        "GitHub Actions is canonical for both roles and both mobile platforms; package production and internal-store mutation are separate workflows, and public store promotion remains separate.",
-        "Mobile Internal Release consumes successful main CI authority, writes binary-bound identity/policy/provenance receipts, retains exact packages for 90 days, and publishes post-comparison build authority without touching either store.",
-        "Mobile Internal Exact Promotion persists the 90-day exact-package upload claim before idempotent TestFlight distribution; Apple identity without that prior exact claim fails closed, while group-assignment retries reuse the exact claim and Play retries require completed qa digest readback.",
-        "Final analyzer-clean producer run 31435724862 selected source 9c3633095464778a1d5734d742ab3036e5f7cde7; exact promotion runs 31436879851 and 31436882152 processed Consumer and Host iOS build 202608100000030201 as VALID and persisted claim artifacts 9081579386 and 9081563645; issue #218 owns installed-device proof and historical group-assignment closure evidence.",
-        "Final flag-free Android promotion runs 31423759477 and 31423765422 failed closed before upload because Play developer account 5956684998834594943 is unverified and has zero app records; issue #199 owns the required account and app-record setup.",
-        "Mobile Internal Release run 29168074271 is historical pre-split evidence: it processed Consumer and Host build 202607110000000301 as VALID; retirement run 29168662623 verified those receipts and disabled both app-scoped Default workflows.",
-        "Run 29388936845 exposed an ephemeral-runner Apple Development certificate leak. Nineteen verified-unused certificates were revoked on 2026-07-15, three working human identities were preserved, and dedicated reusable CI certificate 7P698XNLRP was stored in prod-mobile pending repaired main-run proof.",
+        "Build numbers come from the stores: the latest TestFlight build plus one, and the highest version code on any Play track plus one.",
+        "Each beta job records a GitHub build attestation, a job summary with the commit and SHA-256, and a 30-day artifact.",
+        "The custom Mobile Internal Release and Promote pipeline was retired after Mobile Beta run 40975670519 uploaded both iOS apps to TestFlight and run 40943509998 uploaded Host Android to Play internal; see docs/plans/mobile_release_fastlane_migration.md.",
         "Apple Developer App ID Catch Host/com.catchdates.host and App Store Connect app id 6778927317 were created on 2026-06-10; SKU is catch-host-ios.",
-        "Legacy Catch | Default and Runner | Default Xcode Cloud workflows are disabled and retained only as rollback/audit surfaces.",
-        "Android Publisher API and the dedicated github-actions-play-publisher OIDC identity are ready with zero project roles; Play upload remains disabled until APP-TARGET-ANDROID-PLAY-001 closes app-record, app-scoped permission, App Signing, tester, and install proof.",
         "App Store Connect displays an updated Apple Developer Program License Agreement notice that the Account Holder should accept before treating host uploads/submissions as release-ready.",
         "App Store review metadata and TestFlight group membership remain console-owned."
       ]

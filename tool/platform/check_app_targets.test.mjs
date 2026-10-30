@@ -3,12 +3,12 @@ import fs from "node:fs";
 import test from "node:test";
 import {
   androidClientFor,
+  fastlaneLaneSource,
   packageVersionFromPubLock,
   parseAppleBuildConfigurations,
   validateAppleFirebaseLockstep,
   validateAutomaticAppleSigningSettings,
   validateAndroidBuildSource,
-  validateExternalGateContract,
   validateManifestShape,
   validateReleaseOwnership,
   validateSharedAndroidManifestSource,
@@ -36,7 +36,6 @@ function validManifest() {
       packageEntrypoint: "lib/main.dart",
       storeProduct: {
         appStoreConnectAppId: "consumer-app",
-        testFlightDistributionPolicy: "all-existing-internal-groups-with-testers",
       },
     },
     host: {
@@ -45,7 +44,6 @@ function validManifest() {
       packageEntrypoint: "lib/main.dart",
       storeProduct: {
         appStoreConnectAppId: "host-app",
-        testFlightDistributionPolicy: "all-existing-internal-groups-with-testers",
       },
     },
   };
@@ -77,29 +75,6 @@ function validManifest() {
     roles,
     environments,
     targets,
-  };
-}
-
-function validExternalGates() {
-  return {
-    schemaVersion: 1,
-    logicalName: "catch-app-target-external-gates",
-    gates: [
-      {
-        id: "APP-TARGET-IOS-GITHUB-CUTOVER-001",
-        status: "blocked_external",
-        issue: 218,
-        scope: "consumer-and-host-testflight-internal-distribution",
-        closureCriteria: ["assign and smoke-test both exact builds"],
-      },
-      {
-        id: "APP-TARGET-ANDROID-PLAY-001",
-        status: "blocked_external",
-        issue: 199,
-        scope: "consumer-and-host-google-play-internal-distribution",
-        closureCriteria: ["verify the account and process both qa builds"],
-      },
-    ],
   };
 }
 
@@ -187,30 +162,6 @@ test("signed app-target authority rejects operational release evidence", () => {
   const findings = validateManifestShape(manifest);
   assert.ok(findings.some((finding) => finding.includes("transitionalDebt")));
   assert.ok(findings.some((finding) => finding.includes("testFlightEvidence")));
-});
-
-test("external gate contract rejects missing gates and tracked run evidence", () => {
-  const contract = validExternalGates();
-  contract.gates[0].removalProof = ["run 123"];
-  contract.gates.pop();
-
-  const findings = validateExternalGateContract(contract);
-  assert.ok(findings.some((finding) => finding.includes("removalProof")));
-  assert.ok(findings.some((finding) =>
-    finding.includes("missing external gate APP-TARGET-ANDROID-PLAY-001")));
-});
-
-test("resolved external gates are a clean terminal state", () => {
-  const externalGates = validExternalGates();
-  for (const gate of externalGates.gates) gate.status = "resolved";
-
-  const result = validateReleaseOwnership({
-    externalGates,
-    manifest: unifiedReleaseManifest(),
-    workflowSource: unifiedWorkflow,
-  });
-  assert.deepEqual(result.findings, []);
-  assert.deepEqual(result.warnings, []);
 });
 
 test("androidClientFor selects the Host client instead of client zero", () => {
@@ -309,221 +260,124 @@ test("Apple signing settings require automatic signing without an identity overr
   assert.ok(findings.some((finding) => finding.includes("defer CODE_SIGN_IDENTITY")));
 });
 
-function unifiedReleaseManifest() {
+function releaseManifest() {
   const manifest = validManifest();
-  manifest.releasePolicy = {
-    owner: "github-actions",
-    workflow: ".github/workflows/mobile-internal-release.yml",
-    promotionWorkflow: ".github/workflows/mobile-internal-promote.yml",
-    trigger: "successful-main-ci-exact-artifact-authority",
-    environment: "prod-mobile",
-    approvalMode: "automatic-ios-exact-artifact-internal-promotion",
-    branchPolicy: "main-only",
-    roles: ["consumer", "host"],
-    ios: {
-      channel: "testflight",
-      uploadMode: "separate-promotion-workflow",
-      automaticRoles: ["consumer", "host"],
-      distributionPolicy: "all-existing-internal-groups-with-testers",
-      signingStyle: "automatic",
-      developmentIdentitySource: "reusable-ci-p12",
-      distributionSigningStage: "export",
-      uploadArtifact: "verified-ipa",
-      uploadTool: "altool",
-    },
-    android: {
-      channel: "play-internal",
-      track: "qa",
-      uploadMode: "separate-promotion-workflow",
-      publisherAuth: "github-oidc",
-      publisherServiceAccount: "github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com",
-      uploadCertificateSha256: "A".repeat(64),
-    },
-  };
+  manifest.releasePolicy = JSON.parse(JSON.stringify(repoManifest.releasePolicy));
   for (const target of manifest.targets.filter((candidate) => candidate.environment === "prod")) {
     target.release = {
       owner: "github-actions",
-      githubMode: "automatic-exact-artifact",
-      githubWorkflow: ".github/workflows/mobile-internal-release.yml",
-      automaticTestFlightOnMain: true,
+      appStoreConnectAppId: manifest.roles[target.role].storeProduct.appStoreConnectAppId,
       googlePlayPackageName: target.android.applicationId,
-      legacyXcodeCloudWorkflow: `${target.role} legacy`,
     };
   }
   return manifest;
 }
 
-const unifiedWorkflow = fs.readFileSync(
-  new URL("../../.github/workflows/mobile-internal-release.yml", import.meta.url),
-  "utf8",
-) + fs.readFileSync(new URL("../../.github/workflows/_mobile-platform-authority.yml", import.meta.url), "utf8");
+const repoManifest = JSON.parse(
+  fs.readFileSync(new URL("../app_targets.json", import.meta.url), "utf8"),
+);
+const releaseSources = {
+  fastfileSource: fs.readFileSync(new URL("../../fastlane/Fastfile", import.meta.url), "utf8"),
+  betaWorkflowSource: fs.readFileSync(
+    new URL("../../.github/workflows/mobile-beta.yml", import.meta.url),
+    "utf8",
+  ),
+  productionWorkflowSource: fs.readFileSync(
+    new URL("../../.github/workflows/mobile-production.yml", import.meta.url),
+    "utf8",
+  ),
+};
 
-test("release ownership accepts the exact-target producer and separate promoter", () => {
-  const manifest = unifiedReleaseManifest();
-  const result = validateReleaseOwnership({
-    externalGates: validExternalGates(),
-    manifest,
-    workflowSource: unifiedWorkflow,
-  });
-  assert.deepEqual(result.findings, []);
-  assert.equal(result.warnings.length, 2);
+function releaseFindings({manifest = releaseManifest(), ...overrides} = {}) {
+  return validateReleaseOwnership({manifest, ...releaseSources, ...overrides});
+}
+
+function assertFinding(findings, text) {
+  assert.ok(
+    findings.some((finding) => finding.includes(text)),
+    `expected a finding containing "${text}"; got ${JSON.stringify(findings)}`,
+  );
+}
+
+test("release ownership accepts the fastlane beta and production workflows", () => {
+  assert.deepEqual(releaseFindings(), []);
 });
 
-test("release ownership rejects reintroducing store mutation in the package producer", () => {
-  const manifest = unifiedReleaseManifest();
-  const workflowSource = `${unifiedWorkflow}\nxcrun altool --upload-package "$IPA_PATH"\n`;
-
-  const result = validateReleaseOwnership({
-    externalGates: validExternalGates(),
-    manifest,
-    workflowSource,
-  });
-  assert.ok(
-    result.findings.some((finding) =>
-      finding.includes("must not contain TestFlight upload"),
-    ),
-  );
+test("fastlane lane extraction stays inside one platform and one lane", () => {
+  const iosBeta = fastlaneLaneSource(releaseSources.fastfileSource, "ios", "beta");
+  const androidBeta = fastlaneLaneSource(releaseSources.fastfileSource, "android", "beta");
+  assert.match(iosBeta, /upload_to_testflight/u);
+  assert.doesNotMatch(iosBeta, /upload_to_app_store|upload_to_play_store/u);
+  assert.match(androidBeta, /upload_to_play_store/u);
+  assert.doesNotMatch(androidBeta, /track_promote_to|upload_to_testflight/u);
+  assert.equal(fastlaneLaneSource(releaseSources.fastfileSource, "ios", "missing"), "");
 });
 
-test("release ownership rejects split or incomplete workflow ownership", () => {
-  const manifest = unifiedReleaseManifest();
-  manifest.targets.find((target) => target.id === "consumer-prod").release.owner = "xcode-cloud";
-  const workflowSource = `
-on:
-  push:
-jobs:
-  prod-ios:
-    environment: prod-mobile
-`;
+test("release ownership rejects retired pipeline fields and a drifted policy", () => {
+  const manifest = releaseManifest();
+  manifest.releasePolicy.betaWorkflow = ".github/workflows/mobile-internal-release.yml";
+  manifest.releasePolicy.android.betaTrack = "qa";
+  const consumer = manifest.targets.find((target) => target.id === "consumer-prod");
+  consumer.release.owner = "xcode-cloud";
+  consumer.release.githubWorkflow = ".github/workflows/mobile-internal-release.yml";
 
-  const result = validateReleaseOwnership({
-    externalGates: validExternalGates(),
-    manifest,
-    workflowSource,
-  });
-  assert.ok(result.findings.some((finding) => finding.includes("consumer-prod")));
-  assert.ok(result.findings.some((finding) => finding.includes("Android target matrix")));
+  const findings = releaseFindings({manifest});
+  assertFinding(findings, "beta workflow was '.github/workflows/mobile-internal-release.yml'");
+  assertFinding(findings, "Android beta track was 'qa'");
+  assertFinding(findings, "consumer-prod: release owner must be github-actions");
+  assertFinding(findings, "consumer-prod.release.githubWorkflow belonged to the retired release pipeline");
 });
 
-test("release ownership rejects an explicit iOS archive signing identity", () => {
-  const manifest = unifiedReleaseManifest();
-  const workflowSource = `${unifiedWorkflow}\nCODE_SIGN_IDENTITY=Apple Distribution\n`;
-
-  const result = validateReleaseOwnership({
-    externalGates: validExternalGates(),
-    manifest,
-    workflowSource,
+test("release ownership keeps production out of the automatic beta workflow", () => {
+  const findings = releaseFindings({
+    betaWorkflowSource: `${releaseSources.betaWorkflowSource}
+      - run: bundle exec fastlane ios release role:host build:1
+        environment: prod-mobile-release
+`.replace("  workflow_dispatch:", "  push:\n  workflow_dispatch:"),
   });
-  assert.ok(
-    result.findings.some((finding) =>
-      finding.includes("defer CODE_SIGN_IDENTITY to Xcode automatic signing"),
-    ),
-  );
+  assertFinding(findings, "mobile-beta.yml must not contain a production lane");
+  assertFinding(findings, "mobile-beta.yml must not contain the production environment");
+  assertFinding(findings, "mobile-beta.yml must not contain a push or workflow_run trigger");
 });
 
-test("release ownership rejects a missing reusable iOS CI identity import", () => {
-  const manifest = unifiedReleaseManifest();
-  const workflowSource = unifiedWorkflow.replace(
-    '          security import "$p12_path" \\\n',
-    "          echo missing-identity-import \\\n",
-  );
-
-  const result = validateReleaseOwnership({
-    externalGates: validExternalGates(),
-    manifest,
-    workflowSource,
+test("release ownership requires the beta schedule, provenance and verifiers", () => {
+  const findings = releaseFindings({
+    betaWorkflowSource: releaseSources.betaWorkflowSource
+      .replace(/ {2}schedule:\n {4}- cron: .*\n/u, "")
+      .replaceAll("actions/attest-build-provenance@", "actions/upload-artifact@"),
+    fastfileSource: releaseSources.fastfileSource
+      .replace('"tool/platform/verify_ios_release_identity.mjs"', '"tool/platform/other.mjs"')
+      .replace('track: "internal", aab: aab', 'track: "beta", aab: aab'),
   });
-  assert.ok(
-    result.findings.some((finding) =>
-      finding.includes("non-extractable reusable iOS identity import"),
-    ),
-  );
+  assertFinding(findings, "mobile-beta.yml is missing nightly schedule");
+  assertFinding(findings, "mobile-beta.yml is missing build provenance attestation");
+  assertFinding(findings, "iosBeta lane is missing post-export iOS identity verification");
+  assertFinding(findings, "androidBeta lane is missing internal track upload");
 });
 
-test("release ownership rejects missing reusable iOS identity cleanup", () => {
-  const manifest = unifiedReleaseManifest();
-  const workflowSource = unifiedWorkflow.replace(
-    '            security delete-keychain "$IOS_CI_KEYCHAIN_PATH" 2>/dev/null || true\n',
-    "            echo cleanup-missing\n",
-  );
-
-  const result = validateReleaseOwnership({
-    externalGates: validExternalGates(),
-    manifest,
-    workflowSource,
-  });
-  assert.ok(
-    result.findings.some((finding) =>
-      finding.includes("always-run reusable iOS identity cleanup"),
+test("release ownership keeps production manual, reviewer-gated and rebuild-free", () => {
+  const findings = releaseFindings({
+    productionWorkflowSource: releaseSources.productionWorkflowSource
+      .replace("environment: prod-mobile-release", "environment: prod-mobile")
+      .replace("  workflow_dispatch:", "  schedule:\n    - cron: \"0 0 * * *\"\n  workflow_dispatch:"),
+    fastfileSource: releaseSources.fastfileSource.replace(
+      "    with_api_key do |key, _key_path|\n",
+      "    build_app(scheme: \"Runner\")\n    with_api_key do |key, _key_path|\n",
     ),
-  );
+  });
+  assertFinding(findings, "must run every job in the reviewer-gated prod-mobile-release environment");
+  assertFinding(findings, "mobile-production.yml must not contain an automatic trigger");
+  assertFinding(findings, "iosRelease lane must promote a tested build, not rebuild");
 });
 
-test("release ownership rejects incomplete reusable iOS identity verification", () => {
-  const manifest = unifiedReleaseManifest();
-  const workflowSource = unifiedWorkflow
-    .replace("-fingerprint -sha256", "-serial")
-    .replace(
-      '          if [[ "$actual_expiry_epoch" != "$configured_expiry_epoch" ]]; then\n',
-      "          if false; then\n",
-    )
-    .replace("-checkend 2592000", "-noout");
-
-  const result = validateReleaseOwnership({
-    externalGates: validExternalGates(),
-    manifest,
-    workflowSource,
+test("release ownership keeps beta lanes away from production and signing overrides", () => {
+  const findings = releaseFindings({
+    fastfileSource: releaseSources.fastfileSource
+      .replace('track: "internal", aab: aab', 'track: "production", aab: aab')
+      .replace("opt_out_usage\n", "opt_out_usage\n# CODE_SIGN_IDENTITY = Apple Distribution\n"),
   });
-  assert.ok(
-    result.findings.some((finding) =>
-      finding.includes("reusable iOS identity fingerprint derivation"),
-    ),
-  );
-  assert.ok(
-    result.findings.some((finding) =>
-      finding.includes("reusable iOS identity validity floor"),
-    ),
-  );
-  assert.ok(
-    result.findings.some((finding) =>
-      finding.includes("reusable iOS identity expiry metadata validation"),
-    ),
-  );
-});
-
-test("release ownership rejects re-exporting after IPA verification", () => {
-  const manifest = unifiedReleaseManifest();
-  const workflowSource = `${unifiedWorkflow}\nxcodebuild \\\n  -exportArchive\n`;
-
-  const result = validateReleaseOwnership({
-    externalGates: validExternalGates(),
-    manifest,
-    workflowSource,
-  });
-  assert.ok(
-    result.findings.some((finding) =>
-      finding.includes("must export exactly one IPA before verification and packaging"),
-    ),
-  );
-});
-
-test("release ownership rejects an unbound immutable package upload", () => {
-  const manifest = unifiedReleaseManifest();
-  const workflowSource = unifiedWorkflow.replaceAll(
-    "package_mobile_release.mjs bind-upload",
-    "package_mobile_release.mjs missing-upload-binding",
-  );
-
-  const result = validateReleaseOwnership({
-    externalGates: validExternalGates(),
-    manifest,
-    workflowSource,
-  });
-  assert.ok(
-    result.findings.some((finding) =>
-      finding.includes("immutable package upload binding"),
-    ),
-  );
+  assertFinding(findings, "androidBeta lane must not reach production");
+  assertFinding(findings, "must defer CODE_SIGN_IDENTITY to Xcode automatic signing");
 });
 
 test("resolveAppTarget returns explicit target fields", () => {

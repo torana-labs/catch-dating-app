@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.22.0
-updated: 2026-10-29
+version: 3.0.0
+updated: 2026-10-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -270,13 +270,12 @@ source-review job. The merge queue reruns it on the exact combined source of
 each group before `main` moves, so a pull request result never needs to stay
 current with `main`. A `main` push whose exact commit already passed a
 successful merge-queue run re-runs no validation lane, source preflight
-included: it only plans, finalizes, packages Firebase delivery and writes the
-delivery authority, and the finalizer records the reused run ID. Firebase
-packaging compiles Functions from that same commit, and Marketing Website reads
-the queue run's Marketing and capture evidence, validating its own source when
-the queue run selected neither. App builds then run in nightly validation and in
-Mobile Internal Release, which builds each released app. Without a successful
-queue run of the same commit, `main` runs every selected lane.
+included: it only plans and records the reused run ID in its summary.
+Marketing Website reads the queue run's Marketing and capture evidence,
+validating its own source when the queue run selected neither. App builds then
+run in nightly validation, and signed store builds come from
+[Mobile releases](#mobile-releases). Without a successful queue run of the same
+commit, `main` runs every selected lane.
 
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
@@ -304,8 +303,9 @@ The policy lane runs the existing `agent:harness-v2` wiring suite when Tools is
 absent, with the pinned Node version and only root npm dependencies. When Tools
 is selected alongside a workflow change, its check closure owns that suite;
 ordinary prose keeps its lightweight document checks.
-Only direct component ownership may authorize Firebase deployment or a mobile
-release; dependency expansion can add validation but cannot authorize mutation.
+The graph selects validation only. No plan authorizes a Firebase deployment or
+a mobile release: `Deploy backend` plans from its own `deployed/<env>` tag, and
+mobile builds run in `Mobile Beta` and `Mobile Production`.
 
 The packaged callable IAM helper is deployment tooling, not compiled Functions
 runtime. Its exact script and test paths select backend validation without
@@ -318,25 +318,13 @@ an explicit capability check; an unknown capability version fails. Existing
 conditional bindings and policy etags are preserved when adding the intended
 unconditional public invoker binding.
 
-Main pushes start validation immediately from the latest completed successful
-main CI source. Harness, Tools preflight/execution and Flutter test selection
-use the union of every path touched in that committed history, including
-reversions, merge-parent changes and transient removed files. Current unowned
-paths still fail; unowned transient history broadens validation to the existing
-nightly/full mode. The validation plan cannot authorize deployment or release.
-
-After all selected lanes pass, `finalize-plan` waits for lower-numbered main CI
-runs and resolves the final successful predecessor. It independently recomputes
-the committed validation plan, binds the source/run/attempt and checks every
-selected job result. The final predecessor must lie inside the validated window;
-its endpoint main plan must be covered by the validated paths, lanes, registered
-Tools closure, generators and actual role/platform builds. Directional document
-metadata and new-widget gates run again against that predecessor. Missing or
-incompatible proof fails before publication. Only this final plan receives the
-existing delivery artifact name, and Firebase packaging consumes its deploy
-groups and the same attempt's tested Functions build. Failed predecessors keep
-the earlier successful base; successful ones advance it. Required CI includes
-finalization while allowing test execution to overlap. Pull requests and nightly runs retain their
+Main pushes plan from the push's `before` commit. Harness, Tools
+preflight/execution and Flutter test selection use the union of every path
+touched in that committed history, including reversions, merge-parent changes
+and transient removed files. Current unowned paths still fail; unowned
+transient history broadens validation to the existing nightly/full mode. A
+cancelled older main run leaves no gap to cover: the merge queue already
+validated each of its commits. Pull requests and nightly runs retain their
 existing validation flow.
 
 Root Flutter unit/widget tests are selected by
@@ -561,8 +549,8 @@ The current workflows are:
 | `.github/workflows/admin-website.yml` | Validates Admin source and live callable dependencies, then calls the exact build/promote adapters for the production `admin` target. |
 | `.github/workflows/host-website.yml` | Validates the Host target, standalone roster tests, and Host-owned Flutter surfaces, then builds and promotes the independent production `host` target. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
-| `.github/workflows/mobile-internal-release.yml` | Signed package matrix and automatic iOS handoff. It consumes a successful `main` CI authority, builds only exact role/platform targets, publishes 90-day IPA/AAB packages plus separate post-comparison platform authorities, and dispatches one exact promoter for every authorized iOS target without mutating either store itself. |
-| `.github/workflows/mobile-internal-promote.yml` | Exact-artifact promoter. Automatic iOS dispatches and manual recovery dispatches both verify the current producer and authority/package ids, digests, provenance, and target before uploading the already-signed IPA to TestFlight or AAB to Play `qa`; it never rebuilds or resigns. After an iOS upload claim is durable, it grants the VALID build to existing internal groups that already contain testers. |
+| `.github/workflows/mobile-beta.yml` | Nightly (when app sources changed) and on-demand fastlane test builds: builds, verifies and uploads each app to TestFlight internal testers or the Play internal track in one job, with build provenance. See Mobile releases. |
+| `.github/workflows/mobile-production.yml` | Reviewer-gated fastlane promotion of a build testers already have: App Store review submission or a Play staged rollout, with no rebuild. See Mobile releases. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 | `.github/workflows/website-production-observability.yml` | Best-effort quarter-hour and manual production probes, offset from busy cron boundaries with a sparse checkout of the standalone probe. GitHub scheduling is not a latency SLA. |
 | `.github/workflows/branch-hygiene.yml` | Daily semantic branch audit, supervised integrated-ref candidates, and an issue plus failed run for stale code outside `main` without an open PR. |
@@ -587,8 +575,8 @@ their separate Pod lockfiles, plugin graphs and app targets remain independent.
 and the existing compile-codegen catalog selects the same check before commit.
 A checkout with current generated files needs no extra generation step.
 Generator or template edits retain both iOS validation builds and freshness
-checks. They authorize a mobile release only when the generated native files
-change; unchanged output must not create another TestFlight release.
+checks. The nightly `Mobile Beta` path gate builds new TestFlight builds only
+when files under `apps/` or the other app inputs change.
 
 Each generated Podfile contains the complete policy. Do not replace it with a
 runtime Ruby import: Flutter's warm-checkout pod-install decision and
@@ -722,11 +710,10 @@ skips static mutation after Next takes over. See `docs/web_surface_architecture.
 for the preview, production limits, rollback and acceptance contracts, and
 [Website rollback to the static Vite build](#website-rollback-to-the-static-vite-build)
 for the operator steps. `prod-mobile` is approval-free and `main`-only; it contains
-only mobile signing, Maps, App Store Connect, and Play-publisher credentials.
-The producer has a matching fail-closed ref guard. Store mutation is isolated in
-the exact promoter, whose four role/platform targets each have their own bounded
-non-cancelling queue. Every authorized iOS target is dispatched automatically;
-manual dispatch remains a recovery surface. `prod-backend` served only the
+only mobile signing, Maps, App Store Connect, and Play-publisher credentials, and
+`Mobile Beta` checks the ref again before building. `prod-mobile-release` holds
+the same store credentials for `Mobile Production` and requires a reviewer's
+approval; see [Mobile releases](#mobile-releases). `prod-backend` served only the
 retired Delivery workflow and is now unused; `Deploy backend` deploys prod
 through reviewer-protected `prod`. The `prod-backend` OIDC provider binds the immutable repository and owner IDs, ref,
 environment, caller workflow, reusable workflow, and automatic event type; both
@@ -754,10 +741,8 @@ the unchanged helper's current reviewer-protection check.
 Every `Deploy backend` prod run waits for a `prod` reviewer. Dev and prod run
 independently, one deploy per environment at a time.
 
-During cutover, reviewer-protected `prod` may still hold duplicate mobile
-secrets as rollback material. The mobile workflow does not read them. Delete
-those duplicates only after both GitHub iOS lanes process and both signed
-Android lanes pass from `prod-mobile`.
+Reviewer-protected `prod` may still hold duplicate mobile secrets from the
+GitHub iOS cutover. No mobile workflow reads them; the owner may delete them.
 
 Each Firebase deployment environment must define these variables:
 
@@ -1228,8 +1213,8 @@ flavors:
 - `GOOGLE_MAPS_IOS_API_KEY_STAGING`
 - `GOOGLE_MAPS_IOS_API_KEY_PROD`
 
-The environment-scoped `Mobile Internal Release` workflow needs these
-`prod-mobile` environment secrets for iOS:
+`Mobile Beta` needs these `prod-mobile` environment secrets for iOS (`Mobile
+Production` needs only the three App Store Connect secrets):
 
 - `APP_STORE_CONNECT_API_KEY_ID`
 - `APP_STORE_CONNECT_API_ISSUER_ID`
@@ -1245,30 +1230,28 @@ Actions secrets.
 
 The reusable iOS archive identity is a dedicated Apple Development certificate,
 not a personal signing identity. Store its encrypted PKCS#12 payload and
-password in the two `IOS_CI_DEVELOPMENT_CERTIFICATE_*` secrets. Keep these
-non-secret `prod-mobile` environment variables beside it:
+password in the two `IOS_CI_DEVELOPMENT_CERTIFICATE_*` secrets. No workflow
+reads the older `IOS_CI_DEVELOPMENT_CERTIFICATE_ID`, `_SHA256` and `_EXPIRES_AT`
+variables any more.
 
-- `IOS_CI_DEVELOPMENT_CERTIFICATE_ID`
-- `IOS_CI_DEVELOPMENT_CERTIFICATE_SHA256`
-- `IOS_CI_DEVELOPMENT_CERTIFICATE_EXPIRES_AT`
-
-Each iOS matrix runner imports that same identity into an ephemeral keychain,
-checks the certificate type, Apple team, SHA-256 fingerprint, and 30-day
-validity floor, then deletes the decoded PKCS#12, public certificate copy,
-temporary keychain, and materialized App Store Connect key. Keep Xcode archive
+The iOS beta lane imports that identity into fastlane's temporary CI keychain
+(`setup_ci` and `import_certificate`) and deletes the decoded PKCS#12 and the
+materialized App Store Connect key when the lane ends. Keep Xcode archive
 signing automatic and keep `-allowProvisioningUpdates`; the persistent private
 key prevents a clean runner from asking Apple to create another development
 certificate, while Xcode can still create or repair role-specific profiles.
+fastlane does not check the certificate's expiry, so track it in the Apple
+Developer portal.
 
-Rotate the CI identity before the 30-day floor by creating one replacement
+Rotate the CI identity before it expires by creating one replacement
 certificate/private-key pair, importing the replacement PKCS#12 locally to
-prove it is a usable code-signing identity, updating both secrets and all three
-variables, and running both iOS release lanes. Re-query Apple certificates and
+prove it is a usable code-signing identity, updating both secrets, and running
+`Mobile Beta` for iOS for both apps. Re-query Apple certificates and
 profile relationships after the run. Revoke the old CI certificate only after
 both roles process successfully with the replacement and no new certificate id
 appears. Never auto-revoke the active CI certificate at job teardown.
 
-Android release jobs require these `prod-mobile` environment secrets:
+The `Mobile Beta` Android job requires these `prod-mobile` environment secrets:
 
 - `ANDROID_UPLOAD_KEYSTORE_BASE64`
 - `ANDROID_UPLOAD_STORE_PASSWORD`
@@ -1276,15 +1259,13 @@ Android release jobs require these `prod-mobile` environment secrets:
 - `ANDROID_UPLOAD_KEY_PASSWORD`
 - `GOOGLE_MAPS_ANDROID_API_KEY_PROD`
 
-Play publishing in `Mobile Internal Exact Promotion` uses the existing GitHub
-OIDC provider plus the environment variables `GCP_WORKLOAD_IDENTITY_PROVIDER`
-and `GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL`. There is no rollout Boolean to drift:
-every Android promotion must live-probe both Catch Play records, both `qa`
-tracks, app-scoped edit access, and at least one Google Group tester per track
-before the selected AAB can upload. Play App Signing enrollment remains an
-owner-controlled Play Console prerequisite because the Publisher API cannot
-prove it before the first bundle exists. Do not add a long-lived Google Play
-JSON key.
+Play publishing in `Mobile Beta` and `Mobile Production` uses the existing
+GitHub OIDC provider plus the environment variables
+`GCP_WORKLOAD_IDENTITY_PROVIDER` and `GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL`;
+`google-github-actions/auth` writes the short-lived credentials file fastlane
+`supply` reads. Play App Signing enrollment remains an owner-controlled Play
+Console prerequisite because the Publisher API cannot prove it before the first
+bundle exists. Do not add a long-lived Google Play JSON key.
 
 As of 2026-07-11, `androidpublisher.googleapis.com` is enabled and
 `github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com`
@@ -1297,13 +1278,8 @@ member was added for the `prod-mobile-release` environment that
 still invite that identity separately, scoped to the two app records and only
 read-app plus testing-track release permissions.
 
-After those grants exist, configure at least one Google Group tester on each
-`qa` track. The exact promoter invokes the separately authenticated,
-apply-guarded `tool/platform/probe_google_play_access.mjs` for both package
-names on every Android promotion. The fleet probe creates an edit, reads the
-track and its Google Group testers, and deletes the edit without uploading or
-committing. It is not part of package production and must not be replaced by a
-trial upload. The promoter still refuses every track except `qa`.
+Testers for each app belong on its Play `internal` track. The retired `qa`
+closed-testing track is no longer used.
 
 ## Deploy Backend
 
@@ -1687,51 +1663,11 @@ Functions `defineBoolean` deployment parameters. This Admin availability contrac
 does not migrate their activation mechanism; any backend switch migration or
 live activation requires its own authorized source and release work.
 
-Mobile artifacts remain separate from backend deployment. A successful
-same-repository `main` CI attempt wakes `.github/workflows/mobile-internal-release.yml`,
-which verifies CI authority v3 and consumes only the exact
-`consumer-ios`, `consumer-android`, `host-ios`, or `host-android` targets in that
-plan. The approval-free, main-only `prod-mobile` environment supplies signing
-credentials. The producer builds, signs, verifies, size-audits, and retains each
-selected IPA/AAB plus its identity, policy, provenance, and immutable upload
-receipt for 90 days. Each platform finishes its own cross-role comparisons and
-publishes a separate `catch.mobile-build-authority/v2` containing only that
-platform's selected targets. A failed Android build or size gate does not block
-iOS authority publication or TestFlight handoff; iOS failures likewise do not
-invalidate Android packages. The producer performs no TestFlight or Play mutation.
-
-Store mutation remains a separate exact-artifact operation in
-`.github/workflows/mobile-internal-promote.yml`. After the iOS platform authority
-is published, the producer uses its narrowly scoped `actions: write` job to dispatch
-one promoter for every authorized iOS target, passing the current producer
-run/attempt and exact authority artifact id/digest. GitHub runs the promoter from
-`main`; v2 promotion requires the selected platform's verification job to have
-succeeded in the exact current producer attempt. It can proceed while the other
-platform is running or after that platform fails. Legacy v1 aggregate authorities
-still require the entire producer run to finish successfully. The promoter
-derives the package artifact only from that authority, downloads it by immutable
-id, verifies the GitHub digest and every packaged byte, and freshly re-extracts it
-for final verification before credentials are created. Manual dispatch accepts
-the same inputs and remains available for exact recovery.
-
-The promoter uploads the already-signed IPA to TestFlight or the already-signed
-AAB to the Play `qa` track without Flutter, Gradle, Xcode archive/export, or
-signing work. For iOS, it waits for the exact build to reach `VALID`, removes the
-upload credential, persists the immutable exact-upload claim, then rematerializes
-the credential only for an idempotent distribution step. That step selects every
-existing internal TestFlight group for the app that already contains testers,
-adds the exact build to groups that do not yet have it, reads every relationship
-back, and persists a separate 90-day distribution receipt. It never creates a
-group, adds a tester, or grants access to an external group. The run fails closed
-when no existing internal group contains testers. Play additionally requires the
-two-app live readiness gate to pass; public store promotion remains outside this
-workflow.
-
-Every producer-state check, including the last check immediately before store
-credentials are loaded, accepts the selected platform's successful v2 authority
-independently of a sibling platform failure. Each check re-reads the exact
-attempt's platform authority job; cancellation, missing/duplicate platform proof,
-stale attempts, and changed artifact bytes still fail closed.
+Mobile builds stay separate from backend deployment. `Mobile Beta` builds,
+verifies and uploads each selected app and platform in one job, so the signed
+bytes never leave the runner that built them before upload; `Mobile
+Production` promotes a build already in the store and rebuilds nothing. See
+[Mobile releases](#mobile-releases).
 
 The mobile package receipt intentionally reports two repository-controlled
 measurements: compressed bytes in the signed IPA/AAB and the sum of raw archive
@@ -1887,14 +1823,6 @@ The reusable delivery contract binds:
 - artifact basename, byte length, and SHA-256 digest; and
 - the ordered stages permitted for that artifact.
 
-The final `Required CI` step publishes `catch.ci-delivery-authority/v3` only
-after that exact attempt owns its planner artifact and, when deployment is
-needed, backend package. The authority binds the numeric CI workflow id,
-workflow-scoped run number, run id, attempt, source SHA, and each referenced
-artifact's immutable id, name, and GitHub SHA-256 digest. A consuming release
-workflow downloads the referenced artifacts by id and independently verifies
-the downloaded archive digest before extraction.
-
 Before using deployment credentials or mutating remote state, a consuming job
 must receive the expected source SHA, run id, and run attempt from trusted queue
 selection or explicit recovery input, download the artifact plus provenance
@@ -1929,26 +1857,23 @@ approval, concurrency, stage postconditions, smoke tests, and mutation policy.
 Production permission is never inferred from a valid digest. The Firebase
 backend no longer uses this contract: `Deploy backend` deploys an exact
 commit (see Deploy Backend). Admin and Marketing Hosting consume it through
-`_web-hosting-build.yml` and `_web-hosting-promote.yml`. Mobile release routing,
-signed package production, and store promotion use separate exact-target
-producer and promoter workflows; the promoter cannot rebuild or resign.
+`_web-hosting-build.yml` and `_web-hosting-promote.yml`. Mobile releases do not
+use it either: `Mobile Beta` builds and uploads in one job and records a GitHub
+build attestation (see [Mobile releases](#mobile-releases)).
 
 ## Release Setup Evidence Snapshot
 
 Current setup/build/signing/distribution verdict: local builds and the native
-signing contract are healthy. On 2026-07-15, GitHub run `29388936845` exposed
-an Apple certificate-capacity blocker in both iOS archive jobs: ephemeral
-runners had no reusable development private key, so automatic signing had
-accumulated one unusable API-created certificate per runner. Nineteen verified
-unused development certificates were revoked, the three working human
-Development/Distribution/Developer ID identities were preserved, and dedicated
-CI certificate `7P698XNLRP` was installed in `prod-mobile`. Current
-final analyzer-clean producer run `31435724862` used the repaired reusable-keychain
-path for both roles, and exact promotion runs `31436879851` and `31436882152`
-processed the Consumer and Host IPAs as `VALID`. Mobile store distribution still needs
-external product-release evidence: current automatic TestFlight distribution
-receipts plus install proof for both roles, and Play account verification, enrollment, processing,
-tester, signing-fingerprint, install, and launch proof.
+signing contract are healthy. On 2026-07-15 ephemeral runners without a
+reusable development private key had accumulated one unusable API-created
+Apple certificate per run; nineteen verified-unused development certificates
+were revoked, the three working human Development/Distribution/Developer ID
+identities were preserved, and dedicated CI certificate `7P698XNLRP` was
+installed in `prod-mobile`. `Mobile Beta` imports that identity: run
+`40975670519` uploaded both iOS apps to TestFlight, and run `40943509998`
+uploaded Host Android to Play internal. Mobile store distribution still needs
+external product-release evidence: install proof for both roles, the Consumer
+Play app record, and Play signing-fingerprint, install, and launch proof.
 
 Verified setup state:
 
@@ -1971,9 +1896,8 @@ Verified setup state:
 - Direct macOS distribution is Developer ID signed, timestamped, notarized,
   stapled, and Gatekeeper accepted.
 - Consumer TestFlight upload/install/launch and iOS Maps behavior have legacy
-  Xcode Cloud proof. GitHub Actions is now the canonical owner for both roles;
-  both current GitHub builds have processed, while the repaired automatic
-  tester-group receipt and install/launch proof remain pending for each role.
+  Xcode Cloud proof. `Mobile Beta` now uploads both roles; install/launch proof
+  of those builds remains pending for each role.
 
 Still outside this setup verdict:
 
@@ -2232,9 +2156,9 @@ Host event broadcasts completed their backend-first rollout in August 2026:
    callable JSON rejection rather than 404, redirect, HTML/GFE, IAM denial, or
    5xx.
 3. After that proof passed in production, the temporary client flag was
-   removed. The Host job in `Mobile Internal Release` still runs the
+   removed. The Host beta lane in `fastlane/Fastfile` still runs the
 manifest-driven live dependency check before Flutter/Xcode work and refuses
-to archive if the callable is not reachable. Broadcast visibility is now a
+to build if the callable is not reachable. Broadcast visibility is now a
 product capability, not a rollout flag.
 
 Organizer follower-update delivery uses the same backend-first boundary, but
@@ -2695,69 +2619,49 @@ Run a lane locally with `bundle exec fastlane ios beta role:host` or
 `bundle exec fastlane android beta role:consumer`, given the same environment
 variables the workflow passes. `bundle exec fastlane lanes` lists every lane.
 
-The older `Mobile Internal Release` and `Mobile Internal Promote` workflows
-keep running until the fastlane path has shipped each app once. The migration
-plan, `plans/mobile_release_fastlane_migration.md`, owns the cutover, the
-regression ledger and the delete list.
+`tool/app_targets.json` records this contract in `releasePolicy`: fastlane
+lanes, the two workflows and their environments, TestFlight automatic internal
+distribution, the Play `internal` beta track, and the Android upload
+certificate the bundle verifier checks. `platform:app-targets` checks the
+workflows and the Fastfile against it: beta runs on a schedule and on dispatch
+in `prod-mobile` and never reaches production; production runs only on
+dispatch in `prod-mobile-release`, from `main`, and never rebuilds. Run the
+mobile release gates with:
 
-## Mobile Internal Release Ownership
+```sh
+node tool/run.mjs check \
+  platform:app-targets \
+  platform:mobile-package-policy \
+  platform:verify-ios-release-identity \
+  platform:verify-android-release-identity
+```
 
-Decision updated 2026-08-13: GitHub Actions remains the canonical internal
-mobile release owner for both Consumer and Host, but package production and
-store mutation are separate authorities:
+### What the beta lanes verify
 
-- `Mobile Internal Release` is a signed-package `workflow_run` consumer. It
-  accepts a successful same-repository `main` CI authority, builds only exact
-  role/platform targets, and publishes verified 90-day packages plus independent
-  platform v2 build authorities, then automatically hands authorized iOS targets to
-  the separate promoter. It has no manual dispatch and no store mutation.
-- `Mobile Internal Exact Promotion` receives an automatic dispatch for every
-  authorized iOS target. It accepts one exact target and current producer
-  attempt, derives the package id/digest from the verified platform authority,
-  then uploads those already-signed bytes to TestFlight without rebuilding or
-  resigning. Manual exact dispatch remains available for iOS or Play recovery.
+The lanes check `tool/firebase/client_callable_dependencies.json` before
+building. A disabled production feature reports `disabled` and skips the live
+probe. An enabled Host callable dependency must return an expected Firebase
+callable JSON rejection to an unauthenticated probe; 404, redirect, HTML/GFE,
+IAM denial, unexpected success, and 5xx all stop the build before upload.
 
-`tool/app_targets.json` therefore declares
-`successful-main-ci-exact-artifact-authority`,
-`automatic-ios-exact-artifact-internal-promotion`, and
-`separate-promotion-workflow` for both platforms. CI impact routing produces
-exact `consumer-ios`,
-`consumer-android`, `host-ios`, and `host-android` intersections; it never turns
-one role into a two-platform matrix. The promoter serializes only the selected
-target with a bounded non-cancelling queue and rejects ref, rerun-attempt,
-producer-attempt, authority, package, or target substitution before credentials.
-An unrelated `main` commit may land after dispatch: the promoter permits that
-only when its dispatch SHA remains an ancestor of `main` and none of the exact
-promotion workflow, manifest, package verifier, or store-operation sources
-changed. Relevant release-code drift fails closed and waits for a fresh dispatch.
-Public App Store or Play production promotion is never automatic in either
-workflow; only internal TestFlight distribution is automatic.
+`verify_ios_release_identity.mjs` checks the exported IPA for the target
+marker, compiled Flutter entrypoint, bundle/display identity, version/build,
+embedded Firebase bundle/app/project identity, Firebase OAuth URL scheme, and
+role-specific signed entitlements. Consumer requires HealthKit and Associated
+Domains. Host intentionally has neither; both roles require their Push/App
+Attest contract. Production entitlement values and an explicit
+`get-task-allow=false` are required. Archives stay on Xcode automatic signing
+with the reusable Apple Development identity; Apple's cloud signing re-signs
+the App Store export through the API key and
+`apps/<role>/ios/ExportOptions.prod.plist`. The lane then validates the built
+prod Maps key and writes the identity receipt beside the IPA.
 
-After a verified store result and credential cleanup, the promoter writes one
-`mobile-promotion-claim-v1-<target>-<package-artifact-id>-<signed-sha256>`
-artifact containing only `mobile-promotion-receipt.json` and retains it for 90
-days. For iOS this claim is persisted before group distribution, so a transient
-group API failure can retry without creating a fresh build. A later dispatch may
-reuse that claim only when the successful promotion
-attempt, source CI and producer attempts, authority/package ids and digests,
-signed-byte SHA-256, store target/version/build, and remote result all match.
-The prior run may have succeeded, failed, or been cancelled after publishing the
-claim; the claim is reusable because its exact upload postcondition was already
-verified and persisted before the separate distribution operation began.
-The separate `testflight-distribution-v1-...` artifact binds the remote build id,
-exact package artifact id and signed-byte digest, selected internal group ids and
-names, tester counts, relationship readback, and promotion attempt. For Apple,
-an existing App Store Connect version/build identity is not proof of
-which IPA bytes were uploaded. If `altool` succeeds but the exact claim cannot
-be persisted, automatic exact recovery fails closed and a new build is
-required; any operator reconciliation must remain explicitly non-exact and
-cannot satisfy this claim contract. Google Play can retry an ambiguous first
-result without a second upload only after its completed `qa` readback proves
-the exact version code and remote SHA-256.
+`verify_android_release_bundle.mjs` uses checksum-pinned bundletool `1.18.3`,
+verifies JAR integrity and the checked upload-certificate SHA-256, and reads
+the compiled package, target/role, Firebase app/project, Maps, debuggable,
+version-name, and version-code identity before any Play upload.
 
-The producer resolves scheme, configuration, bundle id, and entrypoint from the
-six-target manifest, then runs the package and platform gates before publishing
-authority:
+### Build wrapper retries
 
 Every GitHub Actions `flutter build ios` entrypoint routes through
 `tool/flutter_with_env.sh`. On CI only, that wrapper retries at most three times
@@ -2770,83 +2674,44 @@ running under the CI environment contract.
 The same wrapper applies a separate CI-only retry to Android `apk` and
 `appbundle` builds when the output contains both a transient Java socket
 failure and the Gradle wrapper download stack. The ordinary wrapper default is
-three attempts; the protected mobile producer allows five attempts with a
-20-second delay to keep the selected Android package lane resilient. A failed
-Android runner blocks Android authority publication without withholding iOS
-packages or distribution. Consumer and Host use the same smaller binary-only Gradle
+three attempts; the Mobile Beta Android job allows five attempts with a
+20-second delay. Consumer and Host use the same smaller binary-only Gradle
 distribution from Gradle's immutable GitHub release and pin its published
 SHA-256. The wrapper does not retry Gradle compilation, signing, Android
-configuration, or unrelated network-looking errors. This keeps signed-package
-production resilient to an interrupted distribution download without masking
-deterministic product failures.
+configuration, or unrelated network-looking errors.
 
-The iOS `Export prod IPA` step applies the same policy shape to
-`xcodebuild -exportArchive`: at most three attempts with a 20-second delay,
-and only when the failed output contains the transient App Store Connect
-response signature `isn't in the correct format` (matched as `correct
-format`). Apple occasionally answers the export's provisioning negotiation
-with an unparseable response; the same archive, secrets, and code then export
-cleanly on a later attempt. Any other export error, and a persistent transient
-after three attempts, fails the step on first encounter or exhaustion. On a
-final failure the step preserves the export log and the newest
-`*.xcdistributionlogs` bundle under
-`build/ios/release-evidence/<role>-export-diagnostics`, uploaded as a 14-day
-failure-only `ios-export-diagnostics-v1-<target>-...` artifact so the Apple
-error detail survives runner teardown. The retry never weakens verification:
-the exported IPA still passes the strict identity, package-policy, and
-exact-bytes binding gates below.
+### iOS Maps key and toolchain pins
 
-```sh
-node tool/run.mjs check \
-  ci:mobile-release-package \
-  ci:mobile-release-workflow \
-  ci:mobile-promotion-core \
-  ci:mobile-promotion-workflow \
-  platform:app-targets \
-  platform:mobile-build-number \
-  platform:verify-ios-release-identity \
-  platform:verify-app-store-build \
-  platform:verify-android-release-identity \
-  platform:upload-google-play-bundle
-```
+GitHub Actions iOS jobs write each app's
+`apps/<role>/ios/Flutter/GoogleMapsKeys.xcconfig` through
+`tool/write_ios_maps_key_xcconfig.sh <env> <output>`. The simulator build matrix
+uses `dev`; TestFlight builds use `prod`. Keep Maps-key validation in that
+helper instead of duplicating secret preflight logic in each CI surface.
+`apps/<role>/ios/Flutter/GoogleMapsKeys.xcconfig` is gitignored, so it is never
+present in a fresh clone. Without the key the archived `GoogleMapsApiKey` is
+empty, `GMSServices.provideAPIKey` is skipped in `AppDelegate`, and every map
+screen crashes at runtime.
 
-It also checks `tool/firebase/client_callable_dependencies.json` immediately
-after resolving the target. A disabled production feature reports `disabled`
-and skips the live probe. An enabled Host callable dependency must return an
-expected Firebase callable JSON rejection to an unauthenticated probe; 404,
-redirect, HTML/GFE, IAM denial, unexpected success, and 5xx all block package
-production.
+GitHub Actions read `tool/ci/toolchain.env` through local actions under
+`.github/actions`. Update that file instead of editing workflow YAML when
+changing public tool versions such as Flutter, Node, Java, or Firebase CLI.
+`tool/ci/check_toolchain_consistency.sh` requires every Apple-native workflow,
+including Mobile Beta and Mobile Production, to run on the pinned
+`APPLE_CI_RUNNER`.
 
-`verify_ios_release_identity.mjs` checks both the archive and exported app for
-the target marker, compiled Flutter entrypoint, bundle/display identity,
-version/build, embedded Firebase bundle/app/project identity, Firebase OAuth URL
-scheme, and role-specific signed entitlements. Consumer requires HealthKit and
-Associated Domains. Host intentionally has neither; both roles require their
-Push/App Attest contract. Xcode automatic signing may produce a development-signed
-archive before distribution export, so the archive receipt verifies role and app
-identity without treating it as store-ready proof. The exported IPA receipt is
-strict: production entitlement values and an explicit `get-task-allow=false`
-are required. The workflow separately validates the built prod Maps key, writes
-stage-labelled JSON identity receipts, and records the IPA SHA-256. The separate
-promoter cryptographically rebinds that receipt to the exact package bytes and
-uploads the same verified IPA with `altool`; a second export after verification
-is rejected by the app-target scanner.
+### History
 
-Before archive, the workflow checks the proposed Apple build against the latest
-200 App Store Connect builds for that app. Canonical GitHub iOS releases use an
-18-digit `<UTC YYYYMMDD><8-digit GitHub run><2-digit attempt>` number, which is
-above the legacy date/build namespace and unique to the source CI attempt. The
-producer does not upload. Its post-authority handoff automatically dispatches
-every authorized iOS target, and the exact promoter records the producer attempt,
-store response, and internal group relationship readback. App Store processing
-and TestFlight distribution are machine-verifiable; install and launch remain
-physical-device evidence.
-
-Android uses `100000 + workflow run number * 100 + attempt`; two reserved retry
-digits prevent adjacent-run collisions. The verifier uses checksum-pinned
-bundletool `1.18.3`, verifies JAR integrity and the checked upload-certificate
-SHA-256, and reads compiled package, target/role, Firebase app/project, Maps,
-debuggable, version-name, and version-code identity before any Play edit.
+The custom `Mobile Internal Release`, `Mobile Internal Promote` and
+`_mobile-platform-authority` workflows, their package and promotion scripts,
+and the `main` CI delivery authority they consumed were deleted on 2026-10-30,
+after `Mobile Beta` run `40975670519` uploaded both iOS apps to TestFlight, run
+`40943509998` uploaded Host Android to Play internal (version code 457902) and
+run `40959763441` built the signed Consumer Android bundle. Their run history
+stays in GitHub Actions and App Store Connect. The migration plan,
+[plans/mobile_release_fastlane_migration.md](plans/mobile_release_fastlane_migration.md),
+records what the old pipeline did and each regression the fastlane path
+accepts. The legacy Xcode Cloud `Default` workflows of both apps stay disabled
+in App Store Connect; do not reactivate them.
 
 ## Optional Flight Provider Configuration
 
@@ -2875,257 +2740,29 @@ Alerts and webhook ingestion remain disabled. See the
 [flight preparation guide](../functions/src/transport/README.md) for secure
 user-only credential entry, exact controls, and activation blockers.
 
-## TestFlight Status
+## Host App Icons
 
-Both roles have checked local/native composition, Firebase identity, distinct
-store identity, App Store Connect records, and manifest-resolved GitHub archive
-and exact-promotion paths. The producer deliberately stops at signed package
-authority, then automatically dispatches the exact promoter for authorized iOS
-targets. The promoter owns upload and existing-internal-group assignment;
-installation and launch remain physical-device evidence.
-`APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open until current distribution
-receipts plus installation and launch proof are recorded in GitHub issue `#218`.
-`tool/app_target_external_gates.json` owns that stable external gate and the
-matching Play gate without carrying run receipts. Update live evidence here and
-in the owning Issues; an evidence-only update must never authorize new signed
-mobile packages.
-
-The current analyzer-clean split release is proven for both roles from the same
-immutable producer authority. Producer run `31435724862` selected source
-`9c3633095464778a1d5734d742ab3036e5f7cde7` and published authority artifact
-`9081276899`. Consumer promotion run `31436879851` reused exact iOS package
-artifact `9081248527`, uploaded version `1.0.2`, build
-`202608100000030201`, to App Store Connect app `6765646860`, remote build
-`13f755b5-508c-4acc-9a85-cea069e3425d`, and persisted exact claim artifact
-`9081579386`. Host promotion run `31436882152` reused exact iOS package artifact
-`9081211960`, uploaded version `1.0.1`, the same source-bound build number, to
-app `6778927317`, remote build `0e37ff07-3f88-40fc-be88-fd23e36de60a`, and
-persisted exact claim artifact `9081563645`.
-Both postconditions reached `VALID`; neither promotion rebuilt, re-exported, or
-re-signed its producer package. These historical claims prove upload and
-processing, not TestFlight group assignment or installed-device behavior.
-Promotions after the 2026-08-13 automation change also persist the separate
-distribution receipt.
-
-Consumer `1.0.2` is the first live proof of the split architecture. Main CI run
-`31266032614` authorized source `c7be024a4e272d4a21759127a4fdd19e5752e30a`;
-producer run `31266556052` created and verified only the Consumer iOS and
-Android packages; promotion run `31267129848` reused iOS package artifact
-`9024464806` and uploaded TestFlight build `202608080000018401` without any
-Flutter build, Xcode archive/export, or signing command. Exact claim artifact
-`9024637372` binds that package and signed-IPA digest to App Store Connect app
-`6765646860`, version `1.0.2`, the remote build id, and all three workflow
-attempts. It does not prove TestFlight group assignment or installed-device
-behavior.
-
-Consumer manual recovery run `30523657375` uploaded commit
-`1cf9739e858e3e458cf1bf70e10d0d496938defe` after PR `#133`; build
-`202607300000005101` reached App Store Connect `VALID`. That is historical
-processing proof, not authority for automatic future uploads, tester-group
-assignment, or installation. The 2026-08-13 policy automatically dispatches
-exact iOS promotions from the verified producer while retaining a separate
-manual recovery dispatch.
-
-The pre-cutover Consumer dispatch `29161431098` successfully signed and archived
-`com.catchdates.app`, then stopped before export because Xcode's archive
-`Info.plist` contains a root `CreationDate` that cannot be converted wholesale
-to JSON. The verifier now extracts `ApplicationProperties` and has a regression
-test for that real plist shape. The failed dispatch is diagnostic evidence, not
-TestFlight upload proof.
-
-The first unified main run `29165188541` proved the credential and build-number
-preflight, then exposed that the verifier incorrectly treated a development-signed
-archive as a distributable app (`aps-environment=development`,
-`get-task-allow=true`). Run `29166191690` then proved why forcing
-`Apple Distribution` is not the fix: both iOS jobs failed because that manual
-identity conflicts with automatic signing, while both Consumer and Host Android
-jobs built, verified, and uploaded their signed AAB artifacts successfully. The
-corrected contract leaves archive signing automatic, lets `xcodebuild
--exportArchive` re-sign with `apps/<role>/ios/ExportOptions.prod.plist`, and reserves strict
-distribution-entitlement enforcement for the exported IPA. The checked IPA is
-then uploaded directly instead of asking Xcode to export a different binary for
-upload.
-
-Run `29168074271` on main SHA
-`05a3a5811a9c20ec82d14a4b04114c4538acfdd2` closed the upload and processing
-proof on 2026-07-12. Both role jobs archived, verified, exported, uploaded the
-same checksum-verified IPA, and reached App Store Connect `VALID` as build
-`202607110000000301`. Its Consumer and Host processing receipts are bound to
-that exact GitHub run. Retirement dispatch `29168662623` downloaded those
-receipts, re-verified both live builds, and disabled both app-scoped `Default`
-workflows. Independent App Store Connect reads confirmed both remain disabled.
-
-Run `29388936845` on main SHA
-`6d042bc77ef943b1278013906c3dec3714586771` failed both iOS archive jobs on
-2026-07-15 after Xcode reported the Apple Development certificate limit and no
-matching iOS App Development profile for either production bundle id. Android
-completed successfully. Live inventory proved that 17 API-created development
-certificates had no surviving private key or live profile relationship; two
-additional human-named development certificates also had no private key or live
-profile relationship. All 19 were revoked by exact id. The remaining live set
-was reduced to the working human Apple Development, Apple Distribution, and
-Developer ID identities, then dedicated reusable CI development certificate
-`7P698XNLRP` was added. Do not rerun `29388936845`: its old workflow does not
-import the reusable private key and would recreate the leak.
-
-Historical pre-split cutover status (completed on 2026-07-12):
-
-1. Complete: both GitHub role jobs archive, verify, export, and upload.
-2. Complete: both exact builds finish processing in App Store Connect.
-3. Complete: the Consumer workflow
-   `93EC2EEF-494E-492D-8574-570AA8BF690E` and Host workflow
-   `1F97B043-9337-427B-854C-6F88F2110020` are disabled. GitHub/App Store status
-   surfaces may prefix them as `Catch | Default` and `Runner | Default`; the
-   app-scoped API name is `Default` for each app.
-4. Superseded by automation: the exact promoter now records and assigns every
-   existing internal TestFlight group that already contains testers.
-5. Pending: install and launch both GitHub-owned builds with App Check, Maps,
-   phone auth, push, and role-specific entrypoint proof.
-
-Items 1-3 describe the earlier combined workflow and remain historical evidence
-only. The current split producer and exact promoter are now exercised for both
-iOS roles: producer run `31435724862` created the exact packages, Consumer
-promotion `31436879851` and Host promotion `31436882152` uploaded those packages
-without rebuilding, both App Store Connect builds reached `VALID`, and exact
-claim artifacts `9081579386` and `9081563645` bind the remote results. Only live
-distribution receipt evidence, installation, and device smoke proof remain open
-in issue `#218`. Google Play remains externally blocked by
-developer-account verification and missing app records in issue `#199`; the
-exact Consumer and Host Android packages are retained for promotion after that
-account gate clears.
-
-Current host icon status: host builds use generated `AppIcon-host-dev`,
-`AppIcon-host-staging`, and `AppIcon-host-prod` catalogs on iOS/macOS, plus
-Android `hostDev`, `hostStaging`, and `hostProd` launcher resources. The
-two-line icon and centered light/dark splash read `Catch Host` in the same
-explicit Archivo `wght: 600` / `wdth: 78` voice as Consumer; there is no system
-font fallback and no plural `Hosts` product mark. Regenerate the Swift masters
-and then run `dart run tool/branding/generate_native_brand_assets.dart` after
-native brand-token, icon, or splash changes.
-
-## Legacy Xcode Cloud State
-
-The old 12 a.m. scheduled Consumer Xcode Cloud build was retired live in App
-Store Connect on 2026-05-21. The later Consumer and Host app-scoped `Default`
-workflows were disabled on 2026-07-12 after the exact GitHub builds reached
-`VALID`. They may appear in status contexts as `Catch | Default` and
-`Runner | Default`, but the App Store Connect API returns the exact workflow
-name `Default` for each distinct app. GitHub Actions is the sole routine release
-owner; do not reactivate these workflows except for an explicit rollback.
-The former `retire_xcode_cloud` operation was a bounded cutover tool: it required
-exact processed Consumer and Host GitHub build numbers and matching processing
-receipts before disabling the two named workflows. That input no longer exists.
-Neither the package producer nor the exact promoter can mutate Xcode Cloud.
-
-The unused prototype App Store Connect record `catch_dating_app` (app id
-`6738610809`, bundle id `com.example.catchDatingApp`) was removed on 2026-07-12
-after API inventory proved it had no builds, prerelease versions, beta groups,
-or commercial products. Its disabled Xcode Cloud product
-`26D4F6B6-7D4F-4FC8-8B34-6B5D9FB9C692` had zero build runs and was deleted; the
-active `Catch Dating` and `Catch Host` records were re-listed afterward.
-
-Current App Store Connect file/folder rules:
-
-- Any file from `/lib`
-- Any file from `/ios`
-- Any file from `/assets`
-- Any file from `/contracts`
-- File name `pubspec.yaml` from any folder
-- File name `pubspec.lock` from any folder
-- Any file from `/tool`
-- Any file from `/firebase/prod`
-
-These historical rules live in App Store Connect, not repository YAML. They are
-retained only for audit traceability; do not reactivate them as routine upload
-triggers.
-
-If a backend change intentionally requires a compatible app binary, land the
-corresponding mobile source/config change so CI selects the exact affected
-role/platform target after the backend contract is ready. `Mobile Internal
-Release` has no manual dispatch; do not manufacture an unplanned package by
-rerunning or bypassing its CI authority.
-
-GitHub Actions iOS jobs write each app's
-`apps/<role>/ios/Flutter/GoogleMapsKeys.xcconfig` through
-`tool/write_ios_maps_key_xcconfig.sh <env> <output>`. The simulator build matrix
-uses `dev`; TestFlight release builds use `prod`. Keep Maps-key validation in
-that helper instead of duplicating secret preflight logic in each CI surface.
-
-## Legacy Xcode Cloud Build Scripts
-
-The checked Xcode Cloud `ci_scripts` were removed on 2026-10-23 with the root
-native shells. All three copies (root, Consumer and Host) were byte-identical,
-and each wrote the Maps key into root `ios/Flutter/` and pod-installed the root
-project, so none could build a shipped app project. Recovering through Xcode
-Cloud would need new scripts that prepare `apps/<role>/ios`, inject and verify
-the environment-specific Maps key, and stay above the GitHub candidate floor.
-
-GitHub Actions read `tool/ci/toolchain.env` through local actions under
-`.github/actions`. Update that file instead of editing workflow YAML when
-changing public tool versions such as Flutter, Node, Java, or Firebase CLI.
-
-`apps/<role>/ios/Flutter/GoogleMapsKeys.xcconfig` is gitignored, so it is never
-present in a fresh clone. Without the key the archived `GoogleMapsApiKey` is
-empty, `GMSServices.provideAPIKey` is skipped in `AppDelegate`, and every map
-screen crashes at runtime.
-
-## GitHub-Only Migration Status
-
-The repository migration is implemented as two Actions authorities: the
-CI-triggered producer owns exact role/platform signed iOS/Android packages and
-automatically dispatches authorized iOS targets, while the exact promoter owns
-one verified TestFlight or Play `qa` mutation without rebuilding. Consumer and
-Host iOS both upload automatically from an affected successful `main` push;
-Android Play remains a manual recovery dispatch while its external account gate
-is open.
-
-Consumer and Host exact upload and processing plus legacy-owner retirement are
-complete. `APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open only for current
-automatic distribution receipt and install/launch proof in issue `#218`.
-`APP-TARGET-ANDROID-PLAY-001` remains blocked in issue `#199` on Play developer
-account verification, app-record creation, App Signing, publisher access,
-processing, testers, and device proof.
-
-Cutover checklist:
-
-1. Complete historical evidence: Consumer and Host GitHub uploads and App Store
-   processing from the pre-split workflow.
-2. Complete: both legacy Xcode Cloud workflows disabled.
-3. Complete: current analyzer-clean Consumer and Host exact promotions processed
-   in runs `31436879851` and `31436882152` with 90-day exact claims.
-4. Record both automatic TestFlight distribution receipts and install/launch
-   proofs in issue `#218`.
-5. Complete the Play owner-verification, app-record, App Signing, tester, and
-   publisher-access steps in issue `#199`, then rerun the exact promoter.
-6. Record both Play internal
-   processing/install/launch proofs and signing
-   fingerprints.
-
-The repository can verify that the GitHub `prod-mobile` environment has the
-required App Store Connect secret names and that the local release scripts fail
-loudly when required release secrets are missing. The exact promoter can prove
-TestFlight group membership and build access through App Store Connect API
-readback. It cannot prove installed-device behavior, export-compliance prompts,
-privacy, or review metadata state without direct account or device evidence.
+Host builds use generated `AppIcon-host-dev`, `AppIcon-host-staging`, and
+`AppIcon-host-prod` catalogs on iOS/macOS, plus Android `hostDev`,
+`hostStaging`, and `hostProd` launcher resources. The two-line icon and
+centered light/dark splash read `Catch Host` in the same explicit Archivo
+`wght: 600` / `wdth: 78` voice as Consumer; there is no system font fallback and
+no plural `Hosts` product mark. Regenerate the Swift masters and then run
+`dart run tool/branding/generate_native_brand_assets.dart` after native
+brand-token, icon, or splash changes.
 
 ## Human Release Evidence
 
-Already confirmed outside repository checks:
+Store uploads, processing and build numbers are visible in each `Mobile Beta`
+job summary, in App Store Connect and in Play Console. These still require
+human confirmation outside repository checks:
 
-- TestFlight upload, install, launch, and iOS Maps behavior through the App
-  Store Connect/Xcode Cloud build process before the nightly schedule was
-  retired.
-- Consumer and Host GitHub build `202607110000000301` reached App Store Connect
-  `VALID` from run `29168074271`; receipt-gated run `29168662623` then disabled
-  both legacy Xcode Cloud workflows.
-- Consumer GitHub build `202607300000005101` from commit `1cf9739e` reached App
-  Store Connect `VALID` in recovery run `30523657375`.
-
-These still require human confirmation outside repository checks:
-
-- Install and launch through the GitHub-owned Consumer and Host pipeline; group
-  assignment itself is now API-verified by the automatic distribution receipt.
-- Consumer and Host Play internal-testing evidence.
+- Install and launch of the current Consumer and Host TestFlight builds with
+  App Check, Maps, phone auth, push, and role-specific entrypoint proof
+  (issue `#218`).
+- Consumer and Host Play internal-testing install and launch evidence; the
+  Consumer Play app record and its first hand upload remain open in issue
+  `#199`.
 - Crashlytics visibility and symbolication evidence.
 - Analytics DebugView event evidence.
 - Store metadata, screenshots, privacy forms, support URL, privacy policy, and

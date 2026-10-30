@@ -2,7 +2,7 @@
   "$schema": "./component_graph.schema.json",
   "version": "0.2.0",
   "status": "required",
-  "modes": ["pr", "merge_group", "main", "nightly", "release"],
+  "modes": ["pr", "merge_group", "main", "nightly"],
   "targets": [
     "admin",
     "capture_freshness",
@@ -21,12 +21,6 @@
     "tools",
     "visual_integration"
   ],
-  "deployGroupRequirements": {
-    "firestore-indexes": ["contracts"],
-    "functions": ["functions"],
-    "firestore-rules": ["firestore_rules"],
-    "storage-rules": ["firestore_rules"]
-  },
   "ciCheckout": {
     "planner": {
       "mode": "sparse",
@@ -37,7 +31,6 @@
         "/tool/harness.mjs",
         "/tool/harness/verify_local.mjs",
         "/tool/harness/compare_selectors.mjs",
-        "/tool/ci/main_ci_baseline.mjs",
         "/tool/ci/toolchain.env",
         "/tool/harness/component_graph.json",
         "/tool/harness/lib/component_graph.mjs",
@@ -181,10 +174,10 @@
     },
     "backend-delivery-control": {
       "direct": {
-        "pr": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "firebase:affected-function-targets"]},
-        "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "firebase:affected-function-targets"]},
-        "main": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "firebase:affected-function-targets"]},
-        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "firebase:affected-function-targets"]}
+        "pr": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "firebase:affected-function-targets"]},
+        "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "firebase:affected-function-targets"]},
+        "main": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "firebase:affected-function-targets"]},
+        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "firebase:affected-function-targets"]}
       },
       "affected": {}
     },
@@ -283,8 +276,7 @@
         "pr": {"ciTargets": ["contracts"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]},
         "merge_group": {"ciTargets": ["contracts"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]},
         "main": {"ciTargets": ["contracts"]},
-        "nightly": {"ciTargets": ["contracts"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]},
-        "release": {}
+        "nightly": {"ciTargets": ["contracts"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]}
       },
       "affected": {}
     },
@@ -310,9 +302,8 @@
       "direct": {
         "pr": {"ciTargets": ["contracts", "firestore_rules", "functions"]},
         "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions"]},
-        "main": {"ciTargets": ["contracts", "firestore_rules", "functions"], "deployGroups": ["functions"]},
-        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions"]},
-        "release": {"deployGroups": ["functions"]}
+        "main": {"ciTargets": ["contracts", "firestore_rules", "functions"]},
+        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions"]}
       },
       "affected": {
         "pr": {"ciTargets": ["contracts", "firestore_rules", "functions"]},
@@ -334,9 +325,8 @@
       "direct": {
         "pr": {"ciTargets": ["contracts"]},
         "merge_group": {"ciTargets": ["contracts"]},
-        "main": {"ciTargets": ["contracts"], "deployGroups": ["firestore-indexes"]},
-        "nightly": {"ciTargets": ["contracts"]},
-        "release": {"deployGroups": ["firestore-indexes"]}
+        "main": {"ciTargets": ["contracts"]},
+        "nightly": {"ciTargets": ["contracts"]}
       },
       "affected": {
         "pr": {"ciTargets": ["contracts"]},
@@ -349,9 +339,8 @@
       "direct": {
         "pr": {"ciTargets": ["contracts", "firestore_rules"]},
         "merge_group": {"ciTargets": ["contracts", "firestore_rules"]},
-        "main": {"ciTargets": ["contracts", "firestore_rules"], "deployGroups": ["firestore-rules"]},
-        "nightly": {"ciTargets": ["contracts", "firestore_rules"]},
-        "release": {"deployGroups": ["firestore-rules"]}
+        "main": {"ciTargets": ["contracts", "firestore_rules"]},
+        "nightly": {"ciTargets": ["contracts", "firestore_rules"]}
       },
       "affected": {
         "pr": {"ciTargets": ["firestore_rules"]},
@@ -364,9 +353,8 @@
       "direct": {
         "pr": {"ciTargets": ["contracts", "firestore_rules"]},
         "merge_group": {"ciTargets": ["contracts", "firestore_rules"]},
-        "main": {"ciTargets": ["contracts", "firestore_rules"], "deployGroups": ["storage-rules"]},
-        "nightly": {"ciTargets": ["contracts", "firestore_rules"]},
-        "release": {"deployGroups": ["storage-rules"]}
+        "main": {"ciTargets": ["contracts", "firestore_rules"]},
+        "nightly": {"ciTargets": ["contracts", "firestore_rules"]}
       },
       "affected": {
         "pr": {"ciTargets": ["firestore_rules"]},
@@ -425,9 +413,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter", "visual_integration"]},
         "merge_group": {"ciTargets": ["flutter", "visual_integration"]},
-        "main": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"], "releaseTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"], "releaseRoles": ["consumer", "host"]},
-        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
-        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web", "host-android", "host-ios", "host-web"], "releaseTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"], "releaseRoles": ["consumer", "host"]}
+        "main": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"], "buildTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
       },
       "affected": {}
     },
@@ -435,9 +422,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["consumer-web-smoke", "host-web-smoke"]},
         "merge_group": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["consumer-web-smoke", "host-web-smoke"]},
-        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "releaseTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"], "releaseRoles": ["consumer", "host"]},
-        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
-        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web", "host-android", "host-ios", "host-web"], "releaseTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"], "releaseRoles": ["consumer", "host"]}
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "buildTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
       },
       "affected": {}
     },
@@ -445,9 +431,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]},
         "merge_group": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]},
-        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools"], "releaseTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"], "releaseRoles": ["consumer", "host"]},
-        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]},
-        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web", "host-android", "host-ios", "host-web"], "releaseTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"], "releaseRoles": ["consumer", "host"]}
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools"], "buildTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]}
       },
       "affected": {}
     },
@@ -455,9 +440,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter", "flutter_web_smoke", "visual_integration"], "buildTargets": ["host-web-smoke"]},
         "merge_group": {"ciTargets": ["flutter", "flutter_web_smoke", "visual_integration"], "buildTargets": ["host-web-smoke"]},
-        "main": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"], "releaseTargets": ["host-android", "host-ios"], "releaseRoles": ["host"]},
-        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
-        "release": {"buildTargets": ["host-android", "host-ios", "host-web"], "releaseTargets": ["host-android", "host-ios"], "releaseRoles": ["host"]}
+        "main": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"], "buildTargets": ["host-android", "host-ios"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
       },
       "affected": {
         "pr": {"ciTargets": ["flutter", "flutter_web_smoke", "visual_integration"], "buildTargets": ["host-web-smoke"]},
@@ -469,9 +453,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter", "flutter_web_smoke", "visual_integration"], "buildTargets": ["consumer-web-smoke"]},
         "merge_group": {"ciTargets": ["flutter", "flutter_web_smoke", "visual_integration"], "buildTargets": ["consumer-web-smoke"]},
-        "main": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"], "releaseTargets": ["consumer-android", "consumer-ios"], "releaseRoles": ["consumer"]},
-        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
-        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web"], "releaseTargets": ["consumer-android", "consumer-ios"], "releaseRoles": ["consumer"]}
+        "main": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"], "buildTargets": ["consumer-android", "consumer-ios"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
       },
       "affected": {
         "pr": {"ciTargets": ["flutter", "flutter_web_smoke", "visual_integration"], "buildTargets": ["consumer-web-smoke"]},
@@ -528,9 +511,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter_build_android"]},
         "merge_group": {"ciTargets": ["flutter_build_android"]},
-        "main": {"ciTargets": ["flutter_build_android"], "releaseTargets": ["host-android"], "releaseRoles": ["host"]},
-        "nightly": {"ciTargets": ["flutter_build_android"]},
-        "release": {"buildTargets": ["host-android"], "releaseTargets": ["host-android"], "releaseRoles": ["host"]}
+        "main": {"ciTargets": ["flutter_build_android"], "buildTargets": ["host-android"]},
+        "nightly": {"ciTargets": ["flutter_build_android"]}
       },
       "affected": {}
     },
@@ -538,9 +520,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter_build_android"]},
         "merge_group": {"ciTargets": ["flutter_build_android"]},
-        "main": {"ciTargets": ["flutter_build_android"], "releaseTargets": ["consumer-android"], "releaseRoles": ["consumer"]},
-        "nightly": {"ciTargets": ["flutter_build_android"]},
-        "release": {"buildTargets": ["consumer-android"], "releaseTargets": ["consumer-android"], "releaseRoles": ["consumer"]}
+        "main": {"ciTargets": ["flutter_build_android"], "buildTargets": ["consumer-android"]},
+        "nightly": {"ciTargets": ["flutter_build_android"]}
       },
       "affected": {}
     },
@@ -557,9 +538,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter_build_ios", "tools"], "checkIds": ["platform:ios-pod-policy"]},
         "merge_group": {"ciTargets": ["flutter_build_ios", "tools"], "checkIds": ["platform:ios-pod-policy"]},
-        "main": {"ciTargets": ["flutter_build_ios", "tools"], "checkIds": ["platform:ios-pod-policy"], "releaseTargets": ["host-ios"], "releaseRoles": ["host"]},
-        "nightly": {"ciTargets": ["flutter_build_ios", "tools"], "checkIds": ["platform:ios-pod-policy"]},
-        "release": {"buildTargets": ["host-ios"], "releaseTargets": ["host-ios"], "releaseRoles": ["host"]}
+        "main": {"ciTargets": ["flutter_build_ios", "tools"], "checkIds": ["platform:ios-pod-policy"], "buildTargets": ["host-ios"]},
+        "nightly": {"ciTargets": ["flutter_build_ios", "tools"], "checkIds": ["platform:ios-pod-policy"]}
       },
       "affected": {}
     },
@@ -567,9 +547,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter_build_ios", "tools"], "checkIds": ["platform:ios-pod-policy"]},
         "merge_group": {"ciTargets": ["flutter_build_ios", "tools"], "checkIds": ["platform:ios-pod-policy"]},
-        "main": {"ciTargets": ["flutter_build_ios", "tools"], "checkIds": ["platform:ios-pod-policy"], "releaseTargets": ["consumer-ios"], "releaseRoles": ["consumer"]},
-        "nightly": {"ciTargets": ["flutter_build_ios", "tools"], "checkIds": ["platform:ios-pod-policy"]},
-        "release": {"buildTargets": ["consumer-ios"], "releaseTargets": ["consumer-ios"], "releaseRoles": ["consumer"]}
+        "main": {"ciTargets": ["flutter_build_ios", "tools"], "checkIds": ["platform:ios-pod-policy"], "buildTargets": ["consumer-ios"]},
+        "nightly": {"ciTargets": ["flutter_build_ios", "tools"], "checkIds": ["platform:ios-pod-policy"]}
       },
       "affected": {}
     },
@@ -578,8 +557,7 @@
         "pr": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"], "buildTargets": ["host-web"]},
         "merge_group": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"], "buildTargets": ["host-web"]},
         "main": {"ciTargets": ["flutter_build_web"]},
-        "nightly": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]},
-        "release": {"buildTargets": ["host-web"]}
+        "nightly": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]}
       },
       "affected": {}
     },
@@ -588,8 +566,7 @@
         "pr": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"], "buildTargets": ["consumer-web"]},
         "merge_group": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"], "buildTargets": ["consumer-web"]},
         "main": {"ciTargets": ["flutter_build_web"]},
-        "nightly": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]},
-        "release": {"buildTargets": ["consumer-web"]}
+        "nightly": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]}
       },
       "affected": {}
     },
@@ -597,9 +574,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
         "merge_group": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
-        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "releaseTargets": ["host-android", "host-ios"], "releaseRoles": ["host"]},
-        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
-        "release": {"buildTargets": ["host-android", "host-ios", "host-web"], "releaseTargets": ["host-android", "host-ios"], "releaseRoles": ["host"]}
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "buildTargets": ["host-android", "host-ios"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
       },
       "affected": {}
     },
@@ -607,9 +583,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
         "merge_group": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
-        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "releaseTargets": ["consumer-android", "consumer-ios"], "releaseRoles": ["consumer"]},
-        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
-        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web"], "releaseTargets": ["consumer-android", "consumer-ios"], "releaseRoles": ["consumer"]}
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "buildTargets": ["consumer-android", "consumer-ios"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
       },
       "affected": {}
     },
@@ -618,8 +593,7 @@
         "pr": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]},
         "merge_group": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]},
         "main": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]},
-        "nightly": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]},
-        "release": {"buildTargets": ["consumer-web", "host-web"]}
+        "nightly": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]}
       },
       "affected": {}
     },
@@ -627,9 +601,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
         "merge_group": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
-        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "releaseTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"], "releaseRoles": ["consumer", "host"]},
-        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
-        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web", "host-android", "host-ios", "host-web"], "releaseTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"], "releaseRoles": ["consumer", "host"]}
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "buildTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
       },
       "affected": {}
     },
@@ -673,9 +646,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]},
         "merge_group": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]},
-        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools"], "releaseTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"], "releaseRoles": ["consumer", "host"]},
-        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]},
-        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web", "host-android", "host-ios", "host-web"], "releaseTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"], "releaseRoles": ["consumer", "host"]}
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools"], "buildTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]}
       },
       "affected": {}
     },
@@ -684,8 +656,7 @@
         "pr": {"ciTargets": ["admin", "capture_freshness", "contracts", "firestore_rules", "functions", "marketing"]},
         "merge_group": {"ciTargets": ["admin", "capture_freshness", "contracts", "firestore_rules", "functions", "marketing"]},
         "main": {"ciTargets": ["admin", "capture_freshness", "contracts", "firestore_rules", "functions", "marketing"]},
-        "nightly": {"ciTargets": ["admin", "capture_freshness", "contracts", "firestore_rules", "functions", "marketing"]},
-        "release": {}
+        "nightly": {"ciTargets": ["admin", "capture_freshness", "contracts", "firestore_rules", "functions", "marketing"]}
       },
       "affected": {}
     },
@@ -693,9 +664,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter_build_android", "tools"]},
         "merge_group": {"ciTargets": ["flutter_build_android", "tools"]},
-        "main": {"ciTargets": ["flutter_build_android", "tools"], "releaseTargets": ["host-android"], "releaseRoles": ["host"]},
-        "nightly": {"ciTargets": ["flutter_build_android", "tools"]},
-        "release": {"buildTargets": ["host-android"], "releaseTargets": ["host-android"], "releaseRoles": ["host"]}
+        "main": {"ciTargets": ["flutter_build_android", "tools"], "buildTargets": ["host-android"]},
+        "nightly": {"ciTargets": ["flutter_build_android", "tools"]}
       },
       "affected": {}
     },
@@ -703,9 +673,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter_build_ios", "tools"]},
         "merge_group": {"ciTargets": ["flutter_build_ios", "tools"]},
-        "main": {"ciTargets": ["flutter_build_ios", "tools"], "releaseTargets": ["host-ios"], "releaseRoles": ["host"]},
-        "nightly": {"ciTargets": ["flutter_build_ios", "tools"]},
-        "release": {"buildTargets": ["host-ios"], "releaseTargets": ["host-ios"], "releaseRoles": ["host"]}
+        "main": {"ciTargets": ["flutter_build_ios", "tools"], "buildTargets": ["host-ios"]},
+        "nightly": {"ciTargets": ["flutter_build_ios", "tools"]}
       },
       "affected": {}
     },
@@ -713,9 +682,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter_build_android", "tools"]},
         "merge_group": {"ciTargets": ["flutter_build_android", "tools"]},
-        "main": {"ciTargets": ["flutter_build_android", "tools"], "releaseTargets": ["consumer-android"], "releaseRoles": ["consumer"]},
-        "nightly": {"ciTargets": ["flutter_build_android", "tools"]},
-        "release": {"buildTargets": ["consumer-android"], "releaseTargets": ["consumer-android"], "releaseRoles": ["consumer"]}
+        "main": {"ciTargets": ["flutter_build_android", "tools"], "buildTargets": ["consumer-android"]},
+        "nightly": {"ciTargets": ["flutter_build_android", "tools"]}
       },
       "affected": {}
     },
@@ -723,9 +691,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter_build_ios", "tools"]},
         "merge_group": {"ciTargets": ["flutter_build_ios", "tools"]},
-        "main": {"ciTargets": ["flutter_build_ios", "tools"], "releaseTargets": ["consumer-ios"], "releaseRoles": ["consumer"]},
-        "nightly": {"ciTargets": ["flutter_build_ios", "tools"]},
-        "release": {"buildTargets": ["consumer-ios"], "releaseTargets": ["consumer-ios"], "releaseRoles": ["consumer"]}
+        "main": {"ciTargets": ["flutter_build_ios", "tools"], "buildTargets": ["consumer-ios"]},
+        "nightly": {"ciTargets": ["flutter_build_ios", "tools"]}
       },
       "affected": {}
     },
@@ -742,9 +709,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["consumer-web-smoke", "host-web-smoke"]},
         "merge_group": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["consumer-web-smoke", "host-web-smoke"]},
-        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "releaseTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"], "releaseRoles": ["consumer", "host"]},
-        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
-        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web", "host-android", "host-ios", "host-web"], "releaseTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"], "releaseRoles": ["consumer", "host"]}
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "buildTargets": ["consumer-android", "consumer-ios", "host-android", "host-ios"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
       },
       "affected": {}
     },
@@ -752,9 +718,8 @@
       "direct": {
         "pr": {"ciTargets": ["functions"]},
         "merge_group": {"ciTargets": ["functions"]},
-        "main": {"ciTargets": ["functions"], "deployGroups": ["functions"]},
-        "nightly": {"ciTargets": ["functions"]},
-        "release": {"deployGroups": ["functions"]}
+        "main": {"ciTargets": ["functions"]},
+        "nightly": {"ciTargets": ["functions"]}
       },
       "affected": {}
     },
@@ -762,9 +727,8 @@
       "direct": {
         "pr": {"ciTargets": ["flutter_build_ios"]},
         "merge_group": {"ciTargets": ["flutter_build_ios"]},
-        "main": {"ciTargets": ["flutter_build_ios"], "releaseTargets": ["consumer-ios", "host-ios"], "releaseRoles": ["consumer", "host"]},
-        "nightly": {"ciTargets": ["flutter_build_ios"]},
-        "release": {"buildTargets": ["consumer-ios", "host-ios"], "releaseTargets": ["consumer-ios", "host-ios"], "releaseRoles": ["consumer", "host"]}
+        "main": {"ciTargets": ["flutter_build_ios"], "buildTargets": ["consumer-ios", "host-ios"]},
+        "nightly": {"ciTargets": ["flutter_build_ios"]}
       },
       "affected": {}
     }
@@ -818,7 +782,6 @@
       "id": "backend-delivery-control",
       "paths": {"include": [
         ".github/workflows/backend-deploy.yml", ".github/workflows/_backend-deploy.yml",
-        "tool/ci/package_firebase_delivery.mjs", "tool/ci/package_firebase_delivery.test.mjs",
         "functions/scripts/set-callable-invokers-public.cjs", "functions/test/callable-invokers.test.cjs"
       ]},
       "components": ["ci.backend-delivery"],
@@ -842,8 +805,8 @@
     {
       "id": "harness-scoped-control",
       "paths": {"include": [
-        "tool/harness/**/*.test.mjs", "tool/ci/**/*.test.mjs", ".github/workflows/host-measurement-preview.yml", ".github/workflows/website-next-preview.yml", ".github/workflows/website-next-promote.yml", ".github/workflows/admin-website.yml", ".github/workflows/marketing-website.yml", ".github/workflows/host-website.yml", ".github/workflows/_web-hosting-build.yml", ".github/workflows/mobile-internal-release.yml", ".github/workflows/mobile-internal-promote.yml", ".github/workflows/mobile-beta.yml", ".github/workflows/mobile-production.yml", ".github/workflows/dependabot-auto-merge.yml", "fastlane/**", "Gemfile", "Gemfile.lock", ".github/workflows/_mobile-platform-authority.yml", ".github/workflows/release-readiness.yml", ".github/workflows/observability-evidence.yml", ".github/workflows/website-production-observability.yml", ".github/workflows/data-validation.yml", ".github/workflows/branch-hygiene.yml", "tool/ci/host_measurement_preview.mjs", "tool/ci/mobile_promotion_core.mjs", "tool/ci/wait_main_marketing_validation.mjs"
-      ], "exclude": [ "tool/ci/package_firebase_delivery.test.mjs", "tool/ci/web_hosting_workflow.test.mjs"
+        "tool/harness/**/*.test.mjs", "tool/ci/**/*.test.mjs", ".github/workflows/host-measurement-preview.yml", ".github/workflows/website-next-preview.yml", ".github/workflows/website-next-promote.yml", ".github/workflows/admin-website.yml", ".github/workflows/marketing-website.yml", ".github/workflows/host-website.yml", ".github/workflows/_web-hosting-build.yml", ".github/workflows/mobile-beta.yml", ".github/workflows/mobile-production.yml", ".github/workflows/dependabot-auto-merge.yml", "fastlane/**", "Gemfile", "Gemfile.lock", ".github/workflows/release-readiness.yml", ".github/workflows/observability-evidence.yml", ".github/workflows/website-production-observability.yml", ".github/workflows/data-validation.yml", ".github/workflows/branch-hygiene.yml", "tool/ci/host_measurement_preview.mjs", "tool/ci/wait_main_marketing_validation.mjs"
+      ], "exclude": [ "tool/ci/web_hosting_workflow.test.mjs"
       ]},
       "components": ["repo.harness-scoped"],
       "terminal": true

@@ -448,9 +448,7 @@
         "tool/ci/delivery_core.test.mjs"
       ],
       "alsoCheckIds": [
-        "ci:firebase-delivery-package",
-        "ci:web-hosting-delivery-package",
-        "ci:mobile-release-package"
+        "ci:web-hosting-delivery-package"
       ],
       "description": "Creates and verifies ephemeral exact-SHA, source-run, and SHA-256 artifact provenance plus ordered idempotent deployment checkpoints for CI/CD promotion and resume.",
       "checks": [
@@ -558,7 +556,6 @@
       },
       "impactPaths": [
         "tool/firebase/affected_function_targets.test.mjs",
-        "tool/ci/package_firebase_delivery.mjs",
         ".github/workflows/_backend-deploy.yml"
       ],
       "description": "Selects the authorized Functions affected by exact committed module dependencies, with full snapshot and conservative fallback behavior.",
@@ -673,99 +670,6 @@
           "reports every unresolved production and test import",
           "checks the staged index so an untracked file cannot mask an omission"
         ]
-      }
-    },
-    {
-      "id": "ci:firebase-delivery-package",
-      "category": "ci",
-      "path": "tool/ci/package_firebase_delivery.mjs",
-      "command": "node --test tool/ci/package_firebase_delivery.test.mjs",
-      "safety": "local-writes-build-artifacts",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node",
-          "root-npm"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/package_firebase_delivery.test.mjs",
-        "firebase.json",
-        ".firebaserc",
-        "functions/package.json",
-        "functions/package-lock.json",
-        "functions/src/index.ts",
-        "functions/scripts/set-callable-invokers-public.cjs",
-        "tool/firebase/list_firebase_function_targets.mjs",
-        "tool/firebase/plan_firebase_deploy_targets.mjs",
-        "tool/firebase/affected_function_targets.mjs",
-        "tool/firebase/affected_function_targets.test.mjs"
-      ],
-      "description": "Projects the CI-authorized backend into one bounded no-predeploy Firebase package, binding the exact source/base SHAs, source CI run, impact-plan digest, compiled Functions, ordered stages, and permitted targets. Promotion derives affected exports from exact Git module dependencies, preserving full snapshot and conservative fallback behavior.",
-      "checks": [
-        "node --check tool/ci/package_firebase_delivery.mjs",
-        "node --test tool/ci/package_firebase_delivery.test.mjs"
-      ],
-      "role": "generator",
-      "alsoCheckIds": [
-        "firebase:affected-function-targets"
-      ]
-    },
-    {
-      "id": "ci:main-ci-baseline",
-      "category": "ci",
-      "path": "tool/ci/main_ci_baseline.mjs",
-      "command": "node --test tool/ci/main_ci_baseline.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/main_ci_baseline.test.mjs",
-        ".github/workflows/ci.yml"
-      ],
-      "description": "Tests exact main CI baseline identity, immediate validation and bounded ordered publication waits, retaining failed-window recovery and rejecting foreign or rewritten source histories.",
-      "checks": [
-        "node --check tool/ci/main_ci_baseline.mjs",
-        "node --test tool/ci/main_ci_baseline.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/ci/main_ci_baseline.test.mjs"
-      }
-    },
-    {
-      "id": "ci:finalize-ci-plan",
-      "category": "ci",
-      "path": "tool/ci/finalize_ci_plan.mjs",
-      "command": "node --test tool/ci/finalize_ci_plan.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/finalize_ci_plan.test.mjs",
-        ".github/workflows/ci.yml"
-      ],
-      "description": "Verify committed validation coverage and selected job success before ordered main publication.",
-      "checks": [
-        "node --check tool/ci/finalize_ci_plan.mjs",
-        "node --test tool/ci/finalize_ci_plan.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/ci/finalize_ci_plan.test.mjs"
       }
     },
     {
@@ -953,185 +857,6 @@
           "workspace plan discovers every pubspec and resolves workspace members once",
           "workspace plan fails closed without the root package",
           "workspace runner stops at the first nonzero package analysis"
-        ]
-      }
-    },
-    {
-      "id": "ci:mobile-release-package",
-      "category": "ci",
-      "path": "tool/ci/package_mobile_release.mjs",
-      "command": "node --test tool/ci/package_mobile_release.test.mjs",
-      "safety": "local-writes-build-artifacts",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/package_mobile_release.test.mjs",
-        "tool/ci/delivery_core.mjs",
-        "tool/platform/check_mobile_package.mjs",
-        "tool/platform/verify_android_release_bundle.mjs",
-        "tool/platform/verify_ios_release_identity.mjs",
-        ".github/workflows/mobile-internal-release.yml"
-      ],
-      "alsoCheckIds": [
-        "ci:mobile-release-workflow",
-        "ci:mobile-promotion-core",
-        "platform:app-targets"
-      ],
-      "description": "Packages one CI-authorized signed IPA or AAB for an exact role/platform release target with delivery provenance, identity and policy evidence, immutable upload binding, and a strict aggregate build authority.",
-      "checks": [
-        "node --check tool/ci/package_mobile_release.mjs",
-        "node --test tool/ci/package_mobile_release.test.mjs"
-      ],
-      "role": "generator",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/package_mobile_release.test.mjs",
-        "contains": [
-          "packages exact iOS and Android targets with delivery provenance v2",
-          "refuses a target that the exact CI plan did not authorize",
-          "identity and package-policy evidence reject same-name byte substitution",
-          "verification rejects artifact, provenance, and source-binding tampering",
-          "aggregate authority strictly binds the post-comparison target and artifacts"
-        ]
-      }
-    },
-    {
-      "id": "ci:mobile-promotion-core",
-      "category": "ci",
-      "path": "tool/ci/mobile_promotion_core.mjs",
-      "command": "node --test tool/ci/mobile_promotion_core.test.mjs",
-      "safety": "local-writes-build-artifacts",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/mobile_promotion_core.test.mjs",
-        "tool/ci/package_mobile_release.mjs",
-        "tool/platform/check_mobile_package.mjs",
-        "tool/platform/verify_android_release_bundle.mjs",
-        "tool/platform/verify_ios_release_identity.mjs",
-        ".github/workflows/mobile-internal-promote.yml"
-      ],
-      "alsoCheckIds": [
-        "ci:mobile-promotion-workflow"
-      ],
-      "description": "Selects one exact role/platform package only from a verified aggregate mobile build authority, reverifies the packaged binary and provenance, and writes one bounded immutable store-result receipt after promotion.",
-      "checks": [
-        "node --check tool/ci/mobile_promotion_core.mjs",
-        "node --test tool/ci/mobile_promotion_core.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/mobile_promotion_core.test.mjs",
-        "contains": [
-          "selects the exact current target package only from build authority",
-          "rejects stale attempts, wrong targets, and substituted artifact names",
-          "reverifies packaged bytes against the aggregate authority",
-          "promotion receipt binds immutable exact package and uploaded store result"
-        ]
-      }
-    },
-    {
-      "id": "ci:mobile-promotion-workflow",
-      "category": "ci",
-      "path": "tool/ci/mobile_promotion_workflow.test.mjs",
-      "command": "node --test tool/ci/mobile_promotion_workflow.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        ".github/workflows/mobile-internal-promote.yml",
-        "tool/ci/mobile_promotion_workflow.test.mjs",
-        "tool/ci/mobile_promotion_core.mjs",
-        "tool/ci/package_mobile_release.mjs",
-        "tool/platform/probe_google_play_access.mjs",
-        "tool/platform/distribute_testflight_build.mjs",
-        "tool/platform/upload_google_play_bundle.mjs",
-        "tool/app_targets.json"
-      ],
-      "description": "Guards automatic iOS and recovery mobile promotion: current successful producer attempt, immutable authority/package ids and digests, durable upload claim, internal tester-group readback, target-scoped queueing, and zero rebuild or resigning work.",
-      "checks": [
-        "node --check tool/ci/mobile_promotion_workflow.test.mjs",
-        "node --test tool/ci/mobile_promotion_workflow.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/mobile_promotion_workflow.test.mjs",
-        "contains": [
-          "promotion accepts exact automatic or confirmed recovery dispatches with one queue per target",
-          "producer attempt and current promoter implementation are fail-closed",
-          "authority selects the package id, name, and digest and metadata cannot be substituted",
-          "producer head S2 is separate from authority source S1 and superseded source attempts reject",
-          "prior claims are exact, attempt-bound, and ambiguous Apple identity fails closed",
-          "fresh source, artifact, and package verification immediately precedes credentials",
-          "promotion uses one exact store authority and never rebuilds, archives, or signs",
-          "iOS promotion assigns exact VALID builds only to existing internal groups with testers",
-          "upload claim is durable before idempotent distribution and credentials are removed"
-        ]
-      }
-    },
-    {
-      "id": "ci:mobile-release-workflow",
-      "category": "ci",
-      "path": "tool/ci/mobile_release_workflow.test.mjs",
-      "command": "node --test tool/ci/mobile_release_workflow.test.mjs tool/ci/mobile_platform_authority_workflow.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        ".github/workflows/mobile-internal-release.yml",
-        ".github/workflows/_mobile-platform-authority.yml",
-        "tool/ci/mobile_release_workflow.test.mjs",
-        "tool/ci/mobile_platform_authority_workflow.test.mjs",
-        "tool/harness.mjs",
-        "tool/harness/component_graph.json",
-        "tool/harness/component_graph.schema.json",
-        "tool/harness/lib/component_graph.mjs",
-        "tool/platform/check_app_targets.mjs",
-        "tool/app_targets.json"
-      ],
-      "description": "Guards the mobile signed-package producer and automatic iOS handoff: successful main CI authority, exact role/platform target matrices, source-bound 90-day packages, post-comparison authority, exact workflow dispatch, and zero direct store mutation.",
-      "checks": [
-        "node --check tool/ci/mobile_release_workflow.test.mjs",
-        "node --check tool/ci/mobile_platform_authority_workflow.test.mjs",
-        "node --test tool/ci/mobile_release_workflow.test.mjs tool/ci/mobile_platform_authority_workflow.test.mjs",
-        "node tool/platform/check_app_targets.mjs --check"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/mobile_release_workflow.test.mjs",
-        "contains": [
-          "mobile producer consumes only a successful same-repository main CI attempt",
-          "source CI attempt must still be latest immediately before authority upload",
-          "mobile producer downloads the CI authority and plan by immutable id and digest",
-          "exact releaseTargets select role-platform builds without Cartesian widening",
-          "partial producer reruns fail closed with a current-attempt completeness authority",
-          "verified authority automatically dispatches every authorized iOS target",
-          "finalizer downloads and re-verifies exact package bytes before authority",
-          "Android release jobs use the same checksummed Gradle distribution with bounded recovery",
-          "producer performs no App Store, Play, or legacy-owner mutation"
         ]
       }
     },
@@ -3700,7 +3425,6 @@
         "node --check tool/firebase/list_firebase_function_targets.mjs"
       ],
       "alsoCheckIds": [
-        "ci:firebase-delivery-package",
         "firebase:deploy-target-plan"
       ]
     },
@@ -4300,23 +4024,20 @@
           "node"
         ]
       },
-      "description": "Validates the six Consumer/Host app targets across entrypoints, Firebase registrations, Apple schemes and entitlements, Android flavors and capabilities, deep links, force-update policy, and release ownership.",
+      "description": "Validates the six Consumer/Host app targets across entrypoints, Firebase registrations, Apple schemes and entitlements, Android flavors and capabilities, deep links, force-update policy, and fastlane release ownership (Mobile Beta, Mobile Production, fastlane/Fastfile).",
       "checks": [
         "node --check tool/platform/resolve_app_target.mjs",
         "node --check tool/platform/check_app_targets.mjs",
         "bash tool/flutter_with_env.test.sh",
         "node --test tool/platform/check_app_targets.test.mjs",
-        "node --test tool/platform/mobile_release_target_contract.test.mjs",
         "node tool/platform/check_app_targets.mjs --check"
       ],
       "impactPaths": [
-        "tool/app_target_external_gates.json",
         "tool/app_targets.json",
         "tool/platform/check_app_targets.test.mjs",
-        "tool/platform/mobile_release_target_contract.test.mjs",
-        "tool/harness/component_graph.json",
-        "tool/harness/component_graph.schema.json",
-        "tool/harness/lib/component_graph.mjs"
+        "fastlane/Fastfile",
+        ".github/workflows/mobile-beta.yml",
+        ".github/workflows/mobile-production.yml"
       ],
       "role": "gate",
       "rules": [
@@ -4328,28 +4049,12 @@
         "contains": [
           "validateManifestShape rejects a duplicate role/environment target",
           "signed app-target authority rejects operational release evidence",
-          "external gate contract rejects missing gates and tracked run evidence",
-          "resolved external gates are a clean terminal state",
-          "release ownership rejects split or incomplete workflow ownership",
-          "release ownership rejects a missing reusable iOS CI identity import",
-          "release ownership rejects missing reusable iOS identity cleanup",
-          "release ownership rejects incomplete reusable iOS identity verification"
+          "release ownership rejects retired pipeline fields and a drifted policy",
+          "release ownership keeps production out of the automatic beta workflow",
+          "release ownership requires the beta schedule, provenance and verifiers",
+          "release ownership keeps production manual, reviewer-gated and rebuild-free"
         ]
       }
-    },
-    {
-      "id": "platform:mobile-build-number",
-      "category": "platform",
-      "path": "tool/platform/compute_mobile_build_number.mjs",
-      "command": "node tool/platform/compute_mobile_build_number.mjs --help",
-      "safety": "local-readonly",
-      "status": "active",
-      "description": "Computes serialized, monotonic GitHub release build numbers with bounded retry namespaces for Apple and Google Play.",
-      "checks": [
-        "node --check tool/platform/compute_mobile_build_number.mjs",
-        "node --test tool/platform/compute_mobile_build_number.test.mjs"
-      ],
-      "role": "generator"
     },
     {
       "id": "platform:verify-ios-release-identity",
@@ -4402,128 +4107,6 @@
           "rejects signer, Maps, Firebase, and debug drift"
         ]
       }
-    },
-    {
-      "id": "platform:verify-app-store-build",
-      "category": "platform",
-      "path": "tool/platform/verify_app_store_build.mjs",
-      "command": "node tool/platform/verify_app_store_build.mjs --help",
-      "safety": "remote-readonly",
-      "status": "active",
-      "description": "Checks a candidate Apple build number against App Store Connect and waits for an exact uploaded build to reach VALID processing state.",
-      "checks": [
-        "node --check tool/platform/verify_app_store_build.mjs",
-        "node --test tool/platform/verify_app_store_build.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/platform/verify_app_store_build.test.mjs",
-        "contains": [
-          "candidate preflight rejects a non-monotonic build",
-          "processed-build wait fails closed on invalid processing"
-        ]
-      }
-    },
-    {
-      "id": "platform:distribute-testflight-build",
-      "category": "platform",
-      "path": "tool/platform/distribute_testflight_build.mjs",
-      "command": "node tool/platform/distribute_testflight_build.mjs --help",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "impactPaths": [
-        "tool/platform/distribute_testflight_build.test.mjs"
-      ],
-      "description": "Associates one exact VALID App Store Connect build with every existing internal TestFlight group that already contains testers, without creating groups or changing tester membership.",
-      "checks": [
-        "node --check tool/platform/distribute_testflight_build.mjs",
-        "node --test tool/platform/distribute_testflight_build.test.mjs"
-      ],
-      "role": "generator",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/platform/distribute_testflight_build.test.mjs",
-        "contains": [
-          "assigns a VALID exact build only to existing internal groups with testers",
-          "is idempotent when every eligible internal group already has the build",
-          "dry run reports missing access without mutating App Store Connect",
-          "fails closed when the app has no internal group containing testers"
-        ]
-      }
-    },
-    {
-      "id": "platform:verify-ios-processing-receipts",
-      "category": "platform",
-      "path": "tool/platform/verify_ios_processing_receipts.mjs",
-      "command": "node tool/platform/verify_ios_processing_receipts.mjs --help",
-      "safety": "local-readonly",
-      "status": "active",
-      "description": "Verifies that Consumer and Host VALID App Store processing receipts came from the declared Mobile Internal Release run before Xcode Cloud retirement.",
-      "checks": [
-        "node --check tool/platform/verify_ios_processing_receipts.mjs",
-        "node --test tool/platform/verify_ios_processing_receipts.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/platform/verify_ios_processing_receipts.test.mjs",
-        "contains": [
-          "rejects a processed build not proven by the declared GitHub run"
-        ]
-      }
-    },
-    {
-      "id": "platform:probe-google-play-access",
-      "category": "platform",
-      "path": "tool/platform/probe_google_play_access.mjs",
-      "command": "node tool/platform/probe_google_play_access.mjs --help",
-      "safety": "remote-write-ephemeral-apply-guarded",
-      "status": "active",
-      "description": "Authenticates to the Catch Play apps, creates uncommitted edits, verifies qa tracks and machine-verifiable Google Group testers, and deletes every edit without uploading or committing a release.",
-      "checks": [
-        "node --check tool/platform/probe_google_play_access.mjs",
-        "node --test tool/platform/probe_google_play_access.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/platform/probe_google_play_access.test.mjs",
-        "contains": [
-          "Play probe deletes its edit when qa access is denied",
-          "Play probe fails closed without machine-verifiable qa testers and deletes its edit",
-          "fleet readiness requires both unique Catch apps and leaves no committed edit",
-          "fleet readiness deletes both edits when the second app is not ready"
-        ]
-      }
-    },
-    {
-      "id": "platform:upload-google-play-bundle",
-      "category": "platform",
-      "path": "tool/platform/upload_google_play_bundle.mjs",
-      "command": "node tool/platform/upload_google_play_bundle.mjs --help",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Uploads one verified Android App Bundle to Google Play's qa internal-testing track through the official Publisher API; production-track publishing is forbidden.",
-      "checks": [
-        "node --check tool/platform/upload_google_play_bundle.mjs",
-        "node --test tool/platform/upload_google_play_bundle.test.mjs"
-      ],
-      "role": "generator"
-    },
-    {
-      "id": "platform:xcode-cloud-workflow-state",
-      "category": "platform",
-      "path": "tool/platform/set_xcode_cloud_workflow_state.mjs",
-      "command": "node tool/platform/set_xcode_cloud_workflow_state.mjs --help",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Reads or explicitly enables/disables a named Xcode Cloud workflow through the App Store Connect API with production mutation guards.",
-      "checks": [
-        "node --check tool/platform/set_xcode_cloud_workflow_state.mjs",
-        "node --test tool/platform/set_xcode_cloud_workflow_state.test.mjs"
-      ],
-      "role": "generator"
     },
     {
       "id": "platform:upload-crashlytics-symbols",

@@ -79,8 +79,8 @@ jobs:
             /functions/package.json
             /pubspec.yaml
             /.github/workflows/app-build-matrix.yml
-            /.github/workflows/mobile-internal-promote.yml
-            /.github/workflows/mobile-internal-release.yml
+            /.github/workflows/mobile-beta.yml
+            /.github/workflows/mobile-production.yml
             /.github/workflows/visual-integration-ci.yml
 
       - id: toolchain

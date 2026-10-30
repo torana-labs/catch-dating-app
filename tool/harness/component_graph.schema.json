@@ -9,7 +9,6 @@
     "status",
     "modes",
     "targets",
-    "deployGroupRequirements",
     "ciCheckout",
     "operationProfiles",
     "classifications",
@@ -24,23 +23,13 @@
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": {"enum": ["pr", "merge_group", "main", "nightly", "release"]}
+      "items": {"enum": ["pr", "merge_group", "main", "nightly"]}
     },
     "targets": {
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
       "items": {"type": "string", "minLength": 1}
-    },
-    "deployGroupRequirements": {
-      "type": "object",
-      "minProperties": 1,
-      "additionalProperties": {
-        "type": "array",
-        "minItems": 1,
-        "uniqueItems": true,
-        "items": {"type": "string", "minLength": 1}
-      }
     },
     "ciCheckout": {
       "type": "object",
@@ -192,25 +181,7 @@
         "ciTargets": {"$ref": "#/$defs/stringSet"},
         "checkIds": {"$ref": "#/$defs/stringSet"},
         "codegenIds": {"$ref": "#/$defs/stringSet"},
-        "buildTargets": {"$ref": "#/$defs/stringSet"},
-        "releaseTargets": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "enum": [
-              "consumer-android",
-              "consumer-ios",
-              "host-android",
-              "host-ios"
-            ]
-          }
-        },
-        "deployGroups": {"$ref": "#/$defs/stringSet"},
-        "releaseRoles": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {"enum": ["consumer", "host"]}
-        }
+        "buildTargets": {"$ref": "#/$defs/stringSet"}
       }
     },
     "stringSet": {
