@@ -19,6 +19,8 @@ export async function refreshOrganizerFormPaymentTokensHandler(deps: {
   credentials: Pick<FormPaymentCredentials, "access">;
 }, now = Date.now(), clock: () => number = Date.now) {
   const deadline = clock() + 4 * 60_000;
+  /* firestore-index: organizerPaymentConnections (
+    status:ASCENDING,mode:ASCENDING,tokenExpiresAt:ASCENDING) */
   const due = await deps.db.collection("organizerPaymentConnections")
     .where("status", "==", "ready").where("mode", "==", deps.mode)
     .where("tokenExpiresAt", "<=",
