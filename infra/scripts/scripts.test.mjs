@@ -156,7 +156,7 @@ test("inventory refuses two active apps for one environment and role", (t) => {
 
 // --- play_signing_fingerprints.sh ------------------------------------------
 
-function play(t, {reported, keytool, apksigner}) {
+function play(t, {reported, keytool, apksigner, androidHomeApksigner}) {
   const root = sandbox(t);
   fs.writeFileSync(path.join(root, "generated.json"), JSON.stringify({generatedApks: [
     {certificateSha256Hash: reported, generatedUniversalApk: {downloadId: "dl/1"}},
@@ -168,9 +168,17 @@ function play(t, {reported, keytool, apksigner}) {
     'case "$url" in *":download?alt=media") echo apk > "$out";; *) cp "$PWD/generated.json" "$out";; esac',
   ].join("\n"));
   shim(root, "keytool", keytool);
-  shim(root, "apksigner", apksigner ?? "exit 1");
-  return run("scripts/play_signing_fingerprints.sh", ["com.catchdates.app", "100001"],
-    {root, env: {PLAY_ACCESS_TOKEN: "test"}});
+  const env = {PLAY_ACCESS_TOKEN: "test", ANDROID_HOME: path.join(root, "sdk"), ANDROID_SDK_ROOT: ""};
+  if (androidHomeApksigner) {
+    // The runner's build-tools apksigner, reached through a symlink.
+    const tools = path.join(root, "sdk", "build-tools", "37.0.0");
+    fs.mkdirSync(tools, {recursive: true});
+    fs.writeFileSync(path.join(root, "apksigner-real"), `#!/usr/bin/env bash\n${androidHomeApksigner}\n`, {mode: 0o755});
+    fs.symlinkSync(path.join(root, "apksigner-real"), path.join(tools, "apksigner"));
+  } else {
+    shim(root, "apksigner", apksigner ?? "exit 1");
+  }
+  return run("scripts/play_signing_fingerprints.sh", ["com.catchdates.app", "100001"], {root, env});
 }
 
 const colons = (hex) => hex.toUpperCase().match(/../gu).join(":");
@@ -194,6 +202,23 @@ test("play fingerprints fall back to apksigner for v2/v3-only APKs", (t) => {
     apksigner: `echo "Signer #1 certificate SHA-256 digest: ${sha256("ef")}"; echo "Signer #1 certificate SHA-1 digest: ${sha1("12")}"`});
   assert.equal(result.status, 0, result.stderr);
   assert.equal(JSON.parse(result.stdout).reader, "apksigner");
+});
+
+test("play fingerprints find a symlinked build-tools apksigner and read rotated-key output", (t) => {
+  const result = play(t, {reported: sha256("ef"), keytool: 'echo "Not a signed jar file"',
+    androidHomeApksigner: `echo "Signer (minSdkVersion=24, maxSdkVersion=2147483647) certificate SHA-256 digest: ${sha256("ef")}"; echo "Signer (minSdkVersion=24, maxSdkVersion=2147483647) certificate SHA-1 digest: ${sha1("12")}"`});
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), {package: "com.catchdates.app", versionCode: "100001",
+    sha1: sha1("12"), sha256: sha256("ef"), reader: "apksigner"});
+});
+
+test("play fingerprints explain why neither reader worked", (t) => {
+  const result = play(t, {reported: sha256("ef"), keytool: 'echo "Not a signed jar file"',
+    apksigner: 'echo "DOES NOT VERIFY"; echo "ERROR: no signers" >&2; exit 1'});
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /keytool found no v1 \(JAR\) signature: Not a signed jar file/u);
+  assert.match(result.stderr, /apksigner verify --print-certs exited 1: DOES NOT VERIFY ERROR: no signers/u);
+  assert.match(result.stderr, /downloaded 4 bytes, starting with 61706b0a/u);
 });
 
 test("play fingerprints fail when the APK certificate does not match Play", (t) => {
