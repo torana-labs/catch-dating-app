@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
-  "sourceDigest": "sha256:d53a70ef5535bb95521a8031cda5c0eb7f84385b04314d9ebaf4c0a58372f134",
+  "sourceDigest": "sha256:5da84cb6447fece07ca7d9e3c9ca5bd4fe6bd634fba75086c945d9c28dfcb4ef",
   "resolvedDigest": "sha256:4f29980c9dc527ab0aeac3848ebd27faa4191cce98279429c90decf34feba462",
   "feature": {
     "id": "feature.dashboard_home",

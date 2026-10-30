@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:5674615577557be94b8c3713dcc45b1f701b696a7855607a4bcb1f5d7b143387",
-  "resolvedDigest": "sha256:c6fa9aebc0b1bb8c418d8d2329e8cfa9a1a6b8aa1b7eb7bb3e6fbfeaec1a8429",
+  "sourceDigest": "sha256:b7236d7f90cafd8d8c6a694e89f59b82640693c453b51829ab91b11b5c275f56",
+  "resolvedDigest": "sha256:9c73454bb9ec8ab8979c70728d0a2034923d62ec37e8ea5fef1138cf5760ae59",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",

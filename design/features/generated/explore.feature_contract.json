@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-10-29",
   "sourceDigest": "sha256:504216f747aff8547f0c9de443da18c2557c71e46b650f725177d9a998e96d91",
-  "resolvedDigest": "sha256:1b7700e9a4cd4fe426becf405e3253079f457894d6d0e4555e9dc4fc1f7dd65b",
+  "resolvedDigest": "sha256:a97bd30b89e8d1e63d3635708d3cffc91b701f06803261f1a4f646e1e99f0375",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",

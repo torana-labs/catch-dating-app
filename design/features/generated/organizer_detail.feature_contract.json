@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-10-19",
-  "sourceDigest": "sha256:9394b74224b2769b388fea06049361fe75a179a3222d77a209c19fad57a4b21d",
-  "resolvedDigest": "sha256:7aeb718dc7c523fa49e08ccb4ce0f58d16f9831e2a6edfde1be14dbdd67cf984",
+  "sourceDigest": "sha256:2e3f85cc65d996f1d6064fed64ab31455b1db26e8841c41667502f5591697c88",
+  "resolvedDigest": "sha256:6f2eafd8c79be9f18a8e507e31d350380c26f6a2c969d570ade4a8e60ca4a560",
   "feature": {
     "id": "feature.organizer_detail",
     "name": "Organizer Detail",

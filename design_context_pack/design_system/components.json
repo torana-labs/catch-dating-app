@@ -18660,7 +18660,7 @@
       "tier": "T2",
       "aliases": [
         "ClubCoverImage",
-        "OrganizerImage",
+        "ClubImage",
         "ClubPhoto"
       ],
       "summary": "Canonical club-cover resolver for uploaded photos, the global image grade, deterministic club artwork, and compact fallbacks.",
@@ -18690,10 +18690,10 @@
       "contract": {
         "props": [
           {
-            "name": "club",
+            "name": "organizer",
             "type": "object",
             "required": true,
-            "dartType": "Club"
+            "dartType": "Organizer"
           },
           {
             "name": "compact",
@@ -18722,7 +18722,7 @@
           "theme.light.color.primary"
         ],
         "dartRoles": [
-          "Club.primaryClubPhotoUrl",
+          "Organizer.primaryOrganizerPhotoUrl",
           "CatchGradedImage",
           "CatchNetworkImage",
           "OrganizerPlaceholderCover"
