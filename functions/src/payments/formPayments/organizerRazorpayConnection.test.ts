@@ -4,11 +4,34 @@ import {OrganizerRazorpayConnectionService} from
   "./organizerRazorpayConnection";
 
 type Data = Record<string, unknown>;
+interface MemoryQuery {
+  filters: Array<[string, unknown]>;
+  where: (field: string, op: string, value: unknown) => MemoryQuery;
+  limit: (count: number) => MemoryQuery;
+  get: () => Promise<{docs: Array<{id: string}>}>;
+}
 class MemoryDb {
   records = new Map<string, Data>();
   private tail: Promise<unknown> = Promise.resolve();
   collection(name: string) {
-    return {doc: (id: string) => this.ref(`${name}/${id}`)};
+    return {doc: (id: string) => this.ref(`${name}/${id}`),
+      where: (field: string, op: string, value: unknown) =>
+        this.query(name, []).where(field, op, value)};
+  }
+  query(name: string, filters: Array<[string, unknown]>,
+    count = 100): MemoryQuery {
+    return {filters,
+      where: (field, op, value) => {
+        assert.equal(op, "==");
+        return this.query(name, [...filters, [field, value]], count);
+      },
+      limit: (value) => this.query(name, filters, value),
+      get: async () => ({docs: [...this.records.entries()]
+        .filter(([path, data]) => path.startsWith(`${name}/`) &&
+          filters.every(([field, value]) => data[field] === value))
+        .slice(0, count)
+        .map(([path]) => ({id: path.split("/").at(-1)!}))}),
+    };
   }
   ref(path: string) {
     return {path, get: async () => this.snapshot(path)};
@@ -19,14 +42,17 @@ class MemoryDb {
       data: () => value && {...value}};
   }
   async runTransaction<T>(work: (tx: {
-    get: (ref: {path: string}) => Promise<ReturnType<MemoryDb["snapshot"]>>;
+    get: (ref: {path: string} | MemoryQuery) =>
+      Promise<ReturnType<MemoryDb["snapshot"]> |
+        Awaited<ReturnType<MemoryQuery["get"]>>>;
     create: (ref: {path: string}, data: Data) => void;
     update: (ref: {path: string}, data: Data) => void;
   }) => Promise<T>): Promise<T> {
     const run = this.tail.then(async () => {
       const writes: Array<() => void> = [];
       const result = await work({
-        get: async (ref) => this.snapshot(ref.path),
+        get: async (ref) => "filters" in ref ? ref.get() :
+          this.snapshot(ref.path),
         create: (ref, data) => {
           if (this.records.has(ref.path)) throw new Error("Already exists");
           writes.push(() => this.records.set(ref.path, {...data}));
@@ -203,4 +229,51 @@ test("disconnect during provider setup cannot be overwritten by callback",
     await h.service.disconnect("org", "host", connectionId);
     await assert.rejects(h.service.status("other", "host", connectionId));
     await assert.rejects(h.service.disconnect("org", "other", connectionId));
+  });
+
+test("an organizer keeps one ready Razorpay account per mode", async () => {
+  const h = harness();
+  const first = await h.service.begin("org", "host");
+  await h.service.complete(h.state, "code");
+  await assert.rejects(h.service.begin("org", "host"),
+    (error: {code?: string; details?: unknown}) => {
+      assert.equal(error.code, "failed-precondition");
+      assert.deepEqual(error.details, {reason: "razorpayAlreadyConnected"});
+      return true;
+    });
+  // A disconnected account no longer counts as the organizer's connection.
+  await h.service.disconnect("org", "host", first.connectionId);
+  h.db.records.delete(`organizerPaymentConnections/${first.connectionId}`);
+  h.db.records.set("organizerPaymentConnections/rpc_old", {
+    organizerId: "org", provider: "razorpay", mode: "test",
+    status: "disconnected", accountId: "acc_merchant"});
+  for (const path of [...h.db.records.keys()]) {
+    if (path.startsWith("organizerPaymentOauthStates/")) {
+      h.db.records.delete(path);
+    }
+  }
+  assert.ok((await h.service.begin("org", "host")).connectionId);
+});
+
+test("a second account that finishes authorizing is not made ready",
+  async () => {
+    const h = harness();
+    const {connectionId} = await h.service.begin("org", "host");
+    // Another connection became ready while this one was at Razorpay.
+    h.db.records.set("organizerPaymentConnections/rpc_other", {
+      organizerId: "org", provider: "razorpay", mode: "test",
+      status: "ready", accountId: "acc_other"});
+    await assert.rejects(h.service.complete(h.state, "code"),
+      /could not be verified/u);
+    assert.equal(h.db.records.get(
+      `organizerPaymentConnections/${connectionId}`)?.status,
+    "needsAttention");
+    // A ready connection in the other mode does not block this one.
+    const other = harness();
+    other.db.records.set("organizerPaymentConnections/rpc_live", {
+      organizerId: "org", provider: "razorpay", mode: "live",
+      status: "ready", accountId: "acc_live"});
+    await other.service.begin("org", "host");
+    assert.equal((await other.service.complete(other.state, "code")).status,
+      "ready");
   });

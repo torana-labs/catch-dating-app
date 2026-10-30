@@ -21,7 +21,10 @@ export interface OrganizerRazorpayConnectionDeps {
   requireManager?: typeof requireOrganizerManager;
 }
 
-/** OAuth binds one initiating manager to a new immutable connection id. */
+/** OAuth binds one initiating manager to a new immutable connection id. An
+ * organizer has at most one ready connection per mode: event checkout needs a
+ * single merchant, so a second account is refused instead of guessed between.
+ */
 export class OrganizerRazorpayConnectionService {
   private readonly now: () => number;
   private readonly randomToken: () => string;
@@ -40,6 +43,11 @@ export class OrganizerRazorpayConnectionService {
     assertId(organizerId);
     assertId(actorUid);
     await this.authorize(organizerId, actorUid);
+    if ((await this.readyConnections(organizerId)).docs.length > 0) {
+      throw new HttpsError("failed-precondition",
+        "Disconnect the connected Razorpay account before connecting another.",
+        {reason: "razorpayAlreadyConnected"});
+    }
     const state = this.randomToken();
     const authorizationUrl = this.deps.provider.authorizationUrl(state);
     const stateHash = hashState(state);
@@ -107,15 +115,20 @@ export class OrganizerRazorpayConnectionService {
         accountId: token.accountId, webhookId, url});
       await this.authorize(oauth.organizerId, oauth.actorUid);
       await this.deps.db.runTransaction(async (tx) => {
-        const [stateSnap, connectionSnap] = await Promise.all([
+        const [stateSnap, connectionSnap, ready] = await Promise.all([
           tx.get(this.stateRef(stateHash)),
           tx.get(this.connectionRef(oauth.connectionId)),
+          this.readyConnections(oauth.organizerId, tx),
         ]);
         const current = requireDoc<OauthState>(stateSnap,
           "OrganizerPaymentOauthStateDocument");
         const connection = requireDoc<Connection>(connectionSnap,
           "OrganizerPaymentConnectionDocument");
         assertConnecting(connection, oauth);
+        // Another account became ready while this one was authorizing.
+        if (ready.docs.some((doc) => doc.id !== oauth.connectionId)) {
+          invalidCallback();
+        }
         if (current.status !== "exchanging" ||
             current.connectionId !== oauth.connectionId ||
             current.expiresAt.toMillis() <= this.now()) invalidCallback();
@@ -247,6 +260,15 @@ export class OrganizerRazorpayConnectionService {
 
   private authorize(organizerId: string, actorUid: string): Promise<void> {
     return this.requireManager({db: this.deps.db, organizerId, actorUid});
+  }
+
+  private readyConnections(organizerId: string,
+    tx?: FirebaseFirestore.Transaction):
+    Promise<FirebaseFirestore.QuerySnapshot> {
+    const query = this.deps.db.collection("organizerPaymentConnections")
+      .where("organizerId", "==", organizerId).where("status", "==", "ready")
+      .where("mode", "==", this.deps.mode).limit(2);
+    return tx ? tx.get(query) : query.get();
   }
 
   private connectionRef(id: string): FirebaseFirestore.DocumentReference {

@@ -6,20 +6,21 @@ import {hostListings} from "../features/organizers/data";
 import type {HostListing} from "../features/organizers/types";
 import type {PublicReader} from "./repositories/publicReader";
 
-const assemblePublicCatalog = vi.hoisted(() => vi.fn());
-vi.mock("./publicCatalog", () => ({assemblePublicCatalog, publicFirestore: vi.fn()}));
+const {assemblePublicCatalog, publicReader} = vi.hoisted(() => ({assemblePublicCatalog: vi.fn(), publicReader: vi.fn()}));
+vi.mock("./publicCatalog", () => ({assemblePublicCatalog, publicReader}));
 
-import {assembleHomeCatalog} from "./homeCatalog";
+import {assembleHomeCatalog, readHomeCatalog} from "./homeCatalog";
 
 const readAt = Date.parse("2026-05-14T00:00:00.000Z");
 const indore = JSON.parse(fs.readFileSync(
   new URL("../../../contracts/fixtures/valid/city_plans_doc.json", import.meta.url), "utf8")) as Record<string, unknown>;
 
-function reader(docs: Record<string, unknown>, fail = false): PublicReader {
+function reader(docs: Record<string, unknown>, fail: boolean | "hang" = false): PublicReader {
   return {
     collection: (name: string) => ({
       doc: (id: string) => ({
         get: async () => {
+          if (fail === "hang") await new Promise(() => undefined);
           if (fail) throw new Error("unavailable");
           const data = docs[`${name}/${id}`];
           return {id, exists: data !== undefined, data: () => data};
@@ -65,5 +66,32 @@ describe("homepage catalog", () => {
     expect(catalog.phase).toBe("unavailable");
     expect(catalog.plans.status).toBe("live");
     expect(catalog.cities.find((city) => city.slug === "pune")?.status).toBe("launchingSoon");
+  });
+
+  it("reads as unavailable at once when there is no reader, without trying the catalog", async () => {
+    const catalog = await assembleHomeCatalog(null, "mumbai", readAt);
+    expect(catalog.phase).toBe("unavailable");
+    expect(catalog.plans.status).toBe("live");
+    expect(assemblePublicCatalog).not.toHaveBeenCalled();
+  });
+
+  it("reads as unavailable when the reader cannot be built, such as without credentials", async () => {
+    publicReader.mockRejectedValue(new Error("PUBLIC_READER_CREDENTIALS_UNAVAILABLE"));
+    const catalog = await readHomeCatalog("mumbai");
+    expect(catalog.phase).toBe("unavailable");
+    expect(catalog.selected.slug).toBe("mumbai");
+  });
+
+  it("gives up on a read that does not answer by the public read deadline", async () => {
+    vi.useFakeTimers();
+    try {
+      const pending = assembleHomeCatalog(reader({}, "hang"), "mumbai", readAt);
+      await vi.advanceTimersByTimeAsync(8_000);
+      const catalog = await pending;
+      expect(catalog.phase).toBe("unavailable");
+      expect(catalog.plans.status).toBe("live");
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

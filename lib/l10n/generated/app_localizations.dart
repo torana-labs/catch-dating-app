@@ -41517,7 +41517,7 @@ abstract class AppLocalizations {
   /// Memberships are not offered to this organizer.
   ///
   /// In en, this message translates to:
-  /// **'Catch hasn’t turned on memberships for your club yet.'**
+  /// **'Catch hasn’t turned on memberships for you yet.'**
   String get hostMembershipsUnavailableNotOffered;
 
   /// The organizer must connect their own Razorpay account.

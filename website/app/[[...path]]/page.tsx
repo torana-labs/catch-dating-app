@@ -1,4 +1,5 @@
 import {readHomeCatalog} from "../../src/server/homeCatalog";
+import {markPublicPageUnavailable} from "../../src/server/publicPageCacheResponse";
 import {notFound, permanentRedirect} from "next/navigation";
 import {resolvePublicRoute} from "../../src/server/publicRoute";
 import {PublicProviders} from "../../src/app/next/PublicProviders";
@@ -25,6 +26,8 @@ export default async function Page(props: Props) {
   // The homepage, Explore and the city pages read cityPlans documents instead of the catalog.
   const cityCatalog = route.page === "home" || route.page === "visitor_discovery" ?
     await readHomeCatalog(route.citySlug ?? requestedCity) : undefined;
+  // A city that could not be read keeps its message but answers 503, so no cache keeps it.
+  if (cityCatalog?.phase === "unavailable") markPublicPageUnavailable();
   // Only public allowlisted discovery choices enter the initial client state.
   const publicSearch = new URLSearchParams(["city", "format", "q", "when", "show"].flatMap((key) =>
     typeof search[key] === "string" && search[key] ? [[key, search[key] as string]] : []));

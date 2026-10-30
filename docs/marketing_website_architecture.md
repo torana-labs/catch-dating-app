@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.17.3
-updated: 2026-10-29
+version: 0.18.0
+updated: 2026-10-30
 owner: marketing_website
 status: active
 ---
@@ -52,7 +52,11 @@ waiting for start-up.
 The proxy marks a page only after the publication preflight authorizes it.
 `instrumentation.ts` turns the mark into the header only when the final status is
 200, so a 404, 503 or post-preflight 500 stays `no-store`, and a missing hook
-leaves pages uncached rather than caching an error. Claim, booking, follow,
+leaves pages uncached rather than caching an error. Home, Explore and the city
+pages read their plans in the page, so a city that cannot be read renders its
+own unavailable message and marks the render unavailable; the hook then sends
+it as a 503 with `private, no-store` and `Retry-After: 30`, never a cached 200
+([unavailable public reads](web_surface_architecture.md#unavailable-public-reads)). Claim, booking, follow,
 signed-in, Host, legal, `/api/public-catalog` and private-shell responses stay
 `no-store`. Signed-in and follow state load in the browser. React cache only
 deduplicates a render's reads; there is no server-side cross-request snapshot or
