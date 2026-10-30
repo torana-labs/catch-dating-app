@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callables/resolve_event_assistance_accountability_callable_request.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
+import 'package:catch_dating_app/platform/schema_contracts/generated/callables/resolve_event_assistance_accountability_callable_request.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
     as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';

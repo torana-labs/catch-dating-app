@@ -25,24 +25,17 @@ type NullableLiveSummaryFields =
   | "approvedPublic"
   | "appDiscoverable";
 
-export type OrganizerIntakeWorkbenchBridge = Omit<
-  Pick<
-    Intake.OrganizerIntakeBridge,
-    | "schemaVersion"
-    | "summary"
-    | "publicationReviewPackets"
-    | "searchCandidates"
-    | "items"
-  >,
-  "summary" | "publicationReviewPackets"
-> & {
+export interface OrganizerIntakeWorkbenchBridge {
+  schemaVersion: number;
+  searchCandidates: Intake.OrganizerSearchCandidateQueue;
+  items: Intake.OrganizerIntakeItem[];
   summary: Omit<
     Intake.OrganizerIntakeSummary,
     NullableLiveSummaryFields
   > & Record<NullableLiveSummaryFields, number | null>;
   publicationReviewPackets: OrganizerWorkbenchPublicationReviewPackets;
   unavailableRecords?: OperationUnavailableRecord[];
-};
+}
 
 type NullablePublicationPacketSummaryFields =
   | "packets"
@@ -70,7 +63,6 @@ export interface OrganizerIntakeAvailability {
   searchCandidates: boolean;
   publicationPackets: boolean;
   canonicalItems: boolean;
-  diagnostics: boolean;
   discoveryCandidateCount: number;
   runIds: string[];
 }
@@ -78,7 +70,6 @@ export interface OrganizerIntakeAvailability {
 export interface OrganizerIntakeLoadResult {
   source: "firestore" | "sample";
   workbench: OrganizerIntakeWorkbenchBridge;
-  diagnosticsBridge: Intake.OrganizerIntakeBridge | null;
   availability: OrganizerIntakeAvailability;
 }
 
@@ -101,15 +92,9 @@ Promise<OrganizerIntakeLoadResult> {
     draftLinks,
     pages.flatMap(unavailableOperationRecords)
   );
-  const diagnosticsBridge = null;
   return {
     source: inventory.source === "firestore" ? "firestore" : "sample",
-    diagnosticsBridge,
-    availability: organizerAvailabilityFromOperations(
-      runs,
-      workItems,
-      diagnosticsBridge
-    ),
+    availability: organizerAvailabilityFromOperations(runs, workItems),
     workbench,
   };
 }
@@ -213,8 +198,7 @@ export function organizerWorkbenchFromOperations(
 
 function organizerAvailabilityFromOperations(
   runs: OperationRun[],
-  workItems: OperationWorkItem[],
-  diagnosticsBridge: Intake.OrganizerIntakeBridge | null
+  workItems: OperationWorkItem[]
 ): OrganizerIntakeAvailability {
   const recordTypes = new Set(workItems.flatMap((item) => {
     const intake = recordValue(item.normalizedPayload.intake);
@@ -231,7 +215,6 @@ function organizerAvailabilityFromOperations(
       recordTypes.has("organizer_search_candidate"),
     publicationPackets: hasPublicationPackets,
     canonicalItems: hasPublicationPackets,
-    diagnostics: diagnosticsBridge !== null,
     discoveryCandidateCount,
     runIds: runs.map((run) => run.runId),
   };

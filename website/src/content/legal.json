@@ -109,7 +109,7 @@
       "eyebrow": "Legal",
       "title": "Terms of use",
       "summary": "The rules for using Catch, its organizer directory, event pages, accounts, and related services.",
-      "effectiveDate": "26 October 2026",
+      "effectiveDate": "30 October 2026",
       "sections": [
         {
           "heading": "Agreement and eligibility",
@@ -136,6 +136,13 @@
           "paragraphs": [
             "You must treat other people lawfully and respectfully. You may not impersonate someone; misrepresent age, identity, authority, or event facts; harass, threaten, stalk, discriminate against, exploit, or endanger anyone; expose private information; manipulate reviews or engagement; bypass security; interfere with the service; use unauthorized automation; or use Catch unlawfully.",
             "You retain ownership of content you submit. You give Catch a worldwide, non-exclusive, royalty-free licence to host, reproduce, format, moderate, and display that content as needed to operate, protect, improve, and promote the relevant service, subject to the Privacy Policy and visibility controls. You confirm that you have the rights needed to submit it."
+          ]
+        },
+        {
+          "heading": "Automated access",
+          "paragraphs": [
+            "You may not use any robot, spider, scraper, crawler or other automated means to access, copy, index or collect content or data from Catch (including organizer and event listings, reviews and profiles), or to get around any measure we use to limit such access, except search engines and link-preview services that follow our robots.txt, or with our prior written permission.",
+            "You may not use content from Catch to train or improve any machine-learning or AI model. We may block, rate-limit or suspend access that we believe breaches this section."
           ]
         },
         {

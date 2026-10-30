@@ -402,7 +402,7 @@ and CSS/Canvas. That is the failure mode this section exists to prevent.
 Promote `EventSuccessMomentPresentation`
 ([event_success_companion_screen_state.dart:698](../../lib/event_success/presentation/event_success_companion_screen_state.dart))
 from a Dart-only presentation class into a generated contract under
-`contracts/catalogs/`, emitted to both `lib/core/schema_contracts/generated/`
+`contracts/catalogs/`, emitted to both `lib/platform/schema_contracts/generated/`
 and `functions/src/shared/generated/`, and consumed by the web runtime through
 the existing generated-types pipeline.
 

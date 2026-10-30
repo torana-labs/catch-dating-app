@@ -1,0 +1,28 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+// ignore_for_file: constant_identifier_names, use_null_aware_elements
+
+// Typed callable request DTO emitted from callables/update_event_payload.schema.json.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
+
+/// Callable payload accepted by updateEvent.
+final class UpdateEventCallableRequest {
+  const UpdateEventCallableRequest({
+    required this.eventId,
+    this.mediaRecovery,
+    this.expectedSetupRevision,
+    required this.fields,
+  });
+
+  final String eventId;
+  final Map<String, Object?>? mediaRecovery;
+  final int? expectedSetupRevision;
+  final Map<String, Object?> fields;
+
+  Map<String, Object?> toJson() => {
+    'eventId': eventId,
+    'mediaRecovery': ?mediaRecovery,
+    'expectedSetupRevision': ?expectedSetupRevision,
+    'fields': fields,
+  };
+}
