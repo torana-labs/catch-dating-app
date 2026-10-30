@@ -222,6 +222,12 @@ jobs:
             echo "::error::$tag is at $current, which $GITHUB_SHA does not contain; refusing to move it backwards."
             exit 1
           fi
-          git tag -f "$tag" "$GITHUB_SHA"
-          git push --force origin "refs/tags/$tag"
+          # GitHub refuses to move a ref across workflow-file changes for a
+          # token without the workflows permission, which GITHUB_TOKEN never
+          # has. Creating a tag on a commit main already holds is allowed, so
+          # delete it and create it again.
+          if [[ -n "$current" ]]; then
+            git push origin ":refs/tags/$tag"
+          fi
+          git push origin "$GITHUB_SHA:refs/tags/$tag"
           echo "$tag -> $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
