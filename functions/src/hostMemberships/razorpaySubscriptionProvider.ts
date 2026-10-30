@@ -2,6 +2,7 @@ import {verifyRazorpayWebhookSignature} from "../payments/razorpay";
 import {
   FormPaymentProviderError,
   RazorpayPaymentProvider,
+  assertHttps,
   assertToken,
   providerId,
 } from "../payments/formPayments/razorpayPaymentProvider";
@@ -16,6 +17,36 @@ import {
 
 /** Renewal counts large enough to behave as "until cancelled". */
 export const subscriptionTotalCounts = {monthly: 120, annual: 10} as const;
+
+/** Events the membership webhook subscribes to on either account. */
+export const hostMembershipWebhookEvents = [
+  "subscription.authenticated",
+  "subscription.activated",
+  "subscription.charged",
+  "subscription.pending",
+  "subscription.halted",
+  "subscription.paused",
+  "subscription.resumed",
+  "subscription.cancelled",
+  "subscription.completed",
+  "subscription.updated",
+] as const;
+
+/** Catch's platform account, authenticated with its key credentials. */
+export interface PlatformSubscriptionAuth {
+  keyId: string; keySecret: string; webhookSecret: string;
+  mode: "test" | "live";
+}
+
+/**
+ * The organizer's own merchant account through Catch's Technology Partner
+ * OAuth connection. Razorpay's read_write scope covers every merchant API,
+ * including Plans and Subscriptions; the webhook secret is the connection's.
+ */
+export interface MerchantSubscriptionAuth {
+  accessToken: string; accountId: string; webhookSecret: string;
+  mode: "test" | "live";
+}
 
 const subscriptionStatuses: readonly ProviderSubscriptionStatus[] = [
   "created", "authenticated", "active", "pending", "halted", "paused",
@@ -97,6 +128,17 @@ function wrapId(value: unknown, prefix: string): string {
   }
 }
 
+/** Razorpay can omit the acc_ prefix on owner_id in partner responses. */
+function membershipWebhookMatches(webhook: Json, accountId: string): boolean {
+  const owner = String(webhook.owner_id ?? "");
+  return webhook.entity === "webhook" && webhook.active === true &&
+    webhook.secret_exists === true &&
+    [accountId, accountId.slice(4)].includes(owner) &&
+    Array.isArray(webhook.events) &&
+    hostMembershipWebhookEvents.every((event) =>
+      (webhook.events as unknown[]).includes(event));
+}
+
 function transferItems(body: Json): Json[] {
   if (body.entity !== "collection" || !Array.isArray(body.items) ||
       body.items.length > 50) invalid();
@@ -112,29 +154,49 @@ class SubscriptionTransport extends RazorpayPaymentProvider {
 }
 
 /**
- * Razorpay Subscriptions on the Catch platform account, with Route transfers
- * of each captured charge to the host linked account. Requests reuse the
- * hardened transport (timeout, body cap, no error-body echo).
+ * Razorpay Subscriptions on one account: the organizer's own merchant account
+ * (hostCollected) or Catch's platform account with Route transfers of each
+ * captured charge to the host linked account (platformSplit). Requests reuse
+ * the hardened transport (timeout, body cap, no error-body echo).
  */
 export class RazorpaySubscriptionProvider
 implements HostMembershipBillingProvider {
   readonly provider = "razorpay" as const;
   private readonly transport: SubscriptionTransport;
-  private readonly keyId: string;
+  private readonly handle: string;
   private readonly webhookSecret: string;
+  private readonly merchantAccountId: string | null;
 
-  constructor(input: {keyId: string; keySecret: string; webhookSecret: string;
-    mode: "test" | "live"}, fetchImpl: typeof fetch = fetch) {
+  constructor(input: PlatformSubscriptionAuth | MerchantSubscriptionAuth,
+    fetchImpl: typeof fetch = fetch) {
+    assertToken(input.webhookSecret);
+    this.webhookSecret = input.webhookSecret;
+    if ("accessToken" in input) {
+      assertToken(input.accessToken);
+      providerId(input.accountId, "acc_");
+      const {accessToken} = input;
+      this.handle = accessToken;
+      this.merchantAccountId = input.accountId;
+      this.transport = new SubscriptionTransport({
+        signatureSecret: input.webhookSecret,
+        authorization: (handle) => {
+          if (handle !== accessToken) {
+            throw new HostMembershipProviderError("Invalid Razorpay token.",
+              "requestNotSent");
+          }
+          return `Bearer ${accessToken}`;
+        }}, fetchImpl);
+      return;
+    }
     if (!new RegExp(`^rzp_${input.mode}_[A-Za-z0-9]+$`, "u")
       .test(input.keyId)) {
       throw new HostMembershipProviderError("Invalid Razorpay key.",
         "requestNotSent");
     }
     assertToken(input.keySecret);
-    assertToken(input.webhookSecret);
     const {keyId, keySecret} = input;
-    this.keyId = keyId;
-    this.webhookSecret = input.webhookSecret;
+    this.handle = keyId;
+    this.merchantAccountId = null;
     this.transport = new SubscriptionTransport({signatureSecret: keySecret,
       authorization: (handle) => {
         if (handle !== keyId) {
@@ -149,14 +211,59 @@ implements HostMembershipBillingProvider {
   private async call(path: string, method: "GET" | "POST",
     body?: Record<string, unknown>): Promise<Json> {
     try {
-      return await this.transport.call(this.keyId, path, method, body);
+      return await this.transport.call(this.handle, path, method, body);
     } catch (error) {
       if (error instanceof FormPaymentProviderError) {
         throw new HostMembershipProviderError(error.message,
-          error.disposition);
+          error.disposition, error.httpStatus);
       }
       throw error;
     }
+  }
+
+  async probeSubscriptions(): Promise<"enabled" | "notEnabled"> {
+    let body: Json;
+    try {
+      body = await this.call("/v1/subscriptions?count=1", "GET");
+    } catch (error) {
+      // Razorpay answers a 4xx (other than an authentication failure) when
+      // the product is not activated on the account.
+      if (error instanceof HostMembershipProviderError &&
+          error.disposition === "rejected" && error.httpStatus !== 401) {
+        return "notEnabled";
+      }
+      throw error;
+    }
+    if (body.entity !== "collection" || !Array.isArray(body.items)) invalid();
+    return "enabled";
+  }
+
+  async ensureMerchantWebhook(input: {url: string}):
+    Promise<{webhookId: string}> {
+    const accountId = this.merchantAccountId;
+    if (!accountId) {
+      throw new HostMembershipProviderError(
+        "Merchant webhooks need a merchant connection.", "requestNotSent");
+    }
+    assertHttps(input.url, 255);
+    const existing = await this.call(`/v2/accounts/${accountId}/webhooks`,
+      "GET");
+    if (!Array.isArray(existing.items) || existing.items.length > 100) {
+      invalid();
+    }
+    for (const raw of existing.items) {
+      const webhook = record(raw);
+      if (webhook.url === input.url && membershipWebhookMatches(webhook,
+        accountId)) {
+        return {webhookId: wrapId(webhook.id, "")};
+      }
+    }
+    const created = await this.call(`/v2/accounts/${accountId}/webhooks`,
+      "POST", {url: input.url, secret: this.webhookSecret,
+        events: [...hostMembershipWebhookEvents]});
+    if (created.url !== input.url ||
+        !membershipWebhookMatches(created, accountId)) invalid();
+    return {webhookId: wrapId(created.id, "")};
   }
 
   async createPrice(input: Parameters<

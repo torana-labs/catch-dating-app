@@ -91,7 +91,9 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
 /**
  * The release a deployment must serve. Promotion runs on main's head but
  * releases the accepted preview's source (RELEASE_SHA); a preview releases
- * the commit it runs on.
+ * the commit it runs on. The routes and copy above are this file's source's,
+ * so promotion runs the release's own copy of this file, never main's: main
+ * may have reworked a route since (an older Explore, for one, fails main's).
  */
 export function expectedRelease(env) {
   return env.RELEASE_SHA || env.GITHUB_SHA;

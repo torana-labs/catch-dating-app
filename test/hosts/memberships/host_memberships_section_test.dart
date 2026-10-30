@@ -15,11 +15,15 @@ HostMembershipProgramView _program({
   Map<String, Object?>? program,
   bool routeReady = true,
   bool fee = true,
+  String? paymentMode,
+  String? reason,
 }) => HostMembershipProgramView.fromResponse({
   'organizerId': 'organizer-1',
   'program': program,
   'routeAccountReady': routeReady,
   'feeConfigured': fee,
+  'paymentMode': ?paymentMode,
+  'unavailableReason': ?reason,
 });
 
 const _enabled = {
@@ -79,6 +83,57 @@ void main() {
     );
     expect(find.byKey(const ValueKey('host-memberships-enable')), findsNothing);
     expect(find.text('Set up required'), findsOneWidget);
+  });
+
+  testWidgets('a host-collected program names the blocker the host can fix', (
+    tester,
+  ) async {
+    final commands = <HostMembershipProgramCommand>[];
+    await _pump(
+      tester,
+      HostMembershipsState(
+        program: _program(
+          routeReady: false,
+          paymentMode: 'hostCollected',
+          reason: 'razorpayNotConnected',
+        ),
+        plans: const [],
+      ),
+      commands: commands,
+    );
+    expect(find.text('Razorpay account'), findsOneWidget);
+    expect(find.textContaining('Members pay you directly'), findsOneWidget);
+    expect(find.byKey(const ValueKey('host-memberships-enable')), findsNothing);
+
+    await _pump(
+      tester,
+      HostMembershipsState(
+        program: _program(
+          paymentMode: 'hostCollected',
+          reason: 'subscriptionsNotEnabled',
+        ),
+        plans: const [],
+      ),
+      commands: commands,
+    );
+    expect(find.textContaining('Turn on Subscriptions'), findsOneWidget);
+    expect(find.byKey(const ValueKey('host-memberships-enable')), findsNothing);
+
+    // An unknown future reason still blocks, with the generic copy.
+    await _pump(
+      tester,
+      HostMembershipsState(
+        program: _program(paymentMode: 'hostCollected', reason: 'somethingNew'),
+        plans: const [],
+      ),
+      commands: commands,
+    );
+    expect(
+      find.byKey(const ValueKey('host-memberships-unavailable')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('host-memberships-enable')), findsNothing);
+    expect(commands, isEmpty);
   });
 
   testWidgets('an enabled program pauses billing and lists plans', (

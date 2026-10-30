@@ -4,6 +4,7 @@ import {logger} from "firebase-functions";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {FirestoreShadowProjectionWriter} from "../projectionImporter";
+import {instagramDiscoveryConfig} from "./instagramDiscovery";
 import {
   processSupplyIntakeRequest,
   supplyIntakeCollections,
@@ -19,6 +20,7 @@ function deps(): SupplyIntakeWorkerDeps {
     db,
     now: () => new Date(),
     projectionWriter: new FirestoreShadowProjectionWriter(db),
+    instagramDiscovery: () => instagramDiscoveryConfig(),
     // Snapshots are content-addressed, so a retry rewrites identical bytes.
     // storage.rules deny every client path under supply-intake/.
     putSnapshot: async (requestId, snapshot) => {

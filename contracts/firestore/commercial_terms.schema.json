@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/commercial_terms.schema.json",
+  "title": "CommercialTermsDocument",
+  "description": "Operator-owned commercial terms. The platform document holds complete defaults; an organizer document (id org_<sha256(organizerId)>) holds a sparse override. Every write bumps revision and appends an immutable commercialTermsRevisions record and an admin audit log in the same transaction. Direct client access is denied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "scope", "organizerId", "revision", "terms", "reason", "updatedByUid", "updatedAtMillis", "lastMutationHash"],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "callable-owned"},
+    "scope": {"enum": ["platform", "organizer"], "x-catch-ownership": "callable-owned"},
+    "organizerId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}], "x-catch-ownership": "callable-owned"},
+    "revision": {"type": "integer", "minimum": 1, "x-catch-ownership": "callable-owned"},
+    "terms": {"anyOf": [{"$ref": "../shared/commercial_terms.schema.json#/definitions/terms"}, {"$ref": "../shared/commercial_terms.schema.json#/definitions/termsOverride"}], "x-catch-ownership": "callable-owned"},
+    "reason": {"type": "string", "minLength": 3, "maxLength": 500, "x-catch-ownership": "callable-owned"},
+    "updatedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "updatedAtMillis": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "callable-owned"},
+    "lastMutationHash": {"type": "string", "pattern": "^[a-f0-9]{64}$", "x-catch-ownership": "callable-owned"}
+  },
+  "allOf": [
+    {"if": {"properties": {"scope": {"const": "platform"}}},
+      "then": {"properties": {"organizerId": {"type": "null"}, "terms": {"$ref": "../shared/commercial_terms.schema.json#/definitions/terms"}}},
+      "else": {"properties": {"organizerId": {"type": "string"}, "terms": {"$ref": "../shared/commercial_terms.schema.json#/definitions/termsOverride"}}}}
+  ],
+  "x-firestore-collection": "commercialTerms",
+  "x-firestore-path": "commercialTerms/{termsId}",
+  "x-document-id-field": "termsId",
+  "x-owner": "manageCommercialTerms admin callable"
+}

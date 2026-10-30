@@ -156,6 +156,64 @@ const schemaPaymentRoutingPolicyDocumentSchema = <String, Object?>{
         },
       ],
     },
+    'hostMembership': <String, Object?>{
+      'description': 'Membership money flow: razorpayOAuth is hostCollected (subscriptions on the organizer\'s own connected account), razorpayRoute is platformSplit. Absent on policies written before memberships had a route, and treated as null.',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'route',
+              ],
+              'properties': <String, Object?>{
+                'route': <String, Object?>{
+                  'const': 'disabled',
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'route',
+                'mode',
+                'currency',
+                'merchantCountry',
+              ],
+              'properties': <String, Object?>{
+                'route': <String, Object?>{
+                  'enum': <Object?>[
+                    'razorpayRoute',
+                    'razorpayOAuth',
+                    'stripeConnectDirect',
+                    'stripeConnectDestination',
+                  ],
+                },
+                'mode': <String, Object?>{
+                  'enum': <Object?>[
+                    'test',
+                    'live',
+                  ],
+                },
+                'currency': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[A-Z]{3}\$',
+                },
+                'merchantCountry': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[A-Z]{2}\$',
+                },
+              },
+            },
+          ],
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
     'updatedAt': <String, Object?>{
       'type': 'object',
       'description': 'Serialized Firestore Timestamp fixture shape.',

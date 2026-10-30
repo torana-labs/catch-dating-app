@@ -41,7 +41,7 @@ export interface SupplyIntakeRequestsDocument {
     captureReceipts: {
       schemaVersion: 1;
       runKey: string;
-      adapterId: "page_fetch" | "static_page";
+      adapterId: "page_fetch" | "static_page" | "instagram_business_discovery";
       policyVersion: string;
       policyDecisionId: string | null;
       requestedUrl: string;

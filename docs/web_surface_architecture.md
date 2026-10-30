@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.44.0
+version: 0.45.0
 updated: 2026-10-30
 owner: web_platform
 status: active
@@ -193,6 +193,12 @@ the expected runtime service, region and pinned tag. Preview runs must pass the
 deployed public-route smoke check. Promotion records the production candidate
 version before smoke checks and rechecks it immediately before cloning that
 exact version; an absent, changed or unrelated release fails closed.
+Both promotion smoke checks, on the `next-release` channel and on live, run the
+released commit's own `deployedSmoke.mjs` from a worktree of that commit,
+checked out before credentials. Its routes and copy are what that source
+serves and what its preview passed; main's copy describes main's routes, which
+may have moved on (run 41025078900 failed checking a pre-#972 release against
+main's Explore). Main's checkout supplies every other promotion script.
 
 ### Release train
 

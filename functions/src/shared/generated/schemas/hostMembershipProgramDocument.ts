@@ -6,7 +6,7 @@ export const hostMembershipProgramDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/host_membership_programs.schema.json",
   "title": "HostMembershipProgramDocument",
-  "description": "Server-owned per-organizer paid membership program: the payment provider binding snapshot taken when the program was enabled, the host-wide billing pause and member counts.",
+  "description": "Server-owned per-organizer paid membership program: the payment binding snapshot taken when the program was enabled (its money flow, account and connection), the host-wide billing pause and member counts.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "hostMembershipPrograms",
@@ -70,6 +70,19 @@ export const hostMembershipProgramDocumentSchema: Record<string, unknown> = {
             "test",
             "live"
           ]
+        },
+        "moneyFlow": {
+          "description": "Absent on programs enabled under the original platform-account model, which is platformSplit.",
+          "enum": [
+            "hostCollected",
+            "platformSplit"
+          ]
+        },
+        "webhookId": {
+          "description": "hostCollected only: the membership webhook Catch registered on the organizer's merchant account.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
         }
       },
       "x-catch-ownership": "server-only"

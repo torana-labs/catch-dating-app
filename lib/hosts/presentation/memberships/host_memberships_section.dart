@@ -6,6 +6,7 @@ import 'package:catch_dating_app/hosts/presentation/memberships/host_membership_
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_state.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_razorpay_connection_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
@@ -70,8 +71,12 @@ class HostMembershipsCard extends ConsumerWidget {
               ),
             ),
           ),
+          // Each mode sets up its own account: the organizer's Razorpay
+          // connection, or the Route payout account for a split.
           if (!state.program.routeAccountReady && isOwner)
-            HostPaymentAccountControllerCard(organizer: organizer),
+            state.program.collectsOnOwnAccount
+                ? HostRazorpayConnectionCard(organizerId: organizer.id)
+                : HostPaymentAccountControllerCard(organizer: organizer),
         ],
       ),
     );
@@ -125,17 +130,21 @@ class HostMembershipsSection extends StatelessWidget {
             CatchField.read(
               copy: catchFieldCopy(l10n),
               key: const ValueKey('host-memberships-payout-readiness'),
-              title: l10n.hostMembershipsPayoutTitle,
+              title: program.collectsOnOwnAccount
+                  ? l10n.hostMembershipsRazorpayTitle
+                  : l10n.hostMembershipsPayoutTitle,
               valueText: program.routeAccountReady
                   ? l10n.hostMembershipsPayoutReady
                   : l10n.hostMembershipsPayoutNotReady,
               icon: CatchIcons.payment,
             ),
-            if (!program.feeConfigured)
+            if (program.unavailableReason != null || !program.feeConfigured)
               CatchField.content(
                 copy: catchFieldCopy(l10n),
+                key: const ValueKey('host-memberships-unavailable'),
                 title: l10n.hostMembershipsUnavailableTitle,
-                body: l10n.hostMembershipsUnavailableBody,
+                body: _unavailableBody(l10n, program.unavailableReason),
+                bodyMaxLines: 4,
                 icon: CatchIcons.info,
               ),
             if (program.enabled)
@@ -225,3 +234,26 @@ class HostMembershipsSection extends StatelessWidget {
     );
   }
 }
+
+/// The host-facing reason memberships cannot run yet. Servers that predate
+/// reasons report only a missing fee configuration.
+String _unavailableBody(
+  AppLocalizations l10n,
+  HostMembershipUnavailableReason? reason,
+) => switch (reason) {
+  HostMembershipUnavailableReason.notOffered =>
+    l10n.hostMembershipsUnavailableNotOffered,
+  HostMembershipUnavailableReason.razorpayNotConnected =>
+    l10n.hostMembershipsUnavailableConnectRazorpay,
+  HostMembershipUnavailableReason.razorpayNeedsAttention =>
+    l10n.hostMembershipsUnavailableReconnectRazorpay,
+  HostMembershipUnavailableReason.subscriptionsNotEnabled =>
+    l10n.hostMembershipsUnavailableSubscriptions,
+  HostMembershipUnavailableReason.payoutAccountNotReady =>
+    l10n.hostMembershipsUnavailablePayout,
+  HostMembershipUnavailableReason.providerUnavailable =>
+    l10n.hostMembershipsUnavailableProvider,
+  HostMembershipUnavailableReason.termsNotConfigured ||
+  HostMembershipUnavailableReason.other ||
+  null => l10n.hostMembershipsUnavailableBody,
+};

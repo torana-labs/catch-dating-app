@@ -510,7 +510,8 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
                   "adapterId": {
                     "enum": [
                       "page_fetch",
-                      "static_page"
+                      "static_page",
+                      "instagram_business_discovery"
                     ]
                   },
                   "policyVersion": {
@@ -1068,7 +1069,8 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
         "adapterId": {
           "enum": [
             "page_fetch",
-            "static_page"
+            "static_page",
+            "instagram_business_discovery"
           ]
         },
         "policyVersion": {

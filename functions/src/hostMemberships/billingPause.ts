@@ -7,7 +7,9 @@ import {validateHostMembershipProgramDocument} from
 import {applySubscriptionSnapshot, collections, readProgram} from
   "./membershipStore";
 import {
+  bindingOf,
   defaultHostMembershipRuntime,
+  providerFor,
   type HostMembershipRuntime,
 } from "./runtime";
 
@@ -33,8 +35,9 @@ export async function advanceHostBillingPause(organizerId: string,
     .orderBy(FieldPath.documentId()).limit(pageSize);
   if (cursor) query = query.startAfter(cursor);
   const page = await query.get();
-  const config = await runtime.config();
-  const provider = runtime.provider(config);
+  // Each membership's subscription stays on the account it was bought on.
+  const providers = new Map<string,
+    ReturnType<typeof providerFor>>();
   let processed = 0;
   for (const doc of page.docs) {
     const membership = doc.data();
@@ -45,6 +48,12 @@ export async function advanceHostBillingPause(organizerId: string,
         membership.pause?.initiator === "host";
     if (!eligible) continue;
     try {
+      const binding = bindingOf(membership.payment ?? program.payment);
+      const key = `${binding.moneyFlow}:${binding.bindingId}`;
+      if (!providers.has(key)) {
+        providers.set(key, providerFor(runtime, organizerId, binding));
+      }
+      const provider = await providers.get(key)!;
       const snapshot = pausing ?
         await provider.pause(membership.providerSubscriptionId) :
         await provider.resume(membership.providerSubscriptionId);
@@ -52,7 +61,8 @@ export async function advanceHostBillingPause(organizerId: string,
       await applySubscriptionSnapshot({db, snapshot,
         observedAtMillis: nowMillis, nowMillis,
         intent: pausing ? "hostPause" : "hostResume",
-        catchProject: runtime.catchProject(), expectedMembershipId: doc.id});
+        catchProject: runtime.catchProject(), expectedMembershipId: doc.id,
+        deliveredBy: binding});
       processed++;
     } catch {
       // One provider refusal (for example a trial not yet started) must not

@@ -154,6 +154,64 @@ export const paymentRoutingPolicyDocumentSchema: Record<string, unknown> = {
         }
       ]
     },
+    "hostMembership": {
+      "description": "Membership money flow: razorpayOAuth is hostCollected (subscriptions on the organizer's own connected account), razorpayRoute is platformSplit. Absent on policies written before memberships had a route, and treated as null.",
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "updatedAt": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",

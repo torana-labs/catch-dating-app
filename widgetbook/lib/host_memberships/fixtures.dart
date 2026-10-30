@@ -195,6 +195,9 @@ HostMembershipProgramView widgetbookMembershipProgram({
       : null,
   'routeAccountReady': routeReady,
   'feeConfigured': true,
+  // The default money flow: members pay the host's own Razorpay account.
+  'paymentMode': 'hostCollected',
+  'unavailableReason': routeReady ? null : 'razorpayNotConnected',
 });
 
 HostMembershipsState widgetbookHostMembershipsState({

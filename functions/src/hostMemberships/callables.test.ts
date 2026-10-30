@@ -13,7 +13,13 @@ import {
   FakeBillingProvider,
   callable,
   catchProject,
+  connectionId,
   dayMillis,
+  hostCollectedPayment,
+  membershipRouting,
+  merchantAccountId,
+  readyConnection,
+  seedPlatformSplitStore,
   now,
   organizerId,
   plan,
@@ -133,26 +139,116 @@ test("a host billing pause pauses members and resumes only its own",
       "active");
   });
 
-test("program enable requires payout readiness and fee config", async () => {
-  const db = seedStore();
-  db.deleteDoc(`hostMembershipPrograms/${organizerId}`);
-  const notReady = testDeps(db, new FakeBillingProvider(), {
-    readyRouteAccount: (async () => {
-      throw new Error("not ready");
-    }) as never});
-  const read = await manageHostMembershipProgramHandler(callable("host-1",
-    {action: "get", organizerId}), notReady);
-  assert.deepEqual([read.program, read.routeAccountReady, read.feeConfigured],
-    [null, false, true]);
-  await assert.rejects(manageHostMembershipProgramHandler(callable("host-1",
-    {action: "enable", organizerId}), notReady), /payout setup/);
-  const enabled = await manageHostMembershipProgramHandler(callable("host-1",
-    {action: "enable", organizerId}), testDeps(db));
-  assert.equal(enabled.program?.state, "enabled");
-  await assert.rejects(manageHostMembershipProgramHandler(callable(
-    "member-1", {action: "get", organizerId}), testDeps(db)),
-  /permission-denied/);
-});
+test("program readiness fails closed with a host-facing reason",
+  async () => {
+    const get = async (db: ReturnType<typeof seedStore>,
+      deps = testDeps(db)) => manageHostMembershipProgramHandler(
+      callable("host-1", {action: "get", organizerId}), deps);
+    const enable = (db: ReturnType<typeof seedStore>, deps = testDeps(db)) =>
+      manageHostMembershipProgramHandler(callable("host-1",
+        {action: "enable", organizerId}), deps);
+    const fresh = (extra: Record<string, Record<string, unknown>> = {}) => {
+      const db = seedStore(extra);
+      db.deleteDoc(`hostMembershipPrograms/${organizerId}`);
+      return db;
+    };
+
+    // Catch has not offered memberships: no membership route.
+    const notOffered = fresh();
+    notOffered.deleteDoc("paymentRoutingPolicies/app");
+    const off = await get(notOffered);
+    assert.deepEqual([off.program, off.paymentMode, off.unavailableReason],
+      [null, null, "notOffered"]);
+    await assert.rejects(enable(notOffered),
+      /hasn't turned on memberships/);
+
+    // hostCollected without a connected Razorpay account.
+    const unconnected = fresh();
+    unconnected.deleteDoc(`organizerPaymentConnections/${connectionId}`);
+    const noAccount = await get(unconnected);
+    assert.deepEqual([noAccount.paymentMode, noAccount.routeAccountReady,
+      noAccount.unavailableReason],
+    ["hostCollected", false, "razorpayNotConnected"]);
+    await assert.rejects(enable(unconnected), /Connect your Razorpay/);
+    const stale = fresh(readyConnection({status: "needsAttention"}));
+    assert.equal((await get(stale)).unavailableReason,
+      "razorpayNeedsAttention");
+
+    // Catch's commercial terms are not configured yet.
+    const noTerms = fresh();
+    noTerms.deleteDoc("commercialTerms/platform");
+    const termsMissing = await get(noTerms);
+    assert.deepEqual([termsMissing.routeAccountReady,
+      termsMissing.feeConfigured, termsMissing.unavailableReason],
+    [true, false, "termsNotConfigured"]);
+    await assert.rejects(enable(noTerms), /finishing your terms/);
+
+    // The host's Razorpay account has not enabled Subscriptions.
+    const disabled = new FakeBillingProvider();
+    disabled.subscriptionsEnabled = false;
+    const db = fresh();
+    await assert.rejects(enable(db, testDeps(db, disabled)),
+      /Turn on Subscriptions/);
+    assert.equal(db.getDoc(`hostMembershipPrograms/${organizerId}`),
+      undefined);
+
+    // Ready: the program binds the host's own account and its webhook.
+    const provider = new FakeBillingProvider();
+    const enabled = await enable(db, testDeps(db, provider));
+    assert.deepEqual([enabled.program?.state, enabled.paymentMode,
+      enabled.unavailableReason], ["enabled", "hostCollected", null]);
+    assert.deepEqual(db.getDoc(`hostMembershipPrograms/${organizerId}`)!
+      .payment, {...hostCollectedPayment, webhookId: "wh_membership"});
+    assert.deepEqual(provider.calls.map((call) => call.method).slice(0, 2),
+      ["probeSubscriptions", "ensureMerchantWebhook"]);
+    assert.deepEqual(provider.calls[1].input, {url:
+      "https://example.test/hostMembershipRazorpayWebhook?connectionId=" +
+      connectionId});
+
+    // platformSplit stays available behind its own route and payout account.
+    const split = seedPlatformSplitStore();
+    const notReady = testDeps(split, new FakeBillingProvider(), {
+      readyRouteAccount: (async () => {
+        throw new Error("not ready");
+      }) as never});
+    assert.deepEqual([(await get(split, notReady)).paymentMode,
+      (await get(split, notReady)).unavailableReason],
+    ["platformSplit", "payoutAccountNotReady"]);
+    assert.equal((await get(split)).unavailableReason, null);
+
+    await assert.rejects(manageHostMembershipProgramHandler(callable(
+      "member-1", {action: "get", organizerId}), testDeps(db)),
+    /permission-denied/);
+  });
+
+test("checkout fails closed when the bound mode can no longer run",
+  async () => {
+    const prepare = (db: ReturnType<typeof seedStore>) =>
+      manageHostMembershipCheckoutHandler(callable("member-1", {
+        action: "prepare", organizerId, planId, interval: "monthly"}),
+      testDeps(db));
+    const ok = seedStore();
+    const opened = await prepare(ok);
+    assert.deepEqual(ok.getDoc(
+      `hostMembershipCheckouts/${opened.checkoutId}`)!.payment,
+    hostCollectedPayment);
+
+    const disconnected = seedStore(readyConnection({status: "disconnected",
+      disconnectedAt: Timestamp.fromMillis(now)}));
+    await assert.rejects(prepare(disconnected), /Connect your Razorpay/);
+    const noTerms = seedStore();
+    noTerms.deleteDoc("commercialTerms/platform");
+    await assert.rejects(prepare(noTerms), /finishing your terms/);
+    // Catch switched the organizer to another money flow: re-enable first.
+    await assert.rejects(prepare(seedStore(membershipRouting(
+      "razorpayRoute"))), /not taking new members/);
+    // A provider plan made on another account cannot be bought here.
+    await assert.rejects(prepare(seedStore({[`hostMembershipPlans/${planId}`]:
+      plan({prices: {monthly: {amountPaise: 49900,
+        providerPriceIds: {razorpay: "plan_TestMonthly1"},
+        providerAccountId: "acc_Elsewhere1", revision: 1}}}) as unknown as
+      Record<string, unknown>})), /not available/);
+  });
 
 test("plans save as drafts and publish with provider prices", async () => {
   const db = seedStore();
@@ -177,11 +273,14 @@ test("plans save as drafts and publish with provider prices", async () => {
     action: "publish", organizerId, planId: created.planId}), deps);
   const stored = db.getDoc(`hostMembershipPlans/${created.planId}`)!;
   assert.equal(stored.status, "published");
+  // Provider plans are created on the organizer's own Razorpay account.
   assert.deepEqual(stored.prices, {
     monthly: {amountPaise: 29900,
-      providerPriceIds: {razorpay: "plan_Createdmonthly"}, revision: 1},
+      providerPriceIds: {razorpay: "plan_Createdmonthly"},
+      providerAccountId: merchantAccountId, revision: 1},
     annual: {amountPaise: 299900,
-      providerPriceIds: {razorpay: "plan_Createdannual"}, revision: 1}});
+      providerPriceIds: {razorpay: "plan_Createdannual"},
+      providerAccountId: merchantAccountId, revision: 1}});
   // A price edit makes a new provider price; the old one is untouched.
   await manageHostMembershipPlansHandler(callable("host-1", {
     action: "save", organizerId, planId: created.planId,

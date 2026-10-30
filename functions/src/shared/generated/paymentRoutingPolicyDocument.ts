@@ -46,6 +46,26 @@ export type PaymentRoutingPolicyDocument = {
       )
     | null;
   /**
+   * Membership money flow: razorpayOAuth is hostCollected (subscriptions on the organizer's own connected account), razorpayRoute is platformSplit. Absent on policies written before memberships had a route, and treated as null.
+   */
+  hostMembership?:
+    | (
+        | {
+            route: "disabled";
+          }
+        | {
+            route:
+              | "razorpayRoute"
+              | "razorpayOAuth"
+              | "stripeConnectDirect"
+              | "stripeConnectDestination";
+            mode: "test" | "live";
+            currency: string;
+            merchantCountry: string;
+          }
+      )
+    | null;
+  /**
    * Serialized Firestore Timestamp fixture shape.
    */
   updatedAt: {
