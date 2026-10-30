@@ -40,6 +40,14 @@ import {listingInstagramUsername, listingLumaCalendarUrl,
 import {extractClaimCode} from "./instagramClaimProtocol";
 import type {InstagramInboundMessage} from "./instagramClaimProtocol";
 import type {InstagramMessagingProvider} from "./instagramMessagingProvider";
+import {defaultLumaClaimPageReader, lumaClaimMarker} from "./lumaClaimPage";
+import type {LumaClaimPageReader} from "./lumaClaimPage";
+import type {ConfirmOrganizerClaimVerificationCallablePayload} from
+  "../shared/generated/confirmOrganizerClaimVerificationCallablePayload";
+import type {ConfirmOrganizerClaimVerificationCallableResponse} from
+  "../shared/generated/confirmOrganizerClaimVerificationCallableResponse";
+import {validateConfirmOrganizerClaimVerificationCallablePayload} from
+  "../shared/generated/validators/confirmOrganizerClaimVerificationInput";
 
 type ClaimMethod = StartOrganizerClaimVerificationCallablePayload["method"];
 // The receipt also records nomination replies (instagramInboundRouter.ts);
@@ -57,6 +65,9 @@ const hourMillis = 60 * minuteMillis;
 const startLimit: RateLimitConfig = {maxRequests: 10, windowMs: hourMillis};
 const optionsLimit: RateLimitConfig = {maxRequests: 30, windowMs: minuteMillis};
 const senderLimit: RateLimitConfig = {maxRequests: 10, windowMs: hourMillis};
+// Each Luma check spends one request of the month's page-fetch allowance.
+const confirmLimit: RateLimitConfig = {maxRequests: 6,
+  windowMs: 10 * minuteMillis};
 
 const collections = {
   attempts: "organizerClaimVerifications",
@@ -88,6 +99,8 @@ export interface ClaimVerificationDeps {
   now: () => number;
   config: () => ClaimVerificationConfig;
   randomCode: () => string;
+  /** Reads Luma calendar pages; hidden while page fetching is off. */
+  lumaPages: () => LumaClaimPageReader;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
     key: string,
@@ -113,6 +126,7 @@ export const defaultClaimVerificationDeps: ClaimVerificationDeps = {
     };
   },
   randomCode: () => crypto.randomInt(0, 1_000_000).toString().padStart(6, "0"),
+  lumaPages: defaultLumaClaimPageReader,
   checkRateLimit: defaultCheckRateLimit,
 };
 
@@ -136,6 +150,8 @@ export async function getOrganizerClaimVerificationOptionsHandler(
   assertCanBeClaimed(organizer);
   const config = deps.config();
   const instagram = listingInstagramUsername(organizer);
+  const luma = listingLumaCalendarUrl(organizer);
+  const lumaEnabled = await deps.lumaPages().enabled();
   return {
     organizerId: data.organizerId,
     methods: [
@@ -148,9 +164,10 @@ export async function getOrganizerClaimVerificationOptionsHandler(
       },
       {
         method: "lumaDescription",
-        available: false,
-        proofTarget: listingLumaCalendarUrl(organizer),
-        unavailableReason: "turnedOff",
+        available: lumaEnabled && luma !== null,
+        proofTarget: luma,
+        unavailableReason: !lumaEnabled ? "turnedOff" :
+          luma === null ? "noSourceOnListing" : null,
       },
     ],
     catchInstagramHandle: config.instagramEnabled ?
@@ -168,12 +185,15 @@ export async function startOrganizerClaimVerificationHandler(
   >(request, validateStartOrganizerClaimVerificationCallablePayload,
     normalizePayload);
   const config = deps.config();
-  if (data.method !== "instagramMessage" || !config.instagramEnabled ||
-      !config.catchInstagramHandle) {
+  const instagram = data.method === "instagramMessage";
+  const switchedOn = instagram ?
+    config.instagramEnabled && config.catchInstagramHandle !== null :
+    await deps.lumaPages().enabled();
+  if (!switchedOn) {
     throw new HttpsError("failed-precondition",
       "This way of checking is not switched on yet.");
   }
-  const catchHandle = config.catchInstagramHandle;
+  const catchHandle = instagram ? config.catchInstagramHandle : null;
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, requesterUid,
     "startOrganizerClaimVerification", startLimit);
@@ -207,10 +227,12 @@ export async function startOrganizerClaimVerificationHandler(
       throw new HttpsError("failed-precondition",
         "Finish your Catch account before you claim a page.");
     }
-    const proofTarget = listingInstagramUsername(organizer);
+    const proofTarget = instagram ? listingInstagramUsername(organizer) :
+      listingLumaCalendarUrl(organizer);
     if (!proofTarget) {
-      throw new HttpsError("failed-precondition",
-        "This listing has no Instagram account to check.");
+      throw new HttpsError("failed-precondition", instagram ?
+        "This listing has no Instagram account to check." :
+        "This listing has no Luma calendar to check.");
     }
     const existing = attemptSnap.exists ?
       requireDoc<OrganizerClaimVerificationDocument>(attemptSnap,
@@ -221,18 +243,21 @@ export async function startOrganizerClaimVerificationHandler(
           CLAIM_CODE_REUSE_MIN_MILLIS) {
       return startResponse(existing, catchHandle);
     }
-    const [previousCodeSnap, ...candidateSnaps] = await Promise.all([
-      existing ? tx.get(db.collection(collections.codes).doc(existing.code)) :
-        Promise.resolve(null),
-      ...candidates.map((code) =>
-        tx.get(db.collection(collections.codes).doc(code))),
-    ]);
-    const code = candidates.find((_candidate, index) => {
+    // Only Instagram codes are looked up by value, so only they are
+    // reserved; a Luma code is checked on its own attempt.
+    const codesRef = db.collection(collections.codes);
+    const [previousCodeSnap, ...candidateSnaps] = instagram ?
+      await Promise.all([
+        existing ? tx.get(codesRef.doc(existing.code)) : Promise.resolve(null),
+        ...candidates.map((candidate) => tx.get(codesRef.doc(candidate))),
+      ]) : [null];
+    const code = instagram ? candidates.find((_candidate, index) => {
       const snap = candidateSnaps[index];
-      return !snap.exists || requireDoc<OrganizerClaimInstagramCodeDocument>(
-        snap, "OrganizerClaimInstagramCodeDocument").expiresAt.toMillis() <=
-          nowMillis;
-    });
+      return snap !== null && (!snap.exists ||
+        requireDoc<OrganizerClaimInstagramCodeDocument>(snap,
+          "OrganizerClaimInstagramCodeDocument").expiresAt.toMillis() <=
+          nowMillis);
+    }) : candidates[0];
     if (!code) {
       throw new HttpsError("unavailable", "Try again in a moment.");
     }
@@ -256,10 +281,12 @@ export async function startOrganizerClaimVerificationHandler(
       lastRejection: null,
     } as const;
     tx.set(attemptRef, attempt);
-    tx.set(db.collection(collections.codes).doc(code), {
-      code, attemptId, organizerId: data.organizerId, expiresAt,
-      consumedAt: null,
-    });
+    if (instagram) {
+      tx.set(db.collection(collections.codes).doc(code), {
+        code, attemptId, organizerId: data.organizerId, expiresAt,
+        consumedAt: null,
+      });
+    }
     // The superseded code keeps its reservation so a late send is told it
     // was replaced rather than that it is unknown.
     if (previousCodeSnap?.exists && previousCodeSnap.id !== code &&
@@ -394,67 +421,187 @@ async function approveInstagramClaim(
         attempt?.attemptId ?? null);
       return {outcome: stale ?? "unknownCode", proofTarget: null};
     }
-    const organizerSnap = await tx.get(
-      db.collection("organizers").doc(attempt.organizerId));
-    const requestId = organizerClaimRequestId(attempt.organizerId,
-      attempt.requesterUid);
-    const requestSnap = await tx.get(
-      db.collection("organizerClaimRequests").doc(requestId));
-    const pendingRequest = requestSnap.exists &&
-      requireDoc<OrganizerClaimRequestDocument>(requestSnap,
-        "OrganizerClaimRequestDocument").status === "pending";
-    let stageApproval: () => void;
-    try {
-      if (!organizerSnap.exists) {
-        throw new HttpsError("not-found", "Organizer listing not found.");
-      }
-      stageApproval = await prepareOrganizerClaimApproval(tx, db, {
-        requestId,
-        organizerId: attempt.organizerId,
-        requesterUid: attempt.requesterUid,
-        organizer: requireDoc<OrganizerDocument>(organizerSnap,
-          "OrganizerDocument"),
-        decidedByUid: null,
-        decisionReason: `Verified by an Instagram message from @${username}.`,
-        notificationActorUid: attempt.requesterUid,
-        // A request the requester already sent to staff review is approved
-        // as it stands; otherwise the verified claim creates its own.
-        newRequest: pendingRequest ? null : {
-          requesterRole: "owner",
-          proofUrls: [`https://www.instagram.com/${username}/`],
-        },
-        supersedeOtherPendingClaim: true,
-        transitionId,
-        recordedAt,
-        serverTimestamp: deps.serverTimestamp,
-      });
-    } catch (error) {
-      if (!(error instanceof HttpsError)) throw error;
+    const verified = await stageVerifiedClaim(tx, db, deps, attempt, {
+      source: "instagramMessage",
+      observedIdentity: username,
+      messageKey: message.messageKey,
+      decisionReason: `Verified by an Instagram message from @${username}.`,
+      proofUrl: `https://www.instagram.com/${username}/`,
+    }, transitionId, recordedAt);
+    if (!verified) {
       // Already claimed, archived, or the account is gone: staff review is
       // the way forward, so the code stays live for the page to explain.
       stageReceipt(tx, receiptRef, deps, message, "claimUnavailable",
         attempt.attemptId);
       return {outcome: "claimUnavailable", proofTarget: null};
     }
-    stageApproval();
-    const timestamp = deps.serverTimestamp();
-    tx.update(attemptRef, {
-      status: "verified",
-      verifiedAt: timestamp,
-      updatedAt: timestamp,
-      claimRequestId: requestId,
-      evidence: {
-        source: "instagramMessage",
-        observedIdentity: username,
-        messageKey: message.messageKey,
-        observedAt: timestamp,
-      },
-      lastRejection: null,
-    });
-    tx.update(codeRef, {consumedAt: timestamp});
+    tx.update(codeRef, {consumedAt: deps.serverTimestamp()});
     stageReceipt(tx, receiptRef, deps, message, "verified",
       attempt.attemptId);
     return {outcome: "verified", proofTarget: attempt.proofTarget};
+  });
+}
+
+interface VerifiedProof {
+  source: "instagramMessage" | "lumaDescription";
+  observedIdentity: string;
+  messageKey: string | null;
+  decisionReason: string;
+  proofUrl: string;
+}
+
+/**
+ * Approves the attempt's claim through the shared ownership path and records
+ * the evidence. Returns the approved request id, or null when the listing
+ * can no longer be claimed this way; nothing is written then. Call it after
+ * the caller's own reads.
+ */
+async function stageVerifiedClaim(
+  tx: FirebaseFirestore.Transaction,
+  db: FirebaseFirestore.Firestore,
+  deps: ClaimVerificationDeps,
+  attempt: OrganizerClaimVerificationDocument,
+  proof: VerifiedProof,
+  transitionId: string,
+  recordedAt: string
+): Promise<string | null> {
+  const organizerSnap = await tx.get(
+    db.collection("organizers").doc(attempt.organizerId));
+  const requestId = organizerClaimRequestId(attempt.organizerId,
+    attempt.requesterUid);
+  const requestSnap = await tx.get(
+    db.collection("organizerClaimRequests").doc(requestId));
+  const pendingRequest = requestSnap.exists &&
+    requireDoc<OrganizerClaimRequestDocument>(requestSnap,
+      "OrganizerClaimRequestDocument").status === "pending";
+  let stageApproval: () => void;
+  try {
+    if (!organizerSnap.exists) {
+      throw new HttpsError("not-found", "Organizer listing not found.");
+    }
+    stageApproval = await prepareOrganizerClaimApproval(tx, db, {
+      requestId,
+      organizerId: attempt.organizerId,
+      requesterUid: attempt.requesterUid,
+      organizer: requireDoc<OrganizerDocument>(organizerSnap,
+        "OrganizerDocument"),
+      decidedByUid: null,
+      decisionReason: proof.decisionReason,
+      notificationActorUid: attempt.requesterUid,
+      // A request the requester already sent to staff review is approved as
+      // it stands; otherwise the verified claim creates its own.
+      newRequest: pendingRequest ? null :
+        {requesterRole: "owner", proofUrls: [proof.proofUrl]},
+      supersedeOtherPendingClaim: true,
+      transitionId,
+      recordedAt,
+      serverTimestamp: deps.serverTimestamp,
+    });
+  } catch (error) {
+    if (error instanceof HttpsError) return null;
+    throw error;
+  }
+  stageApproval();
+  const timestamp = deps.serverTimestamp();
+  tx.update(db.collection(collections.attempts).doc(attempt.attemptId), {
+    status: "verified",
+    verifiedAt: timestamp,
+    updatedAt: timestamp,
+    claimRequestId: requestId,
+    evidence: {
+      source: proof.source,
+      observedIdentity: proof.observedIdentity,
+      messageKey: proof.messageKey,
+      observedAt: timestamp,
+    },
+    lastRejection: null,
+  });
+  return requestId;
+}
+
+/**
+ * The Luma check: reads the listing's calendar page for the attempt's
+ * marker and, when it is there, approves the claim. The marker may stay in
+ * the description afterwards; it only ever matches its own attempt.
+ */
+export async function confirmOrganizerClaimVerificationHandler(
+  request: CallableRequest<unknown>,
+  deps: ClaimVerificationDeps = defaultClaimVerificationDeps
+): Promise<ConfirmOrganizerClaimVerificationCallableResponse> {
+  const uid = requireAuth(request);
+  const data = validateCallableWithAjv<
+    ConfirmOrganizerClaimVerificationCallablePayload
+  >(request, validateConfirmOrganizerClaimVerificationCallablePayload,
+    normalizePayload);
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(db, uid, "confirmOrganizerClaimVerification",
+    confirmLimit);
+  const attemptRef = db.collection(collections.attempts).doc(data.attemptId);
+  const attemptSnap = await attemptRef.get();
+  const attempt = attemptSnap.exists ?
+    requireDoc<OrganizerClaimVerificationDocument>(attemptSnap,
+      "OrganizerClaimVerificationDocument") : null;
+  if (!attempt || attempt.requesterUid !== uid) {
+    throw new HttpsError("not-found", "Claim attempt not found.");
+  }
+  if (attempt.method !== "lumaDescription") {
+    throw new HttpsError("failed-precondition",
+      "An Instagram claim completes when your message arrives.");
+  }
+  const respond = (
+    status: ConfirmOrganizerClaimVerificationCallableResponse["status"],
+    lastRejection: ConfirmOrganizerClaimVerificationCallableResponse[
+      "lastRejection"] = null,
+    claimRequestId: string | null = attempt.claimRequestId
+  ) => ({attemptId: attempt.attemptId, status, claimRequestId,
+    lastRejection});
+  if (attempt.status === "verified") return respond("verified");
+  if (attempt.status !== "awaitingProof" ||
+      attempt.expiresAt.toMillis() <= deps.now()) return respond("expired");
+  const pages = deps.lumaPages();
+  if (!(await pages.enabled())) {
+    throw new HttpsError("failed-precondition",
+      "This way of checking is not switched on yet.");
+  }
+  const reading = await pages.read({
+    url: attempt.proofTarget,
+    marker: lumaClaimMarker(attempt.code),
+    runKey: `organizer-claim:${attempt.attemptId}:${deps.now()}`,
+  });
+  if (!reading.showsMarker) {
+    if (reading.outcome !== "fetched") {
+      return respond("awaitingProof", "pageUnavailable");
+    }
+    await db.runTransaction(async (tx) => {
+      const current = await tx.get(attemptRef);
+      if (current.data()?.status !== "awaitingProof") return;
+      const timestamp = deps.serverTimestamp();
+      tx.update(attemptRef, {updatedAt: timestamp,
+        lastRejection: {reason: "codeNotFound", at: timestamp}});
+    });
+    return respond("awaitingProof", "codeNotFound");
+  }
+  const transitionId = crypto.randomUUID();
+  const recordedAt = new Date(deps.now()).toISOString();
+  return db.runTransaction(async (tx) => {
+    const currentSnap = await tx.get(attemptRef);
+    const current = requireDoc<OrganizerClaimVerificationDocument>(
+      currentSnap, "OrganizerClaimVerificationDocument");
+    if (current.status === "verified") {
+      return respond("verified", null, current.claimRequestId);
+    }
+    if (current.status !== "awaitingProof" || current.code !== attempt.code ||
+        current.expiresAt.toMillis() <= deps.now()) return respond("expired");
+    const requestId = await stageVerifiedClaim(tx, db, deps, current, {
+      source: "lumaDescription",
+      observedIdentity: reading.finalUrl ?? current.proofTarget,
+      messageKey: null,
+      decisionReason: `Verified by a code on the Luma calendar ${
+        current.proofTarget}.`,
+      proofUrl: current.proofTarget,
+    }, transitionId, recordedAt);
+    return requestId ? respond("verified", null, requestId) :
+      respond("claimUnavailable");
   });
 }
 
@@ -551,13 +698,15 @@ export function claimReplyText(
 function startResponse(
   attempt: Pick<OrganizerClaimVerificationDocument, "attemptId" |
     "organizerId" | "method" | "code" | "proofTarget" | "expiresAt">,
-  catchHandle: string
+  catchHandle: string | null
 ): StartOrganizerClaimVerificationCallableResponse {
   return {
     attemptId: attempt.attemptId,
     organizerId: attempt.organizerId,
     method: attempt.method,
     code: attempt.code,
+    proofText: attempt.method === "lumaDescription" ?
+      lumaClaimMarker(attempt.code) : attempt.code,
     proofTarget: attempt.proofTarget,
     catchInstagramHandle: catchHandle,
     expiresAt: attempt.expiresAt.toDate().toISOString(),
@@ -597,4 +746,8 @@ export const getOrganizerClaimVerificationOptions = onCall(
 export const startOrganizerClaimVerification = onCall(
   appCheckCallableOptions,
   (request) => startOrganizerClaimVerificationHandler(request)
+);
+export const confirmOrganizerClaimVerification = onCall(
+  appCheckCallableOptions,
+  (request) => confirmOrganizerClaimVerificationHandler(request)
 );

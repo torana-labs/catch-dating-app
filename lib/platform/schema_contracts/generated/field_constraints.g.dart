@@ -27105,6 +27105,42 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const confirmOrganizerClaimVerificationCallablePayloadAttemptId = CatchContractFieldConstraints(
+    path: 'confirmOrganizerClaimVerificationCallablePayload.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmOrganizerClaimVerificationCallableResponseAttemptId = CatchContractFieldConstraints(
+    path: 'confirmOrganizerClaimVerificationCallableResponse.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmOrganizerClaimVerificationCallableResponseClaimRequestId = CatchContractFieldConstraints(
+    path: 'confirmOrganizerClaimVerificationCallableResponse.claimRequestId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmOrganizerClaimVerificationCallableResponseLastRejection = CatchContractFieldConstraints(
+    path: 'confirmOrganizerClaimVerificationCallableResponse.lastRejection',
+    valueTypes: <String>['string'],
+    enumValues: <String>['codeNotFound', 'pageUnavailable'],
+  );
+
+  static const confirmOrganizerClaimVerificationCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'confirmOrganizerClaimVerificationCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['awaitingProof', 'verified', 'expired', 'claimUnavailable'],
+  );
+
   static const connectOrganizerLumaProviderCallablePayloadApiKey = CatchContractFieldConstraints(
     path: 'connectOrganizerLumaProviderCallablePayload.apiKey',
     maxLength: 512,
@@ -164476,6 +164512,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const startOrganizerClaimVerificationCallableResponseProofText = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.proofText',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^(catch-)?[0-9]{6}\$',
+  );
+
   static const startOrganizerContactConversationCallablePayloadContactId = CatchContractFieldConstraints(
     path: 'startOrganizerContactConversationCallablePayload.contactId',
     maxLength: 180,
@@ -182980,6 +183023,11 @@ abstract final class CatchContractConstraints {
     'confirmEventAssistanceDepartureCallablePayload.command.payload.expectedProgressRevision': confirmEventAssistanceDepartureCallablePayloadCommandPayloadExpectedProgressRevision,
     'confirmEventAssistanceDepartureCallablePayload.command.payload.groupId': confirmEventAssistanceDepartureCallablePayloadCommandPayloadGroupId,
     'confirmEventAssistanceDepartureCallablePayload.expectedSourceHash': confirmEventAssistanceDepartureCallablePayloadExpectedSourceHash,
+    'confirmOrganizerClaimVerificationCallablePayload.attemptId': confirmOrganizerClaimVerificationCallablePayloadAttemptId,
+    'confirmOrganizerClaimVerificationCallableResponse.attemptId': confirmOrganizerClaimVerificationCallableResponseAttemptId,
+    'confirmOrganizerClaimVerificationCallableResponse.claimRequestId': confirmOrganizerClaimVerificationCallableResponseClaimRequestId,
+    'confirmOrganizerClaimVerificationCallableResponse.lastRejection': confirmOrganizerClaimVerificationCallableResponseLastRejection,
+    'confirmOrganizerClaimVerificationCallableResponse.status': confirmOrganizerClaimVerificationCallableResponseStatus,
     'connectOrganizerLumaProviderCallablePayload.apiKey': connectOrganizerLumaProviderCallablePayloadApiKey,
     'connectOrganizerLumaProviderCallablePayload.eventId': connectOrganizerLumaProviderCallablePayloadEventId,
     'connectOrganizerLumaProviderCallablePayload.externalEventId': connectOrganizerLumaProviderCallablePayloadExternalEventId,
@@ -201741,6 +201789,7 @@ abstract final class CatchContractConstraints {
     'startOrganizerClaimVerificationCallableResponse.method': startOrganizerClaimVerificationCallableResponseMethod,
     'startOrganizerClaimVerificationCallableResponse.organizerId': startOrganizerClaimVerificationCallableResponseOrganizerId,
     'startOrganizerClaimVerificationCallableResponse.proofTarget': startOrganizerClaimVerificationCallableResponseProofTarget,
+    'startOrganizerClaimVerificationCallableResponse.proofText': startOrganizerClaimVerificationCallableResponseProofText,
     'startOrganizerContactConversationCallablePayload.contactId': startOrganizerContactConversationCallablePayloadContactId,
     'startOrganizerContactConversationCallablePayload.organizerId': startOrganizerContactConversationCallablePayloadOrganizerId,
     'startOrganizerConversationCallablePayload.eventId': startOrganizerConversationCallablePayloadEventId,

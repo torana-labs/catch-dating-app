@@ -142,9 +142,11 @@ const CONTRACT_ERRORS = new Set(["INVALID_INTAKE_REQUEST", "INVALID_ACQUISITION_
  * Live fetching only when policy enables it; its cited decision must exist and
  * be accepted or the request fails closed. Otherwise a source that captures
  * nothing, so the listing still forms from the nomination and records every
- * seed as a gap for research.
+ * seed as a gap for research. Claim verification reads Luma pages through the
+ * same gate and monthly allowance.
  */
-async function pageSourceFor(deps: SupplyIntakeWorkerDeps, policy: AcquisitionPolicy):
+export async function pageSourceFor(deps: Pick<SupplyIntakeWorkerDeps, "db" | "now" | "transport">,
+  policy: AcquisitionPolicy):
   Promise<{source: IntakePageSource; settle: () => Promise<void>}> {
   const runtime = await packagedIntake();
   if (!policy.pageFetch.enabled) {

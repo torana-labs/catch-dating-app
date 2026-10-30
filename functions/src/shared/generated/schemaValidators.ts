@@ -879,6 +879,8 @@ export {validateStartOrganizerClaimVerificationCallablePayload} from "./validato
 export {validateStartOrganizerClaimVerificationCallableResponse} from "./validators/startOrganizerClaimVerificationOutput";
 export {validateGetOrganizerClaimVerificationOptionsCallablePayload} from "./validators/getOrganizerClaimVerificationOptionsInput";
 export {validateOrganizerClaimVerificationOptionsCallableResponse} from "./validators/organizerClaimVerificationOptionsOutput";
+export {validateConfirmOrganizerClaimVerificationCallablePayload} from "./validators/confirmOrganizerClaimVerificationInput";
+export {validateConfirmOrganizerClaimVerificationCallableResponse} from "./validators/confirmOrganizerClaimVerificationOutput";
 export {validateAdminDecideOrganizerClaimCallablePayload} from "./validators/adminDecideOrganizerClaimInput";
 export {validateCreateClubCallableResponse} from "./validators/createClubOutput";
 export {validateCreateClubPostCallablePayload} from "./validators/createClubPostInput";

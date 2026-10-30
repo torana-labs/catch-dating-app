@@ -405,6 +405,7 @@ export {
   requestOrganizerClaim,
 } from "./organizers/organizerClaims";
 export {
+  confirmOrganizerClaimVerification,
   getOrganizerClaimVerificationOptions,
   startOrganizerClaimVerification,
 } from "./organizers/organizerClaimVerification";
