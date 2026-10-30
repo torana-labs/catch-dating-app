@@ -99,8 +99,8 @@ node --test ../scripts/scripts.test.mjs
 ```
 
 The Terraform version is pinned in `tool/ci/toolchain.env`
-(`TERRAFORM_VERSION`) and in `versions.tf`; `tool/ci/check_toolchain_consistency.sh`
-fails when they differ. Provider versions are exact and locked in
+(`TERRAFORM_VERSION`) and exactly in `versions.tf`. The workflows install the
+toolchain version, so `terraform init` fails when the two differ. Provider versions are exact and locked in
 `infra/firebase/.terraform.lock.hcl` for linux_amd64, darwin_arm64 and
 darwin_amd64.
 

@@ -28,15 +28,6 @@ if [[ "$functions_node_version" != "$NODE_VERSION" ]]; then
   exit 1
 fi
 
-terraform_required_version="$(
-  sed -n 's/^[[:space:]]*required_version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' \
-    "$repo_root/infra/firebase/versions.tf" | head -1
-)"
-if [[ "$terraform_required_version" != "$TERRAFORM_VERSION" ]]; then
-  echo "infra/firebase/versions.tf required_version is ${terraform_required_version:-missing}, but tool/ci/toolchain.env TERRAFORM_VERSION is $TERRAFORM_VERSION."
-  exit 1
-fi
-
 version_at_least() {
   local current_version="$1"
   local required_version="$2"

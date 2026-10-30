@@ -1,6 +1,6 @@
 terraform {
-  # Keep equal to TERRAFORM_VERSION in tool/ci/toolchain.env;
-  # tool/ci/check_toolchain_consistency.sh fails when they differ.
+  # Keep equal to TERRAFORM_VERSION in tool/ci/toolchain.env. The infra
+  # workflows install that version, so terraform init fails when they differ.
   required_version = "1.16.6"
 
   required_providers {
