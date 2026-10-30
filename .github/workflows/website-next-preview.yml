@@ -168,8 +168,11 @@ jobs:
           [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]
           test "$(gcloud artifacts docker images describe "$pinned" --project "$project" --format='value(image_summary.digest)')" = "$digest"
           node website/scripts/next/previewRelease.mjs authorize
+          # The run's own tag names the revision it creates; Hosting's pinTag
+          # reuses it, so the channel pins this revision and no other.
+          tag="$(node --input-type=module -e 'import {previewRevisionTag} from "./website/scripts/next/channelState.mjs"; console.log(previewRevisionTag(process.env.GITHUB_RUN_ID, process.env.GITHUB_RUN_ATTEMPT));')"
           gcloud run deploy catch-website-next-preview --project "$project" --region "$region" \
-            --image "$pinned" --service-account github-actions-web-reader@catch-dating-app-64e51.iam.gserviceaccount.com \
+            --image "$pinned" --tag "$tag" --service-account github-actions-web-reader@catch-dating-app-64e51.iam.gserviceaccount.com \
             --allow-unauthenticated --ingress all --cpu 1 --memory 512Mi --concurrency 40 \
             --min-instances 0 --max-instances 1 --timeout 30 --port 8080 \
             --set-env-vars "CATCH_WEBSITE_STAGE=preview,CATCH_PUBLIC_FIRESTORE_PROJECT=$project,CATCH_RELEASE_SHA=$GITHUB_SHA" \
@@ -190,6 +193,8 @@ jobs:
         run: |
           set -euo pipefail
           node website/scripts/next/channelState.mjs record next-candidate catch-website-next-preview build/next-preview/channel.json
+          node website/scripts/next/channelState.mjs pinned build/next-preview/channel.json build/next-preview/service.json \
+            > build/next-preview/pinned-revision.json
           url="$(jq -er .url build/next-preview/channel.json)"
           node website/scripts/next/deployedSmoke.mjs "$url" > build/next-preview/deployed-checks.json
       - name: Retain runtime and preview identities for acceptance
@@ -202,6 +207,7 @@ jobs:
             build/next-preview/image-digest.txt
             build/next-preview/hosting-preview.json
             build/next-preview/channel.json
+            build/next-preview/pinned-revision.json
             build/next-preview/deployed-checks.json
           if-no-files-found: warn
           retention-days: 30

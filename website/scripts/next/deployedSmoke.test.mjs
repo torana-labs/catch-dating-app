@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
-import {expectedRelease, sharedCacheSeconds, sharedCachePage, verifyDeployedWebsite} from "./deployedSmoke.mjs";
+import {awaitServedRelease, expectedRelease, sharedCacheSeconds, sharedCachePage, verifyDeployedWebsite} from "./deployedSmoke.mjs";
 import {homePageCopy} from "../../src/content/homePage.ts";
 import {hostLandingCopy} from "../../src/content/hostLanding.ts";
 import {explorePageCopy} from "../../src/content/explorePage.ts";
@@ -125,4 +125,28 @@ test("the smoke runs from a bare release worktree: no installed package at runti
     }
   }
   assert.ok(seen.size > 3, "the import walk found the smoke's own imports");
+});
+
+test("acceptance waits, within a bound, for the deployment to answer as the release", async () => {
+  const candidate = "https://catch-dating-app-64e51--next-candidate-tnpxnhes.web.app", previous = "3".repeat(40);
+  const answers = (...releases) => {
+    const asked = [];
+    return {asked, fetchImpl: async (url, init) => {
+      asked.push(url); assert.equal(init.redirect, "manual");
+      const release = releases[Math.min(asked.length - 1, releases.length - 1)];
+      return release instanceof Error ? Promise.reject(release) : new Response("<h1>Home</h1>", {headers: {"x-catch-release": release, age: "12", "x-cache": "HIT"}});
+    }};
+  };
+  const slept = [], sleep = async ms => {slept.push(ms);};
+  // Run 41075702618: seconds after its channel release, / still answered as the previous release.
+  const settling = answers(previous, new Error("reset"), sourceSha);
+  assert.deepEqual(await awaitServedRelease(candidate, sourceSha, {fetchImpl: settling.fetchImpl, sleep, delayMs: 5}),
+    {attempt: 3, status: 200, release: sourceSha, age: "12", cache: "HIT"});
+  assert.deepEqual(settling.asked, Array(3).fill(`${candidate}/`), "the wait asks the real path the checks ask");
+  assert.deepEqual(slept, [5, 5]);
+  const stuck = answers(previous);
+  await assert.rejects(awaitServedRelease(candidate, sourceSha, {fetchImpl: stuck.fetchImpl, sleep, attempts: 4}),
+    new RegExp(`did not serve ${sourceSha} after 4 attempts; last answer .*${previous}`, "u"));
+  assert.equal(stuck.asked.length, 4);
+  await assert.rejects(awaitServedRelease(candidate, "main", {fetchImpl: stuck.fetchImpl, sleep}));
 });
