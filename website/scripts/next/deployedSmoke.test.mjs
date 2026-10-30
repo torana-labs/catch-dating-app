@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import test from "node:test";
+import {fileURLToPath} from "node:url";
 import {expectedRelease, sharedCacheSeconds, sharedCachePage, verifyDeployedWebsite} from "./deployedSmoke.mjs";
 import {homePageCopy} from "../../src/content/homePage.ts";
 import {hostLandingCopy} from "../../src/content/hostLanding.ts";
@@ -80,4 +83,34 @@ test("promotion checks the preview's release, which main may have moved past", (
   const release = "a".repeat(40), head = "b".repeat(40);
   assert.equal(expectedRelease({GITHUB_SHA: head, RELEASE_SHA: release}), release);
   assert.equal(expectedRelease({GITHUB_SHA: release}), release, "a preview checks its own commit");
+});
+
+test("the routes and copy are this source's own, so an older release fails them", async () => {
+  // Promotion run 41025078900 checked a pre-#972 release against main's Explore
+  // copy. Promotion therefore runs the release's own copy of this script.
+  const older = (path, result) => {if (path === "/explore/") result.body = "<h1>Find your next plan.</h1>";};
+  await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, older)}), /\/explore\/ rendered content/u);
+});
+
+test("the smoke runs from a bare release worktree: no installed package at runtime", () => {
+  // Promotion runs this file from a worktree of the released commit, which has
+  // no node_modules. Every runtime import must stay inside the website source.
+  const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+  const seen = new Set(), pending = [fileURLToPath(new URL("./deployedSmoke.mjs", import.meta.url))];
+  while (pending.length) {
+    const file = pending.pop();
+    if (seen.has(file)) continue;
+    seen.add(file);
+    const source = fs.readFileSync(file, "utf8");
+    for (const match of source.matchAll(/^\s*(?:import|export)\s+(type\s+)?(?:[^;"']*?\sfrom\s+)?["']([^"']+)["']/gmu)) {
+      const [, typeOnly, specifier] = match;
+      if (typeOnly || specifier.startsWith("node:")) continue;
+      assert.ok(specifier.startsWith("."), `${path.relative(website, file)} imports the package ${specifier} at runtime`);
+      const target = path.resolve(path.dirname(file), specifier);
+      assert.ok(target.startsWith(website + path.sep), `${path.relative(website, file)} imports ${specifier} from outside website/`);
+      assert.ok(fs.existsSync(target), `${specifier} resolves to a file`);
+      pending.push(target);
+    }
+  }
+  assert.ok(seen.size > 3, "the import walk found the smoke's own imports");
 });
