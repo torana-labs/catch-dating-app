@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_membership_admin_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_admin.dart';
 import 'package:catch_dating_app/host_memberships/host_memberships.dart';
@@ -20,16 +20,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class HostMembershipsCard extends ConsumerWidget {
   const HostMembershipsCard({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.isOwner,
   });
 
-  final Club club;
+  final Organizer organizer;
   final bool isOwner;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final provider = hostMembershipsControllerProvider(club.id);
+    final provider = hostMembershipsControllerProvider(organizer.id);
     final programMutation = ref.watch(
       HostMembershipsController.programMutation,
     );
@@ -65,13 +65,13 @@ class HostMembershipsCard extends ConsumerWidget {
             onOpenPlan: (plan) => showCatchBottomSheet<void>(
               context: context,
               builder: (_) => HostMembershipPlanEditorSheet(
-                organizerId: club.id,
+                organizerId: organizer.id,
                 plan: plan,
               ),
             ),
           ),
           if (!state.program.routeAccountReady && isOwner)
-            HostPaymentAccountControllerCard(club: club),
+            HostPaymentAccountControllerCard(organizer: organizer),
         ],
       ),
     );

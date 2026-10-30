@@ -149,7 +149,7 @@ class ExploreAppliedFilterRail extends StatelessWidget {
       chips.add(
         CatchChip.removable(
           key: const ValueKey('explore-applied-joined'),
-          label: context.l10n.exploreExploreFilterRailLabelJoinedClubs,
+          label: context.l10n.exploreExploreFilterRailLabelJoinedOrganizers,
           onRemove: () => onToggleJoinedOnly?.call(),
           enabled: onToggleJoinedOnly != null,
         ),
@@ -235,7 +235,7 @@ class ExploreFilterSheet extends StatelessWidget {
         state ??
         ExploreFilterSheetState.from(
           filters: filters,
-          sourceClubs: const [],
+          sourceOrganizers: const [],
           l10n: context.l10n,
         );
 
@@ -301,7 +301,7 @@ class ExploreFilterSheet extends StatelessWidget {
               ),
               gapH20,
               CatchKickerText(
-                label: context.l10n.exploreExploreFilterRailTextClubs,
+                label: context.l10n.exploreExploreFilterRailTextOrganizers,
                 color: t.ink2,
                 maxLines: null,
               ),
@@ -316,7 +316,7 @@ class ExploreFilterSheet extends StatelessWidget {
                       contract: CatchContractConstraints
                           .mobileFormStateExploreJoinedOnly,
                       label:
-                          context.l10n.exploreExploreFilterRailLabelJoinedClubs,
+                          context.l10n.exploreExploreFilterRailLabelJoinedOrganizers,
                       selected: filters.joinedOnly,
                       enabled: onToggleJoinedOnly != null,
                       onChanged: (_) => onToggleJoinedOnly?.call(),

@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/forms/data/host_application_repository
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_application_import.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
@@ -22,7 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../clubs/clubs_test_helpers.dart';
+import '../../organizers/organizers_test_helpers.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
@@ -66,8 +66,8 @@ void main() {
           overrides: [
             firebaseAuthProvider.overrideWithValue(_LifecycleAuth()),
             uidProvider.overrideWithValue(const AsyncData<String?>('host')),
-            hostOperableClubsProvider('host').overrideWithValue(
-              AsyncData([buildClub(id: 'org', ownerUserId: 'host')]),
+            hostOperableOrganizersProvider('host').overrideWithValue(
+              AsyncData([buildOrganizer(id: 'org', ownerUserId: 'host')]),
             ),
             hostFormsDirectoryControllerProvider.overrideWith2((_) => _Forms()),
             hostFormResponsesControllerProvider.overrideWith2(

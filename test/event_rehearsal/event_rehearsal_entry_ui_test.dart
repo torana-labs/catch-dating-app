@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_configuration.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_customise_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_entry_scaffold.dart';
@@ -179,7 +179,7 @@ void main() {
 
 EventRehearsalConfiguration _configuration() =>
     EventRehearsalConfiguration.defaults(
-      organizerDefaults: const ClubHostDefaults(
+      organizerDefaults: const OrganizerHostDefaults(
         primaryActivityKind: ActivityKind.singlesMixer,
       ),
       event: rehearsalSourceEvent(),

@@ -1004,7 +1004,7 @@ final _styleRegistry = <_StyleEntry>[
   _StyleEntry.single(
     'clubMemberSeal',
     'function',
-    CatchTextStyles.clubMemberSeal,
+    CatchTextStyles.organizerMemberSeal,
   ),
   _StyleEntry.single('debugDetails', 'debug', CatchTextStyles.debugDetails),
 ];

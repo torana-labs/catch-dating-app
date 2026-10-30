@@ -5,7 +5,7 @@ void _dashboardFullHomeShellTests() {
     testWidgets('keeps the focus list while attended enrichment is loading', (
       tester,
     ) async {
-      final joinedClubIds = ['club-1'];
+      final joinedOrganizerIds = ['club-1'];
       final user = buildUser();
       final event = buildEvent(id: 'booked-event', bookedCount: 1);
 
@@ -16,7 +16,7 @@ void _dashboardFullHomeShellTests() {
               user.uid,
             ).overrideWithValue(const AsyncLoading<List<Event>>()),
             exploreRecommendedEventsProvider(
-              recommendationsQueryFor(user.uid, joinedClubIds),
+              recommendationsQueryFor(user.uid, joinedOrganizerIds),
             ).overrideWithValue(noRecommendationCandidates),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
@@ -29,7 +29,7 @@ void _dashboardFullHomeShellTests() {
             theme: AppTheme.light,
             home: _DashboardFullTestShell(
               user: user,
-              followedClubIds: joinedClubIds,
+              followedOrganizerIds: joinedOrganizerIds,
               signedUpEvents: [event],
             ),
           ),
@@ -46,7 +46,7 @@ void _dashboardFullHomeShellTests() {
     testWidgets('keeps live focus content when attended enrichment fails', (
       tester,
     ) async {
-      final joinedClubIds = ['club-1'];
+      final joinedOrganizerIds = ['club-1'];
       final user = buildUser();
       final event = buildEvent(id: 'booked-event', bookedCount: 1);
 
@@ -57,7 +57,7 @@ void _dashboardFullHomeShellTests() {
               AsyncError<List<Event>>(Exception('boom'), StackTrace.empty),
             ),
             exploreRecommendedEventsProvider(
-              recommendationsQueryFor(user.uid, joinedClubIds),
+              recommendationsQueryFor(user.uid, joinedOrganizerIds),
             ).overrideWith(
               (ref) async => const <ExploreEventRecommendationCandidate>[],
             ),
@@ -67,7 +67,7 @@ void _dashboardFullHomeShellTests() {
             theme: AppTheme.light,
             home: _DashboardFullTestShell(
               user: user,
-              followedClubIds: joinedClubIds,
+              followedOrganizerIds: joinedOrganizerIds,
               signedUpEvents: [event],
             ),
           ),
@@ -85,7 +85,7 @@ void _dashboardFullHomeShellTests() {
       tester,
     ) async {
       final now = DateTime.now();
-      final joinedClubIds = ['club-1'];
+      final joinedOrganizerIds = ['club-1'];
       final user = buildUser();
       final nextEvent = buildEvent(
         id: 'next-event',
@@ -111,7 +111,7 @@ void _dashboardFullHomeShellTests() {
             theme: AppTheme.light,
             home: _DashboardFullTestShell(
               user: user,
-              followedClubIds: joinedClubIds,
+              followedOrganizerIds: joinedOrganizerIds,
               signedUpEvents: [nextEvent],
             ),
           ),
@@ -163,7 +163,7 @@ void _dashboardFullHomeShellTests() {
             theme: AppTheme.light,
             home: _DashboardFullTestShell(
               user: user,
-              followedClubIds: const [],
+              followedOrganizerIds: const [],
               signedUpEvents: const [],
             ),
           ),
@@ -186,7 +186,7 @@ void _dashboardFullHomeShellTests() {
       addTearDown(tester.view.resetPhysicalSize);
 
       final now = DateTime(2026, 5, 13, 8);
-      final joinedClubIds = ['club-1'];
+      final joinedOrganizerIds = ['club-1'];
       final user = buildUser(name: 'Manan Sethi', displayName: 'Subrath');
       final nextEvent = buildEvent(
         id: 'next-event',
@@ -202,7 +202,7 @@ void _dashboardFullHomeShellTests() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
             exploreRecommendedEventsProvider(
-              recommendationsQueryFor(user.uid, joinedClubIds),
+              recommendationsQueryFor(user.uid, joinedOrganizerIds),
             ).overrideWithValue(noRecommendationCandidates),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
@@ -215,7 +215,7 @@ void _dashboardFullHomeShellTests() {
             theme: AppTheme.light,
             home: _DashboardFullTestShell(
               user: user,
-              followedClubIds: joinedClubIds,
+              followedOrganizerIds: joinedOrganizerIds,
               signedUpEvents: [nextEvent],
             ),
           ),
@@ -240,7 +240,7 @@ void _dashboardFullHomeShellTests() {
     testWidgets('does not render a profile shortcut in the dashboard header', (
       tester,
     ) async {
-      final joinedClubIds = ['club-1'];
+      final joinedOrganizerIds = ['club-1'];
       final user = buildUser(name: 'Suvrat Garg').copyWith(
         profilePhotos: [
           ProfilePhoto.uploaded(
@@ -264,7 +264,7 @@ void _dashboardFullHomeShellTests() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
             exploreRecommendedEventsProvider(
-              recommendationsQueryFor(user.uid, joinedClubIds),
+              recommendationsQueryFor(user.uid, joinedOrganizerIds),
             ).overrideWithValue(noRecommendationCandidates),
             ..._dashboardHostOverrides(user),
           ],
@@ -272,7 +272,7 @@ void _dashboardFullHomeShellTests() {
             theme: AppTheme.light,
             home: _DashboardFullTestShell(
               user: user,
-              followedClubIds: joinedClubIds,
+              followedOrganizerIds: joinedOrganizerIds,
               signedUpEvents: [nextEvent],
             ),
           ),
@@ -321,7 +321,7 @@ void _dashboardFullHomeShellTests() {
             theme: AppTheme.light,
             home: _DashboardFullTestShell(
               user: user,
-              followedClubIds: const [],
+              followedOrganizerIds: const [],
               signedUpEvents: [event],
             ),
           ),
@@ -380,7 +380,7 @@ void _dashboardFullHomeShellTests() {
             theme: AppTheme.light,
             home: _DashboardFullTestShell(
               user: user,
-              followedClubIds: const [],
+              followedOrganizerIds: const [],
               signedUpEvents: [event],
             ),
           ),
@@ -440,7 +440,7 @@ void _dashboardFullHomeShellTests() {
             theme: AppTheme.light,
             home: _DashboardFullTestShell(
               user: user,
-              followedClubIds: const [],
+              followedOrganizerIds: const [],
               signedUpEvents: [event],
             ),
           ),
@@ -515,7 +515,7 @@ void _dashboardFullHomeShellTests() {
               theme: AppTheme.light,
               home: _DashboardFullTestShell(
                 user: user,
-                followedClubIds: const [],
+                followedOrganizerIds: const [],
                 signedUpEvents: [firstRun, secondRun],
               ),
             ),
@@ -580,7 +580,7 @@ void _dashboardFullHomeShellTests() {
               theme: AppTheme.light,
               home: _DashboardFullTestShell(
                 user: user,
-                followedClubIds: const [],
+                followedOrganizerIds: const [],
                 signedUpEvents: const [],
               ),
             ),

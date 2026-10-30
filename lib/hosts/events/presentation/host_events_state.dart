@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/private_event_setup_inventory.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -8,7 +8,7 @@ import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-typedef HostEventsManageEventCallback = void Function(Club club, Event event);
+typedef HostEventsManageEventCallback = void Function(Organizer organizer, Event event);
 
 enum HostEventsRouteStatus { authRequired, loading, error, empty, loaded }
 
@@ -17,15 +17,15 @@ class HostEventsRouteState {
   const HostEventsRouteState({
     required this.status,
     this.uid,
-    this.organizers = const <Club>[],
+    this.organizers = const <Organizer>[],
     this.error,
     this.stackTrace,
-    this.errorContext = AppErrorContext.club,
+    this.errorContext = AppErrorContext.organizer,
   });
 
   final HostEventsRouteStatus status;
   final String? uid;
-  final List<Club> organizers;
+  final List<Organizer> organizers;
   final Object? error;
   final StackTrace? stackTrace;
   final AppErrorContext errorContext;

@@ -12,8 +12,8 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.d
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_preference.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_wingman_request.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going_section.dart';
@@ -56,9 +56,9 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
     super.key,
     this.child,
     this.uid = 'design-host-owner',
-    this.club,
+    this.organizer,
     this.event,
-    this.clubValue,
+    this.organizerValue,
     this.eventValue,
     this.attendanceValue,
     this.attendeeProfilesValue,
@@ -80,9 +80,9 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
 
   final Widget? child;
   final String? uid;
-  final Club? club;
+  final Organizer? organizer;
   final Event? event;
-  final AsyncValue<Club?>? clubValue;
+  final AsyncValue<Organizer?>? organizerValue;
   final AsyncValue<Event?>? eventValue;
   final AsyncValue<AttendanceSheetViewModel?>? attendanceValue;
   final AsyncValue<Map<String, (String, String?)>>? attendeeProfilesValue;
@@ -103,7 +103,7 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveClub = club ?? widgetbookClub;
+    final effectiveOrganizer = organizer ?? widgetbookOrganizer;
     final effectiveEvent = event ?? widgetbookPrivateEvent;
     final referenceNow = switch (initialSection) {
       HostEventManageSection.setup || HostEventManageSection.guests =>
@@ -145,9 +145,9 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
       child: WidgetbookFixtureScope(
         overrides: [
           uidProvider.overrideWithValue(AsyncData<String?>(uid)),
-          fetchClubProvider(
-            effectiveClub.id,
-          ).overrideWith((ref) => _futureOrValue(clubValue, effectiveClub)),
+          fetchOrganizerProvider(
+            effectiveOrganizer.id,
+          ).overrideWith((ref) => _futureOrValue(organizerValue, effectiveOrganizer)),
           watchEventProvider(
             effectiveEvent.id,
           ).overrideWith((ref) => _streamValue(eventValue, effectiveEvent)),
@@ -235,7 +235,7 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
           child:
               child ??
               HostEventManageRouteScreen(
-                clubId: effectiveClub.id,
+                clubId: effectiveOrganizer.id,
                 eventId: effectiveEvent.id,
                 initialEvent: _initialManageEvent(eventValue, effectiveEvent),
                 initialSection: initialSection,
@@ -248,14 +248,14 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
   }
 }
 
-Future<Club?> _futureOrValue(AsyncValue<Club?>? value, Club fallback) {
+Future<Organizer?> _futureOrValue(AsyncValue<Organizer?>? value, Organizer fallback) {
   return switch (value) {
     AsyncData(:final value) => Future.value(value),
-    AsyncError(:final error, :final stackTrace) => Future<Club?>.error(
+    AsyncError(:final error, :final stackTrace) => Future<Organizer?>.error(
       error,
       stackTrace,
     ),
-    AsyncLoading() => Future<Club?>.delayed(const Duration(days: 1)),
+    AsyncLoading() => Future<Organizer?>.delayed(const Duration(days: 1)),
     null => Future.value(fallback),
   };
 }

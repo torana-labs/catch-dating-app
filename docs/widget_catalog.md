@@ -333,34 +333,34 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>MatchTesterSheet</code> | <code>lib/chats/presentation/widgets/suvbot_dock.dart:416</code> | — | — | No class documentation or registry summary. |
 | <code>SuvbotDock</code> | <code>lib/chats/presentation/widgets/suvbot_dock.dart:23</code> | — | — | No class documentation or registry summary. |
 | <code>SuvbotResetActionRow</code> | <code>lib/chats/presentation/widgets/suvbot_dock.dart:329</code> | — | — | No class documentation or registry summary. |
-| <code>ClubDetailReadOnlyPreview</code> | <code>lib/clubs/presentation/detail/club_detail_read_only_preview.dart:15</code> | — | — | Live, consumer-facing Club Detail composition for an owner-facing read-only preview. The selected [initialClub] renders immediately while live detail data hydrates, matching the consumer route's initial-club fallback policy. |
-| <code>ClubContactSection</code> | <code>lib/clubs/presentation/detail/widgets/club_contact_section.dart:13</code> | — | — | No class documentation or registry summary. |
-| <code>ClubActivitySection</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:325</code> | — | — | No class documentation or registry summary. |
-| <code>ClubDetailBody</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:32</code> | — | — | No class documentation or registry summary. |
-| <code>ClubDetailSliverBody</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:81</code> | — | — | Sliver-native form of the canonical Club Detail composition. |
-| <code>ClubNextRunBanner</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:277</code> | — | — | No class documentation or registry summary. |
-| <code>ClubBellButton</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_dock.dart:251</code> | — | — | Member notifications bell — the active state fills with the club's activity accent (not the raw Material color scheme). |
-| <code>ClubDetailDock</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_dock.dart:24</code> | <code>Dock</code> | — | Design-system `ClubDock` (`components/clubs/ClubDock`): the persistent bottom bar of a club detail screen, stateful over membership role — BookingDock's club sibling. `visitor` shows the member count + an **activity-pigmented** Join CTA (the one sanctioned use of the club pigment on an action); `member` shows the count + a notifications bell + a quiet "Joined" control; `owner` shows Manage + a New-event pair; `guest` shows an ink "Sign in to join". The mono [footnote] carries the state's quiet facts. Also called: <code>ClubActionBar</code>, <code>ClubBottomBar</code>, <code>MembershipBar</code>. |
-| <code>ClubMemberCountText</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_dock.dart:213</code> | — | — | No class documentation or registry summary. |
-| <code>ClubMembershipDock</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_dock.dart:301</code> | — | — | Provider-backed [ClubDetailDock] for the consumer club-detail screen. Computes the membership state and wires Join / Leave / notification mutations and the guest sign-in route. (Owner state is host-app territory and not rendered here.) |
-| <code>ClubHeroHeader</code> | <code>lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart:259</code> | — | — | No class documentation or registry summary. |
-| <code>ClubHeroTopBar</code> | <code>lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart:47</code> | — | — | No class documentation or registry summary. |
-| <code>ClubHostRow</code> | <code>lib/clubs/presentation/detail/widgets/club_host_section.dart:82</code> | — | — | No class documentation or registry summary. |
-| <code>ClubHostSection</code> | <code>lib/clubs/presentation/detail/widgets/club_host_section.dart:15</code> | — | — | No class documentation or registry summary. |
-| <code>ClubPhotoRail</code> | <code>lib/clubs/presentation/detail/widgets/club_photo_rail.dart:7</code> | — | — | No class documentation or registry summary. |
-| <code>ClubScheduleSection</code> | <code>lib/clubs/presentation/detail/widgets/club_schedule_section.dart:8</code> | — | — | No class documentation or registry summary. |
-| <code>ClubShareCard</code> | <code>lib/clubs/presentation/detail/widgets/club_share_card.dart:41</code> | — | — | No class documentation or registry summary. |
-| <code>ClubShareCover</code> | <code>lib/clubs/presentation/detail/widgets/club_share_card.dart:118</code> | — | — | No class documentation or registry summary. |
-| <code>ClubAvatarRail</code> | <code>lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart:9</code> | — | — | No class documentation or registry summary. |
-| <code>AvatarChip</code> | <code>lib/clubs/presentation/discovery/widgets/club_list_tile_parts/avatar_chip.dart:6</code> | — | — | No class documentation or registry summary. |
-| <code>ClubImage</code> | <code>lib/clubs/presentation/discovery/widgets/club_list_tile_parts/club_image.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>ClubIndexRow</code> | <code>lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>ClubJoinAction</code> | <code>lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:99</code> | — | — | No class documentation or registry summary. |
-| <code>ClubJoinButton</code> | <code>lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:179</code> | — | — | No class documentation or registry summary. |
-| <code>ClubCover</code> | <code>lib/clubs/shared/club_cover.dart:7</code> | <code>Cover</code> | — | Shared club-cover resolver for editorial cards and detail heroes. Also called: <code>ClubCoverImage</code>, <code>ClubImage</code>, <code>ClubPhoto</code>. |
-| <code>ClubHostIdentityRow</code> | <code>lib/clubs/shared/club_host_identity_row.dart:60</code> | — | — | No class documentation or registry summary. |
-| <code>ClubTagList</code> | <code>lib/clubs/shared/club_host_identity_row.dart:36</code> | — | — | No class documentation or registry summary. |
-| <code>ClubPlaceholderCover</code> | <code>lib/clubs/shared/club_placeholder_cover.dart:8</code> | <code>Cover</code> | <code>catch.organizer_poster</code> | Deterministic no-photo organizer artwork used by poster and compact cover states. |
+| <code>OrganizerDetailReadOnlyPreview</code> | <code>lib/organizers/presentation/detail/organizer_detail_read_only_preview.dart:15</code> | — | — | Live, consumer-facing Club Detail composition for an owner-facing read-only preview. The selected [initialClub] renders immediately while live detail data hydrates, matching the consumer route's initial-club fallback policy. |
+| <code>OrganizerContactSection</code> | <code>lib/organizers/presentation/detail/widgets/organizer_contact_section.dart:13</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerActivitySection</code> | <code>lib/organizers/presentation/detail/widgets/organizer_detail_body.dart:325</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerDetailBody</code> | <code>lib/organizers/presentation/detail/widgets/organizer_detail_body.dart:32</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerDetailSliverBody</code> | <code>lib/organizers/presentation/detail/widgets/organizer_detail_body.dart:81</code> | — | — | Sliver-native form of the canonical Club Detail composition. |
+| <code>OrganizerNextRunBanner</code> | <code>lib/organizers/presentation/detail/widgets/organizer_detail_body.dart:277</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerBellButton</code> | <code>lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart:251</code> | — | — | Member notifications bell — the active state fills with the club's activity accent (not the raw Material color scheme). |
+| <code>OrganizerDetailDock</code> | <code>lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart:24</code> | <code>Dock</code> | — | Design-system `ClubDock` (`components/clubs/ClubDock`): the persistent bottom bar of a club detail screen, stateful over membership role — BookingDock's club sibling. `visitor` shows the member count + an **activity-pigmented** Join CTA (the one sanctioned use of the club pigment on an action); `member` shows the count + a notifications bell + a quiet "Joined" control; `owner` shows Manage + a New-event pair; `guest` shows an ink "Sign in to join". The mono [footnote] carries the state's quiet facts. Also called: <code>ClubActionBar</code>, <code>ClubBottomBar</code>, <code>MembershipBar</code>. |
+| <code>OrganizerMemberCountText</code> | <code>lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart:213</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerMembershipDock</code> | <code>lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart:301</code> | — | — | Provider-backed [OrganizerDetailDock] for the consumer club-detail screen. Computes the membership state and wires Join / Leave / notification mutations and the guest sign-in route. (Owner state is host-app territory and not rendered here.) |
+| <code>OrganizerHeroHeader</code> | <code>lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart:259</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerHeroTopBar</code> | <code>lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart:47</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerHostRow</code> | <code>lib/organizers/presentation/detail/widgets/organizer_host_section.dart:82</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerHostSection</code> | <code>lib/organizers/presentation/detail/widgets/organizer_host_section.dart:15</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerPhotoRail</code> | <code>lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart:7</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerScheduleSection</code> | <code>lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart:8</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerShareCard</code> | <code>lib/organizers/presentation/detail/widgets/organizer_share_card.dart:41</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerShareCover</code> | <code>lib/organizers/presentation/detail/widgets/organizer_share_card.dart:118</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerAvatarRail</code> | <code>lib/organizers/presentation/discovery/widgets/organizer_avatar_rail.dart:9</code> | — | — | No class documentation or registry summary. |
+| <code>AvatarChip</code> | <code>lib/organizers/presentation/discovery/widgets/organizer_list_tile_parts/avatar_chip.dart:6</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerImage</code> | <code>lib/organizers/presentation/discovery/widgets/organizer_list_tile_parts/organizer_image.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerIndexRow</code> | <code>lib/organizers/presentation/discovery/widgets/organizer_list_tile_parts/directory_card.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerJoinAction</code> | <code>lib/organizers/presentation/discovery/widgets/organizer_list_tile_parts/directory_card.dart:99</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerJoinButton</code> | <code>lib/organizers/presentation/discovery/widgets/organizer_list_tile_parts/directory_card.dart:179</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerCover</code> | <code>lib/organizers/shared/organizer_cover.dart:7</code> | <code>Cover</code> | — | Shared club-cover resolver for editorial cards and detail heroes. Also called: <code>ClubCoverImage</code>, <code>OrganizerImage</code>, <code>ClubPhoto</code>. |
+| <code>OrganizerHostIdentityRow</code> | <code>lib/organizers/shared/organizer_host_identity_row.dart:60</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerTagList</code> | <code>lib/organizers/shared/organizer_host_identity_row.dart:36</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerPlaceholderCover</code> | <code>lib/organizers/shared/organizer_placeholder_cover.dart:8</code> | <code>Cover</code> | <code>catch.organizer_poster</code> | Deterministic no-photo organizer artwork used by poster and compact cover states. |
 | <code>CatchConsumerBootstrap</code> | <code>lib/consumer_bootstrap.dart:25</code> | — | — | Consumer-only process bootstrap. |
 | <code>ActivityMapPin</code> | <code>lib/contexts/events/parts/activity_map_pin.dart:8</code> | <code>Pin</code> | — | Activity-pigment map pin with an optional selected data flag. Also called: <code>MapPin</code>, <code>EventMapPin</code>, <code>LocationPin</code>. |
 | <code>EventActivityBadge</code> | <code>lib/contexts/events/parts/event_activity_badge.dart:6</code> | <code>Badge</code> | <code>catch.event_card</code> | Circular activity glyph stamp used by event cards, agenda rows, and ticket compositions. |
@@ -383,8 +383,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>NotificationDayList</code> | <code>lib/dashboard/presentation/widgets/activity_section.dart:144</code> | — | — | No class documentation or registry summary. |
 | <code>NotificationRow</code> | <code>lib/dashboard/presentation/widgets/activity_section.dart:259</code> | <code>Row</code> | — | Activity notification list row with type glyph, read/unread emphasis, timestamp, optional body, divider, and tap semantics. Also called: <code>NotificationTile</code>, <code>NotificationItem</code>, <code>ActivityRow</code>, <code>NotificationListItem</code>. |
 | <code>NotificationRowSkeleton</code> | <code>lib/dashboard/presentation/widgets/activity_section.dart:204</code> | — | — | No class documentation or registry summary. |
-| <code>ClubPostHomeCard</code> | <code>lib/dashboard/presentation/widgets/club_posts_home_section.dart:55</code> | — | — | No class documentation or registry summary. |
-| <code>ClubPostsHomeSection</code> | <code>lib/dashboard/presentation/widgets/club_posts_home_section.dart:11</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerPostHomeCard</code> | <code>lib/dashboard/presentation/widgets/organizer_posts_home_section.dart:55</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerPostsHomeSection</code> | <code>lib/dashboard/presentation/widgets/organizer_posts_home_section.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>DashboardEmptySliverBody</code> | <code>lib/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>HowCatchWorksSection</code> | <code>lib/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart:22</code> | — | — | Shared explainer for both the signed-out and signed-in idle Home states. |
 | <code>DashboardFullSliverBody</code> | <code>lib/dashboard/presentation/widgets/dashboard_full.dart:33</code> | — | — | No class documentation or registry summary. |
@@ -638,7 +638,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PlaceSuggestionRow</code> | <code>lib/events/presentation/location_picker_screen.dart:504</code> | — | — | No class documentation or registry summary. |
 | <code>SelectedPointSection</code> | <code>lib/events/presentation/location_picker_screen.dart:570</code> | — | — | No class documentation or registry summary. |
 | <code>SavedEventsAgendaList</code> | <code>lib/events/presentation/saved_events_screen.dart:144</code> | — | — | No class documentation or registry summary. |
-| <code>SavedEventsClubNamesErrorState</code> | <code>lib/events/presentation/saved_events_screen.dart:181</code> | — | — | No class documentation or registry summary. |
+| <code>SavedEventsOrganizerNamesErrorState</code> | <code>lib/events/presentation/saved_events_screen.dart:181</code> | — | — | No class documentation or registry summary. |
 | <code>EventCompanionCard</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:279</code> | — | — | Provider-free companion prompt adapter for hidden, loading, error, and available Event Success plan states. |
 | <code>EventDetailCalloutCard</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:207</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailHostsSection</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:340</code> | — | — | Compact host identity, with all affordances derived from available actions. |
@@ -711,9 +711,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventDateTile</code> | <code>lib/events/shared/event_tiles/event_date_tile.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>MonthDayTile</code> | <code>lib/events/shared/event_tiles/event_date_tile.dart:120</code> | — | — | No class documentation or registry summary. |
 | <code>WeekDayTile</code> | <code>lib/events/shared/event_tiles/event_date_tile.dart:55</code> | — | — | No class documentation or registry summary. |
-| <code>ClubCard</code> | <code>lib/explore/presentation/widgets/club_card.dart:13</code> | <code>Card</code> | <code>catch.organizer_poster</code> | Explore spotlight adopter that composes organizer authority, rating, host identity, and tags into the canonical poster. |
-| <code>ExploreClubTagList</code> | <code>lib/explore/presentation/widgets/club_card.dart:167</code> | — | — | No class documentation or registry summary. |
-| <code>ExploreFeedClubRow</code> | <code>lib/explore/presentation/widgets/club_card.dart:86</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerCard</code> | <code>lib/explore/presentation/widgets/organizer_card.dart:13</code> | <code>Card</code> | <code>catch.organizer_poster</code> | Explore spotlight adopter that composes organizer authority, rating, host identity, and tags into the canonical poster. |
+| <code>ExploreOrganizerTagList</code> | <code>lib/explore/presentation/widgets/organizer_card.dart:167</code> | — | — | No class documentation or registry summary. |
+| <code>ExploreFeedOrganizerRow</code> | <code>lib/explore/presentation/widgets/organizer_card.dart:86</code> | — | — | No class documentation or registry summary. |
 | <code>CityOptionTile</code> | <code>lib/explore/presentation/widgets/explore_city_picker.dart:181</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreCityButton</code> | <code>lib/explore/presentation/widgets/explore_city_picker.dart:87</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreCityPicker</code> | <code>lib/explore/presentation/widgets/explore_city_picker.dart:10</code> | — | — | No class documentation or registry summary. |
@@ -758,18 +758,18 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostEventEntrySheet</code> | <code>lib/hosts/events/presentation/host_event_entry_sheet.dart:42</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsRouteScaffold</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:109</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerMomentsEntryField</code> | <code>lib/hosts/events/presentation/moments/organizer_moments_entry_field.dart:10</code> | — | — | Manage-screen entry into the event's organizer Moments workspace. |
-| <code>HostEventsClubCard</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:34</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventsClubSection</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:180</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventsOrganizerCard</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:34</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventsOrganizerSection</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:180</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsTimelineBody</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:371</code> | — | — | One lifecycle page. The root owns tabs and scrolling chrome; this adapter selects data/state only, and the shared page/section/record owners lay it out. |
-| <code>ClubBasicsStep</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart:13</code> | — | — | No class documentation or registry summary. |
-| <code>ClubDetailsStep</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_details_step.dart:8</code> | — | — | No class documentation or registry summary. |
-| <code>ClubEventSuccessDefaultsStep</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart:8</code> | — | — | No class documentation or registry summary. |
-| <code>ClubHostDefaultsStep</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart:19</code> | — | — | No class documentation or registry summary. |
-| <code>ClubPolicyDefaultsCard</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart:77</code> | — | — | No class documentation or registry summary. |
-| <code>CreateClubContactSection</code> | <code>lib/hosts/presentation/club_management/create/widgets/create_club_contact_section.dart:8</code> | — | — | No class documentation or registry summary. |
-| <code>ClubProfileImageTile</code> | <code>lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:188</code> | — | — | No class documentation or registry summary. |
-| <code>CreateClubPhotosPicker</code> | <code>lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:12</code> | — | — | No class documentation or registry summary. |
-| <code>CreateClubProfileImagePicker</code> | <code>lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:99</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerBasicsStep</code> | <code>lib/hosts/presentation/organizer_management/create/widgets/organizer_basics_step.dart:13</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerDetailsStep</code> | <code>lib/hosts/presentation/organizer_management/create/widgets/organizer_details_step.dart:8</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerEventSuccessDefaultsStep</code> | <code>lib/hosts/presentation/organizer_management/create/widgets/organizer_event_success_defaults_step.dart:8</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerHostDefaultsStep</code> | <code>lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart:19</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerPolicyDefaultsCard</code> | <code>lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart:77</code> | — | — | No class documentation or registry summary. |
+| <code>CreateOrganizerContactSection</code> | <code>lib/hosts/presentation/organizer_management/create/widgets/create_organizer_contact_section.dart:8</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerProfileImageTile</code> | <code>lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart:188</code> | — | — | No class documentation or registry summary. |
+| <code>CreateOrganizerPhotosPicker</code> | <code>lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart:12</code> | — | — | No class documentation or registry summary. |
+| <code>CreateOrganizerProfileImagePicker</code> | <code>lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart:99</code> | — | — | No class documentation or registry summary. |
 | <code>HostAudienceSourceRuleSection</code> | <code>lib/hosts/presentation/customers/host_audience_source_rule_section.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>HostContactMergeCandidateCard</code> | <code>lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart:153</code> | — | — | No class documentation or registry summary. |
 | <code>HostContactMergeReviewSheet</code> | <code>lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart:15</code> | — | — | No class documentation or registry summary. |
@@ -905,31 +905,31 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostAnalyticsPeriodInput</code> | <code>lib/hosts/presentation/host_operations/host_analytics_period_input.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostAnalyticsBarTile</code> | <code>lib/hosts/presentation/host_operations/host_analytics_trend_section.dart:130</code> | — | — | No class documentation or registry summary. |
 | <code>HostAnalyticsTrendSection</code> | <code>lib/hosts/presentation/host_operations/host_analytics_trend_section.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubEditBody</code> | <code>lib/hosts/presentation/host_operations/host_club_edit_body.dart:25</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubPublicationChannelRow</code> | <code>lib/hosts/presentation/host_operations/host_club_edit_body.dart:676</code> | — | — | No class documentation or registry summary. |
-| <code>HostAnalyticsEventList</code> | <code>lib/hosts/presentation/host_operations/host_club_insights_section.dart:464</code> | — | — | No class documentation or registry summary. |
-| <code>HostAnalyticsReportBody</code> | <code>lib/hosts/presentation/host_operations/host_club_insights_section.dart:269</code> | — | — | No class documentation or registry summary. |
-| <code>HostAnalyticsReviewsSection</code> | <code>lib/hosts/presentation/host_operations/host_club_insights_section.dart:534</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubInsightsSection</code> | <code>lib/hosts/presentation/host_operations/host_club_insights_section.dart:17</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubLogoManagerHeader</code> | <code>lib/hosts/presentation/host_operations/host_club_media_rail.dart:109</code> | — | — | The media manager's logo picker header. |
-| <code>HostClubMediaManagerDock</code> | <code>lib/hosts/presentation/host_operations/host_club_media_rail.dart:172</code> | — | — | The media manager's save action and error line. |
-| <code>HostClubMediaRail</code> | <code>lib/hosts/presentation/host_operations/host_club_media_rail.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubOrganizerSectionList</code> | <code>lib/hosts/presentation/host_operations/host_club_organizer_section_list.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostCrmAudienceCard</code> | <code>lib/hosts/presentation/host_operations/host_club_organizer_section_list.dart:41</code> | — | — | No class documentation or registry summary. |
-| <code>HostCrmChannelRow</code> | <code>lib/hosts/presentation/host_operations/host_club_organizer_section_list.dart:165</code> | — | — | No class documentation or registry summary. |
-| <code>HostOrganizerMetricGrid</code> | <code>lib/hosts/presentation/host_operations/host_club_organizer_section_list.dart:195</code> | — | — | No class documentation or registry summary. |
-| <code>HostOrganizerMetricRow</code> | <code>lib/hosts/presentation/host_operations/host_club_organizer_section_list.dart:247</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubDefaultsEditor</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart:158</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubReadOnlyDefaultsSection</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart:244</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubSpokeAsyncBoundary</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubSpokeScaffold</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart:127</code> | — | — | No class documentation or registry summary. |
-| <code>HostTeamProfessionalProfilePreview</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:338</code> | — | — | Read-only projection of the professional identity edited in Host team. This intentionally consumes [HostTeamProfileState] rather than the dating profile collection: a host can have a valid organizer identity without a discoverable consumer profile. |
-| <code>HostTeamProfileList</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:530</code> | — | — | No class documentation or registry summary. |
-| <code>HostTeamProfileSection</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:457</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubsScaffold</code> | <code>lib/hosts/presentation/host_operations/host_clubs_scaffold.dart:72</code> | — | — | No class documentation or registry summary. |
-| <code>HostOrganizerStateScaffold</code> | <code>lib/hosts/presentation/host_operations/host_clubs_scaffold.dart:24</code> | — | — | Organizer route-state adapter that preserves the loaded workspace chrome. |
+| <code>HostOrganizerEditBody</code> | <code>lib/hosts/presentation/host_operations/host_organizer_edit_body.dart:25</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerPublicationChannelRow</code> | <code>lib/hosts/presentation/host_operations/host_organizer_edit_body.dart:676</code> | — | — | No class documentation or registry summary. |
+| <code>HostAnalyticsEventList</code> | <code>lib/hosts/presentation/host_operations/host_organizer_insights_section.dart:464</code> | — | — | No class documentation or registry summary. |
+| <code>HostAnalyticsReportBody</code> | <code>lib/hosts/presentation/host_operations/host_organizer_insights_section.dart:269</code> | — | — | No class documentation or registry summary. |
+| <code>HostAnalyticsReviewsSection</code> | <code>lib/hosts/presentation/host_operations/host_organizer_insights_section.dart:534</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerInsightsSection</code> | <code>lib/hosts/presentation/host_operations/host_organizer_insights_section.dart:17</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerLogoManagerHeader</code> | <code>lib/hosts/presentation/host_operations/host_organizer_media_rail.dart:109</code> | — | — | The media manager's logo picker header. |
+| <code>HostOrganizerMediaManagerDock</code> | <code>lib/hosts/presentation/host_operations/host_organizer_media_rail.dart:172</code> | — | — | The media manager's save action and error line. |
+| <code>HostOrganizerMediaRail</code> | <code>lib/hosts/presentation/host_operations/host_organizer_media_rail.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerSectionList</code> | <code>lib/hosts/presentation/host_operations/host_organizer_section_list.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>HostCrmAudienceCard</code> | <code>lib/hosts/presentation/host_operations/host_organizer_section_list.dart:41</code> | — | — | No class documentation or registry summary. |
+| <code>HostCrmChannelRow</code> | <code>lib/hosts/presentation/host_operations/host_organizer_section_list.dart:165</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerMetricGrid</code> | <code>lib/hosts/presentation/host_operations/host_organizer_section_list.dart:195</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerMetricRow</code> | <code>lib/hosts/presentation/host_operations/host_organizer_section_list.dart:247</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerDefaultsEditor</code> | <code>lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart:158</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerReadOnlyDefaultsSection</code> | <code>lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart:244</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerSpokeAsyncBoundary</code> | <code>lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerSpokeScaffold</code> | <code>lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart:127</code> | — | — | No class documentation or registry summary. |
+| <code>HostTeamProfessionalProfilePreview</code> | <code>lib/hosts/presentation/host_operations/host_organizer_team_screen.dart:338</code> | — | — | Read-only projection of the professional identity edited in Host team. This intentionally consumes [HostTeamProfileState] rather than the dating profile collection: a host can have a valid organizer identity without a discoverable consumer profile. |
+| <code>HostTeamProfileList</code> | <code>lib/hosts/presentation/host_operations/host_organizer_team_screen.dart:530</code> | — | — | No class documentation or registry summary. |
+| <code>HostTeamProfileSection</code> | <code>lib/hosts/presentation/host_operations/host_organizer_team_screen.dart:457</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizersScaffold</code> | <code>lib/hosts/presentation/host_operations/host_organizers_scaffold.dart:72</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerStateScaffold</code> | <code>lib/hosts/presentation/host_operations/host_organizers_scaffold.dart:24</code> | — | — | Organizer route-state adapter that preserves the loaded workspace chrome. |
 | <code>HostManagerEventSetupPreferencesSection</code> | <code>lib/hosts/presentation/host_operations/host_manager_event_setup_preferences_section.dart:10</code> | — | — | Editor for a manager-authorized setup-preferences projection. No field is read from the public Club document, and a null onChanged disables writes until a revision-fenced manager settings command is available. |
-| <code>HostTeamHostedClubsSection</code> | <code>lib/hosts/presentation/host_operations/host_team_hosted_clubs_section.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>HostTeamHostedOrganizersSection</code> | <code>lib/hosts/presentation/host_operations/host_team_hosted_organizers_section.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostWhatsappSetupSection</code> | <code>lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostTrackingSettingsSection</code> | <code>lib/hosts/presentation/host_tracking_settings_section.dart:18</code> | — | — | Settings remain in the organiser Insights workspace; server owns eligibility. |
 | <code>HostedEventMembershipRulesEditor</code> | <code>lib/hosts/presentation/hosted_event_membership_rules_section.dart:40</code> | — | — | No class documentation or registry summary. |
@@ -1156,7 +1156,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ReviewsHistoryBody</code> | <code>lib/reviews/presentation/reviews_history_screen.dart:91</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsHistoryList</code> | <code>lib/reviews/presentation/reviews_history_screen.dart:134</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsHistorySkeleton</code> | <code>lib/reviews/presentation/reviews_history_screen.dart:193</code> | — | — | No class documentation or registry summary. |
-| <code>ClubReviewsSection</code> | <code>lib/reviews/shared/reviews_section.dart:21</code> | — | — | Read-only club review aggregate. |
+| <code>OrganizerReviewsSection</code> | <code>lib/reviews/shared/reviews_section.dart:21</code> | — | — | Read-only club review aggregate. |
 | <code>EventReviewsSection</code> | <code>lib/reviews/shared/reviews_section.dart:48</code> | — | — | Event-scoped reviews with write/edit CTA for attended attendees. |
 | <code>ReviewCard</code> | <code>lib/reviews/shared/reviews_section.dart:314</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewOwnerResponseCard</code> | <code>lib/reviews/shared/reviews_section.dart:410</code> | — | — | No class documentation or registry summary. |
@@ -1278,7 +1278,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventChatScreen</code> | <code>lib/chats/presentation/event_chat_screen.dart:23</code> | — | — | No class documentation or registry summary. |
 | <code>EventProfileScreen</code> | <code>lib/chats/presentation/event_profile_screen.dart:18</code> | — | — | Account-bound editor and protected participant view for one event chat. |
 | <code>ChatsListScreen</code> | <code>lib/chats/presentation/inbox/chat_inbox_screen.dart:21</code> | — | — | No class documentation or registry summary. |
-| <code>ClubDetailScreen</code> | <code>lib/clubs/presentation/detail/club_detail_screen.dart:31</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerDetailScreen</code> | <code>lib/organizers/presentation/detail/organizer_detail_screen.dart:31</code> | — | — | No class documentation or registry summary. |
 | <code>CatchConsumerBootScreen</code> | <code>lib/consumer_bootstrap.dart:172</code> | — | — | The animated Consumer cold-start surface shown above auth and routing. |
 | <code>CrossPathsInvitationScreen</code> | <code>lib/cross_paths/presentation/cross_paths_invitation_screen.dart:28</code> | — | — | No class documentation or registry summary. |
 | <code>ActivityScreen</code> | <code>lib/dashboard/presentation/activity_screen.dart:23</code> | — | — | No class documentation or registry summary. |
@@ -1312,8 +1312,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>OrganizerMomentEditScreen</code> | <code>lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart:6</code> | — | — | Creates or revises a moment through upsertOrganizerMoment. Revising an armed moment drops it back to draft with approval cleared — the backend owns that lifecycle; the form only submits the new definition. |
 | <code>OrganizerMomentsScreen</code> | <code>lib/hosts/events/presentation/moments/organizer_moments_screen.dart:20</code> | — | — | Moments for one event or program scope: the organizer's send rules with their approve-the-rule-once lifecycle (draft → armed → paused/done). |
 | <code>HostApplicationDetailScreen</code> | <code>lib/hosts/presentation/applications/host_application_detail_screen.dart:5</code> | — | — | Compatibility entry for saved application URLs; all detail UI has one owner. |
-| <code>CreateClubScreen</code> | <code>lib/hosts/presentation/club_management/create/create_club_screen.dart:35</code> | — | — | No class documentation or registry summary. |
-| <code>HostCreateClubScreen</code> | <code>lib/hosts/presentation/club_management/host_create_club_screen.dart:4</code> | — | — | No class documentation or registry summary. |
+| <code>CreateOrganizerScreen</code> | <code>lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart:35</code> | — | — | No class documentation or registry summary. |
+| <code>HostCreateOrganizerScreen</code> | <code>lib/hosts/presentation/organizer_management/host_create_organizer_screen.dart:4</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerDetailScreen</code> | <code>lib/hosts/presentation/customers/host_customer_detail_screen.dart:48</code> | — | — | No class documentation or registry summary. |
 | <code>HostAddCustomerScreen</code> | <code>lib/hosts/presentation/customers/host_customer_editor.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomersScreen</code> | <code>lib/hosts/presentation/customers/host_customers_screen.dart:70</code> | — | — | No class documentation or registry summary. |
@@ -1345,12 +1345,12 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostEventManageScreen</code> | <code>lib/hosts/presentation/host_event_manage_screen.dart:59</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventOperatorScreen</code> | <code>lib/hosts/presentation/host_event_operator_screen.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventPublicationRouteScreen</code> | <code>lib/hosts/presentation/host_event_publication_route_screen.dart:5</code> | — | — | The publication editor uses its existing step-flow content after the same uid/organizer/event authorization boundary as management. |
-| <code>HostClubEventDefaultsScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubLiveGuideScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_live_guide_screen.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubMembershipsScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_memberships_screen.dart:5</code> | — | — | Organizer settings spoke for paid memberships: program, payouts, billing pause and plans. Managers edit plans; only the owner sets up payouts. |
-| <code>HostClubPaymentsScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_payments_screen.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubTeamScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubsScreen</code> | <code>lib/hosts/presentation/host_operations/host_clubs_screen.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerEventDefaultsScreen</code> | <code>lib/hosts/presentation/host_operations/host_organizer_event_defaults_screen.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerLiveGuideScreen</code> | <code>lib/hosts/presentation/host_operations/host_organizer_live_guide_screen.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerMembershipsScreen</code> | <code>lib/hosts/presentation/host_operations/host_organizer_memberships_screen.dart:5</code> | — | — | Organizer settings spoke for paid memberships: program, payouts, billing pause and plans. Managers edit plans; only the owner sets up payouts. |
+| <code>HostOrganizerPaymentsScreen</code> | <code>lib/hosts/presentation/host_operations/host_organizer_payments_screen.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerTeamScreen</code> | <code>lib/hosts/presentation/host_operations/host_organizer_team_screen.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizersScreen</code> | <code>lib/hosts/presentation/host_operations/host_organizers_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostLoadingScreen</code> | <code>lib/hosts/presentation/host_operations/host_loading_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostInboxScreen</code> | <code>lib/hosts/presentation/inbox/host_inbox_screen.dart:44</code> | — | — | No class documentation or registry summary. |
 | <code>HostMessagingSetupScreen</code> | <code>lib/hosts/presentation/inbox/host_messaging_setup_screen.dart:11</code> | — | — | No class documentation or registry summary. |

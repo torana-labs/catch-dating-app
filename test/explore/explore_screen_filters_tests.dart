@@ -2,9 +2,9 @@ part of 'explore_widgets_test.dart';
 
 void _registerExploreScreenFiltersTests() {
   testWidgets(
-    'ClubDetailBody shows host identity without opening a dating profile',
+    'OrganizerDetailBody shows host identity without opening a dating profile',
     (tester) async {
-      final club = buildClub(
+      final organizer = buildOrganizer(
         id: 'club-host-profile',
         hostUserId: 'host-42',
         hostName: 'Asha Shah',
@@ -15,9 +15,9 @@ void _registerExploreScreenFiltersTests() {
           GoRoute(
             path: '/',
             builder: (_, _) => Scaffold(
-              body: ClubDetailBody(
-                state: ClubDetailBodyState.fromDomain(
-                  club: club,
+              body: OrganizerDetailBody(
+                state: OrganizerDetailBodyState.fromDomain(
+                  organizer: organizer,
                   userProfile: buildUser(uid: 'runner-1'),
                   uid: 'runner-1',
                   isAuthenticated: true,
@@ -44,7 +44,7 @@ void _registerExploreScreenFiltersTests() {
           ),
         ),
       );
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
 
       expect(find.text('Host'), findsNothing);
       expect(find.text('Asha Shah'), findsOneWidget);
@@ -54,32 +54,32 @@ void _registerExploreScreenFiltersTests() {
       expect(find.text('Hosts events in Bandra'), findsNothing);
 
       await tester.ensureVisible(find.text('Asha Shah'));
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
 
       await tester.tap(find.text('Asha Shah'));
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
 
       expect(find.text('Profile host-42'), findsNothing);
     },
   );
 
-  testWidgets('ClubDetailBody shows multiple hosts and messages a host', (
+  testWidgets('OrganizerDetailBody shows multiple hosts and messages a host', (
     tester,
   ) async {
-    final fakeRepository = FakeClubsRepository()
+    final fakeRepository = FakeOrganizersRepository()
       ..nextHostConversationMatchId = 'host-inquiry-1';
-    final club = buildClub(
+    final organizer = buildOrganizer(
       id: 'club-multi-host',
       hostUserId: 'owner-1',
       ownerUserId: 'owner-1',
       hostUserIds: const ['owner-1', 'host-2'],
       hostProfiles: const [
-        ClubHostProfile(
+        OrganizerHostProfile(
           uid: 'owner-1',
           displayName: 'Owner Host',
-          role: ClubHostRole.owner,
+          role: OrganizerHostRole.owner,
         ),
-        ClubHostProfile(uid: 'host-2', displayName: 'Co Host'),
+        OrganizerHostProfile(uid: 'host-2', displayName: 'Co Host'),
       ],
     );
     final router = GoRouter(
@@ -88,16 +88,16 @@ void _registerExploreScreenFiltersTests() {
         GoRoute(
           path: '/',
           builder: (context, _) => Scaffold(
-            body: ClubDetailBody(
-              state: ClubDetailBodyState.fromDomain(
-                club: club,
+            body: OrganizerDetailBody(
+              state: OrganizerDetailBodyState.fromDomain(
+                organizer: organizer,
                 userProfile: buildSocialReadyUser(),
                 uid: 'runner-1',
                 isAuthenticated: true,
               ),
               onMessageHost: (buttonContext, host) async {
                 final matchId = await fakeRepository.startOrganizerConversation(
-                  organizerId: club.id,
+                  organizerId: organizer.id,
                   hostUid: host.uid,
                 );
                 if (!buttonContext.mounted) return;
@@ -129,7 +129,7 @@ void _registerExploreScreenFiltersTests() {
     );
     final container = ProviderContainer(
       overrides: [
-        clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+        organizersRepositoryProvider.overrideWith((ref) => fakeRepository),
         uidProvider.overrideWith((ref) => Stream.value('runner-1')),
         // A signed-in guest sees the organizer's membership plans.
         watchPublishedHostMembershipPlansProvider.overrideWith(
@@ -155,7 +155,7 @@ void _registerExploreScreenFiltersTests() {
         child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.text('Owner Host'), findsOneWidget);
     expect(find.text('Co Host'), findsOneWidget);
@@ -163,36 +163,36 @@ void _registerExploreScreenFiltersTests() {
     expect(find.textContaining('HOST · '), findsOneWidget);
 
     await tester.ensureVisible(find.text('Co Host'));
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.byTooltip('Message host'), findsNWidgets(2));
 
     await tester.tap(
       find.byKey(const ValueKey<String>('club-host-message-host-2')),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
-    expect(fakeRepository.startedConversationClubId, club.id);
+    expect(fakeRepository.startedConversationOrganizerId, organizer.id);
     expect(fakeRepository.startedConversationHostUid, 'host-2');
     expect(find.text('Chat host-inquiry-1'), findsOneWidget);
   });
 
   testWidgets(
-    'ClubDetailBody owner does not see host team management actions',
+    'OrganizerDetailBody owner does not see host team management actions',
     (tester) async {
       AppConfig.configureEntrypointRole(AppRole.host);
-      final club = buildClub(
+      final organizer = buildOrganizer(
         id: 'club-owner-hosts',
         hostUserId: 'owner-1',
         ownerUserId: 'owner-1',
         hostUserIds: const ['owner-1', 'host-2'],
         hostProfiles: const [
-          ClubHostProfile(
+          OrganizerHostProfile(
             uid: 'owner-1',
             displayName: 'Owner Host',
-            role: ClubHostRole.owner,
+            role: OrganizerHostRole.owner,
           ),
-          ClubHostProfile(uid: 'host-2', displayName: 'Co Host'),
+          OrganizerHostProfile(uid: 'host-2', displayName: 'Co Host'),
         ],
       );
 
@@ -204,9 +204,9 @@ void _registerExploreScreenFiltersTests() {
           child: MaterialApp(
             theme: AppTheme.light,
             home: Scaffold(
-              body: ClubDetailBody(
-                state: ClubDetailBodyState.fromDomain(
-                  club: club,
+              body: OrganizerDetailBody(
+                state: OrganizerDetailBodyState.fromDomain(
+                  organizer: organizer,
                   userProfile: buildUser(uid: 'owner-1'),
                   uid: 'owner-1',
                   isHost: true,
@@ -219,7 +219,7 @@ void _registerExploreScreenFiltersTests() {
           ),
         ),
       );
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
 
       expect(find.text('Host team'), findsNothing);
       expect(find.byTooltip('Add host'), findsNothing);
@@ -228,7 +228,7 @@ void _registerExploreScreenFiltersTests() {
       expect(find.text('Remove host'), findsNothing);
 
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -700));
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
       expect(
         find.text('Publish an event when this club is ready to meet.'),
         findsNothing,
@@ -243,9 +243,9 @@ void _registerExploreScreenFiltersTests() {
   );
 
   testWidgets(
-    'ClubDetailBody keeps club review aggregate read-only below schedule',
+    'OrganizerDetailBody keeps club review aggregate read-only below schedule',
     (tester) async {
-      final club = buildClub(id: 'club-reviews');
+      final organizer = buildOrganizer(id: 'club-reviews');
       final reviews = [
         buildReview(comment: 'Most recent.'),
         buildReview(id: 'review-2', comment: 'Second recent.'),
@@ -258,9 +258,9 @@ void _registerExploreScreenFiltersTests() {
           child: MaterialApp(
             theme: AppTheme.light,
             home: Scaffold(
-              body: ClubDetailBody(
-                state: ClubDetailBodyState.fromDomain(
-                  club: club,
+              body: OrganizerDetailBody(
+                state: OrganizerDetailBodyState.fromDomain(
+                  organizer: organizer,
                   reviews: reviews,
                   userProfile: buildUser(uid: 'runner-1'),
                   uid: 'runner-1',
@@ -272,15 +272,15 @@ void _registerExploreScreenFiltersTests() {
           ),
         ),
       );
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
 
       final detailGroup = tester.widget<SliverMainAxisGroup>(
         find.descendant(
-          of: find.byType(ClubDetailBody),
+          of: find.byType(OrganizerDetailBody),
           matching: find.byType(SliverMainAxisGroup),
         ),
       );
-      expect(detailGroup.children[2], isA<ClubScheduleSection>());
+      expect(detailGroup.children[2], isA<OrganizerScheduleSection>());
       expect(detailGroup.children[3], isA<CatchSectionList>());
       final trailingSections = detailGroup.children[3] as CatchSectionList;
       for (
@@ -289,7 +289,7 @@ void _registerExploreScreenFiltersTests() {
         i++
       ) {
         await tester.drag(find.byType(CustomScrollView), const Offset(0, -400));
-        await _pumpClubUi(tester);
+        await _pumpOrganizerUi(tester);
       }
 
       expect(
@@ -313,14 +313,14 @@ void _registerExploreScreenFiltersTests() {
     },
   );
 
-  testWidgets('ClubDetailBody agenda taps navigate to the selected event', (
+  testWidgets('OrganizerDetailBody agenda taps navigate to the selected event', (
     tester,
   ) async {
-    final club = buildClub(id: 'club-schedule');
+    final organizer = buildOrganizer(id: 'club-schedule');
     final today = DateTime.now();
     final event = buildEvent(
       id: 'event-42',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime(today.year, today.month, today.day, 8),
       endTime: DateTime(today.year, today.month, today.day, 9),
     );
@@ -330,9 +330,9 @@ void _registerExploreScreenFiltersTests() {
         GoRoute(
           path: '/',
           builder: (context, _) => Scaffold(
-            body: ClubDetailBody(
-              state: ClubDetailBodyState.fromDomain(
-                club: club,
+            body: OrganizerDetailBody(
+              state: OrganizerDetailBodyState.fromDomain(
+                organizer: organizer,
                 upcomingEvents: [event],
                 userProfile: buildUser(uid: 'runner-1'),
                 uid: 'runner-1',
@@ -343,7 +343,7 @@ void _registerExploreScreenFiltersTests() {
                 context.pushNamed<void>(
                   Routes.eventDetailScreen.name,
                   pathParameters: {
-                    'clubId': club.id,
+                    'clubId': organizer.id,
                     'eventId': selectedEvent.id,
                   },
                 ),
@@ -367,15 +367,15 @@ void _registerExploreScreenFiltersTests() {
         child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     await tester.tap(
       find.byKey(const ValueKey<String>('club-schedule-event-event-42')),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.text('Event event-42'), findsOneWidget);
   });
@@ -383,7 +383,7 @@ void _registerExploreScreenFiltersTests() {
   testWidgets('ExploreScreen renders a navigable guest club directory', (
     tester,
   ) async {
-    final club = buildClub(id: 'club-99', name: 'Pace Social');
+    final organizer = buildOrganizer(id: 'club-99', name: 'Pace Social');
 
     await tester.pumpWidget(
       ProviderScope(
@@ -391,22 +391,22 @@ void _registerExploreScreenFiltersTests() {
           cityListProvider.overrideWith((ref) async => _testCities),
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          watchClubsByLocationProvider(
-            club.location,
-          ).overrideWith((ref) => Stream.value([club])),
+          watchOrganizersByLocationProvider(
+            organizer.location,
+          ).overrideWith((ref) => Stream.value([organizer])),
           _emptyExploreFeedOverride,
         ],
         child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.byTooltip('Saved events'), findsNothing);
     await tester.tap(find.byKey(const ValueKey('explore-filter-button')));
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
     expect(find.byKey(const ValueKey('explore-filter-joined')), findsNothing);
     Navigator.of(tester.element(find.byType(ExploreFilterSheet))).pop();
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.text('Your organizers'), findsNothing);
     for (
@@ -415,14 +415,14 @@ void _registerExploreScreenFiltersTests() {
       index += 1
     ) {
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -350));
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
     }
 
     expect(find.text('Organizer directory'), findsOneWidget);
     expect(find.text('Pace Social'), findsWidgets);
-    expect(find.byType(ClubCard), findsOneWidget);
+    expect(find.byType(OrganizerCard), findsOneWidget);
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -280));
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
     expect(_catchButtonWithLabel('Follow'), findsOneWidget);
   });
 
@@ -436,11 +436,11 @@ void _registerExploreScreenFiltersTests() {
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           uidProvider.overrideWithValue(const AsyncLoading<String?>()),
           watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
-          exploreSourceClubsProvider.overrideWithValue(
-            const AsyncData(<Club>[]),
+          exploreSourceOrganizersProvider.overrideWithValue(
+            const AsyncData(<Organizer>[]),
           ),
-          exploreClubsViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+          exploreOrganizersViewModelProvider.overrideWithValue(
+            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
           ),
           exploreRecommendationsProvider.overrideWithValue(
             const AsyncData(<ExploreEventRecommendation>[]),
@@ -450,11 +450,11 @@ void _registerExploreScreenFiltersTests() {
         child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.byTooltip('Saved events'), findsNothing);
     await tester.tap(find.byKey(const ValueKey('explore-filter-button')));
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
     expect(find.byKey(const ValueKey('explore-filter-joined')), findsNothing);
   });
 
@@ -468,11 +468,11 @@ void _registerExploreScreenFiltersTests() {
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
-          exploreSourceClubsProvider.overrideWithValue(
-            const AsyncData(<Club>[]),
+          exploreSourceOrganizersProvider.overrideWithValue(
+            const AsyncData(<Organizer>[]),
           ),
-          exploreClubsViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+          exploreOrganizersViewModelProvider.overrideWithValue(
+            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
           ),
           exploreRecommendationsProvider.overrideWithValue(
             const AsyncData(<ExploreEventRecommendation>[]),
@@ -482,11 +482,11 @@ void _registerExploreScreenFiltersTests() {
         child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.byTooltip('Saved events'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('explore-filter-button')));
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
     expect(find.byKey(const ValueKey('explore-filter-joined')), findsOneWidget);
   });
 
@@ -498,10 +498,10 @@ void _registerExploreScreenFiltersTests() {
         overrides: [
           cityListProvider.overrideWith((ref) async => _testCities),
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
-          watchClubsByLocationProvider(
+          watchOrganizersByLocationProvider(
             'mumbai',
           ).overrideWith((ref) => Stream.value(const [])),
-          exploreClubsViewModelProvider.overrideWithValue(const AsyncLoading()),
+          exploreOrganizersViewModelProvider.overrideWithValue(const AsyncLoading()),
           _emptyExploreFeedOverride,
         ],
         child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
@@ -522,7 +522,7 @@ void _registerExploreScreenFiltersTests() {
   testWidgets('ExploreScreen revalidates when its shell tab is re-entered', (
     tester,
   ) async {
-    var activeIndex = appShellClubsTabIndex;
+    var activeIndex = appShellOrganizersTabIndex;
     var feedBuilds = 0;
     late StateSetter setShellState;
 
@@ -532,11 +532,11 @@ void _registerExploreScreenFiltersTests() {
           cityListProvider.overrideWith((ref) async => _testCities),
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          exploreSourceClubsProvider.overrideWithValue(
-            const AsyncData(<Club>[]),
+          exploreSourceOrganizersProvider.overrideWithValue(
+            const AsyncData(<Organizer>[]),
           ),
-          exploreClubsViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+          exploreOrganizersViewModelProvider.overrideWithValue(
+            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
           ),
           exploreFeedViewModelProvider.overrideWith((ref) {
             feedBuilds += 1;
@@ -562,7 +562,7 @@ void _registerExploreScreenFiltersTests() {
 
     setShellState(() => activeIndex = appShellHomeTabIndex);
     await tester.pump();
-    setShellState(() => activeIndex = appShellClubsTabIndex);
+    setShellState(() => activeIndex = appShellOrganizersTabIndex);
     await tester.pump();
     await pumpFeatureUi(tester);
 
@@ -579,11 +579,11 @@ void _registerExploreScreenFiltersTests() {
           cityListProvider.overrideWith((ref) async => _testCities),
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          exploreSourceClubsProvider.overrideWithValue(
-            const AsyncData(<Club>[]),
+          exploreSourceOrganizersProvider.overrideWithValue(
+            const AsyncData(<Organizer>[]),
           ),
-          exploreClubsViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+          exploreOrganizersViewModelProvider.overrideWithValue(
+            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
           ),
           exploreFeedViewModelProvider.overrideWith((ref) {
             feedBuilds += 1;
@@ -612,11 +612,11 @@ void _registerExploreScreenFiltersTests() {
           overrides: [
             cityListProvider.overrideWith((ref) async => _testCities),
             deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
-            watchClubsByLocationProvider(
+            watchOrganizersByLocationProvider(
               'mumbai',
             ).overrideWith((ref) => Stream.value(const [])),
-            exploreClubsViewModelProvider.overrideWithValue(
-              const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+            exploreOrganizersViewModelProvider.overrideWithValue(
+              const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
             ),
             _emptyExploreFeedOverride,
           ],
@@ -642,11 +642,11 @@ void _registerExploreScreenFiltersTests() {
       expect(find.text('Change city'), findsOneWidget);
 
       await tester.tap(find.text('Change city'));
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
       expect(find.text('City'), findsOneWidget);
       expect(find.text('Delhi'), findsOneWidget);
       await tester.tap(find.text('Delhi'));
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
       expect(
         ProviderScope.containerOf(
           tester.element(find.byType(ExploreScreen)),
@@ -664,7 +664,7 @@ void _registerExploreScreenFiltersTests() {
       final morphingSearchWidth = tester.getSize(_topLevelSearchField()).width;
       expect(morphingSearchWidth, greaterThan(CatchIconAction.navSize));
 
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
 
       final expandedSearchWidth = tester.getSize(_topLevelSearchField()).width;
       expect(expandedSearchWidth, greaterThanOrEqualTo(morphingSearchWidth));
@@ -676,15 +676,15 @@ void _registerExploreScreenFiltersTests() {
   testWidgets('ExploreScreen empty state clears search and filters', (
     tester,
   ) async {
-    final sourceClub = buildClub(id: 'source-club', name: 'Bandra Pacers');
+    final sourceOrganizer = buildOrganizer(id: 'source-club', name: 'Bandra Pacers');
     final container = ProviderContainer(
       retry: (_, _) => null,
       overrides: [
         cityListProvider.overrideWith((ref) async => _testCities),
         deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
-        exploreSourceClubsProvider.overrideWithValue(AsyncData([sourceClub])),
-        exploreClubsViewModelProvider.overrideWithValue(
-          const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+        exploreSourceOrganizersProvider.overrideWithValue(AsyncData([sourceOrganizer])),
+        exploreOrganizersViewModelProvider.overrideWithValue(
+          const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
         ),
         _emptyExploreFeedOverride,
       ],
@@ -712,10 +712,10 @@ void _registerExploreScreenFiltersTests() {
   testWidgets(
     'ExploreScreen keeps the featured event in the feed during search',
     (tester) async {
-      final club = buildClub(id: 'search-cover-club', name: 'Search Social');
+      final organizer = buildOrganizer(id: 'search-cover-club', name: 'Search Social');
       final event = event_test.buildEvent(
         id: 'search-cover-event',
-        clubId: club.id,
+        clubId: organizer.id,
         startTime: DateTime.now().add(const Duration(hours: 3)),
       );
 
@@ -725,11 +725,11 @@ void _registerExploreScreenFiltersTests() {
             cityListProvider.overrideWith((ref) async => _testCities),
             deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
             uidProvider.overrideWith((ref) => Stream.value(null)),
-            exploreSourceClubsProvider.overrideWithValue(
-              const AsyncData(<Club>[]),
+            exploreSourceOrganizersProvider.overrideWithValue(
+              const AsyncData(<Organizer>[]),
             ),
-            exploreClubsViewModelProvider.overrideWithValue(
-              const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+            exploreOrganizersViewModelProvider.overrideWithValue(
+              const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
             ),
             exploreFeedViewModelProvider.overrideWithValue(
               AsyncData(
@@ -738,7 +738,7 @@ void _registerExploreScreenFiltersTests() {
                   items: [
                     ExploreEventItem(
                       event: event,
-                      club: club,
+                      organizer: organizer,
                       status: EventTileStatus.open,
                     ),
                   ],
@@ -752,7 +752,7 @@ void _registerExploreScreenFiltersTests() {
           ),
         ),
       );
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
 
       expect(find.byType(FeaturedEventPoster), findsOneWidget);
       expect(find.byType(EventDateRailCard), findsOneWidget);
@@ -785,10 +785,10 @@ void _registerExploreScreenFiltersTests() {
   testWidgets('ExploreScreen renders internal feed when clubs are empty', (
     tester,
   ) async {
-    final club = buildClub(id: 'club-event-only', name: 'Pace Social');
+    final organizer = buildOrganizer(id: 'club-event-only', name: 'Pace Social');
     final event = event_test.buildEvent(
       id: 'event-only',
-      clubId: club.id,
+      clubId: organizer.id,
       startingPointLat: 19.06,
       startingPointLng: 72.83,
     );
@@ -799,11 +799,11 @@ void _registerExploreScreenFiltersTests() {
           cityListProvider.overrideWith((ref) async => _testCities),
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          exploreSourceClubsProvider.overrideWithValue(
-            const AsyncData(<Club>[]),
+          exploreSourceOrganizersProvider.overrideWithValue(
+            const AsyncData(<Organizer>[]),
           ),
-          exploreClubsViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+          exploreOrganizersViewModelProvider.overrideWithValue(
+            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
           ),
           exploreFeedViewModelProvider.overrideWithValue(
             AsyncData(
@@ -812,7 +812,7 @@ void _registerExploreScreenFiltersTests() {
                 items: [
                   ExploreEventItem(
                     event: event,
-                    club: club,
+                    organizer: organizer,
                     availability: resolveViewerEventAvailability(
                       event: event,
                       userProfile: null,
@@ -828,7 +828,7 @@ void _registerExploreScreenFiltersTests() {
         child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.text(event.title), findsWidgets);
     expect(find.byType(FeaturedEventPoster), findsOneWidget);

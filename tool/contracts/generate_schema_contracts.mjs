@@ -9527,7 +9527,7 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
     {
       dartType: "ClubHostDefaults",
       imports: [
-        "import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';",
+        "import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';",
       ],
       jsonExpression: (name) => `${name}.toJson()`,
       nullableJsonExpression: (name) => `${name}?.toJson()`,
@@ -9894,7 +9894,7 @@ function dartPatchClassConfig(specName) {
         includeTimestampJsonHelper: false,
         imports: [
           "import 'package:catch_dating_app/kernel/sentinels.dart';",
-          "import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';",
+          "import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';",
         ],
         objectFields: new Map([["hostDefaults", "ClubHostDefaults"]]),
         listObjectFields: new Map(),

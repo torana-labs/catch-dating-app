@@ -5,7 +5,7 @@
 // Typed callable request DTO emitted from callables/remove_club_host_payload.schema.json.
 // Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Callable payload accepted by removeClubHost.
+/// Callable payload accepted by removeOrganizerHost.
 final class RemoveClubHostCallableRequest {
   const RemoveClubHostCallableRequest({
     required this.clubId,

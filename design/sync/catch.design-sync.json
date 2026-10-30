@@ -298,8 +298,8 @@
           "CatchPoster",
           "CatchPosterHeader",
           "CatchPosterImage",
-          "ClubCard",
-          "ClubPlaceholderCover"
+          "OrganizerCard",
+          "OrganizerPlaceholderCover"
         ]
       },
       {
@@ -2210,8 +2210,8 @@
       "contractId": "catch.club_dock",
       "conceptRole": "composition",
       "conceptId": null,
-      "dartSymbol": "ClubDetailDock",
-      "dartFile": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "dartSymbol": "OrganizerDetailDock",
+      "dartFile": "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart",
       "reactSymbol": null,
       "reactFile": null,
       "reactApi": null,
@@ -2770,8 +2770,8 @@
       "contractId": "catch.club_cover",
       "conceptRole": "composition",
       "conceptId": null,
-      "dartSymbol": "ClubCover",
-      "dartFile": "lib/clubs/shared/club_cover.dart",
+      "dartSymbol": "OrganizerCover",
+      "dartFile": "lib/organizers/shared/organizer_cover.dart",
       "reactSymbol": null,
       "reactFile": null,
       "reactApi": null,
@@ -2797,7 +2797,7 @@
       "figmaDrift": [],
       "codeConnectStatus": "planned",
       "codeConnectTemplate": null,
-      "claudeHandoffName": "ClubCover",
+      "claudeHandoffName": "OrganizerCover",
       "claudeAllowed": true,
       "contractDigest": "fb8fc90a6948d1e63b2d697e44576e3a3eb880bd8f5569af74baf175d6de448c"
     },

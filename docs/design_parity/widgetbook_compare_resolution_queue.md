@@ -277,7 +277,7 @@ Reviewed decisions:
 
 | Candidate | Decision | Canonical direction |
 | --- | --- | --- |
-| TopBar vs ClubHeroTopBar | separate concepts | App bars and hero app bars are different components. Keep `CatchTopBar` for route chrome, and keep club/event hero implementations as hero concepts rather than top-bar variants. |
+| TopBar vs OrganizerHeroTopBar | separate concepts | App bars and hero app bars are different components. Keep `CatchTopBar` for route chrome, and keep club/event hero implementations as hero concepts rather than top-bar variants. |
 
 Implementation target:
 

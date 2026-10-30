@@ -20,7 +20,7 @@ import 'shell_fixture.dart';
 
 @widgetbook.UseCase(
   name: 'Covered by host event section states',
-  type: HostEventsClubSection,
+  type: HostEventsOrganizerSection,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -30,7 +30,7 @@ import 'shell_fixture.dart';
 )
 @widgetbook.UseCase(
   name: 'Event section states',
-  type: HostEventsClubCard,
+  type: HostEventsOrganizerCard,
   path: '[P1 product surfaces]/Host operations/Sections',
 )
 Widget hostHomeEventSectionStates(BuildContext context) {
@@ -41,8 +41,8 @@ Widget hostHomeEventSectionStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'owned club with upcoming rows',
         child: WidgetbookHostHomeSectionFrame(
-          child: HostEventsClubCard(
-            club: widgetbookClub,
+          child: HostEventsOrganizerCard(
+            organizer: widgetbookOrganizer,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             now: HostOperationsFixtures.now,
@@ -53,24 +53,24 @@ Widget hostHomeEventSectionStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'past events grouped into divided month fields',
         child: WidgetbookHostHomeSectionFrame(
-          clubEventStreams: {
-            widgetbookClub.id: Stream<List<Event>>.value([
+          organizerEventStreams: {
+            widgetbookOrganizer.id: Stream<List<Event>>.value([
               HostOperationsFixtures.event(
                 id: 'design-host-past-june',
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 start: DateTime(2026, 6, 14, 9),
                 bookedCount: 8,
               ),
               HostOperationsFixtures.event(
                 id: 'design-host-past-may',
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 start: DateTime(2026, 5, 27, 18, 30),
                 bookedCount: 2,
               ),
             ]),
           },
-          child: HostEventsClubCard(
-            club: widgetbookClub,
+          child: HostEventsOrganizerCard(
+            organizer: widgetbookOrganizer,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             now: HostOperationsFixtures.now,
@@ -81,12 +81,12 @@ Widget hostHomeEventSectionStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'events loading',
         child: WidgetbookHostHomeSectionFrame(
-          clubEventStreams: {
-            widgetbookClub.id:
+          organizerEventStreams: {
+            widgetbookOrganizer.id:
                 HostOperationsFixtures.loadingStream<List<Event>>(),
           },
-          child: HostEventsClubCard(
-            club: widgetbookClub,
+          child: HostEventsOrganizerCard(
+            organizer: widgetbookOrganizer,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             now: HostOperationsFixtures.now,
@@ -97,13 +97,13 @@ Widget hostHomeEventSectionStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'events error',
         child: WidgetbookHostHomeSectionFrame(
-          clubEventStreams: {
-            widgetbookClub.id: HostOperationsFixtures.errorStream<List<Event>>(
+          organizerEventStreams: {
+            widgetbookOrganizer.id: HostOperationsFixtures.errorStream<List<Event>>(
               'Upcoming events failed',
             ),
           },
-          child: HostEventsClubCard(
-            club: widgetbookClub,
+          child: HostEventsOrganizerCard(
+            organizer: widgetbookOrganizer,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             now: HostOperationsFixtures.now,
@@ -114,14 +114,14 @@ Widget hostHomeEventSectionStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'events offline',
         child: WidgetbookHostHomeSectionFrame(
-          clubEventStreams: {
-            widgetbookClub.id: Stream<List<Event>>.error(
+          organizerEventStreams: {
+            widgetbookOrganizer.id: Stream<List<Event>>.error(
               obviousOfflineException(),
               StackTrace.empty,
             ),
           },
-          child: HostEventsClubCard(
-            club: widgetbookClub,
+          child: HostEventsOrganizerCard(
+            organizer: widgetbookOrganizer,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             now: HostOperationsFixtures.now,
@@ -132,11 +132,11 @@ Widget hostHomeEventSectionStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'empty events',
         child: WidgetbookHostHomeSectionFrame(
-          clubEventStreams: {
-            widgetbookClub.id: Stream<List<Event>>.value(const []),
+          organizerEventStreams: {
+            widgetbookOrganizer.id: Stream<List<Event>>.value(const []),
           },
-          child: HostEventsClubCard(
-            club: widgetbookClub,
+          child: HostEventsOrganizerCard(
+            organizer: widgetbookOrganizer,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             now: HostOperationsFixtures.now,
@@ -147,13 +147,13 @@ Widget hostHomeEventSectionStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'cancelled events hidden',
         child: WidgetbookHostHomeSectionFrame(
-          clubEventStreams: {
-            widgetbookClub.id: Stream<List<Event>>.value([
+          organizerEventStreams: {
+            widgetbookOrganizer.id: Stream<List<Event>>.value([
               HostOperationsFixtures.cancelledEvent,
             ]),
           },
-          child: HostEventsClubCard(
-            club: widgetbookClub,
+          child: HostEventsOrganizerCard(
+            organizer: widgetbookOrganizer,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
             now: HostOperationsFixtures.now,
@@ -181,7 +181,7 @@ Widget _hostHomeExactCatalog(BuildContext context, String focus) {
 }
 
 Widget _hostHomePreviewFor(BuildContext context, String focus) {
-  final club = HostOperationsFixtures.primaryClub;
+  final organizer = HostOperationsFixtures.primaryOrganizer;
   final event = HostOperationsFixtures.upcomingEvent;
   final now = event.startTime.subtract(const Duration(hours: 2));
   final state = buildHostTodayState(
@@ -210,7 +210,7 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
       ],
     ),
     'HostOrganizerAvatar' => HostOrganizerAvatar(
-      club: club.copyWith(
+      organizer: organizer.copyWith(
         profileImageUrl: 'assets/fixtures/club_hero_portrait.jpg',
       ),
       size: CatchLayout.appShellNavigationIdentityExtent,

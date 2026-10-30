@@ -37,7 +37,7 @@ const protectedHostPaths = [
   'lib/hosts/presentation/forms/host_form_templates_screen.dart',
   'lib/hosts/presentation/forms/host_form_automations_screen.dart',
   'lib/hosts/presentation/inbox/host_new_message_screen.dart',
-  'lib/hosts/presentation/host_operations/host_team_hosted_clubs_section.dart',
+  'lib/hosts/presentation/host_operations/host_team_hosted_organizers_section.dart',
 ];
 const unresolvedHostPrefixes = [
   'lib/hosts/',

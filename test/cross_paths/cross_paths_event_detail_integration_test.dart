@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation.da
 import 'package:catch_dating_app/contexts/connections/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/contexts/connections/domain/cross_paths_event_consent.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart' show FakeClubsRepository;
 import '../events/events_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart' show FakeOrganizersRepository;
 
 void main() {
   group('Cross Paths Event Detail integration', () {
@@ -31,7 +31,7 @@ void main() {
           eventId: event.id,
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           eventDetailViewModelProvider(event.id).overrideWith(
             (ref) => AsyncData(
               EventDetailViewModel(
@@ -81,7 +81,7 @@ void main() {
           eventId: event.id,
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           eventDetailViewModelProvider(event.id).overrideWith(
             (ref) => AsyncData(
               EventDetailViewModel(

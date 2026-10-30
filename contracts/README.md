@@ -215,7 +215,7 @@ is validated against
 `contracts/patches/update_user_profile.schema.json` and
 `contracts/callables/update_club_payload.schema.json` by
 `test/core/update_user_profile_patch_test.dart` and
-`test/core/update_club_patch_test.dart`.
+`test/core/update_organizer_patch_test.dart`.
 
 Use the typed constructors for known fields. The `raw(...)` constructors remain
 as temporary escape hatches for tests and genuinely dynamic migration/tooling

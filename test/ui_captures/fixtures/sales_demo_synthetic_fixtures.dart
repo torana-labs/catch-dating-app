@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
@@ -14,8 +14,8 @@ import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 
-import '../../clubs/clubs_test_helpers.dart' as club_test;
 import '../../events/events_test_helpers.dart' as event_test;
+import '../../organizers/organizers_test_helpers.dart' as organizer_test;
 import 'demo_world.dart';
 
 final salesDemoSyntheticFixtures = SalesDemoSyntheticFixtures.load();
@@ -151,11 +151,11 @@ class HostMarketingIndiaScenarioFixture {
         compatibilityAffectsRanking: false,
       );
 
-  Club club(SalesDemoSyntheticFixtures fixtures) =>
-      fixtures.hostDemoClub(scenario: scenario);
+  Organizer organizer(SalesDemoSyntheticFixtures fixtures) =>
+      fixtures.hostDemoOrganizer(scenario: scenario);
 
   Event event(SalesDemoSyntheticFixtures fixtures, String role) {
-    final clubValue = club(fixtures);
+    final organizerValue = organizer(fixtures);
     final source = scenario.eventByRole(role);
     if (source.priceInPaise != 0 || source.waitlistedCount != 0) {
       throw const FormatException(
@@ -163,7 +163,7 @@ class HostMarketingIndiaScenarioFixture {
       );
     }
     return fixtures
-        .hostDemoEvent(role: role, club: clubValue, scenario: scenario)
+        .hostDemoEvent(role: role, organizer: organizerValue, scenario: scenario)
         .copyWith(
           name: eventName,
           synthetic: true,
@@ -189,7 +189,7 @@ class HostMarketingIndiaScenarioFixture {
     return fixtures
         .hostSetupDraft(
           id: 'host-marketing-india-setup-draft',
-          club: club(fixtures),
+          organizer: organizer(fixtures),
           savedAt: clock('planning'),
           eventDate: setup.startTime,
           scenario: scenario,
@@ -225,7 +225,7 @@ class SalesDemoHostScenarioFixture {
     required this.id,
     required this.referenceNow,
     required this.host,
-    required this.club,
+    required this.organizer,
     required this.eventsByRole,
     required this.rosterPersonaIds,
     required this.defaultCheckedInCount,
@@ -270,7 +270,7 @@ class SalesDemoHostScenarioFixture {
         referenceMoment.substring(11, 16),
       ),
       host: SalesDemoHostUserFixture._fromJson(world.host),
-      club: SalesDemoHostClubFixture._fromJson({
+      organizer: SalesDemoHostOrganizerFixture._fromJson({
         ...organizer,
         'location': organizer['city'],
       }),
@@ -326,7 +326,7 @@ class SalesDemoHostScenarioFixture {
   final String id;
   final DateTime referenceNow;
   final SalesDemoHostUserFixture host;
-  final SalesDemoHostClubFixture club;
+  final SalesDemoHostOrganizerFixture organizer;
   final Map<String, SalesDemoHostEventFixture> eventsByRole;
   final List<String> rosterPersonaIds;
   final int defaultCheckedInCount;
@@ -372,8 +372,8 @@ class SalesDemoHostUserFixture {
   final String personaId;
 }
 
-class SalesDemoHostClubFixture {
-  const SalesDemoHostClubFixture._({
+class SalesDemoHostOrganizerFixture {
+  const SalesDemoHostOrganizerFixture._({
     required this.id,
     required this.name,
     required this.description,
@@ -385,8 +385,8 @@ class SalesDemoHostClubFixture {
     required this.reviewCount,
   });
 
-  factory SalesDemoHostClubFixture._fromJson(Map<String, Object?> json) {
-    return SalesDemoHostClubFixture._(
+  factory SalesDemoHostOrganizerFixture._fromJson(Map<String, Object?> json) {
+    return SalesDemoHostOrganizerFixture._(
       id: _requiredStringFrom(json, 'id'),
       name: _requiredStringFrom(json, 'name'),
       description: _requiredStringFrom(json, 'description'),
@@ -511,32 +511,32 @@ class SalesDemoSyntheticFixtures {
     ].take(limit).toList(growable: false);
   }
 
-  Club hostDemoClub({SalesDemoHostScenarioFixture? scenario}) {
+  Organizer hostDemoOrganizer({SalesDemoHostScenarioFixture? scenario}) {
     final resolvedScenario = scenario ?? salesDemoHostScenario;
-    return captureClub(
-      id: resolvedScenario.club.id,
-      name: resolvedScenario.club.name,
-      description: resolvedScenario.club.description,
-      area: resolvedScenario.club.area,
-      location: resolvedScenario.club.location,
+    return captureOrganizer(
+      id: resolvedScenario.organizer.id,
+      name: resolvedScenario.organizer.name,
+      description: resolvedScenario.organizer.description,
+      area: resolvedScenario.organizer.area,
+      location: resolvedScenario.organizer.location,
       hostUserId: resolvedScenario.host.uid,
       hostName: resolvedScenario.host.displayName,
-      tags: resolvedScenario.club.tags,
-      memberCount: resolvedScenario.club.memberCount,
-      rating: resolvedScenario.club.rating,
-      reviewCount: resolvedScenario.club.reviewCount,
+      tags: resolvedScenario.organizer.tags,
+      memberCount: resolvedScenario.organizer.memberCount,
+      rating: resolvedScenario.organizer.rating,
+      reviewCount: resolvedScenario.organizer.reviewCount,
     );
   }
 
   Event hostDemoEvent({
     required String role,
-    required Club club,
+    required Organizer organizer,
     SalesDemoHostScenarioFixture? scenario,
   }) {
     final event = (scenario ?? salesDemoHostScenario).eventByRole(role);
     return captureEvent(
       id: event.id,
-      club: club,
+      organizer: organizer,
       startTime: event.startTime,
       endTime: event.endTime,
       meetingPoint: event.meetingPoint,
@@ -554,7 +554,7 @@ class SalesDemoSyntheticFixtures {
     );
   }
 
-  Club captureClub({
+  Organizer captureOrganizer({
     required String id,
     required String name,
     required String description,
@@ -569,7 +569,7 @@ class SalesDemoSyntheticFixtures {
     DateTime? nextEventAt,
     String? nextEventLabel,
   }) {
-    return club_test.buildClub(
+    return organizer_test.buildOrganizer(
       id: id,
       name: name,
       description: description,
@@ -588,7 +588,7 @@ class SalesDemoSyntheticFixtures {
 
   Event captureEvent({
     required String id,
-    required Club club,
+    required Organizer organizer,
     required DateTime startTime,
     DateTime? endTime,
     required String meetingPoint,
@@ -606,7 +606,7 @@ class SalesDemoSyntheticFixtures {
   }) {
     return event_test.buildEvent(
       id: id,
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: startTime,
       endTime: endTime,
       meetingPoint: meetingPoint,
@@ -631,7 +631,7 @@ class SalesDemoSyntheticFixtures {
 
   EventDraft hostSetupDraft({
     required String id,
-    required Club club,
+    required Organizer organizer,
     required DateTime savedAt,
     DateTime? eventDate,
     SalesDemoHostScenarioFixture? scenario,
@@ -641,9 +641,9 @@ class SalesDemoSyntheticFixtures {
     final scheduledDate = eventDate ?? setupEvent.startTime;
     return EventDraft(
       id: id,
-      clubId: club.id,
+      clubId: organizer.id,
       savedAt: savedAt,
-      name: '${resolvedScenario.club.name} ${setupEvent.activityKind.label}',
+      name: '${resolvedScenario.organizer.name} ${setupEvent.activityKind.label}',
       activityKind: setupEvent.activityKind.name,
       capacity: setupEvent.capacityLimit.toString(),
       price: (setupEvent.priceInPaise ~/ 100).toString(),
@@ -651,7 +651,7 @@ class SalesDemoSyntheticFixtures {
       meetingPoint: setupEvent.meetingPoint,
       locationDetails: setupEvent.locationDetails,
       meetingLocationAddress:
-          '${resolvedScenario.club.area}, ${resolvedScenario.club.location}',
+          '${resolvedScenario.organizer.area}, ${resolvedScenario.organizer.location}',
       meetingLocationPlaceId: 'capture-${setupEvent.id}',
       startingPointLat: setupEvent.startingPointLat,
       startingPointLng: setupEvent.startingPointLng,
@@ -697,7 +697,7 @@ class SalesDemoSyntheticFixtures {
   }
 
   List<Review> reviewsForProfiles({
-    required Club club,
+    required Organizer organizer,
     required Event event,
     required Iterable<PublicProfile> reviewers,
     DateTime? firstCreatedAt,
@@ -712,7 +712,7 @@ class SalesDemoSyntheticFixtures {
       for (final indexed in reviewers.indexed)
         Review(
           id: 'review-${event.id}-${indexed.$1 + 1}',
-          organizerId: club.id,
+          organizerId: organizer.id,
           eventId: event.id,
           reviewerUserId: indexed.$2.uid,
           reviewerName: _firstName(indexed.$2.name),

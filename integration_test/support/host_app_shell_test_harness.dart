@@ -6,8 +6,8 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_today_preference_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
@@ -27,8 +27,8 @@ import 'package:flutter/widgets.dart' show SizedBox;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../test/clubs/clubs_test_helpers.dart' show buildClub;
 import '../../test/hosts/support/host_crm_response_fixtures.dart';
+import '../../test/organizers/organizers_test_helpers.dart' show buildOrganizer;
 import '../../test/test_pump_helpers.dart';
 import 'app_shell_test_harness.dart';
 
@@ -79,7 +79,7 @@ class HostShellBackend {
   /// them. Reads project these records the way the backend does.
   final privateEvents = <String, Map<String, Object?>>{};
 
-  Future<void> seedOrganizer(Club organizer) => firestore
+  Future<void> seedOrganizer(Organizer organizer) => firestore
       .collection('organizers')
       .doc(organizer.id)
       .set(organizer.toJson());
@@ -217,7 +217,7 @@ class HostShellBackend {
     final organizerId =
         request['organizerId'] as String? ?? 'host-journey-created-organizer';
     await seedOrganizer(
-      buildClub(
+      buildOrganizer(
         id: organizerId,
         name: request['name']! as String,
         location: request['location']! as String,
@@ -399,7 +399,7 @@ class _CallableResult<T> extends Fake implements HttpsCallableResult<T> {
 Future<List<Object>> hostAppShellTestOverrides({
   required HostShellBackend backend,
   required UserProfile user,
-  required List<Club> organizers,
+  required List<Organizer> organizers,
 }) async {
   for (final organizer in organizers) {
     await backend.seedOrganizer(organizer);
@@ -408,7 +408,7 @@ Future<List<Object>> hostAppShellTestOverrides({
     ...appShellTestOverrides(
       uid: backend.uid,
       user: user,
-      clubsRepository: ClubsRepository(backend.firestore, backend.functions),
+      organizersRepository: OrganizersRepository(backend.firestore, backend.functions),
       eventRepository: EventRepository(backend.firestore, backend.functions),
     ),
     firebaseFirestoreProvider.overrideWithValue(backend.firestore),

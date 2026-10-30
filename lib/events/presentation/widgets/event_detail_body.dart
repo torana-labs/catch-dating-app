@@ -47,7 +47,7 @@ class EventDetailBody extends StatelessWidget {
     required this.onLocationTap,
     required this.onOpenCompanion,
     required this.onRetryCompanion,
-    required this.onViewClub,
+    required this.onViewOrganizer,
     required this.onMessageHost,
     required this.onRetryHosts,
     this.surfaceStyle,
@@ -86,7 +86,7 @@ class EventDetailBody extends StatelessWidget {
   final VoidCallback? onLocationTap;
   final VoidCallback onOpenCompanion;
   final VoidCallback onRetryCompanion;
-  final ValueChanged<String> onViewClub;
+  final ValueChanged<String> onViewOrganizer;
   final EventDetailMessageHostCallback onMessageHost;
   final VoidCallback onRetryHosts;
   final String? inviteCode;
@@ -183,7 +183,7 @@ class EventDetailBody extends StatelessWidget {
             EventDetailHostsSection(
               event: event,
               state: hostState,
-              onViewClub: onViewClub,
+              onViewOrganizer: onViewOrganizer,
               onMessageHost: onMessageHost,
               onRetry: onRetryHosts,
               surfaceStyle: style,
@@ -342,7 +342,7 @@ class EventDetailHostsSection extends StatelessWidget {
     super.key,
     required this.event,
     required this.state,
-    required this.onViewClub,
+    required this.onViewOrganizer,
     required this.onMessageHost,
     required this.onRetry,
     this.surfaceStyle,
@@ -350,7 +350,7 @@ class EventDetailHostsSection extends StatelessWidget {
 
   final Event event;
   final EventDetailHostState state;
-  final ValueChanged<String> onViewClub;
+  final ValueChanged<String> onViewOrganizer;
   final EventDetailMessageHostCallback onMessageHost;
   final VoidCallback onRetry;
   final EventDetailSurfaceStyle? surfaceStyle;
@@ -377,7 +377,7 @@ class EventDetailHostsSection extends StatelessWidget {
           title: context.l10n.eventsEventDetailBodyTitleHostedBy,
           children: [
             CatchField.navigate(
-              onActivate: () => onViewClub(clubId),
+              onActivate: () => onViewOrganizer(clubId),
               content: CatchPersonLayout(
                 name: state.hostName!,
                 imageUrl: state.photoUrl,

@@ -72,7 +72,7 @@ final class DashboardFullViewModelProvider
       List<Event> signedUpEvents,
       UserProfile user,
       String uid,
-      List<String> followedClubIds,
+      List<String> followedOrganizerIds,
     })
     super.argument,
   }) : super(
@@ -107,14 +107,14 @@ final class DashboardFullViewModelProvider
               List<Event> signedUpEvents,
               UserProfile user,
               String uid,
-              List<String> followedClubIds,
+              List<String> followedOrganizerIds,
             });
     return dashboardFullViewModel(
       ref,
       signedUpEvents: argument.signedUpEvents,
       user: argument.user,
       uid: argument.uid,
-      followedClubIds: argument.followedClubIds,
+      followedOrganizerIds: argument.followedOrganizerIds,
     );
   }
 
@@ -151,7 +151,7 @@ final class DashboardFullViewModelFamily extends $Family
             List<Event> signedUpEvents,
             UserProfile user,
             String uid,
-            List<String> followedClubIds,
+            List<String> followedOrganizerIds,
           })
         > {
   DashboardFullViewModelFamily._()
@@ -169,13 +169,13 @@ final class DashboardFullViewModelFamily extends $Family
     required List<Event> signedUpEvents,
     required UserProfile user,
     required String uid,
-    required List<String> followedClubIds,
+    required List<String> followedOrganizerIds,
   }) => DashboardFullViewModelProvider._(
     argument: (
       signedUpEvents: signedUpEvents,
       user: user,
       uid: uid,
-      followedClubIds: followedClubIds,
+      followedOrganizerIds: followedOrganizerIds,
     ),
     from: this,
   );

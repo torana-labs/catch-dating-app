@@ -56,10 +56,10 @@ final class ReviewsRepositoryProvider
 
 String _$reviewsRepositoryHash() => r'52bee368d4158266dbf1c124ad53707143c1958b';
 
-@ProviderFor(watchReviewsForClub)
-final watchReviewsForClubProvider = WatchReviewsForClubFamily._();
+@ProviderFor(watchReviewsForOrganizer)
+final watchReviewsForOrganizerProvider = WatchReviewsForOrganizerFamily._();
 
-final class WatchReviewsForClubProvider
+final class WatchReviewsForOrganizerProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<Review>>,
@@ -67,8 +67,8 @@ final class WatchReviewsForClubProvider
           Stream<List<Review>>
         >
     with $FutureModifier<List<Review>>, $StreamProvider<List<Review>> {
-  WatchReviewsForClubProvider._({
-    required WatchReviewsForClubFamily super.from,
+  WatchReviewsForOrganizerProvider._({
+    required WatchReviewsForOrganizerFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
@@ -79,7 +79,7 @@ final class WatchReviewsForClubProvider
        );
 
   @override
-  String debugGetCreateSourceHash() => _$watchReviewsForClubHash();
+  String debugGetCreateSourceHash() => _$watchReviewsForOrganizerHash();
 
   @override
   String toString() {
@@ -97,12 +97,12 @@ final class WatchReviewsForClubProvider
   @override
   Stream<List<Review>> create(Ref ref) {
     final argument = this.argument as String;
-    return watchReviewsForClub(ref, argument);
+    return watchReviewsForOrganizer(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is WatchReviewsForClubProvider && other.argument == argument;
+    return other is WatchReviewsForOrganizerProvider && other.argument == argument;
   }
 
   @override
@@ -111,12 +111,12 @@ final class WatchReviewsForClubProvider
   }
 }
 
-String _$watchReviewsForClubHash() =>
+String _$watchReviewsForOrganizerHash() =>
     r'2777391bdfaca2d675d1da30fcb68d2565743582';
 
-final class WatchReviewsForClubFamily extends $Family
+final class WatchReviewsForOrganizerFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Review>>, String> {
-  WatchReviewsForClubFamily._()
+  WatchReviewsForOrganizerFamily._()
     : super(
         retry: null,
         name: r'watchReviewsForClubProvider',
@@ -125,8 +125,8 @@ final class WatchReviewsForClubFamily extends $Family
         isAutoDispose: true,
       );
 
-  WatchReviewsForClubProvider call(String clubId) =>
-      WatchReviewsForClubProvider._(argument: clubId, from: this);
+  WatchReviewsForOrganizerProvider call(String clubId) =>
+      WatchReviewsForOrganizerProvider._(argument: clubId, from: this);
 
   @override
   String toString() => r'watchReviewsForClubProvider';

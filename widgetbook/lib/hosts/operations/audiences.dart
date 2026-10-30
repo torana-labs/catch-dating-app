@@ -28,7 +28,7 @@ import 'shell_fixture.dart';
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostSavedAudiencesStates(BuildContext context) {
-  final organizerId = HostOperationsFixtures.primaryClub.id;
+  final organizerId = HostOperationsFixtures.primaryOrganizer.id;
   final audience = HostSavedAudience(
     organizerId: organizerId,
     audienceId: 'design-repeat-runners',
@@ -156,7 +156,7 @@ Widget hostWhatsappSetupSectionStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Messaging',
 )
 Widget hostCustomerMessagingStates(BuildContext context) {
-  final organizerId = HostOperationsFixtures.primaryClub.id;
+  final organizerId = HostOperationsFixtures.primaryOrganizer.id;
   final messagingSetup = HostMessagingSetup(
     organizerId: organizerId,
     providerConfigured: true,
@@ -211,10 +211,10 @@ Widget hostCustomerMessagingStates(BuildContext context) {
                     emptyStateOmitted: true,
                     children: [
                       HostWhatsappSetupSection(
-                        club: HostOperationsFixtures.primaryClub,
+                        organizer: HostOperationsFixtures.primaryOrganizer,
                       ),
                       HostCampaignEditor(
-                        club: HostOperationsFixtures.primaryClub,
+                        organizer: HostOperationsFixtures.primaryOrganizer,
                       ),
                     ],
                   ),

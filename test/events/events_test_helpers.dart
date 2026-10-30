@@ -19,7 +19,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
@@ -234,7 +234,7 @@ Review buildReview({
   );
 }
 
-Club buildClub({
+Organizer buildOrganizer({
   String id = 'club-1',
   String name = 'Stride Social',
   String description = 'Morning runners who like easy city loops.',
@@ -244,7 +244,7 @@ Club buildClub({
   String hostName = 'Host',
   DateTime? createdAt,
 }) {
-  return Club(
+  return Organizer(
     id: id,
     name: name,
     description: description,
@@ -254,7 +254,7 @@ Club buildClub({
     hostName: hostName,
     createdAt: createdAt ?? DateTime(2025),
     memberCount: 1,
-    appVisibility: ClubAppVisibility.discoverable,
+    appVisibility: OrganizerAppVisibility.discoverable,
   );
 }
 
@@ -435,12 +435,12 @@ class FakeEventRepository extends Fake implements EventRepository {
   ExternalEventOriginInput? createdExternalOrigin;
   EventRuntimeWalkInPolicy? createdRuntimeWalkInPolicy;
   final Map<String, Event?> watchedEvents = {};
-  final Map<String, List<Event>> clubEvents = {};
+  final Map<String, List<Event>> organizerEvents = {};
   final Map<String, List<Event>> attendedEvents = {};
   final Map<String, List<Event>> signedUpEvents = {};
   final Map<String, EventPrivateAccess?> privateAccessByEventId = {};
   final Map<String, List<EventInviteLink>> inviteLinksByEventId = {};
-  List<String>? recommendedClubIds;
+  List<String>? recommendedOrganizerIds;
   List<Event> recommendedEvents = const [];
 
   @override
@@ -487,12 +487,12 @@ class FakeEventRepository extends Fake implements EventRepository {
       Stream.value(inviteLinksByEventId[eventId] ?? const []);
 
   @override
-  Stream<List<Event>> watchEventsForClub({required String clubId}) =>
-      Stream.value(clubEvents[clubId] ?? const []);
+  Stream<List<Event>> watchEventsForOrganizer({required String clubId}) =>
+      Stream.value(organizerEvents[clubId] ?? const []);
 
   @override
-  Future<List<Event>> fetchUpcomingEventsForClubs(List<String> clubIds) async {
-    recommendedClubIds = clubIds;
+  Future<List<Event>> fetchUpcomingEventsForOrganizers(List<String> organizerIds) async {
+    recommendedOrganizerIds = organizerIds;
     return recommendedEvents;
   }
 

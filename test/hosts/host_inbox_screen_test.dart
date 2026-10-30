@@ -22,8 +22,8 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation.da
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_posts_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_posts_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
@@ -43,8 +43,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart' as event_test;
+import '../organizers/organizers_test_helpers.dart' as organizer_test;
 import '../test_pump_helpers.dart';
 import 'inbox/host_inbox_test_fixtures.dart' as inbox_fixture;
 
@@ -651,7 +651,7 @@ Widget _app({
   double floatingBottomOverlayInset = 0,
   bool whatsappProviderConfigured = true,
 }) {
-  final club = club_test.buildClub(id: event?.clubId ?? 'club-1');
+  final organizer = organizer_test.buildOrganizer(id: event?.clubId ?? 'club-1');
   final inbox = ChatsListViewModel(
     newMatches: const [],
     conversations: previews,
@@ -677,50 +677,50 @@ Widget _app({
       eventRepositoryProvider.overrideWithValue(
         event_test.FakeEventRepository(),
       ),
-      hostOperableClubsProvider('host-1').overrideWithValue(AsyncData([club])),
-      hostOperableClubsProvider('host-2').overrideWithValue(AsyncData([club])),
+      hostOperableOrganizersProvider('host-1').overrideWithValue(AsyncData([organizer])),
+      hostOperableOrganizersProvider('host-2').overrideWithValue(AsyncData([organizer])),
       organizerProgramListProvider(
-        club.id,
+        organizer.id,
       ).overrideWithValue(const AsyncData([])),
       if (programRepository != null)
         programSetupRepositoryProvider.overrideWithValue(programRepository),
-      watchEventsForClubProvider(
-        club.id,
+      watchEventsForOrganizerProvider(
+        organizer.id,
       ).overrideWith((ref) => Stream.value(events ?? [?event])),
       chatsListViewModelProvider.overrideWithValue(AsyncData(inbox)),
-      hostMessagingSetupProvider(club.id).overrideWithValue(
+      hostMessagingSetupProvider(organizer.id).overrideWithValue(
         AsyncData(
           _messagingSetup(
-            club.id,
+            organizer.id,
             providerConfigured: whatsappProviderConfigured,
           ),
         ),
       ),
       hostCrmSummaryProvider(
-        club.id,
-      ).overrideWithValue(AsyncData(_crmSummary(club.id))),
-      hostSendsProvider(club.id).overrideWithValue(
+        organizer.id,
+      ).overrideWithValue(AsyncData(_crmSummary(organizer.id))),
+      hostSendsProvider(organizer.id).overrideWithValue(
         AsyncData(
-          HostSendsPage(organizerId: club.id, sends: sends, nextCursor: null),
+          HostSendsPage(organizerId: organizer.id, sends: sends, nextCursor: null),
         ),
       ),
-      hostManualSendTasksProvider(club.id).overrideWithValue(
+      hostManualSendTasksProvider(organizer.id).overrideWithValue(
         AsyncData(
           HostManualSendTaskPage(
-            organizerId: club.id,
+            organizerId: organizer.id,
             tasks: manualSendTasks,
             nextCursor: null,
           ),
         ),
       ),
-      watchClubPostRemainingWeeklyQuotaProvider(
-        club.id,
+      watchOrganizerPostRemainingWeeklyQuotaProvider(
+        organizer.id,
       ).overrideWith((ref) => Stream.value(remainingFollowerQuota)),
-      hostWhatsappThreadsProvider(club.id).overrideWithValue(
+      hostWhatsappThreadsProvider(organizer.id).overrideWithValue(
         whatsappThreadsValue ??
             AsyncData(
               HostWhatsappThreadPage(
-                organizerId: club.id,
+                organizerId: organizer.id,
                 threads: whatsappThreads,
                 nextCursor: null,
               ),
@@ -732,10 +732,10 @@ Widget _app({
           coverage: HostCustomerMatchCountCoverage.exact,
         ),
       ),
-      hostSavedAudiencesProvider(club.id).overrideWithValue(
+      hostSavedAudiencesProvider(organizer.id).overrideWithValue(
         AsyncData(
           HostSavedAudiencePage(
-            audiences: [_savedAudience(club.id)],
+            audiences: [_savedAudience(organizer.id)],
             nextCursor: null,
           ),
         ),

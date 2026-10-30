@@ -169,7 +169,7 @@
         {
           "id": "retry_club_names",
           "owner": "calendar_screen",
-          "codeValue": "clubNameLookupProvider",
+          "codeValue": "organizerNameLookupProvider",
           "cardinality": "singleton",
           "scopeKeys": [
             "clubIdSet",
@@ -1110,7 +1110,7 @@
         {
           "id": "retry_club_names",
           "owner": "saved_events_screen",
-          "codeValue": "clubNameLookupProvider",
+          "codeValue": "organizerNameLookupProvider",
           "cardinality": "singleton",
           "scopeKeys": [
             "clubIdSet",

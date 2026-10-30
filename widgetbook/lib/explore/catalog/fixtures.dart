@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -58,8 +58,8 @@ final widgetbookExploreViewer = UserProfile(
   interestedInGenders: const [Gender.man],
 );
 
-final widgetbookExploreClubs = [
-  _club(
+final widgetbookExploreOrganizers = [
+  _organizer(
     id: 'widgetbook-sea-face-social',
     name: 'Sea Face Social',
     area: 'Bandra',
@@ -72,7 +72,7 @@ final widgetbookExploreClubs = [
     tags: const ['running', 'coffee', 'new members'],
     photoSeed: '1502904550040-7534597429ae',
   ),
-  _club(
+  _organizer(
     id: 'widgetbook-long-table-club',
     name: 'Long Table Club',
     area: 'Fort',
@@ -85,7 +85,7 @@ final widgetbookExploreClubs = [
     tags: const ['dinner', 'conversation', 'first-timers'],
     photoSeed: '1517245386807-bb43f82c33c4',
   ),
-  _club(
+  _organizer(
     id: 'widgetbook-open-court',
     name: 'Open Court',
     area: 'Juhu',
@@ -100,13 +100,13 @@ final widgetbookExploreClubs = [
   ),
 ];
 
-final widgetbookExploreJoinedClubIds = {widgetbookExploreClubs.first.id};
+final widgetbookExploreJoinedOrganizerIds = {widgetbookExploreOrganizers.first.id};
 
 final widgetbookExploreFeedItems = [
   _item(
     event: _event(
       id: 'widgetbook-seaface-run',
-      club: widgetbookExploreClubs[0],
+      organizer: widgetbookExploreOrganizers[0],
       startTime: DateTime(2026, 6, 24, 6, 30),
       meetingPoint: 'Carter Road Jetty',
       activityKind: ActivityKind.socialRun,
@@ -115,14 +115,14 @@ final widgetbookExploreFeedItems = [
       distanceKm: 5,
       distanceFromUserKm: 1.2,
     ),
-    club: widgetbookExploreClubs[0],
+    organizer: widgetbookExploreOrganizers[0],
     distanceFromUserKm: 1.2,
-    isJoinedClubMember: true,
+    isJoinedOrganizerMember: true,
   ),
   _item(
     event: _event(
       id: 'widgetbook-long-table-dinner',
-      club: widgetbookExploreClubs[1],
+      organizer: widgetbookExploreOrganizers[1],
       startTime: DateTime(2026, 6, 24, 20),
       meetingPoint: 'Kala Ghoda table room',
       activityKind: ActivityKind.dinner,
@@ -132,13 +132,13 @@ final widgetbookExploreFeedItems = [
       distanceKm: 0,
       distanceFromUserKm: 3.6,
     ),
-    club: widgetbookExploreClubs[1],
+    organizer: widgetbookExploreOrganizers[1],
     distanceFromUserKm: 3.6,
   ),
   _item(
     event: _event(
       id: 'widgetbook-open-court-pickleball',
-      club: widgetbookExploreClubs[2],
+      organizer: widgetbookExploreOrganizers[2],
       startTime: DateTime(2026, 6, 25, 18),
       meetingPoint: 'Juhu court 2',
       activityKind: ActivityKind.pickleball,
@@ -147,13 +147,13 @@ final widgetbookExploreFeedItems = [
       distanceKm: 0,
       distanceFromUserKm: 4.1,
     ),
-    club: widgetbookExploreClubs[2],
+    organizer: widgetbookExploreOrganizers[2],
     distanceFromUserKm: 4.1,
   ),
   _item(
     event: _event(
       id: 'widgetbook-seaface-walk',
-      club: widgetbookExploreClubs[0],
+      organizer: widgetbookExploreOrganizers[0],
       startTime: DateTime(2026, 6, 26, 7),
       meetingPoint: 'Bandra Fort gate',
       activityKind: ActivityKind.walking,
@@ -162,14 +162,14 @@ final widgetbookExploreFeedItems = [
       distanceKm: 3,
       distanceFromUserKm: 1.8,
     ),
-    club: widgetbookExploreClubs[0],
+    organizer: widgetbookExploreOrganizers[0],
     distanceFromUserKm: 1.8,
-    isJoinedClubMember: true,
+    isJoinedOrganizerMember: true,
   ),
   _item(
     event: _event(
       id: 'widgetbook-brunch',
-      club: widgetbookExploreClubs[1],
+      organizer: widgetbookExploreOrganizers[1],
       startTime: DateTime(2026, 6, 27, 11),
       meetingPoint: 'Colaba reading room',
       activityKind: ActivityKind.pubQuiz,
@@ -179,12 +179,12 @@ final widgetbookExploreFeedItems = [
       distanceKm: 0,
       distanceFromUserKm: 4.8,
     ),
-    club: widgetbookExploreClubs[1],
+    organizer: widgetbookExploreOrganizers[1],
     distanceFromUserKm: 4.8,
   ),
 ];
 
-Club _club({
+Organizer _organizer({
   required String id,
   required String name,
   required String area,
@@ -197,7 +197,7 @@ Club _club({
   required List<String> tags,
   required String photoSeed,
 }) {
-  return Club(
+  return Organizer(
     id: id,
     name: name,
     description:
@@ -221,7 +221,7 @@ Club _club({
 
 Event _event({
   required String id,
-  required Club club,
+  required Organizer organizer,
   required DateTime startTime,
   required String meetingPoint,
   required ActivityKind activityKind,
@@ -233,7 +233,7 @@ Event _event({
 }) {
   return Event(
     id: id,
-    clubId: club.id,
+    clubId: organizer.id,
     startTime: startTime,
     endTime: startTime.add(const Duration(hours: 1, minutes: 45)),
     meetingPoint: meetingPoint,
@@ -241,9 +241,9 @@ Event _event({
       name: meetingPoint,
       latitude: widgetbookExploreMumbai.latitude + distanceFromUserKm / 100,
       longitude: widgetbookExploreMumbai.longitude + distanceFromUserKm / 100,
-      notes: club.area,
+      notes: organizer.area,
     ),
-    photoUrl: club.imageUrl,
+    photoUrl: organizer.imageUrl,
     eventPhotos: [
       _photo('event-$id-main', 0, '1500530855697-b586d89ba3ee'),
       _photo('event-$id-group', 1, '1529156069898-49953e39b3ac'),
@@ -266,20 +266,20 @@ Event _event({
 
 ExploreEventItem _item({
   required Event event,
-  required Club club,
+  required Organizer organizer,
   required double distanceFromUserKm,
-  bool isJoinedClubMember = false,
+  bool isJoinedOrganizerMember = false,
 }) {
   return ExploreEventItem(
     event: event,
-    club: club,
+    organizer: organizer,
     availability: resolveViewerEventAvailability(
       event: event,
       userProfile: widgetbookExploreViewer,
       now: widgetbookExploreNow,
     ),
     distanceFromUserKm: distanceFromUserKm,
-    isJoinedClubMember: isJoinedClubMember,
+    isJoinedOrganizerMember: isJoinedOrganizerMember,
   );
 }
 

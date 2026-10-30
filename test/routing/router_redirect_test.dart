@@ -657,15 +657,15 @@ void main() {
 
     test('organizer settings spokes use canonical top-level routes', () {
       expect(
-        Routes.hostClubEventDefaultsScreen.path,
+        Routes.hostOrganizerEventDefaultsScreen.path,
         '/host/organizers/event-defaults',
       );
       expect(
-        Routes.hostClubLiveGuideScreen.path,
+        Routes.hostOrganizerLiveGuideScreen.path,
         '/host/organizers/live-guide',
       );
-      expect(Routes.hostClubTeamScreen.path, '/host/organizers/team');
-      expect(Routes.hostClubPaymentsScreen.path, '/host/organizers/payments');
+      expect(Routes.hostOrganizerTeamScreen.path, '/host/organizers/team');
+      expect(Routes.hostOrganizerPaymentsScreen.path, '/host/organizers/payments');
       expect(
         Routes.hostEventRehearsalStartScreen.path,
         '/host/organizers/:clubId/rehearsals/new',
@@ -680,10 +680,10 @@ void main() {
       );
 
       for (final route in [
-        Routes.hostClubEventDefaultsScreen,
-        Routes.hostClubLiveGuideScreen,
-        Routes.hostClubTeamScreen,
-        Routes.hostClubPaymentsScreen,
+        Routes.hostOrganizerEventDefaultsScreen,
+        Routes.hostOrganizerLiveGuideScreen,
+        Routes.hostOrganizerTeamScreen,
+        Routes.hostOrganizerPaymentsScreen,
         Routes.hostOrganizerMessagingScreen,
       ]) {
         expect(route.audience, AppRouteAudience.host);
@@ -697,7 +697,7 @@ void main() {
         ),
       );
 
-      expect(screen.initialClubId, 'club-1');
+      expect(screen.initialOrganizerId, 'club-1');
       expect(screen.initialExpandedEditField, 'description');
       expect(screen.initialTab.name, 'insights');
       expect(screen.effectiveInitialTab.name, 'edit');
@@ -742,7 +742,7 @@ void main() {
             builder: (_, _) => const Text('Organizer route'),
           ),
           GoRoute(
-            path: Routes.hostClubsScreen.path,
+            path: Routes.hostOrganizersScreen.path,
             redirect: (_, state) => hostOrganizerIndexRedirect(state.uri),
             routes: [
               GoRoute(
@@ -789,7 +789,7 @@ void main() {
           uidAsync: const AsyncData(null),
           userProfileAsync: const AsyncData(null),
           location: '/host/organizers',
-          matchedLocation: Routes.hostClubsScreen.path,
+          matchedLocation: Routes.hostOrganizersScreen.path,
         ),
         '/auth?from=%2Fhost%2Forganizers',
       );
@@ -906,7 +906,7 @@ void main() {
           uidAsync: const AsyncData(null),
           userProfileAsync: const AsyncData(null),
           location: '/clubs/club-1',
-          matchedLocation: Routes.clubDetailScreen.path,
+          matchedLocation: Routes.organizerDetailScreen.path,
         ),
         null,
       );
@@ -1143,7 +1143,7 @@ void main() {
             userProfileAsync: const AsyncData(null),
             hasPendingAuthVerification: true,
             location: '/clubs/club-1',
-            matchedLocation: Routes.clubDetailScreen.path,
+            matchedLocation: Routes.organizerDetailScreen.path,
           ),
           null,
         );

@@ -12,35 +12,35 @@ part 'explore_recommendations_repository.g.dart';
 class ExploreRecommendationsQuery {
   ExploreRecommendationsQuery({
     required this.userId,
-    required Iterable<String> followedClubIds,
-  }) : followedClubIds = List.unmodifiable(
-         (followedClubIds.toSet().toList()..sort()),
+    required Iterable<String> followedOrganizerIds,
+  }) : followedOrganizerIds = List.unmodifiable(
+         (followedOrganizerIds.toSet().toList()..sort()),
        );
 
   final String userId;
-  final List<String> followedClubIds;
+  final List<String> followedOrganizerIds;
 
   @override
   bool operator ==(Object other) {
     return other is ExploreRecommendationsQuery &&
         other.userId == userId &&
-        listEquals(other.followedClubIds, followedClubIds);
+        listEquals(other.followedOrganizerIds, followedOrganizerIds);
   }
 
   @override
-  int get hashCode => Object.hash(userId, Object.hashAll(followedClubIds));
+  int get hashCode => Object.hash(userId, Object.hashAll(followedOrganizerIds));
 }
 
 class ExploreEventRecommendationCandidate {
   const ExploreEventRecommendationCandidate({
     required this.event,
-    required this.clubName,
-    this.clubLocation,
+    required this.organizerName,
+    this.organizerLocation,
   });
 
   final Event event;
-  final String clubName;
-  final String? clubLocation;
+  final String organizerName;
+  final String? organizerLocation;
 }
 
 // Data-owned provider so Explore can consume recommendation supply without
@@ -52,16 +52,16 @@ Future<List<ExploreEventRecommendationCandidate>> exploreRecommendedEvents(
 ) async {
   final events = await ref
       .watch(eventRepositoryProvider)
-      .fetchUpcomingEventsForClubs(query.followedClubIds);
+      .fetchUpcomingEventsForOrganizers(query.followedOrganizerIds);
   if (events.isEmpty) return const [];
 
-  final clubsRepository = ref.watch(clubsRepositoryProvider);
-  final clubIds = events.map((event) => event.clubId).toSet().toList()..sort();
-  final clubs = await Future.wait(clubIds.map(clubsRepository.fetchClub));
-  final clubsById = <String, Club>{};
-  for (final club in clubs) {
-    if (club != null) {
-      clubsById[club.id] = club;
+  final organizersRepository = ref.watch(organizersRepositoryProvider);
+  final organizerIds = events.map((event) => event.clubId).toSet().toList()..sort();
+  final organizers = await Future.wait(organizerIds.map(organizersRepository.fetchOrganizer));
+  final organizersById = <String, Organizer>{};
+  for (final organizer in organizers) {
+    if (organizer != null) {
+      organizersById[organizer.id] = organizer;
     }
   }
 
@@ -69,8 +69,8 @@ Future<List<ExploreEventRecommendationCandidate>> exploreRecommendedEvents(
     for (final event in events)
       ExploreEventRecommendationCandidate(
         event: event,
-        clubName: clubsById[event.clubId]?.name ?? 'Your organizer',
-        clubLocation: clubsById[event.clubId]?.location,
+        organizerName: organizersById[event.clubId]?.name ?? 'Your organizer',
+        organizerLocation: organizersById[event.clubId]?.location,
       ),
   ];
 }
@@ -182,7 +182,7 @@ ExploreEventRecommendation _scoreRecommendation({
     reason = 'Near you';
   }
 
-  if (_isSameCity(viewer, candidate.clubLocation)) {
+  if (_isSameCity(viewer, candidate.organizerLocation)) {
     score += 10;
   }
 
@@ -191,7 +191,7 @@ ExploreEventRecommendation _scoreRecommendation({
 
   return ExploreEventRecommendation(
     event: event,
-    clubName: candidate.clubName,
+    organizerName: candidate.organizerName,
     reasonLabel: reason,
     score: score,
   );
@@ -244,9 +244,9 @@ double _proximityScore(UserProfile? viewer, Event event) {
   return 0;
 }
 
-bool _isSameCity(UserProfile? viewer, String? clubLocation) {
+bool _isSameCity(UserProfile? viewer, String? organizerLocation) {
   final userCity = viewer?.city?.trim().toLowerCase();
-  final location = clubLocation?.trim().toLowerCase();
+  final location = organizerLocation?.trim().toLowerCase();
   return userCity != null &&
       userCity.isNotEmpty &&
       location != null &&

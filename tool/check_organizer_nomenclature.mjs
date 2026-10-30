@@ -14,11 +14,11 @@ const taxonomy = [
 ];
 
 const requiredMarkers = [
-  ["lib/contexts/organizers/data/clubs_repository.dart", "_collectionPath = 'organizers'"],
-  ["lib/contexts/organizers/data/clubs_repository.dart", "createOrganizer"],
-  ["lib/contexts/organizers/data/club_membership_repository.dart", "organizerFollows"],
-  ["lib/contexts/organizers/data/club_posts_repository.dart", "createOrganizerPost"],
-  ["lib/contexts/organizers/data/clubs_repository.dart", "startOrganizerConversation"],
+  ["lib/contexts/organizers/data/organizers_repository.dart", "_collectionPath = 'organizers'"],
+  ["lib/contexts/organizers/data/organizers_repository.dart", "createOrganizer"],
+  ["lib/contexts/organizers/data/organizer_membership_repository.dart", "organizerFollows"],
+  ["lib/contexts/organizers/data/organizer_posts_repository.dart", "createOrganizerPost"],
+  ["lib/contexts/organizers/data/organizers_repository.dart", "startOrganizerConversation"],
   ["lib/contexts/profiles/data/image_upload_repository.dart", "organizers/"],
   ["lib/routing/route_contract.dart", "/host/organizer"],
   ["website/src/firebase.ts", "requestOrganizerClaim"],
@@ -45,15 +45,15 @@ const forbiddenSourceMarkers = [
   ["admin/src", "Enter a clubs/{id}"],
   ["lib/contexts/organizers/data", "collection('clubs')"],
   ["lib/contexts/organizers/data", "organizer_projection_fallback"],
-  ["lib/contexts/organizers/data/clubs_repository.dart", "_legacyCollectionPath"],
-  ["lib/contexts/organizers/data/clubs_repository.dart", "WithLegacyProjection"],
+  ["lib/contexts/organizers/data/organizers_repository.dart", "_legacyCollectionPath"],
+  ["lib/contexts/organizers/data/organizers_repository.dart", "WithLegacyProjection"],
   ["lib/contexts/organizers/data", "FirebaseFunctions.instance.httpsCallable('createClub')"],
   ["lib/contexts/profiles/data", "'clubs/$"],
   ["lib/contexts/discovery/data/explore_recommendations_repository.dart", "Your club"],
   ["lib/contexts/discovery/data/explore_recommendations_repository.dart", "From your clubs"],
-  ["lib/clubs/presentation/detail/club_membership_controller.dart", "join a club"],
-  ["lib/clubs/presentation/detail/club_membership_controller.dart", "leave a club"],
-  ["lib/clubs/presentation/detail/club_membership_controller.dart", "update club notifications"],
+  ["lib/organizers/presentation/detail/organizer_membership_controller.dart", "join a club"],
+  ["lib/organizers/presentation/detail/organizer_membership_controller.dart", "leave a club"],
+  ["lib/organizers/presentation/detail/organizer_membership_controller.dart", "update club notifications"],
   ["functions/src/index.ts", "createPublicClubReview"],
   ["functions/src/index.ts", "listPublicClubReviews"],
   ["functions/src/index.ts", "adminGetClubClaimRequestDetails"],
@@ -85,8 +85,8 @@ const forbiddenClientAuthorityPatterns = [
 const allowedClubCopyKeys = new Set([
   "hostsOrganizerTypeClub",
   "launchAccessLaunchAccessApplicationScreenBodyUsefulIfYouAlready",
-  "clubsClubHeroAppBarTitleClubDetailCollapsedTitle",
-  "clubsClubHeroAppBarTextClubDetailExpandedTitle",
+  "organizersOrganizerHeroAppBarTitleOrganizerDetailCollapsedTitle",
+  "organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle",
 ]);
 
 export function checkOrganizerNomenclature({root = fromRepo()} = {}) {

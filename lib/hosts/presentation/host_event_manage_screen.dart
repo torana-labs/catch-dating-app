@@ -7,8 +7,8 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show
         EventSuccessAssignment,
@@ -59,7 +59,7 @@ CatchAsyncState<T>? _nullableCatchAsyncState<T>(AsyncValue<T>? value) =>
 class HostEventManageScreen extends ConsumerStatefulWidget {
   const HostEventManageScreen({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.event,
     required this.onBackToSuccess,
     this.initialSection = HostEventManageSection.setup,
@@ -73,7 +73,7 @@ class HostEventManageScreen extends ConsumerStatefulWidget {
     this.referenceNow,
   });
 
-  final Club club;
+  final Organizer organizer;
   final Event event;
   final VoidCallback onBackToSuccess;
   final HostEventManageSection initialSection;
@@ -99,7 +99,7 @@ class HostEventManageScreen extends ConsumerStatefulWidget {
 class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
   @override
   Widget build(BuildContext context) {
-    final club = widget.club;
+    final organizer = widget.organizer;
     final event = widget.event;
     final now = widget.referenceNow ?? DateTime.now();
     final screenState = HostEventManageScreenState.resolve(
@@ -165,7 +165,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             accessState: privateAccessState,
             inviteLinksState: inviteLinksState,
             inviteLink: hostEventInviteUrl(
-              clubId: club.id,
+              clubId: organizer.id,
               eventId: event.id,
               inviteCode: privateAccessState?.value?.inviteCode,
             ),
@@ -184,7 +184,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     ]);
     final actionError = _firstMutationError([cancelMutation, deleteMutation]);
     final hostActions = HostEventActionsSection(
-      club: club,
+      organizer: organizer,
       event: event,
       actionState: actionState,
       actionError: actionError,
@@ -192,8 +192,8 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       onManagePublication: event.setupRevision != null
           ? () => context.pushNamed(
               Routes.hostEventPublicationScreen.name,
-              pathParameters: {'clubId': club.id, 'eventId': event.id},
-              extra: club,
+              pathParameters: {'clubId': organizer.id, 'eventId': event.id},
+              extra: organizer,
             )
           : null,
       onEditEvent: () {
@@ -216,7 +216,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         onDeleted: onBackToSuccess,
       ),
       onSharePrivateLink: (inviteLink) => _shareHostPrivateLink(
-        club: club,
+        organizer: organizer,
         event: event,
         inviteLink: inviteLink,
       ),
@@ -240,7 +240,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         HostCapacitySection(event: event, roster: roster),
         gapH20,
         HostEventSummarySection(
-          club: club,
+          organizer: organizer,
           event: event,
           title: context.l10n.hostsHostEventManagePreparationEventDetails,
         ),
@@ -249,7 +249,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           title: context.l10n.hostsHostEventManagePreparationGuestSources,
           children: [
             HostPublicRegistrationField(
-              club: club,
+              organizer: organizer,
               event: event,
               mutation: publicRegistrationMutation,
               onChanged: (enabled) =>
@@ -267,7 +267,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         if (event.effectiveEventPolicy.usesInviteOnly) ...[
           gapH20,
           HostPrivateAccessAsyncBoundary(
-            club: club,
+            organizer: organizer,
             event: event,
             accessAsync: accessAsync!,
             inviteLinksAsync: inviteLinksAsync!,
@@ -279,7 +279,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             onRetryInviteLinks: () =>
                 ref.invalidate(watchEventInviteLinksProvider(event.id)),
             onSharePrivateLink: (inviteLink) => _shareHostPrivateLink(
-              club: club,
+              organizer: organizer,
               event: event,
               inviteLink: inviteLink,
             ),
@@ -315,11 +315,11 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               emphasis: CatchFieldEmphasis.title,
               onTap: () => context.pushNamed(
                 Routes.hostEventRehearsalStartScreen.name,
-                pathParameters: {'clubId': club.id},
+                pathParameters: {'clubId': organizer.id},
                 queryParameters: {'eventId': event.id},
               ),
             ),
-            OrganizerMomentsEntryField(clubId: club.id, event: event),
+            OrganizerMomentsEntryField(clubId: organizer.id, event: event),
           ],
         ),
         gapH20,
@@ -381,7 +381,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  HostEventSummarySection(club: club, event: event),
+                  HostEventSummarySection(organizer: organizer, event: event),
                   gapH20,
                   hostActions,
                   gapH20,
@@ -461,7 +461,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       return HostEventRosterSection(
         bookedCount: bookedCount,
         onClose: onBackToSuccess,
-        onMessageGuests: () => _openEventMessages(club, event),
+        onMessageGuests: () => _openEventMessages(organizer, event),
         child: ListView(
           key: const ValueKey('host-event-roster-scroll'),
           padding: CatchInsets.pageBody,
@@ -485,7 +485,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             onPressed: () => context.pushNamed(
               Routes.eventChatScreen.name,
               pathParameters: {'eventId': event.id},
-              queryParameters: {'organizerId': club.id},
+              queryParameters: {'organizerId': organizer.id},
             ),
           ),
           CatchTopBarPrimaryButton(
@@ -507,17 +507,17 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     if (GoRouter.maybeOf(context) != null) {
       context.pushNamed(
         Routes.hostEventRosterScreen.name,
-        pathParameters: {'clubId': widget.club.id, 'eventId': widget.event.id},
+        pathParameters: {'clubId': widget.organizer.id, 'eventId': widget.event.id},
         extra: widget.event,
       );
     }
   }
 
-  void _openEventMessages(Club club, Event event) {
+  void _openEventMessages(Organizer organizer, Event event) {
     context.pushNamed(
       Routes.hostInboxScreen.name,
       queryParameters: {'eventId': event.id},
-      extra: club,
+      extra: organizer,
     );
   }
 
@@ -747,7 +747,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
   }
 
   void _shareHostPrivateLink({
-    required Club club,
+    required Organizer organizer,
     required Event event,
     required String inviteLink,
   }) {
@@ -763,7 +763,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             (tx) => tx
                 .get(hostEventManageActionsProvider)
                 .sharePrivateLink(
-                  club: club,
+                  organizer: organizer,
                   event: event,
                   inviteLink: inviteLink,
                   l10n: l10n,

@@ -5,8 +5,8 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_arrival_action.d
 import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -48,8 +48,8 @@ void main() {
         overrides: [
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
           uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-          watchActiveClubMembershipsForUserProvider(user.uid).overrideWithValue(
-            const AsyncError<List<ClubMembership>>('clubs', StackTrace.empty),
+          watchActiveOrganizerMembershipsForUserProvider(user.uid).overrideWithValue(
+            const AsyncError<List<OrganizerMembership>>('clubs', StackTrace.empty),
           ),
           watchSignedUpEventsProvider(
             user.uid,
@@ -78,9 +78,9 @@ void main() {
         overrides: [
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
           uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-          watchActiveClubMembershipsForUserProvider(
+          watchActiveOrganizerMembershipsForUserProvider(
             user.uid,
-          ).overrideWithValue(const AsyncLoading<List<ClubMembership>>()),
+          ).overrideWithValue(const AsyncLoading<List<OrganizerMembership>>()),
           watchSignedUpEventsProvider(
             user.uid,
           ).overrideWithValue(const AsyncData<List<Event>>([])),
@@ -108,9 +108,9 @@ void main() {
           dashboardNowProvider.overrideWithValue(DateTime(2026, 5, 13, 8)),
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
           uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-          watchActiveClubMembershipsForUserProvider(
+          watchActiveOrganizerMembershipsForUserProvider(
             user.uid,
-          ).overrideWithValue(const AsyncData<List<ClubMembership>>([])),
+          ).overrideWithValue(const AsyncData<List<OrganizerMembership>>([])),
           watchSignedUpEventsProvider(
             user.uid,
           ).overrideWithValue(const AsyncData<List<Event>>([])),
@@ -157,8 +157,8 @@ void main() {
           dashboardNowProvider.overrideWithValue(DateTime(2026, 5, 13, 8)),
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
           uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-          watchActiveClubMembershipsForUserProvider(user.uid).overrideWithValue(
-            AsyncData<List<ClubMembership>>([
+          watchActiveOrganizerMembershipsForUserProvider(user.uid).overrideWithValue(
+            AsyncData<List<OrganizerMembership>>([
               membership(clubId: 'club-a', uid: user.uid),
             ]),
           ),
@@ -192,7 +192,7 @@ void main() {
       expect(healthReads, 0);
       expect(recommendationReads, 0);
       expect(state.header.title(_l10n), 'Morning, Runner');
-      expect(state.followedClubIds, ['club-a']);
+      expect(state.followedOrganizerIds, ['club-a']);
       expect(state.viewModel?.nextEvent?.id, event.id);
     });
   });
@@ -318,7 +318,7 @@ void main() {
 
     test('surfaces unread club post notifications as a home module', () {
       final now = DateTime(2026, 5, 18, 10);
-      final posts = clubPostNotificationsFromActivity([
+      final posts = organizerPostNotificationsFromActivity([
         _activityNotification(
           id: 'old-post',
           type: ActivityNotificationType.clubUpdate,
@@ -354,14 +354,14 @@ void main() {
         signedUpEvents: const [],
         uid: user.uid,
         attendedEventsAsync: const AsyncData<List<Event>>([]),
-        clubPostNotifications: posts,
+        organizerPostNotifications: posts,
         now: now,
       );
       final state = DashboardHomeScreenState.full(
         header: DashboardHomeHeaderModel.full(user: user, now: now),
         user: user,
         viewModel: viewModel,
-        followedClubIds: const [],
+        followedOrganizerIds: const [],
       );
 
       expect(dashboardHomeModuleImpressionsFor(state), [

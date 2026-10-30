@@ -94,7 +94,7 @@
             "id": "events_list",
             "language": "dart",
             "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
-            "symbol": "HostEventsClubCard"
+            "symbol": "HostEventsOrganizerCard"
           },
           {
             "id": "events_timeline",
@@ -264,7 +264,7 @@
         {
           "id": "create_organizer",
           "owner": "workspace",
-          "codeValue": "hostCreateClubScreen",
+          "codeValue": "hostCreateOrganizerScreen",
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",

@@ -1,14 +1,13 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/chats/chats.dart' show EventChatEntrySection;
-import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_profile_requirements.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
@@ -30,6 +29,7 @@ import 'package:catch_dating_app/events/shared/event_detail_route_transition.dar
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
 import 'package:catch_dating_app/kernel/organizer_supply_capabilities.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_host_contact_controller.dart';
 import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
@@ -131,9 +131,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
     final vmState = _catchAsyncState(vmAsync);
     final uidState = _catchAsyncState(uidAsync);
     final vm = vmState.value;
-    final resolvedClubId = vm?.event.clubId ?? widget.clubId;
-    final clubAsync = ref.watch(fetchClubProvider(resolvedClubId));
-    final clubState = _catchAsyncState(clubAsync);
+    final resolvedOrganizerId = vm?.event.clubId ?? widget.clubId;
+    final organizerAsync = ref.watch(fetchOrganizerProvider(resolvedOrganizerId));
+    final organizerState = _catchAsyncState(organizerAsync);
     final isHostApp = AppConfig.appRole.isHost;
 
     if (vm != null) {
@@ -210,11 +210,11 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
       );
       final hostState = eventDetailHostStateFrom(
         l10n: context.l10n,
-        clubState: clubState,
+        organizerState: organizerState,
         currentUid: vm.userProfile?.uid,
         canMessageHost:
             sectionVisibility.showConsumerActions &&
-            (clubState.value?.supplyCapabilities.hostContactEnabled ?? false) &&
+            (organizerState.value?.supplyCapabilities.hostContactEnabled ?? false) &&
             vm.userProfile?.hasSocialReadyProfileOn(now) == true,
       );
       final socialState = eventDetailSocialStateFrom(
@@ -350,17 +350,17 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
           onOpenCompanion: () => context.pushNamed(
             Routes.eventSuccessCompanionScreen.name,
             pathParameters: {
-              context.l10n.eventsEventDetailScreenBodyClubid: widget.clubId,
+              context.l10n.eventsEventDetailScreenBodyOrganizerid: widget.clubId,
               context.l10n.eventsEventDetailScreenBodyEventid: vm.event.id,
             },
             extra: vm.event,
           ),
           onRetryCompanion: () =>
               ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
-          onViewClub: (clubId) => context.pushNamed(
+          onViewOrganizer: (clubId) => context.pushNamed(
             eventDetailOrganizerRouteFor(isHostApp: isHostApp).name,
             pathParameters: {
-              context.l10n.eventsEventDetailScreenBodyClubid: clubId,
+              context.l10n.eventsEventDetailScreenBodyOrganizerid: clubId,
             },
           ),
           onMessageHost: (clubId, hostUid) => unawaited(
@@ -372,7 +372,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
             ),
           ),
           onRetryHosts: () =>
-              ref.invalidate(fetchClubProvider(vm.event.clubId)),
+              ref.invalidate(fetchOrganizerProvider(vm.event.clubId)),
           inviteCode: widget.inviteCode,
           inviteLinkId: widget.inviteLinkId,
           now: now,
@@ -413,7 +413,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
               userProfile: vm.userProfile,
               isAuthenticated: vm.isAuthenticated,
               organizerCapabilities:
-                  clubState.value?.supplyCapabilities ??
+                  organizerState.value?.supplyCapabilities ??
                   const OrganizerSupplyCapabilities.unclaimedReadOnly(
                     claimable: false,
                   ),
@@ -427,10 +427,10 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                 isAuthenticated: vm.isAuthenticated,
                 isSaved: vm.isSaved,
                 isHosted: vm.isHost,
-                isClubMember: vm.isClubMember,
+                isOrganizerMember: vm.isOrganizerMember,
                 participation: vm.participation,
                 organizerCapabilities:
-                    clubState.value?.supplyCapabilities ??
+                    organizerState.value?.supplyCapabilities ??
                     const OrganizerSupplyCapabilities.unclaimedReadOnly(
                       claimable: false,
                     ),
@@ -463,7 +463,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
         !isHostApp &&
         uidState.hasData &&
         uidState.value == null &&
-        clubState.value?.isPubliclyBrowseable == true;
+        organizerState.value?.isPubliclyBrowseable == true;
     if (vmState.isLoading &&
         _initialEventMatchesRoute &&
         canRenderGuestInitialEvent) {
@@ -525,10 +525,10 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
           onOpenCompanion: () {},
           onRetryCompanion: () =>
               ref.invalidate(watchEventSuccessPlanProvider(event.id)),
-          onViewClub: (clubId) => context.pushNamed(
-            Routes.clubDetailScreen.name,
+          onViewOrganizer: (clubId) => context.pushNamed(
+            Routes.organizerDetailScreen.name,
             pathParameters: {
-              context.l10n.eventsEventDetailScreenBodyClubid: clubId,
+              context.l10n.eventsEventDetailScreenBodyOrganizerid: clubId,
             },
           ),
           onMessageHost: (clubId, hostUid) => unawaited(
@@ -539,7 +539,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
               eventId: widget.eventId,
             ),
           ),
-          onRetryHosts: () => ref.invalidate(fetchClubProvider(widget.clubId)),
+          onRetryHosts: () => ref.invalidate(fetchOrganizerProvider(widget.clubId)),
           inviteCode: widget.inviteCode,
           inviteLinkId: widget.inviteLinkId,
           now: now,
@@ -552,7 +552,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
               event: event,
               userProfile: null,
               isAuthenticated: false,
-              organizerCapabilities: clubState.value!.supplyCapabilities,
+              organizerCapabilities: organizerState.value!.supplyCapabilities,
               now: now,
               sectionVisibility: sectionVisibility,
             )
@@ -562,7 +562,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                 clubId: widget.clubId,
                 isAuthenticated: false,
                 participation: null,
-                organizerCapabilities: clubState.value!.supplyCapabilities,
+                organizerCapabilities: organizerState.value!.supplyCapabilities,
                 inviteCode: widget.inviteCode,
                 inviteLinkId: widget.inviteLinkId,
                 now: now,
@@ -628,7 +628,7 @@ class _EventDetailBottomNavigationBar extends StatelessWidget {
     required this.isAuthenticated,
     this.isSaved = false,
     this.isHosted = false,
-    this.isClubMember = false,
+    this.isOrganizerMember = false,
     required this.participation,
     required this.organizerCapabilities,
     required this.inviteCode,
@@ -646,7 +646,7 @@ class _EventDetailBottomNavigationBar extends StatelessWidget {
   final bool isAuthenticated;
   final bool isSaved;
   final bool isHosted;
-  final bool isClubMember;
+  final bool isOrganizerMember;
   final EventParticipation? participation;
   final OrganizerSupplyCapabilities organizerCapabilities;
   final String? inviteCode;
@@ -682,7 +682,7 @@ class _EventDetailBottomNavigationBar extends StatelessWidget {
       organizerCapabilities: organizerCapabilities,
       isSaved: isSaved,
       isHosted: isHosted,
-      isClubMember: isClubMember,
+      isOrganizerMember: isOrganizerMember,
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
       now: now,
@@ -694,7 +694,7 @@ class _EventDetailBottomNavigationBar extends StatelessWidget {
 /// Keeps Event Detail inside the runtime's route family. In particular, a
 /// host preview must never navigate to the consumer-only organizer route.
 Routes eventDetailOrganizerRouteFor({required bool isHostApp}) =>
-    isHostApp ? Routes.hostClubDetailScreen : Routes.clubDetailScreen;
+    isHostApp ? Routes.hostOrganizerDetailScreen : Routes.organizerDetailScreen;
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
   return catchAsyncStateFromAsyncValue(value);

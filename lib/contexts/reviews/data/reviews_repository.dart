@@ -33,7 +33,7 @@ class ReviewsRepository {
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
-  Stream<List<Review>> watchReviewsForClub(String clubId) =>
+  Stream<List<Review>> watchReviewsForOrganizer(String clubId) =>
       withBackendErrorStream(
         () => _reviewsRef
             .where('organizerId', isEqualTo: clubId)
@@ -78,7 +78,7 @@ class ReviewsRepository {
         ),
       );
 
-  Future<CursorPage<Review, DocumentSnapshot<Review>>> fetchClubReviewsPage({
+  Future<CursorPage<Review, DocumentSnapshot<Review>>> fetchOrganizerReviewsPage({
     required String clubId,
     DocumentSnapshot<Review>? startAfter,
     int limit = ReadLimitPolicy.historyPage,
@@ -278,8 +278,8 @@ ReviewsRepository reviewsRepository(Ref ref) => ReviewsRepository(
 );
 
 @riverpod
-Stream<List<Review>> watchReviewsForClub(Ref ref, String clubId) =>
-    ref.watch(reviewsRepositoryProvider).watchReviewsForClub(clubId);
+Stream<List<Review>> watchReviewsForOrganizer(Ref ref, String clubId) =>
+    ref.watch(reviewsRepositoryProvider).watchReviewsForOrganizer(clubId);
 
 @riverpod
 Stream<List<Review>> watchReviewsForEvent(Ref ref, String eventId) =>

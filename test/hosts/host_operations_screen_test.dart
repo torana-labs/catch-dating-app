@@ -4,7 +4,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_communication_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
@@ -33,21 +32,19 @@ import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.da
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_tracking_settings_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/update_club_patch.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_outreach_sheet.dart';
@@ -64,6 +61,8 @@ import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart';
+import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleton.dart';
@@ -77,6 +76,7 @@ import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart'
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_overview.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/platform/device/external_links.dart';
@@ -110,13 +110,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../clubs/clubs_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart';
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 
 part 'host_audience_directory_consistency_tests.dart';
 part 'host_operations_analytics_team_tests.dart';
-part 'host_operations_club_workspace_tests.dart';
 part 'host_operations_customer_communications_tests.dart';
 part 'host_operations_customer_composition_tests.dart';
 part 'host_operations_customer_detail_tests.dart';
@@ -126,6 +125,7 @@ part 'host_operations_customer_state_tests.dart';
 part 'host_operations_customer_summary_filters_tests.dart';
 part 'host_operations_customers_test_support.dart';
 part 'host_operations_customers_tests.dart';
+part 'host_operations_organizer_workspace_tests.dart';
 part 'host_operations_presence_tests.dart';
 part 'host_operations_saved_audience_failure_tests.dart';
 part 'host_operations_state_events_tests.dart';
@@ -148,7 +148,7 @@ void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
   _registerHostOperationsStateEventsTests();
-  _registerHostOperationsClubWorkspaceTests();
+  _registerHostOperationsOrganizerWorkspaceTests();
   _registerHostOperationsCustomersTests();
   _registerAudienceDirectoryConsistencyTests();
   _registerHostOperationsCustomerDetailTests();
@@ -182,25 +182,25 @@ Future<void> _editHostTeamProfileField(
   await pumpFeatureUi(tester);
 }
 
-Club _hostTeamClub() => buildClub(
+Organizer _hostTeamOrganizer() => buildOrganizer(
   id: 'owned-club',
   name: 'Saket Run Club',
   ownerUserId: _hostUid,
   hostProfiles: const [
-    ClubHostProfile(
+    OrganizerHostProfile(
       uid: _hostUid,
       displayName: 'Catch Host',
-      role: ClubHostRole.owner,
+      role: OrganizerHostRole.owner,
     ),
   ],
 );
 
-ClubDetailViewModel _previewViewModel(
-  Club club, {
+OrganizerDetailViewModel _previewViewModel(
+  Organizer organizer, {
   List<Event> events = const [],
 }) {
-  return ClubDetailViewModel(
-    club: club,
+  return OrganizerDetailViewModel(
+    organizer: organizer,
     isHost: true,
     isMember: true,
     upcomingEvents: events,
@@ -240,8 +240,8 @@ Future<void> _pumpHostScreen(
         ),
       ),
       GoRoute(
-        path: Routes.hostCreateClubScreen.path,
-        name: Routes.hostCreateClubScreen.name,
+        path: Routes.hostCreateOrganizerScreen.path,
+        name: Routes.hostCreateOrganizerScreen.name,
         builder: (_, _) => const Text('Create club route'),
       ),
       GoRoute(
@@ -264,9 +264,9 @@ Future<void> _pumpHostScreen(
             Text('Rehearse ${state.pathParameters['clubId']}'),
       ),
       GoRoute(
-        path: Routes.hostClubTeamScreen.path,
-        name: Routes.hostClubTeamScreen.name,
-        builder: (_, state) => HostClubTeamScreen(
+        path: Routes.hostOrganizerTeamScreen.path,
+        name: Routes.hostOrganizerTeamScreen.name,
+        builder: (_, state) => HostOrganizerTeamScreen(
           clubId: state.uri.queryParameters['clubId'] ?? '',
         ),
       ),
@@ -285,28 +285,28 @@ Future<void> _pumpHostScreen(
             Text('Messaging setup ${state.pathParameters['clubId']}'),
       ),
       GoRoute(
-        path: Routes.hostClubDetailScreen.path,
-        name: Routes.hostClubDetailScreen.name,
+        path: Routes.hostOrganizerDetailScreen.path,
+        name: Routes.hostOrganizerDetailScreen.name,
         builder: (_, state) => Text('Club ${state.pathParameters['clubId']}'),
       ),
       GoRoute(
-        path: Routes.hostClubEventDefaultsScreen.path,
-        name: Routes.hostClubEventDefaultsScreen.name,
-        builder: (_, state) => HostClubEventDefaultsScreen(
+        path: Routes.hostOrganizerEventDefaultsScreen.path,
+        name: Routes.hostOrganizerEventDefaultsScreen.name,
+        builder: (_, state) => HostOrganizerEventDefaultsScreen(
           clubId: state.uri.queryParameters['clubId'] ?? '',
         ),
       ),
       GoRoute(
-        path: Routes.hostClubLiveGuideScreen.path,
-        name: Routes.hostClubLiveGuideScreen.name,
-        builder: (_, state) => HostClubLiveGuideScreen(
+        path: Routes.hostOrganizerLiveGuideScreen.path,
+        name: Routes.hostOrganizerLiveGuideScreen.name,
+        builder: (_, state) => HostOrganizerLiveGuideScreen(
           clubId: state.uri.queryParameters['clubId'] ?? '',
         ),
       ),
       GoRoute(
-        path: Routes.hostClubPaymentsScreen.path,
-        name: Routes.hostClubPaymentsScreen.name,
-        builder: (_, state) => HostClubPaymentsScreen(
+        path: Routes.hostOrganizerPaymentsScreen.path,
+        name: Routes.hostOrganizerPaymentsScreen.name,
+        builder: (_, state) => HostOrganizerPaymentsScreen(
           clubId: state.uri.queryParameters['clubId'] ?? '',
         ),
       ),

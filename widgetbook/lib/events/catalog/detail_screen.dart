@@ -8,7 +8,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart'
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
@@ -49,7 +49,7 @@ Widget eventDetailScreenStates(BuildContext context) {
         child: _RouteFrame(
           value: const AsyncLoading<EventDetailViewModel?>(),
           child: EventDetailScreen(
-            clubId: widgetbookEventsClubId,
+            clubId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -60,7 +60,7 @@ Widget eventDetailScreenStates(BuildContext context) {
         child: _RouteFrame(
           value: const AsyncData<EventDetailViewModel?>(null),
           child: EventDetailScreen(
-            clubId: widgetbookEventsClubId,
+            clubId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -74,7 +74,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             StackTrace.empty,
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsClubId,
+            clubId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -87,7 +87,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             _eventVm(widgetbookEvent, participation: widgetbookEventsSignedUp),
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsClubId,
+            clubId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -100,7 +100,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             _eventVm(widgetbookEvent, isAuthenticated: false, isSaved: false),
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsClubId,
+            clubId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -113,7 +113,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             _eventVm(widgetbookEvent, userProfile: _hostViewer, isHost: true),
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsClubId,
+            clubId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -127,7 +127,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             StackTrace.empty,
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsClubId,
+            clubId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -140,7 +140,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             _eventVm(widgetbookEvent, participation: widgetbookEventsSignedUp),
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsClubId,
+            clubId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
             presentationMode: EventDetailPresentationMode.ticket,
@@ -154,7 +154,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             _eventVm(widgetbookEvent, participation: widgetbookEventsSignedUp),
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsClubId,
+            clubId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
             presentationMode: EventDetailPresentationMode.spotlightDark,
@@ -175,7 +175,7 @@ Widget eventDetailScreenStates(BuildContext context) {
               ),
             ),
             child: EventDetailScreen(
-              clubId: widgetbookEventsClubId,
+              clubId: widgetbookEventsOrganizerId,
               eventId: widgetbookEvent.id,
               enableMapNetworkTiles: false,
             ),
@@ -194,7 +194,7 @@ Widget eventDetailScreenStates(BuildContext context) {
               ),
             ),
             child: EventDetailScreen(
-              clubId: widgetbookEventsClubId,
+              clubId: widgetbookEventsOrganizerId,
               eventId: widgetbookEvent.id,
               enableMapNetworkTiles: false,
             ),
@@ -266,9 +266,9 @@ class _RouteFrame extends StatelessWidget {
           eventDetailViewModelProvider(
             widgetbookEvent.id,
           ).overrideWithValue(value),
-          fetchClubProvider(
-            widgetbookEventsClubId,
-          ).overrideWith((ref) => widgetbookEventsClub),
+          fetchOrganizerProvider(
+            widgetbookEventsOrganizerId,
+          ).overrideWith((ref) => widgetbookEventsOrganizer),
           watchEventParticipationRosterProvider(
             widgetbookEvent.id,
           ).overrideWith((ref) => Stream.value(widgetbookEventsRoster())),

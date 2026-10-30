@@ -6,8 +6,8 @@ const _deepLinkHost = 'catchdates.com';
 class AppDeepLinks {
   const AppDeepLinks._();
 
-  static Uri club(String clubId) => _httpsRoute(
-    Routes.clubDetailScreen.path,
+  static Uri organizer(String clubId) => _httpsRoute(
+    Routes.organizerDetailScreen.path,
     pathParameters: {'clubId': clubId},
   );
 

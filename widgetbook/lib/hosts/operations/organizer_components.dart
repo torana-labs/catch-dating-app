@@ -13,57 +13,57 @@ import 'fixtures.dart';
 import 'preview.dart';
 import 'shell_fixture.dart';
 
-Widget _hostClubExactCatalog(BuildContext context, String focus) {
+Widget _hostOrganizerExactCatalog(BuildContext context, String focus) {
   return WidgetbookPageCatalogFrame(
     title: focus,
     contractId: 'component.host.club.${widgetbookHostComponentSlug(focus)}',
     children: [
       WidgetbookPageStateCard(
         label: 'exact component',
-        child: WidgetbookHostComponentFrame(child: _hostClubPreviewFor(focus)),
+        child: WidgetbookHostComponentFrame(child: _hostOrganizerPreviewFor(focus)),
       ),
     ],
   );
 }
 
-Widget _hostClubPreviewFor(String focus) {
-  final club = HostOperationsFixtures.primaryClub;
+Widget _hostOrganizerPreviewFor(String focus) {
+  final organizer = HostOperationsFixtures.primaryOrganizer;
   final events =
-      HostOperationsFixtures.eventsByClub[club.id] ?? const <Event>[];
+      HostOperationsFixtures.eventsByOrganizer[organizer.id] ?? const <Event>[];
   final metricItems = [
     const HostOrganizerMetricItem(value: '188', label: 'Members'),
     const HostOrganizerMetricItem(value: '4.6', label: 'Rating'),
   ];
-  final team = club.displayHostProfiles;
+  final team = organizer.displayHostProfiles;
   final payment = HostOperationsFixtures.readyPaymentAccount;
   return switch (focus) {
-    'HostClubInsightsSection' => HostClubInsightsSection(club: club),
-    'HostClubOrganizerSectionList' => HostClubOrganizerSectionList(club: club),
-    'HostClubEditBody' => HostClubEditBody(
-      club: club,
+    'HostClubInsightsSection' => HostOrganizerInsightsSection(organizer: organizer),
+    'HostClubOrganizerSectionList' => HostOrganizerSectionList(organizer: organizer),
+    'HostClubEditBody' => HostOrganizerEditBody(
+      organizer: organizer,
       currentUid: widgetbookHostUid,
       isOwner: true,
     ),
-    'HostEventsClubCard' => HostEventsClubCard(
-      club: club,
+    'HostEventsClubCard' => HostEventsOrganizerCard(
+      organizer: organizer,
       onEventEntrySelected: (_, _, _) {},
       onManageEvent: (_, _) {},
       now: HostOperationsFixtures.now,
       sessionBoundary: HostOperationsFixtures.now,
     ),
     'HostOrganizerMetricGrid' => HostOrganizerMetricGrid(
-      club: club,
+      organizer: organizer,
       eventsLoaded: true,
       eventCount: events.length,
       activeEventCount: events.where((event) => !event.isCancelled).length,
     ),
     'HostOrganizerMetricRow' => HostOrganizerMetricRow(items: metricItems),
     'HostPaymentAccountCard' => HostPaymentAccountCard(
-      club: club,
+      organizer: organizer,
       account: payment,
     ),
     'HostPaymentAccountControllerCard' => HostPaymentAccountControllerCard(
-      club: club,
+      organizer: organizer,
     ),
     'HostPaymentAccountSection' => HostPaymentAccountSection(
       accounts: [payment],
@@ -80,7 +80,7 @@ Widget _hostClubPreviewFor(String focus) {
     ),
     'HostPaymentAccountLoadingCard' => const HostPaymentAccountLoadingCard(),
     'HostTeamManagementSection' => HostTeamManagementSection(
-      club: club,
+      organizer: organizer,
       currentUid: widgetbookHostUid,
       canManage: true,
     ),
@@ -96,28 +96,28 @@ Widget _hostClubPreviewFor(String focus) {
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostClubInsightsSection,
+  type: HostOrganizerInsightsSection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostClubInsightsSectionCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostClubInsightsSection');
+Widget hostStrictHostOrganizerInsightsSectionCatalogStates(BuildContext context) =>
+    _hostOrganizerExactCatalog(context, 'HostClubInsightsSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostClubOrganizerSectionList,
+  type: HostOrganizerSectionList,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostClubOrganizerSectionListCatalogStates(
+Widget hostStrictHostOrganizerSectionListCatalogStates(
   BuildContext context,
-) => _hostClubExactCatalog(context, 'HostClubOrganizerSectionList');
+) => _hostOrganizerExactCatalog(context, 'HostClubOrganizerSectionList');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostClubEditBody,
+  type: HostOrganizerEditBody,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostClubEditBodyCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostClubEditBody');
+Widget hostStrictHostOrganizerEditBodyCatalogStates(BuildContext context) =>
+    _hostOrganizerExactCatalog(context, 'HostClubEditBody');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -125,93 +125,93 @@ Widget hostStrictHostClubEditBodyCatalogStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostPaymentAccountSectionCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostPaymentAccountSection');
+    _hostOrganizerExactCatalog(context, 'HostPaymentAccountSection');
 
 @widgetbook.UseCase(
   name: 'Owner loaded',
-  type: HostClubEventDefaultsScreen,
+  type: HostOrganizerEventDefaultsScreen,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
 )
-Widget hostClubEventDefaultsScreenLoaded(BuildContext context) =>
+Widget hostOrganizerEventDefaultsScreenLoaded(BuildContext context) =>
     WidgetbookHostShellScope(
-      child: HostClubEventDefaultsScreen(
-        clubId: HostOperationsFixtures.primaryClub.id,
+      child: HostOrganizerEventDefaultsScreen(
+        clubId: HostOperationsFixtures.primaryOrganizer.id,
       ),
     );
 
 @widgetbook.UseCase(
   name: 'Owner loaded',
-  type: HostClubLiveGuideScreen,
+  type: HostOrganizerLiveGuideScreen,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
 )
-Widget hostClubLiveGuideScreenLoaded(BuildContext context) =>
+Widget hostOrganizerLiveGuideScreenLoaded(BuildContext context) =>
     WidgetbookHostShellScope(
-      child: HostClubLiveGuideScreen(
-        clubId: HostOperationsFixtures.primaryClub.id,
+      child: HostOrganizerLiveGuideScreen(
+        clubId: HostOperationsFixtures.primaryOrganizer.id,
       ),
     );
 
 @widgetbook.UseCase(
   name: 'Owner loaded',
-  type: HostClubTeamScreen,
+  type: HostOrganizerTeamScreen,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
 )
-Widget hostClubTeamScreenLoaded(BuildContext context) =>
+Widget hostOrganizerTeamScreenLoaded(BuildContext context) =>
     WidgetbookHostShellScope(
-      child: HostClubTeamScreen(clubId: HostOperationsFixtures.primaryClub.id),
+      child: HostOrganizerTeamScreen(clubId: HostOperationsFixtures.primaryOrganizer.id),
     );
 
 @widgetbook.UseCase(
   name: 'Owner loaded',
-  type: HostClubPaymentsScreen,
+  type: HostOrganizerPaymentsScreen,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
 )
-Widget hostClubPaymentsScreenLoaded(BuildContext context) =>
+Widget hostOrganizerPaymentsScreenLoaded(BuildContext context) =>
     WidgetbookHostShellScope(
-      child: HostClubPaymentsScreen(
-        clubId: HostOperationsFixtures.primaryClub.id,
+      child: HostOrganizerPaymentsScreen(
+        clubId: HostOperationsFixtures.primaryOrganizer.id,
       ),
     );
 
 @widgetbook.UseCase(
   name: 'Resolver states',
-  type: HostClubSpokeAsyncBoundary,
+  type: HostOrganizerSpokeAsyncBoundary,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
 )
-Widget hostClubSpokeResolverStates(BuildContext context) =>
-    hostClubEventDefaultsScreenLoaded(context);
+Widget hostOrganizerSpokeResolverStates(BuildContext context) =>
+    hostOrganizerEventDefaultsScreenLoaded(context);
 
 @widgetbook.UseCase(
   name: 'Canonical scaffold',
-  type: HostClubSpokeScaffold,
+  type: HostOrganizerSpokeScaffold,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
 )
-Widget hostClubSpokeScaffoldStates(BuildContext context) =>
-    hostClubEventDefaultsScreenLoaded(context);
+Widget hostOrganizerSpokeScaffoldStates(BuildContext context) =>
+    hostOrganizerEventDefaultsScreenLoaded(context);
 
 @widgetbook.UseCase(
   name: 'Optimistic editor',
-  type: HostClubDefaultsEditor,
+  type: HostOrganizerDefaultsEditor,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
 )
-Widget hostClubDefaultsEditorStates(BuildContext context) =>
-    hostClubEventDefaultsScreenLoaded(context);
+Widget hostOrganizerDefaultsEditorStates(BuildContext context) =>
+    hostOrganizerEventDefaultsScreenLoaded(context);
 
 @widgetbook.UseCase(
   name: 'Co-host read only',
-  type: HostClubReadOnlyDefaultsSection,
+  type: HostOrganizerReadOnlyDefaultsSection,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
 )
-Widget hostClubReadOnlyEventDefaultsStates(BuildContext context) =>
-    hostClubEventDefaultsScreenLoaded(context);
+Widget hostOrganizerReadOnlyEventDefaultsStates(BuildContext context) =>
+    hostOrganizerEventDefaultsScreenLoaded(context);
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostEventsClubCard,
+  type: HostEventsOrganizerCard,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostEventsClubCardCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostEventsClubCard');
+Widget hostStrictHostEventsOrganizerCardCatalogStates(BuildContext context) =>
+    _hostOrganizerExactCatalog(context, 'HostEventsClubCard');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -219,7 +219,7 @@ Widget hostStrictHostEventsClubCardCatalogStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostOrganizerMetricGridCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostOrganizerMetricGrid');
+    _hostOrganizerExactCatalog(context, 'HostOrganizerMetricGrid');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -227,7 +227,7 @@ Widget hostStrictHostOrganizerMetricGridCatalogStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostOrganizerMetricRowCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostOrganizerMetricRow');
+    _hostOrganizerExactCatalog(context, 'HostOrganizerMetricRow');
 
 @widgetbook.UseCase(
   name: 'Audience rollup states',
@@ -236,7 +236,7 @@ Widget hostStrictHostOrganizerMetricRowCatalogStates(BuildContext context) =>
 )
 Widget hostCrmAudienceCardStates(BuildContext context) {
   final summary = widgetbookHostCrmSummary(
-    HostOperationsFixtures.primaryClub.id,
+    HostOperationsFixtures.primaryOrganizer.id,
   );
   return widgetbookHostComponentStates('HostCrmAudienceCard', [
     (
@@ -296,14 +296,14 @@ Widget hostCrmChannelRowStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Publication status',
-  type: HostClubPublicationChannelRow,
+  type: HostOrganizerPublicationChannelRow,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostClubPublicationChannelRowStates(BuildContext context) =>
+Widget hostOrganizerPublicationChannelRowStates(BuildContext context) =>
     widgetbookHostComponentStates('HostClubPublicationChannelRow', [
       (
         'visible',
-        const HostClubPublicationChannelRow(
+        const HostOrganizerPublicationChannelRow(
           label: 'Catch app',
           status: 'Visible',
           visible: true,
@@ -311,7 +311,7 @@ Widget hostClubPublicationChannelRowStates(BuildContext context) =>
       ),
       (
         'hidden',
-        const HostClubPublicationChannelRow(
+        const HostOrganizerPublicationChannelRow(
           label: 'Public web page',
           status: 'Hidden',
           visible: false,

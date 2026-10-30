@@ -165,7 +165,7 @@ test("allows feature-local cards to delegate chrome to CatchSection", () => {
 
 test("flags standalone section headers followed by untitled CatchSection shells", () => {
   const findings = scanSourceForSectionHeaders({
-    relativePath: "lib/hosts/presentation/host_operations/host_club_organizer_section_list.dart",
+    relativePath: "lib/hosts/presentation/host_operations/host_organizer_section_list.dart",
     source: [
       "Column(children: [",
       "  CatchSectionHeader(",
@@ -188,7 +188,7 @@ test("flags standalone section headers followed by untitled CatchSection shells"
 
 test("allows CatchSection to own a dynamic title directly", () => {
   const findings = scanSourceForSectionHeaders({
-    relativePath: "lib/hosts/presentation/host_operations/host_club_organizer_section_list.dart",
+    relativePath: "lib/hosts/presentation/host_operations/host_organizer_section_list.dart",
     source: [
       "CatchSection.contained(",
       "  title: context.l10n.hostsHostOrganizerTitleManage,",

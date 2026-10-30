@@ -11,8 +11,8 @@ import 'package:catch_dating_app/contexts/connections/data/match_repository.dart
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
@@ -26,8 +26,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart' as organizer_test;
 import '../test_pump_helpers.dart';
 
 class _FakeMatchRepository extends Fake implements MatchRepository {
@@ -725,12 +725,12 @@ void main() {
     final matches = [hostInquiry, secondHostInquiry, datingMatch];
     final matchRepository = _FakeMatchRepository(matches: matches);
     final conversationRepository = _FakeConversationRepository();
-    final clubsRepository = club_test.FakeClubsRepository()
-      ..clubsById['club-1'] = club_test.buildClub(
+    final organizersRepository = organizer_test.FakeOrganizersRepository()
+      ..organizersById['club-1'] = organizer_test.buildOrganizer(
         hostName: 'Stride Social',
         hostProfiles: const [
-          ClubHostProfile(uid: 'guest-1', displayName: 'Asha Guest'),
-          ClubHostProfile(uid: 'guest-2', displayName: 'Nikhil Guest'),
+          OrganizerHostProfile(uid: 'guest-1', displayName: 'Asha Guest'),
+          OrganizerHostProfile(uid: 'guest-2', displayName: 'Nikhil Guest'),
         ],
       );
     final publicProfileRepository = FakePublicProfileRepository()
@@ -744,7 +744,7 @@ void main() {
           conversationRepositoryProvider.overrideWithValue(
             conversationRepository,
           ),
-          clubsRepositoryProvider.overrideWithValue(clubsRepository),
+          organizersRepositoryProvider.overrideWithValue(organizersRepository),
           publicProfileRepositoryProvider.overrideWithValue(
             publicProfileRepository,
           ),
@@ -764,7 +764,7 @@ void main() {
     expect(find.text('Asha Guest'), findsOneWidget);
     expect(find.text('Nikhil Guest'), findsOneWidget);
     expect(find.text('Taylor'), findsOneWidget);
-    expect(clubsRepository.watchClubsByIdsCalls, [
+    expect(organizersRepository.watchOrganizersByIdsCalls, [
       ['club-1'],
     ]);
     expect(publicProfileRepository.fetchPublicProfilesCalls, [

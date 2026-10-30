@@ -55,6 +55,6 @@ Verified on 2026-06-29 against the profile tab (now
 ## Re-Audit Rule
 
 Do not reuse old pre-rename run/club profile-adjacent audit findings without a
-fresh read of current `lib/events/**`, `lib/clubs/**`, `lib/user_profile/**`,
+fresh read of current `lib/events/**`, `lib/organizers/**`, `lib/user_profile/**`,
 tests, and relevant Functions. Notification and map preferences have moved
 toward Settings, so old "not exposed" claims need live verification.

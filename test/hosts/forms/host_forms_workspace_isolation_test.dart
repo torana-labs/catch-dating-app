@@ -10,8 +10,8 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.da
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_application_import.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
@@ -29,7 +29,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../clubs/clubs_test_helpers.dart';
+import '../../organizers/organizers_test_helpers.dart';
 import '../../test_pump_helpers.dart';
 
 // ignore_for_file: riverpod_lint/scoped_providers_should_specify_dependencies
@@ -514,7 +514,7 @@ class _Harness {
     this.importer,
     this.auth,
     this.actors,
-    this.clubs,
+    this.organizers,
   );
   final ProviderContainer container;
   final GoRouter router;
@@ -522,7 +522,7 @@ class _Harness {
   final _Importer importer;
   final _Auth auth;
   final StreamController<String?> actors;
-  final StreamController<List<Club>> clubs;
+  final StreamController<List<Organizer>> organizers;
   Uri get uri => router.routeInformationProvider.value.uri;
   HostFormResponsesSection panel(WidgetTester tester) =>
       tester.widget(find.byType(HostFormResponsesSection));
@@ -544,22 +544,22 @@ class _Harness {
         auth.uid = 'host';
         actors.add('host');
       case 'clubsABA':
-        clubs.add([buildClub(id: 'b', ownerUserId: 'host')]);
+        organizers.add([buildOrganizer(id: 'b', ownerUserId: 'host')]);
         await tester.idle();
-        final fallback = container.read(hostOperableClubsProvider('host'));
+        final fallback = container.read(hostOperableOrganizersProvider('host'));
         expect(fallback.isLoading, isFalse);
         expect(fallback.hasError, isFalse);
-        expect(fallback.requireValue.map((club) => club.id), ['b']);
-        clubs.add([
-          buildClub(id: 'a', ownerUserId: 'host'),
-          buildClub(id: 'b', ownerUserId: 'host'),
+        expect(fallback.requireValue.map((organizer) => organizer.id), ['b']);
+        organizers.add([
+          buildOrganizer(id: 'a', ownerUserId: 'host'),
+          buildOrganizer(id: 'b', ownerUserId: 'host'),
         ]);
         await tester.idle();
-        final restored = container.read(hostOperableClubsProvider('host'));
+        final restored = container.read(hostOperableOrganizersProvider('host'));
         expect(restored.isLoading, isFalse);
         expect(restored.hasError, isFalse);
         expect(
-          restored.requireValue.map((club) => club.id),
+          restored.requireValue.map((organizer) => organizer.id),
           unorderedEquals(['a', 'b']),
         ); // Both resolved changes are observed before a frame.
       case 'liveAuth':
@@ -577,7 +577,7 @@ class _Harness {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final auth = _Auth();
     final actors = StreamController<String?>.broadcast(sync: true);
-    final clubs = StreamController<List<Club>>.broadcast(sync: true);
+    final organizers = StreamController<List<Organizer>>.broadcast(sync: true);
     final repo = _Repository();
     final importer = _Importer();
     final container = ProviderContainer(
@@ -587,20 +587,20 @@ class _Harness {
           yield 'host';
           yield* actors.stream;
         }),
-        watchClubsHostedByProvider('host').overrideWith((ref) async* {
+        watchOrganizersHostedByProvider('host').overrideWith((ref) async* {
           yield [
-            buildClub(id: 'a', ownerUserId: 'host'),
-            buildClub(id: 'b', ownerUserId: 'host'),
+            buildOrganizer(id: 'a', ownerUserId: 'host'),
+            buildOrganizer(id: 'b', ownerUserId: 'host'),
           ];
-          yield* clubs.stream;
+          yield* organizers.stream;
         }),
-        watchClubsOwnedByProvider(
+        watchOrganizersOwnedByProvider(
           'host',
-        ).overrideWithValue(const AsyncData<List<Club>>([])),
-        hostOperableClubsProvider('other').overrideWithValue(
+        ).overrideWithValue(const AsyncData<List<Organizer>>([])),
+        hostOperableOrganizersProvider('other').overrideWithValue(
           AsyncData([
-            buildClub(id: 'a', ownerUserId: 'other'),
-            buildClub(id: 'b', ownerUserId: 'other'),
+            buildOrganizer(id: 'a', ownerUserId: 'other'),
+            buildOrganizer(id: 'b', ownerUserId: 'other'),
           ]),
         ),
         hostFormsRepositoryProvider.overrideWithValue(repo),
@@ -637,7 +637,7 @@ class _Harness {
       router.dispose();
       container.dispose();
       await actors.close();
-      await clubs.close();
+      await organizers.close();
     });
     await tester.pumpWidget(
       UncontrolledProviderScope(
@@ -650,7 +650,7 @@ class _Harness {
       ),
     );
     await _frames(tester);
-    return _Harness(container, router, repo, importer, auth, actors, clubs);
+    return _Harness(container, router, repo, importer, auth, actors, organizers);
   }
 }
 

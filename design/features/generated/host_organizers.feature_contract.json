@@ -62,44 +62,44 @@
           {
             "id": "route_screen",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
-            "symbol": "HostClubsScreen"
+            "file": "lib/hosts/presentation/host_operations/host_organizers_screen.dart",
+            "symbol": "HostOrganizersScreen"
           },
           {
             "id": "workspace",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-            "symbol": "HostClubsScaffold"
+            "file": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
+            "symbol": "HostOrganizersScaffold"
           },
           {
             "id": "edit_tab",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_club_edit_body.dart",
-            "symbol": "HostClubEditBody"
+            "file": "lib/hosts/presentation/host_operations/host_organizer_edit_body.dart",
+            "symbol": "HostOrganizerEditBody"
           },
           {
             "id": "edit_controller",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/host_club_edit_controller.dart",
-            "symbol": "HostClubEditController"
+            "file": "lib/hosts/presentation/organizer_management/host_organizer_edit_controller.dart",
+            "symbol": "HostOrganizerEditController"
           },
           {
             "id": "spoke_resolver",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
-            "symbol": "HostClubSpokeAsyncBoundary"
+            "file": "lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart",
+            "symbol": "HostOrganizerSpokeAsyncBoundary"
           },
           {
             "id": "defaults_saver",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/host_club_defaults_saver.dart",
-            "symbol": "HostClubDefaultsSaver"
+            "file": "lib/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart",
+            "symbol": "HostOrganizerDefaultsSaver"
           },
           {
             "id": "insights",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_club_insights_section.dart",
-            "symbol": "HostClubInsightsSection"
+            "file": "lib/hosts/presentation/host_operations/host_organizer_insights_section.dart",
+            "symbol": "HostOrganizerInsightsSection"
           },
           {
             "id": "payout_adapter",
@@ -116,8 +116,8 @@
           {
             "id": "team_screen",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-            "symbol": "HostClubTeamScreen"
+            "file": "lib/hosts/presentation/host_operations/host_organizer_team_screen.dart",
+            "symbol": "HostOrganizerTeamScreen"
           },
           {
             "id": "team_section",
@@ -128,7 +128,7 @@
           {
             "id": "team_controller",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/host_team_management_controller.dart",
+            "file": "lib/hosts/presentation/organizer_management/host_team_management_controller.dart",
             "symbol": "HostTeamManagementController"
           },
           {
@@ -332,7 +332,7 @@
         {
           "id": "create_organizer",
           "owner": "workspace",
-          "codeValue": "hostCreateClubScreen",
+          "codeValue": "hostCreateOrganizerScreen",
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
@@ -400,7 +400,7 @@
         {
           "id": "update_organizer",
           "owner": "edit_controller",
-          "codeValue": "updateClub",
+          "codeValue": "updateOrganizer",
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
@@ -428,7 +428,7 @@
         {
           "id": "update_organizer_media",
           "owner": "edit_controller",
-          "codeValue": "updateClubMedia",
+          "codeValue": "updateOrganizerMedia",
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
@@ -898,7 +898,7 @@
         {
           "id": "open_hosted_organizer",
           "owner": "team_screen",
-          "codeValue": "_openHostedClub",
+          "codeValue": "_openHostedOrganizer",
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
@@ -1090,7 +1090,7 @@
               "host_clubs_signed_out"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -1168,7 +1168,7 @@
               "host_clubs_loading"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -1246,7 +1246,7 @@
               "host_clubs_offline"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -1324,7 +1324,7 @@
               "host_clubs_empty"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -1402,7 +1402,7 @@
               "host_clubs_management"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": [
               "test/hosts/host_operations_screen_test.dart"
@@ -1483,10 +1483,10 @@
               "host_clubs_cohost_edit"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": [
-              "test/clubs/clubs_controllers_test.dart",
+              "test/organizers/organizers_controllers_test.dart",
               "test/hosts/host_operations_screen_test.dart"
             ]
           },
@@ -1564,7 +1564,7 @@
               "host_clubs_management"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": [
               "test/hosts/host_operations_screen_test.dart"
@@ -1644,7 +1644,7 @@
               "host_clubs_cohost_edit"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": [
               "test/hosts/host_operations_screen_test.dart"
@@ -1722,7 +1722,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": [
               "test/hosts/host_operations_screen_test.dart"
@@ -1804,7 +1804,7 @@
               "host_clubs_inline_edit_offline"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": [
               "test/hosts/host_operations_screen_test.dart"
@@ -1882,7 +1882,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -1958,7 +1958,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -2034,10 +2034,10 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostClubEventDefaultsScreen/Owner loaded",
-              "HostClubLiveGuideScreen/Owner loaded",
-              "HostClubTeamScreen/Owner loaded",
-              "HostClubPaymentsScreen/Owner loaded"
+              "HostOrganizerEventDefaultsScreen/Owner loaded",
+              "HostOrganizerLiveGuideScreen/Owner loaded",
+              "HostOrganizerTeamScreen/Owner loaded",
+              "HostOrganizerPaymentsScreen/Owner loaded"
             ],
             "tests": [
               "test/hosts/host_operations_screen_test.dart",
@@ -2116,10 +2116,10 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostClubEventDefaultsScreen/Owner loaded",
-              "HostClubLiveGuideScreen/Owner loaded",
-              "HostClubTeamScreen/Owner loaded",
-              "HostClubPaymentsScreen/Owner loaded"
+              "HostOrganizerEventDefaultsScreen/Owner loaded",
+              "HostOrganizerLiveGuideScreen/Owner loaded",
+              "HostOrganizerTeamScreen/Owner loaded",
+              "HostOrganizerPaymentsScreen/Owner loaded"
             ],
             "tests": []
           },
@@ -2195,9 +2195,9 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostClubEventDefaultsScreen/Owner loaded",
-              "HostClubLiveGuideScreen/Owner loaded",
-              "HostClubTeamScreen/Owner loaded"
+              "HostOrganizerEventDefaultsScreen/Owner loaded",
+              "HostOrganizerLiveGuideScreen/Owner loaded",
+              "HostOrganizerTeamScreen/Owner loaded"
             ],
             "tests": [
               "test/hosts/host_operations_screen_test.dart"
@@ -2276,7 +2276,7 @@
               "host_clubs_inline_edit_pending"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -2355,7 +2355,7 @@
               "host_clubs_inline_edit_offline"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -2433,7 +2433,7 @@
               "host_clubs_management"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": [
               "test/hosts/host_operations_screen_test.dart"
@@ -2514,7 +2514,7 @@
               "host_clubs_payout_restricted"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -2597,7 +2597,7 @@
               "host_clubs_payout_refresh_offline"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -2727,7 +2727,7 @@
               "host_clubs_team_offline"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states",
+              "HostOrganizersScreen/Route states",
               "hostTeamAddHostSheetStates",
               "CatchDialog/Host action confirmation dialogs"
             ],
@@ -2811,7 +2811,7 @@
               "host_clubs_team_offline"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states",
+              "HostOrganizersScreen/Route states",
               "hostTeamAddHostSheetStates",
               "CatchDialog/Host action confirmation dialogs"
             ],
@@ -2943,7 +2943,7 @@
               "host_clubs_insights_loading"
             ],
             "previewIds": [
-              "HostClubInsightsSection/Insights scorecard states"
+              "HostOrganizerInsightsSection/Insights scorecard states"
             ],
             "tests": []
           },
@@ -3020,7 +3020,7 @@
               "host_clubs_insights_report"
             ],
             "previewIds": [
-              "HostClubInsightsSection/Insights scorecard states"
+              "HostOrganizerInsightsSection/Insights scorecard states"
             ],
             "tests": []
           },
@@ -3096,7 +3096,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostClubInsightsSection/Insights scorecard states"
+              "HostOrganizerInsightsSection/Insights scorecard states"
             ],
             "tests": []
           },
@@ -3175,7 +3175,7 @@
               "host_clubs_insights_offline"
             ],
             "previewIds": [
-              "HostClubInsightsSection/Insights scorecard states"
+              "HostOrganizerInsightsSection/Insights scorecard states"
             ],
             "tests": []
           },
@@ -3253,7 +3253,7 @@
               "host_clubs_preview_tab"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": [
               "test/hosts/host_operations_screen_test.dart"
@@ -3339,7 +3339,7 @@
               "host_clubs_team_offline"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -3417,7 +3417,7 @@
               "host_clubs_text_scale_2"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -3494,7 +3494,7 @@
               "host_clubs_reduced_motion"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -3571,7 +3571,7 @@
               "host_clubs_light_dark"
             ],
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostOrganizersScreen/Route states"
             ],
             "tests": []
           },
@@ -3646,7 +3646,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostClubTeamScreen/Route states"
+              "HostOrganizerTeamScreen/Route states"
             ],
             "tests": []
           },
@@ -3722,7 +3722,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostClubTeamScreen/Route states"
+              "HostOrganizerTeamScreen/Route states"
             ],
             "tests": []
           },
@@ -3797,7 +3797,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostClubTeamScreen/Route states"
+              "HostOrganizerTeamScreen/Route states"
             ],
             "tests": []
           },
@@ -3873,7 +3873,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostClubTeamScreen/Route states",
+              "HostOrganizerTeamScreen/Route states",
               "HostTeamProfileSection/Profile summary states"
             ],
             "tests": []
@@ -3952,7 +3952,7 @@
               "host_team_fallback_profile"
             ],
             "previewIds": [
-              "HostClubTeamScreen/Route states",
+              "HostOrganizerTeamScreen/Route states",
               "HostTeamProfileSection/Profile summary states"
             ],
             "tests": [
@@ -4033,7 +4033,7 @@
               "host_team_active_profile"
             ],
             "previewIds": [
-              "HostClubTeamScreen/Route states",
+              "HostOrganizerTeamScreen/Route states",
               "HostTeamProfileSection/Profile summary states"
             ],
             "tests": [
@@ -4112,7 +4112,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostClubTeamScreen/Route states",
+              "HostOrganizerTeamScreen/Route states",
               "CatchPageTabBar/Contract states"
             ],
             "tests": []
@@ -4484,8 +4484,8 @@
               "host_team_clubs_loading"
             ],
             "previewIds": [
-              "HostClubTeamScreen/Route states",
-              "HostTeamHostedClubsSection/Clubs states"
+              "HostOrganizerTeamScreen/Route states",
+              "HostTeamHostedOrganizersSection/Clubs states"
             ],
             "tests": []
           },
@@ -4562,8 +4562,8 @@
               "host_team_clubs_error"
             ],
             "previewIds": [
-              "HostClubTeamScreen/Route states",
-              "HostTeamHostedClubsSection/Clubs states"
+              "HostOrganizerTeamScreen/Route states",
+              "HostTeamHostedOrganizersSection/Clubs states"
             ],
             "tests": []
           },
@@ -4639,8 +4639,8 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostClubTeamScreen/Route states",
-              "HostTeamHostedClubsSection/Clubs states"
+              "HostOrganizerTeamScreen/Route states",
+              "HostTeamHostedOrganizersSection/Clubs states"
             ],
             "tests": []
           },
@@ -4719,7 +4719,7 @@
               "host_team_sign_out_offline"
             ],
             "previewIds": [
-              "HostClubTeamScreen/Route states",
+              "HostOrganizerTeamScreen/Route states",
               "CatchPageTabBar/Contract states"
             ],
             "tests": [
@@ -4877,9 +4877,9 @@
               "host_team_text_scale_2"
             ],
             "previewIds": [
-              "HostClubTeamScreen/Route states",
+              "HostOrganizerTeamScreen/Route states",
               "HostTeamProfileSection/Profile summary states",
-              "HostTeamHostedClubsSection/Clubs states",
+              "HostTeamHostedOrganizersSection/Clubs states",
               "CatchPageTabBar/Contract states"
             ],
             "tests": []
@@ -4957,7 +4957,7 @@
               "host_team_reduced_motion"
             ],
             "previewIds": [
-              "HostClubTeamScreen/Route states"
+              "HostOrganizerTeamScreen/Route states"
             ],
             "tests": []
           },
@@ -5034,7 +5034,7 @@
               "host_team_active_profile"
             ],
             "previewIds": [
-              "HostClubTeamScreen/Route states"
+              "HostOrganizerTeamScreen/Route states"
             ],
             "tests": []
           },
@@ -5102,32 +5102,32 @@
               "role": "primary"
             },
             {
-              "id": "hostClubsScreen",
+              "id": "hostOrganizersScreen",
               "path": "/host/organizers",
               "role": "alias"
             },
             {
-              "id": "hostClubEventDefaultsScreen",
+              "id": "hostOrganizerEventDefaultsScreen",
               "path": "/host/organizers/event-defaults",
               "role": "host"
             },
             {
-              "id": "hostClubLiveGuideScreen",
+              "id": "hostOrganizerLiveGuideScreen",
               "path": "/host/organizers/live-guide",
               "role": "host"
             },
             {
-              "id": "hostClubTeamScreen",
+              "id": "hostOrganizerTeamScreen",
               "path": "/host/organizers/team",
               "role": "host"
             },
             {
-              "id": "hostClubPaymentsScreen",
+              "id": "hostOrganizerPaymentsScreen",
               "path": "/host/organizers/payments",
               "role": "host"
             },
             {
-              "id": "hostClubMembershipsScreen",
+              "id": "hostOrganizerMembershipsScreen",
               "path": "/host/organizers/memberships",
               "role": "host"
             }
@@ -5403,14 +5403,14 @@
         "previews": [
           "CatchDialog/Host action confirmation dialogs",
           "CatchPageTabBar/Contract states",
-          "HostClubEventDefaultsScreen/Owner loaded",
-          "HostClubInsightsSection/Insights scorecard states",
-          "HostClubLiveGuideScreen/Owner loaded",
-          "HostClubPaymentsScreen/Owner loaded",
-          "HostClubTeamScreen/Owner loaded",
-          "HostClubTeamScreen/Route states",
-          "HostClubsScreen/Route states",
-          "HostTeamHostedClubsSection/Clubs states",
+          "HostOrganizerEventDefaultsScreen/Owner loaded",
+          "HostOrganizerInsightsSection/Insights scorecard states",
+          "HostOrganizerLiveGuideScreen/Owner loaded",
+          "HostOrganizerPaymentsScreen/Owner loaded",
+          "HostOrganizerTeamScreen/Owner loaded",
+          "HostOrganizerTeamScreen/Route states",
+          "HostOrganizersScreen/Route states",
+          "HostTeamHostedOrganizersSection/Clubs states",
           "HostTeamProfileList/Covered by host team route states",
           "HostTeamProfileSection/Profile summary states",
           "hostTeamAddHostSheetStates"

@@ -129,7 +129,7 @@ class _HostPersonConversationPageBodyState
           match != null &&
           match.clubId == person.organizerId &&
           (match.user1Id == uid || match.user2Id == uid) &&
-          match.isClubHostInquiry &&
+          match.isOrganizerHostInquiry &&
           match.otherId(uid) == person.linkedUid;
       if (!valid) {
         partial = true;

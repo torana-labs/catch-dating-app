@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/messaging/data/conversation_repository
 import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
@@ -54,7 +54,7 @@ final class MatchesChatSurfaceFixtures {
     bookedCount: 9,
   );
 
-  static final club = Club(
+  static final organizer = Organizer(
     id: clubId,
     name: 'Sea Face Social',
     description: 'Small social runs and conversation-led evenings.',
@@ -65,10 +65,10 @@ final class MatchesChatSurfaceFixtures {
     ownerUserId: hostUid,
     hostUserIds: const [hostUid],
     hostProfiles: const [
-      ClubHostProfile(
+      OrganizerHostProfile(
         uid: hostUid,
         displayName: 'Mira from Sea Face',
-        role: ClubHostRole.owner,
+        role: OrganizerHostRole.owner,
       ),
     ],
     createdAt: DateTime(2025, 9),

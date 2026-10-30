@@ -162,7 +162,7 @@ class EventRepository with EventRepositoryActions {
     ),
   );
 
-  Stream<List<Event>> watchEventsForClub({
+  Stream<List<Event>> watchEventsForOrganizer({
     required String clubId,
   }) => withBackendErrorStream(
     // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
@@ -287,9 +287,9 @@ class EventRepository with EventRepositoryActions {
     );
   }
 
-  Stream<List<Event>> watchEventsForClubs({required List<String> clubIds}) =>
-      watchEventsForClubIdsStream(
-        clubIds: clubIds,
+  Stream<List<Event>> watchEventsForOrganizers({required List<String> organizerIds}) =>
+      watchEventsForOrganizerIdsStream(
+        organizerIds: organizerIds,
         eventsRef: _eventsRef,
         context: const BackendErrorContext(
           service: BackendService.firestore,
@@ -341,17 +341,17 @@ class EventRepository with EventRepositoryActions {
       _db.collection('eventBroadcastRequests').doc().id;
 
   /// Fetches upcoming events from the given club IDs.
-  Future<List<Event>> fetchUpcomingEventsForClubs(
-    List<String> clubIds,
+  Future<List<Event>> fetchUpcomingEventsForOrganizers(
+    List<String> organizerIds,
   ) => withBackendErrorContext(
     () async {
       // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
-      final uniqueClubIds = clubIds.toSet().toList()..sort();
-      if (uniqueClubIds.isEmpty) return [];
+      final uniqueOrganizerIds = organizerIds.toSet().toList()..sort();
+      if (uniqueOrganizerIds.isEmpty) return [];
       final nowDateTime = DateTime.now();
       final now = Timestamp.fromDate(nowDateTime);
       final events = <Event>[];
-      for (final chunk in chunkedForWhereIn(uniqueClubIds)) {
+      for (final chunk in chunkedForWhereIn(uniqueOrganizerIds)) {
         final snap = await _db
             .collection(_collectionPath)
             .where('publicationState', isEqualTo: 'published')
@@ -400,8 +400,8 @@ Stream<List<EventInviteLink>> watchEventInviteLinks(Ref ref, String eventId) =>
     ref.watch(eventRepositoryProvider).watchInviteLinks(eventId);
 
 @riverpod
-Stream<List<Event>> watchEventsForClub(Ref ref, String clubId) =>
-    ref.watch(eventRepositoryProvider).watchEventsForClub(clubId: clubId);
+Stream<List<Event>> watchEventsForOrganizer(Ref ref, String clubId) =>
+    ref.watch(eventRepositoryProvider).watchEventsForOrganizer(clubId: clubId);
 
 @riverpod
 Stream<EventVenueSession> eventVenueSession(Ref ref, String eventId) async* {
@@ -419,10 +419,10 @@ Stream<EventVenueSession> eventVenueSession(Ref ref, String eventId) async* {
 }
 
 @riverpod
-Stream<List<Event>> watchEventsForClubs(Ref ref, EventsForClubsQuery query) =>
+Stream<List<Event>> watchEventsForOrganizers(Ref ref, EventsForOrganizersQuery query) =>
     ref
         .watch(eventRepositoryProvider)
-        .watchEventsForClubs(clubIds: query.clubIds);
+        .watchEventsForOrganizers(organizerIds: query.organizerIds);
 
 @riverpod
 Stream<List<Event>> watchEventsByIds(Ref ref, EventsByIdQuery query) => ref
@@ -450,47 +450,47 @@ class EventsByIdQuery {
   int get hashCode => _equality.hash(eventIds);
 }
 
-class EventsForClubsQuery {
-  EventsForClubsQuery._(Iterable<String> clubIds)
-    : clubIds = List.unmodifiable(clubIds.toSet().toList()..sort());
+class EventsForOrganizersQuery {
+  EventsForOrganizersQuery._(Iterable<String> organizerIds)
+    : organizerIds = List.unmodifiable(organizerIds.toSet().toList()..sort());
 
-  factory EventsForClubsQuery(Iterable<String> clubIds) =>
-      EventsForClubsQuery._(clubIds);
+  factory EventsForOrganizersQuery(Iterable<String> organizerIds) =>
+      EventsForOrganizersQuery._(organizerIds);
 
   static const _equality = ListEquality<String>();
 
-  final List<String> clubIds;
+  final List<String> organizerIds;
 
   @override
   bool operator ==(Object other) =>
-      other is EventsForClubsQuery && _equality.equals(other.clubIds, clubIds);
+      other is EventsForOrganizersQuery && _equality.equals(other.organizerIds, organizerIds);
 
   @override
-  int get hashCode => _equality.hash(clubIds);
+  int get hashCode => _equality.hash(organizerIds);
 }
 
 class RecommendedEventsQuery {
-  RecommendedEventsQuery._(Iterable<String> followedClubIds)
-    : followedClubIds = List.unmodifiable(
-        (followedClubIds.toSet().toList()..sort()),
+  RecommendedEventsQuery._(Iterable<String> followedOrganizerIds)
+    : followedOrganizerIds = List.unmodifiable(
+        (followedOrganizerIds.toSet().toList()..sort()),
       );
 
-  factory RecommendedEventsQuery.fromClubIds(
-    Iterable<String> followedClubIds,
-  ) => RecommendedEventsQuery._(followedClubIds);
+  factory RecommendedEventsQuery.fromOrganizerIds(
+    Iterable<String> followedOrganizerIds,
+  ) => RecommendedEventsQuery._(followedOrganizerIds);
 
   static const _equality = ListEquality<String>();
 
-  final List<String> followedClubIds;
+  final List<String> followedOrganizerIds;
 
   @override
   bool operator ==(Object other) {
     return other is RecommendedEventsQuery &&
-        _equality.equals(other.followedClubIds, followedClubIds);
+        _equality.equals(other.followedOrganizerIds, followedOrganizerIds);
   }
 
   @override
-  int get hashCode => _equality.hash(followedClubIds);
+  int get hashCode => _equality.hash(followedOrganizerIds);
 }
 
 /// Returns upcoming events from clubs the user follows.
@@ -498,7 +498,7 @@ class RecommendedEventsQuery {
 Future<List<Event>> recommendedEvents(Ref ref, RecommendedEventsQuery query) =>
     ref
         .watch(eventRepositoryProvider)
-        .fetchUpcomingEventsForClubs(query.followedClubIds);
+        .fetchUpcomingEventsForOrganizers(query.followedOrganizerIds);
 
 /// The UID isolates the local provider generation; it is never sent as authority.
 @riverpod

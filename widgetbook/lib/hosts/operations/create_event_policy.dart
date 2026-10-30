@@ -207,7 +207,7 @@ class _EventPolicyStepFrameState extends State<_EventPolicyStepFrame> {
       formKey: _formKey,
       capacityController: _capacityController,
       priceController: _priceController,
-      currencyCode: currencyCodeForCityName(widgetbookClub.location),
+      currencyCode: currencyCodeForCityName(widgetbookOrganizer.location),
       inviteCodeController: _inviteCodeController,
       dynamicPricingStepController: _dynamicPricingStepController,
       dynamicPricingMaxController: _dynamicPricingMaxController,
@@ -248,7 +248,7 @@ class _EventSuccessStepFrameState extends State<_EventSuccessStepFrame> {
   @override
   Widget build(BuildContext context) {
     return EventSuccessStep(
-      organizerId: widgetbookClub.id,
+      organizerId: widgetbookOrganizer.id,
       activityKind: ActivityKind.socialRun,
       eventSuccessDefaults: _defaults,
       targetAttendeeCount: 24,

@@ -4,12 +4,12 @@ class EventAdmissionRequest {
   const EventAdmissionRequest({
     required this.attendee,
     this.hasValidInvite = false,
-    this.isClubMember = false,
+    this.isOrganizerMember = false,
   });
 
   final EventAttendeeProfile attendee;
   final bool hasValidInvite;
-  final bool isClubMember;
+  final bool isOrganizerMember;
 }
 
 class EventAdmissionDecision {
@@ -66,7 +66,7 @@ class EventPolicyEngine {
       );
     }
 
-    if (admissionPolicy.membershipRequired && !request.isClubMember) {
+    if (admissionPolicy.membershipRequired && !request.isOrganizerMember) {
       return decision(
         type: EventAdmissionDecisionType.membershipRequired,
         reason: EventAdmissionDecisionReason.membershipRequired,
@@ -142,7 +142,7 @@ class EventPolicyEngine {
     EventAdmissionRequest request,
   ) {
     if (admissionPolicy.manualApprovalRequired &&
-        !(admissionPolicy.approvedMembersSkipReview && request.isClubMember)) {
+        !(admissionPolicy.approvedMembersSkipReview && request.isOrganizerMember)) {
       return decision(
         type: EventAdmissionDecisionType.manualReviewRequired,
         reason: EventAdmissionDecisionReason.manualApprovalRequired,

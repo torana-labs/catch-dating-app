@@ -7,8 +7,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart' show TextField;
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../test/events/events_test_helpers.dart' as event_helpers;
+import '../test/organizers/organizers_test_helpers.dart' as organizer_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
 import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
@@ -157,10 +157,10 @@ void main() {
 
   testWidgets('attended event detail submits a review', (tester) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
-    final club = club_helpers.buildClub();
+    final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'review-run-1',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime.now().subtract(const Duration(hours: 2)),
       endTime: DateTime.now().subtract(const Duration(hours: 1)),
       meetingPoint: 'Carter Road Amphitheatre',
@@ -173,10 +173,10 @@ void main() {
       overrides: appShellTestOverrides(
         uid: user.uid,
         user: user,
-        clubs: [club],
-        joinedClubIds: {club.id},
-        clubEvents: {
-          club.id: [run],
+        organizers: [organizer],
+        joinedOrganizerIds: {organizer.id},
+        organizerEvents: {
+          organizer.id: [run],
         },
         attendedEvents: [run],
         reviewsRepository: reviewsRepository,
@@ -184,9 +184,9 @@ void main() {
     );
 
     await openAppTab(tester, 'Explore');
-    await openClubDetail(tester, club);
+    await openOrganizerDetail(tester, organizer);
     await pumpAppShellFrames(tester);
-    await openEventDetail(tester, club: club, event: run);
+    await openEventDetail(tester, organizer: organizer, event: run);
     await tester.scrollUntilVisible(
       find.byKey(ReviewKeys.writeReviewButton),
       300,
@@ -201,7 +201,7 @@ void main() {
     await flushAppShellCallbacks(tester);
     await pumpMutationUi(tester);
 
-    expect(reviewsRepository.addedReview?.organizerId, club.id);
+    expect(reviewsRepository.addedReview?.organizerId, organizer.id);
     expect(reviewsRepository.addedReview?.eventId, run.id);
     expect(reviewsRepository.addedReview?.reviewerUserId, user.uid);
     expect(reviewsRepository.addedReview?.reviewerName, user.name);

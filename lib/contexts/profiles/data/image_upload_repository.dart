@@ -16,10 +16,10 @@ part 'image_upload_repository.g.dart';
 
 enum ImageUploadPurpose {
   profilePhoto,
-  clubCover,
-  clubPhoto,
-  clubProfileImage,
-  clubLogo,
+  organizerCover,
+  organizerPhoto,
+  organizerProfileImage,
+  organizerLogo,
   eventPhoto,
   chatImage,
 }
@@ -80,12 +80,12 @@ class ImageUploadRepository {
     maxHeight: 2133,
     quality: 85,
   );
-  static const clubCoverPolicy = ImageUploadPolicy(
+  static const organizerCoverPolicy = ImageUploadPolicy(
     maxWidth: 1800,
     maxHeight: 1200,
     quality: 82,
   );
-  static const clubProfileImagePolicy = ImageUploadPolicy(
+  static const organizerProfileImagePolicy = ImageUploadPolicy(
     maxWidth: 1024,
     maxHeight: 1024,
     quality: 85,
@@ -324,7 +324,7 @@ class ImageUploadRepository {
     );
   }
 
-  Future<UploadedImage> uploadClubPhoto({
+  Future<UploadedImage> uploadOrganizerPhoto({
     String? uid,
     required String clubId,
     required int position,
@@ -337,18 +337,18 @@ class ImageUploadRepository {
     return uploadWithMetadata(
       storagePath: 'organizers/$clubId/media/$resolvedMediaId/original',
       image: image,
-      purpose: ImageUploadPurpose.clubPhoto,
+      purpose: ImageUploadPurpose.organizerPhoto,
       onProgress: onProgress,
       cancellationToken: cancellationToken,
     );
   }
 
-  Future<String> uploadClubCover({
+  Future<String> uploadOrganizerCover({
     required String uid,
     required String clubId,
     required XFile image,
   }) async {
-    final upload = await uploadClubPhoto(
+    final upload = await uploadOrganizerPhoto(
       uid: uid,
       clubId: clubId,
       position: 0,
@@ -357,7 +357,7 @@ class ImageUploadRepository {
     return upload.url;
   }
 
-  Future<UploadedImage> uploadClubLogo({
+  Future<UploadedImage> uploadOrganizerLogo({
     String? uid,
     required String clubId,
     required XFile image,
@@ -369,18 +369,18 @@ class ImageUploadRepository {
     return uploadWithMetadata(
       storagePath: 'organizers/$clubId/logo/$resolvedMediaId/original',
       image: image,
-      purpose: ImageUploadPurpose.clubLogo,
+      purpose: ImageUploadPurpose.organizerLogo,
       onProgress: onProgress,
       cancellationToken: cancellationToken,
     );
   }
 
-  Future<String> uploadClubProfileImage({
+  Future<String> uploadOrganizerProfileImage({
     required String uid,
     required String clubId,
     required XFile image,
   }) async {
-    final upload = await uploadClubLogo(uid: uid, clubId: clubId, image: image);
+    final upload = await uploadOrganizerLogo(uid: uid, clubId: clubId, image: image);
     return upload.url;
   }
 
@@ -498,10 +498,10 @@ class ImageUploadRepository {
   static ImageUploadPolicy policyForPurpose(ImageUploadPurpose purpose) {
     return switch (purpose) {
       ImageUploadPurpose.profilePhoto => profilePhotoPolicy,
-      ImageUploadPurpose.clubCover => clubCoverPolicy,
-      ImageUploadPurpose.clubPhoto => clubCoverPolicy,
-      ImageUploadPurpose.clubProfileImage => clubProfileImagePolicy,
-      ImageUploadPurpose.clubLogo => clubProfileImagePolicy,
+      ImageUploadPurpose.organizerCover => organizerCoverPolicy,
+      ImageUploadPurpose.organizerPhoto => organizerCoverPolicy,
+      ImageUploadPurpose.organizerProfileImage => organizerProfileImagePolicy,
+      ImageUploadPurpose.organizerLogo => organizerProfileImagePolicy,
       ImageUploadPurpose.eventPhoto => eventPhotoPolicy,
       ImageUploadPurpose.chatImage => chatImagePolicy,
     };

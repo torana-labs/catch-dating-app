@@ -100,7 +100,7 @@ Widget eventActionCardActionsState(BuildContext context) {
 Widget eventDateRailCardState(BuildContext context) {
   return EventDateRailCard(
     event: widgetbookEvent,
-    kicker: widgetbookEventsClub.name,
+    kicker: widgetbookEventsOrganizer.name,
     title: widgetbookEvent.eventFormat.label,
     supportingLabel: '5 km · Conversational · Carter Road Jetty',
     capacityLabel: '18 going · 6 left',

@@ -39,7 +39,7 @@ void main() {
   test('host management implementation files live outside consumer folders', () {
     expect(
       File(
-        'lib/clubs/presentation/create/create_club_screen.dart',
+        'lib/organizers/presentation/create/create_club_screen.dart',
       ).existsSync(),
       isFalse,
     );
@@ -49,7 +49,7 @@ void main() {
     );
     expect(
       File(
-        'lib/clubs/presentation/detail/club_host_management_controller.dart',
+        'lib/organizers/presentation/detail/club_host_management_controller.dart',
       ).existsSync(),
       isFalse,
     );
@@ -61,7 +61,7 @@ void main() {
     );
     expect(
       File(
-        'lib/hosts/presentation/club_management/create/create_club_screen.dart',
+        'lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart',
       ).existsSync(),
       isTrue,
     );
@@ -73,7 +73,7 @@ void main() {
     );
     expect(
       File(
-        'lib/hosts/presentation/club_management/host_team_management_controller.dart',
+        'lib/hosts/presentation/organizer_management/host_team_management_controller.dart',
       ).existsSync(),
       isTrue,
     );

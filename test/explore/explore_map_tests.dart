@@ -16,11 +16,11 @@ void _registerExploreMapTests() {
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          exploreSourceClubsProvider.overrideWithValue(
-            const AsyncData(<Club>[]),
+          exploreSourceOrganizersProvider.overrideWithValue(
+            const AsyncData(<Organizer>[]),
           ),
-          exploreClubsViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+          exploreOrganizersViewModelProvider.overrideWithValue(
+            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
           ),
           exploreFeedViewModelProvider.overrideWithValue(
             AsyncData(
@@ -34,7 +34,7 @@ void _registerExploreMapTests() {
         child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.byType(FeaturedEventPoster), findsNothing);
     expect(find.text(externalEvent.title), findsOneWidget);
@@ -62,11 +62,11 @@ void _registerExploreMapTests() {
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          exploreSourceClubsProvider.overrideWithValue(
-            const AsyncData(<Club>[]),
+          exploreSourceOrganizersProvider.overrideWithValue(
+            const AsyncData(<Organizer>[]),
           ),
-          exploreClubsViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+          exploreOrganizersViewModelProvider.overrideWithValue(
+            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
           ),
           exploreFeedViewModelProvider.overrideWithValue(
             AsyncData(
@@ -80,31 +80,31 @@ void _registerExploreMapTests() {
         child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.byType(NestedScrollView), findsOneWidget);
     final rail = find.byType(ExploreFilterRail);
     final railBefore = tester.getRect(rail);
 
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -700));
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
     final railAfterCollapse = tester.getRect(rail);
     expect(railAfterCollapse.top, lessThan(railBefore.top));
 
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -240));
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
     expect(tester.getRect(rail).top, closeTo(railAfterCollapse.top, 0.001));
   });
 
   testWidgets('ExploreScreen filters discover cards from the chip rail', (
     tester,
   ) async {
-    final socialClub = buildClub(
+    final socialOrganizer = buildOrganizer(
       id: 'social-club',
       name: 'Bandra Pacers',
       rating: 4.2,
     );
-    final tempoClub = buildClub(
+    final tempoOrganizer = buildOrganizer(
       id: 'tempo-club',
       name: 'Tempo Queens',
       area: 'Juhu',
@@ -119,21 +119,21 @@ void _registerExploreMapTests() {
           cityListProvider.overrideWith((ref) async => _testCities),
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          currentUserFollowedClubIdsProvider.overrideWithValue(
+          currentUserFollowedOrganizerIdsProvider.overrideWithValue(
             const AsyncData(<String>{}),
           ),
-          watchClubsByLocationProvider(
+          watchOrganizersByLocationProvider(
             'mumbai',
-          ).overrideWith((ref) => Stream.value([socialClub, tempoClub])),
-          exploreSourceClubsProvider.overrideWithValue(
-            AsyncData([socialClub, tempoClub]),
+          ).overrideWith((ref) => Stream.value([socialOrganizer, tempoOrganizer])),
+          exploreSourceOrganizersProvider.overrideWithValue(
+            AsyncData([socialOrganizer, tempoOrganizer]),
           ),
           _emptyExploreFeedOverride,
         ],
         child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     // Handoff chrome: scope tabs stay visible, secondary filters move behind
     // the right-aligned filter glyph.
@@ -157,12 +157,12 @@ void _registerExploreMapTests() {
     expect(find.text('Rated 4.5+'), findsNothing);
 
     await tester.tap(find.text('Tomorrow'));
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.text('1'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('explore-filter-button')));
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.text('Explore filters'), findsOneWidget);
     expect(find.text('DISTANCE · EVENTS ONLY'), findsOneWidget);
@@ -186,8 +186,8 @@ void _registerExploreMapTests() {
   testWidgets('ExploreFilterSheet toggles secondary filter state', (
     tester,
   ) async {
-    final bandraClub = buildClub(id: 'area-bandra', name: 'Bandra Pacers');
-    final juhuClub = buildClub(
+    final bandraOrganizer = buildOrganizer(id: 'area-bandra', name: 'Bandra Pacers');
+    final juhuOrganizer = buildOrganizer(
       id: 'area-juhu',
       name: 'Tempo Queens',
       area: 'Juhu',
@@ -203,7 +203,7 @@ void _registerExploreMapTests() {
               filters: filters,
               state: ExploreFilterSheetState.from(
                 filters: filters,
-                sourceClubs: [bandraClub, juhuClub],
+                sourceOrganizers: [bandraOrganizer, juhuOrganizer],
                 l10n: _l10n,
               ),
               onToggleHighRatedOnly: () {
@@ -349,7 +349,7 @@ void _registerExploreMapTests() {
 
     expect(find.byKey(const ValueKey('explore-applied-joined')), findsNothing);
     await tester.tap(find.byKey(const ValueKey('explore-filter-button')));
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
     expect(find.byKey(const ValueKey('explore-filter-joined')), findsNothing);
   });
 
@@ -398,14 +398,14 @@ void _registerExploreMapTests() {
   testWidgets('ExploreFilterSheet updates its live result count', (
     tester,
   ) async {
-    final club = buildClub(id: 'filter-count-club');
+    final organizer = buildOrganizer(id: 'filter-count-club');
     final first = ExploreEventItem(
-      event: event_test.buildEvent(id: 'filter-count-1', clubId: club.id),
-      club: club,
+      event: event_test.buildEvent(id: 'filter-count-1', clubId: organizer.id),
+      organizer: organizer,
     );
     final second = ExploreEventItem(
-      event: event_test.buildEvent(id: 'filter-count-2', clubId: club.id),
-      club: club,
+      event: event_test.buildEvent(id: 'filter-count-2', clubId: organizer.id),
+      organizer: organizer,
     );
 
     await tester.pumpWidget(
@@ -428,7 +428,7 @@ void _registerExploreMapTests() {
                 final filters = ref.watch(exploreFiltersProvider);
                 final initialSheetState = ExploreFilterSheetState.from(
                   filters: filters,
-                  sourceClubs: [club],
+                  sourceOrganizers: [organizer],
                   l10n: _l10n,
                 );
                 return ExploreFilterRail(
@@ -472,27 +472,27 @@ void _registerExploreMapTests() {
     await tester.pump();
 
     await tester.tap(find.byKey(const ValueKey('explore-filter-button')));
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
     expect(find.text('Show 2 plans'), findsOneWidget);
 
     await tester.tap(_selectChip('Rated 4.5+'));
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
     expect(find.text('Show 1 plan'), findsOneWidget);
   });
 
   testWidgets('ExploreFeedEventRow demotes ineligible plans with a reason', (
     tester,
   ) async {
-    final club = buildClub(id: 'ineligible-club');
+    final organizer = buildOrganizer(id: 'ineligible-club');
     final item = ExploreEventItem(
-      event: event_test.buildEvent(id: 'ineligible-event', clubId: club.id),
-      club: club,
+      event: event_test.buildEvent(id: 'ineligible-event', clubId: organizer.id),
+      organizer: organizer,
       availability: const ViewerEventAvailability(
         status: ViewerEventAvailabilityStatus.fullForViewer,
         spotsRemaining: 0,
         isSaved: false,
         isHosted: false,
-        isClubMember: false,
+        isOrganizerMember: false,
       ),
     );
 
@@ -509,8 +509,8 @@ void _registerExploreMapTests() {
   });
 
   testWidgets('ExploreScreen map pill opens the map route', (tester) async {
-    final club = buildClub(id: 'club-map-pill', name: 'Bandra Pacers');
-    final event = event_test.buildEvent(id: 'event-map-pill', clubId: club.id);
+    final organizer = buildOrganizer(id: 'club-map-pill', name: 'Bandra Pacers');
+    final event = event_test.buildEvent(id: 'event-map-pill', clubId: organizer.id);
     final router = GoRouter(
       initialLocation: '/',
       routes: [
@@ -529,16 +529,16 @@ void _registerExploreMapTests() {
           cityListProvider.overrideWith((ref) async => _testCities),
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          watchClubsByLocationProvider(
+          watchOrganizersByLocationProvider(
             'mumbai',
-          ).overrideWith((ref) => Stream.value([club])),
+          ).overrideWith((ref) => Stream.value([organizer])),
           exploreFeedViewModelProvider.overrideWithValue(
             AsyncData(
               ExploreFeedViewModel(
                 items: [
                   ExploreEventItem(
                     event: event,
-                    club: club,
+                    organizer: organizer,
                     status: EventTileStatus.open,
                   ),
                 ],
@@ -549,14 +549,14 @@ void _registerExploreMapTests() {
         child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     final mapPill = find.widgetWithText(CatchButton, 'Map');
     expect(mapPill, findsOneWidget);
     expect(find.byType(ExploreMapScreen), findsNothing);
 
     await tester.tap(mapPill);
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.byType(ExploreMapScreen), findsOneWidget);
   });
@@ -574,10 +574,10 @@ void _registerExploreMapTests() {
         CatchLayout.tabBarExtent +
         CatchLayout.tabBarFloatingBottomInset +
         bottomSafeArea;
-    final club = buildClub(id: 'club-map-clearance', name: 'Bandra Pacers');
+    final organizer = buildOrganizer(id: 'club-map-clearance', name: 'Bandra Pacers');
     final event = event_test.buildEvent(
       id: 'event-map-clearance',
-      clubId: club.id,
+      clubId: organizer.id,
     );
 
     await tester.pumpWidget(
@@ -586,16 +586,16 @@ void _registerExploreMapTests() {
           cityListProvider.overrideWith((ref) async => _testCities),
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          watchClubsByLocationProvider(
+          watchOrganizersByLocationProvider(
             'mumbai',
-          ).overrideWith((ref) => Stream.value([club])),
+          ).overrideWith((ref) => Stream.value([organizer])),
           exploreFeedViewModelProvider.overrideWithValue(
             AsyncData(
               ExploreFeedViewModel(
                 items: [
                   ExploreEventItem(
                     event: event,
-                    club: club,
+                    organizer: organizer,
                     status: EventTileStatus.open,
                   ),
                 ],
@@ -612,7 +612,7 @@ void _registerExploreMapTests() {
               viewPadding: EdgeInsets.only(bottom: bottomSafeArea),
             ),
             child: CatchTabViewportScope(
-              index: appShellClubsTabIndex,
+              index: appShellOrganizersTabIndex,
               bottomOverlayInset: shellBottomOverlayInset,
               child: ExploreScreen(),
             ),
@@ -620,7 +620,7 @@ void _registerExploreMapTests() {
         ),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     final mapPillRect = tester.getRect(find.widgetWithText(CatchButton, 'Map'));
     final tabBarTop = tester.view.physicalSize.height - shellBottomOverlayInset;
@@ -635,10 +635,10 @@ void _registerExploreMapTests() {
   testWidgets('ExploreMapScreen can seed selected pin for captures', (
     tester,
   ) async {
-    final club = buildClub(id: 'club-map-selected', name: 'Bandra Map Club');
+    final organizer = buildOrganizer(id: 'club-map-selected', name: 'Bandra Map Club');
     final selectedEvent = event_test.buildEvent(
       id: 'event-map-selected',
-      clubId: club.id,
+      clubId: organizer.id,
       meetingPoint: 'Selected Pin Point',
       startTime: DateTime.now().add(const Duration(days: 1)),
     );
@@ -654,7 +654,7 @@ void _registerExploreMapTests() {
                 items: [
                   ExploreEventItem(
                     event: selectedEvent,
-                    club: club,
+                    organizer: organizer,
                     status: EventTileStatus.open,
                   ),
                 ],
@@ -671,7 +671,7 @@ void _registerExploreMapTests() {
         ),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.byType(CatchScaffold), findsOneWidget);
     expect(
@@ -687,10 +687,10 @@ void _registerExploreMapTests() {
   testWidgets('ExploreMapScreen defaults to the native Google map', (
     tester,
   ) async {
-    final club = buildClub(id: 'club-map-default', name: 'Default Map Club');
+    final organizer = buildOrganizer(id: 'club-map-default', name: 'Default Map Club');
     final event = event_test.buildEvent(
       id: 'event-map-default',
-      clubId: club.id,
+      clubId: organizer.id,
       meetingPoint: 'Default Pin Point',
       startTime: DateTime.now().add(const Duration(days: 1)),
     );
@@ -706,7 +706,7 @@ void _registerExploreMapTests() {
                 items: [
                   ExploreEventItem(
                     event: event,
-                    club: club,
+                    organizer: organizer,
                     status: EventTileStatus.open,
                   ),
                 ],
@@ -720,7 +720,7 @@ void _registerExploreMapTests() {
         ),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
 
     expect(find.byType(EventPinsFallbackMap), findsNothing);
     expect(find.byType(gmaps.GoogleMap), findsOneWidget);
@@ -729,8 +729,8 @@ void _registerExploreMapTests() {
   testWidgets('ExploreMapScreen keeps Any until distance is activated', (
     tester,
   ) async {
-    final club = buildClub(id: 'club-map-ring', name: 'Ring Map Club');
-    final event = event_test.buildEvent(id: 'event-map-ring', clubId: club.id);
+    final organizer = buildOrganizer(id: 'club-map-ring', name: 'Ring Map Club');
+    final event = event_test.buildEvent(id: 'event-map-ring', clubId: organizer.id);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -742,7 +742,7 @@ void _registerExploreMapTests() {
                 items: [
                   ExploreEventItem(
                     event: event,
-                    club: club,
+                    organizer: organizer,
                     status: EventTileStatus.open,
                   ),
                 ],
@@ -756,7 +756,7 @@ void _registerExploreMapTests() {
         ),
       ),
     );
-    await _pumpClubUi(tester);
+    await _pumpOrganizerUi(tester);
     await tester.pump();
 
     final container = ProviderScope.containerOf(
@@ -862,13 +862,13 @@ void _registerExploreMapTests() {
   testWidgets(
     'ExploreMapScreen keeps the ring on zero results and offers recovery',
     (tester) async {
-      final club = buildClub(
+      final organizer = buildOrganizer(
         id: 'club-map-recovery',
         name: 'Map Recovery Club',
       );
       final event = event_test.buildEvent(
         id: 'event-map-recovery',
-        clubId: club.id,
+        clubId: organizer.id,
         meetingPoint: 'Recovery Pin Point',
       );
 
@@ -889,7 +889,7 @@ void _registerExploreMapTests() {
                       : [
                           ExploreEventItem(
                             event: event,
-                            club: club,
+                            organizer: organizer,
                             status: EventTileStatus.open,
                           ),
                         ],
@@ -903,13 +903,13 @@ void _registerExploreMapTests() {
           ),
         ),
       );
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
 
       final container = ProviderScope.containerOf(
         tester.element(find.byType(ExploreMapScreen)),
       );
       await tester.tap(find.text('Distance'));
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
 
       expect(find.text('No events within 1 km'), findsOneWidget);
       expect(find.byType(EventPinsFallbackMap), findsOneWidget);
@@ -917,7 +917,7 @@ void _registerExploreMapTests() {
       expect(find.text('Expand to 3 km'), findsOneWidget);
 
       await tester.tap(find.text('Expand to 3 km'));
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
 
       expect(
         container.read(exploreFiltersProvider).distanceFilter,
@@ -932,14 +932,14 @@ void _registerExploreMapTests() {
       container
           .read(exploreFiltersProvider.notifier)
           .setDistanceFilter(ExploreDistanceFilter.tenKm);
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
 
       expect(find.text('No events within 10 km'), findsOneWidget);
       expect(find.textContaining('Expand to'), findsNothing);
       expect(find.text('Show all'), findsOneWidget);
 
       await tester.tap(find.text('Show all'));
-      await _pumpClubUi(tester);
+      await _pumpOrganizerUi(tester);
 
       expect(
         container.read(exploreFiltersProvider).distanceFilter,

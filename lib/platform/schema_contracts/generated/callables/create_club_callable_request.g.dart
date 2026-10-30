@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
-import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 
 
 // Typed callable request DTO emitted from callables/create_club_payload.schema.json.
 // Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Callable payload accepted by createClub.
+/// Callable payload accepted by createOrganizer.
 final class CreateClubCallableRequest {
   const CreateClubCallableRequest({
     this.clubId,
@@ -39,7 +39,7 @@ final class CreateClubCallableRequest {
   final String? instagramHandle;
   final String? phoneNumber;
   final String? email;
-  final ClubHostDefaults? hostDefaults;
+  final OrganizerHostDefaults? hostDefaults;
 
   Map<String, Object?> toJson() => {
     'clubId': ?clubId,

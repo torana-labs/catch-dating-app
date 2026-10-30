@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart';
@@ -68,7 +68,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             case DashboardHomeRetryTarget.memberships:
               final uid = error.uid;
               if (uid != null) {
-                ref.invalidate(watchActiveClubMembershipsForUserProvider(uid));
+                ref.invalidate(watchActiveOrganizerMembershipsForUserProvider(uid));
               }
             case DashboardHomeRetryTarget.signedUpEvents:
               final uid = error.uid;
@@ -147,9 +147,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         AnalyticsEvents.homeModuleImpression,
         parameters: {AnalyticsParameters.homeModule: module},
       );
-      if (module == context.l10n.dashboardDashboardScreenVisiblecopyClubPosts) {
+      if (module == context.l10n.dashboardDashboardScreenVisiblecopyOrganizerPosts) {
         analytics.logEvent(
-          AnalyticsEvents.clubPostImpression,
+          AnalyticsEvents.organizerPostImpression,
           parameters: {
             AnalyticsParameters.surface:
                 context.l10n.dashboardDashboardScreenVisiblecopyHome,

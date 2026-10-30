@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_screen.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
@@ -22,12 +22,12 @@ void main() {
     tester,
   ) async {
     const organizerId = 'organizer-route';
-    final club = buildClub(id: organizerId);
+    final organizer = buildOrganizer(id: organizerId);
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          watchClubProvider(organizerId).overrideWithValue(AsyncData(club)),
+          watchOrganizerProvider(organizerId).overrideWithValue(AsyncData(organizer)),
           hostMessagingSetupProvider(organizerId).overrideWithValue(
             AsyncData(_messagingSetup(organizerId, providerConfigured: false)),
           ),
@@ -98,7 +98,7 @@ Future<void> _pumpSection(WidgetTester tester, HostMessagingSetup setup) async {
         home: Scaffold(
           body: SingleChildScrollView(
             child: HostWhatsappSetupSection(
-              club: buildClub(id: setup.organizerId),
+              organizer: buildOrganizer(id: setup.organizerId),
             ),
           ),
         ),

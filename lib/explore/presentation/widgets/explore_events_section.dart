@@ -1,12 +1,12 @@
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_mixed_feed_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/club_card.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_row.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_feed_empty_state.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/organizer_card.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
@@ -15,9 +15,9 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-export 'package:catch_dating_app/explore/presentation/widgets/club_card.dart';
 export 'package:catch_dating_app/explore/presentation/widgets/explore_event_row.dart';
 export 'package:catch_dating_app/explore/presentation/widgets/explore_feed_empty_state.dart';
+export 'package:catch_dating_app/explore/presentation/widgets/organizer_card.dart';
 
 typedef CrossPathsProfileSelected =
     void Function(CrossPathsSuggestion suggestion, ExploreEventItem eventItem);
@@ -52,12 +52,12 @@ List<Widget> buildExploreEventsSlivers(
   List<CrossPathsSuggestion> crossPathsSuggestions = const [],
   CrossPathsProfileSelected? onCrossPathsProfileSelected,
   CrossPathsImpression? onCrossPathsImpression,
-  ValueChanged<Club>? onClubSelected,
+  ValueChanged<Organizer>? onOrganizerSelected,
   bool pinnedDayHeaders = true,
   bool promoteFeaturedItem = false,
   DateTime? now,
-  List<Club> candidateClubs = const <Club>[],
-  Set<String> joinedClubIds = const <String>{},
+  List<Organizer> candidateOrganizers = const <Organizer>[],
+  Set<String> joinedOrganizerIds = const <String>{},
 }) {
   return switch (feedState) {
     CatchAsyncState(
@@ -103,11 +103,11 @@ List<Widget> buildExploreEventsSlivers(
     ) =>
       () {
         if (value == null) return [const ExploreEventsSkeleton()];
-        final hasDiscoverableClubCandidates = rankExploreClubIntermixCandidates(
-          candidateClubs,
-          joinedClubIds: joinedClubIds,
+        final hasDiscoverableOrganizerCandidates = rankExploreOrganizerIntermixCandidates(
+          candidateOrganizers,
+          joinedOrganizerIds: joinedOrganizerIds,
         ).isNotEmpty;
-        return value.isEmpty && !hasDiscoverableClubCandidates
+        return value.isEmpty && !hasDiscoverableOrganizerCandidates
             ? [
                 ExploreFeedEmptyState(
                   state: ExploreEventsEmptyState.from(
@@ -124,8 +124,8 @@ List<Widget> buildExploreEventsSlivers(
                 ExploreFeedSliverBody(
                   viewModel: value,
                   l10n: l10n,
-                  candidateClubs: candidateClubs,
-                  joinedClubIds: joinedClubIds,
+                  candidateOrganizers: candidateOrganizers,
+                  joinedOrganizerIds: joinedOrganizerIds,
                   pinnedDayHeaders: pinnedDayHeaders,
                   promoteFeaturedItem: promoteFeaturedItem,
                   showThisWeekList:
@@ -137,7 +137,7 @@ List<Widget> buildExploreEventsSlivers(
                   crossPathsSuggestions: crossPathsSuggestions,
                   onCrossPathsProfileSelected: onCrossPathsProfileSelected,
                   onCrossPathsImpression: onCrossPathsImpression,
-                  onClubSelected: onClubSelected,
+                  onOrganizerSelected: onOrganizerSelected,
                 ),
               ];
       }(),
@@ -149,8 +149,8 @@ class ExploreFeedSliverBody extends StatelessWidget {
     super.key,
     required this.viewModel,
     required this.l10n,
-    required this.candidateClubs,
-    required this.joinedClubIds,
+    required this.candidateOrganizers,
+    required this.joinedOrganizerIds,
     required this.pinnedDayHeaders,
     required this.promoteFeaturedItem,
     required this.showThisWeekList,
@@ -160,13 +160,13 @@ class ExploreFeedSliverBody extends StatelessWidget {
     required this.crossPathsSuggestions,
     required this.onCrossPathsProfileSelected,
     required this.onCrossPathsImpression,
-    required this.onClubSelected,
+    required this.onOrganizerSelected,
   });
 
   final ExploreFeedViewModel viewModel;
   final AppLocalizations l10n;
-  final List<Club> candidateClubs;
-  final Set<String> joinedClubIds;
+  final List<Organizer> candidateOrganizers;
+  final Set<String> joinedOrganizerIds;
   final bool pinnedDayHeaders;
   final bool promoteFeaturedItem;
   final bool showThisWeekList;
@@ -176,15 +176,15 @@ class ExploreFeedSliverBody extends StatelessWidget {
   final List<CrossPathsSuggestion> crossPathsSuggestions;
   final CrossPathsProfileSelected? onCrossPathsProfileSelected;
   final CrossPathsImpression? onCrossPathsImpression;
-  final ValueChanged<Club>? onClubSelected;
+  final ValueChanged<Organizer>? onOrganizerSelected;
 
   @override
   Widget build(BuildContext context) {
     final sectionState = ExploreFeedSectionState.from(
       l10n: l10n,
       viewModel: viewModel,
-      candidateClubs: candidateClubs,
-      joinedClubIds: joinedClubIds,
+      candidateOrganizers: candidateOrganizers,
+      joinedOrganizerIds: joinedOrganizerIds,
       showThisWeekList: showThisWeekList,
       promoteFeaturedItem: promoteFeaturedItem,
       now: now,
@@ -276,13 +276,13 @@ class ExploreFeedSliverBody extends StatelessWidget {
                       item: item,
                       onExternalEventOpened: onExternalEventOpened,
                     ),
-                  ExploreMixedClubSpotlightCard(:final club) => ClubCard(
-                    club: club,
-                    onClubSelected: onClubSelected,
+                  ExploreMixedOrganizerSpotlightCard(:final organizer) => OrganizerCard(
+                    organizer: organizer,
+                    onOrganizerSelected: onOrganizerSelected,
                   ),
-                  ExploreMixedClubRowCard(:final club) => ExploreFeedClubRow(
-                    club: club,
-                    onClubSelected: onClubSelected,
+                  ExploreMixedOrganizerRowCard(:final organizer) => ExploreFeedOrganizerRow(
+                    organizer: organizer,
+                    onOrganizerSelected: onOrganizerSelected,
                   ),
                   ExploreMixedPersonCard(:final suggestion, :final eventItem) =>
                     CrossPathsExploreCard(

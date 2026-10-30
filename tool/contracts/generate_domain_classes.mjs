@@ -629,9 +629,9 @@ const SPECS = [
   {
     className: "ClubMembership",
     schema: "firestore/club_memberships.schema.json",
-    output: "lib/contexts/organizers/domain/club_membership.dart",
+    output: "lib/contexts/organizers/domain/organizer_membership.dart",
     imports: [IMPORT_CONVERTERS],
-    extensionFile: "lib/contexts/organizers/domain/club_membership_extensions.dart",
+    extensionFile: "lib/contexts/organizers/domain/organizer_membership_extensions.dart",
     enums: [
       {name: "ClubMembershipRole", schemaPointer: "/properties/role"},
       {name: "ClubMembershipStatus", schemaPointer: "/properties/status"},
@@ -1165,7 +1165,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 //     Hand-rolled non-freezed value objects with enum-fallback fromJson and
 //     bespoke equality; out of scope for a json_serializable projection.
 //
-//   Club / ClubHostProfile (lib/contexts/organizers/domain/club.dart)
+//   Club / ClubHostProfile (lib/contexts/organizers/domain/organizer.dart)
 //     Club carries derived getters (isOwnedBy/isHostedBy/displayHostProfiles)
 //     and is a curated projection of a schema with ~20 extra fields
 //     (entityKind, ownership, claim, publicPage, verifiedReviewCount, ...).

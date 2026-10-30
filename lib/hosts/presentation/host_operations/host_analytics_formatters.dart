@@ -37,7 +37,7 @@ String _metricLabel(BuildContext context, HostAnalyticsMetricCard metric) {
 String? _deltaCaption(
   BuildContext context,
   HostAnalyticsMetricCard metric,
-  HostClubInsightsRangePreset rangePreset,
+  HostOrganizerInsightsRangePreset rangePreset,
 ) {
   final previous = metric.previousValue;
   if (previous == null || previous == 0) return null;
@@ -51,25 +51,25 @@ String? _deltaCaption(
 
 String _rangeLabel(
   BuildContext context,
-  HostClubInsightsRangePreset rangePreset,
+  HostOrganizerInsightsRangePreset rangePreset,
 ) {
   return switch (rangePreset) {
-    HostClubInsightsRangePreset.thirtyDays =>
+    HostOrganizerInsightsRangePreset.thirtyDays =>
       context.l10n.hostsHostAnalyticsLabel30Days,
-    HostClubInsightsRangePreset.ninetyDays =>
+    HostOrganizerInsightsRangePreset.ninetyDays =>
       context.l10n.hostsHostAnalyticsLabel90Days,
-    HostClubInsightsRangePreset.twelveMonths =>
+    HostOrganizerInsightsRangePreset.twelveMonths =>
       context.l10n.hostsHostAnalyticsLabel12Months,
   };
 }
 
 HostAnalyticsGranularity _granularityFor(
-  HostClubInsightsRangePreset rangePreset,
+  HostOrganizerInsightsRangePreset rangePreset,
 ) {
   return switch (rangePreset) {
-    HostClubInsightsRangePreset.thirtyDays ||
-    HostClubInsightsRangePreset.ninetyDays => HostAnalyticsGranularity.week,
-    HostClubInsightsRangePreset.twelveMonths => HostAnalyticsGranularity.month,
+    HostOrganizerInsightsRangePreset.thirtyDays ||
+    HostOrganizerInsightsRangePreset.ninetyDays => HostAnalyticsGranularity.week,
+    HostOrganizerInsightsRangePreset.twelveMonths => HostAnalyticsGranularity.month,
   };
 }
 

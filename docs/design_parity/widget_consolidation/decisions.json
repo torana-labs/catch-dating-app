@@ -663,7 +663,7 @@
           "action": "absorb"
         }
       ],
-      "rationale": "Same file, identical bodies except the media: argument (polaroid artwork vs photo overlay). Single widget; if call sites pick the variant from photo availability, fold that choice inside (mirroring ClubShareCover), else keep a media param.",
+      "rationale": "Same file, identical bodies except the media: argument (polaroid artwork vs photo overlay). Single widget; if call sites pick the variant from photo availability, fold that choice inside (mirroring OrganizerShareCover), else keep a media param.",
       "decidedBy": "claude",
       "date": "2026-07-03",
       "status": "implemented-WO-014"
@@ -2067,11 +2067,11 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: ClubPhotoRail/EventDetailPhotoGrid",
+      "clusterId": "ranked-pair: OrganizerPhotoRail/EventDetailPhotoGrid",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubPhotoRail",
+          "name": "OrganizerPhotoRail",
           "action": "keep"
         },
         {
@@ -2122,11 +2122,11 @@
       "canonicalSymbol": "CatchSectionHeader"
     },
     {
-      "clusterId": "ranked-pair: ClubHeroTopBar/EventDetailHeroTopBar",
+      "clusterId": "ranked-pair: OrganizerHeroTopBar/EventDetailHeroTopBar",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubHeroTopBar",
+          "name": "OrganizerHeroTopBar",
           "action": "keep"
         },
         {
@@ -2320,11 +2320,11 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: ClubDetailBody/EventDetailBody",
+      "clusterId": "ranked-pair: OrganizerDetailBody/EventDetailBody",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubDetailBody",
+          "name": "OrganizerDetailBody",
           "action": "keep"
         },
         {
@@ -2898,11 +2898,11 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: ClubDetailsStep/EventDetailsStep",
+      "clusterId": "ranked-pair: OrganizerDetailsStep/EventDetailsStep",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubDetailsStep",
+          "name": "OrganizerDetailsStep",
           "action": "keep"
         },
         {
@@ -2952,11 +2952,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: HostClubsScaffold/HostEventsScaffold",
+      "clusterId": "ranked-pair: HostOrganizersScaffold/HostEventsScaffold",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostClubsScaffold",
+          "name": "HostOrganizersScaffold",
           "action": "keep"
         },
         {
@@ -3060,15 +3060,15 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: ClubBasicsStep/ClubDetailsStep",
+      "clusterId": "ranked-pair: OrganizerBasicsStep/ClubDetailsStep",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubBasicsStep",
+          "name": "OrganizerBasicsStep",
           "action": "keep"
         },
         {
-          "name": "ClubDetailsStep",
+          "name": "OrganizerDetailsStep",
           "action": "keep"
         }
       ],
@@ -3096,15 +3096,15 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: ClubEventSuccessDefaultsStep/ClubHostDefaultsStep",
+      "clusterId": "ranked-pair: OrganizerEventSuccessDefaultsStep/ClubHostDefaultsStep",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubEventSuccessDefaultsStep",
+          "name": "OrganizerEventSuccessDefaultsStep",
           "action": "keep"
         },
         {
-          "name": "ClubHostDefaultsStep",
+          "name": "OrganizerHostDefaultsStep",
           "action": "keep"
         }
       ],
@@ -3187,11 +3187,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: ClubShareCard/EventShareCard",
+      "clusterId": "ranked-pair: OrganizerShareCard/EventShareCard",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubShareCard",
+          "name": "OrganizerShareCard",
           "action": "keep"
         },
         {
@@ -3223,11 +3223,11 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: ClubReviewsSection/EventReviewsSection",
+      "clusterId": "ranked-pair: OrganizerReviewsSection/EventReviewsSection",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubReviewsSection",
+          "name": "OrganizerReviewsSection",
           "action": "keep"
         },
         {
@@ -3260,11 +3260,11 @@
       "canonicalSymbol": "CatchStatColumn"
     },
     {
-      "clusterId": "ranked-pair: CreateClubPhotosPicker/CreateEventPhotoPicker",
+      "clusterId": "ranked-pair: CreateOrganizerPhotosPicker/CreateEventPhotoPicker",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CreateClubPhotosPicker",
+          "name": "CreateOrganizerPhotosPicker",
           "action": "keep"
         },
         {
@@ -3322,7 +3322,7 @@
           "action": "keep"
         },
         {
-          "name": "ExploreFeedClubRow",
+          "name": "ExploreFeedOrganizerRow",
           "action": "keep"
         }
       ],
@@ -3603,11 +3603,11 @@
       "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: HostEmptyActionCard. Active sibling behavior is retained."
     },
     {
-      "clusterId": "ranked-pair: ClubDetailBody/ClubDetailLoadingBody",
+      "clusterId": "ranked-pair: OrganizerDetailBody/ClubDetailLoadingBody",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubDetailBody",
+          "name": "OrganizerDetailBody",
           "action": "keep"
         },
         {
@@ -3804,15 +3804,15 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: ClubContactSection/ClubHostSection",
+      "clusterId": "ranked-pair: OrganizerContactSection/ClubHostSection",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubContactSection",
+          "name": "OrganizerContactSection",
           "action": "keep"
         },
         {
-          "name": "ClubHostSection",
+          "name": "OrganizerHostSection",
           "action": "keep"
         }
       ],
@@ -3895,11 +3895,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: ClubHostRow/HostTeamOwnerHostRow",
+      "clusterId": "ranked-pair: OrganizerHostRow/HostTeamOwnerHostRow",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubHostRow",
+          "name": "OrganizerHostRow",
           "action": "keep"
         },
         {
@@ -3957,7 +3957,7 @@
           "action": "keep"
         },
         {
-          "name": "ClubShareCard",
+          "name": "OrganizerShareCard",
           "action": "keep"
         }
       ],
@@ -4097,11 +4097,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: HostClubInsightsSection/HostClubPreviewPane",
+      "clusterId": "ranked-pair: HostOrganizerInsightsSection/HostClubPreviewPane",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostClubInsightsSection",
+          "name": "HostOrganizerInsightsSection",
           "action": "keep"
         },
         {
@@ -4151,11 +4151,11 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: CreateClubScreen/CreateEventScreen",
+      "clusterId": "ranked-pair: CreateOrganizerScreen/CreateEventScreen",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CreateClubScreen",
+          "name": "CreateOrganizerScreen",
           "action": "keep"
         },
         {
@@ -4241,11 +4241,11 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: ClubDetailScreen/EventDetailScreen",
+      "clusterId": "ranked-pair: OrganizerDetailScreen/EventDetailScreen",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubDetailScreen",
+          "name": "OrganizerDetailScreen",
           "action": "keep"
         },
         {
@@ -4614,11 +4614,11 @@
           "action": "keep"
         },
         {
-          "name": "HostClubsScreen",
+          "name": "HostOrganizersScreen",
           "action": "keep"
         },
         {
-          "name": "HostCreateClubScreen",
+          "name": "HostCreateOrganizerScreen",
           "action": "keep"
         },
         {
@@ -4747,7 +4747,7 @@
           "action": "keep"
         },
         {
-          "name": "HostEventsClubCard",
+          "name": "HostEventsOrganizerCard",
           "action": "keep"
         },
         {
@@ -5332,7 +5332,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): the two inline-editor kits (profile: UpdateUserProfilePatch; host: UpdateClubPatch + clubId) both already delegate their chrome to core CatchField.actions — K3 — and fork on genuinely different domain plumbing (save repos, latest-profile rebase, hostDefaults derivation) plus per-field-type logic (slider vs text vs prompt vs options). KIT-WATCH: if a third inline-editor family appears, revisit with a patch-abstraction design.",
+      "rationale": "Name-family review (batch 2): the two inline-editor kits (profile: UpdateUserProfilePatch; host: UpdateOrganizerPatch + clubId) both already delegate their chrome to core CatchField.actions — K3 — and fork on genuinely different domain plumbing (save repos, latest-profile rebase, hostDefaults derivation) plus per-field-type logic (slider vs text vs prompt vs options). KIT-WATCH: if a third inline-editor family appears, revisit with a patch-abstraction design.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5463,7 +5463,7 @@
           "action": "keep"
         },
         {
-          "name": "ClubShareCover",
+          "name": "OrganizerShareCover",
           "action": "keep"
         },
         {
@@ -5475,7 +5475,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): K1 chains, dedupe already done: ClubShareCover composes ClubPolaroidArtwork (photo-else-polaroid fallback); ExploreClubPolaroidCard composes CatchPolaroid + ClubPolaroidArtwork. The event ticket card is a different art system.",
+      "rationale": "Name-family review (batch 2): K1 chains, dedupe already done: OrganizerShareCover composes ClubPolaroidArtwork (photo-else-polaroid fallback); ExploreClubPolaroidCard composes CatchPolaroid + ClubPolaroidArtwork. The event ticket card is a different art system.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5519,7 +5519,7 @@
           "action": "keep"
         },
         {
-          "name": "HostEventsClubSection",
+          "name": "HostEventsOrganizerSection",
           "action": "keep"
         },
         {
@@ -5549,11 +5549,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubActivitySection",
+          "name": "OrganizerActivitySection",
           "action": "keep"
         },
         {
-          "name": "ClubScheduleSection",
+          "name": "OrganizerScheduleSection",
           "action": "keep"
         },
         {
@@ -5627,7 +5627,7 @@
           "action": "keep"
         },
         {
-          "name": "HostClubOrganizerSectionList",
+          "name": "HostOrganizerSectionList",
           "action": "keep"
         },
         {
@@ -5713,7 +5713,7 @@
           "action": "keep"
         },
         {
-          "name": "ClubProfileImageTile",
+          "name": "OrganizerProfileImageTile",
           "action": "keep"
         }
       ],
@@ -5815,7 +5815,7 @@
           "action": "keep"
         },
         {
-          "name": "SavedEventsClubNamesErrorState",
+          "name": "SavedEventsOrganizerNamesErrorState",
           "action": "keep"
         },
         {
@@ -5960,7 +5960,7 @@
     {
       "clusterId": "handoff-2.3: Club directory condensed row",
       "decision": "replace-with-new-primitive",
-      "canonicalSymbol": "ClubIndexRow",
+      "canonicalSymbol": "OrganizerIndexRow",
       "members": [
         {
           "name": "ClubListTile",
@@ -6009,22 +6009,22 @@
           "note": "joined-club rail atom"
         },
         {
-          "name": "ClubImage",
+          "name": "OrganizerImage",
           "action": "keep",
           "note": "shared cover/profile/fallback media atom"
         },
         {
-          "name": "ClubJoinAction",
+          "name": "OrganizerJoinAction",
           "action": "keep",
-          "note": "join mutation/auth redirect seam reused by ClubIndexRow"
+          "note": "join mutation/auth redirect seam reused by OrganizerIndexRow"
         },
         {
-          "name": "ClubJoinButton",
+          "name": "OrganizerJoinButton",
           "action": "keep",
           "note": "provider-free joined badge/join button leaf"
         }
       ],
-      "rationale": "Handoff 2.3 assigns long club directories to a condensed polaroid index-row tier, not the old tall directory card tier. ClubIndexRow keeps the polaroid thumbnail cue, activity chip, mono meta row, and membership trailing while ExploreClubPolaroidCard remains the hero/spotlight tier.",
+      "rationale": "Handoff 2.3 assigns long club directories to a condensed polaroid index-row tier, not the old tall directory card tier. OrganizerIndexRow keeps the polaroid thumbnail cue, activity chip, mono meta row, and membership trailing while ExploreClubPolaroidCard remains the hero/spotlight tier.",
       "decidedBy": "claude-review -> codex",
       "date": "2026-07-06",
       "status": "executed-parity-handoff"
@@ -6257,7 +6257,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubTagList",
+          "name": "OrganizerTagList",
           "action": "keep"
         },
         {
@@ -6568,15 +6568,15 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubCover",
+          "name": "OrganizerCover",
           "action": "keep"
         },
         {
-          "name": "ClubImage",
+          "name": "OrganizerImage",
           "action": "keep"
         }
       ],
-      "rationale": "K3 already-sharing-internals: both delegate graded network rendering and fallback artwork to CatchGradedImage, CatchNetworkImage, and ClubPolaroidArtwork. ClubCover resolves the editorial cover policy (club photo first, then legacy image) and owns optional image semantics; discovery's ClubImage resolves cover-only or profile-preferred media for directory and avatar compositions. Those source-selection policies remain feature adapters over the shared renderer, not duplicate primitive concepts.",
+      "rationale": "K3 already-sharing-internals: both delegate graded network rendering and fallback artwork to CatchGradedImage, CatchNetworkImage, and ClubPolaroidArtwork. OrganizerCover resolves the editorial cover policy (club photo first, then legacy image) and owns optional image semantics; discovery's OrganizerImage resolves cover-only or profile-preferred media for directory and avatar compositions. Those source-selection policies remain feature adapters over the shared renderer, not duplicate primitive concepts.",
       "decidedBy": "codex-rule:K3 -> prior-reviewed-ledger:handoff-2.3",
       "date": "2026-07-19",
       "status": "recorded-concept-reconciliation"
@@ -8874,12 +8874,12 @@
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/clubs/presentation/detail/widgets/club_photo_rail.dart:48",
+          "name": "lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart:48",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/clubs/presentation/detail/widgets/club_photo_rail.dart:53",
+          "name": "lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart:53",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
@@ -8964,7 +8964,7 @@
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/hosts/presentation/host_operations/host_club_media_rail.dart:56",
+          "name": "lib/hosts/presentation/host_operations/host_organizer_media_rail.dart:56",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },

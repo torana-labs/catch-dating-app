@@ -5,8 +5,8 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
     super.key,
     required this.uidState,
     required this.uid,
-    required this.clubsState,
-    required this.selectedClub,
+    required this.organizersState,
+    required this.selectedOrganizer,
     required this.query,
     required this.now,
     required this.requestedScope,
@@ -19,8 +19,8 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
   });
   final CatchAsyncState<String?> uidState;
   final String? uid;
-  final CatchAsyncState<List<Club>> clubsState;
-  final Club? selectedClub;
+  final CatchAsyncState<List<Organizer>> organizersState;
+  final Organizer? selectedOrganizer;
   final String query;
   final DateTime now;
   final HostInboxScope? requestedScope;
@@ -32,23 +32,23 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
   final ValueChanged<HostInboxPerson> onPersonSelected;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (uidState.hasError || clubsState.hasError) {
-      final failed = uidState.hasError ? uidState : clubsState;
+    if (uidState.hasError || organizersState.hasError) {
+      final failed = uidState.hasError ? uidState : organizersState;
       return CatchLocalizedSliverErrorState(
         failed.error!,
         context: AppErrorContext.chat,
-        onRetry: () => onRetry(selectedClub?.id),
+        onRetry: () => onRetry(selectedOrganizer?.id),
       );
     }
     if (uidState.isLoading) return const ChatsListSkeleton();
     if (uid == null) return const _HostAuthRequiredSliver();
-    if (clubsState.isLoading) return const ChatsListSkeleton();
-    final club = selectedClub;
-    if (club == null) return const _HostNoOrganizerSliver();
-    final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
+    if (organizersState.isLoading) return const ChatsListSkeleton();
+    final organizer = selectedOrganizer;
+    if (organizer == null) return const _HostNoOrganizerSliver();
+    final eventsAsync = ref.watch(watchEventsForOrganizerProvider(organizer.id));
     final inboxAsync = ref.watch(hostInboxCatchViewModelProvider);
-    final whatsappAsync = ref.watch(hostInboxWhatsappPagesProvider(club.id));
-    final programsAsync = ref.watch(organizerProgramListProvider(club.id));
+    final whatsappAsync = ref.watch(hostInboxWhatsappPagesProvider(organizer.id));
+    final programsAsync = ref.watch(organizerProgramListProvider(organizer.id));
     final eventsState = catchAsyncStateFromAsyncValue(eventsAsync);
     final inboxState = catchAsyncStateFromAsyncValue(inboxAsync);
     final liveInboxState = catchAsyncStateFromAsyncValue(
@@ -61,7 +61,7 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
     final programPagesAsync = requestedProgramId == null
         ? null
         : ref.watch(
-            hostInboxProgramAudiencePagesProvider(club.id, requestedProgramId),
+            hostInboxProgramAudiencePagesProvider(organizer.id, requestedProgramId),
           );
     final programPagesState = programPagesAsync == null
         ? null
@@ -71,7 +71,7 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
       return CatchLocalizedSliverErrorState(
         programPagesState!.error!,
         context: AppErrorContext.chat,
-        onRetry: () => onRetry(club.id),
+        onRetry: () => onRetry(organizer.id),
       );
     }
     if (requestedProgramId != null &&
@@ -105,7 +105,7 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
       return CatchLocalizedSliverErrorState(
         failed.error!,
         context: AppErrorContext.chat,
-        onRetry: () => onRetry(club.id),
+        onRetry: () => onRetry(organizer.id),
       );
     }
     final loading = eventsState.isLoading && !scope.isProgram;
@@ -140,7 +140,7 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
             events: events ?? const [],
             inbox: inbox,
             participations: participations ?? const [],
-            selectedOrganizerId: club.id,
+            selectedOrganizerId: organizer.id,
             selectedScope: scope,
             selectedSegment: selectedSegment,
             query: query,
@@ -170,7 +170,7 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
       );
     }
     final people = composeHostInboxPeople(
-      organizerId: club.id,
+      organizerId: organizer.id,
       scope: scope,
       segment: selectedSegment,
       catchThreads: [...inbox.newMatches, ...inbox.conversations],
@@ -225,8 +225,8 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
                     CatchButton(
                       label: context.l10n.sharedActionTryAgain,
                       onPressed: () {
-                        ref.invalidate(hostWhatsappThreadsProvider(club.id));
-                        onRetry(club.id);
+                        ref.invalidate(hostWhatsappThreadsProvider(organizer.id));
+                        onRetry(organizer.id);
                       },
                     ),
                 ],
@@ -286,7 +286,7 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
                     ? null
                     : () => ref
                           .read(
-                            hostInboxWhatsappPagesProvider(club.id).notifier,
+                            hostInboxWhatsappPagesProvider(organizer.id).notifier,
                           )
                           .loadMore(),
               ),
@@ -304,7 +304,7 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
                     : () => ref
                           .read(
                             hostInboxProgramAudiencePagesProvider(
-                              club.id,
+                              organizer.id,
                               programId!,
                             ).notifier,
                           )

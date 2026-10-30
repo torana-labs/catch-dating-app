@@ -7,7 +7,7 @@ import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
@@ -34,9 +34,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../clubs/clubs_test_helpers.dart' as club_helpers;
 import '../events/events_test_helpers.dart' as run_helpers;
 import '../onboarding/onboarding_test_helpers.dart' as onboarding_helpers;
+import '../organizers/organizers_test_helpers.dart' as organizer_helpers;
 import '../support/profile_readiness_fixtures.dart';
 import '../test_pump_helpers.dart';
 
@@ -383,11 +383,11 @@ void main() {
   testWidgets(
     'create-event route fetches the club when no extra is available',
     (tester) async {
-      final club = club_helpers.buildClub();
+      final organizer = organizer_helpers.buildOrganizer();
       final container = ProviderContainer(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
-          fetchClubProvider('club-1').overrideWith((ref) async => club),
+          fetchOrganizerProvider('club-1').overrideWith((ref) async => organizer),
           commandJournalStorageProvider.overrideWith((ref) {
             final storage = MemoryCommandJournalStorage();
             return () async => storage;

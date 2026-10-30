@@ -1,13 +1,13 @@
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_entry_view_model.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart' show buildClub;
+import '../organizers/organizers_test_helpers.dart' show buildOrganizer;
 import 'event_rehearsal_configuration_test.dart' show rehearsalSourceEvent;
 
 void main() {
@@ -18,7 +18,7 @@ void main() {
       final container = ProviderContainer.test(
         retry: (_, _) => null,
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(_Clubs()),
+          organizersRepositoryProvider.overrideWithValue(_Organizers()),
           eventRepositoryProvider.overrideWithValue(
             _Events(rehearsalSourceEvent()),
           ),
@@ -45,7 +45,7 @@ void main() {
       final container = ProviderContainer.test(
         retry: (_, _) => null,
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(_Clubs()),
+          organizersRepositoryProvider.overrideWithValue(_Organizers()),
           eventRepositoryProvider.overrideWithValue(
             _Events(rehearsalSourceEvent()),
           ),
@@ -76,7 +76,7 @@ void main() {
     final container = ProviderContainer.test(
       retry: (_, _) => null,
       overrides: [
-        clubsRepositoryProvider.overrideWithValue(_Clubs()),
+        organizersRepositoryProvider.overrideWithValue(_Organizers()),
         eventRepositoryProvider.overrideWithValue(
           _Events(rehearsalSourceEvent().copyWith(clubId: 'other')),
         ),
@@ -98,16 +98,16 @@ void main() {
   });
 }
 
-class _Clubs extends Fake implements ClubsRepository {
+class _Organizers extends Fake implements OrganizersRepository {
   @override
-  Future<Club?> fetchClub(String id) async => buildClub().copyWith(id: id);
+  Future<Organizer?> fetchOrganizer(String id) async => buildOrganizer().copyWith(id: id);
 }
 
 class _Events extends Fake implements EventRepository {
   _Events(this.event);
   final Event event;
   @override
-  Future<List<Event>> fetchUpcomingEventsForClubs(List<String> clubIds) async =>
+  Future<List<Event>> fetchUpcomingEventsForOrganizers(List<String> organizerIds) async =>
       [event];
   @override
   Future<Event?> fetchEvent(String id) async => event;

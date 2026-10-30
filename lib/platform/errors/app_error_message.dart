@@ -11,7 +11,7 @@ enum AppErrorContext {
   explore,
   profile,
   event,
-  club,
+  organizer,
   customers,
   customer,
   applications,
@@ -188,11 +188,11 @@ String _localizedExceptionMessage(
     'launch-access-locked' =>
       l10n.coreAppErrorMessageVisiblecopyThisAccessApplicationIs,
     'club-host-edit-required' =>
-      l10n.coreAppErrorMessageVisiblecopyOnlyAClubHost,
+      l10n.coreAppErrorMessageVisiblecopyOnlyAOrganizerHost,
     'club-owner-edit-required' =>
-      l10n.coreAppErrorMessageVisiblecopyOnlyTheClubOwner,
+      l10n.coreAppErrorMessageVisiblecopyOnlyTheOrganizerOwner,
     'event-club-required' =>
-      l10n.coreAppErrorMessageVisiblecopyChooseAClubBefore,
+      l10n.coreAppErrorMessageVisiblecopyChooseAOrganizerBefore,
     'event-meeting-location-required' =>
       l10n.coreAppErrorMessageVisiblecopyAddAMeetingLocation,
     'swipe-candidates-timeout' =>
@@ -277,7 +277,7 @@ String _contextTitle(AppLocalizations l10n, AppErrorContext context) {
       l10n.coreAppErrorMessageVisiblecopyProfileUnavailable,
     AppErrorContext.event =>
       l10n.coreAppErrorMessageVisiblecopyEventUnavailable,
-    AppErrorContext.club => l10n.coreAppErrorMessageVisiblecopyClubUnavailable,
+    AppErrorContext.organizer => l10n.coreAppErrorMessageVisiblecopyOrganizerUnavailable,
     AppErrorContext.customers => l10n.hostCustomersUnavailable,
     AppErrorContext.customer => l10n.hostCustomersDetailUnavailable,
     AppErrorContext.applications => l10n.hostApplicationsUnavailable,
@@ -350,7 +350,7 @@ String _retryLabelFor(
     AppErrorContext.explore => l10n.coreAppErrorMessageVisiblecopyReloadExplore,
     AppErrorContext.profile => l10n.coreAppErrorMessageVisiblecopyReloadProfile,
     AppErrorContext.event => l10n.coreAppErrorMessageVisiblecopyReloadEvent,
-    AppErrorContext.club => l10n.coreAppErrorMessageVisiblecopyReloadClub,
+    AppErrorContext.organizer => l10n.coreAppErrorMessageVisiblecopyReloadOrganizer,
     AppErrorContext.customers => l10n.hostCustomersReload,
     AppErrorContext.customer => l10n.hostCustomersReloadDetail,
     AppErrorContext.applications => l10n.hostApplicationsReload,
@@ -404,7 +404,7 @@ String _notFoundTitle(AppLocalizations l10n, AppErrorContext context) {
     AppErrorContext.explore =>
       l10n.coreAppErrorMessageVisiblecopyExploreItemNotFound,
     AppErrorContext.event => l10n.coreAppErrorMessageVisiblecopyEventNotFound,
-    AppErrorContext.club => l10n.coreAppErrorMessageVisiblecopyClubNotFound,
+    AppErrorContext.organizer => l10n.coreAppErrorMessageVisiblecopyOrganizerNotFound,
     AppErrorContext.customers => l10n.hostCustomersUnavailable,
     AppErrorContext.customer => l10n.hostCustomersDetailNotFound,
     AppErrorContext.applications => l10n.hostApplicationNotFound,

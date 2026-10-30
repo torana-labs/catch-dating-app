@@ -85,7 +85,7 @@ Widget hostFollowerUpdateComposerSheetStates(BuildContext context) =>
       (
         'quota remaining',
         HostFollowerUpdateComposerSheet(
-          club: HostOperationsFixtures.primaryClub,
+          organizer: HostOperationsFixtures.primaryOrganizer,
           remainingQuota: 2,
           requestIdFactory: () => 'widgetbook-follower-update',
           onSubmitPost: ({required requestId, required text}) async {},
@@ -103,7 +103,7 @@ Widget hostSaveAudienceSheetStates(BuildContext context) =>
       (
         'attended filter',
         HostSaveAudienceSheet(
-          organizerId: HostOperationsFixtures.primaryClub.id,
+          organizerId: HostOperationsFixtures.primaryOrganizer.id,
           suggestedName: 'Sunday regulars',
           definition: const HostSavedAudienceDefinition(
             join: HostSavedAudienceJoin.all,

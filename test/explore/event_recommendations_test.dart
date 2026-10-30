@@ -70,10 +70,10 @@ void main() {
       candidates: [
         recommendationCandidate(
           weakMatch,
-          clubName: 'Late Miles',
-          clubLocation: 'delhi',
+          organizerName: 'Late Miles',
+          organizerLocation: 'delhi',
         ),
-        recommendationCandidate(strongMatch, clubName: 'Bandra Club'),
+        recommendationCandidate(strongMatch, organizerName: 'Bandra Club'),
       ],
       signedUpEventIds: const {},
       attendedEvents: [morningHistory],
@@ -86,7 +86,7 @@ void main() {
       'strong-match',
       'weak-match',
     ]);
-    expect(recommendations.first.clubName, 'Bandra Club');
+    expect(recommendations.first.organizerName, 'Bandra Club');
     expect(recommendations.first.reasonLabel, 'Matches your 10 km preference');
   });
 
@@ -174,7 +174,7 @@ void main() {
     final results = rankExploreEventRecommendations(
       candidates: [
         for (final event in [dinner, alternateLegacyValues, run])
-          ExploreEventRecommendationCandidate(event: event, clubName: 'Club'),
+          ExploreEventRecommendationCandidate(event: event, organizerName: 'Club'),
       ],
       signedUpEventIds: {},
       attendedEvents: [],

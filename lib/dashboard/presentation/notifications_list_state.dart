@@ -190,7 +190,7 @@ String? notificationRoute(ActivityNotification notification) {
         .replaceFirst(':eventId', eventId);
   }
   if (organizerId != null) {
-    return Routes.clubDetailScreen.path.replaceFirst(':clubId', organizerId);
+    return Routes.organizerDetailScreen.path.replaceFirst(':clubId', organizerId);
   }
   return null;
 }

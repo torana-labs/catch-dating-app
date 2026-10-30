@@ -69,7 +69,7 @@
         {
           "id": "retry_club_names",
           "owner": "calendar_screen",
-          "codeValue": "clubNameLookupProvider",
+          "codeValue": "organizerNameLookupProvider",
           "cardinality": "singleton",
           "scopeKeys": ["clubIdSet", "lookupGeneration"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["club_names_loading_error", "planned_events"]}],
@@ -255,7 +255,7 @@
         {
           "id": "retry_club_names",
           "owner": "saved_events_screen",
-          "codeValue": "clubNameLookupProvider",
+          "codeValue": "organizerNameLookupProvider",
           "cardinality": "singleton",
           "scopeKeys": ["clubIdSet", "lookupGeneration"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["club_names_loading_error", "populated_saved_events"]}],

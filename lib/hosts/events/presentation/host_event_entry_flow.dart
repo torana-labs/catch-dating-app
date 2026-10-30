@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
@@ -13,7 +13,7 @@ import 'package:go_router/go_router.dart';
 Future<void> runHostEventEntryFlow({
   required BuildContext context,
   required WidgetRef ref,
-  required Club club,
+  required Organizer organizer,
   required HostEventEntryState state,
   required HostEventEntrySelection selection,
   required DateTime createdAt,
@@ -22,11 +22,11 @@ Future<void> runHostEventEntryFlow({
   switch (selection.intent) {
     case HostEventEntryIntent.resumeDraft:
       final draft = selection.draft;
-      if (draft == null || draft.clubId != club.id || !context.mounted) return;
+      if (draft == null || draft.clubId != organizer.id || !context.mounted) return;
       await _openCreateEvent(
         context: context,
         ref: ref,
-        club: club,
+        organizer: organizer,
         initialDraft: draft,
         isCurrent: isCurrent,
       );
@@ -36,7 +36,7 @@ Future<void> runHostEventEntryFlow({
       await _openRepeatEvent(
         context: context,
         ref: ref,
-        club: club,
+        organizer: organizer,
         event: source,
         createdAt: createdAt,
         isCurrent: isCurrent,
@@ -45,14 +45,14 @@ Future<void> runHostEventEntryFlow({
       await _openCreateEvent(
         context: context,
         ref: ref,
-        club: club,
+        organizer: organizer,
         isCurrent: isCurrent,
       );
     case HostEventEntryIntent.createProgram:
-      if (state.organizerId != club.id || !context.mounted) return;
+      if (state.organizerId != organizer.id || !context.mounted) return;
       await context.pushNamed(
         Routes.hostCreateProgramScreen.name,
-        pathParameters: {'clubId': club.id},
+        pathParameters: {'clubId': organizer.id},
       );
     case HostEventEntryIntent.resumePrivateEvent:
       final eventId = selection.savedEventId;
@@ -60,7 +60,7 @@ Future<void> runHostEventEntryFlow({
       await _openCreateEvent(
         context: context,
         ref: ref,
-        club: club,
+        organizer: organizer,
         initialSavedEventId: eventId,
         isCurrent: isCurrent,
       );
@@ -70,16 +70,16 @@ Future<void> runHostEventEntryFlow({
 Future<void> _openCreateEvent({
   required BuildContext context,
   required WidgetRef ref,
-  required Club club,
+  required Organizer organizer,
   EventDraft? initialDraft,
   String? initialSavedEventId,
   bool Function()? isCurrent,
 }) async {
   await context.pushNamed(
     Routes.hostCreateEventScreen.name,
-    pathParameters: {'clubId': club.id},
+    pathParameters: {'clubId': organizer.id},
     extra: HostCreateEventRouteArguments(
-      initialClub: club,
+      initialOrganizer: organizer,
       initialDraft: initialDraft,
       initialSavedEventId: initialSavedEventId,
       externalBookingMode: initialDraft?.externalBookingMode ?? false,
@@ -87,13 +87,13 @@ Future<void> _openCreateEvent({
     ),
   );
   if (!context.mounted || isCurrent?.call() == false) return;
-  ref.invalidate(clubEventDraftsProvider(clubId: club.id));
+  ref.invalidate(organizerEventDraftsProvider(clubId: organizer.id));
 }
 
 Future<void> _openRepeatEvent({
   required BuildContext context,
   required WidgetRef ref,
-  required Club club,
+  required Organizer organizer,
   required Event event,
   required DateTime createdAt,
   bool Function()? isCurrent,
@@ -101,13 +101,13 @@ Future<void> _openRepeatEvent({
   final prefill = CreateEventPrefill.repeat(event: event, createdAt: createdAt);
   await context.pushNamed(
     Routes.hostCreateEventScreen.name,
-    pathParameters: {'clubId': club.id},
+    pathParameters: {'clubId': organizer.id},
     extra: HostCreateEventRouteArguments(
-      initialClub: club,
+      initialOrganizer: organizer,
       initialPrefill: prefill,
       promptForDrafts: false,
     ),
   );
   if (!context.mounted || isCurrent?.call() == false) return;
-  ref.invalidate(clubEventDraftsProvider(clubId: club.id));
+  ref.invalidate(organizerEventDraftsProvider(clubId: organizer.id));
 }

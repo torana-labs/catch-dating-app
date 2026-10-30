@@ -5,12 +5,11 @@ import 'package:catch_dating_app/chats/presentation/event_chat_participants_scre
 import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/event_profile_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/organizer_moment.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
@@ -34,7 +33,6 @@ import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
@@ -60,6 +58,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_new_message_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/hosts/work/presentation/host_work_screen.dart';
@@ -67,6 +66,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_screen.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
 import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
@@ -130,12 +130,12 @@ String hostProgramsLegacyRedirect(Uri uri) =>
     uri.replace(path: Routes.hostEventsScreen.path).toString();
 
 @visibleForTesting
-HostClubsScreen hostOrganizerScreenForUri(Uri uri) => HostClubsScreen(
-  initialClubId: uri.queryParameters['clubId'],
+HostOrganizersScreen hostOrganizerScreenForUri(Uri uri) => HostOrganizersScreen(
+  initialOrganizerId: uri.queryParameters['clubId'],
   initialExpandedEditField: uri.queryParameters['editField'],
-  initialTab: HostClubTab.values.firstWhere(
+  initialTab: HostOrganizerTab.values.firstWhere(
     (tab) => tab.name == uri.queryParameters['tab'],
-    orElse: () => HostClubTab.edit,
+    orElse: () => HostOrganizerTab.edit,
   ),
 );
 
@@ -395,9 +395,9 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
                     ),
                     GoRoute(
                       path: ':clubId',
-                      name: Routes.clubDetailScreen.name,
+                      name: Routes.organizerDetailScreen.name,
                       parentNavigatorKey: keys.root,
-                      pageBuilder: _clubDetailPage,
+                      pageBuilder: _organizerDetailPage,
                       routes: [
                         GoRoute(
                           path: 'events/:eventId',
@@ -879,60 +879,60 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.organizer,
-    path: Routes.hostClubEventDefaultsScreen.path,
-    name: Routes.hostClubEventDefaultsScreen.name,
-    builder: (context, state) => HostClubEventDefaultsScreen(
+    path: Routes.hostOrganizerEventDefaultsScreen.path,
+    name: Routes.hostOrganizerEventDefaultsScreen.name,
+    builder: (context, state) => HostOrganizerEventDefaultsScreen(
       clubId: state.uri.queryParameters['clubId'] ?? '',
     ),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.organizer,
-    path: Routes.hostClubLiveGuideScreen.path,
-    name: Routes.hostClubLiveGuideScreen.name,
-    builder: (context, state) => HostClubLiveGuideScreen(
+    path: Routes.hostOrganizerLiveGuideScreen.path,
+    name: Routes.hostOrganizerLiveGuideScreen.name,
+    builder: (context, state) => HostOrganizerLiveGuideScreen(
       clubId: state.uri.queryParameters['clubId'] ?? '',
     ),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.organizer,
-    path: Routes.hostClubTeamScreen.path,
-    name: Routes.hostClubTeamScreen.name,
+    path: Routes.hostOrganizerTeamScreen.path,
+    name: Routes.hostOrganizerTeamScreen.name,
     builder: (context, state) =>
-        HostClubTeamScreen(clubId: state.uri.queryParameters['clubId'] ?? ''),
+        HostOrganizerTeamScreen(clubId: state.uri.queryParameters['clubId'] ?? ''),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.organizer,
-    path: Routes.hostClubPaymentsScreen.path,
-    name: Routes.hostClubPaymentsScreen.name,
-    builder: (context, state) => HostClubPaymentsScreen(
+    path: Routes.hostOrganizerPaymentsScreen.path,
+    name: Routes.hostOrganizerPaymentsScreen.name,
+    builder: (context, state) => HostOrganizerPaymentsScreen(
       clubId: state.uri.queryParameters['clubId'] ?? '',
     ),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.organizer,
-    path: Routes.hostClubMembershipsScreen.path,
-    name: Routes.hostClubMembershipsScreen.name,
-    builder: (context, state) => HostClubMembershipsScreen(
+    path: Routes.hostOrganizerMembershipsScreen.path,
+    name: Routes.hostOrganizerMembershipsScreen.name,
+    builder: (context, state) => HostOrganizerMembershipsScreen(
       clubId: state.uri.queryParameters['clubId'] ?? '',
     ),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.organizer,
-    path: Routes.hostClubsScreen.path,
-    name: Routes.hostClubsScreen.name,
+    path: Routes.hostOrganizersScreen.path,
+    name: Routes.hostOrganizersScreen.name,
     redirect: (context, state) => hostOrganizerIndexRedirect(state.uri),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.organizer,
-    path: Routes.hostCreateClubScreen.path,
-    name: Routes.hostCreateClubScreen.name,
-    builder: (context, state) => const HostCreateClubScreen(),
+    path: Routes.hostCreateOrganizerScreen.path,
+    name: Routes.hostCreateOrganizerScreen.name,
+    builder: (context, state) => const HostCreateOrganizerScreen(),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.organizer,
-    path: Routes.hostClubDetailScreen.path,
-    name: Routes.hostClubDetailScreen.name,
-    builder: (context, state) => _clubDetailScreen(state),
+    path: Routes.hostOrganizerDetailScreen.path,
+    name: Routes.hostOrganizerDetailScreen.name,
+    builder: (context, state) => _organizerDetailScreen(state),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.events,
@@ -942,10 +942,10 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
       final extra = state.extra;
       return HostCreateEventRouteScreen(
         clubId: state.pathParameters['clubId']!,
-        initialClub: switch (extra) {
+        initialOrganizer: switch (extra) {
           final HostCreateEventRouteArguments arguments =>
-            arguments.initialClub,
-          final Club club => club,
+            arguments.initialOrganizer,
+          final Organizer organizer => organizer,
           _ => null,
         },
         initialPrefill: switch (extra) {
@@ -1516,9 +1516,9 @@ EventDetailScreen _eventDetailScreen(GoRouterState state) => EventDetailScreen(
   attribution: _eventDetailAttribution(state),
 );
 
-ClubDetailScreen _clubDetailScreen(GoRouterState state) => ClubDetailScreen(
+OrganizerDetailScreen _organizerDetailScreen(GoRouterState state) => OrganizerDetailScreen(
   clubId: state.pathParameters['clubId']!,
-  initialClub: _clubDetailInitialClub(state),
+  initialOrganizer: _organizerDetailInitialOrganizer(state),
 );
 
 class _RouteLoadingScreen extends StatelessWidget {

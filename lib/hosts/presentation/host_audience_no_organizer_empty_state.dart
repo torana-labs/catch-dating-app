@@ -32,18 +32,18 @@ class HostAudienceNoOrganizerEmptyState extends StatelessWidget {
           icon: forms ? CatchIcons.document : CatchIcons.people,
           title: forms
               ? context.l10n.hostFormsNoOrganizerTitle
-              : context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
+              : context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstOrganizer,
           message: forms
               ? context.l10n.hostFormsNoOrganizerBody
-              : context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+              : context.l10n.hostsHostEventsScaffoldBodyCreateAOrganizerTo,
           actions: [
             CatchButton(
               label: forms
                   ? context.l10n.hostFormsCreateOrganizer
-                  : context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+                  : context.l10n.hostsHostEventsScaffoldLabelCreateOrganizer,
               size: forms ? CatchButtonSize.md : CatchButtonSize.lg,
               onPressed: () =>
-                  context.pushNamed(Routes.hostCreateClubScreen.name),
+                  context.pushNamed(Routes.hostCreateOrganizerScreen.name),
             ),
           ],
         ),

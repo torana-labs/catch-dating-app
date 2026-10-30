@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/explore_search_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/kernel/city_data.dart';
@@ -179,7 +179,7 @@ class ExploreFilterSelection {
   /// the events feed. Including it here would make a distance-only selection
   /// silently start applying the time window to the club list (and rebuild it)
   /// while doing nothing for distance.
-  bool get hasActiveClubFilters =>
+  bool get hasActiveOrganizerFilters =>
       timeFilter != defaultExploreTimeFilter ||
       highRatedOnly ||
       joinedOnly ||
@@ -249,35 +249,35 @@ abstract class ExploreViewModel with _$ExploreViewModel {
   const ExploreViewModel._();
 
   const factory ExploreViewModel({
-    required List<Club> joinedClubs,
-    required List<Club> allClubs,
-    @Default({}) Set<String> joinedClubIds,
-    @Default({}) Set<String> followedClubIds,
+    required List<Organizer> joinedOrganizers,
+    required List<Organizer> allOrganizers,
+    @Default({}) Set<String> joinedOrganizerIds,
+    @Default({}) Set<String> followedOrganizerIds,
   }) = _ExploreViewModel;
 
-  bool get isEmpty => allClubs.isEmpty;
+  bool get isEmpty => allOrganizers.isEmpty;
 
   factory ExploreViewModel.partition({
-    required List<Club> clubs,
-    required Set<String> joinedClubIds,
-    Set<String>? followedClubIds,
+    required List<Organizer> organizers,
+    required Set<String> joinedOrganizerIds,
+    Set<String>? followedOrganizerIds,
   }) {
-    final effectiveFollowedClubIds = followedClubIds ?? joinedClubIds;
-    final joinedClubs = <Club>[];
-    final activeClubIds = <String>{};
+    final effectiveFollowedOrganizerIds = followedOrganizerIds ?? joinedOrganizerIds;
+    final joinedOrganizers = <Organizer>[];
+    final activeOrganizerIds = <String>{};
 
-    for (final club in clubs) {
-      if (joinedClubIds.contains(club.id)) {
-        joinedClubs.add(club);
-        activeClubIds.add(club.id);
+    for (final organizer in organizers) {
+      if (joinedOrganizerIds.contains(organizer.id)) {
+        joinedOrganizers.add(organizer);
+        activeOrganizerIds.add(organizer.id);
       }
     }
 
     return ExploreViewModel(
-      joinedClubs: List.unmodifiable(joinedClubs),
-      allClubs: List.unmodifiable(clubs),
-      joinedClubIds: activeClubIds,
-      followedClubIds: Set.unmodifiable(effectiveFollowedClubIds),
+      joinedOrganizers: List.unmodifiable(joinedOrganizers),
+      allOrganizers: List.unmodifiable(organizers),
+      joinedOrganizerIds: activeOrganizerIds,
+      followedOrganizerIds: Set.unmodifiable(effectiveFollowedOrganizerIds),
     );
   }
 }
@@ -493,49 +493,49 @@ class ExploreFilters extends _$ExploreFilters {
 /// **Pattern D variant:** Combines location-filtered clubs with client-side
 /// search to produce a filtered list for the UI.
 @riverpod
-AsyncValue<List<Club>> exploreSourceClubs(Ref ref) {
+AsyncValue<List<Organizer>> exploreSourceOrganizers(Ref ref) {
   final city = ref.watch(selectedExploreCityProvider);
-  final locationClubsAsync = ref.watch(
-    watchClubsByLocationProvider(city.effectiveMarketId),
+  final locationOrganizersAsync = ref.watch(
+    watchOrganizersByLocationProvider(city.effectiveMarketId),
   );
-  final locationClubsState = catchAsyncStateFromAsyncValue(locationClubsAsync);
+  final locationOrganizersState = catchAsyncStateFromAsyncValue(locationOrganizersAsync);
 
-  if (locationClubsState.isLoading) {
+  if (locationOrganizersState.isLoading) {
     return const AsyncLoading();
   }
-  if (locationClubsState.hasError) {
+  if (locationOrganizersState.hasError) {
     return AsyncError(
-      locationClubsState.error!,
-      locationClubsState.stackTrace ?? StackTrace.current,
+      locationOrganizersState.error!,
+      locationOrganizersState.stackTrace ?? StackTrace.current,
     );
   }
-  final locationClubs = locationClubsState.value ?? const <Club>[];
-  return AsyncData(List.unmodifiable(locationClubs));
+  final locationOrganizers = locationOrganizersState.value ?? const <Organizer>[];
+  return AsyncData(List.unmodifiable(locationOrganizers));
 }
 
 @riverpod
-AsyncValue<List<Club>> filteredExploreClubs(Ref ref) {
+AsyncValue<List<Organizer>> filteredExploreOrganizers(Ref ref) {
   final city = ref.watch(selectedExploreCityProvider);
   final query = ref.watch(exploreSearchQueryProvider);
-  final clubsAsync = ref.watch(exploreSourceClubsProvider);
-  final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
+  final organizersAsync = ref.watch(exploreSourceOrganizersProvider);
+  final organizersState = catchAsyncStateFromAsyncValue(organizersAsync);
   final normalizedQuery = query.trim().toLowerCase();
 
-  if (clubsState.isLoading) return const AsyncLoading();
-  if (clubsState.hasError) {
+  if (organizersState.isLoading) return const AsyncLoading();
+  if (organizersState.hasError) {
     return AsyncError(
-      clubsState.error!,
-      clubsState.stackTrace ?? StackTrace.current,
+      organizersState.error!,
+      organizersState.stackTrace ?? StackTrace.current,
     );
   }
 
-  final sourceClubs = clubsState.value ?? const <Club>[];
+  final sourceOrganizers = organizersState.value ?? const <Organizer>[];
   if (normalizedQuery.isEmpty) {
-    return AsyncData(sourceClubs);
+    return AsyncData(sourceOrganizers);
   }
 
-  final localFallback = sourceClubs
-      .where((club) => matchesExploreClubSearchQuery(club, normalizedQuery))
+  final localFallback = sourceOrganizers
+      .where((organizer) => matchesExploreOrganizerSearchQuery(organizer, normalizedQuery))
       .toList(growable: false);
   // Server search keys off the debounced query so typing doesn't fire a
   // Cloud Function call per keystroke. Until it settles, `localFallback`
@@ -567,29 +567,29 @@ AsyncValue<List<Club>> filteredExploreClubs(Ref ref) {
     return AsyncData(localFallback);
   }
 
-  final searchedClubsAsync = ref.watch(
-    watchClubsByIdsProvider(ClubsByIdQuery(searchResult.organizerIds)),
+  final searchedOrganizersAsync = ref.watch(
+    watchOrganizersByIdsProvider(OrganizersByIdQuery(searchResult.organizerIds)),
   );
-  final searchedClubsState = catchAsyncStateFromAsyncValue(searchedClubsAsync);
-  if (searchedClubsState.isLoading) {
+  final searchedOrganizersState = catchAsyncStateFromAsyncValue(searchedOrganizersAsync);
+  if (searchedOrganizersState.isLoading) {
     return const AsyncLoading();
   }
-  if (searchedClubsState.hasError) {
+  if (searchedOrganizersState.hasError) {
     return AsyncData(localFallback);
   }
 
-  final rankedMatches = _rankClubsById(
+  final rankedMatches = _rankOrganizersById(
     ids: searchResult.organizerIds,
-    clubs: searchedClubsState.value ?? const <Club>[],
+    organizers: searchedOrganizersState.value ?? const <Organizer>[],
   );
   return AsyncData(rankedMatches);
 }
 
-List<Club> _rankClubsById({
+List<Organizer> _rankOrganizersById({
   required List<String> ids,
-  required List<Club> clubs,
+  required List<Organizer> organizers,
 }) {
-  final byId = {for (final club in clubs) club.id: club};
+  final byId = {for (final organizer in organizers) organizer.id: organizer};
   return [
     for (final id in ids)
       if (byId[id] != null) byId[id]!,
@@ -603,8 +603,8 @@ List<Club> _rankClubsById({
 /// [ExploreViewModel] that partitions clubs into joined and discover
 /// lists for the UI.
 @riverpod
-AsyncValue<ExploreViewModel> exploreClubsViewModel(Ref ref) {
-  final filteredAsync = ref.watch(filteredExploreClubsProvider);
+AsyncValue<ExploreViewModel> exploreOrganizersViewModel(Ref ref) {
+  final filteredAsync = ref.watch(filteredExploreOrganizersProvider);
   final filteredState = catchAsyncStateFromAsyncValue(filteredAsync);
   final browseFilters = ref.watch(exploreFiltersProvider);
 
@@ -618,9 +618,9 @@ AsyncValue<ExploreViewModel> exploreClubsViewModel(Ref ref) {
     );
   }
 
-  final sourceClubs = filteredState.value ?? const <Club>[];
-  if (sourceClubs.isEmpty) {
-    return const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: []));
+  final sourceOrganizers = filteredState.value ?? const <Organizer>[];
+  if (sourceOrganizers.isEmpty) {
+    return const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: []));
   }
 
   final uidAsync = ref.watch(uidProvider);
@@ -636,71 +636,71 @@ AsyncValue<ExploreViewModel> exploreClubsViewModel(Ref ref) {
   }
 
   final uid = uidState.value;
-  final followedClubIdsAsync = ref.watch(currentUserFollowedClubIdsProvider);
-  final followedClubIdsState = catchAsyncStateFromAsyncValue(
-    followedClubIdsAsync,
+  final followedOrganizerIdsAsync = ref.watch(currentUserFollowedOrganizerIdsProvider);
+  final followedOrganizerIdsState = catchAsyncStateFromAsyncValue(
+    followedOrganizerIdsAsync,
   );
 
-  if (uid != null && followedClubIdsState.isLoading) {
+  if (uid != null && followedOrganizerIdsState.isLoading) {
     return const AsyncLoading();
   }
-  if (uid != null && followedClubIdsState.hasError) {
+  if (uid != null && followedOrganizerIdsState.hasError) {
     return AsyncError(
-      followedClubIdsState.error!,
-      followedClubIdsState.stackTrace ?? StackTrace.current,
+      followedOrganizerIdsState.error!,
+      followedOrganizerIdsState.stackTrace ?? StackTrace.current,
     );
   }
 
-  final followedClubIds = followedClubIdsState.value ?? <String>{};
-  final joinedClubIds = followedClubIds;
-  final clubs = applyExploreFilters(
-    clubs: sourceClubs,
+  final followedOrganizerIds = followedOrganizerIdsState.value ?? <String>{};
+  final joinedOrganizerIds = followedOrganizerIds;
+  final organizers = applyExploreFilters(
+    organizers: sourceOrganizers,
     filters: browseFilters,
-    joinedClubIds: joinedClubIds,
+    joinedOrganizerIds: joinedOrganizerIds,
   );
 
   return AsyncData(
     ExploreViewModel.partition(
-      clubs: clubs,
-      joinedClubIds: joinedClubIds,
-      followedClubIds: followedClubIds,
+      organizers: organizers,
+      joinedOrganizerIds: joinedOrganizerIds,
+      followedOrganizerIds: followedOrganizerIds,
     ),
   );
 }
 
-bool matchesExploreClubSearchQuery(Club club, String normalizedQuery) {
-  return club.name.toLowerCase().contains(normalizedQuery) ||
-      club.area.toLowerCase().contains(normalizedQuery) ||
-      club.displayHostName.toLowerCase().contains(normalizedQuery) ||
-      club.tags.any((tag) => tag.toLowerCase().contains(normalizedQuery));
+bool matchesExploreOrganizerSearchQuery(Organizer organizer, String normalizedQuery) {
+  return organizer.name.toLowerCase().contains(normalizedQuery) ||
+      organizer.area.toLowerCase().contains(normalizedQuery) ||
+      organizer.displayHostName.toLowerCase().contains(normalizedQuery) ||
+      organizer.tags.any((tag) => tag.toLowerCase().contains(normalizedQuery));
 }
 
-List<Club> applyExploreFilters({
-  required List<Club> clubs,
+List<Organizer> applyExploreFilters({
+  required List<Organizer> organizers,
   required ExploreFilterSelection filters,
-  required Set<String> joinedClubIds,
+  required Set<String> joinedOrganizerIds,
   DateTime? now,
 }) {
-  if (!filters.hasActiveClubFilters) return clubs;
+  if (!filters.hasActiveOrganizerFilters) return organizers;
 
   final referenceNow = now ?? DateTime.now();
-  return clubs
-      .where((club) {
-        if (!_clubMatchesTimeFilter(club, filters.timeFilter, referenceNow)) {
+  return organizers
+      .where((organizer) {
+        if (!_organizerMatchesTimeFilter(organizer, filters.timeFilter, referenceNow)) {
           return false;
         }
-        return clubMatchesScopeFilters(
-          club: club,
+        return organizerMatchesScopeFilters(
+          organizer: organizer,
           filters: filters,
-          joinedClubIds: joinedClubIds,
+          joinedOrganizerIds: joinedOrganizerIds,
         );
       })
       .toList(growable: false);
 }
 
-bool _clubMatchesTimeFilter(Club club, ExploreTimeFilter filter, DateTime now) {
+bool _organizerMatchesTimeFilter(Organizer organizer, ExploreTimeFilter filter, DateTime now) {
   if (filter == ExploreTimeFilter.anytime) return true;
-  final nextEventAt = club.nextEventAt;
+  final nextEventAt = organizer.nextEventAt;
   if (nextEventAt == null || nextEventAt.isBefore(now)) return false;
   return exploreTimeWindowFor(filter, now)?.contains(nextEventAt) ?? true;
 }

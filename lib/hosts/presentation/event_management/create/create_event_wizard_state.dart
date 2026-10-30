@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
@@ -16,7 +16,7 @@ enum CreateEventWizardPreviousIntent { previousStep, returnToSteps }
 
 enum CreateEventWizardPrimaryIntent { nextStep, review, submit }
 
-enum CreateEventSuccessNavigationIntent { manageEvent, backToClub }
+enum CreateEventSuccessNavigationIntent { manageEvent, backToOrganizer }
 
 enum CreateEventSuccessNavigationDestination { manageEventRoute, popRoute }
 
@@ -78,12 +78,12 @@ bool createEventWizardStepValidatesSchedule(int index) {
 
 class CreateEventSuccessNavigationState {
   const CreateEventSuccessNavigationState({
-    required this.club,
+    required this.organizer,
     required this.event,
     required this.inviteCode,
   });
 
-  final Club club;
+  final Organizer organizer;
   final Event event;
   final String? inviteCode;
 }
@@ -103,10 +103,10 @@ class CreateEventSuccessNavigationEffect {
       CreateEventSuccessNavigationIntent.manageEvent =>
         CreateEventSuccessNavigationEffect(
           destination: CreateEventSuccessNavigationDestination.manageEventRoute,
-          pathParameters: {'clubId': state.club.id, 'eventId': state.event.id},
+          pathParameters: {'clubId': state.organizer.id, 'eventId': state.event.id},
           extra: state.event,
         ),
-      CreateEventSuccessNavigationIntent.backToClub =>
+      CreateEventSuccessNavigationIntent.backToOrganizer =>
         const CreateEventSuccessNavigationEffect(
           destination: CreateEventSuccessNavigationDestination.popRoute,
         ),
@@ -359,7 +359,7 @@ class CreateEventWizardReviewState {
 
 class CreateEventWizardState {
   const CreateEventWizardState({
-    required this.club,
+    required this.organizer,
     required this.currentStep,
     required this.currentStepKind,
     required this.totalSteps,
@@ -377,7 +377,7 @@ class CreateEventWizardState {
     required this.successNavigation,
   });
 
-  final Club club;
+  final Organizer organizer;
   final int currentStep;
   final CreateEventWizardStep? currentStepKind;
   final int totalSteps;
@@ -395,7 +395,7 @@ class CreateEventWizardState {
   final CreateEventSuccessNavigationState? successNavigation;
 
   factory CreateEventWizardState.resolve({
-    required Club club,
+    required Organizer organizer,
     required List<CatchFormStepSpec> activeSteps,
     required int currentStep,
     required bool submitPending,
@@ -416,12 +416,12 @@ class CreateEventWizardState {
     final successNavigation = createdEvent == null
         ? null
         : CreateEventSuccessNavigationState(
-            club: club,
+            organizer: organizer,
             event: createdEvent,
             inviteCode: inviteCode,
           );
     return CreateEventWizardState(
-      club: club,
+      organizer: organizer,
       currentStep: boundedStep,
       currentStepKind: stepKind,
       totalSteps: totalSteps,

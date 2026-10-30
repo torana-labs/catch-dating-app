@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
@@ -29,7 +29,7 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
         'Runs hosted event formats with clear arrival cues, structured prompts, and visible safety follow-through.',
     status: status,
     verified: status == HostProfileStatus.active,
-    linkedClubIds: [HostOperationsFixtures.primaryClub.id],
+    linkedOrganizerIds: [HostOperationsFixtures.primaryOrganizer.id],
     createdAt: HostOperationsFixtures.now.subtract(const Duration(days: 400)),
     updatedAt: HostOperationsFixtures.now.subtract(const Duration(days: 2)),
   );
@@ -42,7 +42,7 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 )
 @widgetbook.UseCase(
   name: 'Route states',
-  type: HostClubTeamScreen,
+  type: HostOrganizerTeamScreen,
   path: '[P2 host surfaces]/Host team',
 )
 Widget hostTeamRouteStates(BuildContext context) {
@@ -55,7 +55,7 @@ Widget hostTeamRouteStates(BuildContext context) {
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
             uid: null,
-            child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+            child: HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
           ),
         ),
       ),
@@ -65,7 +65,7 @@ Widget hostTeamRouteStates(BuildContext context) {
           child: WidgetbookHostShellScope(
             hostProfileStream:
                 HostOperationsFixtures.loadingStream<HostProfile?>(),
-            child: const HostClubTeamScreen(clubId: 'design-host-sea-face'),
+            child: const HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
           ),
         ),
       ),
@@ -73,7 +73,7 @@ Widget hostTeamRouteStates(BuildContext context) {
         label: 'active profile and clubs',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+            child: HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
           ),
         ),
       ),
@@ -81,9 +81,9 @@ Widget hostTeamRouteStates(BuildContext context) {
         label: 'clubs loading',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedClubsStream:
-                HostOperationsFixtures.loadingStream<List<Club>>(),
-            child: const HostClubTeamScreen(clubId: 'design-host-sea-face'),
+            hostedOrganizersStream:
+                HostOperationsFixtures.loadingStream<List<Organizer>>(),
+            child: const HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
           ),
         ),
       ),
@@ -91,10 +91,10 @@ Widget hostTeamRouteStates(BuildContext context) {
         label: 'clubs error',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            ownedClubsStream: HostOperationsFixtures.errorStream<List<Club>>(
+            ownedOrganizersStream: HostOperationsFixtures.errorStream<List<Organizer>>(
               'Hosted clubs failed',
             ),
-            child: const HostClubTeamScreen(clubId: 'design-host-sea-face'),
+            child: const HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
           ),
         ),
       ),
@@ -104,7 +104,7 @@ Widget hostTeamRouteStates(BuildContext context) {
           child: WidgetbookMediaOverride(
             textScaler: TextScaler.linear(2),
             child: WidgetbookHostShellScope(
-              child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+              child: HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
             ),
           ),
         ),
@@ -115,7 +115,7 @@ Widget hostTeamRouteStates(BuildContext context) {
           child: WidgetbookMediaOverride(
             disableAnimations: true,
             child: WidgetbookHostShellScope(
-              child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+              child: HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
             ),
           ),
         ),
@@ -125,7 +125,7 @@ Widget hostTeamRouteStates(BuildContext context) {
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
             themeMode: ThemeMode.dark,
-            child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+            child: HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
           ),
         ),
       ),
@@ -235,10 +235,10 @@ Widget hostTeamProfileSummaryStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Clubs states',
-  type: HostTeamHostedClubsSection,
+  type: HostTeamHostedOrganizersSection,
   path: '[P2 host surfaces]/Host team',
 )
-Widget hostTeamHostedClubsStates(BuildContext context) {
+Widget hostTeamHostedOrganizersStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
     title: 'HostTeamHostedClubsSection',
     contractId: 'section.host.team.hosted_clubs',
@@ -246,13 +246,13 @@ Widget hostTeamHostedClubsStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'clubs loading',
         child: const WidgetbookHostDeviceFrame(
-          child: _HostTeamHostedClubsFrame(loading: true),
+          child: _HostTeamHostedOrganizersFrame(loading: true),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'clubs error',
         child: WidgetbookHostDeviceFrame(
-          child: _HostTeamHostedClubsFrame(
+          child: _HostTeamHostedOrganizersFrame(
             error: StateError('Hosted clubs failed'),
           ),
         ),
@@ -260,19 +260,19 @@ Widget hostTeamHostedClubsStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'empty clubs',
         child: const WidgetbookHostDeviceFrame(
-          child: _HostTeamHostedClubsFrame(clubs: []),
+          child: _HostTeamHostedOrganizersFrame(organizers: []),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'owner and host-team rows',
         child: const WidgetbookHostDeviceFrame(
-          child: _HostTeamHostedClubsFrame(),
+          child: _HostTeamHostedOrganizersFrame(),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'preview mode rows',
         child: const WidgetbookHostDeviceFrame(
-          child: _HostTeamHostedClubsFrame(editMode: false),
+          child: _HostTeamHostedOrganizersFrame(editMode: false),
         ),
       ),
       WidgetbookPageStateCard(
@@ -280,7 +280,7 @@ Widget hostTeamHostedClubsStates(BuildContext context) {
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
             textScaler: TextScaler.linear(2),
-            child: _HostTeamHostedClubsFrame(),
+            child: _HostTeamHostedOrganizersFrame(),
           ),
         ),
       ),
@@ -290,10 +290,10 @@ Widget hostTeamHostedClubsStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostClubTeamScreen,
+  type: HostOrganizerTeamScreen,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostClubTeamScreenCatalogStates(BuildContext context) =>
+Widget hostStrictHostOrganizerTeamScreenCatalogStates(BuildContext context) =>
     hostTeamRouteStates(context);
 
 class _HostTeamProfileFrame extends StatefulWidget {
@@ -371,15 +371,15 @@ class _HostTeamProfileFrameState extends State<_HostTeamProfileFrame> {
   }
 }
 
-class _HostTeamHostedClubsFrame extends StatelessWidget {
-  const _HostTeamHostedClubsFrame({
-    this.clubs,
+class _HostTeamHostedOrganizersFrame extends StatelessWidget {
+  const _HostTeamHostedOrganizersFrame({
+    this.organizers,
     this.loading = false,
     this.error,
     this.editMode = true,
   });
 
-  final List<Club>? clubs;
+  final List<Organizer>? organizers;
   final bool loading;
   final Object? error;
   final bool editMode;
@@ -396,7 +396,7 @@ class _HostTeamHostedClubsFrame extends StatelessWidget {
             body: ListView(
               padding: CatchInsets.pageBodyUnderHeader,
               children: [
-                HostTeamHostedClubsSection(
+                HostTeamHostedOrganizersSection(
                   actions: HostTeamWorkspaceActionState.from(
                     uid: widgetbookHostUid,
                     editMode: editMode,
@@ -406,16 +406,16 @@ class _HostTeamHostedClubsFrame extends StatelessWidget {
                     ),
                   ),
                   state: error != null
-                      ? HostTeamHostedClubsError(error: error!)
+                      ? HostTeamHostedOrganizersError(error: error!)
                       : loading
-                      ? const HostTeamHostedClubsLoading()
-                      : buildHostTeamHostedClubsState(
-                          CatchAsyncState<List<Club>>.data(
-                            clubs ?? HostOperationsFixtures.clubs,
+                      ? const HostTeamHostedOrganizersLoading()
+                      : buildHostTeamHostedOrganizersState(
+                          CatchAsyncState<List<Organizer>>.data(
+                            organizers ?? HostOperationsFixtures.organizers,
                           ),
                         ),
                   onRetry: error == null ? null : () {},
-                  onOpenClub: (_) {},
+                  onOpenOrganizer: (_) {},
                 ),
               ],
             ),

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_entry_section.dart';
@@ -20,8 +20,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart' show buildClub;
 import '../events/events_test_helpers.dart' show buildEvent;
+import '../organizers/organizers_test_helpers.dart' show buildOrganizer;
 import '../test_pump_helpers.dart';
 
 void main() {
@@ -94,11 +94,11 @@ void main() {
   ) async {
     await mount(
       tester,
-      HostClubEditBody(
-        club: buildClub(
+      HostOrganizerEditBody(
+        organizer: buildOrganizer(
           id: 'private',
           ownerUserId: 'owner',
-          appVisibility: ClubAppVisibility.hidden,
+          appVisibility: OrganizerAppVisibility.hidden,
         ),
         currentUid: 'owner',
         isOwner: true,

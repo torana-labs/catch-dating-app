@@ -11,12 +11,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import '../clubs/clubs_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 final _now = DateTime(2026, 9, 4, 12);
 const _longTitle = 'Friday Evening Trivia Night at The Daily Bar';
-final _club = buildClub();
+final _organizer = buildOrganizer();
 
 void main() {
   setUpAll(() => initializeDateFormatting('en'));
@@ -211,14 +211,14 @@ void main() {
           theme: AppTheme.light,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: HostEventsClubSection(
-            club: _club,
+          home: HostEventsOrganizerSection(
+            organizer: _organizer,
             now: _now,
             state: HostEventsWorkspaceState.fromEvents(
               events: const [],
               now: _now,
             ),
-            entryState: HostEventEntryState.resolve(organizerId: _club.id),
+            entryState: HostEventEntryState.resolve(organizerId: _organizer.id),
             programs: CatchAsyncState.data([program]),
             onOpenProgram: (p) => opened = p.programId,
             onLoadMoreActive: () {},
@@ -265,14 +265,14 @@ void main() {
         theme: AppTheme.light,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: HostEventsClubSection(
-          club: _club,
+        home: HostEventsOrganizerSection(
+          organizer: _organizer,
           now: _now,
           state: HostEventsWorkspaceState.fromEvents(
             events: const [],
             now: _now,
           ),
-          entryState: HostEventEntryState.resolve(organizerId: _club.id),
+          entryState: HostEventEntryState.resolve(organizerId: _organizer.id),
           programs: CatchAsyncState.data([program]),
           hasMorePrograms: true,
           onLoadMorePrograms: (view) => loadedViewNames.add(view.name),
@@ -320,10 +320,10 @@ Future<void> _pump(
         ),
         child: child!,
       ),
-      home: HostEventsClubSection(
-        club: _club,
+      home: HostEventsOrganizerSection(
+        organizer: _organizer,
         state: state,
-        entryState: HostEventEntryState.resolve(organizerId: _club.id),
+        entryState: HostEventEntryState.resolve(organizerId: _organizer.id),
         onLoadMoreActive: () {},
         onLoadMorePast: () {},
         onRetryPast: () {},

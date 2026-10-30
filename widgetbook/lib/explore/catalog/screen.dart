@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
@@ -46,7 +46,7 @@ Widget exploreScreenStates(BuildContext context) {
         child: WidgetbookExploreDeviceFrame(
           height: WidgetbookPreviewLayout.exploreRoutePreviewHeight,
           child: WidgetbookExploreScope(
-            sourceClubs: AsyncError<List<Club>>(
+            sourceOrganizers: AsyncError<List<Organizer>>(
               StateError('Widgetbook club source failed'),
               StackTrace.empty,
             ),
@@ -69,7 +69,7 @@ Widget exploreScreenStates(BuildContext context) {
               activity: ActivityKind.dinner,
             ),
             viewModel: const AsyncData(
-              ExploreViewModel(joinedClubs: [], allClubs: []),
+              ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
             ),
             feed: const AsyncData(ExploreFeedViewModel(items: [])),
             child: const ExploreScreen(),

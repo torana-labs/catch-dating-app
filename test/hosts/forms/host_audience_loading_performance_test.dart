@@ -13,7 +13,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
@@ -26,7 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../clubs/clubs_test_helpers.dart';
+import '../../organizers/organizers_test_helpers.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
@@ -104,8 +104,8 @@ void main() {
         overrides: [
           firebaseAuthProvider.overrideWithValue(_Auth()),
           uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
-          hostOperableClubsProvider('host-1').overrideWithValue(
-            AsyncData([buildClub(id: 'forms-club', ownerUserId: 'host-1')]),
+          hostOperableOrganizersProvider('host-1').overrideWithValue(
+            AsyncData([buildOrganizer(id: 'forms-club', ownerUserId: 'host-1')]),
           ),
           hostContactsRepositoryProvider.overrideWithValue(contacts),
           hostAllSavedAudiencesProvider('forms-club').overrideWithValue(
@@ -170,8 +170,8 @@ Widget _app(_Forms repository, {bool initialResponses = true}) => ProviderScope(
   overrides: [
     firebaseAuthProvider.overrideWithValue(_Auth()),
     uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
-    hostOperableClubsProvider('host-1').overrideWithValue(
-      AsyncData([buildClub(id: 'forms-club', ownerUserId: 'host-1')]),
+    hostOperableOrganizersProvider('host-1').overrideWithValue(
+      AsyncData([buildOrganizer(id: 'forms-club', ownerUserId: 'host-1')]),
     ),
     hostFormsRepositoryProvider.overrideWithValue(repository),
   ],

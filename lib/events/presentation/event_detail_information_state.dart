@@ -251,7 +251,7 @@ EventDetailFactRow _admissionRow(
       icon: EventDetailFactIcon.membersOnly,
       title: l10n.eventsEventDetailDesignPrimitivesVisiblecopyMembersOnly,
       body: l10n
-          .eventsEventDetailDesignPrimitivesVisiblecopyOnlyActiveClubMembers,
+          .eventsEventDetailDesignPrimitivesVisiblecopyOnlyActiveOrganizerMembers,
     ),
   };
 }

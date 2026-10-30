@@ -137,9 +137,9 @@ abstract final class WidgetbookPreviewLayout {
   static const double catchesSummaryPreviewHeight = 108;
   static const double catchesCardPreviewHeight = 168;
   static const double matchesTallPreviewHeight = 340;
-  static const double clubRoutePreviewHeight = 480;
-  static const double clubExpandedPreviewHeight = 500;
-  static const double clubAvatarPreviewExtent = 120;
+  static const double organizerRoutePreviewHeight = 480;
+  static const double organizerExpandedPreviewHeight = 500;
+  static const double organizerAvatarPreviewExtent = 120;
 
   static const double skeletonCardHeight = 84;
   static const double skeletonBoxWidth = 96;
@@ -155,9 +155,9 @@ abstract final class WidgetbookPreviewLayout {
   static const double kickerTruncationWidth = 120;
   static const double monoLabelTruncationWidth = 110;
 
-  static const double clubCoverWidth = 280;
-  static const double clubCoverHeight = 180;
-  static const double clubCoverCompactExtent = 72;
+  static const double organizerCoverWidth = 280;
+  static const double organizerCoverHeight = 180;
+  static const double organizerCoverCompactExtent = 72;
 
   static const double activityArtPairWidth = 180;
   static const double activityArtPairHeight = 96;

@@ -29,12 +29,12 @@ class ExploreScreenEmptyState extends StatelessWidget {
             onClearFilters: onClearFilters,
           );
     return switch (state.kind) {
-      ExploreDiscoveryEmptyKind.noSourceClubs => Center(
+      ExploreDiscoveryEmptyKind.noSourceOrganizers => Center(
         child: Padding(
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
             icon: CatchIcons.people,
-            title: context.l10n.exploreExploreScreenTitleNoClubsInCitylabel(
+            title: context.l10n.exploreExploreScreenTitleNoOrganizersInCitylabel(
               cityLabel: state.cityLabel,
             ),
             message: context.l10n.exploreExploreScreenMessageTryAnotherCityFrom,
@@ -53,7 +53,7 @@ class ExploreScreenEmptyState extends StatelessWidget {
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
             icon: CatchIcons.people,
-            title: context.l10n.exploreExploreScreenTitleNoClubsMatchThis,
+            title: context.l10n.exploreExploreScreenTitleNoOrganizersMatchThis,
             message: context.l10n.exploreExploreScreenMessageClearTheSearchOr,
             actions: [?action],
           ),
@@ -64,10 +64,10 @@ class ExploreScreenEmptyState extends StatelessWidget {
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
             icon: CatchIcons.people,
-            title: context.l10n.exploreExploreScreenTitleNoClubsMatchThis,
+            title: context.l10n.exploreExploreScreenTitleNoOrganizersMatchThis,
             message: context
                 .l10n
-                .exploreExploreScreenMessageTryAnotherClubNeighborhood,
+                .exploreExploreScreenMessageTryAnotherOrganizerNeighborhood,
             actions: [?action],
           ),
         ),
@@ -77,7 +77,7 @@ class ExploreScreenEmptyState extends StatelessWidget {
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
             icon: CatchIcons.people,
-            title: context.l10n.exploreExploreScreenTitleNoClubsMatchThese,
+            title: context.l10n.exploreExploreScreenTitleNoOrganizersMatchThese,
             message: context.l10n.exploreExploreScreenMessageClearOneOrMore,
             actions: [?action],
           ),

@@ -229,7 +229,7 @@
         {
           "id": "retry_route",
           "owner": "route_screen",
-          "codeValue": "reloadClub",
+          "codeValue": "reloadOrganizer",
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
@@ -911,7 +911,7 @@
         {
           "id": "dismiss_success",
           "owner": "wizard_state",
-          "codeValue": "backToClub",
+          "codeValue": "backToOrganizer",
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",

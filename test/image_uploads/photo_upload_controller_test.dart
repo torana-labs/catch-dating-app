@@ -121,7 +121,7 @@ void main() {
     expect(ImageUploadRepository.profilePhotoPolicy.quality, 85);
     expect(ImageUploadRepository.chatImagePolicy.maxWidth, 1440);
     expect(ImageUploadRepository.chatImagePolicy.quality, 78);
-    expect(ImageUploadRepository.clubCoverPolicy.maxHeight, 1200);
+    expect(ImageUploadRepository.organizerCoverPolicy.maxHeight, 1200);
     expect(ImageUploadRepository.eventPhotoPolicy.maxWidth, 1800);
     expect(
       ImageUploadRepository.policyForPurpose(

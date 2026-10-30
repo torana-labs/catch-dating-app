@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dar
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/private_event_setup_inventory.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
@@ -31,10 +31,10 @@ import 'package:go_router/go_router.dart';
 
 typedef HostProgramsLoadMoreCallback = void Function(HostEventsView view);
 
-class HostEventsClubCard extends ConsumerWidget {
-  const HostEventsClubCard({
+class HostEventsOrganizerCard extends ConsumerWidget {
+  const HostEventsOrganizerCard({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.onEventEntrySelected,
     required this.onManageEvent,
     required this.now,
@@ -43,7 +43,7 @@ class HostEventsClubCard extends ConsumerWidget {
     this.initialProgramRow,
   });
 
-  final Club club;
+  final Organizer organizer;
   final HostEventEntryCallback onEventEntrySelected;
   final HostEventsManageEventCallback onManageEvent;
   final DateTime now;
@@ -57,7 +57,7 @@ class HostEventsClubCard extends ConsumerWidget {
       ref.watch(authenticatedSessionProvider),
     );
     final request = HostEventsTimelineRequest(
-      organizerId: club.id,
+      organizerId: organizer.id,
       sessionBoundary: sessionBoundary,
       session: sessionState.value,
     );
@@ -99,13 +99,13 @@ class HostEventsClubCard extends ConsumerWidget {
       pastError: timeline?.pastError,
       pastStackTrace: timeline?.pastStackTrace,
     );
-    final draftsAsync = ref.watch(clubEventDraftsProvider(clubId: club.id));
+    final draftsAsync = ref.watch(organizerEventDraftsProvider(clubId: organizer.id));
     final drafts = switch (draftsAsync) {
       AsyncData<List<EventDraft>>(:final value) => value,
       _ => const <EventDraft>[],
     };
     final entryState = HostEventEntryState.resolve(
-      organizerId: club.id,
+      organizerId: organizer.id,
       drafts: drafts,
       repeatSource: workspaceState.repeatSource,
     );
@@ -115,7 +115,7 @@ class HostEventsClubCard extends ConsumerWidget {
     final accountId = ref.watch(uidProvider).value;
     final scope = accountId == null
         ? null
-        : (accountId: accountId, organizerId: club.id);
+        : (accountId: accountId, organizerId: organizer.id);
     final programController = scope == null
         ? null
         : ref.watch(
@@ -127,7 +127,7 @@ class HostEventsClubCard extends ConsumerWidget {
           );
     return ListenableBuilder(
       listenable: Listenable.merge([?programController]),
-      builder: (_, _) => HostEventsClubSection(
+      builder: (_, _) => HostEventsOrganizerSection(
         programs: programController?.state ?? const CatchAsyncState.loading(),
         hasMorePrograms: programController?.hasMore ?? false,
         loadingMorePrograms: programController?.loadingMore ?? false,
@@ -157,7 +157,7 @@ class HostEventsClubCard extends ConsumerWidget {
                 action,
               ),
         isProgramPending: programController?.isPending,
-        club: club,
+        organizer: organizer,
         state: workspaceState,
         entryState: entryState,
         onRetryEvents: onRetryEvents,
@@ -177,10 +177,10 @@ class HostEventsClubCard extends ConsumerWidget {
   }
 }
 
-class HostEventsClubSection extends StatefulWidget {
-  const HostEventsClubSection({
+class HostEventsOrganizerSection extends StatefulWidget {
+  const HostEventsOrganizerSection({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.state,
     required this.entryState,
     required this.onLoadMoreActive,
@@ -212,7 +212,7 @@ class HostEventsClubSection extends StatefulWidget {
   final bool loadingMorePrograms;
   final Object? programPageError;
   final HostProgramsLoadMoreCallback? onLoadMorePrograms;
-  final Club club;
+  final Organizer organizer;
   final HostEventsWorkspaceState state;
   final HostEventEntryState entryState;
   final VoidCallback? onRetryEvents;
@@ -223,10 +223,10 @@ class HostEventsClubSection extends StatefulWidget {
   final HostEventsManageEventCallback onManageEvent;
 
   @override
-  State<HostEventsClubSection> createState() => _HostEventsClubSectionState();
+  State<HostEventsOrganizerSection> createState() => _HostEventsOrganizerSectionState();
 }
 
-class _HostEventsClubSectionState extends State<HostEventsClubSection>
+class _HostEventsOrganizerSectionState extends State<HostEventsOrganizerSection>
     with SingleTickerProviderStateMixin {
   late final TabController _tabs;
   final Set<HostEventsView> _autoAdvancedProgramViews = {};
@@ -240,9 +240,9 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
   }
 
   @override
-  void didUpdateWidget(HostEventsClubSection oldWidget) {
+  void didUpdateWidget(HostEventsOrganizerSection oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.club.id != widget.club.id) {
+    if (oldWidget.organizer.id != widget.organizer.id) {
       _autoAdvancedProgramViews.clear();
       _tabs.index = 0;
     }
@@ -318,8 +318,8 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
           for (final view in HostEventsView.values)
             CatchRootScreenPageSpec.scroll(
               page: HostEventsTimelineBody(
-                key: ValueKey('host-events-${widget.club.id}-${view.name}'),
-                organizerId: widget.club.id,
+                key: ValueKey('host-events-${widget.organizer.id}-${view.name}'),
+                organizerId: widget.organizer.id,
                 programs: widget.programs,
                 now: widget.now,
                 onRetryPrograms: widget.onRetryPrograms,
@@ -343,9 +343,9 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
                     : widget.onRetryPast,
                 onCreateEvent: _showEventEntrySheet,
                 onManageEvent: (event) =>
-                    widget.onManageEvent(widget.club, event),
+                    widget.onManageEvent(widget.organizer, event),
                 onResumeUnpublished: (eventId) => widget.onEventEntrySelected(
-                  widget.club,
+                  widget.organizer,
                   widget.entryState,
                   HostEventEntrySelection.saved(eventId),
                 ),
@@ -362,7 +362,7 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
       state: widget.entryState,
     );
     if (intent == null || !mounted) return;
-    widget.onEventEntrySelected(widget.club, widget.entryState, intent);
+    widget.onEventEntrySelected(widget.organizer, widget.entryState, intent);
   }
 }
 

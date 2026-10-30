@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/connections/domain/swipe_window.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -62,7 +62,7 @@ class DashboardFullViewModel {
     required this.arrivalAction,
     required this.windowedEvents,
     required this.pendingReviewEvent,
-    this.clubPostNotifications = const <ActivityNotification>[],
+    this.organizerPostNotifications = const <ActivityNotification>[],
     required this.attendedEventsSection,
   });
 
@@ -71,7 +71,7 @@ class DashboardFullViewModel {
   final EventArrivalAction? arrivalAction;
   final List<DashboardCatchWindow> windowedEvents;
   final Event? pendingReviewEvent;
-  final List<ActivityNotification> clubPostNotifications;
+  final List<ActivityNotification> organizerPostNotifications;
   final DashboardSectionModel<List<Event>> attendedEventsSection;
 }
 
@@ -166,7 +166,7 @@ class DashboardHomeScreenState {
     this.error,
     this.user,
     this.viewModel,
-    this.followedClubIds = const <String>[],
+    this.followedOrganizerIds = const <String>[],
     this.notificationUid,
   });
 
@@ -194,13 +194,13 @@ class DashboardHomeScreenState {
     required DashboardHomeHeaderModel header,
     required UserProfile user,
     required DashboardFullViewModel viewModel,
-    required List<String> followedClubIds,
+    required List<String> followedOrganizerIds,
   }) : this._(
          status: DashboardHomeScreenStatus.full,
          header: header,
          user: user,
          viewModel: viewModel,
-         followedClubIds: followedClubIds,
+         followedOrganizerIds: followedOrganizerIds,
          notificationUid: user.uid,
        );
 
@@ -209,7 +209,7 @@ class DashboardHomeScreenState {
   final DashboardHomeLoadError? error;
   final UserProfile? user;
   final DashboardFullViewModel? viewModel;
-  final List<String> followedClubIds;
+  final List<String> followedOrganizerIds;
   final String? notificationUid;
 }
 
@@ -269,13 +269,13 @@ List<String> dashboardHomeModuleImpressionsFor(DashboardHomeScreenState state) {
   if (!hasLiveModule) {
     modules.add('idle_cta');
   }
-  if (viewModel.clubPostNotifications.isNotEmpty) {
+  if (viewModel.organizerPostNotifications.isNotEmpty) {
     modules.add('club_posts');
   }
   return List.unmodifiable(modules);
 }
 
-List<ActivityNotification> clubPostNotificationsFromActivity(
+List<ActivityNotification> organizerPostNotificationsFromActivity(
   Iterable<ActivityNotification> notifications,
 ) {
   final posts =
@@ -304,7 +304,7 @@ DashboardFullViewModel buildDashboardFullViewModel({
   AsyncValue<List<Review>> reviewsByUserAsync = const AsyncData<List<Review>>(
     [],
   ),
-  List<ActivityNotification> clubPostNotifications =
+  List<ActivityNotification> organizerPostNotifications =
       const <ActivityNotification>[],
   DateTime? now,
 }) {
@@ -362,7 +362,7 @@ DashboardFullViewModel buildDashboardFullViewModel({
     arrivalAction: arrivalAction,
     windowedEvents: windowedEvents,
     pendingReviewEvent: pendingReviewEvent,
-    clubPostNotifications: clubPostNotifications,
+    organizerPostNotifications: organizerPostNotifications,
     attendedEventsSection: attendedEventsSection,
   );
 }
@@ -386,10 +386,10 @@ DashboardFullViewModel dashboardFullViewModel(
   required List<Event> signedUpEvents,
   required UserProfile user,
   required String uid,
-  required List<String> followedClubIds,
+  required List<String> followedOrganizerIds,
 }) {
   final notificationsAsync = ref.watch(watchActivityNotificationsProvider(uid));
-  final clubPostNotifications = clubPostNotificationsFromActivity(
+  final organizerPostNotifications = organizerPostNotificationsFromActivity(
     catchAsyncStateFromAsyncValue(notificationsAsync).value ??
         const <ActivityNotification>[],
   );
@@ -399,7 +399,7 @@ DashboardFullViewModel dashboardFullViewModel(
     uid: uid,
     attendedEventsAsync: ref.watch(watchAttendedEventsProvider(uid)),
     reviewsByUserAsync: ref.watch(watchReviewsByUserProvider(uid)),
-    clubPostNotifications: clubPostNotifications,
+    organizerPostNotifications: organizerPostNotifications,
     now: ref.watch(dashboardNowProvider),
   );
 }
@@ -427,26 +427,26 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
         return DashboardHomeScreenState.empty();
       }
 
-      final followedClubIdsAsync = ref.watch(
-        currentUserFollowedClubIdsProvider,
+      final followedOrganizerIdsAsync = ref.watch(
+        currentUserFollowedOrganizerIdsProvider,
       );
       final signedUpEventsAsync = ref.watch(
         watchSignedUpEventsProvider(user.uid),
       );
-      final followedClubIdsState = catchAsyncStateFromAsyncValue(
-        followedClubIdsAsync,
+      final followedOrganizerIdsState = catchAsyncStateFromAsyncValue(
+        followedOrganizerIdsAsync,
       );
       final signedUpEventsState = catchAsyncStateFromAsyncValue(
         signedUpEventsAsync,
       );
 
-      if (followedClubIdsState.isLoading || signedUpEventsState.isLoading) {
+      if (followedOrganizerIdsState.isLoading || signedUpEventsState.isLoading) {
         return DashboardHomeScreenState.loading();
       }
-      if (followedClubIdsState.hasError) {
+      if (followedOrganizerIdsState.hasError) {
         return DashboardHomeScreenState.error(
           DashboardHomeLoadError(
-            error: followedClubIdsState.error!,
+            error: followedOrganizerIdsState.error!,
             retryTarget: DashboardHomeRetryTarget.memberships,
             uid: user.uid,
           ),
@@ -463,13 +463,13 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
       }
 
       final signedUpEvents = signedUpEventsState.value ?? const <Event>[];
-      final followedClubIds = [...?followedClubIdsState.value]..sort();
+      final followedOrganizerIds = [...?followedOrganizerIdsState.value]..sort();
       final viewModel = ref.watch(
         dashboardFullViewModelProvider(
           signedUpEvents: signedUpEvents,
           user: user,
           uid: user.uid,
-          followedClubIds: followedClubIds,
+          followedOrganizerIds: followedOrganizerIds,
         ),
       );
 
@@ -477,7 +477,7 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
         header: DashboardHomeHeaderModel.full(user: user, now: now),
         user: user,
         viewModel: viewModel,
-        followedClubIds: followedClubIds,
+        followedOrganizerIds: followedOrganizerIds,
       );
     },
   );

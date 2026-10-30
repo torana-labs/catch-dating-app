@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo_policy.dart';
@@ -12,8 +12,8 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
-import 'package:catch_dating_app/explore/presentation/explore_club_display_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
+import 'package:catch_dating_app/explore/presentation/explore_organizer_display_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
@@ -47,7 +47,7 @@ void main() {
 
   test('synthetic organizers are never publicly browseable', () {
     expect(
-      _clubForValues(const {}).copyWith(synthetic: true).isPubliclyBrowseable,
+      _organizerForValues(const {}).copyWith(synthetic: true).isPubliclyBrowseable,
       isFalse,
     );
   });
@@ -472,8 +472,8 @@ void _verifyEventDetail(
         isHostApp: values['runtime.appRole'] == 'host',
       ),
       values['runtime.appRole'] == 'host'
-          ? Routes.hostClubDetailScreen
-          : Routes.clubDetailScreen,
+          ? Routes.hostOrganizerDetailScreen
+          : Routes.organizerDetailScreen,
     );
   }
   if (values['runtime.appRole'] == 'host' &&
@@ -541,49 +541,49 @@ void _verifyEventLocation(
 
 bool _authorityRouteAllowed(Map<String, String> values) {
   if (values['viewer.session'] == 'resolving') return true;
-  final club = _clubForValues(values);
+  final organizer = _organizerForValues(values);
   if (values['organizer.lifecycleAvailability'] == 'unavailable') {
-    final activeClub = club.copyWith(
-      status: ClubLifecycleStatus.active,
+    final activeOrganizer = organizer.copyWith(
+      status: OrganizerLifecycleStatus.active,
       archived: false,
     );
     expect(
-      activeClub
-          .copyWith(status: ClubLifecycleStatus.archived)
+      activeOrganizer
+          .copyWith(status: OrganizerLifecycleStatus.archived)
           .isPubliclyBrowseable,
       isFalse,
     );
-    expect(activeClub.copyWith(archived: true).isPubliclyBrowseable, isFalse);
+    expect(activeOrganizer.copyWith(archived: true).isPubliclyBrowseable, isFalse);
   }
   if (values['runtime.appRole'] == 'host') {
     return values['viewer.relationship'] == 'host' &&
-        club.isHostedBy('owner-1');
+        organizer.isHostedBy('owner-1');
   }
-  return club.isPubliclyBrowseable;
+  return organizer.isPubliclyBrowseable;
 }
 
 bool _consumerOrganizerIsPubliclyBrowseable(Map<String, String> values) {
-  final club = _clubForValues(values);
+  final organizer = _organizerForValues(values);
   if (values['organizer.lifecycleAvailability'] == 'unavailable') {
-    final activeClub = club.copyWith(
-      status: ClubLifecycleStatus.active,
+    final activeOrganizer = organizer.copyWith(
+      status: OrganizerLifecycleStatus.active,
       archived: false,
     );
-    final lifecycleArchived = activeClub.copyWith(
-      status: ClubLifecycleStatus.archived,
+    final lifecycleArchived = activeOrganizer.copyWith(
+      status: OrganizerLifecycleStatus.archived,
     );
-    final legacyArchived = activeClub.copyWith(archived: true);
+    final legacyArchived = activeOrganizer.copyWith(archived: true);
     expect(lifecycleArchived.isPubliclyBrowseable, isFalse);
     expect(legacyArchived.isPubliclyBrowseable, isFalse);
     return false;
   }
-  return club.isPubliclyBrowseable;
+  return organizer.isPubliclyBrowseable;
 }
 
-Club _clubForValues(Map<String, String> values) {
+Organizer _organizerForValues(Map<String, String> values) {
   final lifecycleUnavailable =
       values['organizer.lifecycleAvailability'] == 'unavailable';
-  return Club(
+  return Organizer(
     id: 'organizer-1',
     name: 'Organizer',
     description: 'Matrix fixture',
@@ -592,11 +592,11 @@ Club _clubForValues(Map<String, String> values) {
     hostUserId: 'owner-1',
     createdAt: DateTime(2026),
     status: lifecycleUnavailable
-        ? ClubLifecycleStatus.archived
-        : ClubLifecycleStatus.active,
+        ? OrganizerLifecycleStatus.archived
+        : OrganizerLifecycleStatus.active,
     appVisibility: values['organizer.appVisibility'] == 'hidden'
-        ? ClubAppVisibility.hidden
-        : ClubAppVisibility.discoverable,
+        ? OrganizerAppVisibility.hidden
+        : OrganizerAppVisibility.discoverable,
     ownership: OrganizerOwnership.fromJson({
       'state': values['organizer.ownershipState'] ?? 'programmatic',
     }),

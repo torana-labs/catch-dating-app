@@ -1,27 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_top_bar.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
-import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
-import 'package:catch_dating_app/clubs/shared/club_cover.dart';
-import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
-import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/contexts/discovery/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
@@ -45,11 +33,23 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rai
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_recommendations_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_screen.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/kernel/city_data.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_membership_controller.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_body.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_dock.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_schedule_section.dart';
+import 'package:catch_dating_app/organizers/presentation/discovery/widgets/organizer_list_tile.dart';
+import 'package:catch_dating_app/organizers/shared/organizer_cover.dart';
+import 'package:catch_dating_app/organizers/shared/organizer_placeholder_cover.dart';
+import 'package:catch_dating_app/organizers/shared/organizer_transition_tags.dart';
 import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
@@ -73,17 +73,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart' show LaunchMode;
 
-import '../clubs/clubs_test_helpers.dart';
 import '../events/events_test_helpers.dart' as event_test;
+import '../organizers/organizers_test_helpers.dart';
 import '../support/profile_readiness_fixtures.dart';
 import '../test_pump_helpers.dart';
 import 'explore_device_location_fakes.dart';
 
-part 'explore_club_cards_tests.dart';
-part 'explore_club_detail_tests.dart';
 part 'explore_discovery_widgets_tests.dart';
 part 'explore_errors_and_creation_tests.dart';
 part 'explore_map_tests.dart';
+part 'explore_organizer_cards_tests.dart';
+part 'explore_organizer_detail_tests.dart';
 part 'explore_screen_filters_tests.dart';
 
 final _l10n = AppLocalizationsEn();
@@ -124,7 +124,7 @@ class _NoDeviceLocation extends NoDeviceLocation {}
 
 class _FixedDeviceLocation extends FixedDeviceLocation {}
 
-Future<void> _pumpClubsSlivers(
+Future<void> _pumpOrganizersSlivers(
   WidgetTester tester,
   List<Widget> slivers,
 ) async {
@@ -149,12 +149,12 @@ Future<void> _pumpClubsSlivers(
   await tester.pump();
 }
 
-Future<void> _pumpClubUi(WidgetTester tester) async {
+Future<void> _pumpOrganizerUi(WidgetTester tester) async {
   await pumpFeatureUi(tester);
 }
 
 Widget _exploreBodySliverGroup({
-  required ExploreViewModel clubsViewModel,
+  required ExploreViewModel organizersViewModel,
   CatchAsyncState<ExploreFeedViewModel>? feedState,
   CatchAsyncState<List<ExploreEventRecommendation>>? recommendationsState,
   AsyncValue<ExploreFeedViewModel> feedAsync = const AsyncData(
@@ -162,9 +162,9 @@ Widget _exploreBodySliverGroup({
   ),
   ExploreFilterSelection filters = const ExploreFilterSelection(),
   String searchQuery = '',
-  Object? clubSectionError,
+  Object? organizerSectionError,
   VoidCallback onRetryFeed = _noop,
-  VoidCallback onRetryClubs = _noop,
+  VoidCallback onRetryOrganizers = _noop,
   VoidCallback onClearSearch = _noop,
   VoidCallback onClearFilters = _noop,
   VoidCallback? onLoadMore,
@@ -173,8 +173,8 @@ Widget _exploreBodySliverGroup({
   ExploreEventSelected onEventSelected = _noopExploreEventSelected,
   ValueChanged<ExploreExternalEventItem> onExternalEventOpened =
       _noopExternalEventOpened,
-  bool includeJoinedClubsRail = true,
-  bool includeClubDirectory = true,
+  bool includeJoinedOrganizersRail = true,
+  bool includeOrganizerDirectory = true,
 }) {
   return Builder(
     builder: (context) => SliverMainAxisGroup(
@@ -182,12 +182,12 @@ Widget _exploreBodySliverGroup({
         context: context,
         feedState: feedState ?? catchAsyncStateFromAsyncValue(feedAsync),
         recommendationsState: recommendationsState,
-        clubsViewModel: clubsViewModel,
+        organizersViewModel: organizersViewModel,
         filters: filters,
         searchQuery: searchQuery,
-        clubSectionError: clubSectionError,
+        organizerSectionError: organizerSectionError,
         onRetryFeed: onRetryFeed,
-        onRetryClubs: onRetryClubs,
+        onRetryOrganizers: onRetryOrganizers,
         onClearSearch: onClearSearch,
         onClearFilters: onClearFilters,
         onLoadMore: onLoadMore,
@@ -195,8 +195,8 @@ Widget _exploreBodySliverGroup({
         onActivitySelected: onActivitySelected,
         onEventSelected: onEventSelected,
         onExternalEventOpened: onExternalEventOpened,
-        includeJoinedClubsRail: includeJoinedClubsRail,
-        includeClubDirectory: includeClubDirectory,
+        includeJoinedOrganizersRail: includeJoinedOrganizersRail,
+        includeOrganizerDirectory: includeOrganizerDirectory,
         pinnedExploreDayHeaders: false,
       ),
     ),
@@ -250,8 +250,8 @@ List<Widget> _exploreEventsSlivers({
   bool pinnedDayHeaders = true,
   bool promoteFeaturedItem = false,
   DateTime? now,
-  List<Club> candidateClubs = const [],
-  Set<String> joinedClubIds = const {},
+  List<Organizer> candidateOrganizers = const [],
+  Set<String> joinedOrganizerIds = const {},
 }) {
   return buildExploreEventsSlivers(
     catchAsyncStateFromAsyncValue(feedAsync),
@@ -267,8 +267,8 @@ List<Widget> _exploreEventsSlivers({
     pinnedDayHeaders: pinnedDayHeaders,
     promoteFeaturedItem: promoteFeaturedItem,
     now: now,
-    candidateClubs: candidateClubs,
-    joinedClubIds: joinedClubIds,
+    candidateOrganizers: candidateOrganizers,
+    joinedOrganizerIds: joinedOrganizerIds,
   );
 }
 
@@ -317,8 +317,8 @@ void main() {
   group('Explore and club discovery widgets', () {
     _registerExploreAsyncPhaseTests();
     _registerExploreDiscoveryWidgetsTests();
-    _registerExploreClubCardsTests();
-    _registerExploreClubDetailTests();
+    _registerExploreOrganizerCardsTests();
+    _registerExploreOrganizerDetailTests();
     _registerExploreScreenFiltersTests();
     _registerExploreMapTests();
     _registerExploreErrorsAndCreationTests();
@@ -355,7 +355,7 @@ ExternalEvent _buildExternalExploreEvent({
   return ExternalEvent(
     id: id,
     canonicalHostId: 'host-afterfly',
-    compatibilityClubId: 'club-afterfly',
+    compatibilityOrganizerId: 'club-afterfly',
     title: title,
     description: 'A reviewed external event.',
     startTime: startTime,
@@ -487,13 +487,13 @@ void _registerExploreAsyncPhaseTests() {
   testWidgets('Explore feed preserves canonical phases and paging ownership', (
     tester,
   ) async {
-    final club = buildClub(id: 'phase-club');
-    final event = event_test.buildEvent(id: 'phase-event', clubId: club.id);
+    final organizer = buildOrganizer(id: 'phase-club');
+    final event = event_test.buildEvent(id: 'phase-event', clubId: organizer.id);
     final feed = ExploreFeedViewModel(
       items: [
         ExploreEventItem(
           event: event,
-          club: club,
+          organizer: organizer,
           status: EventTileStatus.open,
         ),
       ],
@@ -508,9 +508,9 @@ void _registerExploreAsyncPhaseTests() {
           state.phase == CatchAsyncPhase.data ||
           state.phase == CatchAsyncPhase.refreshing;
       final failed = state.hasStaleError || state.isTerminalError;
-      await _pumpClubsSlivers(tester, [
+      await _pumpOrganizersSlivers(tester, [
         _exploreBodySliverGroup(
-          clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
+          organizersViewModel: const ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
           feedState: state,
           onRetryFeed: () => retries++,
           onLoadMore: () => loads++,
@@ -550,9 +550,9 @@ void _registerExploreAsyncPhaseTests() {
       }
       expect(tester.takeException(), isNull, reason: entry.key);
     }
-    await _pumpClubsSlivers(tester, [
+    await _pumpOrganizersSlivers(tester, [
       _exploreBodySliverGroup(
-        clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
+        organizersViewModel: const ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
         feedAsync: AsyncData(
           ExploreFeedViewModel(
             items: feed.items,
@@ -578,7 +578,7 @@ void _registerExploreAsyncPhaseTests() {
         id: 'phase-recommendation',
         clubId: 'phase-club',
       ),
-      clubName: 'Phase club',
+      organizerName: 'Phase club',
       reasonLabel: 'For this test',
       score: 1,
     );
@@ -587,9 +587,9 @@ void _registerExploreAsyncPhaseTests() {
       var retries = 0;
       final state = entry.value;
       final failed = state.hasStaleError || state.isTerminalError;
-      await _pumpClubsSlivers(tester, [
+      await _pumpOrganizersSlivers(tester, [
         _exploreBodySliverGroup(
-          clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
+          organizersViewModel: const ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
           recommendationsState: state,
           onRetryFeed: () => retries++,
         ),
@@ -624,9 +624,9 @@ void _registerExploreAsyncPhaseTests() {
       null,
       const CatchAsyncState<List<ExploreEventRecommendation>>.data([]),
     ]) {
-      await _pumpClubsSlivers(tester, [
+      await _pumpOrganizersSlivers(tester, [
         _exploreBodySliverGroup(
-          clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
+          organizersViewModel: const ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
           recommendationsState: recommendations,
         ),
       ]);

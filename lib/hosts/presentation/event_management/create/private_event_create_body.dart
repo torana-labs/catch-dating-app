@@ -32,7 +32,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       }
       final scope = (
         userId: uid,
-        organizerId: widget.club.id,
+        organizerId: widget.organizer.id,
         eventId: receipt.eventId,
       );
       _mutateScreenState(() {
@@ -82,7 +82,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       }
       final scope = (
         userId: uid,
-        organizerId: widget.club.id,
+        organizerId: widget.organizer.id,
         eventId: receipt.eventId,
       );
       _mutateScreenState(() {
@@ -157,7 +157,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       }
       final scope = (
         userId: uid,
-        organizerId: widget.club.id,
+        organizerId: widget.organizer.id,
         eventId: receipt.eventId,
       );
       _mutateScreenState(() {
@@ -208,11 +208,11 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       _managerDefaultsError = null;
     });
     try {
-      final defaults = await read(widget.club.id);
+      final defaults = await read(widget.organizer.id);
       if (!mounted) {
         return;
       }
-      if (defaults.organizerId != widget.club.id) {
+      if (defaults.organizerId != widget.organizer.id) {
         throw const FormatException('Organizer defaults identity changed');
       }
       final startingValues =
@@ -280,13 +280,13 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       final controller = ref.read(createEventDraftControllerProvider.notifier);
       final summary =
           await (widget.readSaved ?? controller.getPrivateEventSetup)(
-            organizerId: widget.club.id,
+            organizerId: widget.organizer.id,
             eventId: eventId,
           );
       if (!mounted) {
         return;
       }
-      if (summary.eventId != eventId || summary.organizerId != widget.club.id) {
+      if (summary.eventId != eventId || summary.organizerId != widget.organizer.id) {
         throw const FormatException('Private event read changed identity');
       }
       final basics = PrivateEventBasics(
@@ -296,7 +296,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         localStartTime: summary.localStartTime,
         timezone: EventSetupValue.set(summary.timezone),
       );
-      final drafts = await controller.loadDrafts(clubId: widget.club.id);
+      final drafts = await controller.loadDrafts(clubId: widget.organizer.id);
       if (!mounted) {
         return;
       }
@@ -363,7 +363,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       final pending = await ref
           .read(createEventDraftControllerProvider.notifier)
           .loadPendingBasicsUpdate(
-            organizerId: widget.club.id,
+            organizerId: widget.organizer.id,
             eventId: receipt.eventId,
           );
       if (!mounted) {
@@ -457,7 +457,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
               ref
                   .read(createEventDraftControllerProvider.notifier)
                   .createPrivateEvent)(
-            organizerId: widget.club.id,
+            organizerId: widget.organizer.id,
             requestId: _requestId,
             basics: basics,
           );
@@ -540,7 +540,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     final request =
         existing ??
         PrivateEventBasicsUpdateRequest(
-          organizerId: widget.club.id,
+          organizerId: widget.organizer.id,
           eventId: receipt.eventId,
           requestId: newPrivateEventRequestId(),
           expectedSetupRevision: receipt.setupRevision,
@@ -682,7 +682,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     final draft = privateEventDraftSnapshot(
       old: _activeDraft,
       draftId: _localDraftId,
-      clubId: widget.club.id,
+      clubId: widget.organizer.id,
       name: _nameController.text.trim(),
       cityId: _city?.effectiveCityId ?? _savedCity?.cityId,
       marketId: _city?.effectiveMarketId ?? _savedCity?.marketId,
@@ -703,6 +703,6 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         .read(createEventDraftControllerProvider.notifier)
         .saveDraft(draft);
     _activeDraft = draft;
-    ref.invalidate(clubEventDraftsProvider(clubId: widget.club.id));
+    ref.invalidate(organizerEventDraftsProvider(clubId: widget.organizer.id));
   }
 }

@@ -1,6 +1,6 @@
 part of 'host_event_manage_screen.dart';
 
-typedef _HostEventManageRouteData = ({String? uid, Club? club, Event? event});
+typedef _HostEventManageRouteData = ({String? uid, Organizer? organizer, Event? event});
 
 class HostEventManageRouteScreen extends ConsumerWidget {
   const HostEventManageRouteScreen({
@@ -23,11 +23,11 @@ class HostEventManageRouteScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final clubAsync = ref.watch(fetchClubProvider(clubId));
+    final organizerAsync = ref.watch(fetchOrganizerProvider(clubId));
     final eventAsync = ref.watch(watchEventProvider(eventId));
     final routeDataAsync = _hostEventManageRouteData(
       uid: catchAsyncStateFromAsyncValue(uidAsync),
-      club: catchAsyncStateFromAsyncValue(clubAsync),
+      organizer: catchAsyncStateFromAsyncValue(organizerAsync),
       event: catchAsyncStateFromAsyncValue(eventAsync),
       initialEvent: initialEvent,
     );
@@ -36,7 +36,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
       value: routeDataAsync,
       onRetry: () {
         ref.invalidate(uidProvider);
-        ref.invalidate(fetchClubProvider(clubId));
+        ref.invalidate(fetchOrganizerProvider(clubId));
         ref.invalidate(watchEventProvider(eventId));
       },
       loadingBuilder: (_) => CatchRouteScaffold(
@@ -70,9 +70,9 @@ class HostEventManageRouteScreen extends ConsumerWidget {
       ),
       builder: (context, routeData) {
         final uid = routeData.uid;
-        final club = routeData.club;
+        final organizer = routeData.organizer;
         final event = routeData.event;
-        if (club == null || event == null) {
+        if (organizer == null || event == null) {
           return CatchRouteScaffold(
             topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
               title:
@@ -98,7 +98,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
           );
         }
 
-        if (uid == null || !club.isHostedBy(uid)) {
+        if (uid == null || !organizer.isHostedBy(uid)) {
           return CatchRouteScaffold(
             topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
               title:
@@ -126,7 +126,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
         }
 
         return HostEventManageScreen(
-          club: club,
+          organizer: organizer,
           event: event,
           onBackToSuccess:
               CatchWorkspaceBackScope.maybeOf(context) ??
@@ -142,29 +142,29 @@ class HostEventManageRouteScreen extends ConsumerWidget {
 
 AsyncValue<_HostEventManageRouteData> _hostEventManageRouteData({
   required CatchAsyncState<String?> uid,
-  required CatchAsyncState<Club?> club,
+  required CatchAsyncState<Organizer?> organizer,
   required CatchAsyncState<Event?> event,
   required Event? initialEvent,
 }) {
   final resolvedEvent = event.value ?? initialEvent;
-  final error = uid.error ?? club.error ?? event.error;
+  final error = uid.error ?? organizer.error ?? event.error;
   if (error != null) {
     final stackTrace =
         uid.stackTrace ??
-        club.stackTrace ??
+        organizer.stackTrace ??
         event.stackTrace ??
         StackTrace.current;
     return AsyncError<_HostEventManageRouteData>(error, stackTrace);
   }
   final loading =
       uid.isLoading ||
-      club.isLoading ||
+      organizer.isLoading ||
       (event.isLoading && resolvedEvent == null);
   if (loading) return const AsyncLoading<_HostEventManageRouteData>();
 
   return AsyncData<_HostEventManageRouteData>((
     uid: uid.value,
-    club: club.value,
+    organizer: organizer.value,
     event: resolvedEvent,
   ));
 }

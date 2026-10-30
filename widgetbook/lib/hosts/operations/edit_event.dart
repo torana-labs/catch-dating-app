@@ -3,8 +3,8 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
@@ -71,10 +71,10 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
         label: 'route loading',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
-            clubValue: const AsyncLoading<Club?>(),
+            organizerValue: const AsyncLoading<Organizer?>(),
             eventValue: const AsyncLoading<Event?>(),
             child: EditHostedEventRouteScreen(
-              clubId: widgetbookClub.id,
+              clubId: widgetbookOrganizer.id,
               eventId: widgetbookEditableEvent.id,
             ),
           ),
@@ -84,12 +84,12 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
         label: 'route error',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
-            clubValue: AsyncError<Club?>(
+            organizerValue: AsyncError<Organizer?>(
               StateError('Club fetch failed'),
               StackTrace.empty,
             ),
             child: EditHostedEventRouteScreen(
-              clubId: widgetbookClub.id,
+              clubId: widgetbookOrganizer.id,
               eventId: widgetbookEditableEvent.id,
             ),
           ),
@@ -99,12 +99,12 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
         label: 'route offline',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
-            clubValue: AsyncError<Club?>(
+            organizerValue: AsyncError<Organizer?>(
               obviousOfflineException(),
               StackTrace.empty,
             ),
             child: EditHostedEventRouteScreen(
-              clubId: widgetbookClub.id,
+              clubId: widgetbookOrganizer.id,
               eventId: widgetbookEditableEvent.id,
             ),
           ),
@@ -116,7 +116,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           child: _HostEditEventScope(
             eventValue: const AsyncData<Event?>(null),
             child: EditHostedEventRouteScreen(
-              clubId: widgetbookClub.id,
+              clubId: widgetbookOrganizer.id,
               eventId: widgetbookEditableEvent.id,
             ),
           ),
@@ -128,7 +128,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           child: _HostEditEventScope(
             uid: HostOperationsFixtures.guestUid,
             child: EditHostedEventRouteScreen(
-              clubId: widgetbookClub.id,
+              clubId: widgetbookOrganizer.id,
               eventId: widgetbookEditableEvent.id,
             ),
           ),
@@ -139,7 +139,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
             child: EditHostedEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               event: widgetbookEditableEvent,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -152,7 +152,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
             child: EditHostedEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               event: widgetbookPrivateEvent,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -165,7 +165,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
             child: EditHostedEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               event: HostOperationsFixtures.cancelledEvent,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -179,7 +179,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           child: _HostEditEventScope(
             privateAccessValue: const AsyncLoading<EventPrivateAccess?>(),
             child: EditHostedEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               event: widgetbookPrivateEvent,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -192,7 +192,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
             child: EditHostedEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               event: _validationEvent,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -206,7 +206,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
             child: EditHostedEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               event: _selectedLocationEvent,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -221,7 +221,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
             textScaler: const TextScaler.linear(2),
             child: _HostEditEventScope(
               child: EditHostedEventScreen(
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 event: widgetbookEditableEvent,
                 loadMapTiles: false,
                 now: () => HostOperationsFixtures.now,
@@ -237,7 +237,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
             disableAnimations: true,
             child: _HostEditEventScope(
               child: EditHostedEventScreen(
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 event: widgetbookEditableEvent,
                 loadMapTiles: false,
                 now: () => HostOperationsFixtures.now,
@@ -252,7 +252,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           child: _HostEditEventScope(
             themeMode: ThemeMode.dark,
             child: EditHostedEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               event: widgetbookEditableEvent,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -279,7 +279,7 @@ Widget editHostedEventScreenCatalogStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
             child: EditHostedEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               event: widgetbookEditableEvent,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -292,7 +292,7 @@ Widget editHostedEventScreenCatalogStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
             child: EditHostedEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               event: widgetbookPrivateEvent,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -535,7 +535,7 @@ class _EditableHostedEventPolicySectionFrameState
       padding: CatchInsets.content,
       child: HostedEventPolicySection.editable(
         state: HostEventEditPolicyFieldState.from(
-          currencyCode: currencyCodeForCityName(widgetbookClub.location),
+          currencyCode: currencyCodeForCityName(widgetbookOrganizer.location),
           admissionPreset: _admissionPreset,
           cohortCapsEnabled: _cohortCapsEnabled,
           dynamicPricingEnabled: _dynamicPricingEnabled,
@@ -570,7 +570,7 @@ class _HostEditEventScope extends StatelessWidget {
   const _HostEditEventScope({
     required this.child,
     this.uid,
-    this.clubValue,
+    this.organizerValue,
     this.eventValue,
     this.privateAccessValue,
     this.themeMode = ThemeMode.light,
@@ -578,7 +578,7 @@ class _HostEditEventScope extends StatelessWidget {
 
   final Widget child;
   final String? uid;
-  final AsyncValue<Club?>? clubValue;
+  final AsyncValue<Organizer?>? organizerValue;
   final AsyncValue<Event?>? eventValue;
   final AsyncValue<EventPrivateAccess?>? privateAccessValue;
   final ThemeMode themeMode;
@@ -591,9 +591,9 @@ class _HostEditEventScope extends StatelessWidget {
       child: WidgetbookFixtureScope(
         overrides: [
           uidProvider.overrideWithValue(AsyncData<String?>(effectiveUid)),
-          fetchClubProvider(
-            widgetbookClub.id,
-          ).overrideWithValue(clubValue ?? AsyncData<Club?>(widgetbookClub)),
+          fetchOrganizerProvider(
+            widgetbookOrganizer.id,
+          ).overrideWithValue(organizerValue ?? AsyncData<Organizer?>(widgetbookOrganizer)),
           watchEventProvider(widgetbookEditableEvent.id).overrideWithValue(
             eventValue ?? AsyncData<Event?>(widgetbookEditableEvent),
           ),

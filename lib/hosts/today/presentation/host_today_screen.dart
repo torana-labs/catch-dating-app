@@ -6,8 +6,8 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_start_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_flow.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
@@ -48,7 +48,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
   GoRouter? _router;
   late final ProviderSubscription<AsyncValue<String?>> _identity;
   ProviderSubscription<String?>? _selection;
-  ProviderSubscription<AsyncValue<List<Club>>>? _organizers;
+  ProviderSubscription<AsyncValue<List<Organizer>>>? _organizers;
   String? _observedAccount;
   int _scopeEpoch = 0;
   int _routeEpoch = 0;
@@ -81,7 +81,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
             });
       _organizers = account == null
           ? null
-          : ref.listenManual(hostOperableClubsProvider(account), (_, _) {
+          : ref.listenManual(hostOperableOrganizersProvider(account), (_, _) {
               _scopeEpoch += 1;
             });
     }, fireImmediately: true);
@@ -145,11 +145,11 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
     if (!mounted) return null;
     final uid = ref.read(uidProvider).asData?.value;
     if (uid == null) return null;
-    final clubs = ref.read(hostOperableClubsProvider(uid)).asData?.value;
-    if (clubs == null) return null;
+    final organizers = ref.read(hostOperableOrganizersProvider(uid)).asData?.value;
+    if (organizers == null) return null;
     final selection = ref.read(hostOrganizerSelectionProvider(uid));
     final organizer = resolveSelectedHostOrganizer(
-      clubs,
+      organizers,
       selectedOrganizerId: selection,
       preferredOrganizerId: selection == null
           ? widget.initialOrganizerId
@@ -187,7 +187,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
   }
 
   Future<void> _showEventEntry(
-    Club organizer,
+    Organizer organizer,
     HostEventEntryState state,
     HostTodayFeedRequest request,
     int epoch,
@@ -211,7 +211,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
     await runHostEventEntryFlow(
       context: context,
       ref: ref,
-      club: organizer,
+      organizer: organizer,
       state: state,
       selection: intent,
       createdAt: _clockNow,
@@ -252,7 +252,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
     final organizersState = uid == null
         ? null
         : catchAsyncStateFromAsyncValue(
-            ref.watch(hostOperableClubsProvider(uid)),
+            ref.watch(hostOperableOrganizersProvider(uid)),
           );
     if (uid != null) ref.watch(hostOrganizerSelectionProvider(uid));
     final scopeEpoch = _scopeEpoch;
@@ -286,12 +286,12 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
                 ref.invalidate(uidProvider);
                 return;
               }
-              ref.invalidate(hostOperableClubsProvider(currentUid));
+              ref.invalidate(hostOperableOrganizersProvider(currentUid));
             },
           ),
           HostTodayRouteStatus.empty => HostTodayOrganizerEmptyState(
             onCreateOrganizer: () =>
-                context.pushNamed(Routes.hostCreateClubScreen.name),
+                context.pushNamed(Routes.hostCreateOrganizerScreen.name),
           ),
           HostTodayRouteStatus.loaded => HostTodayLoadedRoute(
             routeState: routeState,
@@ -311,7 +311,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
     );
   }
 
-  Future<void> _showRehearsalStart(Club organizer, Event event) async {
+  Future<void> _showRehearsalStart(Organizer organizer, Event event) async {
     final choice = await showCatchBottomSheet<EventRehearsalStartChoice>(
       context: context,
       builder: (_) => EventRehearsalStartSheet(event: event),
@@ -325,7 +325,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
     );
   }
 
-  void _startRehearsal(Club organizer, {String? sourceEventId}) {
+  void _startRehearsal(Organizer organizer, {String? sourceEventId}) {
     context.pushNamed(
       Routes.hostEventRehearsalStartScreen.name,
       pathParameters: {'clubId': organizer.id},
@@ -336,7 +336,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
     );
   }
 
-  void _openEvent(Club organizer, Event event) {
+  void _openEvent(Organizer organizer, Event event) {
     final isLive =
         !event.startTime.isAfter(_clockNow) && event.endTime.isAfter(_clockNow);
     context.goNamed(
@@ -354,7 +354,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
     );
   }
 
-  void _openAttention(Club organizer, HostAttentionItem item) {
+  void _openAttention(Organizer organizer, HostAttentionItem item) {
     final destination = item.destination;
     switch (destination.route) {
       case HostAttentionDestinationRoute.hostEventManage:
@@ -385,7 +385,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
         return;
       case HostAttentionDestinationRoute.hostOrganizerPayments:
         context.pushNamed(
-          Routes.hostClubPaymentsScreen.name,
+          Routes.hostOrganizerPaymentsScreen.name,
           queryParameters: {'clubId': organizer.id},
         );
         return;
@@ -455,17 +455,17 @@ class HostTodayLoadedRoute extends ConsumerWidget {
   final String? initialOrganizerId;
   final DateTime clockNow;
   final DateTime sessionBoundary;
-  final void Function(Club organizer, Event event) onOpenEvent;
-  final void Function(Club organizer, HostAttentionItem item) onOpenAttention;
+  final void Function(Organizer organizer, Event event) onOpenEvent;
+  final void Function(Organizer organizer, HostAttentionItem item) onOpenAttention;
   final VoidCallback onViewEvents;
   final void Function(
-    Club organizer,
+    Organizer organizer,
     HostEventEntryState state,
     HostTodayFeedRequest request,
   )
   onCreateEvent;
-  final ValueChanged<Club> onStartRehearsal;
-  final void Function(Club organizer, Event event)? onStartEventRehearsal;
+  final ValueChanged<Organizer> onStartRehearsal;
+  final void Function(Organizer organizer, Event event)? onStartEventRehearsal;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -487,7 +487,7 @@ class HostTodayLoadedRoute extends ConsumerWidget {
       ref.watch(hostTodayFeedControllerProvider(request)),
     );
     final draftsAsync = ref.watch(
-      clubEventDraftsProvider(clubId: organizer.id),
+      organizerEventDraftsProvider(clubId: organizer.id),
     );
     final drafts = switch (draftsAsync) {
       AsyncData<List<EventDraft>>(:final value) => value,
@@ -547,11 +547,11 @@ class HostTodayOrganizerEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSliverEmptyState(
       icon: CatchIcons.people,
-      title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
-      message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+      title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstOrganizer,
+      message: context.l10n.hostsHostEventsScaffoldBodyCreateAOrganizerTo,
       actions: [
         CatchButton(
-          label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+          label: context.l10n.hostsHostEventsScaffoldLabelCreateOrganizer,
           leading: Icon(CatchIcons.add, size: CatchIconSize.md),
           size: CatchButtonSize.md,
           onPressed: onCreateOrganizer,

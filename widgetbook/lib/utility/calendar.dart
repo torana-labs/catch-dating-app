@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen_state.dart';
@@ -75,7 +75,7 @@ const _calendarWeekHeaderPreviewHeight = 92.0;
 
 const _calendarMonthHeaderPreviewHeight = 320.0;
 
-const _calendarClubNames = {'design-club': 'Sea Face Social'};
+const _calendarOrganizerNames = {'design-club': 'Sea Face Social'};
 
 @widgetbook.UseCase(
   name: 'Screen states',
@@ -140,7 +140,7 @@ Widget calendarScreenStates(BuildContext context) {
         label: 'club names loading',
         child: WidgetbookUtilityDeviceFrame(
           child: _CalendarScope(
-            clubNamesValue: const AsyncLoading<Map<String, String>>(),
+            organizerNamesValue: const AsyncLoading<Map<String, String>>(),
             child: CalendarScreen(referenceNow: widgetbookUtilityCalendarNow),
           ),
         ),
@@ -149,7 +149,7 @@ Widget calendarScreenStates(BuildContext context) {
         label: 'club names error',
         child: WidgetbookUtilityDeviceFrame(
           child: _CalendarScope(
-            clubNamesValue: AsyncError<Map<String, String>>(
+            organizerNamesValue: AsyncError<Map<String, String>>(
               StateError('Club names failed'),
               StackTrace.empty,
             ),
@@ -221,7 +221,7 @@ Widget calendarLoadingScreenStates(BuildContext context) {
 Widget calendarAgendaSliverSectionStates(BuildContext context) {
   final readyState = CalendarAgendaSectionState.from(
     summary: _calendarSummary,
-    clubNames: const CalendarClubNameLookupState.ready(_calendarClubNames),
+    organizerNames: const CalendarOrganizerNameLookupState.ready(_calendarOrganizerNames),
   );
   final emptyState = CalendarAgendaSectionState.from(
     summary: CalendarEventSummary.from(
@@ -229,7 +229,7 @@ Widget calendarAgendaSliverSectionStates(BuildContext context) {
       savedEvents: const <Event>[],
       now: widgetbookUtilityCalendarNow,
     ),
-    clubNames: const CalendarClubNameLookupState.ready(_calendarClubNames),
+    organizerNames: const CalendarOrganizerNameLookupState.ready(_calendarOrganizerNames),
   );
 
   Key dayKey(DateTime date) {
@@ -252,7 +252,7 @@ Widget calendarAgendaSliverSectionStates(BuildContext context) {
                 state: readyState,
                 dayKeyBuilder: dayKey,
                 onEventSelected: (_) {},
-                onRetryClubNames: widgetbookNoop,
+                onRetryOrganizerNames: widgetbookNoop,
               ),
             ],
           ),
@@ -265,10 +265,10 @@ Widget calendarAgendaSliverSectionStates(BuildContext context) {
           child: CustomScrollView(
             slivers: [
               CalendarAgendaSliverSection(
-                state: const CalendarAgendaClubNamesLoadingState(),
+                state: const CalendarAgendaOrganizerNamesLoadingState(),
                 dayKeyBuilder: dayKey,
                 onEventSelected: (_) {},
-                onRetryClubNames: widgetbookNoop,
+                onRetryOrganizerNames: widgetbookNoop,
               ),
             ],
           ),
@@ -281,12 +281,12 @@ Widget calendarAgendaSliverSectionStates(BuildContext context) {
           child: CustomScrollView(
             slivers: [
               CalendarAgendaSliverSection(
-                state: CalendarAgendaClubNamesErrorState(
+                state: CalendarAgendaOrganizerNamesErrorState(
                   StateError('Club names failed'),
                 ),
                 dayKeyBuilder: dayKey,
                 onEventSelected: (_) {},
-                onRetryClubNames: widgetbookNoop,
+                onRetryOrganizerNames: widgetbookNoop,
               ),
             ],
           ),
@@ -302,7 +302,7 @@ Widget calendarAgendaSliverSectionStates(BuildContext context) {
                 state: emptyState,
                 dayKeyBuilder: dayKey,
                 onEventSelected: (_) {},
-                onRetryClubNames: widgetbookNoop,
+                onRetryOrganizerNames: widgetbookNoop,
               ),
             ],
           ),
@@ -510,14 +510,14 @@ class _CalendarScope extends StatelessWidget {
     this.uidValue,
     this.signedUpEventsValue,
     this.savedEventsValue,
-    this.clubNamesValue,
+    this.organizerNamesValue,
   });
 
   final Widget child;
   final AsyncValue<String?>? uidValue;
   final AsyncValue<List<Event>>? signedUpEventsValue;
   final AsyncValue<List<Event>>? savedEventsValue;
-  final AsyncValue<Map<String, String>>? clubNamesValue;
+  final AsyncValue<Map<String, String>>? organizerNamesValue;
 
   @override
   Widget build(BuildContext context) {
@@ -529,7 +529,7 @@ class _CalendarScope extends StatelessWidget {
       ...?signedUpEvents.asData?.value,
       ...?savedEvents.asData?.value,
     ];
-    final clubQuery = ClubNameLookupQuery(
+    final organizerQuery = OrganizerNameLookupQuery(
       lookupEvents.map((event) => event.clubId),
     );
 
@@ -544,10 +544,10 @@ class _CalendarScope extends StatelessWidget {
         watchSavedEventDetailsForUserProvider(
           widgetbookUtilityViewerUid,
         ).overrideWithValue(savedEvents),
-        if (clubQuery.clubIds.isNotEmpty)
-          clubNameLookupProvider(clubQuery).overrideWithValue(
-            clubNamesValue ??
-                const AsyncData<Map<String, String>>(_calendarClubNames),
+        if (organizerQuery.organizerIds.isNotEmpty)
+          organizerNameLookupProvider(organizerQuery).overrideWithValue(
+            organizerNamesValue ??
+                const AsyncData<Map<String, String>>(_calendarOrganizerNames),
           ),
       ],
       child: child,

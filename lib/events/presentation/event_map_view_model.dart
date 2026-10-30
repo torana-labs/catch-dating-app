@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
@@ -27,12 +27,12 @@ sealed class EventMapPinItem {
 }
 
 class EventMapItem extends EventMapPinItem {
-  EventMapItem({required this.event, required this.status, this.clubName})
+  EventMapItem({required this.event, required this.status, this.organizerName})
     : coordinate = _eventCoordinate(event);
 
   final Event event;
   final EventTileStatus status;
-  final String? clubName;
+  final String? organizerName;
 
   @override
   String get mapId => event.id;
@@ -47,7 +47,7 @@ class EventMapItem extends EventMapPinItem {
   String get locationName => event.locationName;
 
   EventTileData get tileData =>
-      EventTileData.fromEvent(event: event, status: status, clubName: clubName);
+      EventTileData.fromEvent(event: event, status: status, organizerName: organizerName);
 
   @override
   String get pinFlagLabel {
@@ -173,7 +173,7 @@ EventMapViewModel buildEventMapViewModel({
   required List<Event> signedUpEvents,
   List<Event> savedEvents = const <Event>[],
   required List<Event> recommendedEvents,
-  Map<String, String> clubNamesById = const <String, String>{},
+  Map<String, String> organizerNamesById = const <String, String>{},
   DateTime? now,
 }) {
   final effectiveNow = now ?? DateTime.now();
@@ -204,7 +204,7 @@ EventMapViewModel buildEventMapViewModel({
         EventMapItem(
           event: event,
           status: statusById[event.id]!,
-          clubName: clubNamesById[event.clubId],
+          organizerName: organizerNamesById[event.clubId],
         ),
   ];
   final pinnedItems = List<EventMapItem>.unmodifiable(items);
@@ -282,19 +282,19 @@ AsyncValue<EventMapViewModel> eventMapViewModel(Ref ref) {
   final signedUpAsync = ref.watch(watchSignedUpEventsProvider(user.uid));
   final savedAsync = ref.watch(watchSavedEventDetailsForUserProvider(user.uid));
   final membershipsAsync = ref.watch(
-    watchActiveClubMembershipsForUserProvider(user.uid),
+    watchActiveOrganizerMembershipsForUserProvider(user.uid),
   );
   final signedUpState = catchAsyncStateFromAsyncValue(signedUpAsync);
   final savedState = catchAsyncStateFromAsyncValue(savedAsync);
   final membershipsState = catchAsyncStateFromAsyncValue(membershipsAsync);
-  final followedClubIds =
+  final followedOrganizerIds =
       membershipsState.value
           ?.map((membership) => membership.clubId)
           .toList(growable: false) ??
       const <String>[];
   final recommendedAsync = ref.watch(
     recommendedEventsProvider(
-      RecommendedEventsQuery.fromClubIds(followedClubIds),
+      RecommendedEventsQuery.fromOrganizerIds(followedOrganizerIds),
     ),
   );
   final recommendedState = catchAsyncStateFromAsyncValue(recommendedAsync);
@@ -335,17 +335,17 @@ AsyncValue<EventMapViewModel> eventMapViewModel(Ref ref) {
     ...?savedState.value,
     ...?recommendedState.value,
   ];
-  final clubNamesAsync = ref.watch(
-    clubNameLookupProvider(
-      ClubNameLookupQuery(allEvents.map((event) => event.clubId)),
+  final organizerNamesAsync = ref.watch(
+    organizerNameLookupProvider(
+      OrganizerNameLookupQuery(allEvents.map((event) => event.clubId)),
     ),
   );
-  final clubNamesState = catchAsyncStateFromAsyncValue(clubNamesAsync);
-  if (clubNamesState.isLoading) return const AsyncLoading();
-  if (clubNamesState.hasError) {
+  final organizerNamesState = catchAsyncStateFromAsyncValue(organizerNamesAsync);
+  if (organizerNamesState.isLoading) return const AsyncLoading();
+  if (organizerNamesState.hasError) {
     return AsyncError(
-      clubNamesState.error!,
-      clubNamesState.stackTrace ?? StackTrace.current,
+      organizerNamesState.error!,
+      organizerNamesState.stackTrace ?? StackTrace.current,
     );
   }
 
@@ -354,7 +354,7 @@ AsyncValue<EventMapViewModel> eventMapViewModel(Ref ref) {
       signedUpEvents: signedUpState.value ?? const <Event>[],
       savedEvents: savedState.value ?? const <Event>[],
       recommendedEvents: recommendedState.value ?? const <Event>[],
-      clubNamesById: clubNamesState.value ?? const <String, String>{},
+      organizerNamesById: organizerNamesState.value ?? const <String, String>{},
     ),
   );
 }

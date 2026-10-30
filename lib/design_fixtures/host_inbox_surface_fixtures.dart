@@ -3,7 +3,7 @@ import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 
 /// Deterministic Host Inbox fixtures shared by Widgetbook and UI captures.
@@ -22,7 +22,7 @@ final class HostInboxSurfaceFixtures {
 
   static final now = DateTime(2026, 7, 14, 18);
 
-  static final club = Club(
+  static final organizer = Organizer(
     id: clubId,
     name: 'Quiz House Social',
     description: 'Small-team trivia nights for curious people.',
@@ -33,10 +33,10 @@ final class HostInboxSurfaceFixtures {
     ownerUserId: hostUid,
     hostUserIds: const [hostUid],
     hostProfiles: const [
-      ClubHostProfile(
+      OrganizerHostProfile(
         uid: hostUid,
         displayName: 'Mira Shah',
-        role: ClubHostRole.owner,
+        role: OrganizerHostRole.owner,
       ),
     ],
     createdAt: DateTime(2025, 9),

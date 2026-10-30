@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/kernel/location_coordinate.dart';
@@ -18,25 +18,25 @@ class HostEventEditState {
   const HostEventEditState({
     required this.status,
     this.uid,
-    this.club,
+    this.organizer,
     this.event,
     this.error,
   });
 
   factory HostEventEditState.resolve({
     required CatchAsyncState<String?> uid,
-    required CatchAsyncState<Club?> club,
+    required CatchAsyncState<Organizer?> organizer,
     required CatchAsyncState<Event?> event,
     Event? initialEvent,
   }) {
     final resolvedEvent = event.value ?? initialEvent;
     if (uid.status == CatchAsyncStatus.loading ||
-        club.status == CatchAsyncStatus.loading ||
+        organizer.status == CatchAsyncStatus.loading ||
         (event.status == CatchAsyncStatus.loading && resolvedEvent == null)) {
       return const HostEventEditState(status: HostEventEditRouteStatus.loading);
     }
 
-    final error = uid.error ?? club.error ?? event.error;
+    final error = uid.error ?? organizer.error ?? event.error;
     if (error != null) {
       return HostEventEditState(
         status: HostEventEditRouteStatus.error,
@@ -45,21 +45,21 @@ class HostEventEditState {
     }
 
     final resolvedUid = uid.value;
-    final resolvedClub = club.value;
-    if (resolvedClub == null || resolvedEvent == null) {
+    final resolvedOrganizer = organizer.value;
+    if (resolvedOrganizer == null || resolvedEvent == null) {
       return HostEventEditState(
         status: HostEventEditRouteStatus.notFound,
         uid: resolvedUid,
-        club: resolvedClub,
+        organizer: resolvedOrganizer,
         event: resolvedEvent,
       );
     }
 
-    if (resolvedUid == null || !resolvedClub.isHostedBy(resolvedUid)) {
+    if (resolvedUid == null || !resolvedOrganizer.isHostedBy(resolvedUid)) {
       return HostEventEditState(
         status: HostEventEditRouteStatus.unauthorized,
         uid: resolvedUid,
-        club: resolvedClub,
+        organizer: resolvedOrganizer,
         event: resolvedEvent,
       );
     }
@@ -67,14 +67,14 @@ class HostEventEditState {
     return HostEventEditState(
       status: HostEventEditRouteStatus.ready,
       uid: resolvedUid,
-      club: resolvedClub,
+      organizer: resolvedOrganizer,
       event: resolvedEvent,
     );
   }
 
   final HostEventEditRouteStatus status;
   final String? uid;
-  final Club? club;
+  final Organizer? organizer;
   final Event? event;
   final Object? error;
 

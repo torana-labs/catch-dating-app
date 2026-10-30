@@ -12,8 +12,8 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation.da
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_posts_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_posts_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/design_fixtures/host_inbox_surface_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
@@ -244,7 +244,7 @@ Widget hostInboxWorkspaceStates(BuildContext context) {
                     now: HostInboxSurfaceFixtures.now,
                     onPersonSelected: (_) {},
                     people: composeHostInboxPeople(
-                      organizerId: HostInboxSurfaceFixtures.club.id,
+                      organizerId: HostInboxSurfaceFixtures.organizer.id,
                       scope: workspace.selectedScope,
                       segment: workspace.selectedSegment,
                       catchThreads: workspace.threads
@@ -312,7 +312,7 @@ HostInboxViewModel _workspace({
   events: [HostInboxSurfaceFixtures.event],
   inbox: HostInboxSurfaceFixtures.allThreads,
   participations: HostInboxSurfaceFixtures.participations,
-  selectedOrganizerId: HostInboxSurfaceFixtures.club.id,
+  selectedOrganizerId: HostInboxSurfaceFixtures.organizer.id,
   selectedScope: const HostInboxScope.event(HostInboxSurfaceFixtures.eventId),
   selectedSegment: segment,
   query: '',
@@ -366,11 +366,11 @@ class _HostInboxFrame extends StatelessWidget {
         uidProvider.overrideWithValue(
           const AsyncData<String?>(HostInboxSurfaceFixtures.hostUid),
         ),
-        hostOperableClubsProvider(
+        hostOperableOrganizersProvider(
           HostInboxSurfaceFixtures.hostUid,
-        ).overrideWithValue(AsyncData([HostInboxSurfaceFixtures.club])),
-        watchEventsForClubProvider(
-          HostInboxSurfaceFixtures.club.id,
+        ).overrideWithValue(AsyncData([HostInboxSurfaceFixtures.organizer])),
+        watchEventsForOrganizerProvider(
+          HostInboxSurfaceFixtures.organizer.id,
         ).overrideWithValue(
           AsyncData<List<Event>>([HostInboxSurfaceFixtures.event]),
         ),
@@ -384,43 +384,43 @@ class _HostInboxFrame extends StatelessWidget {
           ),
         ),
         hostMessagingSetupProvider(
-          HostInboxSurfaceFixtures.club.id,
+          HostInboxSurfaceFixtures.organizer.id,
         ).overrideWithValue(
-          AsyncData(_messagingSetup(HostInboxSurfaceFixtures.club.id)),
+          AsyncData(_messagingSetup(HostInboxSurfaceFixtures.organizer.id)),
         ),
-        hostSendsProvider(HostInboxSurfaceFixtures.club.id).overrideWithValue(
+        hostSendsProvider(HostInboxSurfaceFixtures.organizer.id).overrideWithValue(
           AsyncData(
             HostSendsPage(
-              organizerId: HostInboxSurfaceFixtures.club.id,
+              organizerId: HostInboxSurfaceFixtures.organizer.id,
               sends: const [],
               nextCursor: null,
             ),
           ),
         ),
         hostManualSendTasksProvider(
-          HostInboxSurfaceFixtures.club.id,
+          HostInboxSurfaceFixtures.organizer.id,
         ).overrideWithValue(
           AsyncData(
             HostManualSendTaskPage(
-              organizerId: HostInboxSurfaceFixtures.club.id,
+              organizerId: HostInboxSurfaceFixtures.organizer.id,
               tasks: const [],
               nextCursor: null,
             ),
           ),
         ),
         hostWhatsappThreadsProvider(
-          HostInboxSurfaceFixtures.club.id,
+          HostInboxSurfaceFixtures.organizer.id,
         ).overrideWithValue(
           AsyncData(
             HostWhatsappThreadPage(
-              organizerId: HostInboxSurfaceFixtures.club.id,
+              organizerId: HostInboxSurfaceFixtures.organizer.id,
               threads: const [],
               nextCursor: null,
             ),
           ),
         ),
-        watchClubPostRemainingWeeklyQuotaProvider(
-          HostInboxSurfaceFixtures.club.id,
+        watchOrganizerPostRemainingWeeklyQuotaProvider(
+          HostInboxSurfaceFixtures.organizer.id,
         ).overrideWith((ref) => Stream.value(3)),
       ],
       child: _DeviceFrame(

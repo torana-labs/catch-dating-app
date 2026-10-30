@@ -2,7 +2,7 @@ import 'dart:ui' show SemanticsAction, Tristate;
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/platform/device/connectivity_service.dart';
@@ -20,16 +20,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../clubs/clubs_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 const _uid = 'host-user';
-final _organizer = buildClub(
+final _organizer = buildOrganizer(
   id: 'saket-run-club',
   name: 'Saket Run Club',
   ownerUserId: _uid,
 );
-final _secondOrganizer = buildClub(
+final _secondOrganizer = buildOrganizer(
   id: 'lodhi-social',
   name: 'Lodhi Social',
   ownerUserId: _uid,
@@ -61,7 +61,7 @@ void main() {
       ProviderScope(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value(_uid)),
-          hostOperableClubsProvider(
+          hostOperableOrganizersProvider(
             _uid,
           ).overrideWithValue(AsyncData([_organizer, _secondOrganizer])),
           totalUnreadCountProvider(_uid).overrideWithValue(0),
@@ -200,7 +200,7 @@ void main() {
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value(_uid)),
-            hostOperableClubsProvider(
+            hostOperableOrganizersProvider(
               _uid,
             ).overrideWithValue(AsyncData([_organizer])),
             totalUnreadCountProvider(_uid).overrideWithValue(0),
@@ -386,7 +386,7 @@ void main() {
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value(_uid)),
-            hostOperableClubsProvider(
+            hostOperableOrganizersProvider(
               _uid,
             ).overrideWithValue(AsyncData([_organizer])),
             totalUnreadCountProvider(_uid).overrideWithValue(0),
@@ -506,7 +506,7 @@ void main() {
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value(_uid)),
-            hostOperableClubsProvider(
+            hostOperableOrganizersProvider(
               _uid,
             ).overrideWithValue(AsyncData([_organizer])),
             totalUnreadCountProvider(_uid).overrideWithValue(7),

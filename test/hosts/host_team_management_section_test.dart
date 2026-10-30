@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -8,22 +8,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('Add host sheet follows handoff copy and submits phone number', (
     tester,
   ) async {
-    final repository = FakeClubsRepository();
-    final club = buildClub(
+    final repository = FakeOrganizersRepository();
+    final organizer = buildOrganizer(
       id: 'owned-club',
       ownerUserId: 'host-1',
       hostProfiles: const [
-        ClubHostProfile(
+        OrganizerHostProfile(
           uid: 'host-1',
           displayName: 'Owner Host',
-          role: ClubHostRole.owner,
+          role: OrganizerHostRole.owner,
         ),
       ],
     );
@@ -31,7 +31,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          clubsRepositoryProvider.overrideWith((ref) => repository),
+          organizersRepositoryProvider.overrideWith((ref) => repository),
           uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
         ],
         child: MaterialApp(
@@ -39,7 +39,7 @@ void main() {
           builder: catchNoticeOverlayBuilder,
           home: Scaffold(
             body: HostTeamManagementSection(
-              club: club,
+              organizer: organizer,
               currentUid: 'host-1',
               canManage: true,
             ),
@@ -72,7 +72,7 @@ void main() {
     await tester.tap(find.widgetWithText(CatchButton, 'Add host'));
     await pumpFeatureUi(tester);
 
-    expect(repository.addedHostClubId, 'owned-club');
+    expect(repository.addedHostOrganizerId, 'owned-club');
     expect(repository.addedHostPhoneNumber, '98765 43210');
     expect(find.text('Host added.'), findsOneWidget);
   });
@@ -80,10 +80,10 @@ void main() {
   testWidgets('Remove host confirmation uses shared copy and mutation', (
     tester,
   ) async {
-    final repository = FakeClubsRepository();
-    final club = _hostTeamClub();
+    final repository = FakeOrganizersRepository();
+    final organizer = _hostTeamOrganizer();
 
-    await _pumpHostTeamSection(tester, repository: repository, club: club);
+    await _pumpHostTeamSection(tester, repository: repository, organizer: organizer);
 
     await tester.tap(find.byKey(const ValueKey('host-team-actions-host-2')));
     await pumpFeatureUi(tester);
@@ -101,7 +101,7 @@ void main() {
     await tester.tap(find.widgetWithText(CatchButton, 'Remove'));
     await pumpFeatureUi(tester);
 
-    expect(repository.removedHostClubId, 'owned-club');
+    expect(repository.removedHostOrganizerId, 'owned-club');
     expect(repository.removedHostUid, 'host-2');
     expect(find.text('Rishi Mehta removed.'), findsOneWidget);
   });
@@ -109,10 +109,10 @@ void main() {
   testWidgets('Transfer ownership confirmation uses shared copy and mutation', (
     tester,
   ) async {
-    final repository = FakeClubsRepository();
-    final club = _hostTeamClub();
+    final repository = FakeOrganizersRepository();
+    final organizer = _hostTeamOrganizer();
 
-    await _pumpHostTeamSection(tester, repository: repository, club: club);
+    await _pumpHostTeamSection(tester, repository: repository, organizer: organizer);
 
     await tester.tap(find.byKey(const ValueKey('host-team-actions-host-2')));
     await pumpFeatureUi(tester);
@@ -130,7 +130,7 @@ void main() {
     await tester.tap(find.widgetWithText(CatchButton, 'Transfer'));
     await pumpFeatureUi(tester);
 
-    expect(repository.transferredOwnershipClubId, 'owned-club');
+    expect(repository.transferredOwnershipOrganizerId, 'owned-club');
     expect(repository.transferredOwnershipUid, 'host-2');
     expect(find.text('Ownership transferred to Rishi Mehta.'), findsOneWidget);
   });
@@ -138,13 +138,13 @@ void main() {
   testWidgets('Co-host can read the roster without owner mutation controls', (
     tester,
   ) async {
-    final repository = FakeClubsRepository();
-    final club = _hostTeamClub();
+    final repository = FakeOrganizersRepository();
+    final organizer = _hostTeamOrganizer();
 
     await _pumpHostTeamSection(
       tester,
       repository: repository,
-      club: club,
+      organizer: organizer,
       currentUid: 'host-2',
       canManage: false,
     );
@@ -188,14 +188,14 @@ void main() {
   testWidgets('Empty roster remains an explicit canonical team section', (
     tester,
   ) async {
-    final repository = FakeClubsRepository();
-    final club = buildClub(
+    final repository = FakeOrganizersRepository();
+    final organizer = buildOrganizer(
       id: 'empty-team-club',
       hostUserId: null,
       hostProfiles: const [],
     );
 
-    await _pumpHostTeamSection(tester, repository: repository, club: club);
+    await _pumpHostTeamSection(tester, repository: repository, organizer: organizer);
 
     expect(
       find.byWidgetPredicate(
@@ -213,32 +213,32 @@ void main() {
   });
 }
 
-Club _hostTeamClub() {
-  return buildClub(
+Organizer _hostTeamOrganizer() {
+  return buildOrganizer(
     id: 'owned-club',
     ownerUserId: 'host-1',
     hostProfiles: const [
-      ClubHostProfile(
+      OrganizerHostProfile(
         uid: 'host-1',
         displayName: 'Owner Host',
-        role: ClubHostRole.owner,
+        role: OrganizerHostRole.owner,
       ),
-      ClubHostProfile(uid: 'host-2', displayName: 'Rishi Mehta'),
+      OrganizerHostProfile(uid: 'host-2', displayName: 'Rishi Mehta'),
     ],
   );
 }
 
 Future<void> _pumpHostTeamSection(
   WidgetTester tester, {
-  required FakeClubsRepository repository,
-  required Club club,
+  required FakeOrganizersRepository repository,
+  required Organizer organizer,
   String currentUid = 'host-1',
   bool canManage = true,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        clubsRepositoryProvider.overrideWith((ref) => repository),
+        organizersRepositoryProvider.overrideWith((ref) => repository),
         uidProvider.overrideWithValue(AsyncData<String?>(currentUid)),
       ],
       child: MaterialApp(
@@ -246,7 +246,7 @@ Future<void> _pumpHostTeamSection(
         builder: catchNoticeOverlayBuilder,
         home: Scaffold(
           body: HostTeamManagementSection(
-            club: club,
+            organizer: organizer,
             currentUid: currentUid,
             canManage: canManage,
           ),

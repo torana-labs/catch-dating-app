@@ -14,10 +14,10 @@ void registerHostEventEntryTests() {
   testWidgets('Host Today delegates creation and opens event manage', (
     tester,
   ) async {
-    final club = buildClub(id: 'club-host', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(id: 'club-host', ownerUserId: _hostUid);
     final event = buildEvent(
       id: 'event-host',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime(2026, 6, 15, 17),
     );
 
@@ -25,14 +25,14 @@ void registerHostEventEntryTests() {
       tester,
       HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
-        ..._hostClubOverrides(
-          owned: [club],
+        ..._hostOrganizerOverrides(
+          owned: [organizer],
           timelineEventsByOrganizer: {
-            club.id: [event],
+            organizer.id: [event],
           },
         ),
-        watchEventsForClubProvider(
-          club.id,
+        watchEventsForOrganizerProvider(
+          organizer.id,
         ).overrideWithValue(AsyncData<List<Event>>([event])),
       ],
     );
@@ -66,15 +66,15 @@ void registerHostEventEntryTests() {
   testWidgets('Host Today owns the dedicated dress rehearsal entry point', (
     tester,
   ) async {
-    final club = buildClub(id: 'rehearsal-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(id: 'rehearsal-club', ownerUserId: _hostUid);
 
     await _pumpHostScreen(
       tester,
       HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
-        watchEventsForClubProvider(
-          club.id,
+        ..._hostOrganizerOverrides(owned: [organizer]),
+        watchEventsForOrganizerProvider(
+          organizer.id,
         ).overrideWithValue(const AsyncData<List<Event>>([])),
       ],
     );
@@ -91,16 +91,16 @@ void registerHostEventEntryTests() {
   testWidgets('Host Today opens smart event entry from its quiet state', (
     tester,
   ) async {
-    final club = buildClub(id: 'quiet-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(id: 'quiet-club', ownerUserId: _hostUid);
     final draft = EventDraft(
       id: 'quiet-draft',
-      clubId: club.id,
+      clubId: organizer.id,
       savedAt: DateTime(2026, 6, 15, 10),
       customActivityLabel: 'Quiz night',
     );
     final pastEvent = buildEvent(
       id: 'past-event',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime(2026, 6, 14, 17),
     );
 
@@ -108,17 +108,17 @@ void registerHostEventEntryTests() {
       tester,
       HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
-        ..._hostClubOverrides(
-          owned: [club],
+        ..._hostOrganizerOverrides(
+          owned: [organizer],
           draftsByOrganizer: {
-            club.id: [draft],
+            organizer.id: [draft],
           },
           timelineEventsByOrganizer: {
-            club.id: [pastEvent],
+            organizer.id: [pastEvent],
           },
         ),
-        watchEventsForClubProvider(
-          club.id,
+        watchEventsForOrganizerProvider(
+          organizer.id,
         ).overrideWithValue(AsyncData<List<Event>>([pastEvent])),
       ],
     );
@@ -156,10 +156,10 @@ void registerHostEventEntryTests() {
   testWidgets('Host Events resumes a loaded draft without a second lookup', (
     tester,
   ) async {
-    final club = buildClub(id: 'draft-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(id: 'draft-club', ownerUserId: _hostUid);
     final draft = EventDraft(
       id: 'draft-one',
-      clubId: club.id,
+      clubId: organizer.id,
       savedAt: DateTime(2026, 6, 15, 10),
       customActivityLabel: 'Quiz night',
     );
@@ -168,14 +168,14 @@ void registerHostEventEntryTests() {
       tester,
       HostEventsScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
-        ..._hostClubOverrides(
-          owned: [club],
+        ..._hostOrganizerOverrides(
+          owned: [organizer],
           draftsByOrganizer: {
-            club.id: [draft],
+            organizer.id: [draft],
           },
         ),
-        watchEventsForClubProvider(
-          club.id,
+        watchEventsForOrganizerProvider(
+          organizer.id,
         ).overrideWithValue(const AsyncData<List<Event>>([])),
       ],
     );
@@ -218,7 +218,7 @@ void registerHostWorkspacePagingTest() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    final ownedClub = buildClub(
+    final ownedOrganizer = buildOrganizer(
       id: 'paged-club',
       name: 'Paged Club',
       ownerUserId: _hostUid,
@@ -226,14 +226,14 @@ void registerHostWorkspacePagingTest() {
 
     await _pumpHostScreen(
       tester,
-      const HostClubsScreen(),
+      const HostOrganizersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [ownedClub]),
-        watchEventsForClubProvider(
-          ownedClub.id,
+        ..._hostOrganizerOverrides(owned: [ownedOrganizer]),
+        watchEventsForOrganizerProvider(
+          ownedOrganizer.id,
         ).overrideWithValue(const AsyncData<List<Event>>([])),
-        clubDetailViewModelProvider(ownedClub.id).overrideWithValue(
-          AsyncData<ClubDetailViewModel?>(_previewViewModel(ownedClub)),
+        organizerDetailViewModelProvider(ownedOrganizer.id).overrideWithValue(
+          AsyncData<OrganizerDetailViewModel?>(_previewViewModel(ownedOrganizer)),
         ),
         watchHostPaymentAccountsProvider(
           _hostUid,
@@ -249,17 +249,17 @@ void registerHostWorkspacePagingTest() {
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsNothing,
     );
-    expect(find.byType(HostClubEditBody), findsOneWidget);
-    expect(find.byType(HostClubInsightsSection), findsNothing);
+    expect(find.byType(HostOrganizerEditBody), findsOneWidget);
+    expect(find.byType(HostOrganizerInsightsSection), findsNothing);
 
     await tester.drag(pager, const Offset(-320, 0));
     await pumpFeatureUi(tester);
-    expect(find.byType(HostClubInsightsSection), findsOneWidget);
+    expect(find.byType(HostOrganizerInsightsSection), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsOneWidget,
     );
-    expect(find.byType(HostClubEditBody), findsNothing);
+    expect(find.byType(HostOrganizerEditBody), findsNothing);
 
     await tester.drag(pager, const Offset(-320, 0));
     await pumpFeatureUi(tester);
@@ -271,11 +271,11 @@ void registerHostWorkspacePagingTest() {
 
     await tester.drag(pager, const Offset(320, 0));
     await pumpFeatureUi(tester);
-    expect(find.byType(HostClubInsightsSection), findsOneWidget);
+    expect(find.byType(HostOrganizerInsightsSection), findsOneWidget);
 
     await tester.drag(pager, const Offset(320, 0));
     await pumpFeatureUi(tester);
-    expect(find.byType(HostClubEditBody), findsOneWidget);
+    expect(find.byType(HostOrganizerEditBody), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsNothing,
@@ -283,43 +283,43 @@ void registerHostWorkspacePagingTest() {
   });
 }
 
-class _RecordingHostClubEditActions implements HostClubEditActions {
-  _RecordingHostClubEditActions({
+class _RecordingHostOrganizerEditActions implements HostOrganizerEditActions {
+  _RecordingHostOrganizerEditActions({
     this.pickedPhotos = const [],
     this.mediaFailuresRemaining = 0,
   });
 
-  final List<HostPickedClubPhoto> pickedPhotos;
-  final List<UpdateClubPatch> profileWrites = [];
-  final List<List<HostClubMediaInput>> mediaWrites = [];
+  final List<HostPickedOrganizerPhoto> pickedPhotos;
+  final List<UpdateOrganizerPatch> profileWrites = [];
+  final List<List<HostOrganizerMediaInput>> mediaWrites = [];
   int mediaFailuresRemaining;
   int mediaUpdateCalls = 0;
   final List<bool> removeLogoWrites = [];
 
   @override
-  Future<void> updateClub({
+  Future<void> updateOrganizer({
     required String clubId,
-    required UpdateClubPatch patch,
+    required UpdateOrganizerPatch patch,
   }) async {
     profileWrites.add(patch);
   }
 
   @override
-  Future<List<HostPickedClubPhoto>> pickClubPhotos({int? limit}) async =>
+  Future<List<HostPickedOrganizerPhoto>> pickOrganizerPhotos({int? limit}) async =>
       limit == null
       ? pickedPhotos
       : pickedPhotos.take(limit).toList(growable: false);
 
   @override
-  Future<HostPickedClubLogo?> pickClubLogo() async => null;
+  Future<HostPickedOrganizerLogo?> pickOrganizerLogo() async => null;
 
   @override
-  Future<HostClubMediaSaveResult> updateClubMedia({
-    required Club club,
-    List<HostClubMediaInput>? photoInputs,
-    HostPickedClubLogo? logo,
+  Future<HostOrganizerMediaSaveResult> updateOrganizerMedia({
+    required Organizer organizer,
+    List<HostOrganizerMediaInput>? photoInputs,
+    HostPickedOrganizerLogo? logo,
     bool removeLogo = false,
-    ValueChanged<HostClubMediaProgress>? onProgress,
+    ValueChanged<HostOrganizerMediaProgress>? onProgress,
   }) async {
     mediaUpdateCalls += 1;
     removeLogoWrites.add(removeLogo);
@@ -327,9 +327,9 @@ class _RecordingHostClubEditActions implements HostClubEditActions {
       mediaFailuresRemaining -= 1;
       final error = StateError('media update failed');
       final newInputs =
-          photoInputs?.whereType<HostNewClubPhotoInput>().toList() ?? const [];
+          photoInputs?.whereType<HostNewOrganizerPhotoInput>().toList() ?? const [];
       final failedId = newInputs.isEmpty ? null : newInputs.first.id;
-      return HostClubMediaSaveResult(
+      return HostOrganizerMediaSaveResult(
         photoInputs: photoInputs,
         logo: logo,
         failures: {?failedId: error},
@@ -337,9 +337,9 @@ class _RecordingHostClubEditActions implements HostClubEditActions {
       );
     }
     if (photoInputs != null) {
-      mediaWrites.add(List<HostClubMediaInput>.of(photoInputs));
+      mediaWrites.add(List<HostOrganizerMediaInput>.of(photoInputs));
     }
-    return HostClubMediaSaveResult(
+    return HostOrganizerMediaSaveResult(
       photoInputs: photoInputs,
       logo: logo,
       failures: const {},
@@ -348,9 +348,9 @@ class _RecordingHostClubEditActions implements HostClubEditActions {
   }
 
   @override
-  Future<void> discardClubMedia({
-    required List<HostClubMediaInput> photoInputs,
-    HostPickedClubLogo? logo,
+  Future<void> discardOrganizerMedia({
+    required List<HostOrganizerMediaInput> photoInputs,
+    HostPickedOrganizerLogo? logo,
   }) async {}
 }
 
@@ -473,16 +473,16 @@ HostAnalyticsEventRow _hostAnalyticsEventRow({required String eventId}) =>
       repeatAttendeeCount: 5,
     );
 
-List _hostClubOverrides({
-  List<Club> owned = const [],
-  List<Club> hosted = const [],
+List _hostOrganizerOverrides({
+  List<Organizer> owned = const [],
+  List<Organizer> hosted = const [],
   Map<String, List<EventDraft>> draftsByOrganizer = const {},
   Map<String, List<Event>> timelineEventsByOrganizer = const {},
   Map<String, HostMessagingSetup> messagingSetupByOrganizer = const {},
 }) {
   final organizerIds = {
-    ...owned.map((club) => club.id),
-    ...hosted.map((club) => club.id),
+    ...owned.map((organizer) => organizer.id),
+    ...hosted.map((organizer) => organizer.id),
   };
   return [
     programEventsControllerProvider.overrideWith((ref, request) {
@@ -508,14 +508,14 @@ List _hostClubOverrides({
       (_) => _FixedHostEventsTimelineController(timelineEventsByOrganizer),
     ),
     uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-    watchClubsOwnedByProvider(
+    watchOrganizersOwnedByProvider(
       _hostUid,
-    ).overrideWithValue(AsyncData<List<Club>>(owned)),
-    watchClubsHostedByProvider(
+    ).overrideWithValue(AsyncData<List<Organizer>>(owned)),
+    watchOrganizersHostedByProvider(
       _hostUid,
-    ).overrideWithValue(AsyncData<List<Club>>(hosted)),
+    ).overrideWithValue(AsyncData<List<Organizer>>(hosted)),
     for (final organizerId in organizerIds)
-      clubEventDraftsProvider(clubId: organizerId).overrideWithValue(
+      organizerEventDraftsProvider(clubId: organizerId).overrideWithValue(
         AsyncData<List<EventDraft>>(
           draftsByOrganizer[organizerId] ?? const <EventDraft>[],
         ),
@@ -708,7 +708,7 @@ HostCrmSummary _emptyCrmSummary(String organizerId) => HostCrmSummary(
   smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
 );
 
-Club _hostTeamClubWithoutProfile() => buildClub(
+Organizer _hostTeamOrganizerWithoutProfile() => buildOrganizer(
   id: 'owned-club',
   name: 'Saket Run Club',
   hostUserId: 'other-host',
@@ -716,27 +716,27 @@ Club _hostTeamClubWithoutProfile() => buildClub(
   hostProfiles: const [],
 );
 
-Future<void> _pumpHostClubEditTab(
+Future<void> _pumpHostOrganizerEditTab(
   WidgetTester tester, {
-  required Club club,
-  required HostClubEditActions actions,
+  required Organizer organizer,
+  required HostOrganizerEditActions actions,
 }) {
   return _pumpHostScreen(
     tester,
     Scaffold(
       body: SingleChildScrollView(
-        child: HostClubEditBody(
-          club: club,
+        child: HostOrganizerEditBody(
+          organizer: organizer,
           currentUid: _hostUid,
           isOwner: true,
         ),
       ),
     ),
-    overrides: [hostClubEditControllerProvider.overrideWithValue(actions)],
+    overrides: [hostOrganizerEditControllerProvider.overrideWithValue(actions)],
   );
 }
 
-UploadedPhoto _uploadedClubPhoto(String id, {required int position}) {
+UploadedPhoto _uploadedOrganizerPhoto(String id, {required int position}) {
   final timestamp = DateTime(2026);
   return UploadedPhoto(
     id: id,

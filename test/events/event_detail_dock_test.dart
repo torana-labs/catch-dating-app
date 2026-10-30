@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart' show FakeClubsRepository;
+import '../organizers/organizers_test_helpers.dart' show FakeOrganizersRepository;
 import 'event_viewer_state_fixtures.dart';
 import 'events_test_helpers.dart';
 
@@ -38,7 +38,7 @@ void main() {
           ),
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
@@ -74,7 +74,7 @@ void main() {
           ),
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
@@ -115,7 +115,7 @@ void main() {
           ),
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
@@ -152,7 +152,7 @@ void main() {
           ),
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -181,7 +181,7 @@ void main() {
           ),
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
@@ -222,7 +222,7 @@ void main() {
           ),
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           paymentRepositoryProvider.overrideWithValue(
             FakePaymentRepository(supportsPaid: false),
           ),
@@ -253,7 +253,7 @@ void main() {
           ),
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
@@ -282,7 +282,7 @@ void main() {
           ),
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -326,7 +326,7 @@ void main() {
       final fakeEventRepository = FakeEventRepository();
       final container = ProviderContainer(
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           uidProvider.overrideWith((ref) => Stream.value('runner-9')),
@@ -401,7 +401,7 @@ void main() {
       final fakeEventRepository = FakeEventRepository();
       final container = ProviderContainer(
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           uidProvider.overrideWith((ref) => Stream.value('runner-9')),
@@ -472,7 +472,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
           uidProvider.overrideWith((ref) => Stream.value('runner-9')),
         ],
@@ -607,7 +607,7 @@ void main() {
           ),
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -647,7 +647,7 @@ void main() {
           ),
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -712,7 +712,7 @@ void main() {
           ),
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );

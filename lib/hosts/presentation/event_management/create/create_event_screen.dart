@@ -12,8 +12,8 @@ import 'package:catch_dating_app/contexts/events/domain/event_public_details.dar
 import 'package:catch_dating_app/contexts/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
@@ -73,7 +73,7 @@ Future<HostDraftExitDecision?> showCreateEventUnsavedChangesDialog(
 class CreateEventScreen extends ConsumerStatefulWidget {
   const CreateEventScreen({
     super.key,
-    required this.club,
+    required this.organizer,
     this.loadMapTiles = true,
     this.now = _systemNow,
     this.initialDraft,
@@ -89,7 +89,7 @@ class CreateEventScreen extends ConsumerStatefulWidget {
          'A create flow cannot restore a draft and apply a repeat prefill.',
        );
 
-  final Club club;
+  final Organizer organizer;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
   final bool promptForDraftsOnStart;
@@ -193,7 +193,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   EventSuccessDefaults _eventSuccessDefaults = const EventSuccessDefaults();
 
   String get _eventCurrencyCode =>
-      currencyCodeForCityName(widget.club.location);
+      currencyCodeForCityName(widget.organizer.location);
 
   CreateEventScheduleState get _scheduleState => CreateEventScheduleState(
     selectedDate: _selectedDate,
@@ -279,7 +279,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         .clamp(0, CreateEventWizardStep.values.length - 1)
         .toInt();
     _pageController = PageController(initialPage: _currentStep);
-    _applyClubDefaults(widget.club.hostDefaults);
+    _applyOrganizerDefaults(widget.organizer.hostDefaults);
     final initialRosterImportPlan = widget.initialRosterImportPlan;
     if (initialRosterImportPlan != null) {
       _setRosterPlan(initialRosterImportPlan);
@@ -349,7 +349,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final recovery = ref.watch(
-      createEventPhotoRecoveryControllerProvider(widget.club.id),
+      createEventPhotoRecoveryControllerProvider(widget.organizer.id),
     );
     ref.listen(authenticatedSessionProvider, (previous, next) {
       final before = previous?.asData?.value;
@@ -370,7 +370,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           message: context.l10n.hostsEventPhotoRecoverySession,
           actions: [
             CatchButton(
-              label: context.l10n.hostsCreateEventSuccessScreenLabelBackToClub,
+              label: context.l10n.hostsCreateEventSuccessScreenLabelBackToOrganizer,
               onPressed: () => Navigator.of(context).maybePop(),
             ),
           ],
@@ -406,7 +406,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         : null;
     final reviewState = _reviewState;
     final wizardState = CreateEventWizardState.resolve(
-      club: widget.club,
+      organizer: widget.organizer,
       activeSteps: _stepSpecs,
       currentStep: _currentStep,
       submitPending: submitMutation.isPending,
@@ -429,13 +429,13 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         onPopInvokedWithResult: (didPop, _) {
           if (!didPop) {
             _handleSuccessNavigationIntent(
-              CreateEventSuccessNavigationIntent.backToClub,
+              CreateEventSuccessNavigationIntent.backToOrganizer,
               successNavigation,
             ).ignore();
           }
         },
         child: CreateEventSuccessScreen(
-          club: successNavigation.club,
+          organizer: successNavigation.organizer,
           event: successNavigation.event,
           inviteCode: successNavigation.inviteCode,
           onManageEvent: () => _handleSuccessNavigationIntent(
@@ -443,7 +443,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             successNavigation,
           ).ignore(),
           onDone: () => _handleSuccessNavigationIntent(
-            CreateEventSuccessNavigationIntent.backToClub,
+            CreateEventSuccessNavigationIntent.backToOrganizer,
             successNavigation,
           ).ignore(),
           rosterImportResult: _rosterImportResult,
@@ -452,7 +452,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           onRetryPhotos: () => ref
               .read(
                 createEventPhotoRecoveryControllerProvider(
-                  widget.club.id,
+                  widget.organizer.id,
                 ).notifier,
               )
               .retryPhotos()
@@ -460,7 +460,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           onReselectPhotos: () => ref
               .read(
                 createEventPhotoRecoveryControllerProvider(
-                  widget.club.id,
+                  widget.organizer.id,
                 ).notifier,
               )
               .retryPhotos(reselect: true)
@@ -491,7 +491,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             title: _isReviewing
                 ? context.l10n.hostsCreateEventReviewTitle
                 : wizardState.title,
-            subtitle: wizardState.club.name,
+            subtitle: wizardState.organizer.name,
             currentStep: wizardState.currentStep,
             totalSteps: wizardState.totalSteps,
             isReviewing: _isReviewing,
@@ -528,8 +528,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                         onPickPhotos: _pickEventPhotos,
                         onRemovePhoto: _removeEventPhoto,
                         onReorderPhoto: _reorderEventPhoto,
-                        organizerName: widget.club.name,
-                        organizerLogoUrl: widget.club.profileImageUrl,
+                        organizerName: widget.organizer.name,
+                        organizerLogoUrl: widget.organizer.profileImageUrl,
                         nameController: _nameController,
                         distanceController: _distanceController,
                         customActivityLabelController:
@@ -554,7 +554,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           if (!activityKind.isDistanceBased) {
                             _selectedPace = null;
                           }
-                          _eventSuccessDefaults = widget.club.hostDefaults
+                          _eventSuccessDefaults = widget.organizer.hostDefaults
                               .eventSuccessForFormat(
                                 _selectedEventFormat,
                                 targetAttendeeCount:
@@ -564,7 +564,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                         selectedInteractionModel: _selectedInteractionModel,
                         onInteractionModelChanged: (model) => setState(() {
                           _selectedInteractionModel = model;
-                          _eventSuccessDefaults = widget.club.hostDefaults
+                          _eventSuccessDefaults = widget.organizer.hostDefaults
                               .eventSuccessForFormat(
                                 _selectedEventFormat,
                                 targetAttendeeCount:
@@ -626,7 +626,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                               WhereStep(
                                 formKey: _whenFormKey,
                                 embedded: true,
-                                organizerId: widget.club.id,
+                                organizerId: widget.organizer.id,
                                 autovalidateMode: autovalidateMode,
                                 meetingPointController: _meetingPointController,
                                 locationDetailsController:
@@ -746,7 +746,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                               EventSuccessStep(
                                 embedded: true,
                                 requiredForRuntime: _externalBookingMode,
-                                organizerId: widget.club.id,
+                                organizerId: widget.organizer.id,
                                 activityKind: _selectedActivityKind,
                                 eventFormat: _selectedEventFormat,
                                 eventSuccessDefaults: _externalBookingMode

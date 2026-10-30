@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
@@ -457,15 +457,15 @@ class PaymentConfirmedBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final clubAsync = ref.watch(watchClubProvider(event.clubId));
-    final clubName = catchAsyncStateFromAsyncValue(clubAsync).value?.name;
+    final organizerAsync = ref.watch(watchOrganizerProvider(event.clubId));
+    final organizerName = catchAsyncStateFromAsyncValue(organizerAsync).value?.name;
     final controller = ref.watch(paymentConfirmationControllerProvider);
     final share = ref.watch(externalShareControllerProvider);
 
     return PaymentConfirmationBody(
       data: data,
       event: event,
-      clubName: clubName,
+      organizerName: organizerName,
       onAddToCalendar: () => unawaited(controller.addToCalendar(event)),
       onOpenDirections: () => unawaited(controller.openDirections(event)),
       onInviteFriend: () => unawaited(
@@ -505,12 +505,12 @@ class PaymentConfirmationBody extends StatelessWidget {
     required this.onReferralShare,
     required this.onViewEvent,
     required this.onBackHome,
-    this.clubName,
+    this.organizerName,
   });
 
   final PaymentConfirmationData data;
   final Event event;
-  final String? clubName;
+  final String? organizerName;
   final VoidCallback onAddToCalendar;
   final VoidCallback onOpenDirections;
   final VoidCallback onInviteFriend;
@@ -547,7 +547,7 @@ class PaymentConfirmationBody extends StatelessWidget {
 
     return EventJoinedCelebrationScreen(
       event: event,
-      clubName: clubName,
+      organizerName: organizerName,
       paymentData: data,
       supplementalChildren: [
         Row(

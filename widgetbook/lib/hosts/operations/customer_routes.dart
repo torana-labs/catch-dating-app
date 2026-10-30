@@ -36,7 +36,7 @@ Widget hostCustomersStates(
   BuildContext context, {
   Widget Function(HostAudienceContactDetail customer)? detailBuilder,
 }) {
-  final organizerId = HostOperationsFixtures.primaryClub.id;
+  final organizerId = HostOperationsFixtures.primaryOrganizer.id;
   const contactId = 'design-customer-ananya';
   final contact = HostAudienceContact(
     contactId: contactId,

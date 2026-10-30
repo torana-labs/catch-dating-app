@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -21,8 +21,8 @@ class ExploreFeedSectionState {
 
   factory ExploreFeedSectionState.from({
     required ExploreFeedViewModel viewModel,
-    required List<Club> candidateClubs,
-    required Set<String> joinedClubIds,
+    required List<Organizer> candidateOrganizers,
+    required Set<String> joinedOrganizerIds,
     required bool showThisWeekList,
     required AppLocalizations l10n,
     List<CrossPathsSuggestion> crossPathsSuggestions = const [],
@@ -55,8 +55,8 @@ class ExploreFeedSectionState {
     final thisWeekEventIds = {for (final item in thisWeekItems) item.event.id};
     final cards = buildExploreMixedFeedCards(
       viewModel: bodyViewModel,
-      candidateClubs: candidateClubs,
-      joinedClubIds: joinedClubIds,
+      candidateOrganizers: candidateOrganizers,
+      joinedOrganizerIds: joinedOrganizerIds,
       excludeEventIds: thisWeekEventIds,
       crossPathsSuggestions: crossPathsSuggestions,
     );
@@ -126,19 +126,19 @@ class ExploreMixedExternalEventRowCard extends ExploreMixedCard {
   DateTime get startTime => item.event.startTime;
 }
 
-class ExploreMixedClubSpotlightCard extends ExploreMixedCard {
-  const ExploreMixedClubSpotlightCard(this.club);
+class ExploreMixedOrganizerSpotlightCard extends ExploreMixedCard {
+  const ExploreMixedOrganizerSpotlightCard(this.organizer);
 
-  final Club club;
+  final Organizer organizer;
 
   @override
   DateTime? get startTime => null;
 }
 
-class ExploreMixedClubRowCard extends ExploreMixedCard {
-  const ExploreMixedClubRowCard(this.club);
+class ExploreMixedOrganizerRowCard extends ExploreMixedCard {
+  const ExploreMixedOrganizerRowCard(this.organizer);
 
-  final Club club;
+  final Organizer organizer;
 
   @override
   DateTime? get startTime => null;
@@ -159,17 +159,17 @@ class ExploreMixedPersonCard extends ExploreMixedCard {
 
 List<ExploreMixedCard> buildExploreMixedFeedCards({
   required ExploreFeedViewModel viewModel,
-  required List<Club> candidateClubs,
-  required Set<String> joinedClubIds,
+  required List<Organizer> candidateOrganizers,
+  required Set<String> joinedOrganizerIds,
   Set<String> excludeEventIds = const <String>{},
   List<CrossPathsSuggestion> crossPathsSuggestions = const [],
 }) {
-  final rankedClubs = rankExploreClubIntermixCandidates(
-    candidateClubs,
-    joinedClubIds: joinedClubIds,
+  final rankedOrganizers = rankExploreOrganizerIntermixCandidates(
+    candidateOrganizers,
+    joinedOrganizerIds: joinedOrganizerIds,
   );
-  final firstClub = rankedClubs.firstOrNull;
-  final secondClub = rankedClubs.skip(1).firstOrNull;
+  final firstOrganizer = rankedOrganizers.firstOrNull;
+  final secondOrganizer = rankedOrganizers.skip(1).firstOrNull;
   final cards = <ExploreMixedCard>[
     for (final item in viewModel.items)
       if (!excludeEventIds.contains(item.event.id))
@@ -180,23 +180,23 @@ List<ExploreMixedCard> buildExploreMixedFeedCards({
   final timedCardCount = cards.length;
 
   if (cards.isEmpty) {
-    if (firstClub != null) cards.add(ExploreMixedClubSpotlightCard(firstClub));
-    if (secondClub != null) cards.add(ExploreMixedClubRowCard(secondClub));
+    if (firstOrganizer != null) cards.add(ExploreMixedOrganizerSpotlightCard(firstOrganizer));
+    if (secondOrganizer != null) cards.add(ExploreMixedOrganizerRowCard(secondOrganizer));
     return cards;
   }
 
-  if (firstClub != null) {
+  if (firstOrganizer != null) {
     cards.insert(
       math.min(2, cards.length),
-      ExploreMixedClubSpotlightCard(firstClub),
+      ExploreMixedOrganizerSpotlightCard(firstOrganizer),
     );
   }
   // The first eight cards may contain at most one organizer. A second
   // organizer therefore appears only after eight timed cards exist.
-  if (secondClub != null && timedCardCount >= 8) {
+  if (secondOrganizer != null && timedCardCount >= 8) {
     cards.insert(
       math.min(9, cards.length),
-      ExploreMixedClubRowCard(secondClub),
+      ExploreMixedOrganizerRowCard(secondOrganizer),
     );
   }
 
@@ -349,14 +349,14 @@ class _ExploreFeedCardGroupBuilder {
   final List<ExploreMixedCard> cards = <ExploreMixedCard>[];
 }
 
-List<Club> rankExploreClubIntermixCandidates(
-  List<Club> clubs, {
-  required Set<String> joinedClubIds,
+List<Organizer> rankExploreOrganizerIntermixCandidates(
+  List<Organizer> organizers, {
+  required Set<String> joinedOrganizerIds,
 }) {
-  final ranked = clubs
-      .where((club) => club.status == ClubLifecycleStatus.active)
-      .where((club) => !club.archived)
-      .where((club) => !joinedClubIds.contains(club.id))
+  final ranked = organizers
+      .where((organizer) => organizer.status == OrganizerLifecycleStatus.active)
+      .where((organizer) => !organizer.archived)
+      .where((organizer) => !joinedOrganizerIds.contains(organizer.id))
       .toList();
   ranked.sort((a, b) {
     final aHasNextEvent = a.nextEventAt != null || a.nextEventLabel != null;

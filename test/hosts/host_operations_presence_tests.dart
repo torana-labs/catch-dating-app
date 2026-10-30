@@ -226,7 +226,7 @@ void _registerHostOperationsPresenceTests() {
             body: SingleChildScrollView(
               child: HostAnalyticsReportBody(
                 report: report,
-                rangePreset: HostClubInsightsRangePreset.thirtyDays,
+                rangePreset: HostOrganizerInsightsRangePreset.thirtyDays,
                 currencyCode: 'INR',
                 onOpenEventReport: (_) {},
                 onOpenAllEvents: () {},
@@ -349,25 +349,25 @@ void _registerHostOperationsPresenceTests() {
   testWidgets(
     'Host analytics permission denied does not display presence totals',
     (tester) async {
-      final club = buildClub(id: 'denied-analytics', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(id: 'denied-analytics', ownerUserId: _hostUid);
       await _pumpHostScreen(
         tester,
         RepaintBoundary(
           key: const ValueKey('presence-preview-boundary'),
           child: Scaffold(
             body: SingleChildScrollView(
-              child: HostClubInsightsSection(club: club),
+              child: HostOrganizerInsightsSection(organizer: organizer),
             ),
           ),
         ),
         overrides: [
-          watchEventsForClubProvider(
-            club.id,
+          watchEventsForOrganizerProvider(
+            organizer.id,
           ).overrideWithValue(const AsyncData<List<Event>>([])),
           hostCrmSummaryProvider(
-            club.id,
-          ).overrideWithValue(AsyncData(_emptyCrmSummary(club.id))),
-          hostTrackingSettingsProvider(club.id).overrideWithValue(
+            organizer.id,
+          ).overrideWithValue(AsyncData(_emptyCrmSummary(organizer.id))),
+          hostTrackingSettingsProvider(organizer.id).overrideWithValue(
             const AsyncError<HostTrackingSettings>(
               PermissionException('Access denied.'),
               StackTrace.empty,

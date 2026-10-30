@@ -5,12 +5,12 @@ extension _CreateEventActions on _CreateEventScreenState {
     if (!mounted || _sessionReplaced) return;
     await ref
         .read(
-          createEventPhotoRecoveryControllerProvider(widget.club.id).notifier,
+          createEventPhotoRecoveryControllerProvider(widget.organizer.id).notifier,
         )
         .restore();
     if (!mounted || _sessionReplaced) return;
     final recovery = ref.read(
-      createEventPhotoRecoveryControllerProvider(widget.club.id),
+      createEventPhotoRecoveryControllerProvider(widget.organizer.id),
     );
     if (recovery.restored is AsyncData<void> && recovery.event == null) {
       await _checkForDrafts();
@@ -64,7 +64,7 @@ extension _CreateEventActions on _CreateEventScreenState {
     final result = await Navigator.of(context).push<LocationPickerResult>(
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(
-          countryIsoCode: countryIsoCodeForCityName(widget.club.location),
+          countryIsoCode: countryIsoCodeForCityName(widget.organizer.location),
           initialLocation: _locationState.startingPoint,
           initialCenter: _locationState.initialCenter(deviceLocation),
           initialLabel: _locationState.initialLabel(
@@ -114,7 +114,7 @@ extension _CreateEventActions on _CreateEventScreenState {
     final result = await Navigator.of(context).push<LocationPickerResult>(
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(
-          countryIsoCode: countryIsoCodeForCityName(widget.club.location),
+          countryIsoCode: countryIsoCodeForCityName(widget.organizer.location),
           initialLocation: current == null
               ? null
               : LocationCoordinate(current.latitude, current.longitude),
@@ -252,10 +252,10 @@ extension _CreateEventActions on _CreateEventScreenState {
   ) async {
     if (_sessionReplaced) return;
     final controller = ref.read(
-      createEventPhotoRecoveryControllerProvider(widget.club.id).notifier,
+      createEventPhotoRecoveryControllerProvider(widget.organizer.id).notifier,
     );
     final recovery = ref.read(
-      createEventPhotoRecoveryControllerProvider(widget.club.id),
+      createEventPhotoRecoveryControllerProvider(widget.organizer.id),
     );
     if (recovery.hasPhotoRecovery && !recovery.isDurable) {
       final leave = await showCatchConfirmDialog(
@@ -367,7 +367,7 @@ extension _CreateEventActions on _CreateEventScreenState {
       final createdEvent = await tx
           .get(createEventControllerProvider.notifier)
           .submit(
-            clubId: widget.club.id,
+            clubId: widget.organizer.id,
             name: _nameController.text,
             startTime: startTime,
             endTime: endTime,
@@ -428,7 +428,7 @@ extension _CreateEventActions on _CreateEventScreenState {
   bool get _hasUnsavedChanges {
     return ref
                 .read(
-                  createEventPhotoRecoveryControllerProvider(widget.club.id),
+                  createEventPhotoRecoveryControllerProvider(widget.organizer.id),
                 )
                 .event ==
             null &&

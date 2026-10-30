@@ -158,7 +158,7 @@ Widget eventDetailInitialEventLoadingBodyStates(BuildContext context) {
             child: EventDetailBody(
               event: widgetbookEvent,
               userProfile: null,
-              clubId: widgetbookEventsClubId,
+              clubId: widgetbookEventsOrganizerId,
               reviews: const [],
               isAuthenticated: false,
               sectionVisibility: eventDetailSectionVisibilityStateFrom(
@@ -187,7 +187,7 @@ Widget eventDetailInitialEventLoadingBodyStates(BuildContext context) {
               onLocationTap: widgetbookNoop,
               onOpenCompanion: widgetbookNoop,
               onRetryCompanion: widgetbookNoop,
-              onViewClub: widgetbookIgnoreString,
+              onViewOrganizer: widgetbookIgnoreString,
               onMessageHost: widgetbookEventsNoopMessageHost,
               onRetryHosts: widgetbookNoop,
               now: widgetbookEventsNow,
@@ -211,7 +211,7 @@ Widget eventDetailInitialEventLoadingBodyStates(BuildContext context) {
                   child: EventDetailBody(
                     event: widgetbookEvent,
                     userProfile: null,
-                    clubId: widgetbookEventsClubId,
+                    clubId: widgetbookEventsOrganizerId,
                     reviews: const [],
                     isAuthenticated: false,
                     sectionVisibility: eventDetailSectionVisibilityStateFrom(
@@ -241,7 +241,7 @@ Widget eventDetailInitialEventLoadingBodyStates(BuildContext context) {
                     onLocationTap: widgetbookNoop,
                     onOpenCompanion: widgetbookNoop,
                     onRetryCompanion: widgetbookNoop,
-                    onViewClub: widgetbookIgnoreString,
+                    onViewOrganizer: widgetbookIgnoreString,
                     onMessageHost: widgetbookEventsNoopMessageHost,
                     onRetryHosts: widgetbookNoop,
                     now: widgetbookEventsNow,

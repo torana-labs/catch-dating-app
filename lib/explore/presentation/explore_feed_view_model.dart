@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_discovery_window_controller.dart';
@@ -117,37 +117,37 @@ String exploreFeedDayLabel(
 class ExploreEventItem {
   const ExploreEventItem({
     required this.event,
-    required this.club,
+    required this.organizer,
     this.availability,
     this._status,
     this.distanceFromUserKm,
-    this.isJoinedClubMember = false,
-    this.isFollowedClubSignal = false,
+    this.isJoinedOrganizerMember = false,
+    this.isFollowedOrganizerSignal = false,
   });
 
   final Event event;
-  final Club club;
+  final Organizer organizer;
   final ViewerEventAvailability? availability;
 
   /// Compatibility override for tests and legacy callers that still construct
   /// Explore items directly. New production paths should pass [availability].
   final EventTileStatus? _status;
   final double? distanceFromUserKm;
-  final bool isJoinedClubMember;
-  final bool isFollowedClubSignal;
+  final bool isJoinedOrganizerMember;
+  final bool isFollowedOrganizerSignal;
 
   EventTileStatus get status =>
       _status ??
       _statusForAvailability(
         availability,
-        isJoinedClubMember: isJoinedClubMember,
+        isJoinedOrganizerMember: isJoinedOrganizerMember,
       );
   EventTileStatus get tileStatus => status;
 
   EventTileData get tileData => EventTileData.fromEvent(
     event: event,
     status: tileStatus,
-    clubName: club.name,
+    organizerName: organizer.name,
   );
 }
 
@@ -177,8 +177,8 @@ String? selectExploreFeaturedEventId({
         for (final item in candidates)
           ExploreEventRecommendationCandidate(
             event: item.event,
-            clubName: item.club.name,
-            clubLocation: item.club.location,
+            organizerName: item.organizer.name,
+            organizerLocation: item.organizer.location,
           ),
       ],
       signedUpEventIds: signedUpEventIds,
@@ -266,7 +266,7 @@ class ExploreExternalEventItem {
 
 EventTileStatus _statusForAvailability(
   ViewerEventAvailability? availability, {
-  required bool isJoinedClubMember,
+  required bool isJoinedOrganizerMember,
 }) {
   return switch (availability?.status) {
     ViewerEventAvailabilityStatus.joined => EventTileStatus.joined,
@@ -288,6 +288,6 @@ EventTileStatus _statusForAvailability(
     ViewerEventAvailabilityStatus.runPreferencesRequired ||
     ViewerEventAvailabilityStatus.open ||
     null =>
-      isJoinedClubMember ? EventTileStatus.recommended : EventTileStatus.open,
+      isJoinedOrganizerMember ? EventTileStatus.recommended : EventTileStatus.open,
   };
 }

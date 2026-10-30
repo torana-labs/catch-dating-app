@@ -14890,7 +14890,7 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "ClubDetailDock",
+      "name": "OrganizerDetailDock",
       "status": "active",
       "kind": "composite",
       "tier": "T4",
@@ -14901,10 +14901,10 @@
       ],
       "summary": "Club-detail membership dock with role-specific guest, visitor, member, and owner action states.",
       "dart": {
-        "symbol": "ClubDetailDock",
-        "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+        "symbol": "OrganizerDetailDock",
+        "file": "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart",
         "constructors": [
-          "ClubDetailDock"
+          "OrganizerDetailDock"
         ]
       },
       "design": {
@@ -14929,7 +14929,7 @@
             "name": "state",
             "type": "enum",
             "required": true,
-            "dartType": "ClubDetailDockRole",
+            "dartType": "OrganizerDetailDockRole",
             "values": [
               "guest",
               "visitor",
@@ -15021,7 +15021,7 @@
           "theme.light.color.surface"
         ],
         "dartRoles": [
-          "ClubDetailDockRole",
+          "OrganizerDetailDockRole",
           "CatchButton",
           "CatchIconAction",
           "ActivityPalette.resolve"
@@ -18329,16 +18329,16 @@
         "dartRoles": [
           "CatchPosterVariant",
           "CatchPosterTone",
-          "ClubPlaceholderCover",
-          "ClubCover",
+          "OrganizerPlaceholderCover",
+          "OrganizerCover",
           "CatchSurface"
         ],
         "goldens": [],
         "members": [
           {
             "id": "catch.organizer_poster.artwork",
-            "symbol": "ClubPlaceholderCover",
-            "file": "lib/clubs/shared/club_placeholder_cover.dart",
+            "symbol": "OrganizerPlaceholderCover",
+            "file": "lib/organizers/shared/organizer_placeholder_cover.dart",
             "summary": "Deterministic no-photo organizer artwork used by poster and compact cover states.",
             "states": [
               "standard",
@@ -18356,8 +18356,8 @@
           },
           {
             "id": "catch.organizer_poster.explore",
-            "symbol": "ClubCard",
-            "file": "lib/explore/presentation/widgets/club_card.dart",
+            "symbol": "OrganizerCard",
+            "file": "lib/explore/presentation/widgets/organizer_card.dart",
             "summary": "Explore spotlight adopter that composes organizer authority, rating, host identity, and tags into the canonical poster.",
             "states": [
               "photo",
@@ -18654,21 +18654,21 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "ClubCover",
+      "name": "OrganizerCover",
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
       "aliases": [
         "ClubCoverImage",
-        "ClubImage",
+        "OrganizerImage",
         "ClubPhoto"
       ],
       "summary": "Canonical club-cover resolver for uploaded photos, the global image grade, deterministic club artwork, and compact fallbacks.",
       "dart": {
-        "symbol": "ClubCover",
-        "file": "lib/clubs/shared/club_cover.dart",
+        "symbol": "OrganizerCover",
+        "file": "lib/organizers/shared/organizer_cover.dart",
         "constructors": [
-          "ClubCover"
+          "OrganizerCover"
         ]
       },
       "design": {
@@ -18683,7 +18683,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "ClubCover",
+          "handoffName": "OrganizerCover",
           "allowed": true
         }
       },
@@ -18725,7 +18725,7 @@
           "Club.primaryClubPhotoUrl",
           "CatchGradedImage",
           "CatchNetworkImage",
-          "ClubPlaceholderCover"
+          "OrganizerPlaceholderCover"
         ],
         "goldens": [],
         "accessibility": {

@@ -49,7 +49,7 @@ Widget _hostEventManageExactCatalog(BuildContext context, String focus) {
 
 Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
   final event = HostOperationsFixtures.privateEvent;
-  final club = HostOperationsFixtures.primaryClub;
+  final organizer = HostOperationsFixtures.primaryOrganizer;
   final roster = EventParticipationRoster.fromParticipations(
     HostOperationsFixtures.participations,
   );
@@ -57,7 +57,7 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
   final profiles = _hostAttendeeProfiles();
   final inviteCode = HostOperationsFixtures.privateAccess.inviteCode;
   final inviteLink = AppDeepLinks.event(
-    clubId: club.id,
+    clubId: organizer.id,
     eventId: event.id,
     inviteCode: inviteCode,
   ).toString();
@@ -88,7 +88,7 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       onTap: () {},
     ),
     'HostEventActionsSection' => HostEventActionsSection(
-      club: club,
+      organizer: organizer,
       event: event,
       actionState: HostEventActionDisplayState.resolve(
         event: event,
@@ -164,7 +164,7 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       ),
     ),
     'HostEventSummarySection' => HostEventSummarySection(
-      club: club,
+      organizer: organizer,
       event: event,
     ),
     'HostEventSummaryRow' => HostEventSummaryRow(
@@ -265,7 +265,7 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
     ),
     'HostPrivateAccessAsyncBoundary' => Consumer(
       builder: (context, ref, _) => HostPrivateAccessAsyncBoundary(
-        club: club,
+        organizer: organizer,
         event: event,
         accessAsync: AsyncData<EventPrivateAccess?>(
           HostOperationsFixtures.privateAccess,
@@ -295,7 +295,7 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
     ),
     'HostPublicRegistrationField' => Consumer(
       builder: (context, ref, _) => HostPublicRegistrationField(
-        club: club,
+        organizer: organizer,
         event: event,
         mutation: ref.watch(
           HostEventBookingController.publicRegistrationMutation,

@@ -4,9 +4,9 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../test/events/events_test_helpers.dart' as event_helpers;
 import '../test/onboarding/onboarding_test_helpers.dart' as onboarding_helpers;
+import '../test/organizers/organizers_test_helpers.dart' as organizer_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
 import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
@@ -18,12 +18,12 @@ void main() {
   testWidgets('unauthenticated launch opens public Explore discovery', (
     tester,
   ) async {
-    final club = club_helpers.buildClub();
+    final organizer = organizer_helpers.buildOrganizer();
 
     await pumpCatchAppShell(
       tester,
       initialRoute: Routes.exploreScreen.path,
-      overrides: appShellTestOverrides(uid: null, user: null, clubs: [club]),
+      overrides: appShellTestOverrides(uid: null, user: null, organizers: [organizer]),
     );
 
     expect(find.text('Explore'), findsOneWidget);
@@ -32,7 +32,7 @@ void main() {
   });
 
   testWidgets('phone auth route sends and verifies an OTP', (tester) async {
-    final club = club_helpers.buildClub();
+    final organizer = organizer_helpers.buildOrganizer();
     final authRepository = onboarding_helpers.FakeAuthRepository()
       ..onVerifyPhoneNumber =
           ({
@@ -50,12 +50,12 @@ void main() {
       overrides: appShellTestOverrides(
         uid: null,
         user: null,
-        clubs: [club],
+        organizers: [organizer],
         authRepository: authRepository,
       ),
     );
 
-    await openClubDetail(tester, club);
+    await openOrganizerDetail(tester, organizer);
     await pumpAppShellFrames(tester);
     await tapCatchButton(tester, 'Sign in to follow');
 
@@ -123,10 +123,10 @@ void main() {
     tester,
   ) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
-    final joinedClub = club_helpers.buildClub(nextEventLabel: 'Sat 6:30 AM');
+    final joinedOrganizer = organizer_helpers.buildOrganizer(nextEventLabel: 'Sat 6:30 AM');
     final nextRun = event_helpers.buildEvent(
       id: 'run-1',
-      clubId: joinedClub.id,
+      clubId: joinedOrganizer.id,
       startTime: DateTime.now().add(const Duration(hours: 3)),
       bookedCount: 1,
     );
@@ -135,8 +135,8 @@ void main() {
       overrides: appShellTestOverrides(
         uid: user.uid,
         user: user,
-        clubs: [joinedClub],
-        joinedClubIds: {joinedClub.id},
+        organizers: [joinedOrganizer],
+        joinedOrganizerIds: {joinedOrganizer.id},
         signedUpEvents: [nextRun],
       ),
     );

@@ -13,7 +13,7 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
     required this.event,
     required this.onViewEvent,
     required this.onBackHome,
-    this.clubName,
+    this.organizerName,
     this.paymentData,
     this.supplementalChildren = const [],
     this.viewEventKey,
@@ -21,7 +21,7 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
   });
 
   final Event event;
-  final String? clubName;
+  final String? organizerName;
   final PaymentConfirmationData? paymentData;
   final VoidCallback onViewEvent;
   final VoidCallback onBackHome;
@@ -42,11 +42,11 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
       message: context.l10n
           .eventsEventJoinedCelebrationScreenMessageYourSpotIsConfirmed(
             title: event.title,
-            value2: clubName == null
+            value2: organizerName == null
                 ? ''
                 : context.l10n
-                      .eventsEventJoinedCelebrationScreenMessageWithClubname(
-                        clubName: clubName!,
+                      .eventsEventJoinedCelebrationScreenMessageWithOrganizername(
+                        organizerName: organizerName!,
                       ),
           ),
       details: [

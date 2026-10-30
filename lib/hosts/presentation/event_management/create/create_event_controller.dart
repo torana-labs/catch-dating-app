@@ -148,7 +148,7 @@ class CreateEventController extends _$CreateEventController {
     ExternalEventOriginInput? externalOrigin,
     EventRuntimeWalkInPolicy? runtimeWalkInPolicy,
   }) async {
-    final normalizedClubId = _requireNonBlank(
+    final normalizedOrganizerId = _requireNonBlank(
       clubId,
       fieldName: 'clubId',
       code: 'event-club-required',
@@ -209,7 +209,7 @@ class CreateEventController extends _$CreateEventController {
     final eventId = eventRepo.generateId();
     final event = Event(
       id: eventId,
-      clubId: normalizedClubId,
+      clubId: normalizedOrganizerId,
       name: normalizedName,
       startTime: startTime,
       endTime: endTime,
@@ -250,7 +250,7 @@ class CreateEventController extends _$CreateEventController {
     );
     return ref
         .read(
-          createEventPhotoRecoveryControllerProvider(normalizedClubId).notifier,
+          createEventPhotoRecoveryControllerProvider(normalizedOrganizerId).notifier,
         )
         .create(
           event: event,

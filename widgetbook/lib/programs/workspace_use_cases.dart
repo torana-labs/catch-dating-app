@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
@@ -28,7 +28,7 @@ const _functionId = 'fn_sangeet';
 
 final _now = DateTime(2026, 2, 14, 14, 30);
 
-final _club = Club(
+final _organizer = Organizer(
   id: _organizerId,
   name: 'Kapoor Family',
   description: 'Wedding family organizer.',
@@ -337,7 +337,7 @@ const _importResult = ProgramManifestImportResult(
 
 List<Override> _workspaceOverrides() => [
   uidProvider.overrideWithValue(const AsyncData<String?>('uid_org')),
-  hostOperableClubsProvider('uid_org').overrideWithValue(AsyncData([_club])),
+  hostOperableOrganizersProvider('uid_org').overrideWithValue(AsyncData([_organizer])),
   organizerProgramListProvider(
     _organizerId,
   ).overrideWithValue(AsyncData(_summaries)),

@@ -24,9 +24,9 @@ import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
@@ -62,8 +62,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../clubs/clubs_test_helpers.dart' show FakeImageUploadRepository;
 import '../events/events_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart' show FakeImageUploadRepository;
 import '../test_pump_helpers.dart';
 import 'host_control_room_test_helpers.dart';
 
@@ -150,7 +150,7 @@ void main() {
     ) async {
       await pumpEventsTestApp(
         tester,
-        HostCreateEventRouteScreen(clubId: 'club-1', initialClub: buildClub()),
+        HostCreateEventRouteScreen(clubId: 'club-1', initialOrganizer: buildOrganizer()),
       );
       await tester.pump();
       expect(find.text('Host access required'), findsOneWidget);
@@ -166,7 +166,7 @@ void main() {
     testWidgets(
       'route hydrates the private create flow from initial club extra',
       (tester) async {
-        final initialClub = buildClub(
+        final initialOrganizer = buildOrganizer(
           id: 'club-extra',
           name: 'Extra Hydration Club',
         );
@@ -174,13 +174,13 @@ void main() {
         await pumpEventsTestApp(
           tester,
           HostCreateEventRouteScreen(
-            clubId: initialClub.id,
-            initialClub: initialClub,
+            clubId: initialOrganizer.id,
+            initialOrganizer: initialOrganizer,
           ),
           overrides: [
-            fetchClubProvider(
-              initialClub.id,
-            ).overrideWithValue(const AsyncLoading<Club?>()),
+            fetchOrganizerProvider(
+              initialOrganizer.id,
+            ).overrideWithValue(const AsyncLoading<Organizer?>()),
           ],
           signedInUid: 'host-1',
         );
@@ -199,7 +199,7 @@ void main() {
         tester,
         HostCreateEventRouteScreen(
           clubId: 'path-club',
-          initialClub: buildClub(id: 'extra-club'),
+          initialOrganizer: buildOrganizer(id: 'extra-club'),
         ),
         signedInUid: 'host-1',
       );
@@ -381,8 +381,8 @@ void main() {
     ) async {
       await _pumpCreateEventFlow(
         tester,
-        clubOverride: buildClub(name: 'Saket Run Club').copyWith(
-          hostDefaults: ClubHostDefaults(
+        organizerOverride: buildOrganizer(name: 'Saket Run Club').copyWith(
+          hostDefaults: OrganizerHostDefaults(
             primaryActivityKind: ActivityKind.pubQuiz,
             eventSuccess: EventSuccessDefaults.recommendedForActivity(
               ActivityKind.pubQuiz,
@@ -449,8 +449,8 @@ void main() {
       final fakeEventRepository = FakeEventRepository();
       await _pumpCreateEventFlow(
         tester,
-        clubOverride: buildClub().copyWith(
-          hostDefaults: ClubHostDefaults(
+        organizerOverride: buildOrganizer().copyWith(
+          hostDefaults: OrganizerHostDefaults(
             eventSuccess: EventSuccessDefaults.recommendedForActivity(
               ActivityKind.openActivity,
               enabled: true,
@@ -551,7 +551,7 @@ void main() {
         await pumpEventsTestApp(
           tester,
           CreateEventSuccessScreen(
-            club: buildClub(),
+            organizer: buildOrganizer(),
             event: event,
             inviteCode: 'CATCH-DELHI',
             onManageEvent: () {},
@@ -879,7 +879,7 @@ Future<void> _pumpCreateEventFlow(
   CommandJournalStorage? recoveryStorage,
   bool alwaysUse24HourFormat = false,
   DateTime Function()? now,
-  Club? clubOverride,
+  Organizer? organizerOverride,
   EventDraft? initialDraft,
   CreateEventPrefill? initialPrefill,
   HostRosterImportPlan? initialRosterImportPlan,
@@ -894,7 +894,7 @@ Future<void> _pumpCreateEventFlow(
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
   }
-  final club = clubOverride ?? buildClub();
+  final organizer = organizerOverride ?? buildOrganizer();
   final router = GoRouter(
     initialLocation: '/',
     routes: [
@@ -912,7 +912,7 @@ Future<void> _pumpCreateEventFlow(
       GoRoute(
         path: '/create-event-test',
         builder: (context, state) => CreateEventScreen(
-          club: club,
+          organizer: organizer,
           loadMapTiles: false,
           now: now ?? DateTime.now,
           initialDraft: initialDraft,
@@ -925,10 +925,10 @@ Future<void> _pumpCreateEventFlow(
         path: Routes.hostAppEventManageScreen.path,
         name: Routes.hostAppEventManageScreen.name,
         builder: (context, state) => HostEventManageScreen(
-          club: club,
+          organizer: organizer,
           event: switch (state.extra) {
             final Event event => event,
-            _ => buildEvent(clubId: club.id),
+            _ => buildEvent(clubId: organizer.id),
           },
           onBackToSuccess: () => context.pop(),
         ),
@@ -945,7 +945,7 @@ Future<void> _pumpCreateEventFlow(
           return () async => storage;
         }),
         watchOrganizerEventVenuesProvider(
-          club.id,
+          organizer.id,
         ).overrideWith((ref) => Stream.value(savedVenues)),
         ...overrides,
       ],

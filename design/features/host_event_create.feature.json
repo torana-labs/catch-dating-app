@@ -90,7 +90,7 @@
         {
           "id": "retry_route",
           "owner": "route_screen",
-          "codeValue": "reloadClub",
+          "codeValue": "reloadOrganizer",
           "cardinality": "singleton",
           "scopeKeys": ["routeInstanceId", "clubId", "failureStateVersion"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["club_fetch_loading", "initial_club_extra", "club_fetch_error", "club_not_found", "unauthorized_host"]}],
@@ -378,7 +378,7 @@
         {
           "id": "dismiss_success",
           "owner": "wizard_state",
-          "codeValue": "backToClub",
+          "codeValue": "backToOrganizer",
           "cardinality": "singleton",
           "scopeKeys": ["routeInstanceId", "clubId", "eventId"],
           "outcomes": [{"kind": "side_effect", "id": "host_event_create.success_dismissed_to_caller"}],

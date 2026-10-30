@@ -166,7 +166,7 @@ control.
 | --- | --- |
 | Headline | **Book with confidence** |
 | Support | Know the host, policies, and verified guest reviews. |
-| Route | `clubDetailScreen` / `/organizers/:clubId` |
+| Route | `organizerDetailScreen` / `/organizers/:clubId` |
 | Source capture | Promote `club_detail_member` after scrolling to the trust-rich state. |
 | Source status | Deterministic route capture exists; a store-specific scroll position is needed. |
 | Required state | Claimed organizer profile with a complete identity, upcoming event, rating, review count, and at least one verified review excerpt. |
@@ -284,7 +284,7 @@ measure the result.
 | --- | --- |
 | Headline | **Know where every payment stands** |
 | Support | Keep payout readiness and guest payment status together. |
-| Route | `hostClubsScreen` / `/host/organizers/payments` |
+| Route | `hostOrganizersScreen` / `/host/organizers/payments` |
 | Source capture | Promote `host_clubs_payout_ready`; compare with the payment column in `host_post_event_report`. |
 | Source status | Deterministic capture exists; select a state that proves both readiness and money movement without exposing account data. |
 | Required state | Payout account ready plus a compact paid/pending/refunded summary or linked event payment status. |
@@ -340,7 +340,7 @@ measure the result.
 | --- | --- |
 | Headline | **See what your events created** |
 | Support | Review attendance, catches, matches, chats, reviews, and payouts. |
-| Route | `hostClubsScreen` / `/host/organizers` Insights tab |
+| Route | `hostOrganizersScreen` / `/host/organizers` Insights tab |
 | Source capture | Promote `host_clubs_insights_report`; retain `host_post_event_report` for event-level reporting evidence. |
 | Source status | Deterministic captures exist; choose a scroll position that shows outcome metrics rather than only the roster. |
 | Required state | Populated organizer analytics with attendance, connection funnel, guest reviews, and a multi-event or event-level outcome summary. |

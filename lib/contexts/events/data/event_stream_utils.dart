@@ -249,13 +249,13 @@ Stream<List<Event>> watchEventsByIdStream({
 /// Watches events for one or more clubs without requiring one subscription per
 /// club. Firestore `whereIn` limits are handled by the shared chunk helper and
 /// every emission is de-duplicated and ordered by start time.
-Stream<List<Event>> watchEventsForClubIdsStream({
-  required List<String> clubIds,
+Stream<List<Event>> watchEventsForOrganizerIdsStream({
+  required List<String> organizerIds,
   required CollectionReference<Event> eventsRef,
   required BackendErrorContext context,
 }) {
-  final uniqueClubIds = clubIds.toSet().toList()..sort();
-  if (uniqueClubIds.isEmpty) return Stream.value(const []);
+  final uniqueOrganizerIds = organizerIds.toSet().toList()..sort();
+  if (uniqueOrganizerIds.isEmpty) return Stream.value(const []);
 
   var eventSubs = <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
   var closed = false;
@@ -279,7 +279,7 @@ Stream<List<Event>> watchEventsForClubIdsStream({
 
   controller = StreamController<List<Event>>(
     onListen: () {
-      final chunks = chunkedForWhereIn(uniqueClubIds).toList(growable: false);
+      final chunks = chunkedForWhereIn(uniqueOrganizerIds).toList(growable: false);
       final eventsByChunk = <int, List<Event>>{};
       for (var index = 0; index < chunks.length; index += 1) {
         final chunk = chunks[index];

@@ -85,7 +85,7 @@ class HostInboxPersonPageBody extends ConsumerWidget {
       );
     }
     final events = catchAsyncStateFromAsyncValue(
-      ref.watch(watchEventsForClubProvider(organizerId)),
+      ref.watch(watchEventsForOrganizerProvider(organizerId)),
     );
     final waitingForScope = this.scope == null && !events.hasData;
     final scope = events.value == null
@@ -148,7 +148,7 @@ class HostInboxPersonPageBody extends ConsumerWidget {
           ? CatchLocalizedErrorState(
               events.error!,
               onRetry: () =>
-                  ref.invalidate(watchEventsForClubProvider(organizerId)),
+                  ref.invalidate(watchEventsForOrganizerProvider(organizerId)),
             )
           : waitingForScope || inbox.isLoading || whatsapp.isLoading
           ? const CatchStateViewport.loading()

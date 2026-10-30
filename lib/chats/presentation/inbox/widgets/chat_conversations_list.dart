@@ -49,7 +49,7 @@ class ChatConversationsList extends StatelessWidget {
           content: CatchConversationLayout(
             name: preview.displayName,
             imageUrl: preview.photoUrl,
-            avatarShape: preview.match.isClubHostInquiry
+            avatarShape: preview.match.isOrganizerHostInquiry
                 ? CatchAvatarVariant.square
                 : CatchAvatarVariant.circle,
             preview: previewTextFor?.call(preview) ?? preview.previewText,

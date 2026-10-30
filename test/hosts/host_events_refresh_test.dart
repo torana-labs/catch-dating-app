@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_screen.dart';
@@ -24,8 +24,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../clubs/clubs_test_helpers.dart' show buildClub;
 import '../events/events_test_helpers.dart' show buildEvent;
+import '../organizers/organizers_test_helpers.dart' show buildOrganizer;
 import '../test_pump_helpers.dart';
 
 typedef _EventPage = CursorPage<Event, DocumentSnapshot<Event>>;
@@ -33,7 +33,7 @@ typedef _EventPage = CursorPage<Event, DocumentSnapshot<Event>>;
 const _actor = 'actor-a';
 const _organizerId = 'org-a';
 final _now = DateTime(2026, 6, 15, 12);
-final _club = buildClub(id: _organizerId, ownerUserId: _actor);
+final _organizer = buildOrganizer(id: _organizerId, ownerUserId: _actor);
 final _draft = EventDraft(
   id: 'draft-1',
   clubId: _organizerId,
@@ -100,12 +100,12 @@ void main() {
       final fixture = _Fixture();
       await fixture.mount(tester);
       final original = fixture.scaffold(tester);
-      final section = tester.widget<HostEventsClubSection>(
-        find.byType(HostEventsClubSection),
+      final section = tester.widget<HostEventsOrganizerSection>(
+        find.byType(HostEventsOrganizerSection),
       );
       expect(section.entryState.repeatSource?.id, 'past-event');
 
-      section.onEventEntrySelected(_club, section.entryState, selection);
+      section.onEventEntrySelected(_organizer, section.entryState, selection);
       await pumpFeatureUi(tester);
       expect(fixture.router.state.name, destination.name);
       expect(fixture.events.activeReads, 1);
@@ -260,12 +260,12 @@ class _Fixture {
         retry: (_, _) => null,
         overrides: [
           uidProvider.overrideWithValue(const AsyncData(_actor)),
-          hostOperableClubsProvider(
+          hostOperableOrganizersProvider(
             _actor,
-          ).overrideWithValue(AsyncData([_club])),
+          ).overrideWithValue(AsyncData([_organizer])),
           eventRepositoryProvider.overrideWithValue(events),
           privateEventSetupTimelineRepositoryProvider.overrideWithValue(setups),
-          clubEventDraftsProvider(
+          organizerEventDraftsProvider(
             clubId: _organizerId,
           ).overrideWith((_) async => [_draft]),
           programEventsControllerProvider.overrideWith((ref, _) {
@@ -291,7 +291,7 @@ class _Fixture {
       ),
     );
     await pumpFeatureUi(tester);
-    expect(find.byType(HostEventsClubCard), findsOneWidget);
+    expect(find.byType(HostEventsOrganizerCard), findsOneWidget);
     expect(events.activeReads, 1);
     expect(setups.upcomingReads, 1);
     expect(tester.takeException(), isNull);

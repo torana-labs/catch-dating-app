@@ -474,13 +474,13 @@ class _IdentitySwitcherFamily extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final club = HostOperationsFixtures.primaryClub;
-    final logoClub = club.copyWith(
+    final organizer = HostOperationsFixtures.primaryOrganizer;
+    final logoOrganizer = organizer.copyWith(
       profileImageUrl:
           'packages/catch_dating_app/assets/fixtures/club_hero_portrait.jpg',
     );
-    final clubs = [logoClub, ...HostOperationsFixtures.clubs.skip(1)];
-    final longClub = logoClub.copyWith(
+    final organizers = [logoOrganizer, ...HostOperationsFixtures.organizers.skip(1)];
+    final longOrganizer = logoOrganizer.copyWith(
       name: 'Sea Face Social With A Deliberately Long Club Name',
     );
     return _FamilySection(
@@ -494,7 +494,7 @@ class _IdentitySwitcherFamily extends StatelessWidget {
           title: 'Navigation identity',
           note: 'Real organizer art in the stable bottom-navigation footprint.',
           child: HostOrganizerAvatar(
-            club: logoClub,
+            organizer: logoOrganizer,
             size: CatchLayout.appShellNavigationIdentityExtent,
           ),
         ),
@@ -503,7 +503,7 @@ class _IdentitySwitcherFamily extends StatelessWidget {
           note:
               'Selection stays legible without adding a second top-bar control.',
           child: HostOrganizerAvatar(
-            club: logoClub,
+            organizer: logoOrganizer,
             size: CatchLayout.appShellNavigationIdentityExtent,
             selected: true,
           ),
@@ -512,8 +512,8 @@ class _IdentitySwitcherFamily extends StatelessWidget {
           title: 'Long-press switcher',
           note: 'The sheet retains full organizer names and selected state.',
           child: HostOrganizerSwitcherSheet(
-            clubs: [longClub, ...clubs.skip(1)],
-            selectedOrganizerId: longClub.id,
+            organizers: [longOrganizer, ...organizers.skip(1)],
+            selectedOrganizerId: longOrganizer.id,
           ),
         ),
       ],

@@ -36,18 +36,18 @@ EventDetailAttribution? _eventDetailAttribution(GoRouterState state) {
   };
 }
 
-Club? _clubDetailInitialClub(GoRouterState state) {
+Organizer? _organizerDetailInitialOrganizer(GoRouterState state) {
   return switch (state.extra) {
-    final Club club => club,
+    final Organizer organizer => organizer,
     _ => null,
   };
 }
 
-Page<void> _clubDetailPage(BuildContext _, GoRouterState state) {
+Page<void> _organizerDetailPage(BuildContext _, GoRouterState state) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
     name: state.name,
-    child: _clubDetailScreen(state),
+    child: _organizerDetailScreen(state),
     transitionDuration: CatchMotion.calendarScroll,
     reverseTransitionDuration: CatchMotion.base,
     transitionsBuilder: (context, animation, secondaryAnimation, child) =>

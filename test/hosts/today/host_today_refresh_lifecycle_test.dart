@@ -8,7 +8,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_attention_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -31,8 +31,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../clubs/clubs_test_helpers.dart' show buildClub;
 import '../../events/events_test_helpers.dart' show buildEvent;
+import '../../organizers/organizers_test_helpers.dart' show buildOrganizer;
 import '../../test_pump_helpers.dart';
 import '../support/host_events_timeline_test_support.dart';
 
@@ -50,7 +50,7 @@ void main() {
     await tester.ensureVisible(task);
     await tester.tap(task);
     await pumpFeatureUi(tester);
-    expect(fixture.router.state.name, Routes.hostClubPaymentsScreen.name);
+    expect(fixture.router.state.name, Routes.hostOrganizerPaymentsScreen.name);
     expect(find.text('Task destination'), findsOneWidget);
     fixture.attention.version = 'after';
     fixture.router.pop();
@@ -256,7 +256,7 @@ void main() {
       final originalState = fixture.todayState(tester);
       unawaited(
         fixture.router.pushNamed<void>(
-          Routes.hostClubPaymentsScreen.name,
+          Routes.hostOrganizerPaymentsScreen.name,
           queryParameters: {'clubId': 'org-a'},
         ),
       );
@@ -543,7 +543,7 @@ class _Fixture {
           ],
         ),
         for (final destination in [
-          (Routes.hostClubPaymentsScreen, 'Task destination'),
+          (Routes.hostOrganizerPaymentsScreen, 'Task destination'),
           (Routes.hostCreateEventScreen, 'Create destination'),
         ])
           GoRoute(
@@ -573,18 +573,18 @@ class _Fixture {
             emptySetupRepository,
           ),
           for (final actor in ['actor-a', 'actor-b'])
-            hostOperableClubsProvider(actor).overrideWithValue(
+            hostOperableOrganizersProvider(actor).overrideWithValue(
               AsyncData([
                 for (final org in ['org-a', 'org-b'])
-                  buildClub(id: org, ownerUserId: actor),
+                  buildOrganizer(id: org, ownerUserId: actor),
               ]),
             ),
           for (final org in ['org-a', 'org-b']) ...[
-            clubEventDraftsProvider(clubId: org).overrideWith((_) async {
+            organizerEventDraftsProvider(clubId: org).overrideWith((_) async {
               draftReads.add(org);
               return [];
             }),
-            fetchClubProvider(org).overrideWithValue(const AsyncData(null)),
+            fetchOrganizerProvider(org).overrideWithValue(const AsyncData(null)),
             watchEventProvider(
               '$org-event',
             ).overrideWith((_) => Stream.value(null)),
@@ -641,7 +641,7 @@ class _Fixture {
   Future<void> retainDraftScopes(WidgetTester tester) async {
     for (final org in ['org-a', 'org-b']) {
       final subscription = container.listen(
-        clubEventDraftsProvider(clubId: org),
+        organizerEventDraftsProvider(clubId: org),
         (_, _) {},
       );
       addTearDown(subscription.close);

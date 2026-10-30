@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_set
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
@@ -46,12 +46,12 @@ enum _HostInviteDestination {
 class HostCampaignEditor extends ConsumerStatefulWidget {
   const HostCampaignEditor({
     super.key,
-    required this.club,
+    required this.organizer,
     this.initialSavedAudienceId,
     this.onBusyChanged,
   });
 
-  final Club club;
+  final Organizer organizer;
   final String? initialSavedAudienceId;
   final ValueChanged<bool>? onBusyChanged;
 
@@ -76,7 +76,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
   @override
   void didUpdateWidget(covariant HostCampaignEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.club.id != widget.club.id ||
+    if (oldWidget.organizer.id != widget.organizer.id ||
         oldWidget.initialSavedAudienceId != widget.initialSavedAudienceId) {
       _campaign = null;
       _scheduledAt = null;
@@ -96,22 +96,22 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final messaging = ref.watch(hostMessagingSetupProvider(widget.club.id));
+    final messaging = ref.watch(hostMessagingSetupProvider(widget.organizer.id));
     final savedAudiences = catchAsyncStateFromAsyncValue(
-      ref.watch(hostSavedAudiencesProvider(widget.club.id)),
+      ref.watch(hostSavedAudiencesProvider(widget.organizer.id)),
     );
     return CatchSection.divided(
       title: context.l10n.hostsHostAudienceCampaign,
       child: CatchAsyncBoundary<HostMessagingSetup>(
         value: messaging,
         onRetry: () =>
-            ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
+            ref.invalidate(hostMessagingSetupProvider(widget.organizer.id)),
         initialLoadTimeout: null,
         loadingBuilder: (_) => const CatchLoadingIndicator(),
         errorBuilder: (_, error, _, onBoundaryRetry) =>
             CatchLocalizedErrorState(
               error,
-              context: AppErrorContext.club,
+              context: AppErrorContext.organizer,
               mode: CatchErrorStateMode.compact,
               onRetry: onBoundaryRetry,
             ),
@@ -120,7 +120,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
           final approved = setup.approvedTemplates;
           final events =
               catchAsyncStateFromAsyncValue(
-                    ref.watch(watchEventsForClubProvider(widget.club.id)),
+                    ref.watch(watchEventsForOrganizerProvider(widget.organizer.id)),
                   ).value
                   ?.where((event) => !event.isCancelled)
                   .toList(growable: false) ??
@@ -145,7 +145,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
               context: AppErrorContext.customers,
               mode: CatchErrorStateMode.compact,
               onRetry: () =>
-                  ref.invalidate(hostSavedAudiencesProvider(widget.club.id)),
+                  ref.invalidate(hostSavedAudiencesProvider(widget.organizer.id)),
             );
           }
           if (savedAudiences.status == CatchAsyncStatus.loading) {
@@ -428,7 +428,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
     final preview = await ref
         .read(hostAudienceControllerProvider)
         .saveAndPreviewCampaign(
-          organizerId: widget.club.id,
+          organizerId: widget.organizer.id,
           draft: HostCampaignDraft(
             requestId: '${DateTime.now().microsecondsSinceEpoch}-host',
             name: _campaignNameController.text.trim(),
@@ -452,21 +452,21 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
   Future<void> _approveCampaign() => _run(() async {
     final campaign = await ref
         .read(hostAudienceControllerProvider)
-        .approveCampaign(organizerId: widget.club.id, campaign: _campaign!);
+        .approveCampaign(organizerId: widget.organizer.id, campaign: _campaign!);
     if (mounted) setState(() => _campaign = campaign);
   });
 
   Future<void> _dispatchCampaign() => _run(() async {
     final campaign = await ref
         .read(hostAudienceControllerProvider)
-        .dispatchCampaign(organizerId: widget.club.id, campaign: _campaign!);
+        .dispatchCampaign(organizerId: widget.organizer.id, campaign: _campaign!);
     if (mounted) setState(() => _campaign = campaign);
   });
 
   Future<void> _cancelCampaign() => _run(() async {
     final campaign = await ref
         .read(hostAudienceControllerProvider)
-        .cancelCampaign(organizerId: widget.club.id, campaign: _campaign!);
+        .cancelCampaign(organizerId: widget.organizer.id, campaign: _campaign!);
     if (mounted) setState(() => _campaign = campaign);
   });
 
@@ -474,7 +474,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
     final campaign = await ref
         .read(hostAudienceControllerProvider)
         .getCampaignReport(
-          organizerId: widget.club.id,
+          organizerId: widget.organizer.id,
           campaignId: _campaign!.campaignId,
         );
     if (mounted) setState(() => _campaign = campaign);
@@ -536,7 +536,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {

@@ -14,9 +14,9 @@ import 'package:catch_dating_app/contexts/events/data/external_event_repository.
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_discovery_window_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -72,7 +72,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final city = ref.watch(selectedExploreCityProvider);
   final query = ref.watch(exploreSearchQueryProvider);
   final filters = ref.watch(exploreFiltersProvider);
-  final clubsAsync = ref.watch(exploreSourceClubsProvider);
+  final organizersAsync = ref.watch(exploreSourceOrganizersProvider);
   final uidAsync = ref.watch(uidProvider);
   final now = ref.watch(exploreDiscoveryReferenceNowProvider);
   final selectedTimeWindow = exploreTimeWindowFor(filters.timeFilter, now);
@@ -87,7 +87,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final deviceLocationAsync = distanceFilterKm == null
       ? const AsyncData<LocationCoordinate?>(null)
       : ref.watch(deviceLocationProvider);
-  final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
+  final organizersState = catchAsyncStateFromAsyncValue(organizersAsync);
   final uidState = catchAsyncStateFromAsyncValue(uidAsync);
   final deviceLocationState = catchAsyncStateFromAsyncValue(
     deviceLocationAsync,
@@ -110,15 +110,15 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
 
   final searchState = catchAsyncStateFromAsyncValue(searchAsync);
 
-  if (clubsState.isLoading ||
+  if (organizersState.isLoading ||
       uidState.isLoading ||
       deviceLocationState.isLoading) {
     return const AsyncLoading();
   }
-  if (clubsState.hasError) {
+  if (organizersState.hasError) {
     return AsyncError(
-      clubsState.error!,
-      clubsState.stackTrace ?? StackTrace.current,
+      organizersState.error!,
+      organizersState.stackTrace ?? StackTrace.current,
     );
   }
   if (uidState.hasError) {
@@ -134,11 +134,11 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
     );
   }
 
-  final sourceClubs = clubsState.value ?? const <Club>[];
-  final sourceClubIds = sourceClubs.map((club) => club.id).toSet();
+  final sourceOrganizers = organizersState.value ?? const <Organizer>[];
+  final sourceOrganizerIds = sourceOrganizers.map((organizer) => organizer.id).toSet();
   final searchResult = searchState.value;
   final serverEventIds = searchResult?.eventIds.toSet();
-  final serverClubIds = searchResult?.organizerIds.toSet();
+  final serverOrganizerIds = searchResult?.organizerIds.toSet();
 
   final uid = uidState.value;
   final viewerCohortIdAsync = uid == null
@@ -147,7 +147,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final userProfileAsync = uid == null
       ? const AsyncData(null)
       : ref.watch(watchUserProfileProvider);
-  final followedClubIdsAsync = ref.watch(currentUserFollowedClubIdsProvider);
+  final followedOrganizerIdsAsync = ref.watch(currentUserFollowedOrganizerIdsProvider);
   final participationsAsync = uid == null
       ? const AsyncData<List<EventParticipation>>([])
       : ref.watch(watchEventParticipationsForUserProvider(uid));
@@ -158,8 +158,8 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final viewerCohortIdState = catchAsyncStateFromAsyncValue(
     viewerCohortIdAsync,
   );
-  final followedClubIdsState = catchAsyncStateFromAsyncValue(
-    followedClubIdsAsync,
+  final followedOrganizerIdsState = catchAsyncStateFromAsyncValue(
+    followedOrganizerIdsAsync,
   );
   final participationsState = catchAsyncStateFromAsyncValue(
     participationsAsync,
@@ -170,7 +170,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
 
   if (userProfileState.isLoading ||
       viewerCohortIdState.isLoading ||
-      followedClubIdsState.isLoading ||
+      followedOrganizerIdsState.isLoading ||
       participationsState.isLoading ||
       savedEventEdgesState.isLoading) {
     return const AsyncLoading();
@@ -187,10 +187,10 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
       userProfileState.stackTrace ?? StackTrace.current,
     );
   }
-  if (followedClubIdsState.hasError) {
+  if (followedOrganizerIdsState.hasError) {
     return AsyncError(
-      followedClubIdsState.error!,
-      followedClubIdsState.stackTrace ?? StackTrace.current,
+      followedOrganizerIdsState.error!,
+      followedOrganizerIdsState.stackTrace ?? StackTrace.current,
     );
   }
   if (participationsState.hasError) {
@@ -206,8 +206,8 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
     );
   }
 
-  final followedClubIds = followedClubIdsState.value ?? <String>{};
-  final membershipClubIds = followedClubIds;
+  final followedOrganizerIds = followedOrganizerIdsState.value ?? <String>{};
+  final membershipOrganizerIds = followedOrganizerIds;
   final userProfile = userProfileState.value;
   final viewerCohortId = viewerCohortIdState.value;
 
@@ -252,13 +252,13 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final eventsById = <String, Event>{
     for (final event in discoveryWindow.internalEvents) event.id: event,
   };
-  final followedRecommendationsAsync = uid == null || followedClubIds.isEmpty
+  final followedRecommendationsAsync = uid == null || followedOrganizerIds.isEmpty
       ? const AsyncData<List<ExploreEventRecommendationCandidate>>([])
       : ref.watch(
           exploreRecommendedEventsProvider(
             ExploreRecommendationsQuery(
               userId: uid,
-              followedClubIds: followedClubIds,
+              followedOrganizerIds: followedOrganizerIds,
             ),
           ),
         );
@@ -321,7 +321,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   };
   for (final event in personalEventsState.value ?? const <Event>[]) {
     final participation = participationByEventId[event.id];
-    if (sourceClubIds.contains(event.clubId) ||
+    if (sourceOrganizerIds.contains(event.clubId) ||
         (event.synthetic &&
             participation?.status == EventParticipationStatus.signedUp)) {
       eventsById[event.id] = event;
@@ -335,34 +335,34 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   for (final event in searchEventsState.value ?? const <Event>[]) {
     eventsById[event.id] = event;
   }
-  final extraClubIds = <String>{
-    for (final clubId in serverClubIds ?? const <String>{})
-      if (!sourceClubIds.contains(clubId)) clubId,
+  final extraOrganizerIds = <String>{
+    for (final clubId in serverOrganizerIds ?? const <String>{})
+      if (!sourceOrganizerIds.contains(clubId)) clubId,
     for (final event in eventsById.values)
-      if (!sourceClubIds.contains(event.clubId)) event.clubId,
+      if (!sourceOrganizerIds.contains(event.clubId)) event.clubId,
   };
-  final extraClubsAsync = extraClubIds.isEmpty
-      ? const AsyncData<List<Club>>([])
+  final extraOrganizersAsync = extraOrganizerIds.isEmpty
+      ? const AsyncData<List<Organizer>>([])
       : ref.watch(
-          watchClubsForMessagingByIdsProvider(ClubsByIdQuery(extraClubIds)),
+          watchOrganizersForMessagingByIdsProvider(OrganizersByIdQuery(extraOrganizerIds)),
         );
-  final extraClubsState = catchAsyncStateFromAsyncValue(extraClubsAsync);
-  if (extraClubsState.isLoading) return const AsyncLoading();
-  if (extraClubsState.hasError) {
+  final extraOrganizersState = catchAsyncStateFromAsyncValue(extraOrganizersAsync);
+  if (extraOrganizersState.isLoading) return const AsyncLoading();
+  if (extraOrganizersState.hasError) {
     return AsyncError(
-      extraClubsState.error!,
-      extraClubsState.stackTrace ?? StackTrace.current,
+      extraOrganizersState.error!,
+      extraOrganizersState.stackTrace ?? StackTrace.current,
     );
   }
-  final clubById = {
-    for (final club in sourceClubs) club.id: club,
-    for (final club in extraClubsState.value ?? const <Club>[]) club.id: club,
+  final organizerById = {
+    for (final organizer in sourceOrganizers) organizer.id: organizer,
+    for (final organizer in extraOrganizersState.value ?? const <Organizer>[]) organizer.id: organizer,
   };
   final deviceLocation = deviceLocationState.value;
   final allItems = eventsById.values
       .where((event) => event.isUpcomingAt(now))
       .map((event) {
-        final club = clubById[event.clubId];
+        final organizer = organizerById[event.clubId];
         final participation = participationByEventId[event.id];
         final isSignedUpSyntheticFixture =
             event.synthetic &&
@@ -370,37 +370,37 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
         if (event.synthetic && !isSignedUpSyntheticFixture) {
           return null;
         }
-        if (club == null ||
-            (!club.isPubliclyBrowseable && !isSignedUpSyntheticFixture)) {
+        if (organizer == null ||
+            (!organizer.isPubliclyBrowseable && !isSignedUpSyntheticFixture)) {
           return null;
         }
-        final isClubMember = membershipClubIds.contains(event.clubId);
+        final isOrganizerMember = membershipOrganizerIds.contains(event.clubId);
         final distanceFromUserKm = _distanceFromUserKm(
           event: event,
           deviceLocation: deviceLocation,
         );
         return ExploreEventItem(
           event: event,
-          club: club,
+          organizer: organizer,
           availability: resolveViewerEventAvailability(
             event: event,
             userProfile: userProfile,
             participation: participationByEventId[event.id],
             isSaved: savedEventIds.contains(event.id),
-            isClubMember: isClubMember,
+            isOrganizerMember: isOrganizerMember,
             now: now,
           ),
-          isJoinedClubMember: isClubMember,
-          isFollowedClubSignal: followedClubIds.contains(event.clubId),
+          isJoinedOrganizerMember: isOrganizerMember,
+          isFollowedOrganizerSignal: followedOrganizerIds.contains(event.clubId),
           distanceFromUserKm: distanceFromUserKm,
         );
       })
       .nonNulls
       .where(
-        (item) => _matchesClubScopeFilters(
-          club: item.club,
+        (item) => _matchesOrganizerScopeFilters(
+          organizer: item.organizer,
           filters: filters,
-          joinedClubIds: membershipClubIds,
+          joinedOrganizerIds: membershipOrganizerIds,
           activityKindFilter: activityKindFilter,
         ),
       )
@@ -410,7 +410,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
           item,
           normalizedQuery,
           serverEventIds: serverEventIds,
-          serverClubIds: serverClubIds,
+          serverOrganizerIds: serverOrganizerIds,
         ),
       )
       .toList();
@@ -494,12 +494,12 @@ Map<ExploreTimeFilter, int> _exploreDateSupplyCounts({
 @riverpod
 AsyncValue<List<ExploreEventRecommendation>> exploreRecommendations(Ref ref) {
   final uidAsync = ref.watch(uidProvider);
-  final followedClubIdsAsync = ref.watch(currentUserFollowedClubIdsProvider);
+  final followedOrganizerIdsAsync = ref.watch(currentUserFollowedOrganizerIdsProvider);
   final uidState = catchAsyncStateFromAsyncValue(uidAsync);
-  final followedClubIdsState = catchAsyncStateFromAsyncValue(
-    followedClubIdsAsync,
+  final followedOrganizerIdsState = catchAsyncStateFromAsyncValue(
+    followedOrganizerIdsAsync,
   );
-  if (uidState.isLoading || followedClubIdsState.isLoading) {
+  if (uidState.isLoading || followedOrganizerIdsState.isLoading) {
     return const AsyncLoading();
   }
   if (uidState.hasError) {
@@ -508,16 +508,16 @@ AsyncValue<List<ExploreEventRecommendation>> exploreRecommendations(Ref ref) {
       uidState.stackTrace ?? StackTrace.current,
     );
   }
-  if (followedClubIdsState.hasError) {
+  if (followedOrganizerIdsState.hasError) {
     return AsyncError(
-      followedClubIdsState.error!,
-      followedClubIdsState.stackTrace ?? StackTrace.current,
+      followedOrganizerIdsState.error!,
+      followedOrganizerIdsState.stackTrace ?? StackTrace.current,
     );
   }
 
   final uid = uidState.value;
-  final followedClubIds = followedClubIdsState.value ?? <String>{};
-  if (uid == null || followedClubIds.isEmpty) {
+  final followedOrganizerIds = followedOrganizerIdsState.value ?? <String>{};
+  if (uid == null || followedOrganizerIds.isEmpty) {
     return const AsyncData(<ExploreEventRecommendation>[]);
   }
 
@@ -528,7 +528,7 @@ AsyncValue<List<ExploreEventRecommendation>> exploreRecommendations(Ref ref) {
     exploreRecommendedEventsProvider(
       ExploreRecommendationsQuery(
         userId: uid,
-        followedClubIds: followedClubIds,
+        followedOrganizerIds: followedOrganizerIds,
       ),
     ),
   );
@@ -586,18 +586,18 @@ AsyncValue<List<ExploreEventRecommendation>> exploreRecommendations(Ref ref) {
   );
 }
 
-bool _matchesClubScopeFilters({
-  required Club club,
+bool _matchesOrganizerScopeFilters({
+  required Organizer organizer,
   required ExploreFilterSelection filters,
-  required Set<String> joinedClubIds,
+  required Set<String> joinedOrganizerIds,
   required ActivityKind? activityKindFilter,
 }) {
   // When the selected tag resolves to a concrete ActivityKind the events query
   // already filtered on it, so the club need not also carry the tag as text.
-  return clubMatchesScopeFilters(
-    club: club,
+  return organizerMatchesScopeFilters(
+    organizer: organizer,
     filters: filters,
-    joinedClubIds: joinedClubIds,
+    joinedOrganizerIds: joinedOrganizerIds,
     activityHandledByEventFilter: activityKindFilter != null,
   );
 }
@@ -665,25 +665,25 @@ bool _matchesSearch(
   ExploreEventItem item,
   String normalizedQuery, {
   Set<String>? serverEventIds,
-  Set<String>? serverClubIds,
+  Set<String>? serverOrganizerIds,
 }) {
   if (normalizedQuery.isEmpty) return true;
-  if (serverEventIds != null || serverClubIds != null) {
+  if (serverEventIds != null || serverOrganizerIds != null) {
     return (serverEventIds?.contains(item.event.id) ?? false) ||
-        (serverClubIds?.contains(item.club.id) ?? false);
+        (serverOrganizerIds?.contains(item.organizer.id) ?? false);
   }
   final event = item.event;
-  final club = item.club;
+  final organizer = item.organizer;
   final searchable = [
     event.title,
     event.locationName,
     event.description,
     event.eventFormat.label,
     event.pace.label,
-    club.name,
-    club.area,
-    club.displayHostName,
-    ...club.tags,
+    organizer.name,
+    organizer.area,
+    organizer.displayHostName,
+    ...organizer.tags,
   ].join(' ').toLowerCase();
   return searchable.contains(normalizedQuery);
 }

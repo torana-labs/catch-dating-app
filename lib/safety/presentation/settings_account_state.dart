@@ -46,7 +46,7 @@ final class SettingsPreferenceValues {
     required this.messages,
     required this.eventReminders,
     required this.eventStatusUpdates,
-    required this.clubUpdates,
+    required this.organizerUpdates,
     required this.weeklyDigest,
   });
 
@@ -58,7 +58,7 @@ final class SettingsPreferenceValues {
       messages = true,
       eventReminders = true,
       eventStatusUpdates = true,
-      clubUpdates = true,
+      organizerUpdates = true,
       weeklyDigest = false;
 
   factory SettingsPreferenceValues.fromProfile(UserProfile profile) {
@@ -70,7 +70,7 @@ final class SettingsPreferenceValues {
       messages: profile.prefsMessages,
       eventReminders: profile.prefsEventReminders,
       eventStatusUpdates: profile.prefsRunStatusUpdates,
-      clubUpdates: profile.prefsClubUpdates,
+      organizerUpdates: profile.prefsClubUpdates,
       weeklyDigest: profile.prefsWeeklyDigest,
     );
   }
@@ -82,7 +82,7 @@ final class SettingsPreferenceValues {
   final bool messages;
   final bool eventReminders;
   final bool eventStatusUpdates;
-  final bool clubUpdates;
+  final bool organizerUpdates;
   final bool weeklyDigest;
 
   bool valueFor(SettingsPreference preference) {
@@ -94,7 +94,7 @@ final class SettingsPreferenceValues {
       SettingsPreference.messages => messages,
       SettingsPreference.eventReminders => eventReminders,
       SettingsPreference.eventStatusUpdates => eventStatusUpdates,
-      SettingsPreference.clubUpdates => clubUpdates,
+      SettingsPreference.organizerUpdates => organizerUpdates,
       SettingsPreference.weeklyDigest => weeklyDigest,
     };
   }
@@ -125,7 +125,7 @@ final class SettingsPreferenceValues {
         SettingsPreference.eventStatusUpdates,
         eventStatusUpdates,
       ),
-      clubUpdates: selected(SettingsPreference.clubUpdates, clubUpdates),
+      organizerUpdates: selected(SettingsPreference.organizerUpdates, organizerUpdates),
       weeklyDigest: selected(SettingsPreference.weeklyDigest, weeklyDigest),
     );
   }

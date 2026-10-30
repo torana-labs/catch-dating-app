@@ -154,7 +154,7 @@ class FoundationTypographyTokens extends StatelessWidget {
               _TypeSpec(
                 'clubMemberSeal',
                 '128',
-                CatchTextStyles.clubMemberSeal(context),
+                CatchTextStyles.organizerMemberSeal(context),
               ),
             ],
           ),

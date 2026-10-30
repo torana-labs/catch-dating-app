@@ -10,10 +10,10 @@ import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_draft.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_draft.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
@@ -40,7 +40,7 @@ final class HostOperationsFixtures {
     bio: 'Builds small-format social events with useful cues and clear hosts.',
     status: HostProfileStatus.active,
     verified: true,
-    linkedClubIds: [primaryClub.id, dinnerClub.id],
+    linkedOrganizerIds: [primaryOrganizer.id, dinnerOrganizer.id],
     createdAt: now.subtract(const Duration(days: 400)),
     updatedAt: now.subtract(const Duration(days: 2)),
   );
@@ -52,7 +52,7 @@ final class HostOperationsFixtures {
     bio: 'Builds small-format social events with useful cues and clear hosts.',
     status: HostProfileStatus.active,
     verified: true,
-    linkedClubIds: [primaryClub.id, dinnerClub.id],
+    linkedOrganizerIds: [primaryOrganizer.id, dinnerOrganizer.id],
     createdAt: now.subtract(const Duration(days: 400)),
     updatedAt: now.subtract(const Duration(days: 2)),
   );
@@ -110,7 +110,7 @@ final class HostOperationsFixtures {
     gender: Gender.woman,
   );
 
-  static final primaryClub = Club(
+  static final primaryOrganizer = Organizer(
     id: 'design-host-sea-face',
     name: 'Sea Face Social',
     description:
@@ -122,12 +122,12 @@ final class HostOperationsFixtures {
     ownerUserId: hostUid,
     hostUserIds: const [hostUid, coHostUid],
     hostProfiles: const [
-      ClubHostProfile(
+      OrganizerHostProfile(
         uid: hostUid,
         displayName: 'Mira Shah',
-        role: ClubHostRole.owner,
+        role: OrganizerHostRole.owner,
       ),
-      ClubHostProfile(uid: coHostUid, displayName: 'Rishi Mehta'),
+      OrganizerHostProfile(uid: coHostUid, displayName: 'Rishi Mehta'),
     ],
     createdAt: DateTime(2025, 9, 12),
     imageUrl:
@@ -141,7 +141,7 @@ final class HostOperationsFixtures {
     instagramHandle: '@seafacesocial',
     phoneNumber: '+91 98765 43210',
     email: 'hello@seafacesocial.example',
-    hostDefaults: const ClubHostDefaults(
+    hostDefaults: const OrganizerHostDefaults(
       supportedActivityKinds: [
         ActivityKind.socialRun,
         ActivityKind.walking,
@@ -150,7 +150,7 @@ final class HostOperationsFixtures {
     ),
   );
 
-  static final dinnerClub = Club(
+  static final dinnerOrganizer = Organizer(
     id: 'design-host-table-club',
     name: 'Long Table Club',
     description:
@@ -162,10 +162,10 @@ final class HostOperationsFixtures {
     ownerUserId: hostUid,
     hostUserIds: const [hostUid],
     hostProfiles: const [
-      ClubHostProfile(
+      OrganizerHostProfile(
         uid: hostUid,
         displayName: 'Mira Shah',
-        role: ClubHostRole.owner,
+        role: OrganizerHostRole.owner,
       ),
     ],
     createdAt: DateTime(2025, 11, 3),
@@ -175,13 +175,13 @@ final class HostOperationsFixtures {
     reviewCount: 21,
     nextEventAt: DateTime(2030, 6, 29, 20),
     nextEventLabel: 'Mon 8:00 PM',
-    hostDefaults: const ClubHostDefaults(
+    hostDefaults: const OrganizerHostDefaults(
       primaryActivityKind: ActivityKind.dinner,
       supportedActivityKinds: [ActivityKind.dinner],
     ),
   );
 
-  static final coHostedClub = primaryClub.copyWith(
+  static final coHostedOrganizer = primaryOrganizer.copyWith(
     id: 'design-host-cohost-club',
     name: 'Tempo Social Club',
     ownerUserId: 'design-host-other-owner',
@@ -189,23 +189,23 @@ final class HostOperationsFixtures {
     hostName: 'Aarav',
     hostUserIds: const ['design-host-other-owner', hostUid],
     hostProfiles: const [
-      ClubHostProfile(
+      OrganizerHostProfile(
         uid: 'design-host-other-owner',
         displayName: 'Aarav Sinha',
-        role: ClubHostRole.owner,
+        role: OrganizerHostRole.owner,
       ),
-      ClubHostProfile(uid: hostUid, displayName: 'Mira Shah'),
+      OrganizerHostProfile(uid: hostUid, displayName: 'Mira Shah'),
     ],
     memberCount: 188,
     rating: 4.6,
     reviewCount: 19,
   );
 
-  static final clubs = [primaryClub, dinnerClub, coHostedClub];
+  static final organizers = [primaryOrganizer, dinnerOrganizer, coHostedOrganizer];
 
   static final upcomingEvent = event(
     id: 'design-host-event-upcoming',
-    club: primaryClub,
+    organizer: primaryOrganizer,
     start: DateTime(2030, 6, 24, 18, 30),
     bookedCount: 10,
     waitlistedCount: 2,
@@ -213,7 +213,7 @@ final class HostOperationsFixtures {
 
   static final privateEvent = event(
     id: 'design-host-event-private',
-    club: primaryClub,
+    organizer: primaryOrganizer,
     start: DateTime(2030, 6, 27, 19),
     bookedCount: 11,
     waitlistedCount: 5,
@@ -226,7 +226,7 @@ final class HostOperationsFixtures {
 
   static final unusedEvent = event(
     id: 'design-host-event-unused',
-    club: primaryClub,
+    organizer: primaryOrganizer,
     start: DateTime(2030, 7, 5, 18, 30),
     bookedCount: 0,
     description: 'An unused host draft that can still be removed safely.',
@@ -234,7 +234,7 @@ final class HostOperationsFixtures {
 
   static final fullEvent = event(
     id: 'design-host-event-full',
-    club: dinnerClub,
+    organizer: dinnerOrganizer,
     start: DateTime(2030, 6, 29, 20),
     bookedCount: 18,
     checkedInCount: 8,
@@ -252,16 +252,16 @@ final class HostOperationsFixtures {
     cancellationReason: 'Monsoon weather alert.',
   );
 
-  static final eventsByClub = <String, List<Event>>{
-    primaryClub.id: [upcomingEvent, privateEvent],
-    dinnerClub.id: [fullEvent],
-    coHostedClub.id: [],
+  static final eventsByOrganizer = <String, List<Event>>{
+    primaryOrganizer.id: [upcomingEvent, privateEvent],
+    dinnerOrganizer.id: [fullEvent],
+    coHostedOrganizer.id: [],
   };
 
   static final privateAccess = EventPrivateAccess(
     id: 'design-host-private-access',
     eventId: privateEvent.id,
-    clubId: primaryClub.id,
+    clubId: primaryOrganizer.id,
     inviteCode: 'SEAFACE',
     createdAt: now.subtract(const Duration(days: 2)),
   );
@@ -270,7 +270,7 @@ final class HostOperationsFixtures {
     EventInviteLink(
       id: 'design-host-link-instagram',
       eventId: privateEvent.id,
-      clubId: primaryClub.id,
+      clubId: primaryOrganizer.id,
       hostUid: hostUid,
       label: 'Instagram bio',
       source: 'instagram',
@@ -286,7 +286,7 @@ final class HostOperationsFixtures {
     EventInviteLink(
       id: 'design-host-link-alumni',
       eventId: privateEvent.id,
-      clubId: primaryClub.id,
+      clubId: primaryOrganizer.id,
       hostUid: hostUid,
       label: 'Alumni WhatsApp',
       source: 'whatsapp',
@@ -344,7 +344,7 @@ final class HostOperationsFixtures {
 
   static final eventDraft = EventDraft(
     id: 'design-host-event-draft',
-    clubId: primaryClub.id,
+    clubId: primaryOrganizer.id,
     savedAt: now.subtract(const Duration(hours: 2)),
     distance: '5',
     capacity: '12',
@@ -360,7 +360,7 @@ final class HostOperationsFixtures {
     selectedStartMinute: 30,
   );
 
-  static final clubDraft = ClubDraft(
+  static final organizerDraft = OrganizerDraft(
     savedAt: now.subtract(const Duration(hours: 3)),
     name: 'Sea Face Evenings',
     area: 'Bandra West',
@@ -370,7 +370,7 @@ final class HostOperationsFixtures {
     instagramHandle: '@seafaceevenings',
     phoneNumber: '+91 98765 43210',
     email: 'hello@seaface.example',
-    hostDefaults: const ClubHostDefaults(
+    hostDefaults: const OrganizerHostDefaults(
       supportedActivityKinds: [
         ActivityKind.socialRun,
         ActivityKind.walking,
@@ -578,7 +578,7 @@ final class HostOperationsFixtures {
 
   static Event event({
     required String id,
-    required Club club,
+    required Organizer organizer,
     required DateTime start,
     required int bookedCount,
     int checkedInCount = 0,
@@ -591,7 +591,7 @@ final class HostOperationsFixtures {
   }) {
     return Event(
       id: id,
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: start,
       endTime: start.add(const Duration(hours: 1, minutes: 30)),
       meetingPoint: meetingPoint,
@@ -599,7 +599,7 @@ final class HostOperationsFixtures {
         name: meetingPoint,
         latitude: 19.0676,
         longitude: 72.8227,
-        notes: club.area,
+        notes: organizer.area,
       ),
       startingPointLat: 19.0676,
       startingPointLng: 72.8227,

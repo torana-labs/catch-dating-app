@@ -10,8 +10,8 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
@@ -39,16 +39,16 @@ ChatRouteState chatRouteState(Ref ref, ChatRouteStateArgs args) {
     match: match,
     routeProfile: args.initialProfile,
   );
-  final hostInquiryClubAsync = initialLookupState.hostInquiryClubId == null
-      ? const AsyncData<Club?>(null)
-      : ref.watch(watchClubProvider(initialLookupState.hostInquiryClubId!));
-  final hostInquiryClub = _catchAsyncState(hostInquiryClubAsync).value;
+  final hostInquiryOrganizerAsync = initialLookupState.hostInquiryOrganizerId == null
+      ? const AsyncData<Organizer?>(null)
+      : ref.watch(watchOrganizerProvider(initialLookupState.hostInquiryOrganizerId!));
+  final hostInquiryOrganizer = _catchAsyncState(hostInquiryOrganizerAsync).value;
   final lookupState = ChatThreadLookupState.resolve(
     matchId: args.matchId,
     uid: uid,
     match: match,
     routeProfile: args.initialProfile,
-    hostInquiryClub: hostInquiryClub,
+    hostInquiryOrganizer: hostInquiryOrganizer,
   );
 
   final eventAsync = lookupState.latestEventId == null

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_timezone.dart';
 import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
@@ -35,23 +35,23 @@ Future<ProgramTimezoneSuggestion> programTimezoneSuggestion(
   Ref ref,
   ProgramTimezoneScope scope,
 ) async {
-  final loadedClubs = Completer<List<Club>>();
-  ref.listen(hostOperableClubsProvider(scope.accountId), (_, next) {
-    if (loadedClubs.isCompleted) return;
+  final loadedOrganizers = Completer<List<Organizer>>();
+  ref.listen(hostOperableOrganizersProvider(scope.accountId), (_, next) {
+    if (loadedOrganizers.isCompleted) return;
     next.when(
-      data: loadedClubs.complete,
-      error: loadedClubs.completeError,
+      data: loadedOrganizers.complete,
+      error: loadedOrganizers.completeError,
       loading: () {},
     );
   }, fireImmediately: true);
   ref.onDispose(() {
-    if (!loadedClubs.isCompleted) {
-      loadedClubs.completeError(StateError('Timezone scope disposed'));
+    if (!loadedOrganizers.isCompleted) {
+      loadedOrganizers.completeError(StateError('Timezone scope disposed'));
     }
   });
-  final clubs = await loadedClubs.future;
-  final organizer = clubs
-      .where((club) => club.id == scope.organizerId)
+  final organizers = await loadedOrganizers.future;
+  final organizer = organizers
+      .where((organizer) => organizer.id == scope.organizerId)
       .firstOrNull;
   if (organizer == null) {
     throw const FormatException('Program organizer unavailable');
