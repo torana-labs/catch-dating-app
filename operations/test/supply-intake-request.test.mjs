@@ -319,3 +319,63 @@ test("events without a start time are not listed, and listed events sort by inst
   const listing = buildIntakeListing({request: request({requestId: "nom-order"}), gathered, now: NOW});
   assert.deepEqual(listing.events.map((event) => event.sourceEntityId), ["early", "late"]);
 });
+
+test("an Instagram-only nomination searches the handle once and reads only calendars that name it", async () => {
+  const pages = {"https://luma.com/blrdroid": page("luma-organizer")};
+  const nominated = (handle) => request({requestId: `nom-ig-${handle}`, seed: {name: null, notes: null, categories: [],
+    urls: [`https://www.instagram.com/${handle}/`]}});
+  const searches = [];
+  const linkSearch = {search: async (input) => {
+    searches.push(input);
+    return [{url: "https://lu.ma/blrdroid"}, {url: "https://www.instagram.com/blrdroid/"}, {url: "https://example.org/x"}];
+  }};
+
+  const gathered = await gatherIntakeEvidence({request: nominated("blrdroid"), pageSource: await staticSource(pages),
+    now: NOW, linkSearch});
+  assert.deepEqual(searches, [{runKey: "nom-ig-blrdroid|search-1", query: "\"blrdroid\""}]);
+  assert.deepEqual(gathered.search, {query: "\"blrdroid\"", outcome: "searched", resultCount: 3,
+    candidateUrls: ["https://lu.ma/blrdroid"]});
+  assert.deepEqual(gathered.pages.map((entry) => [entry.via, entry.platform, entry.abstainReason]),
+    [["seed", "instagram", "not_captured"], ["search", "luma", null]]);
+  assert.ok(gathered.events.length > 0, "the calendar's events come with it");
+  const listing = buildIntakeListing({request: nominated("blrdroid"), gathered, now: NOW});
+  assert.ok(listing.gaps.includes("found_by_search") && listing.gaps.includes("seed_page_unreadable"));
+  assert.equal(listing.researchNeeded, true, "a person checks what search found");
+
+  // A namesake calendar that never names the handle is read but not used.
+  const other = await gatherIntakeEvidence({request: nominated("someone.else"), pageSource: await staticSource(pages),
+    now: NOW, linkSearch});
+  assert.deepEqual(other.pages.map((entry) => [entry.via, entry.abstainReason]),
+    [["seed", "not_captured"], ["search", "search_result_unconfirmed"]]);
+  assert.deepEqual([other.organizers.length, other.events.length], [0, 0]);
+  const otherListing = buildIntakeListing({request: nominated("someone.else"), gathered: other, now: NOW});
+  assert.equal(otherListing.organizer.links.some((link) => link.platform === "luma"), false);
+  assert.equal(otherListing.gaps.includes("found_by_search"), false);
+});
+
+test("handle search stays out of the way when a seed reads, when it is off, and when its budget is spent", async () => {
+  let calls = 0;
+  const counting = {search: async () => {
+    calls += 1;
+    return [];
+  }};
+  const luma = request({seed: {name: null, notes: null, categories: [],
+    urls: ["https://lu.ma/blrdroid", "https://instagram.com/blrdroid"]}});
+  const read = await gatherIntakeEvidence({request: luma, now: NOW, linkSearch: counting,
+    pageSource: await staticSource({"https://luma.com/blrdroid": page("luma-organizer")})});
+  assert.deepEqual([calls, read.search], [0, null]);
+
+  const instagramOnly = request({seed: {name: null, notes: null, categories: [], urls: ["https://instagram.com/blrdroid"]}});
+  const off = await gatherIntakeEvidence({request: instagramOnly, now: NOW, pageSource: await staticSource({}),
+    linkSearch: {search: async () => null}});
+  assert.equal(off.search, null);
+  const spent = await gatherIntakeEvidence({request: instagramOnly, now: NOW, pageSource: await staticSource({}),
+    linkSearch: {search: async () => {
+      throw Object.assign(new Error("over"), {code: "BUDGET_EXCEEDED"});
+    }}});
+  assert.equal(spent.search.outcome, "budget_exhausted");
+  assert.equal(spent.stoppedReason, null, "a spent search budget is not a gathering failure");
+  const linktree = await gatherIntakeEvidence({request: request({seed: {name: null, notes: null, categories: [],
+    urls: ["https://linktr.ee/blrdroid"]}}), now: NOW, pageSource: await staticSource({}), linkSearch: counting});
+  assert.equal(linktree.search.query, "\"blrdroid\"", "Linktree and Beacons handles are searched too");
+});

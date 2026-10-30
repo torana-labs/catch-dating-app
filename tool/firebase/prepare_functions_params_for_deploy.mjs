@@ -42,6 +42,7 @@ export const materializedNonSecretParams = [
   "CATCH_INSTAGRAM_GRAPH_VERSION",
   "SUPPLY_MESSAGE_NOMINATIONS_ENABLED",
   "CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION",
+  "SERPAPI_KEY_VERSION",
   "EVENT_ASSISTANCE_RCS_ENABLED",
   "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED",
   "EVENT_ASSISTANCE_SMS_REPORTS_ENABLED",
@@ -239,6 +240,12 @@ function normalizedProviderParams(environment = process.env, projectId) {
   assert(!autoReplyCredential || autoReplyCredential.startsWith(autoReplyPrefix) &&
     /^[1-9][0-9]*$/.test(autoReplyCredential.slice(autoReplyPrefix.length)),
   "CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION must pin CATCH_WHATSAPP_ACCESS_TOKEN in this project");
+  // Supply Intake's handle search uses a pinned SerpApi key; blank keeps it off.
+  const serpApiKey = environment.SERPAPI_KEY_VERSION?.trim() || "";
+  const serpApiPrefix = `projects/${projectId}/secrets/SERPAPI_API_KEY/versions/`;
+  assert(!serpApiKey || serpApiKey.startsWith(serpApiPrefix) &&
+    /^[1-9][0-9]*$/.test(serpApiKey.slice(serpApiPrefix.length)),
+  "SERPAPI_KEY_VERSION must pin SERPAPI_API_KEY in this project");
 
   const assistanceReferences = {};
   for (const [name, secret] of [["EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_GUEST_KEYS"],
@@ -293,6 +300,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
     CATCH_INSTAGRAM_GRAPH_VERSION: instagramGraphVersion,
     SUPPLY_MESSAGE_NOMINATIONS_ENABLED: messageNominationsEnabled,
     CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION: autoReplyCredential || " ",
+    SERPAPI_KEY_VERSION: serpApiKey || " ",
     ...eventAssistance,
     // Blank preserves a fail-closed callable until hosting is provisioned.
     FORM_DOMAIN_CNAME_TARGET: formDomainTarget || " ",

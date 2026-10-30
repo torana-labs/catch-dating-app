@@ -2552,7 +2552,7 @@ export interface SupplyIntakeRequestsDocument {
 }
 
 /**
- * Durable monthly page-fetch usage for Supply Intake. The worker reserves an intake's allowance here in a transaction before any request leaves the process and releases what it did not use; the monthly cap in acquisition_policy.json is enforced against this count, never against process memory.
+ * Durable monthly network usage for Supply Intake: page fetches at {monthKey}, handle web searches at web-search-{monthKey}. The worker reserves an intake's allowance here in a transaction before any request leaves the process (and releases unused page fetches); the monthly caps in acquisition_policy.json are enforced against these counts, never against process memory.
  */
 export interface SupplyIntakeUsageDocument {
   schemaVersion: 1;

@@ -1250,6 +1250,29 @@
       "recordReferences": false
     },
     {
+      "id": "functions.reference.serpapi",
+      "sourcePaths": [
+        "functions/src/operations/supplyIntake/linkSearch.ts"
+      ],
+      "owner": "supply-intake",
+      "credentialClass": "provider-key",
+      "consumers": [
+        "onSupplyIntakeRequestCreated",
+        "recoverSupplyIntakeRequests"
+      ],
+      "binding": {
+        "kind": "parameter",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "parameter": "SERPAPI_KEY_VERSION",
+        "optional": true,
+        "secret": "SERPAPI_API_KEY"
+      },
+      "activationPolicy": "blank-current-reference-unconfigured",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": false
+    },
+    {
       "id": "functions.reference.event-approval",
       "sourcePaths": [
         "functions/src/events/approvalNotifications/transports.ts"

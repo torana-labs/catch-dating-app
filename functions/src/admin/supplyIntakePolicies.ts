@@ -54,9 +54,10 @@ const policyText: Record<string, {label: string; enables: string; configPath: st
     configPath: "operations/src/workflows/supply-intake/config/acquisition_policy.json (provider)",
   },
   batch_web_search_policy: {
-    label: "Find new organizers through web search",
-    enables: "Catch sends its planned discovery searches (for example \"run club Bengaluru\") to a search API and " +
-      "turns the results into organizer candidates for review. Nothing is listed without a person approving it.",
+    label: "Find organizers' own pages through web search",
+    enables: "When a nomination gives only an Instagram, Linktree or Beacons link, Catch searches the handle once " +
+      "(SerpApi, at most 240 searches a month) and reads the calendar pages that name it. Listings found this way " +
+      "always wait for a person to approve them.",
     configPath: "operations/src/workflows/supply-intake/config/acquisition_policy.json (webSearch)",
   },
   agent_research_policy: {
