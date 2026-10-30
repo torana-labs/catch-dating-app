@@ -959,8 +959,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostSendsPageBody</code> | <code>lib/hosts/presentation/inbox/host_sends_page_body.dart:35</code> | — | — | No class documentation or registry summary. |
 | <code>HostWhatsappThreadSheet</code> | <code>lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>HostMembershipPlanEditorSheet</code> | <code>lib/hosts/presentation/memberships/host_membership_plan_editor_sheet.dart:25</code> | — | — | Creates or edits one membership plan: prices, cap, trial, enforced benefits, free-text perks and the no-show booking cap. |
-| <code>HostMembershipsCard</code> | <code>lib/hosts/presentation/memberships/host_memberships_section.dart:20</code> | — | — | Host Memberships spoke: program and payout readiness, host-wide billing pause, and the organizer's plans. |
-| <code>HostMembershipsSection</code> | <code>lib/hosts/presentation/memberships/host_memberships_section.dart:82</code> | — | — | Provider-free program and plan rows, reused by previews and tests. |
+| <code>HostMembershipsCard</code> | <code>lib/hosts/presentation/memberships/host_memberships_section.dart:21</code> | — | — | Host Memberships spoke: program and payout readiness, host-wide billing pause, and the organizer's plans. |
+| <code>HostMembershipsSection</code> | <code>lib/hosts/presentation/memberships/host_memberships_section.dart:87</code> | — | — | Provider-free program and plan rows, reused by previews and tests. |
 | <code>HostPaymentAccountCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:34</code> | — | — | No class documentation or registry summary. |
 | <code>HostPaymentAccountErrorCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:665</code> | — | — | No class documentation or registry summary. |
 | <code>HostPaymentAccountLoadingCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:636</code> | — | — | No class documentation or registry summary. |
