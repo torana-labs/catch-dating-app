@@ -156,7 +156,7 @@ export const replyCopy = Object.freeze({
     const shown = labels.slice(0, MAX_LABELS).join(", ");
     const more = labels.length > MAX_LABELS ? ` and ${labels.length - MAX_LABELS} more` : "";
     const noun = labels.length === 1 ? "organizer" : "organizers";
-    const base = `Got it. Queued ${labels.length} ${noun} for a Catch listing: ${shown}${more}. It shows on catchdates.com once it's built and checked.`;
+    const base = `Got it. Queued ${labels.length} ${noun} for a Catch listing: ${shown}${more}. It shows on ${BRAND.web.domain} once it's built and checked.`;
     return onlyLinkInBio ?
       `${base} I can't read Linktree or Beacons pages, so if you have their Luma, Instagram or website link, send that too.` :
       base;
