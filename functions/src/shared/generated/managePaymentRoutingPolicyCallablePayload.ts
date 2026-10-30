@@ -40,4 +40,24 @@ export interface ManagePaymentRoutingPolicyCallablePayload {
           }
       )
     | null;
+  /**
+   * Optional so older operator clients keep working: an omitted value keeps the stored membership route.
+   */
+  hostMembership?:
+    | (
+        | {
+            route: "disabled";
+          }
+        | {
+            route:
+              | "razorpayRoute"
+              | "razorpayOAuth"
+              | "stripeConnectDirect"
+              | "stripeConnectDestination";
+            mode: "test" | "live";
+            currency: string;
+            merchantCountry: string;
+          }
+      )
+    | null;
 }

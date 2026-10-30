@@ -344,6 +344,11 @@ const schemaSpecs = [
   {name: "OrganizerEventOfferPaymentDocument", source: "firestore/organizer_event_offer_payments.schema.json", typeOutput: "functions/src/shared/generated/organizerEventOfferPaymentDocument.ts"},
   {name: "OrganizerEventOfferRecipientDocument", source: "firestore/organizer_event_offer_recipients.schema.json", typeOutput: "functions/src/shared/generated/organizerEventOfferRecipientDocument.ts"},
   {name: "PaymentRoutingSnapshot", source: "embedded/payment_routing_snapshot.schema.json", typeOutput: "functions/src/shared/generated/paymentRoutingSnapshot.ts"},
+  {name: "CommercialTerms", source: "embedded/commercial_terms.schema.json", typeOutput: "functions/src/shared/generated/commercialTerms.ts"},
+  {name: "CommercialTermsOverride", source: "embedded/commercial_terms_override.schema.json", typeOutput: "functions/src/shared/generated/commercialTermsOverride.ts"},
+  {name: "CommercialTermsSnapshot", source: "embedded/commercial_terms_snapshot.schema.json", typeOutput: "functions/src/shared/generated/commercialTermsSnapshot.ts"},
+  {name: "ManageCommercialTermsCallablePayload", source: "callables/manage_commercial_terms_payload.schema.json", typeOutput: "functions/src/shared/generated/manageCommercialTermsCallablePayload.ts"},
+  {name: "ManageCommercialTermsCallableResponse", source: "callable_responses/manage_commercial_terms_response.schema.json", typeOutput: "functions/src/shared/generated/manageCommercialTermsCallableResponse.ts"},
   {name: "ManagePaymentRoutingPolicyCallablePayload", source: "callables/manage_payment_routing_policy_payload.schema.json", typeOutput: "functions/src/shared/generated/managePaymentRoutingPolicyCallablePayload.ts"},
   {name: "ManagePaymentRoutingPolicyCallableResponse", source: "callable_responses/manage_payment_routing_policy_response.schema.json", typeOutput: "functions/src/shared/generated/managePaymentRoutingPolicyCallableResponse.ts"},
   {"name": "ManageEventOfferCheckoutCallablePayload", "source": "callables/manage_event_offer_checkout_payload.schema.json", "typeOutput": "functions/src/shared/generated/manageEventOfferCheckoutCallablePayload.ts"},
@@ -1983,6 +1988,17 @@ const schemaSpecs = [
     name: "PaymentRoutingPolicyDocument",
     source: "firestore/payment_routing_policies.schema.json",
     typeOutput: "functions/src/shared/generated/paymentRoutingPolicyDocument.ts",
+  },
+  {
+    name: "CommercialTermsDocument",
+    source: "firestore/commercial_terms.schema.json",
+    typeOutput: "functions/src/shared/generated/commercialTermsDocument.ts",
+  },
+  {
+    name: "CommercialTermsRevisionDocument",
+    source: "firestore/commercial_terms_revisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/commercialTermsRevisionDocument.ts",
   },
   {
     name: "OrganizerFormPaymentDocument",

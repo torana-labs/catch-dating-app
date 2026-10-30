@@ -1,7 +1,19 @@
 // @vitest-environment node
 import fs from "node:fs";
-import {describe, expect, it, vi} from "vitest";
+import {afterEach, describe, expect, it, vi} from "vitest";
 vi.mock("server-only", () => ({}));
+// The reader's credential check, without a Google credential lookup.
+const admin = vi.hoisted(() => ({getAccessToken: vi.fn(), apps: [] as {name: string; options: unknown}[], db: {name: "reader"}}));
+vi.mock("firebase-admin/app", () => ({
+  getApps: () => admin.apps,
+  applicationDefault: () => ({getAccessToken: admin.getAccessToken}),
+  initializeApp: (options: unknown, name: string) => {
+    const app = {name, options};
+    admin.apps.push(app);
+    return app;
+  },
+}));
+vi.mock("firebase-admin/firestore", () => ({getFirestore: () => admin.db}));
 // Maps stay off unless a test turns them on: no Secret Manager call from tests.
 vi.mock("./websiteSecrets", () => ({readWebsiteSecret: async () => null}));
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../features/events/eventDetailModel";
@@ -14,6 +26,7 @@ import {
   assembleOrganizerDetailFromSources,
   assemblePublicCatalog,
   assembleRouteCatalog,
+  publicReader,
 } from "./publicCatalog";
 import type {PublicCollection, PublicReader} from "./repositories/publicReader";
 import {withPublicReviews} from "./repositories/reviewRepository";
@@ -396,5 +409,51 @@ describe("public page read models", () => {
     world.organizerPublicPage.copy = {...page, organizerId: "copy"};
     delete world.organizers["next-proof"];
     expect(await assembleOrganizerDetailCatalog(fakeReader(world).reader, "/organizers/next-proof/", now)).toBeNull();
+  });
+});
+
+describe("public reader", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.useRealTimers();
+  });
+  const configured = (emulator?: string) => {
+    vi.stubEnv("CATCH_WEBSITE_STAGE", "preview");
+    vi.stubEnv("CATCH_PUBLIC_FIRESTORE_PROJECT", "demo-catch-nextjs");
+    vi.stubEnv("FIRESTORE_EMULATOR_HOST", emulator ?? "");
+  };
+
+  it("is ready once its credentials answer", async () => {
+    configured();
+    admin.getAccessToken.mockResolvedValue({access_token: "token", expires_in: 3600});
+    expect(await publicReader()).toBe(admin.db);
+  });
+
+  it("fails at once without credentials instead of letting each read retry", async () => {
+    configured();
+    admin.getAccessToken.mockRejectedValue(new Error("Could not load the default credentials."));
+    await expect(publicReader()).rejects.toThrow("Could not load the default credentials.");
+  });
+
+  it("gives up on a credential lookup that does not answer within three seconds", async () => {
+    configured();
+    vi.useFakeTimers();
+    admin.getAccessToken.mockReturnValue(new Promise(() => undefined));
+    const pending = expect(publicReader()).rejects.toThrow("PUBLIC_READER_CREDENTIALS_UNAVAILABLE");
+    await vi.advanceTimersByTimeAsync(3_000);
+    await pending;
+  });
+
+  it("needs no credentials for the emulator", async () => {
+    configured("127.0.0.1:8765");
+    expect(await publicReader()).toBe(admin.db);
+    expect(admin.getAccessToken).not.toHaveBeenCalled();
+  });
+
+  it("fails before any read without a configured project", async () => {
+    configured();
+    vi.stubEnv("CATCH_PUBLIC_FIRESTORE_PROJECT", "");
+    admin.apps.length = 0;
+    await expect(publicReader()).rejects.toThrow("CATCH_PUBLIC_FIRESTORE_PROJECT is required");
   });
 });

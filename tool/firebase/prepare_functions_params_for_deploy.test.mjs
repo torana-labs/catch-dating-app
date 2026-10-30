@@ -56,6 +56,7 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'CATCH_INSTAGRAM_ACCOUNT_ID=" "',
     'CATCH_INSTAGRAM_HANDLE=" "',
     'CATCH_INSTAGRAM_GRAPH_VERSION="v26.0"',
+    'CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION=" "',
     'SUPPLY_MESSAGE_NOMINATIONS_ENABLED="false"',
     'CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION=" "',
     'SERPAPI_KEY_VERSION=" "',
@@ -114,6 +115,7 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'CATCH_INSTAGRAM_ACCOUNT_ID=" "',
     'CATCH_INSTAGRAM_HANDLE=" "',
     'CATCH_INSTAGRAM_GRAPH_VERSION="v26.0"',
+    'CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION=" "',
     'SUPPLY_MESSAGE_NOMINATIONS_ENABLED="false"',
     'CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION=" "',
     'SERPAPI_KEY_VERSION=" "',
@@ -277,6 +279,28 @@ test("Instagram claims switch on only with Catch's account and handle", () => {
       /requires the Instagram account id and handle/],
     [{CATCH_INSTAGRAM_ACCOUNT_ID: "@catch"}, /numeric Instagram account id/],
     [{CATCH_INSTAGRAM_GRAPH_VERSION: "latest"}, /must look like v26.0/],
+  ]) {
+    assert.throws(() => prepareFunctionsParamsForDeploy({
+      functionsDir: fixture(), projectId: "catchdates-dev",
+      environment: {...publicIds, ...environment},
+    }), message);
+  }
+});
+
+test("Instagram discovery pins a project-local token and needs Catch's account", () => {
+  const version = "projects/catchdates-dev/secrets/CATCH_INSTAGRAM_DISCOVERY_TOKEN/versions/3";
+  const result = prepareFunctionsParamsForDeploy({
+    functionsDir: fixture(), projectId: "catchdates-dev",
+    environment: {...publicIds, CATCH_INSTAGRAM_ACCOUNT_ID: "17841400000000001",
+      CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION: version},
+  });
+  assert.match(fs.readFileSync(result.outputPath, "utf8"),
+    new RegExp(`CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION="${version}"`));
+  for (const [environment, message] of [
+    [{CATCH_INSTAGRAM_ACCOUNT_ID: "17841400000000001",
+      CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION: version.replace("catchdates-dev", "catchdates-staging")},
+    /must pin CATCH_INSTAGRAM_DISCOVERY_TOKEN in this project/],
+    [{CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION: version}, /requires CATCH_INSTAGRAM_ACCOUNT_ID/],
   ]) {
     assert.throws(() => prepareFunctionsParamsForDeploy({
       functionsDir: fixture(), projectId: "catchdates-dev",

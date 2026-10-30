@@ -44,14 +44,20 @@ test("profile rejects mismatched mode and implicit commissions", async () => {
     !error.message.includes("private"));
 });
 
-test("profile accepts an optional host membership fee and nothing else",
+test("credentials-only profiles load; legacy fee keys stay readable",
   async () => {
+    const credentialsOnly: Record<string, unknown> = {...config};
+    delete credentialsOnly.feeBasisPoints;
+    const current = new RazorpayPlatformPaymentConfigLoader("catch-test",
+      async () => JSON.stringify(credentialsOnly));
+    assert.equal((await current.load(version)).feeBasisPoints, undefined);
+    // Older pinned versions still refund and reconcile their payments.
     const withMembership = new RazorpayPlatformPaymentConfigLoader(
       "catch-test", async () => JSON.stringify({...config,
         feeBasisPoints: {formFee: 0, eventAdmission: 0,
           hostMembership: 750}}));
-    assert.equal((await withMembership.load(version)).feeBasisPoints
-      .hostMembership, 750);
+    assert.equal((await withMembership.load(version)).keyId,
+      "rzp_test_platform");
     for (const feeBasisPoints of [
       {formFee: 0, eventAdmission: 0, hostMembership: 10000},
       {formFee: 0, eventAdmission: 0, membership: 500},

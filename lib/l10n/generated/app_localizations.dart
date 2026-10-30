@@ -41508,6 +41508,48 @@ abstract class AppLocalizations {
   /// **'Set up required'**
   String get hostMembershipsPayoutNotReady;
 
+  /// Readiness row for the organizer's own connected Razorpay account, which collects membership payments.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay account'**
+  String get hostMembershipsRazorpayTitle;
+
+  /// Memberships are not offered to this organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch hasn’t turned on memberships for you yet.'**
+  String get hostMembershipsUnavailableNotOffered;
+
+  /// The organizer must connect their own Razorpay account.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your Razorpay account to sell memberships. Members pay you directly.'**
+  String get hostMembershipsUnavailableConnectRazorpay;
+
+  /// The organizer's Razorpay connection needs reconnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Razorpay connection needs attention. Reconnect it to keep selling memberships.'**
+  String get hostMembershipsUnavailableReconnectRazorpay;
+
+  /// Razorpay Subscriptions is not enabled on the organizer's account.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on Subscriptions in your Razorpay account, then turn on memberships again.'**
+  String get hostMembershipsUnavailableSubscriptions;
+
+  /// The Route payout account is not ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish payout setup before selling memberships.'**
+  String get hostMembershipsUnavailablePayout;
+
+  /// Razorpay was unavailable while checking readiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay couldn’t be reached. Try again in a few minutes.'**
+  String get hostMembershipsUnavailableProvider;
+
   /// Memberships unavailable in this environment.
   ///
   /// In en, this message translates to:

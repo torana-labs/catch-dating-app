@@ -971,7 +971,14 @@
         "managePublicEventCheckout",
         "reconcilePublicEventPayments",
         "onCancelledPublicEventPayments",
-        "organizerFormPaymentOauthCallback"
+        "organizerFormPaymentOauthCallback",
+        "manageHostMembershipProgram",
+        "manageHostMembershipPlans",
+        "manageHostMembershipCheckout",
+        "manageMyHostMembership",
+        "hostMembershipRazorpayWebhook",
+        "processHostMembershipBillingPause",
+        "requestAccountDeletion"
       ],
       "binding": {
         "kind": "parameter",
@@ -1045,7 +1052,14 @@
         "configureEventRegistration",
         "managePublicEventCheckout",
         "reconcilePublicEventPayments",
-        "onCancelledPublicEventPayments"
+        "onCancelledPublicEventPayments",
+        "manageHostMembershipProgram",
+        "manageHostMembershipPlans",
+        "manageHostMembershipCheckout",
+        "manageMyHostMembership",
+        "hostMembershipRazorpayWebhook",
+        "processHostMembershipBillingPause",
+        "requestAccountDeletion"
       ],
       "binding": {
         "kind": "record",
@@ -1244,6 +1258,29 @@
         "optional": true,
         "secret": "CATCH_WHATSAPP_ACCESS_TOKEN",
         "enabledParameter": "SUPPLY_MESSAGE_NOMINATIONS_ENABLED"
+      },
+      "activationPolicy": "blank-current-reference-unconfigured",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": false
+    },
+    {
+      "id": "functions.reference.instagram-discovery",
+      "sourcePaths": [
+        "functions/src/operations/supplyIntake/instagramDiscovery.ts"
+      ],
+      "owner": "supply-intake",
+      "credentialClass": "provider-token",
+      "consumers": [
+        "onSupplyIntakeRequestCreated",
+        "recoverSupplyIntakeRequests"
+      ],
+      "binding": {
+        "kind": "parameter",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "parameter": "CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION",
+        "optional": true,
+        "secret": "CATCH_INSTAGRAM_DISCOVERY_TOKEN"
       },
       "activationPolicy": "blank-current-reference-unconfigured",
       "rotationCompatibility": "provider-overlap",

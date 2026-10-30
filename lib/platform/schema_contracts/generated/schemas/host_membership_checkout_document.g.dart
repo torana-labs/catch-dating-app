@@ -90,6 +90,48 @@ const schemaHostMembershipCheckoutDocumentSchema = <String, Object?>{
       'pattern': '^sub_[A-Za-z0-9]{6,40}\$',
       'x-catch-ownership': 'server-only',
     },
+    'payment': <String, Object?>{
+      'description': 'The program binding the subscription was created on. Absent on checkouts created under the original platform-account model.',
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'provider',
+        'moneyFlow',
+        'providerAccountId',
+        'bindingId',
+        'mode',
+      ],
+      'properties': <String, Object?>{
+        'provider': <String, Object?>{
+          'enum': <Object?>[
+            'razorpay',
+          ],
+        },
+        'moneyFlow': <String, Object?>{
+          'description': 'hostCollected: the guest pays the organizer\'s own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch\'s platform account collects and transfers the organizer\'s share (Razorpay Route), deducting any at-source fee.',
+          'enum': <Object?>[
+            'hostCollected',
+            'platformSplit',
+          ],
+        },
+        'providerAccountId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^acc_[A-Za-z0-9]{4,40}\$',
+        },
+        'bindingId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'mode': <String, Object?>{
+          'enum': <Object?>[
+            'test',
+            'live',
+          ],
+        },
+      },
+      'x-catch-ownership': 'server-only',
+    },
     'authorizationUrl': <String, Object?>{
       'type': <Object?>[
         'string',

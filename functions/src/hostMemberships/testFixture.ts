@@ -6,7 +6,13 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import type {RazorpayPlatformPaymentConfig} from
   "../payments/razorpayPlatformPaymentConfig";
+import {Timestamp} from "firebase-admin/firestore";
 import {FakeDocRef, FakeFirestore} from "../shared/testing/programFirestore";
+import {
+  commercialTermsRecords,
+  platformTermsDocument,
+  testCommercialTerms,
+} from "../commercialTerms/testFixture";
 import type {
   HostMembershipBillingProvider,
   ProviderSubscriptionSnapshot,
@@ -33,14 +39,52 @@ export const testConfig: RazorpayPlatformPaymentConfig = {
   schema: "catch.razorpay-platform-payments/v1", mode: "test",
   platformAccountId: "acc_CatchPlatform", keyId: "rzp_test_platform",
   keySecret: "key-secret", webhookSecret,
-  feeBasisPoints: {formFee: 0, eventAdmission: 0, hostMembership: 1000},
 };
+
+export const connectionId = "rpc_" + "c".repeat(32);
+export const merchantAccountId = "acc_HostMerchant1";
+
+/** The hostCollected binding: the organizer's own OAuth-connected account. */
+export const hostCollectedPayment = {provider: "razorpay" as const,
+  moneyFlow: "hostCollected" as const, providerAccountId: merchantAccountId,
+  bindingId: connectionId, mode: "test" as const};
+
+/** The original platform-account program, with no money flow recorded. */
+export const legacyPlatformPayment = {provider: "razorpay" as const,
+  providerAccountId: "acc_HostRoute1", bindingId: "owner-1_razorpay",
+  mode: "test" as const};
+
+const routeSelection = (route: string) => ({route, mode: "test",
+  currency: "INR", merchantCountry: "IN"});
+
+/** Routing policy selecting the membership money flow for every organizer. */
+export function membershipRouting(route = "razorpayOAuth"):
+  Record<string, Record<string, unknown>> {
+  return {"paymentRoutingPolicies/app": {scope: "app", organizerId: null,
+    revision: 1, formFee: null, eventAdmission: null,
+    hostMembership: routeSelection(route),
+    updatedAt: Timestamp.fromMillis(now)}};
+}
+
+/** A ready organizer OAuth connection, as Payments setup leaves it. */
+export function readyConnection(overrides: Record<string, unknown> = {}):
+  Record<string, Record<string, unknown>> {
+  const at = Timestamp.fromMillis(now);
+  return {[`organizerPaymentConnections/${connectionId}`]: {organizerId,
+    provider: "razorpay", mode: "test", status: "ready",
+    accountId: merchantAccountId, publicToken: "rzp_test_oauth_Public1",
+    secretVersionResource: "projects/catch-test/secrets/VAULT/versions/1",
+    tokenExpiresAt: Timestamp.fromMillis(now + 90 * dayMillis),
+    webhookId: "wh_form", webhookUrl: "https://example.test/form",
+    webhookVerifiedAt: at, connectedByUid: "host-1", revision: 2,
+    refreshLeaseUntil: null, createdAt: at, updatedAt: at,
+    disconnectedAt: null, lastErrorCode: null, ...overrides}};
+}
 
 export function program(overrides: Partial<HostMembershipProgramDocument> =
 {}): HostMembershipProgramDocument {
   return {schemaVersion: 1, organizerId, state: "enabled",
-    payment: {provider: "razorpay", providerAccountId: "acc_HostRoute1",
-      bindingId: "owner-1_razorpay", mode: "test"},
+    payment: {...hostCollectedPayment, webhookId: "wh_membership"},
     billingPause: {state: "active", requestedAtMillis: null,
       requestedBy: null, processedCount: 0, cursor: null},
     memberCount: 0, revision: 1, createdAtMillis: now, updatedAtMillis: now,
@@ -52,7 +96,8 @@ export function plan(overrides: Partial<HostMembershipPlanDocument> = {}):
   return {schemaVersion: 1, organizerId, name: "Sunday Runners",
     description: "", status: "published",
     prices: {monthly: {amountPaise: 49900,
-      providerPriceIds: {razorpay: "plan_TestMonthly1"}, revision: 1}},
+      providerPriceIds: {razorpay: "plan_TestMonthly1"},
+      providerAccountId: merchantAccountId, revision: 1}},
     memberCap: null, trialDays: 0,
     benefits: [{type: "eventDiscount", percentOff: 100}],
     perks: [], limits: {maxUpcomingMemberPricedBookings: null},
@@ -60,13 +105,39 @@ export function plan(overrides: Partial<HostMembershipPlanDocument> = {}):
     updatedAtMillis: now, publishedAtMillis: now, ...overrides};
 }
 
+/**
+ * The default store is the hostCollected mode: routing selects the
+ * organizer's own account, its connection is ready and Catch's platform
+ * terms (5% commission, no at-source fee) are configured.
+ */
 export function seedStore(extra: Record<string, Record<string, unknown>> =
 {}): FakeFirestore {
   return new FakeFirestore({
+    ...membershipRouting(),
+    ...readyConnection(),
+    ...commercialTermsRecords(),
     [`hostMembershipPrograms/${organizerId}`]:
       program() as unknown as Record<string, unknown>,
     [`hostMembershipPlans/${planId}`]:
       plan() as unknown as Record<string, unknown>,
+    ...extra,
+  });
+}
+
+/** The platformSplit mode: Route split with a 10% at-source fee. */
+export function seedPlatformSplitStore(
+  extra: Record<string, Record<string, unknown>> = {}): FakeFirestore {
+  return seedStore({
+    ...membershipRouting("razorpayRoute"),
+    ...commercialTermsRecords({platform: platformTermsDocument(
+      testCommercialTerms({hostMembership: 1000}))}),
+    [`hostMembershipPrograms/${organizerId}`]: program({payment: {
+      ...legacyPlatformPayment, moneyFlow: "platformSplit"}}) as unknown as
+      Record<string, unknown>,
+    [`hostMembershipPlans/${planId}`]: plan({prices: {monthly: {
+      amountPaise: 49900, providerPriceIds: {razorpay: "plan_TestMonthly1"},
+      providerAccountId: testConfig.platformAccountId, revision: 1}}}) as
+      unknown as Record<string, unknown>,
     ...extra,
   });
 }
@@ -98,6 +169,7 @@ export class FakeBillingProvider implements HostMembershipBillingProvider {
   calls: Array<{method: string; input: unknown}> = [];
   next: ProviderSubscriptionSnapshot = subscription();
   transfers = new Map<string, string>();
+  subscriptionsEnabled = true;
   private readonly verifier = new RazorpaySubscriptionProvider({
     keyId: testConfig.keyId, keySecret: testConfig.keySecret, webhookSecret,
     mode: "test"}, async () => {
@@ -153,6 +225,15 @@ export class FakeBillingProvider implements HostMembershipBillingProvider {
     const transferId = this.transfers.get(input.paymentId);
     return transferId ? {transferId} : null;
   }
+  async probeSubscriptions() {
+    this.record("probeSubscriptions", null);
+    return this.subscriptionsEnabled ? "enabled" as const :
+      "notEnabled" as const;
+  }
+  async ensureMerchantWebhook(input: {url: string}) {
+    this.record("ensureMerchantWebhook", input);
+    return {webhookId: "wh_membership"};
+  }
   verifyWebhook(rawBody: Buffer, signature: string) {
     return this.verifier.verifyWebhook(rawBody, signature);
   }
@@ -164,14 +245,23 @@ export class FakeBillingProvider implements HostMembershipBillingProvider {
 export function testDeps(db: FakeFirestore,
   provider = new FakeBillingProvider(),
   overrides: Partial<HostMembershipCallableDeps> = {}):
-  HostMembershipCallableDeps & {provider: () => FakeBillingProvider} {
+  HostMembershipCallableDeps & {fakeProvider: () => FakeBillingProvider} {
   let clock = now;
   return {
     db: () => db as unknown as FirebaseFirestore.Firestore,
     nowMillis: () => clock++,
     catchProject: () => catchProject,
-    config: async () => testConfig,
-    provider: () => provider,
+    platformConfig: async () => testConfig,
+    platformProvider: async () => provider,
+    merchantProvider: async (binding: {connectionId: string}) => {
+      if (binding.connectionId !== connectionId) {
+        throw new Error("unknown connection");
+      }
+      return provider;
+    },
+    merchantWebhookUrl: (id: string) =>
+      `https://example.test/hostMembershipRazorpayWebhook?connectionId=${id}`,
+    fakeProvider: () => provider,
     readyRouteAccount: (async () => ({bindingId: "owner-1_razorpay",
       account: {providerAccountId: "acc_HostRoute1"}})) as unknown as
       HostMembershipCallableDeps["readyRouteAccount"],
@@ -180,7 +270,7 @@ export function testDeps(db: FakeFirestore,
       if (actorUid !== "host-1") throw new Error("permission-denied");
     },
     ...overrides,
-  } as HostMembershipCallableDeps & {provider: () => FakeBillingProvider};
+  } as HostMembershipCallableDeps & {fakeProvider: () => FakeBillingProvider};
 }
 
 export function callable(uid: string, data: unknown):
@@ -197,8 +287,9 @@ export function signedWebhook(body: unknown): {rawBody: Buffer;
 
 export function webhookBody(event: string,
   snapshot: ProviderSubscriptionSnapshot, createdAtMillis: number,
-  payment?: {id: string; amount: number; status?: string}) {
-  return {entity: "event", account_id: testConfig.platformAccountId, event,
+  payment?: {id: string; amount: number; status?: string},
+  accountId = merchantAccountId) {
+  return {entity: "event", account_id: accountId, event,
     contains: payment ? ["subscription", "payment"] : ["subscription"],
     payload: {subscription: {entity: rawSubscription(snapshot)},
       ...(payment ? {payment: {entity: {id: payment.id, entity: "payment",

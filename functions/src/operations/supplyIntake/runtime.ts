@@ -50,6 +50,7 @@ interface PackagedIntake {
   assertAcceptedAcquisitionDecision: (decision: unknown, expected: {decisionId: string; gapId: string}) => void;
   GuardedPageFetchPort: new (options: Record<string, unknown>) => IntakePageSource;
   StaticPageSource: new (options: Record<string, unknown>) => IntakePageSource;
+  InstagramDiscoveryPageSource: new (options: Record<string, unknown>) => IntakePageSource;
   SupplyIntakeWorkflow: new (options: Record<string, unknown>) => {
     createPlan: (input: Record<string, unknown>) => Promise<Record<string, unknown>>;
   };
@@ -144,6 +145,7 @@ const modules = [
   ["intake-request.mjs", "workflows/supply-intake/intake-request.mjs"],
   ["organizer-matching/matcher.mjs", "workflows/supply-intake/organizer-matching/matcher.mjs"],
   ["page-capture.mjs", "workflows/supply-intake/page-capture.mjs"],
+  ["instagram-discovery.mjs", "workflows/supply-intake/instagram-discovery.mjs"],
   ["acquisition.mjs", "workflows/supply-intake/acquisition.mjs"],
   ["workflow.mjs", "workflows/supply-intake/workflow.mjs"],
   ["engine.mjs", "platform/engine.mjs"],

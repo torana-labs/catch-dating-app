@@ -144,7 +144,7 @@
       "properties": {
         "schemaVersion": {"const": 1},
         "runKey": {"type": "string", "minLength": 1, "maxLength": 500},
-        "adapterId": {"enum": ["page_fetch", "static_page"]},
+        "adapterId": {"enum": ["page_fetch", "static_page", "instagram_business_discovery"]},
         "policyVersion": {"type": "string", "minLength": 1, "maxLength": 120},
         "policyDecisionId": {"type": ["string", "null"], "maxLength": 200},
         "requestedUrl": {"type": "string", "minLength": 1, "maxLength": 2000},

@@ -167,6 +167,11 @@ partner id, and discovery requests are always submitted by `system`.
    adapter platform (an event's organizer, a profile's `sameAs`) are read too,
    one hop from the seed, up to twelve pages. A page that cannot be read, or
    whose template drifted, becomes a recorded outcome rather than an error.
+   Instagram profiles are never fetched: Business Discovery reads them (see
+   below), and the links in the bio and website become the organizer's
+   `sameAs`. Links in recent captions are related only: they are followed one
+   hop like the rest, and each fetched page says whether it is an event or a
+   calendar.
 2. **Build the listing.** Name, description, image and locality each record
    the page and adapter they came from. Organizer pages outrank event pages,
    and a nominator's typed name is used only when no page names the
@@ -447,6 +452,35 @@ most 12 pages per nomination and 600 a month. Every environment's worker
 reads its own copy of the decision, so dev and staging hold the same accepted
 record as production; without it a nomination fails closed with
 `ACQUISITION_POLICY_DECISION_REQUIRED`. The other four capabilities stay off.
+
+### Instagram Business Discovery
+
+instagram.com disallows crawlers, so Supply Intake never fetches it.
+`supply-intake/instagram-discovery.mjs` wraps the page source: an Instagram
+profile URL becomes one call to Meta's Business Discovery API, made as
+@catch_dates (`17841476918450741`). It reads another business or creator
+account's username, name, biography, website and twelve recent captions and
+permalinks, and nothing else. The response becomes a JSON snapshot that the
+`instagram` adapter (`sources/instagram/`) reads. Every other URL goes to the
+page source unchanged. Personal, private and age-gated accounts return
+nothing (`not_discoverable`). An expired token records
+`provider_auth_error`. Each intake makes at most two calls. Calls cost
+nothing and count against Meta's platform rate limit, not the page fetch
+budget.
+
+Business Discovery is part of the Instagram API with Facebook Login
+(graph.facebook.com), not the Instagram Login that the claim webhook uses. It
+needs `instagram_basic`, `instagram_manage_insights` and
+`pages_read_engagement`. Meta's App Review table puts an app that serves only
+a business you own on Standard Access, with no review. The token is a
+system-user token from the Torana business portfolio, stored as
+`CATCH_INSTAGRAM_DISCOVERY_TOKEN` and named by a pinned version in the
+GitHub variable `CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION`
+(`projects/<project>/secrets/CATCH_INSTAGRAM_DISCOVERY_TOKEN/versions/<n>`).
+Blank keeps discovery off. The Supply Intake functions' runtime service
+account needs Secret Manager Secret Accessor on that secret. A token the
+worker cannot read leaves Instagram profiles unread rather than failing the
+request.
 
 ## Reference Layout
 

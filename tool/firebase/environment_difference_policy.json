@@ -15,6 +15,7 @@
     "CATCH_HOST_OPERATOR_ALERTS_SINCE": {"class": "feature-gate"},
     "CATCH_INSTAGRAM_ACCOUNT_ID": {"class": "identity"},
     "CATCH_INSTAGRAM_CLAIMS_ENABLED": {"class": "feature-gate"},
+    "CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION": {"class": "identity"},
     "CATCH_INSTAGRAM_GRAPH_VERSION": {"class": "feature-gate"},
     "CATCH_INSTAGRAM_HANDLE": {"class": "identity"},
     "CATCH_PRIVACY_POLICY_URL": {"class": "feature-gate"},

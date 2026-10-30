@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import test from "node:test";
+import {fileURLToPath} from "node:url";
 import {expectedRelease, sharedCacheSeconds, sharedCachePage, verifyDeployedWebsite} from "./deployedSmoke.mjs";
 import {homePageCopy} from "../../src/content/homePage.ts";
 import {hostLandingCopy} from "../../src/content/hostLanding.ts";
@@ -13,7 +16,7 @@ function responder(base, change = () => {}) {
     let body = "<h1>Content</h1>", status = path.includes("not-a-real") ? 404 : 200;
     const titles = {"/": homePageCopy.hero.title, "/host/": hostLandingCopy.hero.title, "/explore/": explorePageCopy.lead, "/mumbai/": explorePageCopy.lead};
     if (titles[path]) body = `<h1>${titles[path]}</h1>`;
-    if (path === "/organizers/?q=run") {status = 308; headers.location = "/explore/?q=run&show=organisers";}
+    if (path === "/organizers/?q=run") {status = 301; headers.location = `${base}/explore/?q=run&show=organisers`;}
     if (path === "/api/public-catalog") body = JSON.stringify({listings: [{path: "/organizers/mumbai/club/", catchEvents: [{id: "event"}]}]});
     if (path === "/robots.txt") body = live ? "User-agent: *\nAllow: /" : "User-agent: *\nDisallow: /";
     if (path === "/sitemap.xml") body = "<url><loc>https://catchdates.com/</loc></url>";
@@ -50,9 +53,21 @@ test("deployed acceptance rejects stale builds, bad status, indexing leaks and b
     (path, result) => {if (path === "/") delete result.headers["x-robots-tag"];},
     (path, result) => {if (path.startsWith("/f/")) result.body = "next-release-private-marker";},
     (path, result) => {if (path === "/api/public-catalog") result.headers["cache-control"] = "public, max-age=600";},
+    (path, result) => {if (path === "/organizers/?q=run") result.headers.location = "https://unrelated.example/explore/?q=run&show=organisers";},
   ]) await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, change)}));
   await assert.rejects(verifyDeployedWebsite("https://unrelated.example", sourceSha));
   await assert.rejects(verifyDeployedWebsite("https://catchdates.com", sourceSha, {fetchImpl: responder("https://catchdates.com", (path, result) => {result.headers["x-robots-tag"] = "noindex";})}));
+});
+
+test("a page that rendered its unavailable state never passes as healthy", async () => {
+  for (const [route, message] of [["/", homePageCopy.week.unavailable], ["/explore/", explorePageCopy.unavailable], ["/mumbai/", explorePageCopy.unavailable]]) {
+    const degraded = (path, result) => {if (path === route) result.body += `<p>${message}</p>`;};
+    await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, degraded)}),
+      new RegExp(`${route.replaceAll("/", "\\/")} rendered its unavailable state`, "u"));
+    // Failing closed is a failed release, not a pass.
+    const closed = (path, result) => {if (path === route) {result.status = 503; result.body += `<p>${message}</p>`;}};
+    await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, closed)}), /HTTP status/u);
+  }
 });
 
 test("only a positive shared lifetime counts as a shared cache", async () => {
@@ -80,4 +95,34 @@ test("promotion checks the preview's release, which main may have moved past", (
   const release = "a".repeat(40), head = "b".repeat(40);
   assert.equal(expectedRelease({GITHUB_SHA: head, RELEASE_SHA: release}), release);
   assert.equal(expectedRelease({GITHUB_SHA: release}), release, "a preview checks its own commit");
+});
+
+test("the routes and copy are this source's own, so an older release fails them", async () => {
+  // Promotion run 41025078900 checked a pre-#972 release against main's Explore
+  // copy. Promotion therefore runs the release's own copy of this script.
+  const older = (path, result) => {if (path === "/explore/") result.body = "<h1>Find your next plan.</h1>";};
+  await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, older)}), /\/explore\/ rendered content/u);
+});
+
+test("the smoke runs from a bare release worktree: no installed package at runtime", () => {
+  // Promotion runs this file from a worktree of the released commit, which has
+  // no node_modules. Every runtime import must stay inside the website source.
+  const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+  const seen = new Set(), pending = [fileURLToPath(new URL("./deployedSmoke.mjs", import.meta.url))];
+  while (pending.length) {
+    const file = pending.pop();
+    if (seen.has(file)) continue;
+    seen.add(file);
+    const source = fs.readFileSync(file, "utf8");
+    for (const match of source.matchAll(/^\s*(?:import|export)\s+(type\s+)?(?:[^;"']*?\sfrom\s+)?["']([^"']+)["']/gmu)) {
+      const [, typeOnly, specifier] = match;
+      if (typeOnly || specifier.startsWith("node:")) continue;
+      assert.ok(specifier.startsWith("."), `${path.relative(website, file)} imports the package ${specifier} at runtime`);
+      const target = path.resolve(path.dirname(file), specifier);
+      assert.ok(target.startsWith(website + path.sep), `${path.relative(website, file)} imports ${specifier} from outside website/`);
+      assert.ok(fs.existsSync(target), `${specifier} resolves to a file`);
+      pending.push(target);
+    }
+  }
+  assert.ok(seen.size > 3, "the import walk found the smoke's own imports");
 });

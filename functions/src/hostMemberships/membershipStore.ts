@@ -14,6 +14,7 @@ import {validateHostMembershipProgramDocument} from
   "../shared/generated/validators/hostMembershipProgramDocument";
 import type {ProviderSubscriptionSnapshot} from "./billingProvider";
 import {hostMembershipId, isHostMembershipCheckoutId} from "./ids";
+import type {MembershipPaymentBinding} from "./runtime";
 import {nextMembershipState, type MembershipIntent} from "./stateMachine";
 
 export const collections = {
@@ -83,6 +84,12 @@ export async function applySubscriptionSnapshot(params: {
   catchProject: string;
   intent?: MembershipIntent | null;
   expectedMembershipId?: string;
+  /**
+   * The account the snapshot was read from or delivered by. A snapshot only
+   * applies to a checkout created on that same account, so an organizer's
+   * merchant account can never write another account's memberships.
+   */
+  deliveredBy?: Pick<MembershipPaymentBinding, "moneyFlow" | "bindingId">;
 }): Promise<AppliedSnapshot> {
   const {db, snapshot, nowMillis} = params;
   const ignored: AppliedSnapshot = {membershipId: null, membership: null,
@@ -99,6 +106,16 @@ export async function applySubscriptionSnapshot(params: {
         checkout.providerSubscriptionId !== null &&
           checkout.providerSubscriptionId !== snapshot.id) {
       return {...ignored, checkoutId};
+    }
+    const delivered = params.deliveredBy;
+    if (delivered) {
+      const owner = checkout.payment;
+      const ownerFlow = owner?.moneyFlow ?? "platformSplit";
+      if (ownerFlow !== delivered.moneyFlow ||
+          ownerFlow === "hostCollected" &&
+            owner?.bindingId !== delivered.bindingId) {
+        return {...ignored, checkoutId};
+      }
     }
     const membershipId = hostMembershipId(checkout.organizerId, checkout.uid);
     if (params.expectedMembershipId &&
@@ -122,7 +139,12 @@ export async function applySubscriptionSnapshot(params: {
         planId: checkout.planId, planName: plan.name,
         interval: checkout.interval, priceInPaise: checkout.priceInPaise,
         checkoutId} : null});
-    const next = transition.next;
+    let next = transition.next;
+    // The membership records the account its current subscription lives on.
+    if (next && checkout.payment &&
+        next.providerSubscriptionId === snapshot.id) {
+      next = {...next, payment: {...checkout.payment}};
+    }
     if (transition.outcome === "applied" && next) {
       if (!validateHostMembershipDocument(next)) {
         integrity("Membership transition produced an invalid document.");

@@ -40,14 +40,35 @@ import type {EventPageData} from "../features/events/eventPageModel";
 import {eventMapLink, eventMapsAvailable} from "./eventMapLink";
 
 const markets = new Set(activeEventLiveCities.map(city => city.slug));
-export function publicFirestore() {
+function publicReaderApp() {
   validatePublicRuntimeEnvironment();
   const projectId = process.env.CATCH_PUBLIC_FIRESTORE_PROJECT;
   if (!projectId) throw new Error("CATCH_PUBLIC_FIRESTORE_PROJECT is required");
   const name = "catch-public-website-reader";
-  const app = getApps().find(candidate => candidate.name === name) ?? initializeApp({
+  return getApps().find(candidate => candidate.name === name) ?? initializeApp({
     projectId, credential: applicationDefault(),
   }, name);
+}
+export function publicFirestore() {return getFirestore(publicReaderApp());}
+
+/** Cloud Run's metadata server answers within milliseconds; elsewhere the lookup gives up within seconds. */
+export const PUBLIC_READER_CREDENTIAL_DEADLINE_MS = 3_000;
+
+/**
+ * The reader once its credentials answer. Without credentials Firestore
+ * retries every read for about eight seconds before failing, so a page that
+ * cannot be read would take that long to say so. The credential library
+ * remembers that no metadata server answered, so later checks fail at once.
+ * The emulator needs no credentials.
+ */
+export async function publicReader(): Promise<PublicReader> {
+  const app = publicReaderApp();
+  if (!process.env.FIRESTORE_EMULATOR_HOST) {
+    const credential = app.options.credential;
+    if (!credential) throw new Error("PUBLIC_READER_CREDENTIALS_UNAVAILABLE");
+    await withinReadDeadline(credential.getAccessToken(), PUBLIC_READER_CREDENTIAL_DEADLINE_MS,
+      "PUBLIC_READER_CREDENTIALS_UNAVAILABLE");
+  }
   return getFirestore(app);
 }
 
@@ -198,6 +219,6 @@ export async function assembleRouteCatalog(
 }
 
 /** React cache deduplicates within one render only. No cross-request or offline cache. */
-export const readRouteCatalog = cache((pathname: string) =>
-  assembleRouteCatalog(publicFirestore(), pathname, Date.now()));
-export const readPublicCatalog = cache(() => assemblePublicCatalog(publicFirestore(), Date.now()));
+export const readRouteCatalog = cache(async (pathname: string) =>
+  assembleRouteCatalog(await publicReader(), pathname, Date.now()));
+export const readPublicCatalog = cache(async () => assemblePublicCatalog(await publicReader(), Date.now()));
