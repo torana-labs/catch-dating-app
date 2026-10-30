@@ -156,6 +156,58 @@ test("credential resolution prefers explicit tokens and treats unavailable gclou
   );
 });
 
+test("a cloud session's proxy gcloud token skips clearly without being sent", async () => {
+  const cloudSession = {CLAUDE_CODE_REMOTE: "true", CLOUDSDK_AUTH_ACCESS_TOKEN: "proxy-token"};
+  let gcloudCalls = 0;
+  let fetchCalls = 0;
+  const execution = await executeRulesDeploymentDriftCli(
+    ["--project", projectId],
+    {
+      environment: cloudSession,
+      fetchJson: async () => {
+        fetchCalls += 1;
+        return {};
+      },
+      repoRoot: "/unused",
+      runCommand: () => {
+        gcloudCalls += 1;
+        return {status: 0, stderr: "", stdout: "proxy-token\n"};
+      },
+    },
+  );
+
+  assert.equal(execution.exitCode, 0);
+  assert.equal(execution.report.status, "skipped");
+  assert.equal(execution.report.reason, "unusable-credentials");
+  assert.match(execution.output, /^SKIP Firebase rules deployment drift: this Claude Code cloud session's gcloud token/u);
+  assert.equal(gcloudCalls, 0);
+  assert.equal(fetchCalls, 0);
+});
+
+test("explicit tokens and non-cloud gcloud sessions still reach the Rules API", () => {
+  assert.deepEqual(
+    resolveRulesAccessToken({
+      environment: {CLAUDE_CODE_REMOTE: "true", CLOUDSDK_AUTH_ACCESS_TOKEN: "proxy-token",
+        FIREBASE_RULES_ACCESS_TOKEN: "explicit-token"},
+      runCommand: () => assert.fail("gcloud must not run when a token is explicit"),
+    }),
+    {source: "FIREBASE_RULES_ACCESS_TOKEN", token: "explicit-token"},
+  );
+  for (const environment of [
+    {CLOUDSDK_AUTH_ACCESS_TOKEN: "operator-token"},
+    {CLAUDE_CODE_REMOTE: "true"},
+  ]) {
+    assert.deepEqual(
+      resolveRulesAccessToken({
+        environment,
+        runCommand: ({args}) => ({status: args[1] === "application-default" ? 1 : 0,
+          stderr: "", stdout: "gcloud-token\n"}),
+      }),
+      {source: "gcloud auth print-access-token", token: "gcloud-token"},
+    );
+  }
+});
+
 test("user credentials without a quota project retry once against the inspected project", async () => {
   const calls = [];
   const response = (status, payload) => ({

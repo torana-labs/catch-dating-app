@@ -25,7 +25,7 @@ const _eventDetailPathFragments = <String>[
 const _excludedPathFragments = <String>[
   '/packages/catch_tokens/lib/',
   '/lib/platform/theme/',
-  '/lib/core/schema_contracts/generated/',
+  '/lib/platform/schema_contracts/generated/',
   '/lib/l10n/generated/',
 ];
 

@@ -45,9 +45,6 @@ export const dormantFirebaseFunctionTargets = Object.freeze([
   "functions:expireEventRehearsals",
   "functions:expireEventWaitlistOffers",
   "functions:reconcileRazorpayOrders",
-  // Its Meta app and secrets don't exist yet, so readiness would block every
-  // deploy that includes it. Activation removes it (release_operations.md).
-  "functions:instagramClaimWebhook",
 ]);
 
 export function listFirebaseFunctionExports(sourceRoot = defaultRepoRoot) {

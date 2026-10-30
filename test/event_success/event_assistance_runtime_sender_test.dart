@@ -8,7 +8,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_r
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_sender.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_setting.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schemas/set_event_assistance_runtime_config_callable_payload.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/set_event_assistance_runtime_config_callable_payload.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

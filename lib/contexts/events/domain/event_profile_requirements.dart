@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/profile_requirements.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/profile_requirements.g.dart';
 
 extension EventProfileRequirements on Event {
   bool get requiresAgeDetails =>

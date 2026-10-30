@@ -1,13 +1,13 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_request.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callables/get_event_assistance_checkpoint_callable_request.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callables/reassign_event_assistance_checkpoint_reporter_callable_request.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callables/record_event_assistance_checkpoint_callable_request.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callables/set_event_assistance_checkpoint_closeout_callable_request.g.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/callables/get_event_assistance_checkpoint_callable_request.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/callables/reassign_event_assistance_checkpoint_reporter_callable_request.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/callables/record_event_assistance_checkpoint_callable_request.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/callables/set_event_assistance_checkpoint_closeout_callable_request.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
