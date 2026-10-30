@@ -22,6 +22,12 @@ import {marketForIdOrAlias} from "../../locations/marketConfig";
 // claimable and hidden in the app. Staff withdraw one with a suppress
 // decision. Anything short of a complete listing keeps waiting for review.
 
+// Paused by the owner on 30 Oct 2026: no new organizer page goes live on its
+// own until the site moves off catchdates.com. Nominations still build and
+// wait for staff, and the nominator hears "goes live after a quick check".
+// Set to false to resume.
+export const AUTO_PUBLISH_PAUSED = true;
+
 /** The approver recorded on an auto-published listing. */
 export const AUTO_PUBLISH_ACTOR = "supply-auto-publish";
 // Every new listing is a community until staff say otherwise; the claim flow
@@ -61,7 +67,8 @@ interface RequestState {
  * or one this already published, is left alone.
  */
 export async function autoPublishNominatedListing(deps: AutoPublishDeps, requestId: string,
-  state: RequestState): Promise<AutoPublishOutcome> {
+  state: RequestState, {paused = AUTO_PUBLISH_PAUSED} = {}): Promise<AutoPublishOutcome> {
+  if (paused) return {outcome: "needs_review", reasons: ["auto_publish_paused"]};
   const reasons: string[] = [];
   const {request, result} = state;
   if (state.status !== "completed" || state.approval !== null || !request || !result) reasons.push("not_awaiting_approval");
