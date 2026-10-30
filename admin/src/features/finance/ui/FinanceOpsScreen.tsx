@@ -9,6 +9,7 @@ import {
   Search,
   ShieldCheck,
 } from "lucide-react";
+import type {ReactNode} from "react";
 import {
   AdminButton,
   AdminMetricCard,
@@ -67,6 +68,7 @@ export function FinanceOpsScreen({
   onNotice,
   onSelectIssueId,
   selectedIssueId = null,
+  workspaceSwitch,
 }: {
   actorUid: string;
   adminRoles: string[];
@@ -75,6 +77,7 @@ export function FinanceOpsScreen({
   onNotice: (message: string | null) => void;
   onSelectIssueId?: (issueId: string) => void;
   selectedIssueId?: string | null;
+  workspaceSwitch?: ReactNode;
 }) {
   const controller = useFinanceOpsController({
     adminRoles,
@@ -97,6 +100,7 @@ export function FinanceOpsScreen({
       messagingBudgetController={messagingBudgetController}
       onBackToList={onBackToList}
       organizerEntitlementController={organizerEntitlementController}
+      workspaceSwitch={workspaceSwitch}
     />
   );
 }
@@ -106,11 +110,14 @@ export function FinanceOpsWorkspace({
   messagingBudgetController,
   onBackToList,
   organizerEntitlementController,
+  workspaceSwitch,
 }: {
   controller: FinanceOpsController;
   messagingBudgetController?: MessagingBudgetController;
   onBackToList?: () => void;
   organizerEntitlementController?: OrganizerEntitlementController;
+  /** Links to the other Finance workspaces, shown on the issue register. */
+  workspaceSwitch?: ReactNode;
 }) {
   if (controller.selectedIssueId) {
     return (
@@ -122,6 +129,7 @@ export function FinanceOpsWorkspace({
   }
   return (
     <AdminWorkbenchStack>
+      {workspaceSwitch}
       <FinanceSourceAlerts controller={controller} />
       {messagingBudgetController ?
         renderMessagingBudgetPanel(messagingBudgetController) : null}

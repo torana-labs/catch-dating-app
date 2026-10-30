@@ -1,5 +1,12 @@
 import {describe, expect, it, vi} from "vitest";
-import {adminPathForNav, adminSections, resolveAdminRoute, type AdminNavId} from "./adminRoutes";
+import {
+  adminPathForNav,
+  adminSections,
+  commercialTermsPathForOrganizer,
+  financePathForWorkspace,
+  resolveAdminRoute,
+  type AdminNavId,
+} from "./adminRoutes";
 
 describe("Admin route contract", () => {
   it.each(Object.keys(adminSections) as AdminNavId[])("resolves the %s navigation destination", (nav) => {
@@ -15,6 +22,7 @@ describe("Admin route contract", () => {
     ["/events/external/candidate-1", "events", "externalEventId", "candidate-1"],
     ["/growth/signals/signal-1", "growth", "growthSignalId", "signal-1"],
     ["/finance/issues/payments%2Fpayment-1", "finance", "financeIssueId", "payments/payment-1"],
+    ["/finance/commercial-terms/organizers/org%2F1", "finance", "termsOrganizerId", "org/1"],
     ["/quality/signals/source-1", "quality", "qualitySignalId", "source-1"],
     ["/admin-roles/user-1", "admin-roles", "adminRoleTargetUid", "user-1"],
     ["/sales/hosts/host-1", "sales", "salesOrganizerId", "host-1"],
@@ -29,10 +37,25 @@ describe("Admin route contract", () => {
     ["/organizers/claims", "organizerWorkspace", "claims", "clubId"],
     ["/events/readiness/", "eventWorkspace", "directory", "eventId"],
     ["/events/external", "eventWorkspace", "external", "eventId"],
+    ["/finance/commercial-terms", "financeWorkspace", "commercial-terms", "financeIssueId"],
+    ["/finance/payment-routing", "financeWorkspace", "payment-routing", "financeIssueId"],
+    ["/finance", "financeWorkspace", "issues", "financeIssueId"],
   ])("does not mistake the %s workspace for a record", (path, key, value, recordKey) => {
     const route = resolveAdminRoute(path);
     expect(route).toHaveProperty(key, value);
     expect(route.params[recordKey]).toBeUndefined();
+  });
+
+  it("builds finance workspace paths that resolve back to their workspace", () => {
+    expect(resolveAdminRoute(financePathForWorkspace("payment-routing")).financeWorkspace)
+      .toBe("payment-routing");
+    expect(resolveAdminRoute(financePathForWorkspace("issues")).financeWorkspace).toBe("issues");
+    const organizerPath = commercialTermsPathForOrganizer("club/a b");
+    expect(resolveAdminRoute(organizerPath)).toMatchObject({
+      financeWorkspace: "commercial-terms", params: {termsOrganizerId: "club/a b"},
+    });
+    expect(resolveAdminRoute(commercialTermsPathForOrganizer(null)).params.termsOrganizerId)
+      .toBeUndefined();
   });
 
   it("preserves marketing workspace and draft-step defaults", () => {

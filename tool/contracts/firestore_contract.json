@@ -4184,13 +4184,14 @@
         "keeps commercial terms and their history server-only"
       ],
       "owner": "Catch operators (Finance, Admin Owner) through manageCommercialTerms",
-      "read": "server only; the payment resolver and the admin callable",
+      "read": "server only; the payment resolver, manageCommercialTerms and the read-only adminListCommercialTerms",
       "write": "manageCommercialTerms only: expected-revision replacement with a reason, an immutable revision record and an admin audit log in one transaction",
       "exportedFunctions": [
-        "manageCommercialTerms"
+        "manageCommercialTerms",
+        "adminListCommercialTerms"
       ],
       "migrationNotes": [
-        "New collection. Until commercialTerms/platform exists, platformSplit (Route) payments and memberships fail closed and hostCollected ticket and form payments carry no terms snapshot. Seed it through manageCommercialTerms before relying on either; no backfill rewrites recorded payments."
+        "New collection. Until commercialTerms/platform exists, platformSplit (Route) payments and memberships fail closed and hostCollected ticket and form payments carry no terms snapshot. Save it once in Admin (Finance, Commercial terms), which writes through manageCommercialTerms, before relying on either; no backfill rewrites recorded payments."
       ]
     },
     {
@@ -4204,10 +4205,11 @@
         "keeps commercial terms and their history server-only"
       ],
       "owner": "manageCommercialTerms",
-      "read": "server only; operator audit",
+      "read": "server only; operator audit through adminListCommercialTerms",
       "write": "create-only in the same transaction as the commercialTerms write it records",
       "exportedFunctions": [
-        "manageCommercialTerms"
+        "manageCommercialTerms",
+        "adminListCommercialTerms"
       ],
       "migrationNotes": [
         "New append-only history keyed <termsId>_r<revision>; never updated or deleted."

@@ -11,3 +11,13 @@ test("catalog and validator discovery cover central and feature-owned APIs", () 
     const unrelated = "adminNotInvoked";
   `), ["adminLegacy", "adminSalesRead", "adminSalesWrite"]);
 });
+
+test("the validated boundary also covers callables without the admin prefix", () => {
+  assert.deepEqual(adminCallableNames(`
+    function invokeAdminCallable<RequestData, ResponseData>(name: string, payload: RequestData) {}
+    invokeAdminCallable<Request, Response>("manageCommercialTerms", payload);
+    invokeAdminCallable("managePaymentRoutingPolicy", payload);
+    httpsCallable(functions, "getOrganizerEntitlement");
+    call("proposeSalesPartnerDemoWording", payload);
+  `), ["manageCommercialTerms", "managePaymentRoutingPolicy"]);
+});

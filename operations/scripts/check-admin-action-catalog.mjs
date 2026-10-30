@@ -67,7 +67,7 @@ export async function checkAdminActionCatalog({
     guiCallables,
     catalogCallables
   );
-  const exported = new Set(indexSource.match(/\badmin[A-Z][A-Za-z0-9]+\b/gu) ?? []);
+  const exported = new Set(indexSource.match(/\b[a-z][A-Za-z0-9]+\b/gu) ?? []);
   for (const callable of allCatalogCallables) {
     if (!exported.has(callable)) findings.push({
       id: "catalog-callable-not-exported",

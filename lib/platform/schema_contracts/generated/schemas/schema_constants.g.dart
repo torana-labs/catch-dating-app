@@ -81,6 +81,8 @@ export 'admin_link_organizer_intake_to_sales_response.g.dart';
 export 'admin_link_sales_inbound_intent_callable_payload.g.dart';
 export 'admin_list_action_executions_callable_payload.g.dart';
 export 'admin_list_club_details_callable_payload.g.dart';
+export 'admin_list_commercial_terms_callable_payload.g.dart';
+export 'admin_list_commercial_terms_callable_response.g.dart';
 export 'admin_list_cross_paths_showcase_candidates_callable_payload.g.dart';
 export 'admin_list_cross_paths_showcase_candidates_callable_response.g.dart';
 export 'admin_list_event_details_callable_payload.g.dart';
