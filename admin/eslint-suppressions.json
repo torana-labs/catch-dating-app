@@ -59,31 +59,6 @@
       "count": 1
     }
   },
-  "src/features/intake/organizer/ui/organizerIntakeDiagnostics.tsx": {
-    "react/forbid-elements": {
-      "count": 2
-    }
-  },
-  "src/features/intake/organizer/ui/organizerIntakeDiscoveryPanels.tsx": {
-    "react/forbid-elements": {
-      "count": 33
-    }
-  },
-  "src/features/intake/organizer/ui/organizerIntakeEventPanels.tsx": {
-    "react/forbid-elements": {
-      "count": 32
-    }
-  },
-  "src/features/intake/organizer/ui/organizerIntakeEvidencePanels.tsx": {
-    "react/forbid-elements": {
-      "count": 42
-    }
-  },
-  "src/features/intake/organizer/ui/organizerIntakeReadinessPanels.tsx": {
-    "react/forbid-elements": {
-      "count": 42
-    }
-  },
   "src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx": {
     "react/forbid-elements": {
       "count": 2

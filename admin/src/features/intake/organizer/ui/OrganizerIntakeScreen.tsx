@@ -1,12 +1,10 @@
 import {AlertTriangle} from "lucide-react";
-import {lazy, Suspense, useState} from "react";
+import {Suspense} from "react";
 import {useNavigate} from "react-router";
 
 import {
-  AdminButton,
   AdminGuardrailList,
   AdminIntakeReviewWorkbench,
-  AdminToolbar,
   AdminWorkbenchNote,
   Panel,
 } from "../../../../shared/ui/AdminPrimitives";
@@ -28,13 +26,6 @@ import {renderListingEventImports} from "./listingEventImportPanels";
 import {useSupplyIntakePolicyController} from
   "../controllers/useSupplyIntakePolicyController";
 import {renderSupplyIntakePolicies} from "./supplyIntakePolicyPanels";
-
-const LazyOrganizerIntakeDiagnostics = lazy(async () => {
-  const module = await import("./organizerIntakeDiagnostics");
-  return {
-    default: module.organizerIntakeDiagnostics.OrganizerIntakeDiagnostics,
-  };
-});
 
 export function OrganizerIntakeScreen() {
   return (
@@ -86,49 +77,13 @@ export function OrganizerIntakeWorkspace({
   controller: OrganizerIntakeController;
   nowMs?: number;
 }) {
-  const [showDiagnostics, setShowDiagnostics] = useState(false);
-  if (!showDiagnostics) {
-    return (
-      <>
-        <OrganizerUnavailableRecords controller={controller} />
-        <organizerIntakeWorkbench.OrganizerTaskWorkbench
-          controller={controller}
-          nowMs={nowMs}
-          onShowDiagnostics={() => setShowDiagnostics(true)}
-        />
-      </>
-    );
-  }
-  if (!controller.diagnosticsBridge) {
-    return (
-      <>
-        <OrganizerUnavailableRecords controller={controller} />
-        <organizerIntakeWorkbench.OrganizerTaskWorkbench
-          controller={controller}
-          nowMs={nowMs}
-          onShowDiagnostics={() => setShowDiagnostics(false)}
-        />
-      </>
-    );
-  }
   return (
     <>
       <OrganizerUnavailableRecords controller={controller} />
-      <AdminToolbar>
-        <AdminWorkbenchNote>
-          Diagnostics preserves generated pipeline, policy, crawl, curation,
-          and import evidence without forcing it into the daily decision path.
-        </AdminWorkbenchNote>
-        <AdminButton onClick={() => setShowDiagnostics(false)}>
-          Back to review queue
-        </AdminButton>
-      </AdminToolbar>
-      <Suspense fallback={<AdminWorkbenchNote>Loading diagnostics...</AdminWorkbenchNote>}>
-        <LazyOrganizerIntakeDiagnostics
-          bridge={controller.diagnosticsBridge}
-          controller={controller}
-        />
-      </Suspense>
+      <organizerIntakeWorkbench.OrganizerTaskWorkbench
+        controller={controller}
+        nowMs={nowMs}
+      />
     </>
   );
 }
