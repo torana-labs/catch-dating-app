@@ -820,6 +820,10 @@ export interface HostContactSummaryDocument {
       | "high_impact_advocate"
       | "whatsapp_reachable"
       | "sms_reachable"
+      | "active_member"
+      | "lapsed_member"
+      | "member_no_recent_attendance"
+      | "frequent_non_member"
     )[];
     /**
      * @maxItems 5
@@ -833,6 +837,22 @@ export interface HostContactSummaryDocument {
     smsStatus: "unknown" | "optedIn" | "optedOut";
     sourceCoverage: "exact" | "partial" | "insufficientData";
     revision: number;
+    /**
+     * CRM projection of one contact's paid membership with the organizer, through the contact's linked account.
+     */
+    membership?: {
+      planId: string;
+      planName: string;
+      status:
+        | "trialing"
+        | "active"
+        | "past_due"
+        | "paused"
+        | "canceling"
+        | "expired";
+      memberSinceMillis: number | null;
+      entitled: boolean;
+    } | null;
   };
   version: 1;
 }
@@ -9982,7 +10002,11 @@ export interface OrganizerSavedAudienceDocument {
             | "advocate"
             | "high_impact_advocate"
             | "whatsapp_reachable"
-            | "sms_reachable";
+            | "sms_reachable"
+            | "active_member"
+            | "lapsed_member"
+            | "member_no_recent_attendance"
+            | "frequent_non_member";
         }
       | {
           kind: "manualTag";
@@ -10055,6 +10079,10 @@ export interface OrganizerSavedAudienceDocument {
             | "high_impact_advocate"
             | "whatsapp_reachable"
             | "sms_reachable"
+            | "active_member"
+            | "lapsed_member"
+            | "member_no_recent_attendance"
+            | "frequent_non_member"
           )[];
           /**
            * @maxItems 20
@@ -10297,6 +10325,261 @@ export interface OrganizerEntitlementReceiptDocument {
 }
 
 /**
+ * Server-owned per-organizer paid membership program: the payment provider binding snapshot taken when the program was enabled, the host-wide billing pause and member counts.
+ */
+export interface HostMembershipProgramDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  state: "enabled" | "disabled";
+  payment: {
+    provider: "razorpay";
+    providerAccountId: string;
+    bindingId: string;
+    mode: "test" | "live";
+  };
+  billingPause: {
+    state: "active" | "pausing" | "paused" | "resuming";
+    requestedAtMillis: number | null;
+    requestedBy: string | null;
+    processedCount: number;
+    cursor: string | null;
+  };
+  memberCount: number;
+  revision: number;
+  createdAtMillis: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * One paid membership tier sold by an organizer. Published plans are readable by signed-in users; only the plans callable writes them. Price changes create a new provider price and leave existing members on the price they bought.
+ */
+export interface HostMembershipPlanDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  name: string;
+  description: string;
+  status: "draft" | "published" | "archived";
+  prices: {
+    monthly?: {
+      /**
+       * INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication.
+       */
+      amountPaise: number;
+      providerPriceIds: {
+        razorpay?: string;
+      };
+      revision: number;
+    };
+    annual?: {
+      /**
+       * INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication.
+       */
+      amountPaise: number;
+      providerPriceIds: {
+        razorpay?: string;
+      };
+      revision: number;
+    };
+  };
+  memberCap: number | null;
+  trialDays: number;
+  /**
+   * @maxItems 3
+   */
+  benefits: (
+    | {
+        type: "eventDiscount";
+        percentOff: number;
+      }
+    | {
+        type: "earlyAccess";
+      }
+    | {
+        type: "membersOnlyAccess";
+      }
+  )[];
+  /**
+   * @maxItems 8
+   */
+  perks: string[];
+  limits: {
+    maxUpcomingMemberPricedBookings: number | null;
+  };
+  activeMemberCount: number;
+  sortOrder: number;
+  revision: number;
+  createdAtMillis: number;
+  updatedAtMillis: number;
+  publishedAtMillis: number | null;
+}
+
+/**
+ * One member's paid membership with one organizer, keyed hm_<sha256([organizerId, uid])> so a rejoining member keeps tenure. Written only by the membership state machine from verified provider evidence and member/host intents. Distinct from organizerCommunityMemberships (unpaid approval grants).
+ */
+export interface HostMembershipDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  uid: string;
+  planId: string;
+  planName: string;
+  interval: "monthly" | "annual";
+  status:
+    | "trialing"
+    | "active"
+    | "past_due"
+    | "paused"
+    | "canceling"
+    | "expired";
+  statusReason:
+    | null
+    | "memberPaused"
+    | "hostPaused"
+    | "paymentFailed"
+    | "memberCanceled"
+    | "planCompleted"
+    | "providerCanceled";
+  /**
+   * INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication.
+   */
+  priceInPaise: number;
+  currency: "INR";
+  currentPeriodStartMillis: number | null;
+  currentPeriodEndMillis: number | null;
+  trialEndsAtMillis: number | null;
+  cancelAtPeriodEnd: boolean;
+  pause: null | {
+    initiator: "member" | "host";
+    pausedAtMillis: number;
+  };
+  pastDueSinceMillis: number | null;
+  memberSinceMillis: number | null;
+  tenure: {
+    accumulatedMillis: number;
+    stretchStartedAtMillis: number | null;
+  };
+  provider: "razorpay";
+  providerSubscriptionId: string;
+  providerPlanId: string;
+  providerEventAtMillis: number;
+  lastCheckoutId: string;
+  revision: number;
+  createdAtMillis: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * One membership purchase attempt: the provider subscription awaiting mandate authorization. The buyer may read their own checkout to follow progress; open checkouts reserve plan capacity until expiry.
+ */
+export interface HostMembershipCheckoutDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  planId: string;
+  uid: string;
+  interval: "monthly" | "annual";
+  /**
+   * INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication.
+   */
+  priceInPaise: number;
+  state: "creating" | "open" | "authorized" | "expired" | "failed";
+  provider: "razorpay";
+  providerSubscriptionId: string | null;
+  authorizationUrl: string | null;
+  expiresAtMillis: number;
+  createdAtMillis: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * Server-only ledger of one captured membership charge and its Route transfer to the host linked account minus the platform fee. Keyed by the provider payment id.
+ */
+export interface HostMembershipChargeDocument {
+  schemaVersion: 1;
+  membershipId: string;
+  organizerId: string;
+  uid: string;
+  provider: "razorpay";
+  providerSubscriptionId: string;
+  amountPaise: number;
+  feePaise: number;
+  transferAmountPaise: number;
+  periodStartMillis: number | null;
+  periodEndMillis: number | null;
+  providerAccountId: string;
+  mode: "test" | "live";
+  transfer: {
+    state: "pending" | "requesting" | "created" | "failed" | "notRequired";
+    transferId: string | null;
+    attempts: number;
+    lastError: string | null;
+  };
+  createdAtMillis: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * Server-only create-once dedupe receipt for one verified membership provider webhook delivery. Stores ids and outcome only, never the raw payload.
+ */
+export interface HostMembershipWebhookReceiptDocument {
+  schemaVersion: 1;
+  provider: "razorpay";
+  providerEventId: string | null;
+  eventType: string;
+  subscriptionId: string | null;
+  paymentId: string | null;
+  outcome: "applied" | "ignored" | "stale";
+  receivedAtMillis: number;
+}
+
+/**
+ * One booking made at a member price, keyed {eventId}_{uid}. Source of the member's savings total and of the upcoming member-priced booking cap. Readable by the member only.
+ */
+export interface HostMembershipBenefitUseDocument {
+  schemaVersion: 1;
+  membershipId: string;
+  organizerId: string;
+  uid: string;
+  eventId: string;
+  planId: string;
+  listPriceInPaise: number;
+  paidPriceInPaise: number;
+  savingsInPaise: number;
+  eventStartMillis: number;
+  state: "booked" | "released";
+  createdAtMillis: number;
+}
+
+/**
+ * Paid-membership rules for one event: per-plan member price overrides (0 or 100% off = included), an early-access window anchored when first enabled, and a paid-members-only flag. Kept outside eventPolicy so it never changes the seat policy hash or lock.
+ */
+export interface EventMembershipRulesDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  eventId: string;
+  /**
+   * @maxItems 10
+   */
+  memberPriceOverrides: (
+    | {
+        planId: string;
+        percentOff: number;
+      }
+    | {
+        planId: string;
+        priceInPaise: number;
+      }
+  )[];
+  earlyAccess: null | {
+    hours: number;
+    anchorMillis: number;
+    generalSaleOpensAtMillis: number;
+  };
+  membersOnly: boolean;
+  revision: number;
+  updatedAtMillis: number;
+  updatedBy: string;
+}
+
+/**
  * Server-only identity evidence edge used for keyed candidate lookup. Hashes are restricted identifiers, not anonymous data.
  */
 export interface OrganizerContactIdentityLinkDocument {
@@ -10440,7 +10723,29 @@ export interface OrganizerContactTraitDocument {
     | "high_impact_advocate"
     | "whatsapp_reachable"
     | "sms_reachable"
+    | "active_member"
+    | "lapsed_member"
+    | "member_no_recent_attendance"
+    | "frequent_non_member"
   )[];
+  /**
+   * CRM projection of one contact's paid membership with the organizer, through the contact's linked account.
+   */
+  membership?: {
+    planId: string;
+    planName: string;
+    status:
+      | "trialing"
+      | "active"
+      | "past_due"
+      | "paused"
+      | "canceling"
+      | "expired";
+    memberSinceMillis: number | null;
+    entitled: boolean;
+  } | null;
+  attended30DayCount?: number;
+  attended60DayCount?: number;
   definitionVersion: number;
   whatsappStatus: "unknown" | "optedIn" | "optedOut";
   smsStatus: "unknown" | "optedIn" | "optedOut";

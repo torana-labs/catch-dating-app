@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "organizerId": "organizer-1",
+  "name": "Sunday Runners",
+  "description": "Every Sunday long run included.",
+  "status": "published",
+  "prices": {
+    "monthly": {
+      "amountPaise": 49900,
+      "providerPriceIds": {
+        "razorpay": "plan_TestMonthly1"
+      },
+      "revision": 1
+    },
+    "annual": {
+      "amountPaise": 499900,
+      "providerPriceIds": {
+        "razorpay": "plan_TestAnnual1"
+      },
+      "revision": 1
+    }
+  },
+  "memberCap": 200,
+  "trialDays": 0,
+  "benefits": [
+    {
+      "type": "eventDiscount",
+      "percentOff": 100
+    },
+    {
+      "type": "earlyAccess"
+    }
+  ],
+  "perks": [
+    "Free coffee after the run"
+  ],
+  "limits": {
+    "maxUpcomingMemberPricedBookings": 2
+  },
+  "activeMemberCount": 12,
+  "sortOrder": 0,
+  "revision": 2,
+  "createdAtMillis": 1761600000000,
+  "updatedAtMillis": 1761600000000,
+  "publishedAtMillis": 1761600000000
+}

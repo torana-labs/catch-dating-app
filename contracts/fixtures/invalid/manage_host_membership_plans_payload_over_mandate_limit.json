@@ -1,0 +1,28 @@
+{
+  "action": "save",
+  "organizerId": "organizer-1",
+  "planId": null,
+  "expectedRevision": null,
+  "plan": {
+    "name": "Sunday Runners",
+    "description": "",
+    "prices": {
+      "annual": {
+        "amountPaise": 1600000
+      }
+    },
+    "memberCap": null,
+    "trialDays": 0,
+    "benefits": [
+      {
+        "type": "eventDiscount",
+        "percentOff": 20
+      }
+    ],
+    "perks": [],
+    "limits": {
+      "maxUpcomingMemberPricedBookings": null
+    },
+    "sortOrder": 0
+  }
+}

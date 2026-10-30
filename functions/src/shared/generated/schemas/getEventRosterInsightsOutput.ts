@@ -95,7 +95,7 @@ export const getEventRosterInsightsCallableResponseSchema: Record<string, unknow
           "signals": {
             "type": "array",
             "uniqueItems": true,
-            "maxItems": 10,
+            "maxItems": 11,
             "items": {
               "type": "string",
               "enum": [
@@ -108,7 +108,8 @@ export const getEventRosterInsightsCallableResponseSchema: Record<string, unknow
                 "advocate",
                 "high_impact_advocate",
                 "known_catch_spender",
-                "top_catch_spender"
+                "top_catch_spender",
+                "member"
               ]
             }
           },
@@ -192,7 +193,8 @@ export const getEventRosterInsightsCallableResponseSchema: Record<string, unknow
         "advocate",
         "high_impact_advocate",
         "known_catch_spender",
-        "top_catch_spender"
+        "top_catch_spender",
+        "member"
       ]
     },
     "spendAmount": {
@@ -265,7 +267,7 @@ export const getEventRosterInsightsCallableResponseSchema: Record<string, unknow
         "signals": {
           "type": "array",
           "uniqueItems": true,
-          "maxItems": 10,
+          "maxItems": 11,
           "items": {
             "type": "string",
             "enum": [
@@ -278,7 +280,8 @@ export const getEventRosterInsightsCallableResponseSchema: Record<string, unknow
               "advocate",
               "high_impact_advocate",
               "known_catch_spender",
-              "top_catch_spender"
+              "top_catch_spender",
+              "member"
             ]
           }
         },

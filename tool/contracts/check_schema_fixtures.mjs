@@ -25,6 +25,12 @@ export const fixtureSchemaCases = Object.freeze([
   ["invalid/update_organizer_setup_defaults_clear_value.json", "updateOrganizerEventSetupDefaultsCallablePayloadSchema"],
 
   ["valid/activity_notification_doc.json", "activityNotificationDocumentSchema"],
+  ["valid/host_membership_doc.json", "hostMembershipDocumentSchema"],
+  ["valid/host_membership_plan_doc.json", "hostMembershipPlanDocumentSchema"],
+  ["valid/event_membership_rules_doc.json", "eventMembershipRulesDocumentSchema"],
+  ["valid/manage_host_membership_plans_save_payload.json", "manageHostMembershipPlansCallablePayloadSchema"],
+  ["invalid/host_membership_doc_unknown_status.json", "hostMembershipDocumentSchema"],
+  ["invalid/manage_host_membership_plans_payload_over_mandate_limit.json", "manageHostMembershipPlansCallablePayloadSchema"],
   ["valid/activity_preferences.json", "activityPreferencesSchema"],
   ["valid/archive_club_payload.json", "archiveClubCallablePayloadSchema"],
   ["valid/block_doc.json", "blockDocumentSchema"],

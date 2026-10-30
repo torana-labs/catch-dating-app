@@ -1,0 +1,184 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_host_membership_plans_payload.schema.json",
+  "title": "ManageHostMembershipPlansCallablePayload",
+  "description": "Organizer-manager plan management: list every plan, save a draft or edit, publish (creates provider prices) and archive (stops new joins).",
+  "x-owner": "Host memberships plan editor",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "organizerId"
+      ],
+      "properties": {
+        "action": {
+          "const": "list"
+        },
+        "organizerId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "organizerId",
+        "planId",
+        "plan",
+        "expectedRevision"
+      ],
+      "properties": {
+        "action": {
+          "const": "save"
+        },
+        "organizerId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "planId": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "../shared/host_membership_common.schema.json#/definitions/planId"
+            }
+          ]
+        },
+        "plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "description",
+            "prices",
+            "memberCap",
+            "trialDays",
+            "benefits",
+            "perks",
+            "limits",
+            "sortOrder"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "../shared/host_membership_common.schema.json#/definitions/planName"
+            },
+            "description": {
+              "type": "string",
+              "maxLength": 500
+            },
+            "prices": {
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "properties": {
+                "monthly": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "amountPaise"
+                  ],
+                  "properties": {
+                    "amountPaise": {
+                      "$ref": "../shared/host_membership_common.schema.json#/definitions/planPriceAmountPaise"
+                    }
+                  }
+                },
+                "annual": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "amountPaise"
+                  ],
+                  "properties": {
+                    "amountPaise": {
+                      "$ref": "../shared/host_membership_common.schema.json#/definitions/planPriceAmountPaise"
+                    }
+                  }
+                }
+              }
+            },
+            "memberCap": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100000
+            },
+            "trialDays": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 30
+            },
+            "benefits": {
+              "$ref": "../shared/host_membership_common.schema.json#/definitions/planBenefits"
+            },
+            "perks": {
+              "$ref": "../shared/host_membership_common.schema.json#/definitions/planPerks"
+            },
+            "limits": {
+              "$ref": "../shared/host_membership_common.schema.json#/definitions/planLimits"
+            },
+            "sortOrder": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            }
+          }
+        },
+        "expectedRevision": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 9007199254740990
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "organizerId",
+        "planId"
+      ],
+      "properties": {
+        "action": {
+          "const": "publish"
+        },
+        "organizerId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "planId": {
+          "$ref": "../shared/host_membership_common.schema.json#/definitions/planId"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "organizerId",
+        "planId"
+      ],
+      "properties": {
+        "action": {
+          "const": "archive"
+        },
+        "organizerId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "planId": {
+          "$ref": "../shared/host_membership_common.schema.json#/definitions/planId"
+        }
+      }
+    }
+  ]
+}

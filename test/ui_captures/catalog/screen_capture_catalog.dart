@@ -113,6 +113,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.d
 import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_club_patch.dart';
+import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
@@ -8150,6 +8151,9 @@ List<Object> _settingsAccountProviderOverrides({
   );
   return <Object>[
     uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+    watchMyHostMembershipsProvider(
+      _captureViewerUid,
+    ).overrideWith((ref) => Stream.value(const [])),
     watchUserProfileProvider.overrideWith(
       (ref) => profileStream ?? Stream.value(_captureViewer),
     ),

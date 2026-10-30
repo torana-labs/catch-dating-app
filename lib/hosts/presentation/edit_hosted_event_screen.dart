@@ -25,6 +25,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_booking_controlle
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_save_request.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/hosted_event_membership_rules_section.dart';
 import 'package:catch_dating_app/hosts/presentation/hosted_event_policy_section.dart';
 import 'package:catch_dating_app/hosts/presentation/hosted_event_schedule_section.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
@@ -615,6 +616,11 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                 ),
                               ),
                           privateAccessAsync: privateAccessState.privateAccess,
+                        ),
+                      // Paid membership pricing is INR-only (Razorpay).
+                      if (widget.event.currency == 'INR')
+                        HostedEventMembershipRulesSection(
+                          eventId: widget.event.id,
                         ),
                     ],
                   ),

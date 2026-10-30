@@ -12,6 +12,8 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
 import {deleteAccountEventParticipations} from "./accountDeletionSeats";
+import {endAccountHostMemberships} from
+  "../hostMemberships/accountDeletion";
 
 type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
 
@@ -240,6 +242,8 @@ async function queueRelationshipCleanup(params: {
   // share one transaction, including attendee-only imported seats.
   await deleteAccountEventParticipations({db, uid, now,
     nowMillis: Date.now()});
+  // Paid memberships stop billing before their records are erased below.
+  await endAccountHostMemberships(uid).catch(() => undefined);
   await Promise.all([
     queueClubMembershipCleanup(db, uid, now, writer),
     queueOrganizerAudienceIdentityCleanup(db, uid, now, writer),
@@ -368,7 +372,8 @@ async function queueParticipantPrivateStateCleanup(
     "eventAssignmentFeatureConsents", "organizerCommunityMemberships",
     "organizerCommunityMembershipDecisions",
     "eventApprovalNotificationPreferences",
-    "eventApprovalNotificationReceipts"]) {
+    "eventApprovalNotificationReceipts", "hostMemberships",
+    "hostMembershipCheckouts", "hostMembershipBenefitUses"]) {
     const records = await db.collection(collection)
       .where("uid", "==", uid).get();
     records.forEach((doc) => writer.delete(doc.ref));

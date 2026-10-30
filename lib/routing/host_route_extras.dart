@@ -103,6 +103,7 @@ String? _organizerAudienceUriRedirect(BuildContext _, GoRouterState state) {
     Routes.hostClubLiveGuideScreen,
     Routes.hostClubTeamScreen,
     Routes.hostClubPaymentsScreen,
+    Routes.hostClubMembershipsScreen,
   }.where((route) => route.name == setting).firstOrNull;
   if (route != null && state.uri.queryParameters['clubId'] != null) {
     return state.uri

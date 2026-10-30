@@ -40,7 +40,8 @@
         "advocate",
         "high_impact_advocate",
         "known_catch_spender",
-        "top_catch_spender"
+        "top_catch_spender",
+        "member"
       ]
     },
     "spendAmount": {
@@ -83,7 +84,7 @@
         "signals": {
           "type": "array",
           "uniqueItems": true,
-          "maxItems": 10,
+          "maxItems": 11,
           "items": {"$ref": "#/definitions/signal"}
         },
         "priorAttendedEventCount": {"type": "integer", "minimum": 0, "maximum": 1000000},

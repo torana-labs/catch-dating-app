@@ -26,9 +26,9 @@ the type system. `templates/feature-drop*` are marketing media, out of scope.
 
 ~85% complete. Foundations are **already on-spec** and faithful: color tokens,
 spacing/gutter, radius, stroke, elevation, the activity **accent** pigments, and the
-full `.t-*` type scale ([`catch_text_styles.dart`](../lib/core/theme/catch_text_styles.dart),
-[`catch_fonts.dart`](../lib/core/theme/catch_fonts.dart),
-[`catch_tokens.dart`](../lib/core/theme/catch_tokens.dart)). Most `Catch*` widgets are
+full `.t-*` type scale ([`catch_text_styles.dart`](../lib/platform/theme/catch_text_styles.dart),
+[`catch_fonts.dart`](../lib/platform/theme/catch_fonts.dart),
+[`catch_tokens.dart`](../lib/platform/theme/catch_tokens.dart)). Most `Catch*` widgets are
 real, composed ports. The remaining work is **targeted drift, a handful of missing
 primitives, and a few hand-rolled-instead-of-composed surfaces.**
 

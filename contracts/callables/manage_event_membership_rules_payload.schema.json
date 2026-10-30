@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_event_membership_rules_payload.schema.json",
+  "title": "ManageEventMembershipRulesCallablePayload",
+  "description": "Organizer-manager read and edit of one event's paid-membership rules: member price overrides, early-access hours and the members-only flag.",
+  "x-owner": "Host event editor membership rules section",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "eventId"
+      ],
+      "properties": {
+        "action": {
+          "enum": [
+            "get",
+            "clear"
+          ]
+        },
+        "eventId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "eventId",
+        "memberPriceOverrides",
+        "earlyAccessHours",
+        "membersOnly",
+        "expectedRevision"
+      ],
+      "properties": {
+        "action": {
+          "const": "save"
+        },
+        "eventId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "memberPriceOverrides": {
+          "$ref": "../shared/host_membership_common.schema.json#/definitions/memberPriceOverrides"
+        },
+        "earlyAccessHours": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "../shared/host_membership_common.schema.json#/definitions/earlyAccessHours"
+            }
+          ]
+        },
+        "membersOnly": {
+          "type": "boolean"
+        },
+        "expectedRevision": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 9007199254740990
+        }
+      }
+    }
+  ]
+}

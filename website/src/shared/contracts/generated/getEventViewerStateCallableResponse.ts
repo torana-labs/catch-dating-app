@@ -61,7 +61,9 @@ export interface GetEventViewerStateCallableResponse {
             | "eventUnavailable"
             | "past"
             | "cancelled"
-            | "unsupportedRoute";
+            | "unsupportedRoute"
+            | "paidMembershipRequired"
+            | "memberEarlyAccess";
         };
     route: ("catchFreeBooking" | "catchCheckout" | "catchWaitlistOffer") | null;
     quotedPriceInPaise: number | null;
@@ -104,6 +106,42 @@ export interface GetEventViewerStateCallableResponse {
       attendeeId: string | null;
       expiresAtMillis: number;
       offerPaymentId: string | null;
+    };
+    /**
+     * Present only when the request opted in. Server-evaluated paid membership entitlement for this viewer and event; quotedPriceInPaise is already the member price when memberPriceApplied.
+     */
+    hostMembership?: {
+      member: null | {
+        membershipId: string;
+        planId: string;
+        planName: string;
+        status:
+          | "trialing"
+          | "active"
+          | "past_due"
+          | "paused"
+          | "canceling"
+          | "expired";
+        entitled: boolean;
+      };
+      listPriceInPaise: number | null;
+      memberPriceApplied: boolean;
+      memberPriceBlockedReason: null | "bookingCapReached";
+      savingsInPaise: number;
+      membersOnly: boolean;
+      generalSaleOpensAtMillis: number | null;
+      offer: null | {
+        planId: string;
+        planName: string;
+        interval: "monthly" | "annual";
+        /**
+         * INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication.
+         */
+        planPriceInPaise: number;
+        memberPriceInPaise: number;
+        savingsInPaise: number;
+        unlocksAccess: boolean;
+      };
     };
   };
 }

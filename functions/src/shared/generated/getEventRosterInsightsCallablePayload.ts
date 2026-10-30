@@ -7,4 +7,8 @@
  */
 export interface GetEventRosterInsightsCallablePayload {
   eventId: string;
+  /**
+   * Opt-in for the paid-membership "member" signal; older clients omit it.
+   */
+  includeHostMembership?: boolean;
 }

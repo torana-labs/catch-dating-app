@@ -68,6 +68,7 @@ enum Routes {
   messagingPermissionsScreen('/settings/whatsapp', AppRouteAudience.consumer),
   launchAccessScreen('/settings/launch-access', AppRouteAudience.consumer),
   paymentHistoryScreen('/payment-history', AppRouteAudience.consumer),
+  myMembershipsScreen('/memberships', AppRouteAudience.consumer),
   paymentConfirmationScreen('/payment-confirmation', AppRouteAudience.consumer),
   hostHomeScreen('/host', AppRouteAudience.host),
   hostTodayScreen('/host/today', AppRouteAudience.host),
@@ -233,6 +234,10 @@ enum Routes {
   hostClubLiveGuideScreen('/host/organizers/live-guide', AppRouteAudience.host),
   hostClubTeamScreen('/host/organizers/team', AppRouteAudience.host),
   hostClubPaymentsScreen('/host/organizers/payments', AppRouteAudience.host),
+  hostClubMembershipsScreen(
+    '/host/organizers/memberships',
+    AppRouteAudience.host,
+  ),
   hostClubDetailScreen('/host/organizers/:clubId', AppRouteAudience.host),
   hostCreateClubScreen(
     '/host/organizers/create-organizer',

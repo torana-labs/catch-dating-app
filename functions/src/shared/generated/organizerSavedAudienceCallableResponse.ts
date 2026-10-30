@@ -32,7 +32,11 @@ export interface OrganizerSavedAudienceCallableResponse {
             | "advocate"
             | "high_impact_advocate"
             | "whatsapp_reachable"
-            | "sms_reachable";
+            | "sms_reachable"
+            | "active_member"
+            | "lapsed_member"
+            | "member_no_recent_attendance"
+            | "frequent_non_member";
         }
       | {
           kind: "manualTag";
@@ -105,6 +109,10 @@ export interface OrganizerSavedAudienceCallableResponse {
             | "high_impact_advocate"
             | "whatsapp_reachable"
             | "sms_reachable"
+            | "active_member"
+            | "lapsed_member"
+            | "member_no_recent_attendance"
+            | "frequent_non_member"
           )[];
           /**
            * @maxItems 20

@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {signUpForFreeEventHandler} from "./signUpForFreeEvent";
+import type {HostMembershipContext} from
+  "../hostMemberships/entitlementReader";
 
 test(
   "signUpForFreeEventHandler books a free event through shared signer",
@@ -243,6 +245,8 @@ function deps({
   rateLimitCalls = [],
   onEventRead,
   checkRateLimit,
+  membershipContext,
+  benefitUses = [],
 }: {
   events?: Record<string, Record<string, unknown>>;
   users?: Record<string, Record<string, unknown>>;
@@ -251,6 +255,8 @@ function deps({
   signUpCalls?: SignUpCall[];
   rateLimitCalls?: Array<{uid: string; action: string}>;
   onEventRead?: () => void;
+  membershipContext?: HostMembershipContext;
+  benefitUses?: Array<{id: string; data: unknown}>;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
     uid: string,
@@ -263,10 +269,16 @@ function deps({
     "eventPrivateAccess",
     "eventParticipations",
     "eventWaitlistOffers",
+    "hostMembershipBenefitUses",
   ];
   const firestore = {
     collection: (path: string) => {
       assert.ok(allowedCollections.includes(path), path);
+      if (path === "hostMembershipBenefitUses") {
+        return {doc: (id: string) => ({set: async (data: unknown) => {
+          benefitUses.push({id, data});
+        }})};
+      }
       if (path === "eventWaitlistOffers") {
         return {
           where: () => ({
@@ -311,7 +323,15 @@ function deps({
     ) => {
       signUpCalls.push({eventId, userId, options});
     },
+    readMembershipContext: async () => membershipContext ??
+      emptyMembershipContext(),
+    nowMillis: () => 500,
   };
+}
+
+function emptyMembershipContext(): HostMembershipContext {
+  return {membershipId: "hm_" + "0".repeat(64), rules: null, membership: null,
+    plan: null, publishedPlans: [], upcomingMemberPricedBookings: 0};
 }
 
 function configuredEventFixture(): Record<string, unknown> {
@@ -400,3 +420,64 @@ function isHttpsError(expectedCode: string, expectedMessage: string) {
     error.code === expectedCode &&
     error.message === expectedMessage;
 }
+
+function memberContext(overrides: Partial<HostMembershipContext> = {}):
+  HostMembershipContext {
+  const plan = {planId: "hmp_AbCdEfGhIjKlMnOpQrSt", name: "Sunday Runners",
+    status: "published" as const,
+    prices: {monthly: {amountPaise: 49900, providerPriceIds: {},
+      revision: 1}},
+    memberCap: null, activeMemberCount: 1,
+    benefits: [{type: "eventDiscount" as const, percentOff: 100},
+      {type: "membersOnlyAccess" as const}],
+    limits: {maxUpcomingMemberPricedBookings: null}};
+  return {...emptyMembershipContext(), plan, publishedPlans: [plan],
+    membership: {schemaVersion: 1, organizerId: "club-1", uid: "runner-1",
+      planId: plan.planId, planName: plan.name, interval: "monthly",
+      status: "active", statusReason: null, priceInPaise: 49900,
+      currency: "INR", currentPeriodStartMillis: 0,
+      currentPeriodEndMillis: 10_000, trialEndsAtMillis: null,
+      cancelAtPeriodEnd: false, pause: null, pastDueSinceMillis: null,
+      memberSinceMillis: 0,
+      tenure: {accumulatedMillis: 0, stretchStartedAtMillis: 0},
+      provider: "razorpay", providerSubscriptionId: "sub_TestSub1",
+      providerPlanId: "plan_TestPlan1", providerEventAtMillis: 0,
+      lastCheckoutId: "hmc_AbCdEfGhIjKlMnOpQrSt", revision: 1,
+      createdAtMillis: 1, updatedAtMillis: 1},
+    ...overrides};
+}
+
+test("an included member books a paid event through the free path",
+  async () => {
+    const signUpCalls: SignUpCall[] = [];
+    const benefitUses: Array<{id: string; data: unknown}> = [];
+    await signUpForFreeEventHandler(request("runner-1", {eventId: "event-1"}),
+      deps({events: {"event-1": {priceInPaise: 50_000}}, signUpCalls,
+        benefitUses, membershipContext: memberContext()}));
+    assert.equal(signUpCalls.length, 1);
+    assert.equal(benefitUses.length, 1);
+    assert.equal(benefitUses[0].id, "event-1_runner-1");
+    const use = benefitUses[0].data as Record<string, unknown>;
+    assert.equal(use.listPriceInPaise, 50_000);
+    assert.equal(use.paidPriceInPaise, 0);
+    assert.equal(use.savingsInPaise, 50_000);
+    assert.equal(use.state, "booked");
+  });
+
+test("a non-member cannot book a paid event for free or a members-only one",
+  async () => {
+    await assert.rejects(signUpForFreeEventHandler(
+      request("runner-1", {eventId: "event-1"}),
+      deps({events: {"event-1": {priceInPaise: 50_000}}})),
+    /requires payment/);
+    const signUpCalls: SignUpCall[] = [];
+    const context = memberContext({membership: null,
+      rules: {schemaVersion: 1, organizerId: "club-1", eventId: "event-1",
+        memberPriceOverrides: [], earlyAccess: null, membersOnly: true,
+        revision: 1, updatedAtMillis: 1, updatedBy: "host-1"}});
+    await assert.rejects(signUpForFreeEventHandler(
+      request("runner-1", {eventId: "event-1"}),
+      deps({events: {"event-1": {}}, signUpCalls, membershipContext: context})),
+    /members only/);
+    assert.equal(signUpCalls.length, 0);
+  });

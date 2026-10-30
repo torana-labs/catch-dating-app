@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_my_host_membership_payload.schema.json",
+  "title": "ManageMyHostMembershipCallablePayload",
+  "description": "Member self-serve: pause billing (suspends entitlements), resume, or cancel at the end of the current period.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Consumer My memberships",
+  "required": [
+    "action",
+    "membershipId"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "pause",
+        "resume",
+        "cancelAtPeriodEnd"
+      ],
+      "type": "string"
+    },
+    "membershipId": {
+      "$ref": "../shared/host_membership_common.schema.json#/definitions/membershipId"
+    }
+  }
+}

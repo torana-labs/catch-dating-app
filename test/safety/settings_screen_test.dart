@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
+import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
@@ -557,6 +558,9 @@ ProviderContainer _settingsContainer({
       if (analytics != null)
         appAnalyticsProvider.overrideWith((ref) => analytics),
       uidProvider.overrideWith((ref) => Stream.value(user.uid)),
+      watchMyHostMembershipsProvider(
+        user.uid,
+      ).overrideWith((ref) => Stream.value(const [])),
       appPackageInfoProvider.overrideWith(
         (ref) async => (version: '1.0.1', buildNumber: '3'),
       ),

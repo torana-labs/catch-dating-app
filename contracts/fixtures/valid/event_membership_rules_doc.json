@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "organizerId": "organizer-1",
+  "eventId": "event-1",
+  "memberPriceOverrides": [
+    {
+      "planId": "hmp_AbCdEfGhIjKlMnOpQrSt",
+      "priceInPaise": 0
+    }
+  ],
+  "earlyAccess": {
+    "hours": 48,
+    "anchorMillis": 1761600000000,
+    "generalSaleOpensAtMillis": 1761772800000
+  },
+  "membersOnly": false,
+  "revision": 1,
+  "updatedAtMillis": 1761600000000,
+  "updatedBy": "host-1"
+}

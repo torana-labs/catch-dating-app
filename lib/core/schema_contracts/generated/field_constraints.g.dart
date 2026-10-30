@@ -51888,6 +51888,112 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventMembershipRulesDocumentEarlyAccessAnchorMillis = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.earlyAccess.anchorMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMembershipRulesDocumentEarlyAccessGeneralSaleOpensAtMillis = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.earlyAccess.generalSaleOpensAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMembershipRulesDocumentEarlyAccessHours = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.earlyAccess.hours',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 168,
+  );
+
+  static const eventMembershipRulesDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMembershipRulesDocumentMemberPriceOverrides = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.memberPriceOverrides',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const eventMembershipRulesDocumentMemberPriceOverridesItemsPercentOff = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.memberPriceOverrides.items.percentOff',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const eventMembershipRulesDocumentMemberPriceOverridesItemsPlanId = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.memberPriceOverrides.items.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const eventMembershipRulesDocumentMemberPriceOverridesItemsPriceInPaise = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.memberPriceOverrides.items.priceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const eventMembershipRulesDocumentMembersOnly = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.membersOnly',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventMembershipRulesDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMembershipRulesDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const eventMembershipRulesDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventMembershipRulesDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMembershipRulesDocumentUpdatedBy = CatchContractFieldConstraints(
+    path: 'eventMembershipRulesDocument.updatedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventMessagingBudgetApplicationReceiptDocumentAppliedByUid = CatchContractFieldConstraints(
     path: 'eventMessagingBudgetApplicationReceiptDocument.appliedByUid',
     maxLength: 180,
@@ -80708,14 +80814,14 @@ abstract final class CatchContractConstraints {
   static const exportOrganizerContactsCallablePayloadSegmentId = CatchContractFieldConstraints(
     path: 'exportOrganizerContactsCallablePayload.segmentId',
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const exportOrganizerContactsCallablePayloadSegmentIds = CatchContractFieldConstraints(
     path: 'exportOrganizerContactsCallablePayload.segmentIds',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -80724,7 +80830,7 @@ abstract final class CatchContractConstraints {
     path: 'exportOrganizerContactsCallablePayload.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const exportOrganizerContactsCallableResponseCsv = CatchContractFieldConstraints(
@@ -83902,6 +84008,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getEventRosterInsightsCallablePayloadIncludeHostMembership = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallablePayload.includeHostMembership',
+    valueTypes: <String>['boolean'],
+  );
+
   static const getEventRosterInsightsCallableResponseComputedAtMillis = CatchContractFieldConstraints(
     path: 'getEventRosterInsightsCallableResponse.computedAtMillis',
     required: true,
@@ -84035,8 +84146,8 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['first_time', 'returning', 'regular', 're_engaging', 'reliable', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'known_catch_spender', 'top_catch_spender'],
-    maxItems: 10,
+    itemEnumValues: <String>['first_time', 'returning', 'regular', 're_engaging', 'reliable', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'known_catch_spender', 'top_catch_spender', 'member'],
+    maxItems: 11,
     uniqueItems: true,
   );
 
@@ -84044,7 +84155,7 @@ abstract final class CatchContractConstraints {
     path: 'getEventRosterInsightsCallableResponse.rows.items.signals.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['first_time', 'returning', 'regular', 're_engaging', 'reliable', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'known_catch_spender', 'top_catch_spender'],
+    enumValues: <String>['first_time', 'returning', 'regular', 're_engaging', 'reliable', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'known_catch_spender', 'top_catch_spender', 'member'],
   );
 
   static const getEventRosterInsightsCallableResponseSourceCoverage = CatchContractFieldConstraints(
@@ -85164,6 +85275,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getEventViewerStateCallablePayloadIncludeHostMembership = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallablePayload.includeHostMembership',
+    valueTypes: <String>['boolean'],
+  );
+
   static const getEventViewerStateCallablePayloadInviteCode = CatchContractFieldConstraints(
     path: 'getEventViewerStateCallablePayload.inviteCode',
     maxLength: 120,
@@ -85243,7 +85359,7 @@ abstract final class CatchContractConstraints {
     path: 'getEventViewerStateCallableResponse.viewer.futureBooking.reason',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['membershipRequired', 'inviteRequired', 'reviewRequired', 'full', 'pairCapacityUnavailable', 'generalCapacityUnavailable', 'cohortCapacityUnavailable', 'outOfRatioReviewRequired', 'balanceUnavailable', 'bookingDetailsRequired', 'runPreferencesRequired', 'ageRestricted', 'scheduleConflict', 'eventUnavailable', 'past', 'cancelled', 'unsupportedRoute'],
+    enumValues: <String>['membershipRequired', 'inviteRequired', 'reviewRequired', 'full', 'pairCapacityUnavailable', 'generalCapacityUnavailable', 'cohortCapacityUnavailable', 'outOfRatioReviewRequired', 'balanceUnavailable', 'bookingDetailsRequired', 'runPreferencesRequired', 'ageRestricted', 'scheduleConflict', 'eventUnavailable', 'past', 'cancelled', 'unsupportedRoute', 'paidMembershipRequired', 'memberEarlyAccess'],
   );
 
   static const getEventViewerStateCallableResponseViewerGuestAction = CatchContractFieldConstraints(
@@ -85307,6 +85423,131 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipGeneralSaleOpensAtMillis = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.generalSaleOpensAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipListPriceInPaise = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.listPriceInPaise',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipMemberEntitled = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.member.entitled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipMemberMembershipId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.member.membershipId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hm_[a-f0-9]{64}\$',
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipMemberPlanId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.member.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipMemberPlanName = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.member.planName',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipMemberStatus = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.member.status',
+    required: true,
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipMemberPriceApplied = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.memberPriceApplied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipMemberPriceBlockedReason = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.memberPriceBlockedReason',
+    required: true,
+    enumValues: <String>['bookingCapReached'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipMembersOnly = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.membersOnly',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipOfferInterval = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.offer.interval',
+    required: true,
+    enumValues: <String>['monthly', 'annual'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipOfferMemberPriceInPaise = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.offer.memberPriceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipOfferPlanId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.offer.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipOfferPlanName = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.offer.planName',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipOfferPlanPriceInPaise = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.offer.planPriceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1000,
+    maximum: 1500000,
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipOfferSavingsInPaise = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.offer.savingsInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipOfferUnlocksAccess = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.offer.unlocksAccess',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerHostMembershipSavingsInPaise = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.hostMembership.savingsInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const getEventViewerStateCallableResponseViewerMembershipDecisionId = CatchContractFieldConstraints(
@@ -86723,6 +86964,40 @@ abstract final class CatchContractConstraints {
     maximum: 1000000,
   );
 
+  static const getOrganizerContactDetailCallableResponseTraitsMembershipEntitled = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.membership.entitled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsMembershipMemberSinceMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.membership.memberSinceMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsMembershipPlanId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.membership.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsMembershipPlanName = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.membership.planName',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsMembershipStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.membership.status',
+    required: true,
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
   static const getOrganizerContactDetailCallableResponseTraitsNoShowCount = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallableResponse.traits.noShowCount',
     required: true,
@@ -86736,7 +87011,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 16,
     uniqueItems: true,
   );
@@ -86745,7 +87020,7 @@ abstract final class CatchContractConstraints {
     path: 'getOrganizerContactDetailCallableResponse.traits.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const getOrganizerContactDetailCallableResponseTraitsSmsStatus = CatchContractFieldConstraints(
@@ -91521,6 +91796,40 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{32}\$',
   );
 
+  static const hostContactSummaryDocumentRowMembershipEntitled = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.membership.entitled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const hostContactSummaryDocumentRowMembershipMemberSinceMillis = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.membership.memberSinceMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostContactSummaryDocumentRowMembershipPlanId = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.membership.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const hostContactSummaryDocumentRowMembershipPlanName = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.membership.planName',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostContactSummaryDocumentRowMembershipStatus = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.membership.status',
+    required: true,
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
   static const hostContactSummaryDocumentRowPhoneE164 = CatchContractFieldConstraints(
     path: 'hostContactSummaryDocument.row.phoneE164',
     valueTypes: <String>['string'],
@@ -91540,7 +91849,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 16,
     uniqueItems: true,
   );
@@ -91549,7 +91858,7 @@ abstract final class CatchContractConstraints {
     path: 'hostContactSummaryDocument.row.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const hostContactSummaryDocumentRowSmsStatus = CatchContractFieldConstraints(
@@ -92268,7 +92577,7 @@ abstract final class CatchContractConstraints {
     path: 'hostGroupDetailDocument.row.definition.predicates.items.segmentId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const hostGroupDetailDocumentRowDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
@@ -92276,7 +92585,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -92285,7 +92594,7 @@ abstract final class CatchContractConstraints {
     path: 'hostGroupDetailDocument.row.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const hostGroupDetailDocumentRowDefinitionPredicatesItemsValue = CatchContractFieldConstraints(
@@ -92540,6 +92849,861 @@ abstract final class CatchContractConstraints {
   static const hostGroupSummaryDocumentVersion = CatchContractFieldConstraints(
     path: 'hostGroupSummaryDocument.version',
     required: true,
+  );
+
+  static const hostMembershipBenefitUseDocumentCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipBenefitUseDocument.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipBenefitUseDocumentEventId = CatchContractFieldConstraints(
+    path: 'hostMembershipBenefitUseDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipBenefitUseDocumentEventStartMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipBenefitUseDocument.eventStartMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipBenefitUseDocumentListPriceInPaise = CatchContractFieldConstraints(
+    path: 'hostMembershipBenefitUseDocument.listPriceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const hostMembershipBenefitUseDocumentMembershipId = CatchContractFieldConstraints(
+    path: 'hostMembershipBenefitUseDocument.membershipId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hm_[a-f0-9]{64}\$',
+  );
+
+  static const hostMembershipBenefitUseDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'hostMembershipBenefitUseDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipBenefitUseDocumentPaidPriceInPaise = CatchContractFieldConstraints(
+    path: 'hostMembershipBenefitUseDocument.paidPriceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const hostMembershipBenefitUseDocumentPlanId = CatchContractFieldConstraints(
+    path: 'hostMembershipBenefitUseDocument.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const hostMembershipBenefitUseDocumentSavingsInPaise = CatchContractFieldConstraints(
+    path: 'hostMembershipBenefitUseDocument.savingsInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const hostMembershipBenefitUseDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'hostMembershipBenefitUseDocument.schemaVersion',
+    required: true,
+  );
+
+  static const hostMembershipBenefitUseDocumentState = CatchContractFieldConstraints(
+    path: 'hostMembershipBenefitUseDocument.state',
+    required: true,
+    enumValues: <String>['booked', 'released'],
+  );
+
+  static const hostMembershipBenefitUseDocumentUid = CatchContractFieldConstraints(
+    path: 'hostMembershipBenefitUseDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipChargeDocumentAmountPaise = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 1500000,
+  );
+
+  static const hostMembershipChargeDocumentCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipChargeDocumentFeePaise = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.feePaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1500000,
+  );
+
+  static const hostMembershipChargeDocumentMembershipId = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.membershipId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hm_[a-f0-9]{64}\$',
+  );
+
+  static const hostMembershipChargeDocumentMode = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.mode',
+    required: true,
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const hostMembershipChargeDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipChargeDocumentPeriodEndMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.periodEndMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipChargeDocumentPeriodStartMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.periodStartMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipChargeDocumentProvider = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.provider',
+    required: true,
+    enumValues: <String>['razorpay'],
+  );
+
+  static const hostMembershipChargeDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^acc_[A-Za-z0-9]{4,40}\$',
+  );
+
+  static const hostMembershipChargeDocumentProviderSubscriptionId = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.providerSubscriptionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^sub_[A-Za-z0-9]{6,40}\$',
+  );
+
+  static const hostMembershipChargeDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.schemaVersion',
+    required: true,
+  );
+
+  static const hostMembershipChargeDocumentTransferAttempts = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.transfer.attempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const hostMembershipChargeDocumentTransferLastError = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.transfer.lastError',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipChargeDocumentTransferState = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.transfer.state',
+    required: true,
+    enumValues: <String>['pending', 'requesting', 'created', 'failed', 'notRequired'],
+  );
+
+  static const hostMembershipChargeDocumentTransferTransferId = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.transfer.transferId',
+    valueTypes: <String>['string'],
+    pattern: '^trf_[A-Za-z0-9]{6,40}\$',
+  );
+
+  static const hostMembershipChargeDocumentTransferAmountPaise = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.transferAmountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1500000,
+  );
+
+  static const hostMembershipChargeDocumentUid = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipChargeDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipCheckoutDocumentAuthorizationUrl = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.authorizationUrl',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+    pattern: '^https://',
+  );
+
+  static const hostMembershipCheckoutDocumentCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipCheckoutDocumentExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipCheckoutDocumentInterval = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.interval',
+    required: true,
+    enumValues: <String>['monthly', 'annual'],
+  );
+
+  static const hostMembershipCheckoutDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipCheckoutDocumentPlanId = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const hostMembershipCheckoutDocumentPriceInPaise = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.priceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1000,
+    maximum: 1500000,
+  );
+
+  static const hostMembershipCheckoutDocumentProvider = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.provider',
+    required: true,
+    enumValues: <String>['razorpay'],
+  );
+
+  static const hostMembershipCheckoutDocumentProviderSubscriptionId = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.providerSubscriptionId',
+    valueTypes: <String>['string'],
+    pattern: '^sub_[A-Za-z0-9]{6,40}\$',
+  );
+
+  static const hostMembershipCheckoutDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.schemaVersion',
+    required: true,
+  );
+
+  static const hostMembershipCheckoutDocumentState = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.state',
+    required: true,
+    enumValues: <String>['creating', 'open', 'authorized', 'expired', 'failed'],
+  );
+
+  static const hostMembershipCheckoutDocumentUid = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipCheckoutDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipDocumentCancelAtPeriodEnd = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.cancelAtPeriodEnd',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const hostMembershipDocumentCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipDocumentCurrency = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.currency',
+    required: true,
+  );
+
+  static const hostMembershipDocumentCurrentPeriodEndMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.currentPeriodEndMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipDocumentCurrentPeriodStartMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.currentPeriodStartMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipDocumentInterval = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.interval',
+    required: true,
+    enumValues: <String>['monthly', 'annual'],
+  );
+
+  static const hostMembershipDocumentLastCheckoutId = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.lastCheckoutId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmc_[A-Za-z0-9]{20}\$',
+  );
+
+  static const hostMembershipDocumentMemberSinceMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.memberSinceMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipDocumentPastDueSinceMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.pastDueSinceMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipDocumentPauseInitiator = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.pause.initiator',
+    required: true,
+    enumValues: <String>['member', 'host'],
+  );
+
+  static const hostMembershipDocumentPausePausedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.pause.pausedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipDocumentPlanId = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const hostMembershipDocumentPlanName = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.planName',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipDocumentPriceInPaise = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.priceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1000,
+    maximum: 1500000,
+  );
+
+  static const hostMembershipDocumentProvider = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.provider',
+    required: true,
+    enumValues: <String>['razorpay'],
+  );
+
+  static const hostMembershipDocumentProviderEventAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.providerEventAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipDocumentProviderPlanId = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.providerPlanId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^plan_[A-Za-z0-9]{6,40}\$',
+  );
+
+  static const hostMembershipDocumentProviderSubscriptionId = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.providerSubscriptionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^sub_[A-Za-z0-9]{6,40}\$',
+  );
+
+  static const hostMembershipDocumentRevision = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const hostMembershipDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.schemaVersion',
+    required: true,
+  );
+
+  static const hostMembershipDocumentStatus = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.status',
+    required: true,
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
+  static const hostMembershipDocumentStatusReason = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.statusReason',
+    required: true,
+    enumValues: <String>['memberPaused', 'hostPaused', 'paymentFailed', 'memberCanceled', 'planCompleted', 'providerCanceled'],
+  );
+
+  static const hostMembershipDocumentTenureAccumulatedMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.tenure.accumulatedMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipDocumentTenureStretchStartedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.tenure.stretchStartedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipDocumentTrialEndsAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.trialEndsAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipDocumentUid = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipPlanDocumentActiveMemberCount = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.activeMemberCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000000,
+  );
+
+  static const hostMembershipPlanDocumentBenefits = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.benefits',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 3,
+  );
+
+  static const hostMembershipPlanDocumentBenefitsItemsPercentOff = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.benefits.items.percentOff',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const hostMembershipPlanDocumentBenefitsItemsType = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.benefits.items.type',
+    required: true,
+  );
+
+  static const hostMembershipPlanDocumentCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipPlanDocumentDescription = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.description',
+    maxLength: 500,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipPlanDocumentLimitsMaxUpcomingMemberPricedBookings = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.limits.maxUpcomingMemberPricedBookings',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
+  static const hostMembershipPlanDocumentMemberCap = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.memberCap',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100000,
+  );
+
+  static const hostMembershipPlanDocumentName = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.name',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipPlanDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipPlanDocumentPerks = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.perks',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 8,
+  );
+
+  static const hostMembershipPlanDocumentPerksItems = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.perks.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipPlanDocumentPricesAnnualAmountPaise = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.prices.annual.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1000,
+    maximum: 1500000,
+  );
+
+  static const hostMembershipPlanDocumentPricesAnnualProviderPriceIdsRazorpay = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.prices.annual.providerPriceIds.razorpay',
+    valueTypes: <String>['string'],
+    pattern: '^plan_[A-Za-z0-9]{6,40}\$',
+  );
+
+  static const hostMembershipPlanDocumentPricesAnnualRevision = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.prices.annual.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const hostMembershipPlanDocumentPricesMonthlyAmountPaise = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.prices.monthly.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1000,
+    maximum: 1500000,
+  );
+
+  static const hostMembershipPlanDocumentPricesMonthlyProviderPriceIdsRazorpay = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.prices.monthly.providerPriceIds.razorpay',
+    valueTypes: <String>['string'],
+    pattern: '^plan_[A-Za-z0-9]{6,40}\$',
+  );
+
+  static const hostMembershipPlanDocumentPricesMonthlyRevision = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.prices.monthly.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const hostMembershipPlanDocumentPublishedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.publishedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipPlanDocumentRevision = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const hostMembershipPlanDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.schemaVersion',
+    required: true,
+  );
+
+  static const hostMembershipPlanDocumentSortOrder = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const hostMembershipPlanDocumentStatus = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.status',
+    required: true,
+    enumValues: <String>['draft', 'published', 'archived'],
+  );
+
+  static const hostMembershipPlanDocumentTrialDays = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.trialDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 30,
+  );
+
+  static const hostMembershipPlanDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipProgramDocumentBillingPauseCursor = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.billingPause.cursor',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipProgramDocumentBillingPauseProcessedCount = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.billingPause.processedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const hostMembershipProgramDocumentBillingPauseRequestedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.billingPause.requestedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipProgramDocumentBillingPauseRequestedBy = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.billingPause.requestedBy',
+    maxLength: 128,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipProgramDocumentBillingPauseState = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.billingPause.state',
+    required: true,
+    enumValues: <String>['active', 'pausing', 'paused', 'resuming'],
+  );
+
+  static const hostMembershipProgramDocumentCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipProgramDocumentMemberCount = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.memberCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000000,
+  );
+
+  static const hostMembershipProgramDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipProgramDocumentPaymentBindingId = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.payment.bindingId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipProgramDocumentPaymentMode = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.payment.mode',
+    required: true,
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const hostMembershipProgramDocumentPaymentProvider = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.payment.provider',
+    required: true,
+    enumValues: <String>['razorpay'],
+  );
+
+  static const hostMembershipProgramDocumentPaymentProviderAccountId = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.payment.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^acc_[A-Za-z0-9]{4,40}\$',
+  );
+
+  static const hostMembershipProgramDocumentRevision = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const hostMembershipProgramDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.schemaVersion',
+    required: true,
+  );
+
+  static const hostMembershipProgramDocumentState = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.state',
+    required: true,
+    enumValues: <String>['enabled', 'disabled'],
+  );
+
+  static const hostMembershipProgramDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipWebhookReceiptDocumentEventType = CatchContractFieldConstraints(
+    path: 'hostMembershipWebhookReceiptDocument.eventType',
+    maxLength: 80,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipWebhookReceiptDocumentOutcome = CatchContractFieldConstraints(
+    path: 'hostMembershipWebhookReceiptDocument.outcome',
+    required: true,
+    enumValues: <String>['applied', 'ignored', 'stale'],
+  );
+
+  static const hostMembershipWebhookReceiptDocumentPaymentId = CatchContractFieldConstraints(
+    path: 'hostMembershipWebhookReceiptDocument.paymentId',
+    maxLength: 60,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipWebhookReceiptDocumentProvider = CatchContractFieldConstraints(
+    path: 'hostMembershipWebhookReceiptDocument.provider',
+    required: true,
+    enumValues: <String>['razorpay'],
+  );
+
+  static const hostMembershipWebhookReceiptDocumentProviderEventId = CatchContractFieldConstraints(
+    path: 'hostMembershipWebhookReceiptDocument.providerEventId',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipWebhookReceiptDocumentReceivedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipWebhookReceiptDocument.receivedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipWebhookReceiptDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'hostMembershipWebhookReceiptDocument.schemaVersion',
+    required: true,
+  );
+
+  static const hostMembershipWebhookReceiptDocumentSubscriptionId = CatchContractFieldConstraints(
+    path: 'hostMembershipWebhookReceiptDocument.subscriptionId',
+    maxLength: 60,
+    valueTypes: <String>['string'],
   );
 
   static const hostOperatorAlertDocumentAcceptedAt = CatchContractFieldConstraints(
@@ -98493,14 +99657,14 @@ abstract final class CatchContractConstraints {
   static const listOrganizerContactsCallablePayloadSegmentId = CatchContractFieldConstraints(
     path: 'listOrganizerContactsCallablePayload.segmentId',
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const listOrganizerContactsCallablePayloadSegmentIds = CatchContractFieldConstraints(
     path: 'listOrganizerContactsCallablePayload.segmentIds',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -98509,7 +99673,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerContactsCallablePayload.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const listOrganizerContactsCallablePayloadSort = CatchContractFieldConstraints(
@@ -98616,6 +99780,40 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{32}\$',
   );
 
+  static const listOrganizerContactsCallableResponseContactsItemsMembershipEntitled = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.membership.entitled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsMembershipMemberSinceMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.membership.memberSinceMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsMembershipPlanId = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.membership.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsMembershipPlanName = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.membership.planName',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsMembershipStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.membership.status',
+    required: true,
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
   static const listOrganizerContactsCallableResponseContactsItemsPhoneE164 = CatchContractFieldConstraints(
     path: 'listOrganizerContactsCallableResponse.contacts.items.phoneE164',
     valueTypes: <String>['string'],
@@ -98635,7 +99833,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 16,
     uniqueItems: true,
   );
@@ -98644,7 +99842,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerContactsCallableResponse.contacts.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const listOrganizerContactsCallableResponseContactsItemsSmsStatus = CatchContractFieldConstraints(
@@ -101067,7 +102265,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.segmentId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
@@ -101075,7 +102273,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -101084,7 +102282,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsValue = CatchContractFieldConstraints(
@@ -102367,6 +103565,195 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const manageEventMembershipRulesCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallablePayload.action',
+    required: true,
+  );
+
+  static const manageEventMembershipRulesCallablePayloadEarlyAccessHours = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallablePayload.earlyAccessHours',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 168,
+  );
+
+  static const manageEventMembershipRulesCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageEventMembershipRulesCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const manageEventMembershipRulesCallablePayloadMemberPriceOverrides = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallablePayload.memberPriceOverrides',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const manageEventMembershipRulesCallablePayloadMemberPriceOverridesItemsPercentOff = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallablePayload.memberPriceOverrides.items.percentOff',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const manageEventMembershipRulesCallablePayloadMemberPriceOverridesItemsPlanId = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallablePayload.memberPriceOverrides.items.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const manageEventMembershipRulesCallablePayloadMemberPriceOverridesItemsPriceInPaise = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallablePayload.memberPriceOverrides.items.priceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const manageEventMembershipRulesCallablePayloadMembersOnly = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallablePayload.membersOnly',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageEventMembershipRulesCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageEventMembershipRulesCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageEventMembershipRulesCallableResponsePlans = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.plans',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const manageEventMembershipRulesCallableResponsePlansItemsBenefits = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.plans.items.benefits',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 3,
+  );
+
+  static const manageEventMembershipRulesCallableResponsePlansItemsBenefitsItemsPercentOff = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.plans.items.benefits.items.percentOff',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const manageEventMembershipRulesCallableResponsePlansItemsBenefitsItemsType = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.plans.items.benefits.items.type',
+    required: true,
+  );
+
+  static const manageEventMembershipRulesCallableResponsePlansItemsName = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.plans.items.name',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageEventMembershipRulesCallableResponsePlansItemsPlanId = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.plans.items.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const manageEventMembershipRulesCallableResponsePlansItemsStatus = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.plans.items.status',
+    required: true,
+    enumValues: <String>['draft', 'published', 'archived'],
+  );
+
+  static const manageEventMembershipRulesCallableResponseRulesEarlyAccessHours = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.rules.earlyAccessHours',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 168,
+  );
+
+  static const manageEventMembershipRulesCallableResponseRulesGeneralSaleOpensAtMillis = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.rules.generalSaleOpensAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventMembershipRulesCallableResponseRulesMemberPriceOverrides = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.rules.memberPriceOverrides',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const manageEventMembershipRulesCallableResponseRulesMemberPriceOverridesItemsPercentOff = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.rules.memberPriceOverrides.items.percentOff',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const manageEventMembershipRulesCallableResponseRulesMemberPriceOverridesItemsPlanId = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.rules.memberPriceOverrides.items.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const manageEventMembershipRulesCallableResponseRulesMemberPriceOverridesItemsPriceInPaise = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.rules.memberPriceOverrides.items.priceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const manageEventMembershipRulesCallableResponseRulesMembersOnly = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.rules.membersOnly',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageEventMembershipRulesCallableResponseRulesRevision = CatchContractFieldConstraints(
+    path: 'manageEventMembershipRulesCallableResponse.rules.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
   static const manageEventOfferCheckoutCallablePayloadAction = CatchContractFieldConstraints(
     path: 'manageEventOfferCheckoutCallablePayload.action',
     required: true,
@@ -102713,6 +104100,452 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
+  );
+
+  static const manageHostMembershipCheckoutCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'manageHostMembershipCheckoutCallablePayload.action',
+    required: true,
+  );
+
+  static const manageHostMembershipCheckoutCallablePayloadCheckoutId = CatchContractFieldConstraints(
+    path: 'manageHostMembershipCheckoutCallablePayload.checkoutId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmc_[A-Za-z0-9]{20}\$',
+  );
+
+  static const manageHostMembershipCheckoutCallablePayloadInterval = CatchContractFieldConstraints(
+    path: 'manageHostMembershipCheckoutCallablePayload.interval',
+    required: true,
+    enumValues: <String>['monthly', 'annual'],
+  );
+
+  static const manageHostMembershipCheckoutCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'manageHostMembershipCheckoutCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostMembershipCheckoutCallablePayloadPlanId = CatchContractFieldConstraints(
+    path: 'manageHostMembershipCheckoutCallablePayload.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const manageHostMembershipCheckoutCallableResponseAuthorizationUrl = CatchContractFieldConstraints(
+    path: 'manageHostMembershipCheckoutCallableResponse.authorizationUrl',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+    pattern: '^https://',
+  );
+
+  static const manageHostMembershipCheckoutCallableResponseCheckoutId = CatchContractFieldConstraints(
+    path: 'manageHostMembershipCheckoutCallableResponse.checkoutId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmc_[A-Za-z0-9]{20}\$',
+  );
+
+  static const manageHostMembershipCheckoutCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'manageHostMembershipCheckoutCallableResponse.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const manageHostMembershipCheckoutCallableResponseMembershipId = CatchContractFieldConstraints(
+    path: 'manageHostMembershipCheckoutCallableResponse.membershipId',
+    valueTypes: <String>['string'],
+    pattern: '^hm_[a-f0-9]{64}\$',
+  );
+
+  static const manageHostMembershipCheckoutCallableResponseMembershipStatus = CatchContractFieldConstraints(
+    path: 'manageHostMembershipCheckoutCallableResponse.membershipStatus',
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
+  static const manageHostMembershipCheckoutCallableResponseState = CatchContractFieldConstraints(
+    path: 'manageHostMembershipCheckoutCallableResponse.state',
+    required: true,
+    enumValues: <String>['creating', 'open', 'authorized', 'expired', 'failed'],
+  );
+
+  static const manageHostMembershipPlansCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.action',
+    required: true,
+  );
+
+  static const manageHostMembershipPlansCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const manageHostMembershipPlansCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanBenefits = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.plan.benefits',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 3,
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanBenefitsItemsPercentOff = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.plan.benefits.items.percentOff',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanBenefitsItemsType = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.plan.benefits.items.type',
+    required: true,
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanDescription = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.plan.description',
+    maxLength: 500,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanLimitsMaxUpcomingMemberPricedBookings = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.plan.limits.maxUpcomingMemberPricedBookings',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanMemberCap = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.plan.memberCap',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100000,
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanName = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.plan.name',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanPerks = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.plan.perks',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 8,
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanPerksItems = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.plan.perks.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanPricesAnnualAmountPaise = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.plan.prices.annual.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1000,
+    maximum: 1500000,
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanPricesMonthlyAmountPaise = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.plan.prices.monthly.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1000,
+    maximum: 1500000,
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanSortOrder = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.plan.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanTrialDays = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.plan.trialDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 30,
+  );
+
+  static const manageHostMembershipPlansCallablePayloadPlanId = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallablePayload.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const manageHostMembershipPlansCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlans = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsActiveMemberCount = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.activeMemberCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000000,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsBenefits = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.benefits',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 3,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsBenefitsItemsPercentOff = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.benefits.items.percentOff',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsBenefitsItemsType = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.benefits.items.type',
+    required: true,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsDescription = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.description',
+    maxLength: 500,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsLimitsMaxUpcomingMemberPricedBookings = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.limits.maxUpcomingMemberPricedBookings',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsMemberCap = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.memberCap',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100000,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsName = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.name',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsPerks = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.perks',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 8,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsPerksItems = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.perks.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsPlanId = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsPricesAnnualAmountPaise = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.prices.annual.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1000,
+    maximum: 1500000,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsPricesAnnualRevision = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.prices.annual.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsPricesMonthlyAmountPaise = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.prices.monthly.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1000,
+    maximum: 1500000,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsPricesMonthlyRevision = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.prices.monthly.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsPublishedAtMillis = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.publishedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsRevision = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsSortOrder = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsStatus = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.status',
+    required: true,
+    enumValues: <String>['draft', 'published', 'archived'],
+  );
+
+  static const manageHostMembershipPlansCallableResponsePlansItemsTrialDays = CatchContractFieldConstraints(
+    path: 'manageHostMembershipPlansCallableResponse.plans.items.trialDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 30,
+  );
+
+  static const manageHostMembershipProgramCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'manageHostMembershipProgramCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['get', 'enable', 'disable', 'pauseBilling', 'resumeBilling'],
+  );
+
+  static const manageHostMembershipProgramCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'manageHostMembershipProgramCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostMembershipProgramCallableResponseFeeConfigured = CatchContractFieldConstraints(
+    path: 'manageHostMembershipProgramCallableResponse.feeConfigured',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageHostMembershipProgramCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'manageHostMembershipProgramCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostMembershipProgramCallableResponseProgramBillingPauseState = CatchContractFieldConstraints(
+    path: 'manageHostMembershipProgramCallableResponse.program.billingPauseState',
+    required: true,
+    enumValues: <String>['active', 'pausing', 'paused', 'resuming'],
+  );
+
+  static const manageHostMembershipProgramCallableResponseProgramMemberCount = CatchContractFieldConstraints(
+    path: 'manageHostMembershipProgramCallableResponse.program.memberCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000000,
+  );
+
+  static const manageHostMembershipProgramCallableResponseProgramMode = CatchContractFieldConstraints(
+    path: 'manageHostMembershipProgramCallableResponse.program.mode',
+    required: true,
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const manageHostMembershipProgramCallableResponseProgramProvider = CatchContractFieldConstraints(
+    path: 'manageHostMembershipProgramCallableResponse.program.provider',
+    required: true,
+    enumValues: <String>['razorpay'],
+  );
+
+  static const manageHostMembershipProgramCallableResponseProgramRevision = CatchContractFieldConstraints(
+    path: 'manageHostMembershipProgramCallableResponse.program.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740990,
+  );
+
+  static const manageHostMembershipProgramCallableResponseProgramState = CatchContractFieldConstraints(
+    path: 'manageHostMembershipProgramCallableResponse.program.state',
+    required: true,
+    enumValues: <String>['enabled', 'disabled'],
+  );
+
+  static const manageHostMembershipProgramCallableResponseRouteAccountReady = CatchContractFieldConstraints(
+    path: 'manageHostMembershipProgramCallableResponse.routeAccountReady',
+    required: true,
+    valueTypes: <String>['boolean'],
   );
 
   static const manageHostRosterIntakeCallablePayloadAction = CatchContractFieldConstraints(
@@ -103329,6 +105162,46 @@ abstract final class CatchContractConstraints {
     pattern: '^hri_[a-f0-9]{48}\$',
   );
 
+  static const manageMyHostMembershipCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'manageMyHostMembershipCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pause', 'resume', 'cancelAtPeriodEnd'],
+  );
+
+  static const manageMyHostMembershipCallablePayloadMembershipId = CatchContractFieldConstraints(
+    path: 'manageMyHostMembershipCallablePayload.membershipId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hm_[a-f0-9]{64}\$',
+  );
+
+  static const manageMyHostMembershipCallableResponseCancelAtPeriodEnd = CatchContractFieldConstraints(
+    path: 'manageMyHostMembershipCallableResponse.cancelAtPeriodEnd',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageMyHostMembershipCallableResponseCurrentPeriodEndMillis = CatchContractFieldConstraints(
+    path: 'manageMyHostMembershipCallableResponse.currentPeriodEndMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const manageMyHostMembershipCallableResponseMembershipId = CatchContractFieldConstraints(
+    path: 'manageMyHostMembershipCallableResponse.membershipId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hm_[a-f0-9]{64}\$',
+  );
+
+  static const manageMyHostMembershipCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'manageMyHostMembershipCallableResponse.status',
+    required: true,
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
   static const manageOrganizerFormDomainCallablePayloadAction = CatchContractFieldConstraints(
     path: 'manageOrganizerFormDomainCallablePayload.action',
     required: true,
@@ -103658,6 +105531,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const managePublicEventCheckoutCallablePayloadReviewedQuoteListAmountPaise = CatchContractFieldConstraints(
+    path: 'managePublicEventCheckoutCallablePayload.reviewedQuote.listAmountPaise',
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 100000000,
+  );
+
   static const managePublicEventCheckoutCallablePayloadReviewedQuoteRegistrationRevision = CatchContractFieldConstraints(
     path: 'managePublicEventCheckoutCallablePayload.reviewedQuote.registrationRevision',
     required: true,
@@ -103884,6 +105764,13 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const managePublicEventCheckoutCallableResponseQuoteListAmountPaise = CatchContractFieldConstraints(
+    path: 'managePublicEventCheckoutCallableResponse.quote.listAmountPaise',
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 100000000,
   );
 
   static const managePublicEventCheckoutCallableResponseQuoteRegistrationRevision = CatchContractFieldConstraints(
@@ -110069,6 +111956,20 @@ abstract final class CatchContractConstraints {
     maximum: 1,
   );
 
+  static const organizerContactDocumentHiddenTraitSnapshotAttended30DayCount = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.attended30DayCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerContactDocumentHiddenTraitSnapshotAttended60DayCount = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.attended60DayCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
   static const organizerContactDocumentHiddenTraitSnapshotAttendedEventCount = CatchContractFieldConstraints(
     path: 'organizerContactDocument.hiddenTraitSnapshot.attendedEventCount',
     required: true,
@@ -110193,6 +112094,40 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const organizerContactDocumentHiddenTraitSnapshotMembershipEntitled = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.membership.entitled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerContactDocumentHiddenTraitSnapshotMembershipMemberSinceMillis = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.membership.memberSinceMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactDocumentHiddenTraitSnapshotMembershipPlanId = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.membership.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const organizerContactDocumentHiddenTraitSnapshotMembershipPlanName = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.membership.planName',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactDocumentHiddenTraitSnapshotMembershipStatus = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.membership.status',
+    required: true,
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
   static const organizerContactDocumentHiddenTraitSnapshotNoShowCount = CatchContractFieldConstraints(
     path: 'organizerContactDocument.hiddenTraitSnapshot.noShowCount',
     required: true,
@@ -110246,7 +112181,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 16,
     uniqueItems: true,
   );
@@ -110255,7 +112190,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactDocument.hiddenTraitSnapshot.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const organizerContactDocumentHiddenTraitSnapshotSmsStatus = CatchContractFieldConstraints(
@@ -112102,6 +114037,20 @@ abstract final class CatchContractConstraints {
     maximum: 1,
   );
 
+  static const organizerContactTraitDocumentAttended30DayCount = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.attended30DayCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerContactTraitDocumentAttended60DayCount = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.attended60DayCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
   static const organizerContactTraitDocumentAttendedEventCount = CatchContractFieldConstraints(
     path: 'organizerContactTraitDocument.attendedEventCount',
     required: true,
@@ -112226,6 +114175,40 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const organizerContactTraitDocumentMembershipEntitled = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.membership.entitled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerContactTraitDocumentMembershipMemberSinceMillis = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.membership.memberSinceMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactTraitDocumentMembershipPlanId = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.membership.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const organizerContactTraitDocumentMembershipPlanName = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.membership.planName',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactTraitDocumentMembershipStatus = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.membership.status',
+    required: true,
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
   static const organizerContactTraitDocumentNoShowCount = CatchContractFieldConstraints(
     path: 'organizerContactTraitDocument.noShowCount',
     required: true,
@@ -112279,7 +114262,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 16,
     uniqueItems: true,
   );
@@ -112288,7 +114271,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactTraitDocument.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const organizerContactTraitDocumentSmsStatus = CatchContractFieldConstraints(
@@ -127031,7 +129014,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.segmentId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
@@ -127039,7 +129022,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -127048,7 +129031,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsValue = CatchContractFieldConstraints(
@@ -127361,7 +129344,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerSavedAudienceDocument.definition.predicates.items.segmentId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const organizerSavedAudienceDocumentDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
@@ -127369,7 +129352,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -127378,7 +129361,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerSavedAudienceDocument.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const organizerSavedAudienceDocumentDefinitionPredicatesItemsValue = CatchContractFieldConstraints(
@@ -132528,7 +134511,7 @@ abstract final class CatchContractConstraints {
     path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.segmentId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
@@ -132536,7 +134519,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -132545,7 +134528,7 @@ abstract final class CatchContractConstraints {
     path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsValue = CatchContractFieldConstraints(
@@ -169716,7 +171699,7 @@ abstract final class CatchContractConstraints {
     path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.segmentId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
@@ -169724,7 +171707,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -169733,7 +171716,7 @@ abstract final class CatchContractConstraints {
     path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsValue = CatchContractFieldConstraints(
@@ -181374,6 +183357,20 @@ abstract final class CatchContractConstraints {
     'eventLivePositionDocument.uid': eventLivePositionDocumentUid,
     'eventLivePositionDocument.updatedAt._nanoseconds': eventLivePositionDocumentUpdatedAtNanoseconds,
     'eventLivePositionDocument.updatedAt._seconds': eventLivePositionDocumentUpdatedAtSeconds,
+    'eventMembershipRulesDocument.earlyAccess.anchorMillis': eventMembershipRulesDocumentEarlyAccessAnchorMillis,
+    'eventMembershipRulesDocument.earlyAccess.generalSaleOpensAtMillis': eventMembershipRulesDocumentEarlyAccessGeneralSaleOpensAtMillis,
+    'eventMembershipRulesDocument.earlyAccess.hours': eventMembershipRulesDocumentEarlyAccessHours,
+    'eventMembershipRulesDocument.eventId': eventMembershipRulesDocumentEventId,
+    'eventMembershipRulesDocument.memberPriceOverrides': eventMembershipRulesDocumentMemberPriceOverrides,
+    'eventMembershipRulesDocument.memberPriceOverrides.items.percentOff': eventMembershipRulesDocumentMemberPriceOverridesItemsPercentOff,
+    'eventMembershipRulesDocument.memberPriceOverrides.items.planId': eventMembershipRulesDocumentMemberPriceOverridesItemsPlanId,
+    'eventMembershipRulesDocument.memberPriceOverrides.items.priceInPaise': eventMembershipRulesDocumentMemberPriceOverridesItemsPriceInPaise,
+    'eventMembershipRulesDocument.membersOnly': eventMembershipRulesDocumentMembersOnly,
+    'eventMembershipRulesDocument.organizerId': eventMembershipRulesDocumentOrganizerId,
+    'eventMembershipRulesDocument.revision': eventMembershipRulesDocumentRevision,
+    'eventMembershipRulesDocument.schemaVersion': eventMembershipRulesDocumentSchemaVersion,
+    'eventMembershipRulesDocument.updatedAtMillis': eventMembershipRulesDocumentUpdatedAtMillis,
+    'eventMembershipRulesDocument.updatedBy': eventMembershipRulesDocumentUpdatedBy,
     'eventMessagingBudgetApplicationReceiptDocument.appliedByUid': eventMessagingBudgetApplicationReceiptDocumentAppliedByUid,
     'eventMessagingBudgetApplicationReceiptDocument.budgetSourceHash': eventMessagingBudgetApplicationReceiptDocumentBudgetSourceHash,
     'eventMessagingBudgetApplicationReceiptDocument.context.eventId': eventMessagingBudgetApplicationReceiptDocumentContextEventId,
@@ -185666,6 +187663,7 @@ abstract final class CatchContractConstraints {
     'getEventRehearsalMovementCallablePayload.sessionId': getEventRehearsalMovementCallablePayloadSessionId,
     'getEventRehearsalSummaryCallablePayload.organizerId': getEventRehearsalSummaryCallablePayloadOrganizerId,
     'getEventRosterInsightsCallablePayload.eventId': getEventRosterInsightsCallablePayloadEventId,
+    'getEventRosterInsightsCallablePayload.includeHostMembership': getEventRosterInsightsCallablePayloadIncludeHostMembership,
     'getEventRosterInsightsCallableResponse.computedAtMillis': getEventRosterInsightsCallableResponseComputedAtMillis,
     'getEventRosterInsightsCallableResponse.cutoffAtMillis': getEventRosterInsightsCallableResponseCutoffAtMillis,
     'getEventRosterInsightsCallableResponse.eventId': getEventRosterInsightsCallableResponseEventId,
@@ -185832,6 +187830,7 @@ abstract final class CatchContractConstraints {
     'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.order': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsOrder,
     'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.shape': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsShape,
     'getEventViewerStateCallablePayload.eventId': getEventViewerStateCallablePayloadEventId,
+    'getEventViewerStateCallablePayload.includeHostMembership': getEventViewerStateCallablePayloadIncludeHostMembership,
     'getEventViewerStateCallablePayload.inviteCode': getEventViewerStateCallablePayloadInviteCode,
     'getEventViewerStateCallablePayload.publicPaymentId': getEventViewerStateCallablePayloadPublicPaymentId,
     'getEventViewerStateCallablePayload.surface': getEventViewerStateCallablePayloadSurface,
@@ -185853,6 +187852,24 @@ abstract final class CatchContractConstraints {
     'getEventViewerStateCallableResponse.viewer.guest.publicFormId': getEventViewerStateCallableResponseViewerGuestPublicFormId,
     'getEventViewerStateCallableResponse.viewer.guest.publicPaymentId': getEventViewerStateCallableResponseViewerGuestPublicPaymentId,
     'getEventViewerStateCallableResponse.viewer.guest.runtimeId': getEventViewerStateCallableResponseViewerGuestRuntimeId,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.generalSaleOpensAtMillis': getEventViewerStateCallableResponseViewerHostMembershipGeneralSaleOpensAtMillis,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.listPriceInPaise': getEventViewerStateCallableResponseViewerHostMembershipListPriceInPaise,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.member.entitled': getEventViewerStateCallableResponseViewerHostMembershipMemberEntitled,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.member.membershipId': getEventViewerStateCallableResponseViewerHostMembershipMemberMembershipId,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.member.planId': getEventViewerStateCallableResponseViewerHostMembershipMemberPlanId,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.member.planName': getEventViewerStateCallableResponseViewerHostMembershipMemberPlanName,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.member.status': getEventViewerStateCallableResponseViewerHostMembershipMemberStatus,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.memberPriceApplied': getEventViewerStateCallableResponseViewerHostMembershipMemberPriceApplied,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.memberPriceBlockedReason': getEventViewerStateCallableResponseViewerHostMembershipMemberPriceBlockedReason,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.membersOnly': getEventViewerStateCallableResponseViewerHostMembershipMembersOnly,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.offer.interval': getEventViewerStateCallableResponseViewerHostMembershipOfferInterval,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.offer.memberPriceInPaise': getEventViewerStateCallableResponseViewerHostMembershipOfferMemberPriceInPaise,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.offer.planId': getEventViewerStateCallableResponseViewerHostMembershipOfferPlanId,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.offer.planName': getEventViewerStateCallableResponseViewerHostMembershipOfferPlanName,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.offer.planPriceInPaise': getEventViewerStateCallableResponseViewerHostMembershipOfferPlanPriceInPaise,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.offer.savingsInPaise': getEventViewerStateCallableResponseViewerHostMembershipOfferSavingsInPaise,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.offer.unlocksAccess': getEventViewerStateCallableResponseViewerHostMembershipOfferUnlocksAccess,
+    'getEventViewerStateCallableResponse.viewer.hostMembership.savingsInPaise': getEventViewerStateCallableResponseViewerHostMembershipSavingsInPaise,
     'getEventViewerStateCallableResponse.viewer.membership.decisionId': getEventViewerStateCallableResponseViewerMembershipDecisionId,
     'getEventViewerStateCallableResponse.viewer.membership.revision': getEventViewerStateCallableResponseViewerMembershipRevision,
     'getEventViewerStateCallableResponse.viewer.membership.state': getEventViewerStateCallableResponseViewerMembershipState,
@@ -186049,6 +188066,11 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.traits.cancelledEventCount': getOrganizerContactDetailCallableResponseTraitsCancelledEventCount,
     'getOrganizerContactDetailCallableResponse.traits.expectedEventCount': getOrganizerContactDetailCallableResponseTraitsExpectedEventCount,
     'getOrganizerContactDetailCallableResponse.traits.importedEventCount': getOrganizerContactDetailCallableResponseTraitsImportedEventCount,
+    'getOrganizerContactDetailCallableResponse.traits.membership.entitled': getOrganizerContactDetailCallableResponseTraitsMembershipEntitled,
+    'getOrganizerContactDetailCallableResponse.traits.membership.memberSinceMillis': getOrganizerContactDetailCallableResponseTraitsMembershipMemberSinceMillis,
+    'getOrganizerContactDetailCallableResponse.traits.membership.planId': getOrganizerContactDetailCallableResponseTraitsMembershipPlanId,
+    'getOrganizerContactDetailCallableResponse.traits.membership.planName': getOrganizerContactDetailCallableResponseTraitsMembershipPlanName,
+    'getOrganizerContactDetailCallableResponse.traits.membership.status': getOrganizerContactDetailCallableResponseTraitsMembershipStatus,
     'getOrganizerContactDetailCallableResponse.traits.noShowCount': getOrganizerContactDetailCallableResponseTraitsNoShowCount,
     'getOrganizerContactDetailCallableResponse.traits.segmentIds': getOrganizerContactDetailCallableResponseTraitsSegmentIds,
     'getOrganizerContactDetailCallableResponse.traits.segmentIds.items': getOrganizerContactDetailCallableResponseTraitsSegmentIdsItems,
@@ -186716,6 +188738,11 @@ abstract final class CatchContractConstraints {
     'hostContactSummaryDocument.row.manualTags': hostContactSummaryDocumentRowManualTags,
     'hostContactSummaryDocument.row.manualTags.items.label': hostContactSummaryDocumentRowManualTagsItemsLabel,
     'hostContactSummaryDocument.row.manualTags.items.tagId': hostContactSummaryDocumentRowManualTagsItemsTagId,
+    'hostContactSummaryDocument.row.membership.entitled': hostContactSummaryDocumentRowMembershipEntitled,
+    'hostContactSummaryDocument.row.membership.memberSinceMillis': hostContactSummaryDocumentRowMembershipMemberSinceMillis,
+    'hostContactSummaryDocument.row.membership.planId': hostContactSummaryDocumentRowMembershipPlanId,
+    'hostContactSummaryDocument.row.membership.planName': hostContactSummaryDocumentRowMembershipPlanName,
+    'hostContactSummaryDocument.row.membership.status': hostContactSummaryDocumentRowMembershipStatus,
     'hostContactSummaryDocument.row.phoneE164': hostContactSummaryDocumentRowPhoneE164,
     'hostContactSummaryDocument.row.revision': hostContactSummaryDocumentRowRevision,
     'hostContactSummaryDocument.row.segmentIds': hostContactSummaryDocumentRowSegmentIds,
@@ -186855,6 +188882,127 @@ abstract final class CatchContractConstraints {
     'hostGroupSummaryDocument.status': hostGroupSummaryDocumentStatus,
     'hostGroupSummaryDocument.updatedAtMillis': hostGroupSummaryDocumentUpdatedAtMillis,
     'hostGroupSummaryDocument.version': hostGroupSummaryDocumentVersion,
+    'hostMembershipBenefitUseDocument.createdAtMillis': hostMembershipBenefitUseDocumentCreatedAtMillis,
+    'hostMembershipBenefitUseDocument.eventId': hostMembershipBenefitUseDocumentEventId,
+    'hostMembershipBenefitUseDocument.eventStartMillis': hostMembershipBenefitUseDocumentEventStartMillis,
+    'hostMembershipBenefitUseDocument.listPriceInPaise': hostMembershipBenefitUseDocumentListPriceInPaise,
+    'hostMembershipBenefitUseDocument.membershipId': hostMembershipBenefitUseDocumentMembershipId,
+    'hostMembershipBenefitUseDocument.organizerId': hostMembershipBenefitUseDocumentOrganizerId,
+    'hostMembershipBenefitUseDocument.paidPriceInPaise': hostMembershipBenefitUseDocumentPaidPriceInPaise,
+    'hostMembershipBenefitUseDocument.planId': hostMembershipBenefitUseDocumentPlanId,
+    'hostMembershipBenefitUseDocument.savingsInPaise': hostMembershipBenefitUseDocumentSavingsInPaise,
+    'hostMembershipBenefitUseDocument.schemaVersion': hostMembershipBenefitUseDocumentSchemaVersion,
+    'hostMembershipBenefitUseDocument.state': hostMembershipBenefitUseDocumentState,
+    'hostMembershipBenefitUseDocument.uid': hostMembershipBenefitUseDocumentUid,
+    'hostMembershipChargeDocument.amountPaise': hostMembershipChargeDocumentAmountPaise,
+    'hostMembershipChargeDocument.createdAtMillis': hostMembershipChargeDocumentCreatedAtMillis,
+    'hostMembershipChargeDocument.feePaise': hostMembershipChargeDocumentFeePaise,
+    'hostMembershipChargeDocument.membershipId': hostMembershipChargeDocumentMembershipId,
+    'hostMembershipChargeDocument.mode': hostMembershipChargeDocumentMode,
+    'hostMembershipChargeDocument.organizerId': hostMembershipChargeDocumentOrganizerId,
+    'hostMembershipChargeDocument.periodEndMillis': hostMembershipChargeDocumentPeriodEndMillis,
+    'hostMembershipChargeDocument.periodStartMillis': hostMembershipChargeDocumentPeriodStartMillis,
+    'hostMembershipChargeDocument.provider': hostMembershipChargeDocumentProvider,
+    'hostMembershipChargeDocument.providerAccountId': hostMembershipChargeDocumentProviderAccountId,
+    'hostMembershipChargeDocument.providerSubscriptionId': hostMembershipChargeDocumentProviderSubscriptionId,
+    'hostMembershipChargeDocument.schemaVersion': hostMembershipChargeDocumentSchemaVersion,
+    'hostMembershipChargeDocument.transfer.attempts': hostMembershipChargeDocumentTransferAttempts,
+    'hostMembershipChargeDocument.transfer.lastError': hostMembershipChargeDocumentTransferLastError,
+    'hostMembershipChargeDocument.transfer.state': hostMembershipChargeDocumentTransferState,
+    'hostMembershipChargeDocument.transfer.transferId': hostMembershipChargeDocumentTransferTransferId,
+    'hostMembershipChargeDocument.transferAmountPaise': hostMembershipChargeDocumentTransferAmountPaise,
+    'hostMembershipChargeDocument.uid': hostMembershipChargeDocumentUid,
+    'hostMembershipChargeDocument.updatedAtMillis': hostMembershipChargeDocumentUpdatedAtMillis,
+    'hostMembershipCheckoutDocument.authorizationUrl': hostMembershipCheckoutDocumentAuthorizationUrl,
+    'hostMembershipCheckoutDocument.createdAtMillis': hostMembershipCheckoutDocumentCreatedAtMillis,
+    'hostMembershipCheckoutDocument.expiresAtMillis': hostMembershipCheckoutDocumentExpiresAtMillis,
+    'hostMembershipCheckoutDocument.interval': hostMembershipCheckoutDocumentInterval,
+    'hostMembershipCheckoutDocument.organizerId': hostMembershipCheckoutDocumentOrganizerId,
+    'hostMembershipCheckoutDocument.planId': hostMembershipCheckoutDocumentPlanId,
+    'hostMembershipCheckoutDocument.priceInPaise': hostMembershipCheckoutDocumentPriceInPaise,
+    'hostMembershipCheckoutDocument.provider': hostMembershipCheckoutDocumentProvider,
+    'hostMembershipCheckoutDocument.providerSubscriptionId': hostMembershipCheckoutDocumentProviderSubscriptionId,
+    'hostMembershipCheckoutDocument.schemaVersion': hostMembershipCheckoutDocumentSchemaVersion,
+    'hostMembershipCheckoutDocument.state': hostMembershipCheckoutDocumentState,
+    'hostMembershipCheckoutDocument.uid': hostMembershipCheckoutDocumentUid,
+    'hostMembershipCheckoutDocument.updatedAtMillis': hostMembershipCheckoutDocumentUpdatedAtMillis,
+    'hostMembershipDocument.cancelAtPeriodEnd': hostMembershipDocumentCancelAtPeriodEnd,
+    'hostMembershipDocument.createdAtMillis': hostMembershipDocumentCreatedAtMillis,
+    'hostMembershipDocument.currency': hostMembershipDocumentCurrency,
+    'hostMembershipDocument.currentPeriodEndMillis': hostMembershipDocumentCurrentPeriodEndMillis,
+    'hostMembershipDocument.currentPeriodStartMillis': hostMembershipDocumentCurrentPeriodStartMillis,
+    'hostMembershipDocument.interval': hostMembershipDocumentInterval,
+    'hostMembershipDocument.lastCheckoutId': hostMembershipDocumentLastCheckoutId,
+    'hostMembershipDocument.memberSinceMillis': hostMembershipDocumentMemberSinceMillis,
+    'hostMembershipDocument.organizerId': hostMembershipDocumentOrganizerId,
+    'hostMembershipDocument.pastDueSinceMillis': hostMembershipDocumentPastDueSinceMillis,
+    'hostMembershipDocument.pause.initiator': hostMembershipDocumentPauseInitiator,
+    'hostMembershipDocument.pause.pausedAtMillis': hostMembershipDocumentPausePausedAtMillis,
+    'hostMembershipDocument.planId': hostMembershipDocumentPlanId,
+    'hostMembershipDocument.planName': hostMembershipDocumentPlanName,
+    'hostMembershipDocument.priceInPaise': hostMembershipDocumentPriceInPaise,
+    'hostMembershipDocument.provider': hostMembershipDocumentProvider,
+    'hostMembershipDocument.providerEventAtMillis': hostMembershipDocumentProviderEventAtMillis,
+    'hostMembershipDocument.providerPlanId': hostMembershipDocumentProviderPlanId,
+    'hostMembershipDocument.providerSubscriptionId': hostMembershipDocumentProviderSubscriptionId,
+    'hostMembershipDocument.revision': hostMembershipDocumentRevision,
+    'hostMembershipDocument.schemaVersion': hostMembershipDocumentSchemaVersion,
+    'hostMembershipDocument.status': hostMembershipDocumentStatus,
+    'hostMembershipDocument.statusReason': hostMembershipDocumentStatusReason,
+    'hostMembershipDocument.tenure.accumulatedMillis': hostMembershipDocumentTenureAccumulatedMillis,
+    'hostMembershipDocument.tenure.stretchStartedAtMillis': hostMembershipDocumentTenureStretchStartedAtMillis,
+    'hostMembershipDocument.trialEndsAtMillis': hostMembershipDocumentTrialEndsAtMillis,
+    'hostMembershipDocument.uid': hostMembershipDocumentUid,
+    'hostMembershipDocument.updatedAtMillis': hostMembershipDocumentUpdatedAtMillis,
+    'hostMembershipPlanDocument.activeMemberCount': hostMembershipPlanDocumentActiveMemberCount,
+    'hostMembershipPlanDocument.benefits': hostMembershipPlanDocumentBenefits,
+    'hostMembershipPlanDocument.benefits.items.percentOff': hostMembershipPlanDocumentBenefitsItemsPercentOff,
+    'hostMembershipPlanDocument.benefits.items.type': hostMembershipPlanDocumentBenefitsItemsType,
+    'hostMembershipPlanDocument.createdAtMillis': hostMembershipPlanDocumentCreatedAtMillis,
+    'hostMembershipPlanDocument.description': hostMembershipPlanDocumentDescription,
+    'hostMembershipPlanDocument.limits.maxUpcomingMemberPricedBookings': hostMembershipPlanDocumentLimitsMaxUpcomingMemberPricedBookings,
+    'hostMembershipPlanDocument.memberCap': hostMembershipPlanDocumentMemberCap,
+    'hostMembershipPlanDocument.name': hostMembershipPlanDocumentName,
+    'hostMembershipPlanDocument.organizerId': hostMembershipPlanDocumentOrganizerId,
+    'hostMembershipPlanDocument.perks': hostMembershipPlanDocumentPerks,
+    'hostMembershipPlanDocument.perks.items': hostMembershipPlanDocumentPerksItems,
+    'hostMembershipPlanDocument.prices.annual.amountPaise': hostMembershipPlanDocumentPricesAnnualAmountPaise,
+    'hostMembershipPlanDocument.prices.annual.providerPriceIds.razorpay': hostMembershipPlanDocumentPricesAnnualProviderPriceIdsRazorpay,
+    'hostMembershipPlanDocument.prices.annual.revision': hostMembershipPlanDocumentPricesAnnualRevision,
+    'hostMembershipPlanDocument.prices.monthly.amountPaise': hostMembershipPlanDocumentPricesMonthlyAmountPaise,
+    'hostMembershipPlanDocument.prices.monthly.providerPriceIds.razorpay': hostMembershipPlanDocumentPricesMonthlyProviderPriceIdsRazorpay,
+    'hostMembershipPlanDocument.prices.monthly.revision': hostMembershipPlanDocumentPricesMonthlyRevision,
+    'hostMembershipPlanDocument.publishedAtMillis': hostMembershipPlanDocumentPublishedAtMillis,
+    'hostMembershipPlanDocument.revision': hostMembershipPlanDocumentRevision,
+    'hostMembershipPlanDocument.schemaVersion': hostMembershipPlanDocumentSchemaVersion,
+    'hostMembershipPlanDocument.sortOrder': hostMembershipPlanDocumentSortOrder,
+    'hostMembershipPlanDocument.status': hostMembershipPlanDocumentStatus,
+    'hostMembershipPlanDocument.trialDays': hostMembershipPlanDocumentTrialDays,
+    'hostMembershipPlanDocument.updatedAtMillis': hostMembershipPlanDocumentUpdatedAtMillis,
+    'hostMembershipProgramDocument.billingPause.cursor': hostMembershipProgramDocumentBillingPauseCursor,
+    'hostMembershipProgramDocument.billingPause.processedCount': hostMembershipProgramDocumentBillingPauseProcessedCount,
+    'hostMembershipProgramDocument.billingPause.requestedAtMillis': hostMembershipProgramDocumentBillingPauseRequestedAtMillis,
+    'hostMembershipProgramDocument.billingPause.requestedBy': hostMembershipProgramDocumentBillingPauseRequestedBy,
+    'hostMembershipProgramDocument.billingPause.state': hostMembershipProgramDocumentBillingPauseState,
+    'hostMembershipProgramDocument.createdAtMillis': hostMembershipProgramDocumentCreatedAtMillis,
+    'hostMembershipProgramDocument.memberCount': hostMembershipProgramDocumentMemberCount,
+    'hostMembershipProgramDocument.organizerId': hostMembershipProgramDocumentOrganizerId,
+    'hostMembershipProgramDocument.payment.bindingId': hostMembershipProgramDocumentPaymentBindingId,
+    'hostMembershipProgramDocument.payment.mode': hostMembershipProgramDocumentPaymentMode,
+    'hostMembershipProgramDocument.payment.provider': hostMembershipProgramDocumentPaymentProvider,
+    'hostMembershipProgramDocument.payment.providerAccountId': hostMembershipProgramDocumentPaymentProviderAccountId,
+    'hostMembershipProgramDocument.revision': hostMembershipProgramDocumentRevision,
+    'hostMembershipProgramDocument.schemaVersion': hostMembershipProgramDocumentSchemaVersion,
+    'hostMembershipProgramDocument.state': hostMembershipProgramDocumentState,
+    'hostMembershipProgramDocument.updatedAtMillis': hostMembershipProgramDocumentUpdatedAtMillis,
+    'hostMembershipWebhookReceiptDocument.eventType': hostMembershipWebhookReceiptDocumentEventType,
+    'hostMembershipWebhookReceiptDocument.outcome': hostMembershipWebhookReceiptDocumentOutcome,
+    'hostMembershipWebhookReceiptDocument.paymentId': hostMembershipWebhookReceiptDocumentPaymentId,
+    'hostMembershipWebhookReceiptDocument.provider': hostMembershipWebhookReceiptDocumentProvider,
+    'hostMembershipWebhookReceiptDocument.providerEventId': hostMembershipWebhookReceiptDocumentProviderEventId,
+    'hostMembershipWebhookReceiptDocument.receivedAtMillis': hostMembershipWebhookReceiptDocumentReceivedAtMillis,
+    'hostMembershipWebhookReceiptDocument.schemaVersion': hostMembershipWebhookReceiptDocumentSchemaVersion,
+    'hostMembershipWebhookReceiptDocument.subscriptionId': hostMembershipWebhookReceiptDocumentSubscriptionId,
     'hostOperatorAlertDocument.acceptedAt': hostOperatorAlertDocumentAcceptedAt,
     'hostOperatorAlertDocument.attemptId': hostOperatorAlertDocumentAttemptId,
     'hostOperatorAlertDocument.attempts': hostOperatorAlertDocumentAttempts,
@@ -187698,6 +189846,11 @@ abstract final class CatchContractConstraints {
     'listOrganizerContactsCallableResponse.contacts.items.manualTags': listOrganizerContactsCallableResponseContactsItemsManualTags,
     'listOrganizerContactsCallableResponse.contacts.items.manualTags.items.label': listOrganizerContactsCallableResponseContactsItemsManualTagsItemsLabel,
     'listOrganizerContactsCallableResponse.contacts.items.manualTags.items.tagId': listOrganizerContactsCallableResponseContactsItemsManualTagsItemsTagId,
+    'listOrganizerContactsCallableResponse.contacts.items.membership.entitled': listOrganizerContactsCallableResponseContactsItemsMembershipEntitled,
+    'listOrganizerContactsCallableResponse.contacts.items.membership.memberSinceMillis': listOrganizerContactsCallableResponseContactsItemsMembershipMemberSinceMillis,
+    'listOrganizerContactsCallableResponse.contacts.items.membership.planId': listOrganizerContactsCallableResponseContactsItemsMembershipPlanId,
+    'listOrganizerContactsCallableResponse.contacts.items.membership.planName': listOrganizerContactsCallableResponseContactsItemsMembershipPlanName,
+    'listOrganizerContactsCallableResponse.contacts.items.membership.status': listOrganizerContactsCallableResponseContactsItemsMembershipStatus,
     'listOrganizerContactsCallableResponse.contacts.items.phoneE164': listOrganizerContactsCallableResponseContactsItemsPhoneE164,
     'listOrganizerContactsCallableResponse.contacts.items.revision': listOrganizerContactsCallableResponseContactsItemsRevision,
     'listOrganizerContactsCallableResponse.contacts.items.segmentIds': listOrganizerContactsCallableResponseContactsItemsSegmentIds,
@@ -188213,6 +190366,32 @@ abstract final class CatchContractConstraints {
     'manageEventChatMemberCallablePayload.targetUid': manageEventChatMemberCallablePayloadTargetUid,
     'manageEventChatMemberCallableResponse.replayed': manageEventChatMemberCallableResponseReplayed,
     'manageEventChatMemberCallableResponse.revision': manageEventChatMemberCallableResponseRevision,
+    'manageEventMembershipRulesCallablePayload.action': manageEventMembershipRulesCallablePayloadAction,
+    'manageEventMembershipRulesCallablePayload.earlyAccessHours': manageEventMembershipRulesCallablePayloadEarlyAccessHours,
+    'manageEventMembershipRulesCallablePayload.eventId': manageEventMembershipRulesCallablePayloadEventId,
+    'manageEventMembershipRulesCallablePayload.expectedRevision': manageEventMembershipRulesCallablePayloadExpectedRevision,
+    'manageEventMembershipRulesCallablePayload.memberPriceOverrides': manageEventMembershipRulesCallablePayloadMemberPriceOverrides,
+    'manageEventMembershipRulesCallablePayload.memberPriceOverrides.items.percentOff': manageEventMembershipRulesCallablePayloadMemberPriceOverridesItemsPercentOff,
+    'manageEventMembershipRulesCallablePayload.memberPriceOverrides.items.planId': manageEventMembershipRulesCallablePayloadMemberPriceOverridesItemsPlanId,
+    'manageEventMembershipRulesCallablePayload.memberPriceOverrides.items.priceInPaise': manageEventMembershipRulesCallablePayloadMemberPriceOverridesItemsPriceInPaise,
+    'manageEventMembershipRulesCallablePayload.membersOnly': manageEventMembershipRulesCallablePayloadMembersOnly,
+    'manageEventMembershipRulesCallableResponse.eventId': manageEventMembershipRulesCallableResponseEventId,
+    'manageEventMembershipRulesCallableResponse.organizerId': manageEventMembershipRulesCallableResponseOrganizerId,
+    'manageEventMembershipRulesCallableResponse.plans': manageEventMembershipRulesCallableResponsePlans,
+    'manageEventMembershipRulesCallableResponse.plans.items.benefits': manageEventMembershipRulesCallableResponsePlansItemsBenefits,
+    'manageEventMembershipRulesCallableResponse.plans.items.benefits.items.percentOff': manageEventMembershipRulesCallableResponsePlansItemsBenefitsItemsPercentOff,
+    'manageEventMembershipRulesCallableResponse.plans.items.benefits.items.type': manageEventMembershipRulesCallableResponsePlansItemsBenefitsItemsType,
+    'manageEventMembershipRulesCallableResponse.plans.items.name': manageEventMembershipRulesCallableResponsePlansItemsName,
+    'manageEventMembershipRulesCallableResponse.plans.items.planId': manageEventMembershipRulesCallableResponsePlansItemsPlanId,
+    'manageEventMembershipRulesCallableResponse.plans.items.status': manageEventMembershipRulesCallableResponsePlansItemsStatus,
+    'manageEventMembershipRulesCallableResponse.rules.earlyAccessHours': manageEventMembershipRulesCallableResponseRulesEarlyAccessHours,
+    'manageEventMembershipRulesCallableResponse.rules.generalSaleOpensAtMillis': manageEventMembershipRulesCallableResponseRulesGeneralSaleOpensAtMillis,
+    'manageEventMembershipRulesCallableResponse.rules.memberPriceOverrides': manageEventMembershipRulesCallableResponseRulesMemberPriceOverrides,
+    'manageEventMembershipRulesCallableResponse.rules.memberPriceOverrides.items.percentOff': manageEventMembershipRulesCallableResponseRulesMemberPriceOverridesItemsPercentOff,
+    'manageEventMembershipRulesCallableResponse.rules.memberPriceOverrides.items.planId': manageEventMembershipRulesCallableResponseRulesMemberPriceOverridesItemsPlanId,
+    'manageEventMembershipRulesCallableResponse.rules.memberPriceOverrides.items.priceInPaise': manageEventMembershipRulesCallableResponseRulesMemberPriceOverridesItemsPriceInPaise,
+    'manageEventMembershipRulesCallableResponse.rules.membersOnly': manageEventMembershipRulesCallableResponseRulesMembersOnly,
+    'manageEventMembershipRulesCallableResponse.rules.revision': manageEventMembershipRulesCallableResponseRulesRevision,
     'manageEventOfferCheckoutCallablePayload.action': manageEventOfferCheckoutCallablePayloadAction,
     'manageEventOfferCheckoutCallablePayload.callback.paymentId': manageEventOfferCheckoutCallablePayloadCallbackPaymentId,
     'manageEventOfferCheckoutCallablePayload.callback.signature': manageEventOfferCheckoutCallablePayloadCallbackSignature,
@@ -188260,6 +190439,68 @@ abstract final class CatchContractConstraints {
     'manageEventOfferCheckoutCallableResponse.payment.refundedAmountPaise': manageEventOfferCheckoutCallableResponsePaymentRefundedAmountPaise,
     'manageEventOfferCheckoutCallableResponse.payment.status': manageEventOfferCheckoutCallableResponsePaymentStatus,
     'manageEventOfferCheckoutCallableResponse.serverTimeMillis': manageEventOfferCheckoutCallableResponseServerTimeMillis,
+    'manageHostMembershipCheckoutCallablePayload.action': manageHostMembershipCheckoutCallablePayloadAction,
+    'manageHostMembershipCheckoutCallablePayload.checkoutId': manageHostMembershipCheckoutCallablePayloadCheckoutId,
+    'manageHostMembershipCheckoutCallablePayload.interval': manageHostMembershipCheckoutCallablePayloadInterval,
+    'manageHostMembershipCheckoutCallablePayload.organizerId': manageHostMembershipCheckoutCallablePayloadOrganizerId,
+    'manageHostMembershipCheckoutCallablePayload.planId': manageHostMembershipCheckoutCallablePayloadPlanId,
+    'manageHostMembershipCheckoutCallableResponse.authorizationUrl': manageHostMembershipCheckoutCallableResponseAuthorizationUrl,
+    'manageHostMembershipCheckoutCallableResponse.checkoutId': manageHostMembershipCheckoutCallableResponseCheckoutId,
+    'manageHostMembershipCheckoutCallableResponse.expiresAtMillis': manageHostMembershipCheckoutCallableResponseExpiresAtMillis,
+    'manageHostMembershipCheckoutCallableResponse.membershipId': manageHostMembershipCheckoutCallableResponseMembershipId,
+    'manageHostMembershipCheckoutCallableResponse.membershipStatus': manageHostMembershipCheckoutCallableResponseMembershipStatus,
+    'manageHostMembershipCheckoutCallableResponse.state': manageHostMembershipCheckoutCallableResponseState,
+    'manageHostMembershipPlansCallablePayload.action': manageHostMembershipPlansCallablePayloadAction,
+    'manageHostMembershipPlansCallablePayload.expectedRevision': manageHostMembershipPlansCallablePayloadExpectedRevision,
+    'manageHostMembershipPlansCallablePayload.organizerId': manageHostMembershipPlansCallablePayloadOrganizerId,
+    'manageHostMembershipPlansCallablePayload.plan.benefits': manageHostMembershipPlansCallablePayloadPlanBenefits,
+    'manageHostMembershipPlansCallablePayload.plan.benefits.items.percentOff': manageHostMembershipPlansCallablePayloadPlanBenefitsItemsPercentOff,
+    'manageHostMembershipPlansCallablePayload.plan.benefits.items.type': manageHostMembershipPlansCallablePayloadPlanBenefitsItemsType,
+    'manageHostMembershipPlansCallablePayload.plan.description': manageHostMembershipPlansCallablePayloadPlanDescription,
+    'manageHostMembershipPlansCallablePayload.plan.limits.maxUpcomingMemberPricedBookings': manageHostMembershipPlansCallablePayloadPlanLimitsMaxUpcomingMemberPricedBookings,
+    'manageHostMembershipPlansCallablePayload.plan.memberCap': manageHostMembershipPlansCallablePayloadPlanMemberCap,
+    'manageHostMembershipPlansCallablePayload.plan.name': manageHostMembershipPlansCallablePayloadPlanName,
+    'manageHostMembershipPlansCallablePayload.plan.perks': manageHostMembershipPlansCallablePayloadPlanPerks,
+    'manageHostMembershipPlansCallablePayload.plan.perks.items': manageHostMembershipPlansCallablePayloadPlanPerksItems,
+    'manageHostMembershipPlansCallablePayload.plan.prices.annual.amountPaise': manageHostMembershipPlansCallablePayloadPlanPricesAnnualAmountPaise,
+    'manageHostMembershipPlansCallablePayload.plan.prices.monthly.amountPaise': manageHostMembershipPlansCallablePayloadPlanPricesMonthlyAmountPaise,
+    'manageHostMembershipPlansCallablePayload.plan.sortOrder': manageHostMembershipPlansCallablePayloadPlanSortOrder,
+    'manageHostMembershipPlansCallablePayload.plan.trialDays': manageHostMembershipPlansCallablePayloadPlanTrialDays,
+    'manageHostMembershipPlansCallablePayload.planId': manageHostMembershipPlansCallablePayloadPlanId,
+    'manageHostMembershipPlansCallableResponse.organizerId': manageHostMembershipPlansCallableResponseOrganizerId,
+    'manageHostMembershipPlansCallableResponse.plans': manageHostMembershipPlansCallableResponsePlans,
+    'manageHostMembershipPlansCallableResponse.plans.items.activeMemberCount': manageHostMembershipPlansCallableResponsePlansItemsActiveMemberCount,
+    'manageHostMembershipPlansCallableResponse.plans.items.benefits': manageHostMembershipPlansCallableResponsePlansItemsBenefits,
+    'manageHostMembershipPlansCallableResponse.plans.items.benefits.items.percentOff': manageHostMembershipPlansCallableResponsePlansItemsBenefitsItemsPercentOff,
+    'manageHostMembershipPlansCallableResponse.plans.items.benefits.items.type': manageHostMembershipPlansCallableResponsePlansItemsBenefitsItemsType,
+    'manageHostMembershipPlansCallableResponse.plans.items.description': manageHostMembershipPlansCallableResponsePlansItemsDescription,
+    'manageHostMembershipPlansCallableResponse.plans.items.limits.maxUpcomingMemberPricedBookings': manageHostMembershipPlansCallableResponsePlansItemsLimitsMaxUpcomingMemberPricedBookings,
+    'manageHostMembershipPlansCallableResponse.plans.items.memberCap': manageHostMembershipPlansCallableResponsePlansItemsMemberCap,
+    'manageHostMembershipPlansCallableResponse.plans.items.name': manageHostMembershipPlansCallableResponsePlansItemsName,
+    'manageHostMembershipPlansCallableResponse.plans.items.organizerId': manageHostMembershipPlansCallableResponsePlansItemsOrganizerId,
+    'manageHostMembershipPlansCallableResponse.plans.items.perks': manageHostMembershipPlansCallableResponsePlansItemsPerks,
+    'manageHostMembershipPlansCallableResponse.plans.items.perks.items': manageHostMembershipPlansCallableResponsePlansItemsPerksItems,
+    'manageHostMembershipPlansCallableResponse.plans.items.planId': manageHostMembershipPlansCallableResponsePlansItemsPlanId,
+    'manageHostMembershipPlansCallableResponse.plans.items.prices.annual.amountPaise': manageHostMembershipPlansCallableResponsePlansItemsPricesAnnualAmountPaise,
+    'manageHostMembershipPlansCallableResponse.plans.items.prices.annual.revision': manageHostMembershipPlansCallableResponsePlansItemsPricesAnnualRevision,
+    'manageHostMembershipPlansCallableResponse.plans.items.prices.monthly.amountPaise': manageHostMembershipPlansCallableResponsePlansItemsPricesMonthlyAmountPaise,
+    'manageHostMembershipPlansCallableResponse.plans.items.prices.monthly.revision': manageHostMembershipPlansCallableResponsePlansItemsPricesMonthlyRevision,
+    'manageHostMembershipPlansCallableResponse.plans.items.publishedAtMillis': manageHostMembershipPlansCallableResponsePlansItemsPublishedAtMillis,
+    'manageHostMembershipPlansCallableResponse.plans.items.revision': manageHostMembershipPlansCallableResponsePlansItemsRevision,
+    'manageHostMembershipPlansCallableResponse.plans.items.sortOrder': manageHostMembershipPlansCallableResponsePlansItemsSortOrder,
+    'manageHostMembershipPlansCallableResponse.plans.items.status': manageHostMembershipPlansCallableResponsePlansItemsStatus,
+    'manageHostMembershipPlansCallableResponse.plans.items.trialDays': manageHostMembershipPlansCallableResponsePlansItemsTrialDays,
+    'manageHostMembershipProgramCallablePayload.action': manageHostMembershipProgramCallablePayloadAction,
+    'manageHostMembershipProgramCallablePayload.organizerId': manageHostMembershipProgramCallablePayloadOrganizerId,
+    'manageHostMembershipProgramCallableResponse.feeConfigured': manageHostMembershipProgramCallableResponseFeeConfigured,
+    'manageHostMembershipProgramCallableResponse.organizerId': manageHostMembershipProgramCallableResponseOrganizerId,
+    'manageHostMembershipProgramCallableResponse.program.billingPauseState': manageHostMembershipProgramCallableResponseProgramBillingPauseState,
+    'manageHostMembershipProgramCallableResponse.program.memberCount': manageHostMembershipProgramCallableResponseProgramMemberCount,
+    'manageHostMembershipProgramCallableResponse.program.mode': manageHostMembershipProgramCallableResponseProgramMode,
+    'manageHostMembershipProgramCallableResponse.program.provider': manageHostMembershipProgramCallableResponseProgramProvider,
+    'manageHostMembershipProgramCallableResponse.program.revision': manageHostMembershipProgramCallableResponseProgramRevision,
+    'manageHostMembershipProgramCallableResponse.program.state': manageHostMembershipProgramCallableResponseProgramState,
+    'manageHostMembershipProgramCallableResponse.routeAccountReady': manageHostMembershipProgramCallableResponseRouteAccountReady,
     'manageHostRosterIntakeCallablePayload.action': manageHostRosterIntakeCallablePayloadAction,
     'manageHostRosterIntakeCallablePayload.eventId': manageHostRosterIntakeCallablePayloadEventId,
     'manageHostRosterIntakeCallablePayload.excludedRowIds': manageHostRosterIntakeCallablePayloadExcludedRowIds,
@@ -188345,6 +190586,12 @@ abstract final class CatchContractConstraints {
     'manageHostRosterIntakeCallablePayload.rows.items.value.status': manageHostRosterIntakeCallablePayloadRowsItemsValueStatus,
     'manageHostRosterIntakeCallablePayload.rows.items.value.ticketType': manageHostRosterIntakeCallablePayloadRowsItemsValueTicketType,
     'manageHostRosterIntakeCallablePayload.sessionId': manageHostRosterIntakeCallablePayloadSessionId,
+    'manageMyHostMembershipCallablePayload.action': manageMyHostMembershipCallablePayloadAction,
+    'manageMyHostMembershipCallablePayload.membershipId': manageMyHostMembershipCallablePayloadMembershipId,
+    'manageMyHostMembershipCallableResponse.cancelAtPeriodEnd': manageMyHostMembershipCallableResponseCancelAtPeriodEnd,
+    'manageMyHostMembershipCallableResponse.currentPeriodEndMillis': manageMyHostMembershipCallableResponseCurrentPeriodEndMillis,
+    'manageMyHostMembershipCallableResponse.membershipId': manageMyHostMembershipCallableResponseMembershipId,
+    'manageMyHostMembershipCallableResponse.status': manageMyHostMembershipCallableResponseStatus,
     'manageOrganizerFormDomainCallablePayload.action': manageOrganizerFormDomainCallablePayloadAction,
     'manageOrganizerFormDomainCallablePayload.formId': manageOrganizerFormDomainCallablePayloadFormId,
     'manageOrganizerFormDomainCallablePayload.hostname': manageOrganizerFormDomainCallablePayloadHostname,
@@ -188392,6 +190639,7 @@ abstract final class CatchContractConstraints {
     'managePublicEventCheckoutCallablePayload.reviewedQuote.currency': managePublicEventCheckoutCallablePayloadReviewedQuoteCurrency,
     'managePublicEventCheckoutCallablePayload.reviewedQuote.eventId': managePublicEventCheckoutCallablePayloadReviewedQuoteEventId,
     'managePublicEventCheckoutCallablePayload.reviewedQuote.eventName': managePublicEventCheckoutCallablePayloadReviewedQuoteEventName,
+    'managePublicEventCheckoutCallablePayload.reviewedQuote.listAmountPaise': managePublicEventCheckoutCallablePayloadReviewedQuoteListAmountPaise,
     'managePublicEventCheckoutCallablePayload.reviewedQuote.registrationRevision': managePublicEventCheckoutCallablePayloadReviewedQuoteRegistrationRevision,
     'managePublicEventCheckoutCallablePayload.reviewedQuote.startTimeMillis': managePublicEventCheckoutCallablePayloadReviewedQuoteStartTimeMillis,
     'managePublicEventCheckoutCallableResponse.admission.attendeeId': managePublicEventCheckoutCallableResponseAdmissionAttendeeId,
@@ -188423,6 +190671,7 @@ abstract final class CatchContractConstraints {
     'managePublicEventCheckoutCallableResponse.quote.currency': managePublicEventCheckoutCallableResponseQuoteCurrency,
     'managePublicEventCheckoutCallableResponse.quote.eventId': managePublicEventCheckoutCallableResponseQuoteEventId,
     'managePublicEventCheckoutCallableResponse.quote.eventName': managePublicEventCheckoutCallableResponseQuoteEventName,
+    'managePublicEventCheckoutCallableResponse.quote.listAmountPaise': managePublicEventCheckoutCallableResponseQuoteListAmountPaise,
     'managePublicEventCheckoutCallableResponse.quote.registrationRevision': managePublicEventCheckoutCallableResponseQuoteRegistrationRevision,
     'managePublicEventCheckoutCallableResponse.quote.startTimeMillis': managePublicEventCheckoutCallableResponseQuoteStartTimeMillis,
     'managePublicEventCheckoutCallableResponse.serverTimeMillis': managePublicEventCheckoutCallableResponseServerTimeMillis,
@@ -189275,6 +191524,8 @@ abstract final class CatchContractConstraints {
     'organizerContactDocument.hiddenAt._seconds': organizerContactDocumentHiddenAtSeconds,
     'organizerContactDocument.hiddenBy': organizerContactDocumentHiddenBy,
     'organizerContactDocument.hiddenTraitSnapshot.attendanceRate': organizerContactDocumentHiddenTraitSnapshotAttendanceRate,
+    'organizerContactDocument.hiddenTraitSnapshot.attended30DayCount': organizerContactDocumentHiddenTraitSnapshotAttended30DayCount,
+    'organizerContactDocument.hiddenTraitSnapshot.attended60DayCount': organizerContactDocumentHiddenTraitSnapshotAttended60DayCount,
     'organizerContactDocument.hiddenTraitSnapshot.attendedEventCount': organizerContactDocumentHiddenTraitSnapshotAttendedEventCount,
     'organizerContactDocument.hiddenTraitSnapshot.cancelledEventCount': organizerContactDocumentHiddenTraitSnapshotCancelledEventCount,
     'organizerContactDocument.hiddenTraitSnapshot.computedAt._nanoseconds': organizerContactDocumentHiddenTraitSnapshotComputedAtNanoseconds,
@@ -189292,6 +191543,11 @@ abstract final class CatchContractConstraints {
     'organizerContactDocument.hiddenTraitSnapshot.lastSeenAt._nanoseconds': organizerContactDocumentHiddenTraitSnapshotLastSeenAtNanoseconds,
     'organizerContactDocument.hiddenTraitSnapshot.lastSeenAt._seconds': organizerContactDocumentHiddenTraitSnapshotLastSeenAtSeconds,
     'organizerContactDocument.hiddenTraitSnapshot.linkedAccount': organizerContactDocumentHiddenTraitSnapshotLinkedAccount,
+    'organizerContactDocument.hiddenTraitSnapshot.membership.entitled': organizerContactDocumentHiddenTraitSnapshotMembershipEntitled,
+    'organizerContactDocument.hiddenTraitSnapshot.membership.memberSinceMillis': organizerContactDocumentHiddenTraitSnapshotMembershipMemberSinceMillis,
+    'organizerContactDocument.hiddenTraitSnapshot.membership.planId': organizerContactDocumentHiddenTraitSnapshotMembershipPlanId,
+    'organizerContactDocument.hiddenTraitSnapshot.membership.planName': organizerContactDocumentHiddenTraitSnapshotMembershipPlanName,
+    'organizerContactDocument.hiddenTraitSnapshot.membership.status': organizerContactDocumentHiddenTraitSnapshotMembershipStatus,
     'organizerContactDocument.hiddenTraitSnapshot.noShowCount': organizerContactDocumentHiddenTraitSnapshotNoShowCount,
     'organizerContactDocument.hiddenTraitSnapshot.organizerId': organizerContactDocumentHiddenTraitSnapshotOrganizerId,
     'organizerContactDocument.hiddenTraitSnapshot.projectionVersion': organizerContactDocumentHiddenTraitSnapshotProjectionVersion,
@@ -189549,6 +191805,8 @@ abstract final class CatchContractConstraints {
     'organizerContactTagVocabularyDocument.updatedAt._nanoseconds': organizerContactTagVocabularyDocumentUpdatedAtNanoseconds,
     'organizerContactTagVocabularyDocument.updatedAt._seconds': organizerContactTagVocabularyDocumentUpdatedAtSeconds,
     'organizerContactTraitDocument.attendanceRate': organizerContactTraitDocumentAttendanceRate,
+    'organizerContactTraitDocument.attended30DayCount': organizerContactTraitDocumentAttended30DayCount,
+    'organizerContactTraitDocument.attended60DayCount': organizerContactTraitDocumentAttended60DayCount,
     'organizerContactTraitDocument.attendedEventCount': organizerContactTraitDocumentAttendedEventCount,
     'organizerContactTraitDocument.cancelledEventCount': organizerContactTraitDocumentCancelledEventCount,
     'organizerContactTraitDocument.computedAt._nanoseconds': organizerContactTraitDocumentComputedAtNanoseconds,
@@ -189566,6 +191824,11 @@ abstract final class CatchContractConstraints {
     'organizerContactTraitDocument.lastSeenAt._nanoseconds': organizerContactTraitDocumentLastSeenAtNanoseconds,
     'organizerContactTraitDocument.lastSeenAt._seconds': organizerContactTraitDocumentLastSeenAtSeconds,
     'organizerContactTraitDocument.linkedAccount': organizerContactTraitDocumentLinkedAccount,
+    'organizerContactTraitDocument.membership.entitled': organizerContactTraitDocumentMembershipEntitled,
+    'organizerContactTraitDocument.membership.memberSinceMillis': organizerContactTraitDocumentMembershipMemberSinceMillis,
+    'organizerContactTraitDocument.membership.planId': organizerContactTraitDocumentMembershipPlanId,
+    'organizerContactTraitDocument.membership.planName': organizerContactTraitDocumentMembershipPlanName,
+    'organizerContactTraitDocument.membership.status': organizerContactTraitDocumentMembershipStatus,
     'organizerContactTraitDocument.noShowCount': organizerContactTraitDocumentNoShowCount,
     'organizerContactTraitDocument.organizerId': organizerContactTraitDocumentOrganizerId,
     'organizerContactTraitDocument.projectionVersion': organizerContactTraitDocumentProjectionVersion,

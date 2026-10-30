@@ -19,6 +19,7 @@ import 'package:catch_dating_app/contexts/messaging/data/host_whatsapp_embedded_
 import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';

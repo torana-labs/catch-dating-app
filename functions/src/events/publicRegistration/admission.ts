@@ -44,6 +44,8 @@ import {
 } from "./paymentLedger";
 import {assertPublicPaidAdmission} from "./admissionProof";
 import {prepareCatchBookingAdmission} from "./catchBookingBridge";
+import {recordPublicMemberBenefitUse} from
+  "../../hostMemberships/publicCheckout";
 
 type Result = "admitted" | "refundPending" | "unchanged";
 /** Only the provider processor may establish captured state. Its current,
@@ -63,7 +65,7 @@ export async function finalizePublicPayment(input: {
   }
   let refundEligible = false;
   try {
-    return await db.runTransaction(async (tx): Promise<Result> => {
+    const finalized = await db.runTransaction(async (tx): Promise<Result> => {
       refundEligible = false;
       const paymentRef = db
         .collection(PUBLIC_PAYMENT_COLLECTION)
@@ -297,6 +299,10 @@ export async function finalizePublicPayment(input: {
       });
       return "admitted";
     });
+    if (finalized === "admitted") {
+      await recordAdmittedMemberBenefitUse(db, paymentId, nowMillis);
+    }
+    return finalized;
   } catch (error) {
     const rejected =
       (error instanceof HttpsError &&
@@ -316,5 +322,21 @@ export async function finalizePublicPayment(input: {
     return result === "admitted" || result === "refundPending" ?
       result :
       "unchanged";
+  }
+}
+
+/** Membership savings never change admission; failures are dropped. */
+async function recordAdmittedMemberBenefitUse(
+  db: FirebaseFirestore.Firestore, paymentId: string, nowMillis: number,
+): Promise<void> {
+  try {
+    const payment = parsePublicPayment((await db
+      .collection(PUBLIC_PAYMENT_COLLECTION).doc(paymentId).get()).data(),
+    paymentId);
+    await recordPublicMemberBenefitUse({db, eventId: payment.eventId,
+      uid: payment.recipientUid, paidAmountPaise: payment.amountPaise,
+      nowMillis});
+  } catch {
+    return;
   }
 }

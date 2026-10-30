@@ -25413,4 +25413,555 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostPayoutsRazorpayPermissionsTitle => 'What connecting allows';
+
+  @override
+  String membershipsPricePerMonth({required String price}) {
+    return '$price/mo';
+  }
+
+  @override
+  String membershipsPricePerYear({required String price}) {
+    return '$price/yr';
+  }
+
+  @override
+  String get membershipsStatusTrialing => 'Trial';
+
+  @override
+  String get membershipsStatusActive => 'Active';
+
+  @override
+  String get membershipsStatusPastDue => 'Payment due';
+
+  @override
+  String get membershipsStatusPaused => 'Paused';
+
+  @override
+  String get membershipsStatusPausedByHost => 'Paused by organizer';
+
+  @override
+  String get membershipsStatusCanceling => 'Ends soon';
+
+  @override
+  String get membershipsStatusExpired => 'Ended';
+
+  @override
+  String get membershipsBenefitEventsIncluded => 'Events included';
+
+  @override
+  String membershipsBenefitEventDiscount({required int percent}) {
+    return '$percent% off events';
+  }
+
+  @override
+  String get membershipsBenefitEarlyAccess => 'Early access to bookings';
+
+  @override
+  String get membershipsBenefitMembersOnly => 'Members-only events';
+
+  @override
+  String get membershipsBadgeMember => 'Member';
+
+  @override
+  String membershipsBadgeMemberOf({required String planName}) {
+    return 'Member · $planName';
+  }
+
+  @override
+  String membershipsEventGeneralSaleOpens({
+    required String date,
+    required String time,
+  }) {
+    return 'Members only until $date, $time';
+  }
+
+  @override
+  String get membershipsEventMembersOnly => 'Members only';
+
+  @override
+  String membershipsEventMemberPriceNote({required String price}) {
+    return 'Member price · usually $price';
+  }
+
+  @override
+  String get membershipsEventBookingCapNote =>
+      'You’ve reached your plan’s upcoming booking limit, so this one is at the regular price.';
+
+  @override
+  String membershipsEventIncludedNote({required String planName}) {
+    return 'Included with your $planName membership';
+  }
+
+  @override
+  String membershipsEventSavingNote({
+    required String planName,
+    required String savings,
+  }) {
+    return '$planName members save $savings here';
+  }
+
+  @override
+  String get membershipsUpsellUnlockTitle => 'Members can book this event';
+
+  @override
+  String get membershipsUpsellFreeTitle => 'Free with a membership';
+
+  @override
+  String membershipsUpsellSaveTitle({required String price}) {
+    return 'Members pay $price';
+  }
+
+  @override
+  String membershipsUpsellMessage({
+    required String planName,
+    required String planPrice,
+  }) {
+    return 'Join $planName for $planPrice.';
+  }
+
+  @override
+  String get membershipsUpsellAction => 'See membership';
+
+  @override
+  String get membershipsPlanUnavailableTitle => 'Plan unavailable';
+
+  @override
+  String get membershipsPlanUnavailableBody =>
+      'This membership isn’t on sale right now.';
+
+  @override
+  String get membershipsJoinDone => 'Done';
+
+  @override
+  String get membershipsJoinCheckStatus => 'I’ve approved it · check status';
+
+  @override
+  String membershipsJoinAction({required String price}) {
+    return 'Join for $price';
+  }
+
+  @override
+  String membershipsJoinWelcomeTitle({required String planName}) {
+    return 'Welcome to $planName';
+  }
+
+  @override
+  String get membershipsJoinWelcomeBody =>
+      'Your member price and perks apply now. Manage it any time from My memberships.';
+
+  @override
+  String get membershipsJoinPendingTitle => 'Finish on Razorpay';
+
+  @override
+  String get membershipsJoinPendingBody =>
+      'Approve the UPI Autopay, card or bank mandate in the Razorpay page, then come back here.';
+
+  @override
+  String get membershipsJoinReopen => 'Open Razorpay again';
+
+  @override
+  String get membershipsJoinExpiredTitle => 'Checkout didn’t finish';
+
+  @override
+  String get membershipsJoinExpiredBody =>
+      'Nothing was charged. Close this and try again.';
+
+  @override
+  String get membershipsJoinBillingTitle => 'Billing';
+
+  @override
+  String membershipsJoinTrial({required int days}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days-day free trial',
+      one: '1-day free trial',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get membershipsPlanFull => 'Full';
+
+  @override
+  String get membershipsJoinMandateNote =>
+      'Renews automatically until you cancel. Pause or cancel any time from My memberships. Payments are processed by Razorpay.';
+
+  @override
+  String get membershipsPlansSectionTitle => 'Memberships';
+
+  @override
+  String get membershipsPlanYourPlan => 'Your plan';
+
+  @override
+  String get membershipsScreenTitle => 'My memberships';
+
+  @override
+  String get membershipsSignInTitle => 'Sign in required';
+
+  @override
+  String get membershipsSignInBody => 'Sign in to see your memberships.';
+
+  @override
+  String get membershipsEmptyTitle => 'No memberships yet';
+
+  @override
+  String get membershipsEmptyBody =>
+      'Join an organizer’s membership from their page to get member prices and perks.';
+
+  @override
+  String get membershipsTotalSavedTitle => 'Saved so far';
+
+  @override
+  String get membershipsTotalSavedBody =>
+      'What you’d have paid at regular prices, minus what you paid.';
+
+  @override
+  String get membershipsDetailPrice => 'Price';
+
+  @override
+  String get membershipsDetailTrialEnds => 'Trial ends';
+
+  @override
+  String get membershipsDetailEnds => 'Ends';
+
+  @override
+  String get membershipsDetailPausedSince => 'Period ended';
+
+  @override
+  String get membershipsDetailRenews => 'Renews';
+
+  @override
+  String get membershipsDetailMemberSince => 'Member since';
+
+  @override
+  String membershipsDetailMemberSinceValue({
+    required String date,
+    required int days,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days',
+      one: '1 day',
+    );
+    return '$date · $_temp0';
+  }
+
+  @override
+  String get membershipsDetailSaved => 'Saved';
+
+  @override
+  String get membershipsDetailSavedBody => 'On events booked at member prices.';
+
+  @override
+  String get membershipsDetailHostPausedTitle =>
+      'Billing paused by the organizer';
+
+  @override
+  String get membershipsDetailHostPausedBody =>
+      'You won’t be charged while they take a break. Your member price still applies to any event they run.';
+
+  @override
+  String get membershipsDetailPastDueTitle => 'Payment didn’t go through';
+
+  @override
+  String get membershipsDetailPastDueBody =>
+      'Razorpay will retry automatically. Check your UPI or card mandate so your membership continues.';
+
+  @override
+  String get membershipsActionPause => 'Pause membership';
+
+  @override
+  String get membershipsActionResume => 'Resume membership';
+
+  @override
+  String get membershipsActionCancel => 'Cancel at period end';
+
+  @override
+  String get membershipsConfirmPauseTitle => 'Pause membership?';
+
+  @override
+  String membershipsConfirmPauseBody({required String planName}) {
+    return 'You won’t be charged while $planName is paused, and member prices and early access stop until you resume.';
+  }
+
+  @override
+  String get membershipsConfirmCancelTitle => 'Cancel membership?';
+
+  @override
+  String membershipsConfirmCancelBody({required String planName}) {
+    return '$planName stays active until the end of this period. You won’t be charged again.';
+  }
+
+  @override
+  String membershipsProfileCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count active',
+      one: '1 active',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostMembershipsScreenTitle => 'Memberships';
+
+  @override
+  String get hostMembershipsProgramTitle => 'Program';
+
+  @override
+  String get hostMembershipsProgramOff => 'Off';
+
+  @override
+  String get hostMembershipsProgramTestMode => 'Test mode';
+
+  @override
+  String get hostMembershipsProgramLive => 'Live';
+
+  @override
+  String get hostMembershipsIntroTitle => 'Sell monthly or annual memberships';
+
+  @override
+  String get hostMembershipsIntroBody =>
+      'Members renew automatically through UPI Autopay, card or bank mandates. Catch applies member prices, early access and members-only events at checkout; you deliver any perks in person. Each renewal pays out to your Razorpay account minus Catch’s fee.';
+
+  @override
+  String get hostMembershipsPayoutTitle => 'Payouts';
+
+  @override
+  String get hostMembershipsPayoutReady => 'Ready';
+
+  @override
+  String get hostMembershipsPayoutNotReady => 'Set up required';
+
+  @override
+  String get hostMembershipsUnavailableTitle => 'Not available yet';
+
+  @override
+  String get hostMembershipsUnavailableBody =>
+      'Catch is finishing membership payment setup. You can draft plans now and publish them once it’s ready.';
+
+  @override
+  String get hostMembershipsMemberCount => 'Members';
+
+  @override
+  String get hostMembershipsEnable => 'Turn on memberships';
+
+  @override
+  String get hostMembershipsPauseBilling => 'Pause billing for everyone';
+
+  @override
+  String get hostMembershipsResumeBilling => 'Resume billing';
+
+  @override
+  String get hostMembershipsPauseBillingBody =>
+      'For seasonal breaks. Members aren’t charged and keep their member status.';
+
+  @override
+  String get hostMembershipsBillingPausing => 'Pausing members now…';
+
+  @override
+  String get hostMembershipsBillingPaused =>
+      'Billing is paused. New members can’t join until you resume.';
+
+  @override
+  String get hostMembershipsBillingResuming => 'Resuming members now…';
+
+  @override
+  String get hostMembershipsPlansTitle => 'Plans';
+
+  @override
+  String hostMembershipsPlanRowBody({
+    required String status,
+    required int members,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      members,
+      locale: localeName,
+      other: '$members members',
+      one: '1 member',
+    );
+    return '$status · $_temp0';
+  }
+
+  @override
+  String get hostMembershipsPlanDraft => 'Draft';
+
+  @override
+  String get hostMembershipsPlanPublished => 'On sale';
+
+  @override
+  String get hostMembershipsPlanArchived => 'Archived';
+
+  @override
+  String get hostMembershipsNewPlan => 'New plan';
+
+  @override
+  String get hostMembershipsEditPlan => 'Edit plan';
+
+  @override
+  String get hostMembershipsSavePlan => 'Save plan';
+
+  @override
+  String get hostMembershipsPlanName => 'Plan name';
+
+  @override
+  String get hostMembershipsPlanNameHint => 'Sunday Runners';
+
+  @override
+  String get hostMembershipsPlanDescription => 'Description';
+
+  @override
+  String get hostMembershipsMonthlyPrice => 'Monthly price';
+
+  @override
+  String get hostMembershipsAnnualPrice => 'Annual price';
+
+  @override
+  String get hostMembershipsPriceHelper =>
+      'Between ₹10 and ₹15,000 per charge. Offer monthly, annual or both.';
+
+  @override
+  String get hostMembershipsBenefitsTitle => 'Benefits';
+
+  @override
+  String get hostMembershipsDiscount => 'Member discount on events';
+
+  @override
+  String get hostMembershipsDiscountHelper =>
+      '100% includes events. You can change it per event.';
+
+  @override
+  String get hostMembershipsEarlyAccessBody =>
+      'Members book during an event’s early-access window.';
+
+  @override
+  String get hostMembershipsMembersOnlyBody =>
+      'Members can book events you mark members-only.';
+
+  @override
+  String get hostMembershipsPerks => 'Perks';
+
+  @override
+  String get hostMembershipsPerksHelper =>
+      'One per line, like a free coffee or merch. You deliver these in person.';
+
+  @override
+  String get hostMembershipsLimitsTitle => 'Limits';
+
+  @override
+  String get hostMembershipsMemberCap => 'Member cap';
+
+  @override
+  String get hostMembershipsMemberCapHelper => 'Leave empty for no limit.';
+
+  @override
+  String get hostMembershipsBookingCap => 'Upcoming bookings at member price';
+
+  @override
+  String get hostMembershipsBookingCapHelper =>
+      'Stops no-shows on included plans: extra bookings are at the regular price. Leave empty for no limit.';
+
+  @override
+  String get hostMembershipsTrialDays => 'Free trial days';
+
+  @override
+  String get hostMembershipsPricingHintTitle => 'Pricing check';
+
+  @override
+  String get hostMembershipsTypicalTicket => 'Your typical ticket price';
+
+  @override
+  String get hostMembershipsPricingHintLow => 'This may cost you money';
+
+  @override
+  String get hostMembershipsPricingHintHealthy => 'This looks sustainable';
+
+  @override
+  String hostMembershipsPricingHintBody({required int events}) {
+    return 'Compared with a regular coming $events times a month at your typical ticket price, after the member discount.';
+  }
+
+  @override
+  String get hostMembershipsPublishPlan => 'Put on sale';
+
+  @override
+  String get hostMembershipsPublishPlanBody =>
+      'Members can join from your organizer page.';
+
+  @override
+  String get hostMembershipsArchivePlan => 'Stop selling';
+
+  @override
+  String get hostMembershipsArchivePlanBody =>
+      'Existing members keep their membership; nobody new can join.';
+
+  @override
+  String get hostMembershipsEventRulesTitle => 'Memberships';
+
+  @override
+  String hostMembershipsEventRulesPlanDiscount({required String planName}) {
+    return '$planName member discount';
+  }
+
+  @override
+  String get hostMembershipsEventRulesDiscountHint => 'Plan default';
+
+  @override
+  String get hostMembershipsEventRulesEarlyAccess => 'Member early access';
+
+  @override
+  String get hostMembershipsEventRulesHoursSuffix => 'hours';
+
+  @override
+  String get hostMembershipsEventRulesEarlyAccessHelper =>
+      'General sale opens this many hours after you save.';
+
+  @override
+  String hostMembershipsEventRulesGeneralSale({
+    required String date,
+    required String time,
+  }) {
+    return 'General sale opens $date, $time';
+  }
+
+  @override
+  String get hostMembershipsEventRulesMembersOnly => 'Members only';
+
+  @override
+  String get hostMembershipsEventRulesMembersOnlyBody =>
+      'Only members of plans with members-only access can book.';
+
+  @override
+  String get hostMembershipsEventRulesSave => 'Save membership rules';
+
+  @override
+  String get hostMembershipsFilterGroup => 'Membership';
+
+  @override
+  String get hostMembershipsSegmentActive => 'Active members';
+
+  @override
+  String get hostMembershipsSegmentLapsed => 'Lapsed members';
+
+  @override
+  String get hostMembershipsSegmentNoRecentAttendance =>
+      'Members not seen in 30 days';
+
+  @override
+  String get hostMembershipsSegmentFrequentNonMember =>
+      'Regulars without membership';
+
+  @override
+  String get hostMembershipsCustomerMembership => 'Membership';
+
+  @override
+  String hostMembershipsCustomerMemberSince({required String date}) {
+    return 'Since $date';
+  }
+
+  @override
+  String get hostMembershipsRosterMembers => 'Members';
 }

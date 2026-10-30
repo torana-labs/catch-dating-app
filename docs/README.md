@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 5.9.0
+version: 5.9.1
 updated: 2026-10-29
 owner: agent_operating_model
 status: active
@@ -107,6 +107,7 @@ impact graph; do not create a parallel dependency graph or tracked run history.
 | Backend operation ownership | `backend_operation_catalog.md` | Human-readable catalog of direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points. |
 | Event success | `event_success.md`, `plans/event_dress_rehearsal_runtime_parity_spec.md` | Live event-success architecture, product guardrails, Firestore contracts, manual QA, participant metrics, and the proposed parity-first Dress Rehearsal learning/runtime specification. |
 | Host product and Forms | `../lib/hosts/audience/README.md`, `host_product.md`, `host_forms.md` | Read Audience first for current feature answers and source references. The central contracts own the cross-surface product promise, capability/consent gates, remaining Host tooling decisions, and Forms lifecycle, respondent, distribution, analytics, automation, and conversion requirements. |
+| Host memberships | `plans/host_memberships_spec.md` | Proposed paid monthly/annual host memberships: plans and benefits, checkout entitlement evaluation, Razorpay Subscriptions + Route, membership state machine, CRM segments, surfaces, rules, test plan, MVP/phase-2 split, decisions and open questions. |
 | Wedding/corporate programs and arrivals | `plans/airport_arrivals_prd.md` | Proposed Catch Host private-program architecture, scoped staff workspaces, guest/household identity, Forms/Inbox integration, accommodation, transport and incremental delivery. Update with each reviewed program/transport slice; shared runtime contracts remain in their existing owners. |
 | Cross Paths | `cross_paths.md` | Approved people-in-Explore contract plus implementation receipts for roster privacy and fail-closed global/per-event consent; showcase readiness, sanitized suggestions, invitation, temporary event-plan, capacity, privacy, ranking, analytics, and phased rollout remain owned here. |
 | Location stack | `location_stack_plan.md` | Google Maps/Places, location permissions, run coordinates, check-in geofencing, map navigation, and current map/demo readiness. |

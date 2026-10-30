@@ -8,6 +8,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_profile_requirements.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
@@ -63,6 +64,8 @@ class EventDetailBookingDockState {
     this.isSecondaryLoading = false,
     this.catchLine,
     this.error,
+    this.membershipNote,
+    this.membershipOffer,
   });
 
   const EventDetailBookingDockState.hidden()
@@ -127,6 +130,37 @@ class EventDetailBookingDockState {
   final String? catchLine;
   final Object? error;
 
+  /// Paid host membership context: why the price is what it is.
+  final String? membershipNote;
+
+  /// A membership that would make this event cheaper, free or bookable.
+  final HostMembershipEventOffer? membershipOffer;
+
+  EventDetailBookingDockState _withMembership({
+    String? label,
+    String? priceNote,
+    String? membershipNote,
+    HostMembershipEventOffer? membershipOffer,
+  }) => EventDetailBookingDockState._(
+    visible: visible,
+    label: label ?? this.label,
+    primaryAction: primaryAction,
+    buttonKey: buttonKey,
+    leadingKind: leadingKind,
+    isLoading: isLoading,
+    useAccent: useAccent,
+    price: price,
+    priceNote: priceNote ?? this.priceNote,
+    priceWarn: priceNote == null && priceWarn,
+    waitlistOfferExpiresAt: waitlistOfferExpiresAt,
+    secondaryAction: secondaryAction,
+    isSecondaryLoading: isSecondaryLoading,
+    catchLine: catchLine,
+    error: error,
+    membershipNote: membershipNote ?? this.membershipNote,
+    membershipOffer: membershipOffer ?? this.membershipOffer,
+  );
+
   bool get isPrimaryActionEnabled =>
       visible &&
       !isLoading &&
@@ -159,6 +193,84 @@ class EventDetailBookingDockMutationState {
 }
 
 EventDetailBookingDockState eventDetailBookingDockStateFrom({
+  required AppLocalizations l10n,
+  required Event event,
+  required UserProfile userProfile,
+  required EventParticipation? participation,
+  required DateTime now,
+  required bool hasInviteCode,
+  required bool supportsPaidBookings,
+  OrganizerSupplyCapabilities organizerCapabilities =
+      const OrganizerSupplyCapabilities.claimedManaged(),
+  bool isSaved = false,
+  bool isHosted = false,
+  bool isClubMember = false,
+  EventViewerState? currentViewer,
+  EventDetailBookingDockMutationState mutationState =
+      const EventDetailBookingDockMutationState(),
+}) {
+  final state = _baseBookingDockState(
+    l10n: l10n,
+    event: event,
+    userProfile: userProfile,
+    participation: participation,
+    now: now,
+    hasInviteCode: hasInviteCode,
+    supportsPaidBookings: supportsPaidBookings,
+    organizerCapabilities: organizerCapabilities,
+    isSaved: isSaved,
+    isHosted: isHosted,
+    isClubMember: isClubMember,
+    currentViewer: currentViewer,
+    mutationState: mutationState,
+  );
+  final facts = _membershipFacts(currentViewer?.hostMembership);
+  if (!state.visible ||
+      facts == null ||
+      currentViewer!.hasAdmission ||
+      !event.startTime.isAfter(now)) {
+    return state;
+  }
+  String formatPrice(int paise) =>
+      EventFormatters.priceInPaise(paise, currencyCode: event.currency);
+  final listPrice = facts.listPriceInPaise;
+  final restriction = currentViewer.restriction;
+  final opensAt = facts.generalSaleOpensAt;
+  final memberPlan = facts.memberPlanName;
+  return state._withMembership(
+    label:
+        restriction == EventViewerRestriction.memberEarlyAccess &&
+            opensAt != null
+        ? l10n.membershipsEventGeneralSaleOpens(
+            date: EventFormatters.shortDate(opensAt),
+            time: EventFormatters.time(opensAt),
+          )
+        : restriction == EventViewerRestriction.paidMembershipRequired
+        ? l10n.membershipsEventMembersOnly
+        : null,
+    priceNote:
+        facts.memberPriceApplied &&
+            state.leadingKind == EventDetailBookingDockLeadingKind.price &&
+            listPrice != null
+        ? l10n.membershipsEventMemberPriceNote(price: formatPrice(listPrice))
+        : null,
+    membershipNote: facts.bookingCapReached
+        ? l10n.membershipsEventBookingCapNote
+        : facts.memberPriceApplied &&
+              currentViewer.quotedPriceInPaise == 0 &&
+              memberPlan != null
+        ? l10n.membershipsEventIncludedNote(planName: memberPlan)
+        : facts.memberPriceApplied && memberPlan != null && listPrice != null
+        ? l10n.membershipsEventSavingNote(
+            planName: memberPlan,
+            savings: formatPrice(facts.savingsInPaise),
+          )
+        : null,
+    membershipOffer: facts.offer,
+  );
+}
+
+EventDetailBookingDockState _baseBookingDockState({
   required AppLocalizations l10n,
   required Event event,
   required UserProfile userProfile,
@@ -607,4 +719,15 @@ String? _hostMeta(Club club, AppLocalizations l10n) {
     );
   }
   return parts.isEmpty ? null : parts.join(' · ');
+}
+
+/// Parses the viewer's membership facts. Malformed facts show no membership
+/// offer; the server rechecks entitlement on every booking.
+EventHostMembershipFacts? _membershipFacts(Map<Object?, Object?>? raw) {
+  if (raw == null) return null;
+  try {
+    return EventHostMembershipFacts.fromMap(raw);
+  } on FormatException {
+    return null;
+  }
 }

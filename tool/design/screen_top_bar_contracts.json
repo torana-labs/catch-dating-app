@@ -196,6 +196,14 @@
       "leading": "back"
     },
     {
+      "path": "lib/host_memberships/presentation/my_memberships_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
       "path": "lib/hosts/work/presentation/host_work_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",

@@ -21,7 +21,10 @@ enum HostRosterInsightSignal {
   advocate('advocate'),
   highImpactAdvocate('high_impact_advocate'),
   knownCatchSpender('known_catch_spender'),
-  topCatchSpender('top_catch_spender');
+  topCatchSpender('top_catch_spender'),
+
+  /// A current paid member of this organizer.
+  member('member');
 
   const HostRosterInsightSignal(this.wireValue);
 

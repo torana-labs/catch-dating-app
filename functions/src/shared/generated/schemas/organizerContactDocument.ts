@@ -546,9 +546,70 @@ export const organizerContactDocumentSchema: Record<string, unknown> = {
                   "advocate",
                   "high_impact_advocate",
                   "whatsapp_reachable",
-                  "sms_reachable"
+                  "sms_reachable",
+                  "active_member",
+                  "lapsed_member",
+                  "member_no_recent_attendance",
+                  "frequent_non_member"
                 ]
               }
+            },
+            "membership": {
+              "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "required": [
+                "planId",
+                "planName",
+                "status",
+                "memberSinceMillis",
+                "entitled"
+              ],
+              "properties": {
+                "planId": {
+                  "type": "string",
+                  "pattern": "^hmp_[A-Za-z0-9]{20}$"
+                },
+                "planName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60
+                },
+                "status": {
+                  "enum": [
+                    "trialing",
+                    "active",
+                    "past_due",
+                    "paused",
+                    "canceling",
+                    "expired"
+                  ]
+                },
+                "memberSinceMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "entitled": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "attended30DayCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "attended60DayCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
             },
             "definitionVersion": {
               "type": "integer",
@@ -620,7 +681,11 @@ export const organizerContactDocumentSchema: Record<string, unknown> = {
                 "advocate",
                 "high_impact_advocate",
                 "whatsapp_reachable",
-                "sms_reachable"
+                "sms_reachable",
+                "active_member",
+                "lapsed_member",
+                "member_no_recent_attendance",
+                "frequent_non_member"
               ]
             },
             "channelStatus": {

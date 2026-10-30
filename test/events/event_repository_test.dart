@@ -32,7 +32,7 @@ void main() {
     });
 
     test(
-      'viewer read sends only event and optional source-bound hints',
+      'viewer read sends event, source-bound hints and the membership opt-in',
       () async {
         final callable =
             functions.httpsCallable('getEventViewerState') as TestHttpsCallable;
@@ -48,6 +48,7 @@ void main() {
             'eventId': 'event-1',
             'inviteCode': 'confirmed-invite',
             'publicPaymentId': 'owned-payment',
+            'includeHostMembership': true,
           },
         ]);
         expect((await firestore.collection('events').get()).docs, isEmpty);

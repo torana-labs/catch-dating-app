@@ -15,6 +15,8 @@ import {assertUnpartitionedInventory} from
 import {eventCancellationPolicy} from
   "../../payments/eventCheckout/eventCancellationPolicy";
 import {canonicalJson} from "../eventSetupPreferences/resolve";
+import type {PublicMemberQuoteTerms} from
+  "../../hostMemberships/publicCheckout";
 
 export type RegistrationMode = "closed" | "free" | "paid";
 export type PublicCheckoutQuote = NonNullable<
@@ -121,6 +123,7 @@ export function publicCheckoutQuote(
   organizer: OrganizerDocument,
   nowMillis: number,
   hasActiveCommunityMembership = false,
+  memberTerms: PublicMemberQuoteTerms | null = null,
 ): PublicCheckoutQuote {
   assertPublicRegistrationPolicy(event, organizer, "paid", nowMillis,
     hasActiveCommunityMembership);
@@ -137,7 +140,8 @@ export function publicCheckoutQuote(
     eventName: event.name,
     registrationRevision: event.publicRegistrationRevision!,
     startTimeMillis: event.startTime.toMillis(),
-    amountPaise: event.priceInPaise!,
+    amountPaise: memberTerms?.priceInPaise ?? event.priceInPaise!,
+    ...(memberTerms ? {listAmountPaise: memberTerms.listPriceInPaise} : {}),
     currency: "INR",
     cancellationPolicy: eventCancellationPolicy(event),
   };

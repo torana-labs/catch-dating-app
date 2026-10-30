@@ -80,6 +80,12 @@ const schemaManagePublicEventCheckoutCallableResponseSchema = <String, Object?>{
                 },
               },
             },
+            'listAmountPaise': <String, Object?>{
+              'type': 'integer',
+              'minimum': 100,
+              'maximum': 100000000,
+              'description': 'Present only when a paid host membership price applies: the list price the member would otherwise pay.',
+            },
           },
         },
         <String, Object?>{

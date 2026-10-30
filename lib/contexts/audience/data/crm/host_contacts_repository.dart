@@ -56,6 +56,7 @@ class HostContactsRepository {
         name: 'getEventRosterInsights',
         payload: GetEventRosterInsightsCallableRequest(
           eventId: eventId,
+          includeHostMembership: true,
         ).toJson(),
         action: 'load event roster customer labels',
         parse: HostEventRosterInsights.fromCallableData,

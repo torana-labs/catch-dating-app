@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_host_membership_plans_response.schema.json",
+  "title": "ManageHostMembershipPlansCallableResponse",
+  "description": "Every plan of one organizer in sort order, after the requested action. Provider price ids are never returned.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "plans"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "plans": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "planId",
+          "organizerId",
+          "name",
+          "description",
+          "status",
+          "prices",
+          "memberCap",
+          "trialDays",
+          "benefits",
+          "perks",
+          "limits",
+          "activeMemberCount",
+          "sortOrder",
+          "revision",
+          "publishedAtMillis"
+        ],
+        "properties": {
+          "planId": {
+            "$ref": "../shared/host_membership_common.schema.json#/definitions/planId"
+          },
+          "organizerId": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          },
+          "name": {
+            "$ref": "../shared/host_membership_common.schema.json#/definitions/planName"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "status": {
+            "$ref": "../shared/host_membership_common.schema.json#/definitions/planStatus"
+          },
+          "prices": {
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+              "monthly": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "amountPaise",
+                  "revision"
+                ],
+                "properties": {
+                  "amountPaise": {
+                    "$ref": "../shared/host_membership_common.schema.json#/definitions/planPriceAmountPaise"
+                  },
+                  "revision": {
+                    "$ref": "../shared/host_membership_common.schema.json#/definitions/revision"
+                  }
+                }
+              },
+              "annual": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "amountPaise",
+                  "revision"
+                ],
+                "properties": {
+                  "amountPaise": {
+                    "$ref": "../shared/host_membership_common.schema.json#/definitions/planPriceAmountPaise"
+                  },
+                  "revision": {
+                    "$ref": "../shared/host_membership_common.schema.json#/definitions/revision"
+                  }
+                }
+              }
+            }
+          },
+          "memberCap": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "trialDays": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 30
+          },
+          "benefits": {
+            "$ref": "../shared/host_membership_common.schema.json#/definitions/planBenefits"
+          },
+          "perks": {
+            "$ref": "../shared/host_membership_common.schema.json#/definitions/planPerks"
+          },
+          "limits": {
+            "$ref": "../shared/host_membership_common.schema.json#/definitions/planLimits"
+          },
+          "activeMemberCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000000
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "revision": {
+            "$ref": "../shared/host_membership_common.schema.json#/definitions/revision"
+          },
+          "publishedAtMillis": {
+            "$ref": "../shared/host_membership_common.schema.json#/definitions/nullableMillis"
+          }
+        }
+      }
+    }
+  }
+}

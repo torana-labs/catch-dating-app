@@ -14,6 +14,10 @@ export interface ManagePublicEventCheckoutCallableResponse {
       refundDeadlineMillis: number;
       eventStartsAtMillis: number;
     };
+    /**
+     * Present only when a paid host membership price applies: the list price the member would otherwise pay.
+     */
+    listAmountPaise?: number;
   } | null;
   payment: {
     paymentId: string;

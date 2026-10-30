@@ -589,6 +589,14 @@ Do not edit it by hand.
 | OrganizerAttentionItemDocument | `firestore/organizer_attention_items.schema.json` | `functions/src/shared/generated/organizerAttentionItemDocument.ts` |
 | OrganizerEntitlementsDocument | `firestore/organizer_entitlements.schema.json` | `functions/src/shared/generated/organizerEntitlementsDocument.ts` |
 | OrganizerEntitlementReceiptDocument | `firestore/organizer_entitlement_receipts.schema.json` | `functions/src/shared/generated/organizerEntitlementReceiptDocument.ts` |
+| HostMembershipProgramDocument | `firestore/host_membership_programs.schema.json` | `functions/src/shared/generated/hostMembershipProgramDocument.ts` |
+| HostMembershipPlanDocument | `firestore/host_membership_plans.schema.json` | `functions/src/shared/generated/hostMembershipPlanDocument.ts` |
+| HostMembershipDocument | `firestore/host_memberships.schema.json` | `functions/src/shared/generated/hostMembershipDocument.ts` |
+| HostMembershipCheckoutDocument | `firestore/host_membership_checkouts.schema.json` | `functions/src/shared/generated/hostMembershipCheckoutDocument.ts` |
+| HostMembershipChargeDocument | `firestore/host_membership_charges.schema.json` | `functions/src/shared/generated/hostMembershipChargeDocument.ts` |
+| HostMembershipWebhookReceiptDocument | `firestore/host_membership_webhook_receipts.schema.json` | `functions/src/shared/generated/hostMembershipWebhookReceiptDocument.ts` |
+| HostMembershipBenefitUseDocument | `firestore/host_membership_benefit_uses.schema.json` | `functions/src/shared/generated/hostMembershipBenefitUseDocument.ts` |
+| EventMembershipRulesDocument | `firestore/event_membership_rules.schema.json` | `functions/src/shared/generated/eventMembershipRulesDocument.ts` |
 | OrganizerContactIdentityLinkDocument | `firestore/organizer_contact_identity_links.schema.json` | `functions/src/shared/generated/organizerContactIdentityLinkDocument.ts` |
 | OrganizerContactIdentityClaimDocument | `firestore/organizer_contact_identity_claims.schema.json` | `functions/src/shared/generated/organizerContactIdentityClaimDocument.ts` |
 | OrganizerContactEventEdgeDocument | `firestore/organizer_contact_event_edges.schema.json` | `functions/src/shared/generated/organizerContactEventEdgeDocument.ts` |
@@ -930,6 +938,16 @@ Do not edit it by hand.
 | GetOrganizerEntitlementCallablePayload | `callables/get_organizer_entitlement_payload.schema.json` | `functions/src/shared/generated/getOrganizerEntitlementCallablePayload.ts` |
 | OrganizerEntitlementMutationCallableResponse | `callable_responses/organizer_entitlement_mutation_response.schema.json` | `functions/src/shared/generated/organizerEntitlementMutationCallableResponse.ts` |
 | OrganizerEntitlementCallableResponse | `callable_responses/organizer_entitlement_response.schema.json` | `functions/src/shared/generated/organizerEntitlementCallableResponse.ts` |
+| ManageHostMembershipProgramCallablePayload | `callables/manage_host_membership_program_payload.schema.json` | `functions/src/shared/generated/manageHostMembershipProgramCallablePayload.ts` |
+| ManageHostMembershipProgramCallableResponse | `callable_responses/manage_host_membership_program_response.schema.json` | `functions/src/shared/generated/manageHostMembershipProgramCallableResponse.ts` |
+| ManageHostMembershipPlansCallablePayload | `callables/manage_host_membership_plans_payload.schema.json` | `functions/src/shared/generated/manageHostMembershipPlansCallablePayload.ts` |
+| ManageHostMembershipPlansCallableResponse | `callable_responses/manage_host_membership_plans_response.schema.json` | `functions/src/shared/generated/manageHostMembershipPlansCallableResponse.ts` |
+| ManageHostMembershipCheckoutCallablePayload | `callables/manage_host_membership_checkout_payload.schema.json` | `functions/src/shared/generated/manageHostMembershipCheckoutCallablePayload.ts` |
+| ManageHostMembershipCheckoutCallableResponse | `callable_responses/manage_host_membership_checkout_response.schema.json` | `functions/src/shared/generated/manageHostMembershipCheckoutCallableResponse.ts` |
+| ManageMyHostMembershipCallablePayload | `callables/manage_my_host_membership_payload.schema.json` | `functions/src/shared/generated/manageMyHostMembershipCallablePayload.ts` |
+| ManageMyHostMembershipCallableResponse | `callable_responses/manage_my_host_membership_response.schema.json` | `functions/src/shared/generated/manageMyHostMembershipCallableResponse.ts` |
+| ManageEventMembershipRulesCallablePayload | `callables/manage_event_membership_rules_payload.schema.json` | `functions/src/shared/generated/manageEventMembershipRulesCallablePayload.ts` |
+| ManageEventMembershipRulesCallableResponse | `callable_responses/manage_event_membership_rules_response.schema.json` | `functions/src/shared/generated/manageEventMembershipRulesCallableResponse.ts` |
 | AdminGetEventDetailsCallablePayload | `callables/admin_get_event_details_payload.schema.json` | `functions/src/shared/generated/adminGetEventDetailsCallablePayload.ts` |
 | AdminListEventDetailsCallablePayload | `callables/admin_list_event_details_payload.schema.json` | `functions/src/shared/generated/adminListEventDetailsCallablePayload.ts` |
 | AdminListExternalEventDetailsCallablePayload | `callables/admin_list_external_event_details_payload.schema.json` | `functions/src/shared/generated/adminListExternalEventDetailsCallablePayload.ts` |
@@ -1870,6 +1888,14 @@ Do not edit it by hand.
 | `schemaOrganizerAttentionItemDocumentSchema` | OrganizerAttentionItemDocument | `firestore/organizer_attention_items.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_attention_item_document.g.dart` |
 | `schemaOrganizerEntitlementsDocumentSchema` | OrganizerEntitlementsDocument | `firestore/organizer_entitlements.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_entitlements_document.g.dart` |
 | `schemaOrganizerEntitlementReceiptDocumentSchema` | OrganizerEntitlementReceiptDocument | `firestore/organizer_entitlement_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_entitlement_receipt_document.g.dart` |
+| `schemaHostMembershipProgramDocumentSchema` | HostMembershipProgramDocument | `firestore/host_membership_programs.schema.json` | `lib/core/schema_contracts/generated/schemas/host_membership_program_document.g.dart` |
+| `schemaHostMembershipPlanDocumentSchema` | HostMembershipPlanDocument | `firestore/host_membership_plans.schema.json` | `lib/core/schema_contracts/generated/schemas/host_membership_plan_document.g.dart` |
+| `schemaHostMembershipDocumentSchema` | HostMembershipDocument | `firestore/host_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/host_membership_document.g.dart` |
+| `schemaHostMembershipCheckoutDocumentSchema` | HostMembershipCheckoutDocument | `firestore/host_membership_checkouts.schema.json` | `lib/core/schema_contracts/generated/schemas/host_membership_checkout_document.g.dart` |
+| `schemaHostMembershipChargeDocumentSchema` | HostMembershipChargeDocument | `firestore/host_membership_charges.schema.json` | `lib/core/schema_contracts/generated/schemas/host_membership_charge_document.g.dart` |
+| `schemaHostMembershipWebhookReceiptDocumentSchema` | HostMembershipWebhookReceiptDocument | `firestore/host_membership_webhook_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/host_membership_webhook_receipt_document.g.dart` |
+| `schemaHostMembershipBenefitUseDocumentSchema` | HostMembershipBenefitUseDocument | `firestore/host_membership_benefit_uses.schema.json` | `lib/core/schema_contracts/generated/schemas/host_membership_benefit_use_document.g.dart` |
+| `schemaEventMembershipRulesDocumentSchema` | EventMembershipRulesDocument | `firestore/event_membership_rules.schema.json` | `lib/core/schema_contracts/generated/schemas/event_membership_rules_document.g.dart` |
 | `schemaOrganizerContactIdentityLinkDocumentSchema` | OrganizerContactIdentityLinkDocument | `firestore/organizer_contact_identity_links.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_identity_link_document.g.dart` |
 | `schemaOrganizerContactIdentityClaimDocumentSchema` | OrganizerContactIdentityClaimDocument | `firestore/organizer_contact_identity_claims.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_identity_claim_document.g.dart` |
 | `schemaOrganizerContactEventEdgeDocumentSchema` | OrganizerContactEventEdgeDocument | `firestore/organizer_contact_event_edges.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_event_edge_document.g.dart` |
@@ -2211,6 +2237,16 @@ Do not edit it by hand.
 | `schemaGetOrganizerEntitlementCallablePayloadSchema` | GetOrganizerEntitlementCallablePayload | `callables/get_organizer_entitlement_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_organizer_entitlement_callable_payload.g.dart` |
 | `schemaOrganizerEntitlementMutationCallableResponseSchema` | OrganizerEntitlementMutationCallableResponse | `callable_responses/organizer_entitlement_mutation_response.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_entitlement_mutation_callable_response.g.dart` |
 | `schemaOrganizerEntitlementCallableResponseSchema` | OrganizerEntitlementCallableResponse | `callable_responses/organizer_entitlement_response.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_entitlement_callable_response.g.dart` |
+| `schemaManageHostMembershipProgramCallablePayloadSchema` | ManageHostMembershipProgramCallablePayload | `callables/manage_host_membership_program_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_host_membership_program_callable_payload.g.dart` |
+| `schemaManageHostMembershipProgramCallableResponseSchema` | ManageHostMembershipProgramCallableResponse | `callable_responses/manage_host_membership_program_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_host_membership_program_callable_response.g.dart` |
+| `schemaManageHostMembershipPlansCallablePayloadSchema` | ManageHostMembershipPlansCallablePayload | `callables/manage_host_membership_plans_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_host_membership_plans_callable_payload.g.dart` |
+| `schemaManageHostMembershipPlansCallableResponseSchema` | ManageHostMembershipPlansCallableResponse | `callable_responses/manage_host_membership_plans_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_host_membership_plans_callable_response.g.dart` |
+| `schemaManageHostMembershipCheckoutCallablePayloadSchema` | ManageHostMembershipCheckoutCallablePayload | `callables/manage_host_membership_checkout_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_host_membership_checkout_callable_payload.g.dart` |
+| `schemaManageHostMembershipCheckoutCallableResponseSchema` | ManageHostMembershipCheckoutCallableResponse | `callable_responses/manage_host_membership_checkout_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_host_membership_checkout_callable_response.g.dart` |
+| `schemaManageMyHostMembershipCallablePayloadSchema` | ManageMyHostMembershipCallablePayload | `callables/manage_my_host_membership_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_my_host_membership_callable_payload.g.dart` |
+| `schemaManageMyHostMembershipCallableResponseSchema` | ManageMyHostMembershipCallableResponse | `callable_responses/manage_my_host_membership_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_my_host_membership_callable_response.g.dart` |
+| `schemaManageEventMembershipRulesCallablePayloadSchema` | ManageEventMembershipRulesCallablePayload | `callables/manage_event_membership_rules_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_event_membership_rules_callable_payload.g.dart` |
+| `schemaManageEventMembershipRulesCallableResponseSchema` | ManageEventMembershipRulesCallableResponse | `callable_responses/manage_event_membership_rules_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_event_membership_rules_callable_response.g.dart` |
 | `schemaAdminGetEventDetailsCallablePayloadSchema` | AdminGetEventDetailsCallablePayload | `callables/admin_get_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_event_details_callable_payload.g.dart` |
 | `schemaAdminListEventDetailsCallablePayloadSchema` | AdminListEventDetailsCallablePayload | `callables/admin_list_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_event_details_callable_payload.g.dart` |
 | `schemaAdminListExternalEventDetailsCallablePayloadSchema` | AdminListExternalEventDetailsCallablePayload | `callables/admin_list_external_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_external_event_details_callable_payload.g.dart` |
@@ -2826,6 +2862,8 @@ Do not edit it by hand.
 | AdminGrantOrganizerEntitlementCallableRequest | AdminGrantOrganizerEntitlementCallablePayload | `callables/admin_grant_organizer_entitlement_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_grant_organizer_entitlement_callable_request.g.dart` |
 | AdminRevokeOrganizerEntitlementGrantCallableRequest | AdminRevokeOrganizerEntitlementGrantCallablePayload | `callables/admin_revoke_organizer_entitlement_grant_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_revoke_organizer_entitlement_grant_callable_request.g.dart` |
 | GetOrganizerEntitlementCallableRequest | GetOrganizerEntitlementCallablePayload | `callables/get_organizer_entitlement_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_entitlement_callable_request.g.dart` |
+| ManageHostMembershipProgramCallableRequest | ManageHostMembershipProgramCallablePayload | `callables/manage_host_membership_program_payload.schema.json` | `lib/core/schema_contracts/generated/callables/manage_host_membership_program_callable_request.g.dart` |
+| ManageMyHostMembershipCallableRequest | ManageMyHostMembershipCallablePayload | `callables/manage_my_host_membership_payload.schema.json` | `lib/core/schema_contracts/generated/callables/manage_my_host_membership_callable_request.g.dart` |
 | AdminGetEventDetailsCallableRequest | AdminGetEventDetailsCallablePayload | `callables/admin_get_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_event_details_callable_request.g.dart` |
 | AdminListEventDetailsCallableRequest | AdminListEventDetailsCallablePayload | `callables/admin_list_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_event_details_callable_request.g.dart` |
 | AdminListExternalEventDetailsCallableRequest | AdminListExternalEventDetailsCallablePayload | `callables/admin_list_external_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_external_event_details_callable_request.g.dart` |
@@ -3066,6 +3104,9 @@ Do not edit it by hand.
 | AdminListSupplyIntakePoliciesCallablePayload | no properties |
 | AdminUpdateClubDetailsCallablePayloadPatch | no Dart patch config |
 | AdminUpdateOrganizerDetailsCallablePayloadPatch | no Dart patch config |
+| ManageHostMembershipPlansCallablePayload | not an object schema |
+| ManageHostMembershipCheckoutCallablePayload | not an object schema |
+| ManageEventMembershipRulesCallablePayload | not an object schema |
 | AdminUpdateEventDetailsCallablePayloadPatch | no Dart patch config |
 | MutateEventOfferCallablePayload | cannot map field "action" (no type) |
 | UpsertOrganizerSavedAudienceCallablePayload | cannot map field "scope" (no type) |

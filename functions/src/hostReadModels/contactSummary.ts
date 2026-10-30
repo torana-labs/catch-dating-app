@@ -50,6 +50,7 @@ export function projectContactSummary(params: {
       channel.contactId === contactId && channel.adminSuppressed === true,
     smsStatus: traits.smsStatus, sourceCoverage: traits.sourceCoverage,
     revision: contact.revision,
+    ...(traits.membership ? {membership: traits.membership} : {}),
   };
   return {organizerId: contact.organizerId, contactId,
     searchName: contact.searchName,

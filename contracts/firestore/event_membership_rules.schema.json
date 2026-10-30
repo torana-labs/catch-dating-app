@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_membership_rules.schema.json",
+  "title": "EventMembershipRulesDocument",
+  "description": "Paid-membership rules for one event: per-plan member price overrides (0 or 100% off = included), an early-access window anchored when first enabled, and a paid-members-only flag. Kept outside eventPolicy so it never changes the seat policy hash or lock.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventMembershipRules",
+  "x-firestore-path": "eventMembershipRules/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "manageEventMembershipRules callable",
+  "required": ["schemaVersion", "organizerId", "eventId", "memberPriceOverrides", "earlyAccess", "membersOnly", "revision", "updatedAtMillis", "updatedBy"],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "callable-owned"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "memberPriceOverrides": {"$ref": "../shared/host_membership_common.schema.json#/definitions/memberPriceOverrides", "x-catch-ownership": "callable-owned"},
+    "earlyAccess": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["hours", "anchorMillis", "generalSaleOpensAtMillis"],
+          "properties": {
+            "hours": {"$ref": "../shared/host_membership_common.schema.json#/definitions/earlyAccessHours"},
+            "anchorMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis"},
+            "generalSaleOpensAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis"}
+          }
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "membersOnly": {"type": "boolean", "x-catch-ownership": "callable-owned"},
+    "revision": {"$ref": "../shared/host_membership_common.schema.json#/definitions/revision", "x-catch-ownership": "callable-owned"},
+    "updatedAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis", "x-catch-ownership": "callable-owned"},
+    "updatedBy": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"}
+  }
+}

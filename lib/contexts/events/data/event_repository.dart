@@ -90,6 +90,7 @@ class EventRepository with EventRepositoryActions {
               eventId: eventId,
               inviteCode: inviteCode,
               publicPaymentId: publicPaymentId,
+              includeHostMembership: true,
             ).toJson(),
           );
       final viewer = EventViewerState.fromResponse(result.data);

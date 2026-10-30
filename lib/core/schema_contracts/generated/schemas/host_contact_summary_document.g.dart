@@ -172,6 +172,10 @@ const schemaHostContactSummaryDocumentSchema = <String, Object?>{
               'high_impact_advocate',
               'whatsapp_reachable',
               'sms_reachable',
+              'active_member',
+              'lapsed_member',
+              'member_no_recent_attendance',
+              'frequent_non_member',
             ],
           },
         },
@@ -230,6 +234,53 @@ const schemaHostContactSummaryDocumentSchema = <String, Object?>{
           'type': 'integer',
           'minimum': 1,
           'maximum': 9007199254740991,
+        },
+        'membership': <String, Object?>{
+          'description': 'CRM projection of one contact\'s paid membership with the organizer, through the contact\'s linked account.',
+          'type': <Object?>[
+            'object',
+            'null',
+          ],
+          'additionalProperties': false,
+          'required': <Object?>[
+            'planId',
+            'planName',
+            'status',
+            'memberSinceMillis',
+            'entitled',
+          ],
+          'properties': <String, Object?>{
+            'planId': <String, Object?>{
+              'type': 'string',
+              'pattern': '^hmp_[A-Za-z0-9]{20}\$',
+            },
+            'planName': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 60,
+            },
+            'status': <String, Object?>{
+              'enum': <Object?>[
+                'trialing',
+                'active',
+                'past_due',
+                'paused',
+                'canceling',
+                'expired',
+              ],
+            },
+            'memberSinceMillis': <String, Object?>{
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'entitled': <String, Object?>{
+              'type': 'boolean',
+            },
+          },
         },
       },
       'x-catch-ownership': 'server-only',

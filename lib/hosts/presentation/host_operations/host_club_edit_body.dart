@@ -625,6 +625,13 @@ class _HostClubEditBodyState extends ConsumerState<HostClubEditBody> {
               ),
             CatchField.nav(
               copy: catchFieldCopy(context.l10n),
+              key: const ValueKey('host-club-settings-memberships'),
+              title: context.l10n.hostMembershipsScreenTitle,
+              icon: CatchIcons.membership,
+              onTap: () => _openSpoke(Routes.hostClubMembershipsScreen),
+            ),
+            CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-club-settings-host-team'),
               title: context.l10n.hostsHostClubEditTabLabelHostTeam,
               valueText: context.l10n.hostsHostClubEditTabValueHostCount(

@@ -722,7 +722,11 @@ export const hostGroupDetailDocumentSchema = {
                           "advocate",
                           "high_impact_advocate",
                           "whatsapp_reachable",
-                          "sms_reachable"
+                          "sms_reachable",
+                          "active_member",
+                          "lapsed_member",
+                          "member_no_recent_attendance",
+                          "frequent_non_member"
                         ]
                       }
                     }
@@ -984,7 +988,11 @@ export const hostGroupDetailDocumentSchema = {
                             "advocate",
                             "high_impact_advocate",
                             "whatsapp_reachable",
-                            "sms_reachable"
+                            "sms_reachable",
+                            "active_member",
+                            "lapsed_member",
+                            "member_no_recent_attendance",
+                            "frequent_non_member"
                           ]
                         }
                       },
@@ -1795,7 +1803,11 @@ export const hostContactSummaryDocumentSchema = {
               "advocate",
               "high_impact_advocate",
               "whatsapp_reachable",
-              "sms_reachable"
+              "sms_reachable",
+              "active_member",
+              "lapsed_member",
+              "member_no_recent_attendance",
+              "frequent_non_member"
             ]
           }
         },
@@ -1854,6 +1866,53 @@ export const hostContactSummaryDocumentSchema = {
           "type": "integer",
           "minimum": 1,
           "maximum": 9007199254740991
+        },
+        "membership": {
+          "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "planId",
+            "planName",
+            "status",
+            "memberSinceMillis",
+            "entitled"
+          ],
+          "properties": {
+            "planId": {
+              "type": "string",
+              "pattern": "^hmp_[A-Za-z0-9]{20}$"
+            },
+            "planName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "status": {
+              "enum": [
+                "trialing",
+                "active",
+                "past_due",
+                "paused",
+                "canceling",
+                "expired"
+              ]
+            },
+            "memberSinceMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "entitled": {
+              "type": "boolean"
+            }
+          }
         }
       },
       "x-catch-ownership": "server-only"
@@ -49300,6 +49359,12 @@ export const managePublicEventCheckoutCallablePayloadSchema = {
                   "maximum": 9007199254740991
                 }
               }
+            },
+            "listAmountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000000,
+              "description": "Present only when a paid host membership price applies: the list price the member would otherwise pay."
             }
           }
         },
@@ -49479,6 +49544,12 @@ export const managePublicEventCheckoutCallableResponseSchema = {
                   "maximum": 9007199254740991
                 }
               }
+            },
+            "listAmountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000000,
+              "description": "Present only when a paid host membership price applies: the list price the member would otherwise pay."
             }
           }
         },
@@ -159239,6 +159310,10 @@ export const getEventViewerStateCallablePayloadSchema = {
         "guest"
       ],
       "description": "Defaults to native. Guest entry observes app-free roster, application and checkout sources without requiring a consumer profile."
+    },
+    "includeHostMembership": {
+      "type": "boolean",
+      "description": "Opt-in for paid host membership facts (hostMembership object and the paidMembershipRequired/memberEarlyAccess restrictions). Older clients omit it and receive the original shape."
     }
   },
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -159429,7 +159504,9 @@ export const getEventViewerStateCallableResponseSchema = {
                     "eventUnavailable",
                     "past",
                     "cancelled",
-                    "unsupportedRoute"
+                    "unsupportedRoute",
+                    "paidMembershipRequired",
+                    "memberEarlyAccess"
                   ]
                 }
               }
@@ -159649,6 +159726,158 @@ export const getEventViewerStateCallableResponseSchema = {
                 },
                 {
                   "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "hostMembership": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Present only when the request opted in. Server-evaluated paid membership entitlement for this viewer and event; quotedPriceInPaise is already the member price when memberPriceApplied.",
+          "required": [
+            "member",
+            "listPriceInPaise",
+            "memberPriceApplied",
+            "memberPriceBlockedReason",
+            "savingsInPaise",
+            "membersOnly",
+            "generalSaleOpensAtMillis",
+            "offer"
+          ],
+          "properties": {
+            "member": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "membershipId",
+                    "planId",
+                    "planName",
+                    "status",
+                    "entitled"
+                  ],
+                  "properties": {
+                    "membershipId": {
+                      "type": "string",
+                      "pattern": "^hm_[a-f0-9]{64}$"
+                    },
+                    "planId": {
+                      "type": "string",
+                      "pattern": "^hmp_[A-Za-z0-9]{20}$"
+                    },
+                    "planName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 60
+                    },
+                    "status": {
+                      "enum": [
+                        "trialing",
+                        "active",
+                        "past_due",
+                        "paused",
+                        "canceling",
+                        "expired"
+                      ]
+                    },
+                    "entitled": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              ]
+            },
+            "listPriceInPaise": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "memberPriceApplied": {
+              "type": "boolean"
+            },
+            "memberPriceBlockedReason": {
+              "enum": [
+                null,
+                "bookingCapReached"
+              ]
+            },
+            "savingsInPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "membersOnly": {
+              "type": "boolean"
+            },
+            "generalSaleOpensAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "offer": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "planId",
+                    "planName",
+                    "interval",
+                    "planPriceInPaise",
+                    "memberPriceInPaise",
+                    "savingsInPaise",
+                    "unlocksAccess"
+                  ],
+                  "properties": {
+                    "planId": {
+                      "type": "string",
+                      "pattern": "^hmp_[A-Za-z0-9]{20}$"
+                    },
+                    "planName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 60
+                    },
+                    "interval": {
+                      "enum": [
+                        "monthly",
+                        "annual"
+                      ]
+                    },
+                    "planPriceInPaise": {
+                      "type": "integer",
+                      "minimum": 1000,
+                      "maximum": 1500000,
+                      "description": "INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication."
+                    },
+                    "memberPriceInPaise": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "savingsInPaise": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "unlocksAccess": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               ]
             }
@@ -168312,9 +168541,70 @@ export const organizerContactDocumentSchema = {
                   "advocate",
                   "high_impact_advocate",
                   "whatsapp_reachable",
-                  "sms_reachable"
+                  "sms_reachable",
+                  "active_member",
+                  "lapsed_member",
+                  "member_no_recent_attendance",
+                  "frequent_non_member"
                 ]
               }
+            },
+            "membership": {
+              "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "required": [
+                "planId",
+                "planName",
+                "status",
+                "memberSinceMillis",
+                "entitled"
+              ],
+              "properties": {
+                "planId": {
+                  "type": "string",
+                  "pattern": "^hmp_[A-Za-z0-9]{20}$"
+                },
+                "planName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60
+                },
+                "status": {
+                  "enum": [
+                    "trialing",
+                    "active",
+                    "past_due",
+                    "paused",
+                    "canceling",
+                    "expired"
+                  ]
+                },
+                "memberSinceMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "entitled": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "attended30DayCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "attended60DayCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
             },
             "definitionVersion": {
               "type": "integer",
@@ -168386,7 +168676,11 @@ export const organizerContactDocumentSchema = {
                 "advocate",
                 "high_impact_advocate",
                 "whatsapp_reachable",
-                "sms_reachable"
+                "sms_reachable",
+                "active_member",
+                "lapsed_member",
+                "member_no_recent_attendance",
+                "frequent_non_member"
               ]
             },
             "channelStatus": {
@@ -169103,7 +169397,11 @@ export const organizerSavedAudienceDocumentSchema = {
                       "advocate",
                       "high_impact_advocate",
                       "whatsapp_reachable",
-                      "sms_reachable"
+                      "sms_reachable",
+                      "active_member",
+                      "lapsed_member",
+                      "member_no_recent_attendance",
+                      "frequent_non_member"
                     ]
                   }
                 }
@@ -169365,7 +169663,11 @@ export const organizerSavedAudienceDocumentSchema = {
                         "advocate",
                         "high_impact_advocate",
                         "whatsapp_reachable",
-                        "sms_reachable"
+                        "sms_reachable",
+                        "active_member",
+                        "lapsed_member",
+                        "member_no_recent_attendance",
+                        "frequent_non_member"
                       ]
                     }
                   },
@@ -169630,7 +169932,11 @@ export const organizerSavedAudienceDocumentSchema = {
                       "advocate",
                       "high_impact_advocate",
                       "whatsapp_reachable",
-                      "sms_reachable"
+                      "sms_reachable",
+                      "active_member",
+                      "lapsed_member",
+                      "member_no_recent_attendance",
+                      "frequent_non_member"
                     ]
                   }
                 }
@@ -169892,7 +170198,11 @@ export const organizerSavedAudienceDocumentSchema = {
                         "advocate",
                         "high_impact_advocate",
                         "whatsapp_reachable",
-                        "sms_reachable"
+                        "sms_reachable",
+                        "active_member",
+                        "lapsed_member",
+                        "member_no_recent_attendance",
+                        "frequent_non_member"
                       ]
                     }
                   },
@@ -169939,7 +170249,11 @@ export const organizerSavedAudienceDocumentSchema = {
                 "advocate",
                 "high_impact_advocate",
                 "whatsapp_reachable",
-                "sms_reachable"
+                "sms_reachable",
+                "active_member",
+                "lapsed_member",
+                "member_no_recent_attendance",
+                "frequent_non_member"
               ]
             }
           }
@@ -170201,7 +170515,11 @@ export const organizerSavedAudienceDocumentSchema = {
                   "advocate",
                   "high_impact_advocate",
                   "whatsapp_reachable",
-                  "sms_reachable"
+                  "sms_reachable",
+                  "active_member",
+                  "lapsed_member",
+                  "member_no_recent_attendance",
+                  "frequent_non_member"
                 ]
               }
             },
@@ -170248,7 +170566,11 @@ export const organizerSavedAudienceDocumentSchema = {
               "advocate",
               "high_impact_advocate",
               "whatsapp_reachable",
-              "sms_reachable"
+              "sms_reachable",
+              "active_member",
+              "lapsed_member",
+              "member_no_recent_attendance",
+              "frequent_non_member"
             ]
           }
         },
@@ -170288,7 +170610,11 @@ export const organizerSavedAudienceDocumentSchema = {
             "advocate",
             "high_impact_advocate",
             "whatsapp_reachable",
-            "sms_reachable"
+            "sms_reachable",
+            "active_member",
+            "lapsed_member",
+            "member_no_recent_attendance",
+            "frequent_non_member"
           ]
         }
       }
@@ -171908,6 +172234,1283 @@ export const organizerEntitlementReceiptDocumentSchema = {
   }
 };
 
+export const hostMembershipProgramDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_membership_programs.schema.json",
+  "title": "HostMembershipProgramDocument",
+  "description": "Server-owned per-organizer paid membership program: the payment provider binding snapshot taken when the program was enabled, the host-wide billing pause and member counts.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostMembershipPrograms",
+  "x-firestore-path": "hostMembershipPrograms/{organizerId}",
+  "x-owner": "manageHostMembershipProgram callable and processHostMembershipBillingPause schedule",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "state",
+    "payment",
+    "billingPause",
+    "memberCount",
+    "revision",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "state": {
+      "enum": [
+        "enabled",
+        "disabled"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "payment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "providerAccountId",
+        "bindingId",
+        "mode"
+      ],
+      "properties": {
+        "provider": {
+          "enum": [
+            "razorpay"
+          ]
+        },
+        "providerAccountId": {
+          "type": "string",
+          "pattern": "^acc_[A-Za-z0-9]{4,40}$"
+        },
+        "bindingId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "mode": {
+          "enum": [
+            "test",
+            "live"
+          ]
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "billingPause": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "requestedAtMillis",
+        "requestedBy",
+        "processedCount",
+        "cursor"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "active",
+            "pausing",
+            "paused",
+            "resuming"
+          ]
+        },
+        "requestedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "requestedBy": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        },
+        "processedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "memberCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000000,
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740990,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const hostMembershipPlanDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_membership_plans.schema.json",
+  "title": "HostMembershipPlanDocument",
+  "description": "One paid membership tier sold by an organizer. Published plans are readable by signed-in users; only the plans callable writes them. Price changes create a new provider price and leave existing members on the price they bought.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostMembershipPlans",
+  "x-firestore-path": "hostMembershipPlans/{planId}",
+  "x-document-id-field": "planId",
+  "x-owner": "manageHostMembershipPlans callable; member counts by the membership state machine",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "name",
+    "description",
+    "status",
+    "prices",
+    "memberCap",
+    "trialDays",
+    "benefits",
+    "perks",
+    "limits",
+    "activeMemberCount",
+    "sortOrder",
+    "revision",
+    "createdAtMillis",
+    "updatedAtMillis",
+    "publishedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "x-catch-ownership": "callable-owned"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "prices": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "monthly": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "amountPaise",
+            "providerPriceIds",
+            "revision"
+          ],
+          "properties": {
+            "amountPaise": {
+              "type": "integer",
+              "minimum": 1000,
+              "maximum": 1500000,
+              "description": "INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication."
+            },
+            "providerPriceIds": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "razorpay": {
+                  "type": "string",
+                  "pattern": "^plan_[A-Za-z0-9]{6,40}$"
+                }
+              }
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740990
+            }
+          }
+        },
+        "annual": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "amountPaise",
+            "providerPriceIds",
+            "revision"
+          ],
+          "properties": {
+            "amountPaise": {
+              "type": "integer",
+              "minimum": 1000,
+              "maximum": 1500000,
+              "description": "INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication."
+            },
+            "providerPriceIds": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "razorpay": {
+                  "type": "string",
+                  "pattern": "^plan_[A-Za-z0-9]{6,40}$"
+                }
+              }
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740990
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "memberCap": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 100000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "trialDays": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 30,
+      "x-catch-ownership": "callable-owned"
+    },
+    "benefits": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "percentOff"
+            ],
+            "properties": {
+              "type": {
+                "const": "eventDiscount"
+              },
+              "percentOff": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "earlyAccess"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "membersOnlyAccess"
+              }
+            }
+          }
+        ]
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "perks": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxUpcomingMemberPricedBookings"
+      ],
+      "properties": {
+        "maxUpcomingMemberPricedBookings": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 20
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "activeMemberCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000000,
+      "x-catch-ownership": "server-only"
+    },
+    "sortOrder": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740990,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "publishedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
+export const hostMembershipDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_memberships.schema.json",
+  "title": "HostMembershipDocument",
+  "description": "One member's paid membership with one organizer, keyed hm_<sha256([organizerId, uid])> so a rejoining member keeps tenure. Written only by the membership state machine from verified provider evidence and member/host intents. Distinct from organizerCommunityMemberships (unpaid approval grants).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostMemberships",
+  "x-firestore-path": "hostMemberships/{membershipId}",
+  "x-document-id-field": "membershipId",
+  "x-owner": "host membership state machine (webhook, checkout refresh, self-serve and billing-pause callables)",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "uid",
+    "planId",
+    "planName",
+    "interval",
+    "status",
+    "statusReason",
+    "priceInPaise",
+    "currency",
+    "currentPeriodStartMillis",
+    "currentPeriodEndMillis",
+    "trialEndsAtMillis",
+    "cancelAtPeriodEnd",
+    "pause",
+    "pastDueSinceMillis",
+    "memberSinceMillis",
+    "tenure",
+    "provider",
+    "providerSubscriptionId",
+    "providerPlanId",
+    "providerEventAtMillis",
+    "lastCheckoutId",
+    "revision",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "planId": {
+      "type": "string",
+      "pattern": "^hmp_[A-Za-z0-9]{20}$",
+      "x-catch-ownership": "server-only"
+    },
+    "planName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "x-catch-ownership": "server-only"
+    },
+    "interval": {
+      "enum": [
+        "monthly",
+        "annual"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "enum": [
+        "trialing",
+        "active",
+        "past_due",
+        "paused",
+        "canceling",
+        "expired"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "statusReason": {
+      "enum": [
+        null,
+        "memberPaused",
+        "hostPaused",
+        "paymentFailed",
+        "memberCanceled",
+        "planCompleted",
+        "providerCanceled"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "priceInPaise": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 1500000,
+      "description": "INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication.",
+      "x-catch-ownership": "server-only"
+    },
+    "currency": {
+      "const": "INR",
+      "x-catch-ownership": "server-only"
+    },
+    "currentPeriodStartMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "currentPeriodEndMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "trialEndsAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "cancelAtPeriodEnd": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "pause": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "initiator",
+            "pausedAtMillis"
+          ],
+          "properties": {
+            "initiator": {
+              "enum": [
+                "member",
+                "host"
+              ]
+            },
+            "pausedAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "pastDueSinceMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "memberSinceMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "tenure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accumulatedMillis",
+        "stretchStartedAtMillis"
+      ],
+      "properties": {
+        "accumulatedMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "stretchStartedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "provider": {
+      "enum": [
+        "razorpay"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "providerSubscriptionId": {
+      "type": "string",
+      "pattern": "^sub_[A-Za-z0-9]{6,40}$",
+      "x-catch-ownership": "server-only"
+    },
+    "providerPlanId": {
+      "type": "string",
+      "pattern": "^plan_[A-Za-z0-9]{6,40}$",
+      "x-catch-ownership": "server-only"
+    },
+    "providerEventAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "lastCheckoutId": {
+      "type": "string",
+      "pattern": "^hmc_[A-Za-z0-9]{20}$",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740990,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const hostMembershipCheckoutDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_membership_checkouts.schema.json",
+  "title": "HostMembershipCheckoutDocument",
+  "description": "One membership purchase attempt: the provider subscription awaiting mandate authorization. The buyer may read their own checkout to follow progress; open checkouts reserve plan capacity until expiry.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostMembershipCheckouts",
+  "x-firestore-path": "hostMembershipCheckouts/{checkoutId}",
+  "x-document-id-field": "checkoutId",
+  "x-owner": "manageHostMembershipCheckout callable and the membership webhook",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "planId",
+    "uid",
+    "interval",
+    "priceInPaise",
+    "state",
+    "provider",
+    "providerSubscriptionId",
+    "authorizationUrl",
+    "expiresAtMillis",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "planId": {
+      "type": "string",
+      "pattern": "^hmp_[A-Za-z0-9]{20}$",
+      "x-catch-ownership": "server-only"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "interval": {
+      "enum": [
+        "monthly",
+        "annual"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "priceInPaise": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 1500000,
+      "description": "INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication.",
+      "x-catch-ownership": "server-only"
+    },
+    "state": {
+      "enum": [
+        "creating",
+        "open",
+        "authorized",
+        "expired",
+        "failed"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "provider": {
+      "enum": [
+        "razorpay"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "providerSubscriptionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^sub_[A-Za-z0-9]{6,40}$",
+      "x-catch-ownership": "server-only"
+    },
+    "authorizationUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "pattern": "^https://",
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const hostMembershipChargeDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_membership_charges.schema.json",
+  "title": "HostMembershipChargeDocument",
+  "description": "Server-only ledger of one captured membership charge and its Route transfer to the host linked account minus the platform fee. Keyed by the provider payment id.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostMembershipCharges",
+  "x-firestore-path": "hostMembershipCharges/{chargeId}",
+  "x-document-id-field": "chargeId",
+  "x-owner": "membership webhook and reconcileHostMembershipCharges schedule",
+  "required": [
+    "schemaVersion",
+    "membershipId",
+    "organizerId",
+    "uid",
+    "provider",
+    "providerSubscriptionId",
+    "amountPaise",
+    "feePaise",
+    "transferAmountPaise",
+    "periodStartMillis",
+    "periodEndMillis",
+    "providerAccountId",
+    "mode",
+    "transfer",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "membershipId": {
+      "type": "string",
+      "pattern": "^hm_[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "provider": {
+      "enum": [
+        "razorpay"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "providerSubscriptionId": {
+      "type": "string",
+      "pattern": "^sub_[A-Za-z0-9]{6,40}$",
+      "x-catch-ownership": "server-only"
+    },
+    "amountPaise": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 1500000,
+      "x-catch-ownership": "server-only"
+    },
+    "feePaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1500000,
+      "x-catch-ownership": "server-only"
+    },
+    "transferAmountPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1500000,
+      "x-catch-ownership": "server-only"
+    },
+    "periodStartMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "periodEndMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "providerAccountId": {
+      "type": "string",
+      "pattern": "^acc_[A-Za-z0-9]{4,40}$",
+      "x-catch-ownership": "server-only"
+    },
+    "mode": {
+      "enum": [
+        "test",
+        "live"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "transfer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "transferId",
+        "attempts",
+        "lastError"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "pending",
+            "requesting",
+            "created",
+            "failed",
+            "notRequired"
+          ]
+        },
+        "transferId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^trf_[A-Za-z0-9]{6,40}$"
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "lastError": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const hostMembershipWebhookReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_membership_webhook_receipts.schema.json",
+  "title": "HostMembershipWebhookReceiptDocument",
+  "description": "Server-only create-once dedupe receipt for one verified membership provider webhook delivery. Stores ids and outcome only, never the raw payload.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostMembershipWebhookReceipts",
+  "x-firestore-path": "hostMembershipWebhookReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "hostMembershipRazorpayWebhook",
+  "required": [
+    "schemaVersion",
+    "provider",
+    "providerEventId",
+    "eventType",
+    "subscriptionId",
+    "paymentId",
+    "outcome",
+    "receivedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "provider": {
+      "enum": [
+        "razorpay"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "providerEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "server-only"
+    },
+    "eventType": {
+      "type": "string",
+      "maxLength": 80,
+      "x-catch-ownership": "server-only"
+    },
+    "subscriptionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 60,
+      "x-catch-ownership": "server-only"
+    },
+    "paymentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 60,
+      "x-catch-ownership": "server-only"
+    },
+    "outcome": {
+      "enum": [
+        "applied",
+        "ignored",
+        "stale"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "receivedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const hostMembershipBenefitUseDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_membership_benefit_uses.schema.json",
+  "title": "HostMembershipBenefitUseDocument",
+  "description": "One booking made at a member price, keyed {eventId}_{uid}. Source of the member's savings total and of the upcoming member-priced booking cap. Readable by the member only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostMembershipBenefitUses",
+  "x-firestore-path": "hostMembershipBenefitUses/{benefitUseId}",
+  "x-document-id-field": "benefitUseId",
+  "x-owner": "member-priced booking paths (signUpForFreeEvent, public paid admission)",
+  "required": [
+    "schemaVersion",
+    "membershipId",
+    "organizerId",
+    "uid",
+    "eventId",
+    "planId",
+    "listPriceInPaise",
+    "paidPriceInPaise",
+    "savingsInPaise",
+    "eventStartMillis",
+    "state",
+    "createdAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "membershipId": {
+      "type": "string",
+      "pattern": "^hm_[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "planId": {
+      "type": "string",
+      "pattern": "^hmp_[A-Za-z0-9]{20}$",
+      "x-catch-ownership": "server-only"
+    },
+    "listPriceInPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
+      "x-catch-ownership": "server-only"
+    },
+    "paidPriceInPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
+      "x-catch-ownership": "server-only"
+    },
+    "savingsInPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
+      "x-catch-ownership": "server-only"
+    },
+    "eventStartMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "state": {
+      "enum": [
+        "booked",
+        "released"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const eventMembershipRulesDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_membership_rules.schema.json",
+  "title": "EventMembershipRulesDocument",
+  "description": "Paid-membership rules for one event: per-plan member price overrides (0 or 100% off = included), an early-access window anchored when first enabled, and a paid-members-only flag. Kept outside eventPolicy so it never changes the seat policy hash or lock.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventMembershipRules",
+  "x-firestore-path": "eventMembershipRules/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "manageEventMembershipRules callable",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "eventId",
+    "memberPriceOverrides",
+    "earlyAccess",
+    "membersOnly",
+    "revision",
+    "updatedAtMillis",
+    "updatedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "memberPriceOverrides": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "planId",
+              "percentOff"
+            ],
+            "properties": {
+              "planId": {
+                "type": "string",
+                "pattern": "^hmp_[A-Za-z0-9]{20}$"
+              },
+              "percentOff": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "planId",
+              "priceInPaise"
+            ],
+            "properties": {
+              "planId": {
+                "type": "string",
+                "pattern": "^hmp_[A-Za-z0-9]{20}$"
+              },
+              "priceInPaise": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000
+              }
+            }
+          }
+        ]
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "earlyAccess": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hours",
+            "anchorMillis",
+            "generalSaleOpensAtMillis"
+          ],
+          "properties": {
+            "hours": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 168
+            },
+            "anchorMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "generalSaleOpensAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "membersOnly": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740990,
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
 export const organizerContactIdentityLinkDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_contact_identity_links.schema.json",
@@ -172833,9 +174436,70 @@ export const organizerContactTraitDocumentSchema = {
           "advocate",
           "high_impact_advocate",
           "whatsapp_reachable",
-          "sms_reachable"
+          "sms_reachable",
+          "active_member",
+          "lapsed_member",
+          "member_no_recent_attendance",
+          "frequent_non_member"
         ]
       }
+    },
+    "membership": {
+      "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "planId",
+        "planName",
+        "status",
+        "memberSinceMillis",
+        "entitled"
+      ],
+      "properties": {
+        "planId": {
+          "type": "string",
+          "pattern": "^hmp_[A-Za-z0-9]{20}$"
+        },
+        "planName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "status": {
+          "enum": [
+            "trialing",
+            "active",
+            "past_due",
+            "paused",
+            "canceling",
+            "expired"
+          ]
+        },
+        "memberSinceMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "entitled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "attended30DayCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "attended60DayCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
     },
     "definitionVersion": {
       "type": "integer",
@@ -172907,7 +174571,11 @@ export const organizerContactTraitDocumentSchema = {
         "advocate",
         "high_impact_advocate",
         "whatsapp_reachable",
-        "sms_reachable"
+        "sms_reachable",
+        "active_member",
+        "lapsed_member",
+        "member_no_recent_attendance",
+        "frequent_non_member"
       ]
     },
     "channelStatus": {
@@ -265000,6 +266668,1150 @@ export const organizerEntitlementCallableResponseSchema = {
   }
 };
 
+export const manageHostMembershipProgramCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_host_membership_program_payload.schema.json",
+  "title": "ManageHostMembershipProgramCallablePayload",
+  "description": "Organizer-manager read and control of the organizer's paid membership program: enable with the ready Route account, disable, and host-wide billing pause/resume.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Host memberships settings",
+  "required": [
+    "action",
+    "organizerId"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "get",
+        "enable",
+        "disable",
+        "pauseBilling",
+        "resumeBilling"
+      ],
+      "type": "string"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const manageHostMembershipProgramCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_host_membership_program_response.schema.json",
+  "title": "ManageHostMembershipProgramCallableResponse",
+  "description": "Bounded program projection plus readiness facts the host settings screen needs before enabling memberships.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "program",
+    "routeAccountReady",
+    "feeConfigured"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "program": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "provider",
+            "mode",
+            "billingPauseState",
+            "memberCount",
+            "revision"
+          ],
+          "properties": {
+            "state": {
+              "enum": [
+                "enabled",
+                "disabled"
+              ]
+            },
+            "provider": {
+              "enum": [
+                "razorpay"
+              ]
+            },
+            "mode": {
+              "enum": [
+                "test",
+                "live"
+              ]
+            },
+            "billingPauseState": {
+              "enum": [
+                "active",
+                "pausing",
+                "paused",
+                "resuming"
+              ]
+            },
+            "memberCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740990
+            }
+          }
+        }
+      ]
+    },
+    "routeAccountReady": {
+      "type": "boolean"
+    },
+    "feeConfigured": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const manageHostMembershipPlansCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_host_membership_plans_payload.schema.json",
+  "title": "ManageHostMembershipPlansCallablePayload",
+  "description": "Organizer-manager plan management: list every plan, save a draft or edit, publish (creates provider prices) and archive (stops new joins).",
+  "x-owner": "Host memberships plan editor",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "organizerId"
+      ],
+      "properties": {
+        "action": {
+          "const": "list"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "organizerId",
+        "planId",
+        "plan",
+        "expectedRevision"
+      ],
+      "properties": {
+        "action": {
+          "const": "save"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "planId": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^hmp_[A-Za-z0-9]{20}$"
+            }
+          ]
+        },
+        "plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "description",
+            "prices",
+            "memberCap",
+            "trialDays",
+            "benefits",
+            "perks",
+            "limits",
+            "sortOrder"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "description": {
+              "type": "string",
+              "maxLength": 500
+            },
+            "prices": {
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "properties": {
+                "monthly": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "amountPaise"
+                  ],
+                  "properties": {
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 1000,
+                      "maximum": 1500000,
+                      "description": "INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication."
+                    }
+                  }
+                },
+                "annual": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "amountPaise"
+                  ],
+                  "properties": {
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 1000,
+                      "maximum": 1500000,
+                      "description": "INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication."
+                    }
+                  }
+                }
+              }
+            },
+            "memberCap": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100000
+            },
+            "trialDays": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 30
+            },
+            "benefits": {
+              "type": "array",
+              "maxItems": 3,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "percentOff"
+                    ],
+                    "properties": {
+                      "type": {
+                        "const": "eventDiscount"
+                      },
+                      "percentOff": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "type"
+                    ],
+                    "properties": {
+                      "type": {
+                        "const": "earlyAccess"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "type"
+                    ],
+                    "properties": {
+                      "type": {
+                        "const": "membersOnlyAccess"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "perks": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              }
+            },
+            "limits": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "maxUpcomingMemberPricedBookings"
+              ],
+              "properties": {
+                "maxUpcomingMemberPricedBookings": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 20
+                }
+              }
+            },
+            "sortOrder": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            }
+          }
+        },
+        "expectedRevision": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 9007199254740990
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "organizerId",
+        "planId"
+      ],
+      "properties": {
+        "action": {
+          "const": "publish"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "planId": {
+          "type": "string",
+          "pattern": "^hmp_[A-Za-z0-9]{20}$"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "organizerId",
+        "planId"
+      ],
+      "properties": {
+        "action": {
+          "const": "archive"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "planId": {
+          "type": "string",
+          "pattern": "^hmp_[A-Za-z0-9]{20}$"
+        }
+      }
+    }
+  ]
+};
+
+export const manageHostMembershipPlansCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_host_membership_plans_response.schema.json",
+  "title": "ManageHostMembershipPlansCallableResponse",
+  "description": "Every plan of one organizer in sort order, after the requested action. Provider price ids are never returned.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "plans"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "plans": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "planId",
+          "organizerId",
+          "name",
+          "description",
+          "status",
+          "prices",
+          "memberCap",
+          "trialDays",
+          "benefits",
+          "perks",
+          "limits",
+          "activeMemberCount",
+          "sortOrder",
+          "revision",
+          "publishedAtMillis"
+        ],
+        "properties": {
+          "planId": {
+            "type": "string",
+            "pattern": "^hmp_[A-Za-z0-9]{20}$"
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "published",
+              "archived"
+            ]
+          },
+          "prices": {
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+              "monthly": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "amountPaise",
+                  "revision"
+                ],
+                "properties": {
+                  "amountPaise": {
+                    "type": "integer",
+                    "minimum": 1000,
+                    "maximum": 1500000,
+                    "description": "INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication."
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740990
+                  }
+                }
+              },
+              "annual": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "amountPaise",
+                  "revision"
+                ],
+                "properties": {
+                  "amountPaise": {
+                    "type": "integer",
+                    "minimum": 1000,
+                    "maximum": 1500000,
+                    "description": "INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication."
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740990
+                  }
+                }
+              }
+            }
+          },
+          "memberCap": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "trialDays": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 30
+          },
+          "benefits": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "type",
+                    "percentOff"
+                  ],
+                  "properties": {
+                    "type": {
+                      "const": "eventDiscount"
+                    },
+                    "percentOff": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 100
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "const": "earlyAccess"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "const": "membersOnlyAccess"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "perks": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          "limits": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "maxUpcomingMemberPricedBookings"
+            ],
+            "properties": {
+              "maxUpcomingMemberPricedBookings": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "maximum": 20
+              }
+            }
+          },
+          "activeMemberCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000000
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740990
+          },
+          "publishedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    }
+  }
+};
+
+export const manageHostMembershipCheckoutCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_host_membership_checkout_payload.schema.json",
+  "title": "ManageHostMembershipCheckoutCallablePayload",
+  "description": "Member checkout: prepare creates a provider subscription and returns its hosted mandate-authorization link; refresh pulls the provider state and applies it.",
+  "x-owner": "Consumer membership join flow",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "organizerId",
+        "planId",
+        "interval"
+      ],
+      "properties": {
+        "action": {
+          "const": "prepare"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "planId": {
+          "type": "string",
+          "pattern": "^hmp_[A-Za-z0-9]{20}$"
+        },
+        "interval": {
+          "enum": [
+            "monthly",
+            "annual"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "checkoutId"
+      ],
+      "properties": {
+        "action": {
+          "const": "refresh"
+        },
+        "checkoutId": {
+          "type": "string",
+          "pattern": "^hmc_[A-Za-z0-9]{20}$"
+        }
+      }
+    }
+  ]
+};
+
+export const manageHostMembershipCheckoutCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_host_membership_checkout_response.schema.json",
+  "title": "ManageHostMembershipCheckoutCallableResponse",
+  "description": "Current checkout progress and, once authorized, the resulting membership status.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "checkoutId",
+    "state",
+    "authorizationUrl",
+    "expiresAtMillis",
+    "membershipId",
+    "membershipStatus"
+  ],
+  "properties": {
+    "checkoutId": {
+      "type": "string",
+      "pattern": "^hmc_[A-Za-z0-9]{20}$"
+    },
+    "state": {
+      "enum": [
+        "creating",
+        "open",
+        "authorized",
+        "expired",
+        "failed"
+      ]
+    },
+    "authorizationUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "pattern": "^https://"
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "membershipId": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^hm_[a-f0-9]{64}$"
+        }
+      ]
+    },
+    "membershipStatus": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "enum": [
+            "trialing",
+            "active",
+            "past_due",
+            "paused",
+            "canceling",
+            "expired"
+          ]
+        }
+      ]
+    }
+  }
+};
+
+export const manageMyHostMembershipCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_my_host_membership_payload.schema.json",
+  "title": "ManageMyHostMembershipCallablePayload",
+  "description": "Member self-serve: pause billing (suspends entitlements), resume, or cancel at the end of the current period.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Consumer My memberships",
+  "required": [
+    "action",
+    "membershipId"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "pause",
+        "resume",
+        "cancelAtPeriodEnd"
+      ],
+      "type": "string"
+    },
+    "membershipId": {
+      "type": "string",
+      "pattern": "^hm_[a-f0-9]{64}$"
+    }
+  }
+};
+
+export const manageMyHostMembershipCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_my_host_membership_response.schema.json",
+  "title": "ManageMyHostMembershipCallableResponse",
+  "description": "Membership status after the member action is applied with the provider.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "membershipId",
+    "status",
+    "cancelAtPeriodEnd",
+    "currentPeriodEndMillis"
+  ],
+  "properties": {
+    "membershipId": {
+      "type": "string",
+      "pattern": "^hm_[a-f0-9]{64}$"
+    },
+    "status": {
+      "enum": [
+        "trialing",
+        "active",
+        "past_due",
+        "paused",
+        "canceling",
+        "expired"
+      ]
+    },
+    "cancelAtPeriodEnd": {
+      "type": "boolean"
+    },
+    "currentPeriodEndMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const manageEventMembershipRulesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_event_membership_rules_payload.schema.json",
+  "title": "ManageEventMembershipRulesCallablePayload",
+  "description": "Organizer-manager read and edit of one event's paid-membership rules: member price overrides, early-access hours and the members-only flag.",
+  "x-owner": "Host event editor membership rules section",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "eventId"
+      ],
+      "properties": {
+        "action": {
+          "enum": [
+            "get",
+            "clear"
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "eventId",
+        "memberPriceOverrides",
+        "earlyAccessHours",
+        "membersOnly",
+        "expectedRevision"
+      ],
+      "properties": {
+        "action": {
+          "const": "save"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "memberPriceOverrides": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "planId",
+                  "percentOff"
+                ],
+                "properties": {
+                  "planId": {
+                    "type": "string",
+                    "pattern": "^hmp_[A-Za-z0-9]{20}$"
+                  },
+                  "percentOff": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "planId",
+                  "priceInPaise"
+                ],
+                "properties": {
+                  "planId": {
+                    "type": "string",
+                    "pattern": "^hmp_[A-Za-z0-9]{20}$"
+                  },
+                  "priceInPaise": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "earlyAccessHours": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 168
+            }
+          ]
+        },
+        "membersOnly": {
+          "type": "boolean"
+        },
+        "expectedRevision": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 9007199254740990
+        }
+      }
+    }
+  ]
+};
+
+export const manageEventMembershipRulesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_event_membership_rules_response.schema.json",
+  "title": "ManageEventMembershipRulesCallableResponse",
+  "description": "The event's current membership rules and the organizer's non-archived plans the editor can reference.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "rules",
+    "plans"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "rules": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "memberPriceOverrides",
+            "earlyAccessHours",
+            "generalSaleOpensAtMillis",
+            "membersOnly",
+            "revision"
+          ],
+          "properties": {
+            "memberPriceOverrides": {
+              "type": "array",
+              "maxItems": 10,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "planId",
+                      "percentOff"
+                    ],
+                    "properties": {
+                      "planId": {
+                        "type": "string",
+                        "pattern": "^hmp_[A-Za-z0-9]{20}$"
+                      },
+                      "percentOff": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "planId",
+                      "priceInPaise"
+                    ],
+                    "properties": {
+                      "planId": {
+                        "type": "string",
+                        "pattern": "^hmp_[A-Za-z0-9]{20}$"
+                      },
+                      "priceInPaise": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100000000
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "earlyAccessHours": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 168
+                }
+              ]
+            },
+            "generalSaleOpensAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "membersOnly": {
+              "type": "boolean"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740990
+            }
+          }
+        }
+      ]
+    },
+    "plans": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "planId",
+          "name",
+          "status",
+          "benefits"
+        ],
+        "properties": {
+          "planId": {
+            "type": "string",
+            "pattern": "^hmp_[A-Za-z0-9]{20}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "published",
+              "archived"
+            ]
+          },
+          "benefits": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "type",
+                    "percentOff"
+                  ],
+                  "properties": {
+                    "type": {
+                      "const": "eventDiscount"
+                    },
+                    "percentOff": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 100
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "const": "earlyAccess"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "const": "membersOnlyAccess"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
 export const adminGetEventDetailsCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_get_event_details_payload.schema.json",
@@ -275384,7 +278196,11 @@ export const upsertOrganizerSavedAudienceCallablePayloadSchema = {
                       "advocate",
                       "high_impact_advocate",
                       "whatsapp_reachable",
-                      "sms_reachable"
+                      "sms_reachable",
+                      "active_member",
+                      "lapsed_member",
+                      "member_no_recent_attendance",
+                      "frequent_non_member"
                     ]
                   }
                 }
@@ -275646,7 +278462,11 @@ export const upsertOrganizerSavedAudienceCallablePayloadSchema = {
                         "advocate",
                         "high_impact_advocate",
                         "whatsapp_reachable",
-                        "sms_reachable"
+                        "sms_reachable",
+                        "active_member",
+                        "lapsed_member",
+                        "member_no_recent_attendance",
+                        "frequent_non_member"
                       ]
                     }
                   },
@@ -275976,7 +278796,11 @@ export const organizerSavedAudienceCallableResponseSchema = {
                       "advocate",
                       "high_impact_advocate",
                       "whatsapp_reachable",
-                      "sms_reachable"
+                      "sms_reachable",
+                      "active_member",
+                      "lapsed_member",
+                      "member_no_recent_attendance",
+                      "frequent_non_member"
                     ]
                   }
                 }
@@ -276238,7 +279062,11 @@ export const organizerSavedAudienceCallableResponseSchema = {
                         "advocate",
                         "high_impact_advocate",
                         "whatsapp_reachable",
-                        "sms_reachable"
+                        "sms_reachable",
+                        "active_member",
+                        "lapsed_member",
+                        "member_no_recent_attendance",
+                        "frequent_non_member"
                       ]
                     }
                   },
@@ -276451,7 +279279,11 @@ export const listOrganizerSavedAudiencesCallableResponseSchema = {
                             "advocate",
                             "high_impact_advocate",
                             "whatsapp_reachable",
-                            "sms_reachable"
+                            "sms_reachable",
+                            "active_member",
+                            "lapsed_member",
+                            "member_no_recent_attendance",
+                            "frequent_non_member"
                           ]
                         }
                       }
@@ -276713,7 +279545,11 @@ export const listOrganizerSavedAudiencesCallableResponseSchema = {
                               "advocate",
                               "high_impact_advocate",
                               "whatsapp_reachable",
-                              "sms_reachable"
+                              "sms_reachable",
+                              "active_member",
+                              "lapsed_member",
+                              "member_no_recent_attendance",
+                              "frequent_non_member"
                             ]
                           }
                         },
@@ -277102,7 +279938,11 @@ export const previewOrganizerSavedAudienceCallableResponseSchema = {
                           "advocate",
                           "high_impact_advocate",
                           "whatsapp_reachable",
-                          "sms_reachable"
+                          "sms_reachable",
+                          "active_member",
+                          "lapsed_member",
+                          "member_no_recent_attendance",
+                          "frequent_non_member"
                         ]
                       }
                     }
@@ -277364,7 +280204,11 @@ export const previewOrganizerSavedAudienceCallableResponseSchema = {
                             "advocate",
                             "high_impact_advocate",
                             "whatsapp_reachable",
-                            "sms_reachable"
+                            "sms_reachable",
+                            "active_member",
+                            "lapsed_member",
+                            "member_no_recent_attendance",
+                            "frequent_non_member"
                           ]
                         }
                       },
@@ -305991,6 +308835,10 @@ export const getEventRosterInsightsCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "includeHostMembership": {
+      "type": "boolean",
+      "description": "Opt-in for the paid-membership \"member\" signal; older clients omit it."
     }
   }
 };
@@ -306088,7 +308936,7 @@ export const getEventRosterInsightsCallableResponseSchema = {
           "signals": {
             "type": "array",
             "uniqueItems": true,
-            "maxItems": 10,
+            "maxItems": 11,
             "items": {
               "type": "string",
               "enum": [
@@ -306101,7 +308949,8 @@ export const getEventRosterInsightsCallableResponseSchema = {
                 "advocate",
                 "high_impact_advocate",
                 "known_catch_spender",
-                "top_catch_spender"
+                "top_catch_spender",
+                "member"
               ]
             }
           },
@@ -306185,7 +309034,8 @@ export const getEventRosterInsightsCallableResponseSchema = {
         "advocate",
         "high_impact_advocate",
         "known_catch_spender",
-        "top_catch_spender"
+        "top_catch_spender",
+        "member"
       ]
     },
     "spendAmount": {
@@ -306258,7 +309108,7 @@ export const getEventRosterInsightsCallableResponseSchema = {
         "signals": {
           "type": "array",
           "uniqueItems": true,
-          "maxItems": 10,
+          "maxItems": 11,
           "items": {
             "type": "string",
             "enum": [
@@ -306271,7 +309121,8 @@ export const getEventRosterInsightsCallableResponseSchema = {
               "advocate",
               "high_impact_advocate",
               "known_catch_spender",
-              "top_catch_spender"
+              "top_catch_spender",
+              "member"
             ]
           }
         },
@@ -306506,7 +309357,11 @@ export const listOrganizerContactsCallablePayloadSchema = {
             "advocate",
             "high_impact_advocate",
             "whatsapp_reachable",
-            "sms_reachable"
+            "sms_reachable",
+            "active_member",
+            "lapsed_member",
+            "member_no_recent_attendance",
+            "frequent_non_member"
           ]
         },
         {
@@ -306539,7 +309394,11 @@ export const listOrganizerContactsCallablePayloadSchema = {
           "advocate",
           "high_impact_advocate",
           "whatsapp_reachable",
-          "sms_reachable"
+          "sms_reachable",
+          "active_member",
+          "lapsed_member",
+          "member_no_recent_attendance",
+          "frequent_non_member"
         ]
       },
       "description": "OR within attendance, reliability, advocacy and reachable categories; AND across selected categories."
@@ -325686,7 +328545,11 @@ export const listOrganizerContactsCallableResponseSchema = {
                 "advocate",
                 "high_impact_advocate",
                 "whatsapp_reachable",
-                "sms_reachable"
+                "sms_reachable",
+                "active_member",
+                "lapsed_member",
+                "member_no_recent_attendance",
+                "frequent_non_member"
               ]
             }
           },
@@ -325745,6 +328608,53 @@ export const listOrganizerContactsCallableResponseSchema = {
             "type": "integer",
             "minimum": 1,
             "maximum": 9007199254740991
+          },
+          "membership": {
+            "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "planId",
+              "planName",
+              "status",
+              "memberSinceMillis",
+              "entitled"
+            ],
+            "properties": {
+              "planId": {
+                "type": "string",
+                "pattern": "^hmp_[A-Za-z0-9]{20}$"
+              },
+              "planName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "status": {
+                "enum": [
+                  "trialing",
+                  "active",
+                  "past_due",
+                  "paused",
+                  "canceling",
+                  "expired"
+                ]
+              },
+              "memberSinceMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "entitled": {
+                "type": "boolean"
+              }
+            }
           }
         }
       }
@@ -325909,7 +328819,11 @@ export const listOrganizerContactsCallableResponseSchema = {
               "advocate",
               "high_impact_advocate",
               "whatsapp_reachable",
-              "sms_reachable"
+              "sms_reachable",
+              "active_member",
+              "lapsed_member",
+              "member_no_recent_attendance",
+              "frequent_non_member"
             ]
           }
         },
@@ -325968,6 +328882,53 @@ export const listOrganizerContactsCallableResponseSchema = {
           "type": "integer",
           "minimum": 1,
           "maximum": 9007199254740991
+        },
+        "membership": {
+          "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "planId",
+            "planName",
+            "status",
+            "memberSinceMillis",
+            "entitled"
+          ],
+          "properties": {
+            "planId": {
+              "type": "string",
+              "pattern": "^hmp_[A-Za-z0-9]{20}$"
+            },
+            "planName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "status": {
+              "enum": [
+                "trialing",
+                "active",
+                "past_due",
+                "paused",
+                "canceling",
+                "expired"
+              ]
+            },
+            "memberSinceMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "entitled": {
+              "type": "boolean"
+            }
+          }
         }
       }
     }
@@ -326492,7 +329453,11 @@ export const getOrganizerContactDetailCallableResponseSchema = {
               "advocate",
               "high_impact_advocate",
               "whatsapp_reachable",
-              "sms_reachable"
+              "sms_reachable",
+              "active_member",
+              "lapsed_member",
+              "member_no_recent_attendance",
+              "frequent_non_member"
             ]
           }
         },
@@ -326519,6 +329484,53 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "partial",
             "insufficientData"
           ]
+        },
+        "membership": {
+          "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "planId",
+            "planName",
+            "status",
+            "memberSinceMillis",
+            "entitled"
+          ],
+          "properties": {
+            "planId": {
+              "type": "string",
+              "pattern": "^hmp_[A-Za-z0-9]{20}$"
+            },
+            "planName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "status": {
+              "enum": [
+                "trialing",
+                "active",
+                "past_due",
+                "paused",
+                "canceling",
+                "expired"
+              ]
+            },
+            "memberSinceMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "entitled": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },
@@ -329207,7 +332219,11 @@ export const getOrganizerContactDetailCallableResponseSchema = {
               "advocate",
               "high_impact_advocate",
               "whatsapp_reachable",
-              "sms_reachable"
+              "sms_reachable",
+              "active_member",
+              "lapsed_member",
+              "member_no_recent_attendance",
+              "frequent_non_member"
             ]
           }
         },
@@ -329234,6 +332250,53 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "partial",
             "insufficientData"
           ]
+        },
+        "membership": {
+          "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "planId",
+            "planName",
+            "status",
+            "memberSinceMillis",
+            "entitled"
+          ],
+          "properties": {
+            "planId": {
+              "type": "string",
+              "pattern": "^hmp_[A-Za-z0-9]{20}$"
+            },
+            "planName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "status": {
+              "enum": [
+                "trialing",
+                "active",
+                "past_due",
+                "paused",
+                "canceling",
+                "expired"
+              ]
+            },
+            "memberSinceMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "entitled": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },
@@ -330363,7 +333426,11 @@ export const exportOrganizerContactsCallablePayloadSchema = {
             "advocate",
             "high_impact_advocate",
             "whatsapp_reachable",
-            "sms_reachable"
+            "sms_reachable",
+            "active_member",
+            "lapsed_member",
+            "member_no_recent_attendance",
+            "frequent_non_member"
           ]
         },
         {
@@ -330389,7 +333456,11 @@ export const exportOrganizerContactsCallablePayloadSchema = {
           "advocate",
           "high_impact_advocate",
           "whatsapp_reachable",
-          "sms_reachable"
+          "sms_reachable",
+          "active_member",
+          "lapsed_member",
+          "member_no_recent_attendance",
+          "frequent_non_member"
         ]
       },
       "description": "OR within attendance, reliability, advocacy and reachable categories; AND across selected categories."

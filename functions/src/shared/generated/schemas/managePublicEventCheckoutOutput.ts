@@ -77,6 +77,12 @@ export const managePublicEventCheckoutCallableResponseSchema: Record<string, unk
                   "maximum": 9007199254740991
                 }
               }
+            },
+            "listAmountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000000,
+              "description": "Present only when a paid host membership price applies: the list price the member would otherwise pay."
             }
           }
         },

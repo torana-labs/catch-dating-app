@@ -1004,7 +1004,15 @@
         "configureEventRegistration",
         "managePublicEventCheckout",
         "reconcilePublicEventPayments",
-        "onCancelledPublicEventPayments"
+        "onCancelledPublicEventPayments",
+        "manageHostMembershipProgram",
+        "manageHostMembershipPlans",
+        "manageHostMembershipCheckout",
+        "manageMyHostMembership",
+        "hostMembershipRazorpayWebhook",
+        "reconcileHostMembershipCharges",
+        "processHostMembershipBillingPause",
+        "requestAccountDeletion"
       ],
       "binding": {
         "kind": "parameter",

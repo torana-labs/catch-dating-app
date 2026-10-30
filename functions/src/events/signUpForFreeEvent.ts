@@ -39,6 +39,12 @@ import {
 } from "./inviteLinks";
 import {requireActiveCrossPathsPairHold} from
   "../crossPaths/pairHoldValidation";
+import {
+  evaluateHostMembershipContext,
+  hostMembershipRestrictionCopy,
+  readHostMembershipContext,
+  recordHostMembershipBenefitUse,
+} from "../hostMemberships/entitlementReader";
 
 interface SignUpForFreeEventDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -55,12 +61,16 @@ interface SignUpForFreeEventDeps {
       crossPathsPairHoldId?: string | null;
     }
   ) => Promise<void>;
+  readMembershipContext: typeof readHostMembershipContext;
+  nowMillis: () => number;
 }
 
 const defaultDeps: SignUpForFreeEventDeps = {
   firestore: () => admin.firestore(),
   checkRateLimit,
   signUpForEvent: signUpUserForEvent,
+  readMembershipContext: readHostMembershipContext,
+  nowMillis: Date.now,
 };
 
 /**
@@ -129,11 +139,25 @@ export async function signUpForFreeEventHandler(
       eventId,
       requesterUid: uid,
     }) : null;
-  const priceInPaise = pairHold?.requesterPriceInPaise ?? quotePriceInPaise({
-    policy,
-    cohortId,
-    roster,
-  });
+  const nowMillis = deps.nowMillis();
+  const organizerId = event.organizerId ?? event.clubId;
+  const listPriceInPaise = pairHold?.requesterPriceInPaise ??
+    quotePriceInPaise({policy, cohortId, roster});
+  // Paid host membership pricing and gates apply after the policy quote; an
+  // included member's price becomes zero. Pair holds keep their own price.
+  const membershipContext = pairHold ? null :
+    await deps.readMembershipContext({db, organizerId, uid, eventId,
+      nowMillis});
+  const membershipEntitlement = membershipContext ?
+    evaluateHostMembershipContext(membershipContext, listPriceInPaise,
+      nowMillis) : null;
+  if (membershipEntitlement && !membershipEntitlement.admission.allowed &&
+      !hasWaitlistOfferAccess) {
+    throw new HttpsError("failed-precondition",
+      hostMembershipRestrictionCopy[membershipEntitlement.admission.reason]);
+  }
+  const priceInPaise = membershipEntitlement?.priceInPaise ??
+    listPriceInPaise;
 
   if (priceInPaise !== 0) {
     throw new HttpsError(
@@ -168,6 +192,11 @@ export async function signUpForFreeEventHandler(
     ...(inviteAttribution ? {inviteAttribution} : {}),
     ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
   });
+  if (membershipContext && membershipEntitlement) {
+    await recordHostMembershipBenefitUse({db, context: membershipContext,
+      entitlement: membershipEntitlement, eventId,
+      eventStartMillis: event.startTime.toMillis(), nowMillis});
+  }
 
   return {success: true};
 }

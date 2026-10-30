@@ -23,6 +23,10 @@ export type ManagePublicEventCheckoutCallablePayload =
           refundDeadlineMillis: number;
           eventStartsAtMillis: number;
         };
+        /**
+         * Present only when a paid host membership price applies: the list price the member would otherwise pay.
+         */
+        listAmountPaise?: number;
       };
       inviteToken: string | null;
     }

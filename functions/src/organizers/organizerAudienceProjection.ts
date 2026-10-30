@@ -18,6 +18,7 @@ import type {
   OrganizerContactIdentityLinkDocument,
   OrganizerContactOriginDocument,
   OrganizerContactTraitDocument,
+  HostMembershipDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   attendeeIdentityEvidence,
@@ -39,6 +40,10 @@ import {
 
 import {formAdmissionContactId} from "./organizerFormAdmissionIdentity";
 import {organizerContactProjectedFields} from "./organizerContactFields";
+import {validateHostMembershipDocument} from
+  "../shared/generated/validators/hostMembershipDocument";
+import {membershipIsEntitled} from "../hostMemberships/entitlement";
+import {hostMembershipId} from "../hostMemberships/ids";
 
 const projectionReceiptTtlMillis = 30 * 24 * 60 * 60 * 1000;
 
@@ -427,6 +432,12 @@ export async function rebuildOrganizerContact(
     const linkedUid = [...edges].sort(compareContactEdges)
       .find((edge) => edge.linkedUid !== null)?.linkedUid ??
         (hasStandaloneOrigin ? current.linkedUid : null);
+    // Paid membership is keyed by the linked account, never by phone match.
+    const membership = linkedUid === null ? null :
+      contactMembershipProjection((await tx.get(db
+        .collection("hostMemberships")
+        .doc(hostMembershipId(current.organizerId, linkedUid)))).data(),
+      current.organizerId, linkedUid, now.toMillis());
     const rebuilt: OrganizerContactDocument = {
       ...current,
       ...fields,
@@ -451,7 +462,7 @@ export async function rebuildOrganizerContact(
     const afterTrait = active ? organizerContactTraits({
       contactId, contact: rebuilt, edges, now,
       referredRegistrationCount, referredCheckedInCount,
-      referredCheckedIn365DayCount,
+      referredCheckedIn365DayCount, membership,
     }) ?? undefined : undefined;
     const beforeTrait = traitSnap.data() as
       OrganizerContactTraitDocument | undefined;
@@ -743,3 +754,42 @@ export const onOrganizerCommunicationPreferenceAudienceProjected =
       await projectOrganizerCommunicationPreference(before, after, event.id);
     }
   );
+
+/** CRM view of a validated paid membership; anything else reads as none. */
+export function contactMembershipProjection(raw: unknown, organizerId: string,
+  uid: string, nowMillis: number):
+  NonNullable<OrganizerContactTraitDocument["membership"]> | null {
+  if (!validateHostMembershipDocument(raw) || raw.organizerId !== organizerId ||
+      raw.uid !== uid) return null;
+  return {planId: raw.planId, planName: raw.planName, status: raw.status,
+    memberSinceMillis: raw.memberSinceMillis,
+    entitled: membershipIsEntitled(raw, nowMillis)};
+}
+
+/** Rebuilds every contact linked to a member after their membership moves. */
+export async function projectHostMembershipToContacts(params: {
+  organizerId: string; uid: string; projectionEventId: string;
+}, deps: AudienceProjectionDeps = defaultDeps): Promise<number> {
+  const db = deps.firestore();
+  const contacts = await db.collection("organizerContacts")
+    .where("organizerId", "==", params.organizerId)
+    .where("linkedUid", "==", params.uid)
+    .limit(20).get();
+  for (const doc of contacts.docs) {
+    await rebuildOrganizerContact(doc.id,
+      `${params.projectionEventId}|${doc.id}`, deps);
+  }
+  return contacts.size;
+}
+
+export const onHostMembershipAudienceProjected = onDocumentWritten(
+  "hostMemberships/{membershipId}",
+  async (event) => {
+    const membership = (event.data?.after.data() ??
+      event.data?.before.data()) as HostMembershipDocument | undefined;
+    if (!membership?.organizerId || !membership.uid) return;
+    await projectHostMembershipToContacts({
+      organizerId: membership.organizerId, uid: membership.uid,
+      projectionEventId: `hostMembership:${event.id}`});
+  }
+);

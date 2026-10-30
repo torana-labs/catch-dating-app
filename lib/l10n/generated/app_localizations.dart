@@ -41003,6 +41003,900 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'What connecting allows'**
   String get hostPayoutsRazorpayPermissionsTitle;
+
+  /// Membership price billed monthly.
+  ///
+  /// In en, this message translates to:
+  /// **'{price}/mo'**
+  String membershipsPricePerMonth({required String price});
+
+  /// Membership price billed yearly.
+  ///
+  /// In en, this message translates to:
+  /// **'{price}/yr'**
+  String membershipsPricePerYear({required String price});
+
+  /// Membership status: free trial before the first charge.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial'**
+  String get membershipsStatusTrialing;
+
+  /// Membership status: active and paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get membershipsStatusActive;
+
+  /// Membership status: a renewal payment failed and is being retried.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment due'**
+  String get membershipsStatusPastDue;
+
+  /// Membership status: the member paused billing.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get membershipsStatusPaused;
+
+  /// Membership status: the organizer paused billing for all members.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused by organizer'**
+  String get membershipsStatusPausedByHost;
+
+  /// Membership status: cancelled, active until the end of the current period.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends soon'**
+  String get membershipsStatusCanceling;
+
+  /// Membership status: ended.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get membershipsStatusExpired;
+
+  /// Plan benefit: member price is free on this organizer's events.
+  ///
+  /// In en, this message translates to:
+  /// **'Events included'**
+  String get membershipsBenefitEventsIncluded;
+
+  /// Plan benefit: percent discount on this organizer's events.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% off events'**
+  String membershipsBenefitEventDiscount({required int percent});
+
+  /// Plan benefit: book before general sale opens.
+  ///
+  /// In en, this message translates to:
+  /// **'Early access to bookings'**
+  String get membershipsBenefitEarlyAccess;
+
+  /// Plan benefit: access to members-only events.
+  ///
+  /// In en, this message translates to:
+  /// **'Members-only events'**
+  String get membershipsBenefitMembersOnly;
+
+  /// Badge for a paid member of an organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get membershipsBadgeMember;
+
+  /// Badge naming the member's plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Member · {planName}'**
+  String membershipsBadgeMemberOf({required String planName});
+
+  /// Event dock label while only members can book during early access.
+  ///
+  /// In en, this message translates to:
+  /// **'Members only until {date}, {time}'**
+  String membershipsEventGeneralSaleOpens({
+    required String date,
+    required String time,
+  });
+
+  /// Event dock label for a paid-members-only event.
+  ///
+  /// In en, this message translates to:
+  /// **'Members only'**
+  String get membershipsEventMembersOnly;
+
+  /// Price note under the member price in the event dock.
+  ///
+  /// In en, this message translates to:
+  /// **'Member price · usually {price}'**
+  String membershipsEventMemberPriceNote({required String price});
+
+  /// Dock footnote when the member's upcoming member-priced booking cap is reached.
+  ///
+  /// In en, this message translates to:
+  /// **'You’ve reached your plan’s upcoming booking limit, so this one is at the regular price.'**
+  String get membershipsEventBookingCapNote;
+
+  /// Dock footnote when the event is free for the member.
+  ///
+  /// In en, this message translates to:
+  /// **'Included with your {planName} membership'**
+  String membershipsEventIncludedNote({required String planName});
+
+  /// Dock footnote showing the member's savings on this event.
+  ///
+  /// In en, this message translates to:
+  /// **'{planName} members save {savings} here'**
+  String membershipsEventSavingNote({
+    required String planName,
+    required String savings,
+  });
+
+  /// Upsell title when a membership unlocks booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Members can book this event'**
+  String get membershipsUpsellUnlockTitle;
+
+  /// Upsell title when a membership makes the event free.
+  ///
+  /// In en, this message translates to:
+  /// **'Free with a membership'**
+  String get membershipsUpsellFreeTitle;
+
+  /// Upsell title when a membership lowers the price.
+  ///
+  /// In en, this message translates to:
+  /// **'Members pay {price}'**
+  String membershipsUpsellSaveTitle({required String price});
+
+  /// Upsell message naming the plan and its price.
+  ///
+  /// In en, this message translates to:
+  /// **'Join {planName} for {planPrice}.'**
+  String membershipsUpsellMessage({
+    required String planName,
+    required String planPrice,
+  });
+
+  /// Upsell button opening the plan.
+  ///
+  /// In en, this message translates to:
+  /// **'See membership'**
+  String get membershipsUpsellAction;
+
+  /// Plan sheet title when the plan is no longer offered.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan unavailable'**
+  String get membershipsPlanUnavailableTitle;
+
+  /// Plan sheet body when the plan is no longer offered.
+  ///
+  /// In en, this message translates to:
+  /// **'This membership isn’t on sale right now.'**
+  String get membershipsPlanUnavailableBody;
+
+  /// Close the plan sheet after joining.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get membershipsJoinDone;
+
+  /// Refresh membership status after approving the mandate on Razorpay.
+  ///
+  /// In en, this message translates to:
+  /// **'I’ve approved it · check status'**
+  String get membershipsJoinCheckStatus;
+
+  /// Join button with the selected price.
+  ///
+  /// In en, this message translates to:
+  /// **'Join for {price}'**
+  String membershipsJoinAction({required String price});
+
+  /// Success banner after the membership starts.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to {planName}'**
+  String membershipsJoinWelcomeTitle({required String planName});
+
+  /// Success banner body after joining.
+  ///
+  /// In en, this message translates to:
+  /// **'Your member price and perks apply now. Manage it any time from My memberships.'**
+  String get membershipsJoinWelcomeBody;
+
+  /// Banner while the member approves the mandate on Razorpay.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish on Razorpay'**
+  String get membershipsJoinPendingTitle;
+
+  /// Explains the hosted mandate approval step.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve the UPI Autopay, card or bank mandate in the Razorpay page, then come back here.'**
+  String get membershipsJoinPendingBody;
+
+  /// Reopen the hosted mandate page.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Razorpay again'**
+  String get membershipsJoinReopen;
+
+  /// Banner when the checkout expired or failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout didn’t finish'**
+  String get membershipsJoinExpiredTitle;
+
+  /// Banner body when the checkout expired or failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing was charged. Close this and try again.'**
+  String get membershipsJoinExpiredBody;
+
+  /// Billing interval row in the plan sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing'**
+  String get membershipsJoinBillingTitle;
+
+  /// Plan trial length.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =1{1-day free trial} other{{days}-day free trial}}'**
+  String membershipsJoinTrial({required int days});
+
+  /// Plan has reached its member cap.
+  ///
+  /// In en, this message translates to:
+  /// **'Full'**
+  String get membershipsPlanFull;
+
+  /// Disclosure under the join button.
+  ///
+  /// In en, this message translates to:
+  /// **'Renews automatically until you cancel. Pause or cancel any time from My memberships. Payments are processed by Razorpay.'**
+  String get membershipsJoinMandateNote;
+
+  /// Organizer page section listing membership plans.
+  ///
+  /// In en, this message translates to:
+  /// **'Memberships'**
+  String get membershipsPlansSectionTitle;
+
+  /// Marks the member's current plan in the plan list.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan'**
+  String get membershipsPlanYourPlan;
+
+  /// Title of the member's memberships screen and its entry row.
+  ///
+  /// In en, this message translates to:
+  /// **'My memberships'**
+  String get membershipsScreenTitle;
+
+  /// My memberships when signed out.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in required'**
+  String get membershipsSignInTitle;
+
+  /// My memberships when signed out.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to see your memberships.'**
+  String get membershipsSignInBody;
+
+  /// My memberships empty state title.
+  ///
+  /// In en, this message translates to:
+  /// **'No memberships yet'**
+  String get membershipsEmptyTitle;
+
+  /// My memberships empty state body.
+  ///
+  /// In en, this message translates to:
+  /// **'Join an organizer’s membership from their page to get member prices and perks.'**
+  String get membershipsEmptyBody;
+
+  /// Total savings across memberships.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved so far'**
+  String get membershipsTotalSavedTitle;
+
+  /// Explains how savings are calculated.
+  ///
+  /// In en, this message translates to:
+  /// **'What you’d have paid at regular prices, minus what you paid.'**
+  String get membershipsTotalSavedBody;
+
+  /// Membership price row.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get membershipsDetailPrice;
+
+  /// Membership trial end date row.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial ends'**
+  String get membershipsDetailTrialEnds;
+
+  /// Date a cancelled membership ends.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends'**
+  String get membershipsDetailEnds;
+
+  /// Last period end for a paused membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Period ended'**
+  String get membershipsDetailPausedSince;
+
+  /// Next renewal date.
+  ///
+  /// In en, this message translates to:
+  /// **'Renews'**
+  String get membershipsDetailRenews;
+
+  /// Membership tenure row.
+  ///
+  /// In en, this message translates to:
+  /// **'Member since'**
+  String get membershipsDetailMemberSince;
+
+  /// Member-since date and cumulative membership days.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · {days, plural, =1{1 day} other{{days} days}}'**
+  String membershipsDetailMemberSinceValue({
+    required String date,
+    required int days,
+  });
+
+  /// Savings for this membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get membershipsDetailSaved;
+
+  /// Explains membership savings.
+  ///
+  /// In en, this message translates to:
+  /// **'On events booked at member prices.'**
+  String get membershipsDetailSavedBody;
+
+  /// Explains a host-wide billing pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing paused by the organizer'**
+  String get membershipsDetailHostPausedTitle;
+
+  /// Explains a host-wide billing pause.
+  ///
+  /// In en, this message translates to:
+  /// **'You won’t be charged while they take a break. Your member price still applies to any event they run.'**
+  String get membershipsDetailHostPausedBody;
+
+  /// Explains a failed renewal.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment didn’t go through'**
+  String get membershipsDetailPastDueTitle;
+
+  /// Explains a failed renewal.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay will retry automatically. Check your UPI or card mandate so your membership continues.'**
+  String get membershipsDetailPastDueBody;
+
+  /// Member action: pause billing.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause membership'**
+  String get membershipsActionPause;
+
+  /// Member action: resume billing.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume membership'**
+  String get membershipsActionResume;
+
+  /// Member action: cancel at the end of the current period.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel at period end'**
+  String get membershipsActionCancel;
+
+  /// Confirm pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause membership?'**
+  String get membershipsConfirmPauseTitle;
+
+  /// Confirm pause.
+  ///
+  /// In en, this message translates to:
+  /// **'You won’t be charged while {planName} is paused, and member prices and early access stop until you resume.'**
+  String membershipsConfirmPauseBody({required String planName});
+
+  /// Confirm cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel membership?'**
+  String get membershipsConfirmCancelTitle;
+
+  /// Confirm cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'{planName} stays active until the end of this period. You won’t be charged again.'**
+  String membershipsConfirmCancelBody({required String planName});
+
+  /// Count of current memberships on the profile row.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 active} other{{count} active}}'**
+  String membershipsProfileCount({required int count});
+
+  /// Host organizer settings spoke for paid memberships.
+  ///
+  /// In en, this message translates to:
+  /// **'Memberships'**
+  String get hostMembershipsScreenTitle;
+
+  /// Host memberships program section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Program'**
+  String get hostMembershipsProgramTitle;
+
+  /// Program badge when memberships are not enabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get hostMembershipsProgramOff;
+
+  /// Program badge in Razorpay test mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Test mode'**
+  String get hostMembershipsProgramTestMode;
+
+  /// Program badge in live mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get hostMembershipsProgramLive;
+
+  /// Host memberships intro title.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell monthly or annual memberships'**
+  String get hostMembershipsIntroTitle;
+
+  /// Host memberships intro body.
+  ///
+  /// In en, this message translates to:
+  /// **'Members renew automatically through UPI Autopay, card or bank mandates. Catch applies member prices, early access and members-only events at checkout; you deliver any perks in person. Each renewal pays out to your Razorpay account minus Catch’s fee.'**
+  String get hostMembershipsIntroBody;
+
+  /// Route payout account readiness row.
+  ///
+  /// In en, this message translates to:
+  /// **'Payouts'**
+  String get hostMembershipsPayoutTitle;
+
+  /// Payout account ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get hostMembershipsPayoutReady;
+
+  /// Payout account not ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up required'**
+  String get hostMembershipsPayoutNotReady;
+
+  /// Memberships unavailable in this environment.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available yet'**
+  String get hostMembershipsUnavailableTitle;
+
+  /// Memberships unavailable in this environment.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch is finishing membership payment setup. You can draft plans now and publish them once it’s ready.'**
+  String get hostMembershipsUnavailableBody;
+
+  /// Current member count.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get hostMembershipsMemberCount;
+
+  /// Enable the membership program.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on memberships'**
+  String get hostMembershipsEnable;
+
+  /// Host-wide billing pause action.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause billing for everyone'**
+  String get hostMembershipsPauseBilling;
+
+  /// Resume host-wide billing.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume billing'**
+  String get hostMembershipsResumeBilling;
+
+  /// Explains the host-wide billing pause.
+  ///
+  /// In en, this message translates to:
+  /// **'For seasonal breaks. Members aren’t charged and keep their member status.'**
+  String get hostMembershipsPauseBillingBody;
+
+  /// Billing pause in progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Pausing members now…'**
+  String get hostMembershipsBillingPausing;
+
+  /// Billing paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing is paused. New members can’t join until you resume.'**
+  String get hostMembershipsBillingPaused;
+
+  /// Billing resume in progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Resuming members now…'**
+  String get hostMembershipsBillingResuming;
+
+  /// Plans section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Plans'**
+  String get hostMembershipsPlansTitle;
+
+  /// Plan row status and member count.
+  ///
+  /// In en, this message translates to:
+  /// **'{status} · {members, plural, =1{1 member} other{{members} members}}'**
+  String hostMembershipsPlanRowBody({
+    required String status,
+    required int members,
+  });
+
+  /// Plan status draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get hostMembershipsPlanDraft;
+
+  /// Plan status published.
+  ///
+  /// In en, this message translates to:
+  /// **'On sale'**
+  String get hostMembershipsPlanPublished;
+
+  /// Plan status archived.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get hostMembershipsPlanArchived;
+
+  /// Create a membership plan.
+  ///
+  /// In en, this message translates to:
+  /// **'New plan'**
+  String get hostMembershipsNewPlan;
+
+  /// Edit a membership plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit plan'**
+  String get hostMembershipsEditPlan;
+
+  /// Save a membership plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Save plan'**
+  String get hostMembershipsSavePlan;
+
+  /// Plan name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan name'**
+  String get hostMembershipsPlanName;
+
+  /// Example plan name.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday Runners'**
+  String get hostMembershipsPlanNameHint;
+
+  /// Plan description field.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get hostMembershipsPlanDescription;
+
+  /// Monthly price field (rupees).
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly price'**
+  String get hostMembershipsMonthlyPrice;
+
+  /// Annual price field (rupees).
+  ///
+  /// In en, this message translates to:
+  /// **'Annual price'**
+  String get hostMembershipsAnnualPrice;
+
+  /// Price limits; the ceiling keeps renewals within the RBI auto-debit limit.
+  ///
+  /// In en, this message translates to:
+  /// **'Between ₹10 and ₹15,000 per charge. Offer monthly, annual or both.'**
+  String get hostMembershipsPriceHelper;
+
+  /// Plan benefits section.
+  ///
+  /// In en, this message translates to:
+  /// **'Benefits'**
+  String get hostMembershipsBenefitsTitle;
+
+  /// Default percent off events.
+  ///
+  /// In en, this message translates to:
+  /// **'Member discount on events'**
+  String get hostMembershipsDiscount;
+
+  /// Explains the default event discount.
+  ///
+  /// In en, this message translates to:
+  /// **'100% includes events. You can change it per event.'**
+  String get hostMembershipsDiscountHelper;
+
+  /// Explains early access benefit.
+  ///
+  /// In en, this message translates to:
+  /// **'Members book during an event’s early-access window.'**
+  String get hostMembershipsEarlyAccessBody;
+
+  /// Explains members-only benefit.
+  ///
+  /// In en, this message translates to:
+  /// **'Members can book events you mark members-only.'**
+  String get hostMembershipsMembersOnlyBody;
+
+  /// Free-text perks field.
+  ///
+  /// In en, this message translates to:
+  /// **'Perks'**
+  String get hostMembershipsPerks;
+
+  /// Explains free-text perks.
+  ///
+  /// In en, this message translates to:
+  /// **'One per line, like a free coffee or merch. You deliver these in person.'**
+  String get hostMembershipsPerksHelper;
+
+  /// Plan limits section.
+  ///
+  /// In en, this message translates to:
+  /// **'Limits'**
+  String get hostMembershipsLimitsTitle;
+
+  /// Optional maximum members.
+  ///
+  /// In en, this message translates to:
+  /// **'Member cap'**
+  String get hostMembershipsMemberCap;
+
+  /// Member cap helper.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty for no limit.'**
+  String get hostMembershipsMemberCapHelper;
+
+  /// Cap on upcoming member-priced bookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming bookings at member price'**
+  String get hostMembershipsBookingCap;
+
+  /// Explains the booking cap.
+  ///
+  /// In en, this message translates to:
+  /// **'Stops no-shows on included plans: extra bookings are at the regular price. Leave empty for no limit.'**
+  String get hostMembershipsBookingCapHelper;
+
+  /// Trial length field.
+  ///
+  /// In en, this message translates to:
+  /// **'Free trial days'**
+  String get hostMembershipsTrialDays;
+
+  /// Pricing hint section.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing check'**
+  String get hostMembershipsPricingHintTitle;
+
+  /// Advisory input for the pricing hint; not saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Your typical ticket price'**
+  String get hostMembershipsTypicalTicket;
+
+  /// Pricing hint: plan is below what regulars spend.
+  ///
+  /// In en, this message translates to:
+  /// **'This may cost you money'**
+  String get hostMembershipsPricingHintLow;
+
+  /// Pricing hint: plan is in line with regular spend.
+  ///
+  /// In en, this message translates to:
+  /// **'This looks sustainable'**
+  String get hostMembershipsPricingHintHealthy;
+
+  /// Explains the pricing hint assumption.
+  ///
+  /// In en, this message translates to:
+  /// **'Compared with a regular coming {events} times a month at your typical ticket price, after the member discount.'**
+  String hostMembershipsPricingHintBody({required int events});
+
+  /// Publish a draft plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Put on sale'**
+  String get hostMembershipsPublishPlan;
+
+  /// Explains publishing a plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Members can join from your organizer page.'**
+  String get hostMembershipsPublishPlanBody;
+
+  /// Archive a plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop selling'**
+  String get hostMembershipsArchivePlan;
+
+  /// Explains archiving a plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing members keep their membership; nobody new can join.'**
+  String get hostMembershipsArchivePlanBody;
+
+  /// Event editor membership rules section.
+  ///
+  /// In en, this message translates to:
+  /// **'Memberships'**
+  String get hostMembershipsEventRulesTitle;
+
+  /// Per-plan discount for this event.
+  ///
+  /// In en, this message translates to:
+  /// **'{planName} member discount'**
+  String hostMembershipsEventRulesPlanDiscount({required String planName});
+
+  /// Hint when using the plan's default discount.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan default'**
+  String get hostMembershipsEventRulesDiscountHint;
+
+  /// Early-access window length.
+  ///
+  /// In en, this message translates to:
+  /// **'Member early access'**
+  String get hostMembershipsEventRulesEarlyAccess;
+
+  /// Unit suffix for early access.
+  ///
+  /// In en, this message translates to:
+  /// **'hours'**
+  String get hostMembershipsEventRulesHoursSuffix;
+
+  /// Explains the early-access anchor.
+  ///
+  /// In en, this message translates to:
+  /// **'General sale opens this many hours after you save.'**
+  String get hostMembershipsEventRulesEarlyAccessHelper;
+
+  /// Computed general-sale time.
+  ///
+  /// In en, this message translates to:
+  /// **'General sale opens {date}, {time}'**
+  String hostMembershipsEventRulesGeneralSale({
+    required String date,
+    required String time,
+  });
+
+  /// Members-only toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Members only'**
+  String get hostMembershipsEventRulesMembersOnly;
+
+  /// Explains members-only.
+  ///
+  /// In en, this message translates to:
+  /// **'Only members of plans with members-only access can book.'**
+  String get hostMembershipsEventRulesMembersOnlyBody;
+
+  /// Save event membership rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Save membership rules'**
+  String get hostMembershipsEventRulesSave;
+
+  /// CRM filter group for membership segments.
+  ///
+  /// In en, this message translates to:
+  /// **'Membership'**
+  String get hostMembershipsFilterGroup;
+
+  /// CRM segment: current paid members.
+  ///
+  /// In en, this message translates to:
+  /// **'Active members'**
+  String get hostMembershipsSegmentActive;
+
+  /// CRM segment: memberships that ended.
+  ///
+  /// In en, this message translates to:
+  /// **'Lapsed members'**
+  String get hostMembershipsSegmentLapsed;
+
+  /// CRM segment: members without a check-in in 30 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Members not seen in 30 days'**
+  String get hostMembershipsSegmentNoRecentAttendance;
+
+  /// CRM segment: non-members with 4+ check-ins in 60 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Regulars without membership'**
+  String get hostMembershipsSegmentFrequentNonMember;
+
+  /// Customer detail membership row.
+  ///
+  /// In en, this message translates to:
+  /// **'Membership'**
+  String get hostMembershipsCustomerMembership;
+
+  /// Customer member-since date.
+  ///
+  /// In en, this message translates to:
+  /// **'Since {date}'**
+  String hostMembershipsCustomerMemberSince({required String date});
+
+  /// Roster filter for paid members.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get hostMembershipsRosterMembers;
 }
 
 class _AppLocalizationsDelegate

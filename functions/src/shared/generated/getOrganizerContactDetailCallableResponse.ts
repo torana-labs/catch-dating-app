@@ -124,10 +124,30 @@ export interface GetOrganizerContactDetailCallableResponse {
       | "high_impact_advocate"
       | "whatsapp_reachable"
       | "sms_reachable"
+      | "active_member"
+      | "lapsed_member"
+      | "member_no_recent_attendance"
+      | "frequent_non_member"
     )[];
     whatsappStatus: "unknown" | "optedIn" | "optedOut";
     smsStatus: "unknown" | "optedIn" | "optedOut";
     sourceCoverage: "exact" | "partial" | "insufficientData";
+    /**
+     * CRM projection of one contact's paid membership with the organizer, through the contact's linked account.
+     */
+    membership?: {
+      planId: string;
+      planName: string;
+      status:
+        | "trialing"
+        | "active"
+        | "past_due"
+        | "paused"
+        | "canceling"
+        | "expired";
+      memberSinceMillis: number | null;
+      entitled: boolean;
+    } | null;
   };
   revenue: {
     coverage: "exact" | "partial" | "unavailable";

@@ -33,6 +33,12 @@ enum EventViewerRestriction {
   past,
   cancelled,
   unsupportedRoute,
+
+  /// The event is for paid members of a plan with members-only access.
+  paidMembershipRequired,
+
+  /// Paid members are booking early; general sale has not opened.
+  memberEarlyAccess,
 }
 
 enum EventViewerPayment {
@@ -72,6 +78,7 @@ final class EventViewerState {
     required this.inventoryRevision,
     required this.capacityRevision,
     required this.migrationRevision,
+    required this.hostMembership,
   });
 
   final String eventId, organizerId;
@@ -91,6 +98,11 @@ final class EventViewerState {
   final String? policyHash;
   final int? inventoryRevision, capacityRevision, migrationRevision;
 
+  /// The server's paid host membership facts for this event, unparsed; null
+  /// when it omitted them. The payments context owns their shape, so the
+  /// event screen parses them with `EventHostMembershipFacts.fromMap`.
+  final Map<Object?, Object?>? hostMembership;
+
   bool get hasAdmission => admission != EventViewerAdmission.none;
   bool get canBook => allowed && route != EventViewerRoute.catchWaitlistOffer;
   bool get canAcceptOffer =>
@@ -98,7 +110,7 @@ final class EventViewerState {
 
   factory EventViewerState.fromResponse(Object? data) {
     final envelope = _object(data, {'viewer'});
-    final v = _object(envelope['viewer'], {
+    const viewerKeys = {
       'eventId',
       'organizerId',
       'observedAtMillis',
@@ -112,7 +124,14 @@ final class EventViewerState {
       'route',
       'quotedPriceInPaise',
       'basis',
-    });
+    };
+    final rawViewer = envelope['viewer'];
+    final hasMembershipFacts =
+        rawViewer is Map && rawViewer.containsKey('hostMembership');
+    final v = _object(
+      rawViewer,
+      hasMembershipFacts ? {...viewerKeys, 'hostMembership'} : viewerKeys,
+    );
     final m = _object(v['membership'], {'state', 'revision', 'decisionId'});
     final future = _object(v['futureBooking'], {'allowed', 'reason'});
     final basis = _object(v['basis'], {
@@ -157,6 +176,7 @@ final class EventViewerState {
       inventoryRevision: _integerOrNull(basis['inventoryRevision']),
       capacityRevision: _integerOrNull(basis['capacityRevision']),
       migrationRevision: _integerOrNull(basis['migrationRevision']),
+      hostMembership: hasMembershipFacts ? _map(v['hostMembership']) : null,
     );
   }
 }
@@ -168,6 +188,11 @@ Map<Object?, Object?> _object(Object? value, Set<String> keys) {
     throw const FormatException('Invalid event viewer object');
   }
   return Map<Object?, Object?>.from(value);
+}
+
+Map<Object?, Object?> _map(Object? value) {
+  if (value is! Map) throw const FormatException('Invalid event viewer object');
+  return Map<Object?, Object?>.unmodifiable(value);
 }
 
 T _enum<T extends Enum>(Object? value, List<T> values) => values.firstWhere(

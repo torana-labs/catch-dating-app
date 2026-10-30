@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_host_membership_program_response.schema.json",
+  "title": "ManageHostMembershipProgramCallableResponse",
+  "description": "Bounded program projection plus readiness facts the host settings screen needs before enabling memberships.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "program",
+    "routeAccountReady",
+    "feeConfigured"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "program": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "provider",
+            "mode",
+            "billingPauseState",
+            "memberCount",
+            "revision"
+          ],
+          "properties": {
+            "state": {
+              "enum": [
+                "enabled",
+                "disabled"
+              ]
+            },
+            "provider": {
+              "$ref": "../shared/host_membership_common.schema.json#/definitions/provider"
+            },
+            "mode": {
+              "$ref": "../shared/host_membership_common.schema.json#/definitions/providerMode"
+            },
+            "billingPauseState": {
+              "enum": [
+                "active",
+                "pausing",
+                "paused",
+                "resuming"
+              ]
+            },
+            "memberCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000
+            },
+            "revision": {
+              "$ref": "../shared/host_membership_common.schema.json#/definitions/revision"
+            }
+          }
+        }
+      ]
+    },
+    "routeAccountReady": {
+      "type": "boolean"
+    },
+    "feeConfigured": {
+      "type": "boolean"
+    }
+  }
+}

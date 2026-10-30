@@ -7,6 +7,7 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
@@ -330,6 +331,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             Routes.paymentHistoryScreen.name,
                           ),
                   ),
+                  const HostMembershipProfileSection(),
                   CatchField.nav(
                     copy: catchFieldCopy(context.l10n),
                     key: SettingsKeys.hostAppRow,

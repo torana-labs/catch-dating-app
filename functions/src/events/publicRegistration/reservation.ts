@@ -42,6 +42,8 @@ import {
   publicPaymentId,
   parsePublicPayment,
 } from "./paymentLedger";
+import {publicHostMembershipQuoteTerms} from
+  "../../hostMemberships/publicCheckout";
 
 export async function reservePublicPayment(input: {
   db: FirebaseFirestore.Firestore;
@@ -115,7 +117,9 @@ export async function reservePublicPayment(input: {
     });
     await assertPublicEventAge({db, tx, uid, event, nowMillis});
     const quote = publicCheckoutQuote(eventId, event, organizer, nowMillis,
-      await publicGuestMembership({db, tx, event, uid, nowMillis}));
+      await publicGuestMembership({db, tx, event, uid, nowMillis}),
+      await publicHostMembershipQuoteTerms({db, tx, eventId, event, uid,
+        nowMillis}));
     assertReviewedPublicQuote(reviewedQuote, quote);
     const organizerId = event.organizerId!;
     if (

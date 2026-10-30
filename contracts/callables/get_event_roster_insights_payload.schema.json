@@ -7,6 +7,7 @@
   "additionalProperties": false,
   "required": ["eventId"],
   "properties": {
-    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "includeHostMembership": {"type": "boolean", "description": "Opt-in for the paid-membership \"member\" signal; older clients omit it."}
   }
 }

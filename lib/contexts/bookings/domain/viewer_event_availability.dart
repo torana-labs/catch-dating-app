@@ -290,7 +290,9 @@ ViewerEventAvailability viewerEventAvailabilityFromState({
       : switch (viewer.restriction!) {
           EventViewerRestriction.bookingDetailsRequired =>
             ViewerEventAvailabilityStatus.profileRequired,
-          EventViewerRestriction.membershipRequired =>
+          EventViewerRestriction.membershipRequired ||
+          EventViewerRestriction.paidMembershipRequired ||
+          EventViewerRestriction.memberEarlyAccess =>
             ViewerEventAvailabilityStatus.membershipRequired,
           EventViewerRestriction.inviteRequired =>
             ViewerEventAvailabilityStatus.inviteRequired,

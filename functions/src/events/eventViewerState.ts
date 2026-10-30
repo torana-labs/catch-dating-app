@@ -44,7 +44,8 @@ export async function getEventViewerStateHandler(
       nowMillis: deps.nowMillis()}) : await deps.read({db, uid,
       eventId: payload.eventId,
       inviteCode: payload.inviteCode, publicPaymentId: payload.publicPaymentId,
-      nowMillis: deps.nowMillis()});
+      nowMillis: deps.nowMillis(),
+      ...(payload.includeHostMembership ? {includeHostMembership: true} : {})});
   if (!viewer) {
     throw new HttpsError("not-found", "This event is unavailable.");
   }

@@ -47,6 +47,9 @@ declare("lib/hosts/presentation/customers/host_customer_timeline_section.dart",
 declare("lib/programs/presentation/program_events_row.dart",
   "lib/programs/presentation/program_events_row.dart", null,
   ["programEventsField"], ["CatchField"]);
+declare("lib/host_memberships/presentation/host_membership_profile_section.dart",
+  "lib/host_memberships/presentation/host_membership_profile_section.dart", null,
+  ["hostMembershipProfileField"], ["CatchField"]);
 declare("lib/routing/host_inbox_route.dart", "lib/routing/go_router.dart", null,
   ["hostInboxScreenForUri"], ["HostInboxScreen"]);
 

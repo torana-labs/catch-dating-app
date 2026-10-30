@@ -233,6 +233,8 @@ import 'package:widgetbook_workspace/geometry/specimens/responsive.dart'
     as _widgetbook_workspace_geometry_specimens_responsive;
 import 'package:widgetbook_workspace/geometry/specimens/top_bars.dart'
     as _widgetbook_workspace_geometry_specimens_top_bars;
+import 'package:widgetbook_workspace/host_memberships/host_membership_use_cases.dart'
+    as _widgetbook_workspace_host_memberships_host_membership_use_cases;
 import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart'
     as _widgetbook_workspace_hosts_host_booking_provider_use_cases;
 import 'package:widgetbook_workspace/hosts/host_event_offer_use_cases.dart'
@@ -247,6 +249,8 @@ import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
+import 'package:widgetbook_workspace/hosts/host_membership_admin_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_membership_admin_use_cases;
 import 'package:widgetbook_workspace/hosts/host_offer_payment_use_cases.dart'
     as _widgetbook_workspace_hosts_host_offer_payment_use_cases;
 import 'package:widgetbook_workspace/hosts/host_payout_connection_use_cases.dart'
@@ -14625,6 +14629,132 @@ final directories = <_widgetbook.WidgetbookNode>[
           ),
         ],
       ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Host memberships',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'HostMembershipBadge',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Statuses',
+                builder:
+                    _widgetbook_workspace_host_memberships_host_membership_use_cases
+                        .hostMembershipBadgeStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostMembershipJoinSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Plan details',
+                builder:
+                    _widgetbook_workspace_host_memberships_host_membership_use_cases
+                        .hostMembershipJoinSheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostMembershipPlanSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Resolved plan',
+                builder:
+                    _widgetbook_workspace_host_memberships_host_membership_use_cases
+                        .hostMembershipPlanSheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostMembershipPlansList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Plans and current member',
+                builder:
+                    _widgetbook_workspace_host_memberships_host_membership_use_cases
+                        .hostMembershipPlansListStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostMembershipPlansSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Club page section',
+                builder:
+                    _widgetbook_workspace_host_memberships_host_membership_use_cases
+                        .hostMembershipPlansSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostMembershipProfileSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Signed-in member',
+                builder:
+                    _widgetbook_workspace_host_memberships_host_membership_use_cases
+                        .hostMembershipProfileSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostMembershipSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Statuses and actions',
+                builder:
+                    _widgetbook_workspace_host_memberships_host_membership_use_cases
+                        .hostMembershipSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostMembershipUpsellBanner',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Included, discount and members-only',
+                builder:
+                    _widgetbook_workspace_host_memberships_host_membership_use_cases
+                        .hostMembershipUpsellBannerStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'MyMembershipsBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Resolved memberships',
+                builder:
+                    _widgetbook_workspace_host_memberships_host_membership_use_cases
+                        .myMembershipsBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'MyMembershipsList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Populated and empty',
+                builder:
+                    _widgetbook_workspace_host_memberships_host_membership_use_cases
+                        .myMembershipsListStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'MyMembershipsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder:
+                    _widgetbook_workspace_host_memberships_host_membership_use_cases
+                        .myMembershipsScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
     ],
   ),
   _widgetbook.WidgetbookCategory(
@@ -14650,6 +14780,77 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Profile summary states',
                 builder: _widgetbook_workspace_hosts_operations_team_identity
                     .hostTeamProfileSummaryStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Memberships',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'HostClubMembershipsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Owner loaded',
+                builder:
+                    _widgetbook_workspace_hosts_host_membership_admin_use_cases
+                        .hostClubMembershipsScreenLoaded,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostMembershipPlanEditorSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'New and existing plan',
+                builder:
+                    _widgetbook_workspace_hosts_host_membership_admin_use_cases
+                        .hostMembershipPlanEditorSheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostMembershipsCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Owner loaded',
+                builder:
+                    _widgetbook_workspace_hosts_host_membership_admin_use_cases
+                        .hostMembershipsCardStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostMembershipsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Off, payouts blocked, live and billing paused',
+                builder:
+                    _widgetbook_workspace_hosts_host_membership_admin_use_cases
+                        .hostMembershipsSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostedEventMembershipRulesEditor',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Unset and configured',
+                builder:
+                    _widgetbook_workspace_hosts_host_membership_admin_use_cases
+                        .hostedEventMembershipRulesEditorStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostedEventMembershipRulesSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Loaded rules',
+                builder:
+                    _widgetbook_workspace_hosts_host_membership_admin_use_cases
+                        .hostedEventMembershipRulesSectionStates,
               ),
             ],
           ),

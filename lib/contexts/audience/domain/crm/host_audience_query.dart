@@ -12,7 +12,11 @@ enum HostAudienceSegment {
   advocate('advocate'),
   highImpactAdvocate('high_impact_advocate'),
   whatsappReachable('whatsapp_reachable'),
-  smsReachable('sms_reachable');
+  smsReachable('sms_reachable'),
+  activeMember('active_member'),
+  lapsedMember('lapsed_member'),
+  memberNoRecentAttendance('member_no_recent_attendance'),
+  frequentNonMember('frequent_non_member');
 
   const HostAudienceSegment(this.wireValue);
 

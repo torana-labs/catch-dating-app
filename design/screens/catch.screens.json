@@ -359,7 +359,8 @@
           "routes": [
             "hostClubEventDefaultsScreen",
             "hostClubLiveGuideScreen",
-            "hostClubPaymentsScreen"
+            "hostClubPaymentsScreen",
+            "hostClubMembershipsScreen"
           ],
           "file": "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
           "symbol": "HostClubSpokeScaffold",
@@ -384,6 +385,7 @@
             "hostClubEventDefaultsScreen",
             "hostClubLiveGuideScreen",
             "hostClubPaymentsScreen",
+            "hostClubMembershipsScreen",
             "hostClubTeamScreen"
           ],
           "file": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
@@ -1015,6 +1017,22 @@
         }
       ],
       "reason": "Payment History is a canonical pushed list route."
+    },
+    "screen.memberships.mine": {
+      "owners": [
+        {
+          "routes": [
+            "myMembershipsScreen"
+          ],
+          "file": "lib/host_memberships/presentation/my_memberships_screen.dart",
+          "symbol": "MyMembershipsScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "My memberships is a canonical pushed list route."
     },
     "screen.host.applications": {
       "owners": [
@@ -10933,6 +10951,11 @@
         {
           "id": "hostClubPaymentsScreen",
           "path": "/host/organizers/payments",
+          "role": "host"
+        },
+        {
+          "id": "hostClubMembershipsScreen",
+          "path": "/host/organizers/memberships",
           "role": "host"
         }
       ],
@@ -27006,6 +27029,179 @@
         ]
       },
       "openGaps": []
+    },
+    {
+      "id": "screen.memberships.mine",
+      "shell": {
+        "owner": "consumer",
+        "nestedScaffoldAllowed": false,
+        "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "empty",
+          "error",
+          "loading",
+          "mutation",
+          "permission"
+        ],
+        "owner": "MyMembershipsController and CatchAsyncBoundary"
+      },
+      "name": "My memberships",
+      "owner": "host_memberships",
+      "priority": "P3",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "myMembershipsScreen",
+          "path": "/memberships",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/host_memberships/presentation/my_memberships_screen.dart",
+        "symbol": "MyMembershipsScreen"
+      },
+      "stateController": {
+        "primary": "MyMembershipsScreen + uidProvider + myMembershipsViewModelProvider + MyMembershipsController",
+        "files": [
+          {
+            "file": "lib/host_memberships/presentation/my_memberships_screen.dart",
+            "symbol": "MyMembershipsScreen"
+          },
+          {
+            "file": "lib/host_memberships/presentation/my_memberships_view_model.dart",
+            "symbol": "myMembershipsViewModel"
+          },
+          {
+            "file": "lib/contexts/payments/data/host_membership_repository.dart",
+            "symbol": "watchMyMemberships"
+          },
+          {
+            "file": "lib/host_memberships/presentation/my_memberships_state.dart",
+            "symbol": "MyMembershipsState"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/host_memberships/presentation/my_memberships_controller.dart",
+            "symbol": "MyMembershipsController"
+          }
+        ],
+        "notes": "MyMembershipsScreen resolves the current uid, combines the owner-readable membership and benefit-use streams into rows with savings, and routes pause, resume and cancel-at-period-end through MyMembershipsController after a confirm dialog. Billing status is server-owned; the screen only renders it."
+      },
+      "designRefs": [
+        {
+          "id": "repo.host-memberships-spec",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/host_memberships_spec.md",
+          "notes": "Host memberships MVP consumer surface."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "MyMembershipsScreen renders the shared async loading state while uid or memberships load.",
+          "nextAction": "Capture the routed loading state once memberships leave test mode.",
+          "previewIds": []
+        },
+        {
+          "id": "error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "MyMembershipsScreen renders the shared localized error state with retry.",
+          "nextAction": "Capture the routed error state once memberships leave test mode.",
+          "previewIds": []
+        },
+        {
+          "id": "populated",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "MyMembershipsList renders each membership with status, renewal, savings and self-serve actions.",
+          "nextAction": "Capture active, paused and host-paused rows once memberships leave test mode.",
+          "previewIds": []
+        },
+        {
+          "id": "empty",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "MyMembershipsList renders the no-memberships empty state.",
+          "nextAction": "Capture the routed empty state once memberships leave test mode.",
+          "previewIds": []
+        },
+        {
+          "id": "signed_out",
+          "kind": "permission",
+          "status": "implemented",
+          "source": "MyMembershipsScreen renders a sign-in empty state when uidProvider resolves null.",
+          "nextAction": "Capture the routed signed-out state once memberships leave test mode.",
+          "previewIds": [
+            "MyMembershipsScreen/Screen states"
+          ]
+        },
+        {
+          "id": "self_serve_change",
+          "kind": "mutation",
+          "status": "implemented",
+          "source": "MyMembershipsBody confirms pause and cancel, runs MyMembershipsController.changeMutation, disables row actions while pending and shows mutation failures in a localized banner.",
+          "nextAction": "Capture pending and failed self-serve changes once memberships leave test mode.",
+          "previewIds": [
+            "HostMembershipSection/Statuses and actions"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "Savings summary and a membership row list inside CatchRouteScaffold.",
+        "targetLayout": "Savings summary and a membership row list inside CatchRouteScaffold.",
+        "sections": [
+          {
+            "id": "section.memberships.mine.list",
+            "name": "Membership list",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "MyMembershipsList"
+            ],
+            "flutter": {
+              "file": "lib/host_memberships/presentation/my_memberships_screen.dart",
+              "symbol": "MyMembershipsList"
+            },
+            "currentOwner": "MyMembershipsBody + MyMembershipsController",
+            "targetOwner": "MyMembershipsBody + MyMembershipsController",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.badge",
+              "catch.button"
+            ],
+            "states": [
+              "populated",
+              "empty",
+              "mutation"
+            ],
+            "migration": "Keep billing status server-owned; self-serve actions stay behind manageMyHostMembership.",
+            "previewIds": []
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-MEMBERSHIPS-MINE-001",
+          "status": "open",
+          "nextAction": "Add routed captures and a design reference before memberships leave Razorpay test mode."
+        }
+      ]
     },
     {
       "id": "screen.payments.history",

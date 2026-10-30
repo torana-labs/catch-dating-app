@@ -87,6 +87,12 @@
             },
             "cancellationPolicy": {
               "$ref": "../shared/event_checkout_payment_common.schema.json#/definitions/cancellationPolicy"
+            },
+            "listAmountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000000,
+              "description": "Present only when a paid host membership price applies: the list price the member would otherwise pay."
             }
           }
         },

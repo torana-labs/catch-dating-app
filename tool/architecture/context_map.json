@@ -17,7 +17,7 @@
     {"id": "formats", "owns": "What each format is and how it is set up: playbooks, modules, structures, questionnaires, activity profiles and the default settings an organiser or event picks."},
     {"id": "events", "owns": "Events, schedules, venues and event policies."},
     {"id": "organizers", "owns": "Organisers, their team and roles, organiser pages, follows and claims."},
-    {"id": "payments", "owns": "Guest payments, refunds, an organiser's Razorpay connection and the Catch bill."},
+    {"id": "payments", "owns": "Guest payments, refunds, an organiser's Razorpay connection, paid organiser memberships and the Catch bill."},
     {"id": "bookings", "owns": "Bookings, waitlists, tickets, the door, attendance and guest lists."},
     {"id": "reviews", "owns": "Ratings after an event."},
     {"id": "audience", "owns": "The people a host knows: groups, tags, notes and imports."},
@@ -66,6 +66,7 @@
     {"path": "lib/locations/", "context": "events"},
 
     {"path": "lib/payments/", "context": "payments"},
+    {"path": "lib/host_memberships/", "context": "payments"},
 
     {"path": "lib/reviews/", "context": "reviews"},
 

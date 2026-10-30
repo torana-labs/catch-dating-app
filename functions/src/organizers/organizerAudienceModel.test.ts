@@ -275,3 +275,44 @@ function trait() {
   assert.ok(contact);
   return contact;
 }
+
+test("membership segments follow entitlement and 30/60-day attendance", () => {
+  const checkIn = (eventId: string, daysAgo: number) => edge({eventId,
+    checkedIn: true,
+    checkedInAt: admin.firestore.Timestamp.fromMillis(200 * day -
+      daysAgo * day)});
+  const membership: NonNullable<Parameters<
+    typeof organizerContactTraits>[0]["membership"]> = {
+      planId: "hmp_AbCdEfGhIjKlMnOpQrSt", planName: "Sunday Runners",
+      status: "active", memberSinceMillis: day, entitled: true};
+  const segments = (edges: OrganizerContactEventEdgeDocument[],
+    member: typeof membership | null) => organizerContactTraits({
+      contactId: "contact-1", contact: organizerContact({linkedUid: "user-1"}),
+      edges, now, membership: member})!;
+
+  const quietMember = segments([checkIn("event-1", 45)], membership);
+  assert.ok(quietMember.segmentIds.includes("active_member"));
+  assert.ok(quietMember.segmentIds.includes("member_no_recent_attendance"));
+  assert.equal(quietMember.attended30DayCount, 0);
+  assert.deepEqual(quietMember.membership, membership);
+
+  const busyMember = segments([checkIn("event-1", 5)], membership);
+  assert.ok(!busyMember.segmentIds.includes("member_no_recent_attendance"));
+
+  const lapsed = segments([], {...membership, status: "expired",
+    entitled: false});
+  assert.ok(lapsed.segmentIds.includes("lapsed_member"));
+  assert.ok(!lapsed.segmentIds.includes("active_member"));
+
+  const regulars = ["a", "b", "c", "d"].map((id, index) =>
+    checkIn(`event-${id}`, 10 + index * 10));
+  const frequent = segments(regulars, null);
+  assert.equal(frequent.attended60DayCount, 4);
+  assert.ok(frequent.segmentIds.includes("frequent_non_member"));
+  assert.ok(!segments(regulars, membership).segmentIds
+    .includes("frequent_non_member"));
+  const older = segments([...regulars.slice(0, 3), checkIn("event-e", 61)],
+    null);
+  assert.ok(!older.segmentIds.includes("frequent_non_member"));
+  assert.equal(segments([], null).membership, null);
+});

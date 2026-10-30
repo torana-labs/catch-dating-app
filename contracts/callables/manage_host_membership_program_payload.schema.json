@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_host_membership_program_payload.schema.json",
+  "title": "ManageHostMembershipProgramCallablePayload",
+  "description": "Organizer-manager read and control of the organizer's paid membership program: enable with the ready Route account, disable, and host-wide billing pause/resume.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Host memberships settings",
+  "required": [
+    "action",
+    "organizerId"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "get",
+        "enable",
+        "disable",
+        "pauseBilling",
+        "resumeBilling"
+      ],
+      "type": "string"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    }
+  }
+}

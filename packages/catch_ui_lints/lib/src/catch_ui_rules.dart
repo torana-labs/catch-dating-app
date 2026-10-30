@@ -655,7 +655,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
   // Shared app UI lives in context parts, shared pages, the platform media
   // and dialog helpers and the app shells; feature screens live in
   // presentation folders. The celebration page predates the scan (it was
-  // lib/core/celebration) and joins it when it is redrawn.
+  // lib/pages/celebration) and joins it when it is redrawn.
   bool _isUiSystemScannerPath(String path) {
     if (!_isSizingScannerPath(path)) return false;
     return path.contains('/packages/catch_ui/lib/src/') ||

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/clubs/shared/club_host_identity_row.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -193,6 +194,10 @@ class ClubDetailSliverBody extends StatelessWidget {
                       onMessageHost: effectiveHostMessage,
                     ),
                   ),
+                // Members join from the public organizer page; hosts manage
+                // plans in Catch Host instead.
+                if (!embeddedPreview && !state.isHost && state.isAuthenticated)
+                  HostMembershipPlansSection(organizerId: club.id),
               ],
             ),
           ],

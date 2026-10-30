@@ -4058,6 +4058,188 @@
       ]
     },
     {
+      "id": "hostMembershipPrograms",
+      "path": "hostMembershipPrograms/{organizerId}",
+      "rulesMatch": "/hostMembershipPrograms/{organizerId}",
+      "typescriptInterface": "HostMembershipProgramDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps membership billing state server-only"
+      ],
+      "owner": "host membership program callable and billing-pause schedule",
+      "read": "server only; managers receive a bounded callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "manageHostMembershipProgram",
+        "processHostMembershipBillingPause",
+        "hostMembershipRazorpayWebhook"
+      ],
+      "migrationNotes": [
+        "New in host memberships v1; no backfill. The payment snapshot is taken from the ready Route account when the program is enabled and re-verified for every charge transfer.",
+        "memberCount moves in the membership state-machine transaction; the billing pause advances in bounded pages with a cursor."
+      ]
+    },
+    {
+      "id": "hostMembershipPlans",
+      "path": "hostMembershipPlans/{planId}",
+      "rulesMatch": "/hostMembershipPlans/{planId}",
+      "typescriptInterface": "HostMembershipPlanDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "publishes only published membership plans"
+      ],
+      "owner": "host membership plans callable",
+      "read": "signed-in users read published plans; managers read all plans through the callable",
+      "write": "server only; manageHostMembershipPlans",
+      "exportedFunctions": [
+        "manageHostMembershipPlans",
+        "manageHostMembershipCheckout",
+        "hostMembershipRazorpayWebhook"
+      ],
+      "migrationNotes": [
+        "Provider prices are immutable: a changed amount gets a new provider price id and revision while existing members keep their own price.",
+        "activeMemberCount is a server projection of non-expired memberships, used for the member cap."
+      ]
+    },
+    {
+      "id": "hostMemberships",
+      "path": "hostMemberships/{membershipId}",
+      "rulesMatch": "/hostMemberships/{membershipId}",
+      "typescriptInterface": "HostMembershipDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets members read only their own paid membership records"
+      ],
+      "owner": "host membership state machine",
+      "read": "owner (uid) only; hosts see members through CRM and roster callables",
+      "write": "server only; verified provider evidence and member/host intents",
+      "exportedFunctions": [
+        "hostMembershipRazorpayWebhook",
+        "manageHostMembershipCheckout",
+        "manageMyHostMembership",
+        "processHostMembershipBillingPause",
+        "onHostMembershipAudienceProjected",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Keyed hm_<sha256([organizerId, uid])> so a rejoining member keeps tenure and member-since.",
+        "Distinct from organizerCommunityMemberships (unpaid host approval grants).",
+        "Subject account deletion cancels live subscriptions immediately, applies the expiry, then erases membership, checkout and benefit-use roots; charge ledgers are retained as payment records."
+      ]
+    },
+    {
+      "id": "hostMembershipCheckouts",
+      "path": "hostMembershipCheckouts/{checkoutId}",
+      "rulesMatch": "/hostMembershipCheckouts/{checkoutId}",
+      "typescriptInterface": "HostMembershipCheckoutDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets members read only their own paid membership records"
+      ],
+      "owner": "host membership checkout callable",
+      "read": "owner (uid) only",
+      "write": "server only",
+      "exportedFunctions": [
+        "manageHostMembershipCheckout",
+        "hostMembershipRazorpayWebhook",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Open unexpired checkouts reserve plan capacity for the member cap."
+      ]
+    },
+    {
+      "id": "hostMembershipCharges",
+      "path": "hostMembershipCharges/{chargeId}",
+      "rulesMatch": "/hostMembershipCharges/{chargeId}",
+      "typescriptInterface": "HostMembershipChargeDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps membership billing state server-only"
+      ],
+      "owner": "host membership webhook and charge reconciler",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "hostMembershipRazorpayWebhook",
+        "reconcileHostMembershipCharges"
+      ],
+      "migrationNotes": [
+        "Keyed by the provider payment id; the transfer lease prevents a second Route transfer after an unknown outcome."
+      ]
+    },
+    {
+      "id": "hostMembershipWebhookReceipts",
+      "path": "hostMembershipWebhookReceipts/{receiptId}",
+      "rulesMatch": "/hostMembershipWebhookReceipts/{receiptId}",
+      "typescriptInterface": "HostMembershipWebhookReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps membership billing state server-only"
+      ],
+      "owner": "hostMembershipRazorpayWebhook",
+      "read": "server only",
+      "write": "server only; create once per provider event",
+      "exportedFunctions": [
+        "hostMembershipRazorpayWebhook"
+      ],
+      "migrationNotes": [
+        "Stores ids and outcome only, never raw payloads."
+      ]
+    },
+    {
+      "id": "hostMembershipBenefitUses",
+      "path": "hostMembershipBenefitUses/{benefitUseId}",
+      "rulesMatch": "/hostMembershipBenefitUses/{benefitUseId}",
+      "typescriptInterface": "HostMembershipBenefitUseDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets members read only their own paid membership records"
+      ],
+      "owner": "member-priced booking paths",
+      "read": "owner (uid) only",
+      "write": "server only",
+      "exportedFunctions": [
+        "signUpForFreeEvent",
+        "managePublicEventCheckout",
+        "cancelEventSignUp",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Keyed {eventId}_{uid}; source of member savings and the upcoming member-priced booking cap."
+      ]
+    },
+    {
+      "id": "eventMembershipRules",
+      "path": "eventMembershipRules/{eventId}",
+      "rulesMatch": "/eventMembershipRules/{eventId}",
+      "typescriptInterface": "EventMembershipRulesDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps membership billing state server-only"
+      ],
+      "owner": "event membership rules callable",
+      "read": "server only; viewer state and the host callable project it",
+      "write": "server only; manageEventMembershipRules",
+      "exportedFunctions": [
+        "manageEventMembershipRules",
+        "getEventViewerState",
+        "signUpForFreeEvent",
+        "managePublicEventCheckout"
+      ],
+      "migrationNotes": [
+        "Kept outside eventPolicy so member pricing never changes the seat policy hash or trips the policy lock."
+      ]
+    },
+    {
       "id": "catchWhatsappReplyOperations",
       "path": "catchWhatsappReplyOperations/{operationId}",
       "rulesMatch": "/catchWhatsappReplyOperations/{operationId}",

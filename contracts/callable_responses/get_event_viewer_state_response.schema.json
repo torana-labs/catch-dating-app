@@ -177,7 +177,9 @@
                     "eventUnavailable",
                     "past",
                     "cancelled",
-                    "unsupportedRoute"
+                    "unsupportedRoute",
+                    "paidMembershipRequired",
+                    "memberEarlyAccess"
                   ]
                 }
               }
@@ -397,6 +399,133 @@
                 },
                 {
                   "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "hostMembership": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Present only when the request opted in. Server-evaluated paid membership entitlement for this viewer and event; quotedPriceInPaise is already the member price when memberPriceApplied.",
+          "required": [
+            "member",
+            "listPriceInPaise",
+            "memberPriceApplied",
+            "memberPriceBlockedReason",
+            "savingsInPaise",
+            "membersOnly",
+            "generalSaleOpensAtMillis",
+            "offer"
+          ],
+          "properties": {
+            "member": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "membershipId",
+                    "planId",
+                    "planName",
+                    "status",
+                    "entitled"
+                  ],
+                  "properties": {
+                    "membershipId": {
+                      "$ref": "../shared/host_membership_common.schema.json#/definitions/membershipId"
+                    },
+                    "planId": {
+                      "$ref": "../shared/host_membership_common.schema.json#/definitions/planId"
+                    },
+                    "planName": {
+                      "$ref": "../shared/host_membership_common.schema.json#/definitions/planName"
+                    },
+                    "status": {
+                      "$ref": "../shared/host_membership_common.schema.json#/definitions/membershipStatus"
+                    },
+                    "entitled": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              ]
+            },
+            "listPriceInPaise": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "memberPriceApplied": {
+              "type": "boolean"
+            },
+            "memberPriceBlockedReason": {
+              "enum": [
+                null,
+                "bookingCapReached"
+              ]
+            },
+            "savingsInPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "membersOnly": {
+              "type": "boolean"
+            },
+            "generalSaleOpensAtMillis": {
+              "$ref": "../shared/host_membership_common.schema.json#/definitions/nullableMillis"
+            },
+            "offer": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "planId",
+                    "planName",
+                    "interval",
+                    "planPriceInPaise",
+                    "memberPriceInPaise",
+                    "savingsInPaise",
+                    "unlocksAccess"
+                  ],
+                  "properties": {
+                    "planId": {
+                      "$ref": "../shared/host_membership_common.schema.json#/definitions/planId"
+                    },
+                    "planName": {
+                      "$ref": "../shared/host_membership_common.schema.json#/definitions/planName"
+                    },
+                    "interval": {
+                      "$ref": "../shared/host_membership_common.schema.json#/definitions/interval"
+                    },
+                    "planPriceInPaise": {
+                      "$ref": "../shared/host_membership_common.schema.json#/definitions/planPriceAmountPaise"
+                    },
+                    "memberPriceInPaise": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "savingsInPaise": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "unlocksAccess": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               ]
             }

@@ -2806,6 +2806,39 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ── Paid host memberships (docs/plans/host_memberships_spec.md) ────────
+    // Every membership document is server-owned. Members read only their own
+    // membership, checkout and booking savings; signed-in users read
+    // published plans. Hosts read members through manager callables.
+    match /hostMembershipPrograms/{organizerId} {
+      allow read, write: if false;
+    }
+    match /hostMembershipPlans/{planId} {
+      allow read: if isAuthed() && resource.data.status == "published";
+      allow write: if false;
+    }
+    match /hostMemberships/{membershipId} {
+      allow read: if isAuthed() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+    match /hostMembershipCheckouts/{checkoutId} {
+      allow read: if isAuthed() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+    match /hostMembershipBenefitUses/{benefitUseId} {
+      allow read: if isAuthed() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+    match /hostMembershipCharges/{chargeId} {
+      allow read, write: if false;
+    }
+    match /hostMembershipWebhookReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+    match /eventMembershipRules/{eventId} {
+      allow read, write: if false;
+    }
+
     // ── Reviews ───────────────────────────────────────────────────────────────
     match /reviews/{reviewId} {
       allow read: if isAuthed();

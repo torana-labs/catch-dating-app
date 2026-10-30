@@ -13,6 +13,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_screen_state.d
 import 'package:catch_dating_app/events/presentation/organizer_event_checkout_controller.dart';
 import 'package:catch_dating_app/events/presentation/widgets/organizer_payment_method_sheet.dart';
 import 'package:catch_dating_app/events/shared/event_joined_celebration_screen.dart';
+import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/kernel/organizer_supply_capabilities.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
@@ -41,6 +42,7 @@ class EventBookingDock extends StatelessWidget {
     this.catchLineAccent,
     this.footnote,
     this.errorMessage,
+    this.upsell,
   });
 
   final String label;
@@ -56,12 +58,16 @@ class EventBookingDock extends StatelessWidget {
   final String? footnote;
   final String? errorMessage;
 
+  /// Paid membership offer shown above the dock when it would help.
+  final Widget? upsell;
+
   @override
   Widget build(BuildContext context) {
     final error = errorMessage;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        ?upsell,
         if (error != null) CatchBanner.error(message: error),
         CatchDock.primary(
           label: label,
@@ -439,6 +445,18 @@ class EventDetailDock extends ConsumerWidget {
       backgroundColor: ctaBackground,
       dividerColor: ctaDivider,
       errorMessage: errorMessage,
+      footnote: dockState.membershipNote,
+      upsell: switch (dockState.membershipOffer) {
+        final offer? => HostMembershipUpsellBanner(
+          offer: offer,
+          onJoin: () => showHostMembershipPlanSheet(
+            context,
+            organizerId: viewer.organizerId,
+            planId: offer.planId,
+          ),
+        ),
+        null => null,
+      },
     );
   }
 

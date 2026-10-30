@@ -34,7 +34,11 @@ export const exportOrganizerContactsCallablePayloadSchema: Record<string, unknow
             "advocate",
             "high_impact_advocate",
             "whatsapp_reachable",
-            "sms_reachable"
+            "sms_reachable",
+            "active_member",
+            "lapsed_member",
+            "member_no_recent_attendance",
+            "frequent_non_member"
           ]
         },
         {
@@ -60,7 +64,11 @@ export const exportOrganizerContactsCallablePayloadSchema: Record<string, unknow
           "advocate",
           "high_impact_advocate",
           "whatsapp_reachable",
-          "sms_reachable"
+          "sms_reachable",
+          "active_member",
+          "lapsed_member",
+          "member_no_recent_attendance",
+          "frequent_non_member"
         ]
       },
       "description": "OR within attendance, reliability, advocacy and reachable categories; AND across selected categories."

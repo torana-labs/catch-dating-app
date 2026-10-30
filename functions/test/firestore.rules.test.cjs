@@ -1441,6 +1441,91 @@ describe("firestore.rules", () => {
       }
     });
 
+    it("lets members read only their own paid membership records", async () => {
+      const membershipId = "hm_" + "a".repeat(64);
+      await seed(["hostMemberships", membershipId], {
+        organizerId: "organizer-1", uid: "member-1", status: "active",
+      });
+      await seed(["hostMembershipCheckouts", "hmc_AbCdEfGhIjKlMnOpQrSt"], {
+        organizerId: "organizer-1", uid: "member-1", state: "open",
+      });
+      await seed(["hostMembershipBenefitUses", "event-1_member-1"], {
+        organizerId: "organizer-1", uid: "member-1", savingsInPaise: 50000,
+      });
+      const member = authedDb("member-1");
+      await assertSucceeds(getDoc(doc(member, "hostMemberships", membershipId)));
+      await assertSucceeds(getDocs(query(collection(member, "hostMemberships"),
+        where("uid", "==", "member-1"))));
+      await assertSucceeds(getDoc(doc(
+        member, "hostMembershipCheckouts", "hmc_AbCdEfGhIjKlMnOpQrSt")));
+      await assertSucceeds(getDocs(query(
+        collection(member, "hostMembershipBenefitUses"),
+        where("uid", "==", "member-1"))));
+      for (const db of [testEnv.unauthenticatedContext().firestore(),
+        authedDb("other-1")]) {
+        await assertFails(getDoc(doc(db, "hostMemberships", membershipId)));
+        await assertFails(getDoc(doc(
+          db, "hostMembershipCheckouts", "hmc_AbCdEfGhIjKlMnOpQrSt")));
+        await assertFails(getDoc(doc(
+          db, "hostMembershipBenefitUses", "event-1_member-1")));
+      }
+      for (const db of [member, authedDb("other-1")]) {
+        await assertFails(setDoc(doc(db, "hostMemberships", membershipId),
+          {organizerId: "organizer-1", uid: "member-1", status: "active"}));
+        await assertFails(setDoc(doc(
+          db, "hostMembershipBenefitUses", "event-2_member-1"),
+        {organizerId: "organizer-1", uid: "member-1", savingsInPaise: 1}));
+      }
+    });
+
+    it("publishes only published membership plans", async () => {
+      await seed(["hostMembershipPlans", "hmp_PublishedPlan0000001"], {
+        organizerId: "organizer-1", status: "published", name: "Runners",
+      });
+      await seed(["hostMembershipPlans", "hmp_DraftPlan00000000001"], {
+        organizerId: "organizer-1", status: "draft", name: "Draft",
+      });
+      const viewer = authedDb("member-1");
+      await assertSucceeds(getDoc(doc(
+        viewer, "hostMembershipPlans", "hmp_PublishedPlan0000001")));
+      await assertSucceeds(getDocs(query(
+        collection(viewer, "hostMembershipPlans"),
+        where("organizerId", "==", "organizer-1"),
+        where("status", "==", "published"))));
+      await assertFails(getDoc(doc(
+        viewer, "hostMembershipPlans", "hmp_DraftPlan00000000001")));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext()
+        .firestore(), "hostMembershipPlans", "hmp_PublishedPlan0000001")));
+      await assertFails(setDoc(doc(
+        viewer, "hostMembershipPlans", "hmp_PublishedPlan0000001"),
+      {organizerId: "organizer-1", status: "published", name: "Free"}));
+    });
+
+    it("keeps membership billing state server-only", async () => {
+      await seed(["hostMembershipPrograms", "organizer-1"], {
+        organizerId: "organizer-1", state: "enabled",
+      });
+      await seed(["hostMembershipCharges", "pay_Test0001"], {
+        organizerId: "organizer-1", uid: "member-1", amountPaise: 49900,
+      });
+      await seed(["hostMembershipWebhookReceipts", "hmwh_1"], {
+        eventType: "subscription.charged",
+      });
+      await seed(["eventMembershipRules", "event-1"], {
+        organizerId: "organizer-1", membersOnly: true,
+      });
+      for (const db of [testEnv.unauthenticatedContext().firestore(),
+        authedDb("member-1"), authedDb("host-1")]) {
+        for (const [path, id] of [["hostMembershipPrograms", "organizer-1"],
+          ["hostMembershipCharges", "pay_Test0001"],
+          ["hostMembershipWebhookReceipts", "hmwh_1"],
+          ["eventMembershipRules", "event-1"]]) {
+          await assertFails(getDoc(doc(db, path, id)));
+          await assertFails(setDoc(doc(db, path, id), {organizerId: "x"}));
+        }
+      }
+    });
+
     it("keeps organizer form state server-only", async () => {
       await seed(["organizerForms", "form-1"], {
         organizerId: "organizer-1",
