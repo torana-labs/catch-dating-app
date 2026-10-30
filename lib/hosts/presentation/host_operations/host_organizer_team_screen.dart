@@ -357,8 +357,84 @@ class HostTeamProfessionalProfilePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final state = this.state;
+    if (state case HostTeamProfileContent(:final profile)) {
+      final t = CatchTokens.of(context);
+      final hostedOrganizers = organizers
+          .where((organizer) => organizer.isHostedBy(profile.uid))
+          .toList(growable: false);
+      final roleTitle = profile.roleTitle?.trim();
+      final bio = profile.bio?.trim();
+
+      return Column(
+        key: const ValueKey<String>('host-team-professional-profile-preview'),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchSurface(
+            borderRole: CatchBorderRole.separator,
+            padding: CatchInsets.cardContent,
+            child: Column(
+              children: [
+                CatchAvatar(
+                  size: CatchSpacing.s16,
+                  name: profile.displayName,
+                  imageUrl: profile.avatarUrl,
+                  borderWidth: CatchStroke.avatarRing,
+                  borderColor: t.primarySoft,
+                ),
+                gapH16,
+                CatchText(
+                  profile.displayName,
+                  variant: CatchTextVariant.displayXs,
+                  textAlign: TextAlign.center,
+                ),
+                if (roleTitle?.isNotEmpty == true) ...[
+                  gapH8,
+                  CatchText(
+                    roleTitle!,
+                    variant: CatchTextVariant.bodyLead,
+                    color: t.ink2,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+                gapH12,
+                CatchBadge.functional(
+                  label: hostProfileStatusLabel(profile.status, context.l10n),
+                  tone: profile.isActive
+                      ? CatchBadgeTone.success
+                      : CatchBadgeTone.neutral,
+                ),
+                if (bio?.isNotEmpty == true) ...[
+                  gapH16,
+                  CatchText(
+                    bio!,
+                    textAlign: TextAlign.center,
+                    variant: CatchTextVariant.bodyM,
+                    color: t.ink2,
+                  ),
+                ],
+              ],
+            ),
+          ),
+          CatchSection.fieldRows(
+            title:
+                context.l10n.hostsHostOrganizerTeamScreenTitleOrganizersYouHost,
+            children: [
+              for (final organizer in hostedOrganizers)
+                CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
+                  title: organizer.name,
+                  valueText: organizer.isOwnedBy(profile.uid)
+                      ? context.l10n.organizersOrganizerHostRoleOwner
+                      : context.l10n.organizersOrganizerHostRoleHost,
+                  icon: CatchIcons.people,
+                ),
+            ],
+          ),
+        ],
+      );
+    }
     return switch (state) {
-      HostTeamProfileLoading() => const CatchLoadingIndicator(),
       HostTeamProfileError(:final error) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.profile,
@@ -372,100 +448,8 @@ class HostTeamProfessionalProfilePreview extends StatelessWidget {
         message:
             context.l10n.hostsHostOrganizerTeamScreenVisiblecopyAddAHostBio,
       ),
-      HostTeamProfileContent(:final profile) =>
-        _HostTeamProfessionalProfileContent(
-          profile: profile,
-          organizers: organizers,
-        ),
+      _ => const CatchLoadingIndicator(),
     };
-  }
-}
-
-class _HostTeamProfessionalProfileContent extends StatelessWidget {
-  const _HostTeamProfessionalProfileContent({
-    required this.profile,
-    required this.organizers,
-  });
-
-  final HostProfile profile;
-  final List<Organizer> organizers;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final hostedOrganizers = organizers
-        .where((organizer) => organizer.isHostedBy(profile.uid))
-        .toList(growable: false);
-    final roleTitle = profile.roleTitle?.trim();
-    final bio = profile.bio?.trim();
-
-    return Column(
-      key: const ValueKey<String>('host-team-professional-profile-preview'),
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        CatchSurface(
-          borderRole: CatchBorderRole.separator,
-          padding: CatchInsets.cardContent,
-          child: Column(
-            children: [
-              CatchAvatar(
-                size: CatchSpacing.s16,
-                name: profile.displayName,
-                imageUrl: profile.avatarUrl,
-                borderWidth: CatchStroke.avatarRing,
-                borderColor: t.primarySoft,
-              ),
-              gapH16,
-              CatchText(
-                profile.displayName,
-                variant: CatchTextVariant.displayXs,
-                textAlign: TextAlign.center,
-              ),
-              if (roleTitle?.isNotEmpty == true) ...[
-                gapH8,
-                CatchText(
-                  roleTitle!,
-                  variant: CatchTextVariant.bodyLead,
-                  color: t.ink2,
-                  textAlign: TextAlign.center,
-                ),
-              ],
-              gapH12,
-              CatchBadge.functional(
-                label: hostProfileStatusLabel(profile.status, context.l10n),
-                tone: profile.isActive
-                    ? CatchBadgeTone.success
-                    : CatchBadgeTone.neutral,
-              ),
-              if (bio?.isNotEmpty == true) ...[
-                gapH16,
-                CatchText(
-                  bio!,
-                  textAlign: TextAlign.center,
-                  variant: CatchTextVariant.bodyM,
-                  color: t.ink2,
-                ),
-              ],
-            ],
-          ),
-        ),
-        CatchSection.fieldRows(
-          title:
-              context.l10n.hostsHostOrganizerTeamScreenTitleOrganizersYouHost,
-          children: [
-            for (final organizer in hostedOrganizers)
-              CatchField.read(
-                copy: catchFieldCopy(context.l10n),
-                title: organizer.name,
-                valueText: organizer.isOwnedBy(profile.uid)
-                    ? context.l10n.organizersOrganizerHostRoleOwner
-                    : context.l10n.organizersOrganizerHostRoleHost,
-                icon: CatchIcons.people,
-              ),
-          ],
-        ),
-      ],
-    );
   }
 }
 

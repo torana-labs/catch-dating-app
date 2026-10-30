@@ -47,7 +47,10 @@ Page<void> _organizerDetailPage(BuildContext _, GoRouterState state) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
     name: state.name,
-    child: _organizerDetailScreen(state),
+    child: OrganizerDetailScreen(
+      clubId: state.pathParameters['clubId']!,
+      initialOrganizer: _organizerDetailInitialOrganizer(state),
+    ),
     transitionDuration: CatchMotion.calendarScroll,
     reverseTransitionDuration: CatchMotion.base,
     transitionsBuilder: (context, animation, secondaryAnimation, child) =>

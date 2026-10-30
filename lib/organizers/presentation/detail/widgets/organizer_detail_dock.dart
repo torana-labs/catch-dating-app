@@ -77,19 +77,84 @@ class OrganizerDetailDock extends StatelessWidget {
                 ),
                 const SizedBox(width: CatchSpacing.s3),
               ],
-              _OrganizerDetailDockControls(
-                state: state,
-                activity: activity,
-                notificationsEnabled: notificationsEnabled,
-                joinKey: joinKey,
-                manageKey: manageKey,
-                isJoinLoading: isJoinLoading,
-                isBellLoading: isBellLoading,
-                onJoin: onJoin,
-                onSignIn: onSignIn,
-                onBell: onBell,
-                onManage: onManage,
-                onCreate: onCreate,
+              Expanded(
+                child: switch (state) {
+                  OrganizerDetailDockRole.guest => CatchButton(
+                    label: context
+                        .l10n
+                        .organizersOrganizerDetailDockLabelSignInToJoin,
+                    leading: Icon(CatchIcons.locked),
+                    onPressed: onSignIn,
+                    fullWidth: true,
+                  ),
+                  OrganizerDetailDockRole.visitor => CatchButton(
+                    key: joinKey,
+                    label: context
+                        .l10n
+                        .organizersOrganizerDetailDockLabelJoinOrganizer,
+                    leading: Icon(CatchIcons.add),
+                    accentColor: activity.accent,
+                    status: (isJoinLoading)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
+                    onPressed: onJoin,
+                    fullWidth: true,
+                  ),
+                  OrganizerDetailDockRole.member => Row(
+                    children: [
+                      OrganizerBellButton(
+                        active: notificationsEnabled,
+                        accent: activity.accent,
+                        isLoading: isBellLoading,
+                        onPressed: onBell,
+                      ),
+                      const SizedBox(width: CatchSpacing.s3),
+                      Expanded(
+                        child: CatchButton(
+                          key: manageKey,
+                          label: context
+                              .l10n
+                              .organizersOrganizerDetailDockLabelJoined,
+                          leading: Icon(CatchIcons.success),
+                          variant: CatchButtonVariant.secondary,
+                          status: (isJoinLoading)
+                              ? CatchButtonStatus.loading
+                              : CatchButtonStatus.idle,
+                          onPressed: onManage,
+                          fullWidth: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                  OrganizerDetailDockRole.owner => Row(
+                    children: [
+                      Expanded(
+                        child: CatchButton(
+                          label: context
+                              .l10n
+                              .organizersOrganizerDetailDockLabelManage,
+                          leading: Icon(CatchIcons.settings),
+                          variant: CatchButtonVariant.secondary,
+                          onPressed: onManage,
+                          fullWidth: true,
+                        ),
+                      ),
+                      const SizedBox(width: CatchSpacing.s3),
+                      Expanded(
+                        flex: 2,
+                        child: CatchButton(
+                          label: context
+                              .l10n
+                              .organizersOrganizerDetailDockLabelNewEvent,
+                          leading: Icon(CatchIcons.add),
+                          accentColor: activity.accent,
+                          onPressed: onCreate,
+                          fullWidth: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                },
               ),
             ],
           ),
@@ -106,109 +171,6 @@ class OrganizerDetailDock extends StatelessWidget {
           ],
         ],
       ),
-    );
-  }
-}
-
-class _OrganizerDetailDockControls extends StatelessWidget {
-  const _OrganizerDetailDockControls({
-    required this.state,
-    required this.activity,
-    required this.notificationsEnabled,
-    required this.joinKey,
-    required this.manageKey,
-    required this.isJoinLoading,
-    required this.isBellLoading,
-    required this.onJoin,
-    required this.onSignIn,
-    required this.onBell,
-    required this.onManage,
-    required this.onCreate,
-  });
-
-  final OrganizerDetailDockRole state;
-  final ActivityStyle activity;
-  final bool notificationsEnabled;
-  final Key? joinKey;
-  final Key? manageKey;
-  final bool isJoinLoading;
-  final bool isBellLoading;
-  final VoidCallback? onJoin;
-  final VoidCallback? onSignIn;
-  final VoidCallback? onBell;
-  final VoidCallback? onManage;
-  final VoidCallback? onCreate;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: switch (state) {
-        OrganizerDetailDockRole.guest => CatchButton(
-          label: context.l10n.organizersOrganizerDetailDockLabelSignInToJoin,
-          leading: Icon(CatchIcons.locked),
-          onPressed: onSignIn,
-          fullWidth: true,
-        ),
-        OrganizerDetailDockRole.visitor => CatchButton(
-          key: joinKey,
-          label: context.l10n.organizersOrganizerDetailDockLabelJoinOrganizer,
-          leading: Icon(CatchIcons.add),
-          accentColor: activity.accent,
-          status: (isJoinLoading)
-              ? CatchButtonStatus.loading
-              : CatchButtonStatus.idle,
-          onPressed: onJoin,
-          fullWidth: true,
-        ),
-        OrganizerDetailDockRole.member => Row(
-          children: [
-            OrganizerBellButton(
-              active: notificationsEnabled,
-              accent: activity.accent,
-              isLoading: isBellLoading,
-              onPressed: onBell,
-            ),
-            const SizedBox(width: CatchSpacing.s3),
-            Expanded(
-              child: CatchButton(
-                key: manageKey,
-                label: context.l10n.organizersOrganizerDetailDockLabelJoined,
-                leading: Icon(CatchIcons.success),
-                variant: CatchButtonVariant.secondary,
-                status: (isJoinLoading)
-                    ? CatchButtonStatus.loading
-                    : CatchButtonStatus.idle,
-                onPressed: onManage,
-                fullWidth: true,
-              ),
-            ),
-          ],
-        ),
-        OrganizerDetailDockRole.owner => Row(
-          children: [
-            Expanded(
-              child: CatchButton(
-                label: context.l10n.organizersOrganizerDetailDockLabelManage,
-                leading: Icon(CatchIcons.settings),
-                variant: CatchButtonVariant.secondary,
-                onPressed: onManage,
-                fullWidth: true,
-              ),
-            ),
-            const SizedBox(width: CatchSpacing.s3),
-            Expanded(
-              flex: 2,
-              child: CatchButton(
-                label: context.l10n.organizersOrganizerDetailDockLabelNewEvent,
-                leading: Icon(CatchIcons.add),
-                accentColor: activity.accent,
-                onPressed: onCreate,
-                fullWidth: true,
-              ),
-            ),
-          ],
-        ),
-      },
     );
   }
 }

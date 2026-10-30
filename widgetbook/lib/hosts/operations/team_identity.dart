@@ -241,6 +241,65 @@ Widget hostTeamProfileSummaryStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Professional profile preview states',
+  type: HostTeamProfessionalProfilePreview,
+  path: '[P2 host surfaces]/Host team',
+)
+Widget hostTeamProfessionalProfilePreviewStates(BuildContext context) {
+  final organizers = [HostOperationsFixtures.primaryOrganizer];
+  return WidgetbookPageCatalogFrame(
+    title: 'HostTeamProfessionalProfilePreview',
+    contractId: 'section.host.team.professional_preview',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'preview loading',
+        child: WidgetbookHostDeviceFrame(
+          child: HostTeamProfessionalProfilePreview(
+            state: const HostTeamProfileLoading(),
+            organizers: organizers,
+            onRetry: () {},
+          ),
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'preview error',
+        child: WidgetbookHostDeviceFrame(
+          child: HostTeamProfessionalProfilePreview(
+            state: HostTeamProfileError(
+              error: StateError('Host profile failed'),
+            ),
+            organizers: organizers,
+            onRetry: () {},
+          ),
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'no profile',
+        child: WidgetbookHostDeviceFrame(
+          child: HostTeamProfessionalProfilePreview(
+            state: const HostTeamProfileMissing(),
+            organizers: organizers,
+            onRetry: () {},
+          ),
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'active profile',
+        child: WidgetbookHostDeviceFrame(
+          child: HostTeamProfessionalProfilePreview(
+            state: HostTeamProfileContent(
+              profile: _hostProfileVariant(HostProfileStatus.active),
+            ),
+            organizers: organizers,
+            onRetry: () {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Clubs states',
   type: HostTeamHostedOrganizersSection,
   path: '[P2 host surfaces]/Host team',

@@ -14775,6 +14775,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'HostTeamProfessionalProfilePreview',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Professional profile preview states',
+                builder: _widgetbook_workspace_hosts_operations_team_identity
+                    .hostTeamProfessionalProfilePreviewStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'HostTeamProfileSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
