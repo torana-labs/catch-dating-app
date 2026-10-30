@@ -5,23 +5,15 @@ import {
   FileWarning,
   Link2,
   Lock,
-  MapPin,
   Search,
-  ShieldCheck,
-  Sparkles,
-  Users,
 } from "lucide-react";
 import {
   AdminButton,
   AdminCard,
   AdminGuardrailList,
   AdminIntakeDecisionActions,
-  AdminIntakeDecisionBox,
   AdminIntakeDecisionState,
   AdminIntakeBoundaryNotice,
-  AdminIntakeGate,
-  AdminIntakeGateList,
-  AdminIntakeLayout,
   AdminIntakePublicationBoundaryPanel,
   AdminIntakeReviewWorkbench,
   AdminIntakeSection,
@@ -31,31 +23,12 @@ import {
   AdminIntakeTaskToolbar,
   AdminIntakeWorkspaceFrame,
   AdminIntakeWorkspaceTabs,
-  AdminOrganizerCurationControlGrid,
-  AdminOrganizerCurationControlSection,
-  AdminOrganizerIntakeBadges,
-  AdminOrganizerIntakeCard,
-  AdminOrganizerIntakeCardHeader,
   AdminOrganizerIntakeCheckboxField,
-  AdminOrganizerIntakeCurationPanel,
-  AdminOrganizerIntakeList,
-  AdminOrganizerIntakeSurfaceGrid,
-  AdminOrganizerLocationResolutionForm,
-  AdminOrganizerPolicyGapColumns,
-  AdminOrganizerSurfaceList,
-  AdminOrganizerSurfaceRow,
   AdminPanel,
-  AdminSearchCandidateActions,
-  AdminSearchCandidateCard,
   AdminSearchCandidateHeader,
-  AdminSearchCandidateList,
-  AdminSearchCandidatePanel,
-  AdminSearchCandidateSnippet,
-  AdminStateRow,
   AdminTagList,
   AdminWorkspace,
   AlertRow,
-  EmptyState,
   QualityList,
   QualityRow,
   SearchField,
@@ -308,35 +281,6 @@ export const AdminIntakeReviewWorkbenchStory: Story = {
   ),
 };
 
-export const AdminIntakeLayoutStory: Story = {
-  name: "Layout",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_intake_layout",
-      states: ["summary-and-list"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminIntakeLayout>
-        <AdminIntakeSection>
-          <AdminIntakeSectionTitle>
-            <strong>Summary</strong>
-            <span>12 candidates ready for review</span>
-          </AdminIntakeSectionTitle>
-          <AdminOrganizerIntakeSurfaceGrid>
-            <AdminStateRow label="Ready" value="8" />
-            <AdminStateRow label="Blocked" value="4" />
-          </AdminOrganizerIntakeSurfaceGrid>
-        </AdminIntakeSection>
-        <AdminOrganizerIntakeList>
-          <AdminOrganizerIntakeCard>Candidate list item</AdminOrganizerIntakeCard>
-        </AdminOrganizerIntakeList>
-      </AdminIntakeLayout>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminIntakeSectionStory: Story = {
   name: "Section",
   parameters: {
@@ -405,56 +349,6 @@ export const AdminIntakeSourceListStory: Story = {
   ),
 };
 
-export const AdminIntakeGateListStory: Story = {
-  name: "Gate list",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_intake_gate_list",
-      states: ["passed-and-blocked"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminIntakeGateList>
-        <AdminIntakeGate tone="passed">
-          <CheckCircle2 size={16} />
-          <span>Public profile evidence found.</span>
-        </AdminIntakeGate>
-        <AdminIntakeGate tone="blocked">
-          <FileWarning size={16} />
-          <span>Missing city confidence.</span>
-        </AdminIntakeGate>
-      </AdminIntakeGateList>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminIntakeGateStory: Story = {
-  name: "Gate",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_intake_gate",
-      states: ["passed", "blocked", "neutral"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminIntakeGate tone="passed">
-        <CheckCircle2 size={16} />
-        <span>Evidence verified</span>
-      </AdminIntakeGate>
-      <AdminIntakeGate tone="blocked">
-        <FileWarning size={16} />
-        <span>Policy hold required</span>
-      </AdminIntakeGate>
-      <AdminIntakeGate>
-        <Sparkles size={16} />
-        <span>Review note pending</span>
-      </AdminIntakeGate>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminGuardrailListStory: Story = {
   name: "Guardrail list",
   parameters: {
@@ -514,33 +408,6 @@ export const AdminIntakeDecisionStateStory: Story = {
   ),
 };
 
-export const AdminIntakeDecisionBoxStory: Story = {
-  name: "Decision box",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_intake_decision_box",
-      states: ["note-and-actions"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminIntakeDecisionBox>
-        <CatchField
-          recipe="input"
-          title="Decision note"
-          onChanged={() => undefined}
-          maxLines={3}
-          value="Evidence is sufficient for curation approval."
-        />
-        <AdminIntakeDecisionActions>
-          <AdminButton>Hold</AdminButton>
-          <AdminButton variant="primary">Approve</AdminButton>
-        </AdminIntakeDecisionActions>
-      </AdminIntakeDecisionBox>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminIntakeDecisionActionsStory: Story = {
   name: "Decision actions",
   parameters: {
@@ -556,285 +423,6 @@ export const AdminIntakeDecisionActionsStory: Story = {
         <AdminButton>Hold</AdminButton>
         <AdminButton variant="primary">Approve</AdminButton>
       </AdminIntakeDecisionActions>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOrganizerIntakeCurationPanelStory: Story = {
-  name: "Organizer curation panel",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_organizer_intake_curation_panel",
-      states: ["summary"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOrganizerIntakeCurationPanel>
-        <AdminIntakeSectionTitle>
-          <strong>Organizer curation</strong>
-          <span>Ready for review</span>
-        </AdminIntakeSectionTitle>
-        <AdminOrganizerIntakeBadges>
-          <CatchBadge recipe="status" tone="success" label="evidence" />
-          <CatchBadge label="claim ready" />
-        </AdminOrganizerIntakeBadges>
-      </AdminOrganizerIntakeCurationPanel>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOrganizerIntakeListStory: Story = {
-  name: "Organizer list",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_organizer_intake_list",
-      states: ["cards"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOrganizerIntakeList>
-        <AdminOrganizerIntakeCard>Afterfly Social</AdminOrganizerIntakeCard>
-        <AdminOrganizerIntakeCard>City Supper Club</AdminOrganizerIntakeCard>
-      </AdminOrganizerIntakeList>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOrganizerIntakeCardStory: Story = {
-  name: "Organizer card",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_organizer_intake_card",
-      states: ["default", "with-decision"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOrganizerIntakeCard>
-        <AdminOrganizerIntakeCardHeader>
-          <AdminIntakeSectionTitle>
-            <strong>Afterfly Social</strong>
-            <span>San Francisco</span>
-          </AdminIntakeSectionTitle>
-          <AdminOrganizerIntakeBadges>
-            <CatchBadge recipe="status" tone="success" label="ready" />
-          </AdminOrganizerIntakeBadges>
-        </AdminOrganizerIntakeCardHeader>
-        <AdminIntakeDecisionActions>
-          <AdminButton>Hold</AdminButton>
-          <AdminButton variant="primary">Approve</AdminButton>
-        </AdminIntakeDecisionActions>
-      </AdminOrganizerIntakeCard>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOrganizerIntakeCardHeaderStory: Story = {
-  name: "Organizer card header",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_organizer_intake_card_header",
-      states: ["title-and-badges"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOrganizerIntakeCard>
-        <AdminOrganizerIntakeCardHeader>
-          <AdminIntakeSectionTitle>
-            <strong>Afterfly Social</strong>
-            <span>Profile confidence high</span>
-          </AdminIntakeSectionTitle>
-          <AdminOrganizerIntakeBadges>
-            <CatchBadge recipe="status" tone="success" label="verified" />
-            <CatchBadge label="external events" />
-          </AdminOrganizerIntakeBadges>
-        </AdminOrganizerIntakeCardHeader>
-      </AdminOrganizerIntakeCard>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOrganizerIntakeBadgesStory: Story = {
-  name: "Organizer badges",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_organizer_intake_badges",
-      states: ["mixed"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOrganizerIntakeBadges>
-        <CatchBadge recipe="status" tone="success" label="ready" />
-        <CatchBadge recipe="status" tone="warning" label="source gap" />
-        <CatchBadge label="owner handoff" />
-      </AdminOrganizerIntakeBadges>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOrganizerPolicyGapColumnsStory: Story = {
-  name: "Policy gap columns",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_organizer_policy_gap_columns",
-      states: ["two-columns"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOrganizerPolicyGapColumns>
-        <QualityList>
-          <QualityRow icon={<CheckCircle2 size={16} />} tone="success">
-            <strong>Profile safety</strong>
-            <span>Passed.</span>
-          </QualityRow>
-        </QualityList>
-        <QualityList>
-          <QualityRow icon={<FileWarning size={16} />} tone="warning">
-            <strong>Venue ambiguity</strong>
-            <span>Needs manual confirmation.</span>
-          </QualityRow>
-        </QualityList>
-      </AdminOrganizerPolicyGapColumns>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOrganizerLocationResolutionFormStory: Story = {
-  name: "Location resolution form",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_organizer_location_resolution_form",
-      states: ["fields"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOrganizerLocationResolutionForm>
-        <CatchField
-          recipe="input"
-          title="City"
-          onChanged={() => undefined}
-          value="San Francisco"
-        />
-        <CatchField
-          recipe="input"
-          title="Neighborhood"
-          onChanged={() => undefined}
-          value="SoMa"
-        />
-        <AdminButton icon={<MapPin size={16} />}>Resolve</AdminButton>
-      </AdminOrganizerLocationResolutionForm>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOrganizerIntakeSurfaceGridStory: Story = {
-  name: "Organizer surface grid",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_organizer_intake_surface_grid",
-      states: ["surface-panels"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOrganizerIntakeSurfaceGrid>
-        <AdminPanel icon={<Users size={18} />} title="Profile">
-          <AdminStateRow label="Completeness" value="86%" />
-        </AdminPanel>
-        <AdminPanel icon={<ShieldCheck size={18} />} title="Safety">
-          <AdminStateRow label="Risk" value="Low" />
-        </AdminPanel>
-      </AdminOrganizerIntakeSurfaceGrid>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOrganizerSurfaceListStory: Story = {
-  name: "Organizer surface list",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_organizer_surface_list",
-      states: ["rows"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOrganizerSurfaceList>
-        <AdminOrganizerSurfaceRow>
-          <strong>Instagram</strong>
-          <span>Recent activity found.</span>
-        </AdminOrganizerSurfaceRow>
-        <AdminOrganizerSurfaceRow>
-          <strong>Website</strong>
-          <span>Needs canonical URL.</span>
-        </AdminOrganizerSurfaceRow>
-      </AdminOrganizerSurfaceList>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOrganizerSurfaceRowStory: Story = {
-  name: "Organizer surface row",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_organizer_surface_row",
-      states: ["text", "tagged"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOrganizerSurfaceRow>
-        <strong>Ticketing page</strong>
-        <CatchBadge recipe="status" tone="success" label="verified" />
-      </AdminOrganizerSurfaceRow>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOrganizerCurationControlSectionStory: Story = {
-  name: "Curation control section",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_organizer_curation_control_section",
-      states: ["controls"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOrganizerCurationControlSection>
-        <AdminIntakeSectionTitle>
-          <strong>Curation controls</strong>
-          <span>Apply reviewer overrides</span>
-        </AdminIntakeSectionTitle>
-        <AdminOrganizerCurationControlGrid>
-          <AdminOrganizerIntakeCheckboxField checked label="Show as launch organizer" onChange={() => undefined} />
-          <AdminOrganizerIntakeCheckboxField checked={false} label="Require source follow-up" onChange={() => undefined} />
-        </AdminOrganizerCurationControlGrid>
-      </AdminOrganizerCurationControlSection>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOrganizerCurationControlGridStory: Story = {
-  name: "Curation control grid",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_organizer_curation_control_grid",
-      states: ["checkboxes"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOrganizerCurationControlGrid>
-        <AdminOrganizerIntakeCheckboxField checked label="Feature in directory" onChange={() => undefined} />
-        <AdminOrganizerIntakeCheckboxField checked={false} label="Hide public route" onChange={() => undefined} />
-      </AdminOrganizerCurationControlGrid>
     </AdminWorkspace>
   ),
 };
@@ -855,69 +443,6 @@ export const AdminOrganizerIntakeCheckboxFieldStory: Story = {
   ),
 };
 
-export const AdminSearchCandidatePanelStory: Story = {
-  name: "Search candidate panel",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_search_candidate_panel",
-      states: ["search-and-results"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminSearchCandidatePanel>
-        <SearchField ariaLabel="Search candidates" icon={<Search size={16} />} value="afterfly" />
-        <AdminSearchCandidateList>
-          <AdminSearchCandidateCard>Afterfly Social</AdminSearchCandidateCard>
-        </AdminSearchCandidateList>
-      </AdminSearchCandidatePanel>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminSearchCandidateListStory: Story = {
-  name: "Search candidate list",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_search_candidate_list",
-      states: ["cards", "empty"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminSearchCandidateList>
-        <AdminSearchCandidateCard>Afterfly Social</AdminSearchCandidateCard>
-        <EmptyState>No duplicate candidates found.</EmptyState>
-      </AdminSearchCandidateList>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminSearchCandidateCardStory: Story = {
-  name: "Search candidate card",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_search_candidate_card",
-      states: ["default", "with-actions"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminSearchCandidateCard>
-        <AdminSearchCandidateHeader>
-          <strong>Afterfly Social</strong>
-          <CatchBadge recipe="status" tone="success" label="matched" />
-        </AdminSearchCandidateHeader>
-        <AdminSearchCandidateSnippet>Public profile and imported source agree.</AdminSearchCandidateSnippet>
-        <AdminSearchCandidateActions>
-          <AdminButton>Dismiss</AdminButton>
-          <AdminButton variant="primary">Use candidate</AdminButton>
-        </AdminSearchCandidateActions>
-      </AdminSearchCandidateCard>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminSearchCandidateHeaderStory: Story = {
   name: "Search candidate header",
   parameters: {
@@ -928,47 +453,12 @@ export const AdminSearchCandidateHeaderStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminSearchCandidateCard>
+      <AdminCard variant="searchCandidate">
         <AdminSearchCandidateHeader>
           <strong>Afterfly Social</strong>
           <CatchBadge recipe="status" tone="success" label="96% match" />
         </AdminSearchCandidateHeader>
-      </AdminSearchCandidateCard>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminSearchCandidateSnippetStory: Story = {
-  name: "Search candidate snippet",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_search_candidate_snippet",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminSearchCandidateSnippet>
-        Source bio, city, and event history match the existing organizer.
-      </AdminSearchCandidateSnippet>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminSearchCandidateActionsStory: Story = {
-  name: "Search candidate actions",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_search_candidate_actions",
-      states: ["actions"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminSearchCandidateActions>
-        <AdminButton>Dismiss</AdminButton>
-        <AdminButton variant="primary">Attach</AdminButton>
-      </AdminSearchCandidateActions>
+      </AdminCard>
     </AdminWorkspace>
   ),
 };

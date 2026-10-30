@@ -824,44 +824,24 @@ const componentFamilies = [
     guidance: "Use AdminIntakeSourceList instead of passing the raw admin intake-source-list class from feature code.",
   },
   {
-    family: "admin-intake-gate-list",
-    surfaces: ["admin"],
-    sourcePatterns: [
-      {
-        pattern:
-          /["'`][^"'`]*(?<![-\w])(?:intake-gate-list|intake-gate)(?![-\w])[^"'`]*["'`]/gu,
-        description: "raw admin intake gate class string",
-      },
-    ],
-    jsxPatterns: [
-      {
-        pattern:
-          /\bclassName=\{?["'`][^"'`]*(?<![-\w])(?:intake-gate-list|intake-gate)(?![-\w])[^"'`]*["'`]\}?/gu,
-        description: "raw admin intake gate class",
-      },
-    ],
-    createElementPattern: null,
-    guidance: "Use AdminIntakeGateList and AdminIntakeGate instead of passing raw admin intake-gate-list/intake-gate classes from feature code.",
-  },
-  {
     family: "admin-intake-decision-shell",
     surfaces: ["admin"],
     sourcePatterns: [
       {
         pattern:
-          /["'`][^"'`]*(?<![-\w])(?:intake-decision-actions|intake-decision-state|intake-decision-box|marketing-decision-footer)(?![-\w])[^"'`]*["'`]/gu,
+          /["'`][^"'`]*(?<![-\w])(?:intake-decision-actions|intake-decision-state|marketing-decision-footer)(?![-\w])[^"'`]*["'`]/gu,
         description: "raw admin intake decision shell class string",
       },
     ],
     jsxPatterns: [
       {
         pattern:
-          /\bclassName=\{?["'`][^"'`]*(?<![-\w])(?:intake-decision-actions|intake-decision-state|intake-decision-box|marketing-decision-footer)(?![-\w])[^"'`]*["'`]\}?/gu,
+          /\bclassName=\{?["'`][^"'`]*(?<![-\w])(?:intake-decision-actions|intake-decision-state|marketing-decision-footer)(?![-\w])[^"'`]*["'`]\}?/gu,
         description: "raw admin intake decision shell class",
       },
     ],
     createElementPattern: null,
-    guidance: "Use DecisionFooter, AdminDecisionFooterShell, AdminIntakeDecisionActions, AdminIntakeDecisionState, and AdminIntakeDecisionBox instead of passing raw admin intake decision classes from feature code.",
+    guidance: "Use DecisionFooter, AdminDecisionFooterShell, AdminIntakeDecisionActions, and AdminIntakeDecisionState instead of passing raw admin intake decision classes from feature code.",
   },
   {
     family: "admin-intake-workspace-shell",
@@ -869,19 +849,19 @@ const componentFamilies = [
     sourcePatterns: [
       {
         pattern:
-          /["'`][^"'`]*(?<![-\w])(?:intake-workspace-header|intake-workspace-tabs|intake-event-workspace|intake-layout)(?![-\w])[^"'`]*["'`]/gu,
+          /["'`][^"'`]*(?<![-\w])(?:intake-workspace-header|intake-workspace-tabs|intake-event-workspace)(?![-\w])[^"'`]*["'`]/gu,
         description: "raw admin intake workspace shell class string",
       },
     ],
     jsxPatterns: [
       {
         pattern:
-          /\bclassName=\{?["'`][^"'`]*(?<![-\w])(?:intake-workspace-header|intake-workspace-tabs|intake-event-workspace|intake-layout)(?![-\w])[^"'`]*["'`]\}?/gu,
+          /\bclassName=\{?["'`][^"'`]*(?<![-\w])(?:intake-workspace-header|intake-workspace-tabs|intake-event-workspace)(?![-\w])[^"'`]*["'`]\}?/gu,
         description: "raw admin intake workspace shell class",
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminIntakeWorkspaceHeader, AdminIntakeWorkspaceTabs, AdminIntakeLayout, and AdminIntakeEventWorkspaceShell instead of passing raw admin intake workspace shell classes from feature code.",
+    guidance: "Use AdminIntakeWorkspaceHeader, AdminIntakeWorkspaceTabs, and AdminIntakeEventWorkspaceShell instead of passing raw admin intake workspace shell classes from feature code.",
   },
   {
     family: "admin-organizer-intake-curation-shell",
@@ -889,19 +869,19 @@ const componentFamilies = [
     sourcePatterns: [
       {
         pattern:
-          /["'`][^"'`]*(?<![-\w])(?:curation-panel|intake-list|policy-gap-columns|location-resolution-form|intake-card|intake-card-header|intake-badges|intake-surface-grid|surface-list|surface-row|intake-checkbox-row|curation-control|curation-control-grid)(?![-\w])[^"'`]*["'`]/gu,
+          /["'`][^"'`]*(?<![-\w])(?:intake-card|intake-card-header|intake-checkbox-row)(?![-\w])[^"'`]*["'`]/gu,
         description: "raw admin organizer intake curation shell class string",
       },
     ],
     jsxPatterns: [
       {
         pattern:
-          /\bclassName=\{?["'`][^"'`]*(?<![-\w])(?:curation-panel|intake-list|policy-gap-columns|location-resolution-form|intake-card|intake-card-header|intake-badges|intake-surface-grid|surface-list|surface-row|intake-checkbox-row|curation-control|curation-control-grid)(?![-\w])[^"'`]*["'`]\}?/gu,
+          /\bclassName=\{?["'`][^"'`]*(?<![-\w])(?:intake-card|intake-card-header|intake-checkbox-row)(?![-\w])[^"'`]*["'`]\}?/gu,
         description: "raw admin organizer intake curation shell class",
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminOrganizerIntakeCurationPanel, AdminOrganizerIntakeList, AdminOrganizerIntakeCard, AdminOrganizerIntakeCardHeader, AdminOrganizerIntakeBadges, AdminOrganizerPolicyGapColumns, AdminOrganizerLocationResolutionForm, AdminOrganizerIntakeSurfaceGrid, AdminOrganizerSurfaceList, AdminOrganizerSurfaceRow, AdminOrganizerIntakeCheckboxField, AdminOrganizerCurationControlSection, and AdminOrganizerCurationControlGrid instead of passing raw organizer intake curation classes from feature code.",
+    guidance: "Use AdminCard and CardHeader with variant=\"intake\", and AdminOrganizerIntakeCheckboxField, instead of passing raw organizer intake card and checkbox classes from feature code.",
   },
   {
     family: "admin-overview-queue-shell",
@@ -1118,7 +1098,7 @@ const componentFamilies = [
     sourcePatterns: [
       {
         pattern:
-          /["'`][^"'`]*\b(?:intake-section|intake-section-title|search-candidate-panel|search-candidate-list|search-candidate-card|search-candidate-header|search-candidate-snippet|search-candidate-actions)\b[^"'`]*["'`]/gu,
+          /["'`][^"'`]*\b(?:intake-section|intake-section-title|search-candidate-card|search-candidate-header)\b[^"'`]*["'`]/gu,
         description: "raw admin intake/search-candidate shell class string",
       },
     ],
@@ -1135,16 +1115,6 @@ const componentFamilies = [
       },
       {
         pattern:
-          /<div\b[^>]*\bclassName=\{?["'`][^"'`]*\bsearch-candidate-panel\b[^"'`]*["'`]\}?/gu,
-        description: "raw admin search candidate panel",
-      },
-      {
-        pattern:
-          /<div\b[^>]*\bclassName=\{?["'`][^"'`]*\bsearch-candidate-list\b[^"'`]*["'`]\}?/gu,
-        description: "raw admin search candidate list",
-      },
-      {
-        pattern:
           /<article\b[^>]*\bclassName=\{?["'`][^"'`]*\bsearch-candidate-card\b[^"'`]*["'`]\}?/gu,
         description: "raw admin search candidate card",
       },
@@ -1153,19 +1123,9 @@ const componentFamilies = [
           /<header\b[^>]*\bclassName=\{?["'`][^"'`]*\bsearch-candidate-header\b[^"'`]*["'`]\}?/gu,
         description: "raw admin search candidate header",
       },
-      {
-        pattern:
-          /<p\b[^>]*\bclassName=\{?["'`][^"'`]*\bsearch-candidate-snippet\b[^"'`]*["'`]\}?/gu,
-        description: "raw admin search candidate snippet",
-      },
-      {
-        pattern:
-          /<div\b[^>]*\bclassName=\{?["'`][^"'`]*\bsearch-candidate-actions\b[^"'`]*["'`]\}?/gu,
-        description: "raw admin search candidate actions",
-      },
     ],
     createElementPattern: null,
-    guidance: "Use AdminIntakeSection, AdminIntakeSectionTitle, and AdminSearchCandidate* primitives instead of rendering admin intake/search-candidate shells directly.",
+    guidance: "Use AdminIntakeSection, AdminIntakeSectionTitle, AdminSearchCandidateHeader, and AdminCard with variant=\"searchCandidate\" instead of rendering admin intake/search-candidate shells directly.",
   },
   {
     family: "admin-row-tag-shell",
@@ -1901,7 +1861,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use ListingSection, ListingSectionIntro, ListingFactGrid, ListingNoteGrid, ListingFormatRow, ListingDiagnostics*, ListingEventDownloadPanel, ListingEventEvidenceList, ListingReview*, and ListingSourceLedger instead of rendering organizer listing shells directly.",
+    guidance: "Use ListingSection, ListingSectionIntro, ListingFactGrid, ListingNoteGrid, ListingDiagnostics*, ListingEventDownloadPanel, ListingEventEvidenceList, ListingReview*, and ListingSourceLedger instead of rendering organizer listing shells directly.",
   },
   {
     family: "website-listing-card-grid-shell",
@@ -1945,7 +1905,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use OrganizerResultCard*, OrganizerEventHighlights, and ListingFormatRow instead of rendering organizer result-card shells directly.",
+    guidance: "Use OrganizerResultCard* and OrganizerEventHighlights instead of rendering organizer result-card shells directly.",
   },
   {
     family: "website-organizer-search-section-shell",

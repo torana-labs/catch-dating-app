@@ -68,7 +68,6 @@ import {
   AdminIntakeSectionTitle,
   AdminIntakeSourceList,
   AdminSearchCandidateHeader,
-  AdminSearchCandidatePanel,
   AdminMutedCell,
   AdminPublishingLoadbar,
   AdminRowTitle,

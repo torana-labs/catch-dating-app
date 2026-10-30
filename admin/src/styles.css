@@ -2254,21 +2254,6 @@ select {
   gap: var(--catch-space-s2);
 }
 
-.intake-layout {
-  align-items: start;
-}
-
-.intake-list {
-  display: grid;
-  gap: var(--catch-space-s3);
-}
-
-.search-candidate-panel,
-.search-candidate-list {
-  display: grid;
-  gap: var(--catch-space-s3);
-}
-
 .search-candidate-card {
   display: grid;
   gap: var(--catch-space-s3);
@@ -2290,46 +2275,6 @@ select {
   font-size: var(--catch-typography-web-control-size);
   line-height: var(--catch-typography-brand-meta-line-height);
   overflow-wrap: anywhere;
-}
-
-.search-candidate-snippet {
-  margin: 0;
-  color: var(--muted);
-  font-size: var(--catch-typography-web-context-size);
-}
-
-.search-candidate-actions {
-  display: grid;
-  gap: var(--catch-space-s2);
-}
-
-.search-candidate-actions > button {
-  justify-self: start;
-  min-height: 32px;
-  padding: 0 var(--catch-space-s3);
-  border: var(--catch-stroke-hairline) solid var(--primary);
-  border-radius: var(--catch-radius-xs);
-  background: var(--primary);
-  color: var(--on-primary);
-  cursor: pointer;
-  font-size: var(--catch-typography-web-status-size);
-  font-weight: var(--catch-typography-brand-kicker-weight);
-}
-
-.search-candidate-actions > button:disabled {
-  cursor: not-allowed;
-  opacity: 0.54;
-}
-
-.location-resolution-form {
-  display: grid;
-  gap: var(--catch-space-s2);
-}
-
-.policy-gap-columns {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--catch-space-s3);
 }
 
 .intake-card {
@@ -2361,31 +2306,15 @@ select {
   text-transform: uppercase;
 }
 
-.intake-badges,
 .intake-tags {
   display: flex;
   gap: var(--catch-space-micro6);
   flex-wrap: wrap;
 }
 
-.intake-badges {
-  justify-content: flex-end;
-}
-
-.intake-surface-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--catch-space-s2);
-}
-
 .intake-section {
   display: grid;
   gap: var(--catch-space-s2);
-}
-
-.curation-panel {
-  padding-top: var(--catch-space-micro10);
-  border-top: var(--catch-stroke-hairline) solid var(--line);
 }
 
 .intake-section-title {
@@ -2395,7 +2324,6 @@ select {
   text-transform: uppercase;
 }
 
-.intake-gate-list,
 .guardrail-list,
 .intake-source-list,
 .command-stack {
@@ -2405,50 +2333,6 @@ select {
 
 .intake-source-list {
   margin-top: var(--catch-space-s3);
-}
-
-.intake-gate {
-  display: flex;
-  gap: var(--catch-space-s2);
-  padding: var(--catch-space-s2);
-  border: var(--catch-stroke-hairline) solid var(--line);
-  border-radius: var(--catch-radius-sm);
-  background: var(--surface);
-}
-
-.intake-gate.passed {
-  color: var(--positive);
-}
-
-.intake-gate.blocked {
-  border-color: var(--attention-line);
-  background: var(--attention-soft);
-  color: var(--attention);
-}
-
-.intake-gate strong,
-.intake-gate span {
-  display: block;
-}
-
-.intake-gate strong {
-  color: var(--ink);
-  font-size: var(--catch-typography-web-status-size);
-}
-
-.intake-gate span {
-  margin-top: var(--catch-space-micro2);
-  color: var(--muted);
-  font-size: var(--catch-typography-web-status-size);
-}
-
-.intake-decision-box {
-  display: grid;
-  gap: var(--catch-space-s2);
-  padding: var(--catch-space-micro10);
-  border: var(--catch-stroke-hairline) solid var(--line);
-  border-radius: var(--catch-radius-sm);
-  background: var(--surface);
 }
 
 .intake-checkbox-row {
@@ -2465,24 +2349,6 @@ select {
   margin-top: var(--catch-space-micro2);
 }
 
-.curation-control {
-  display: grid;
-  gap: var(--catch-space-s2);
-}
-
-.curation-control-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: var(--catch-space-s2);
-}
-
-.surface-list {
-  display: grid;
-  gap: var(--catch-space-s2);
-  margin-top: var(--catch-space-micro10);
-}
-
-.surface-row,
 .surface-preview {
   display: flex;
   align-items: flex-start;
@@ -2499,20 +2365,16 @@ select {
   justify-content: stretch;
 }
 
-.surface-row strong,
-.surface-row span,
 .surface-preview strong,
 .surface-preview span {
   display: block;
 }
 
-.surface-row strong,
 .surface-preview strong {
   color: var(--ink);
   font-size: var(--catch-typography-web-status-size);
 }
 
-.surface-row span,
 .surface-preview span {
   color: var(--muted);
   font-size: var(--catch-typography-web-status-size);
@@ -4069,10 +3931,6 @@ th {
     flex: 0 0 36px;
   }
 
-  .intake-surface-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .form-grid.three {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -4194,7 +4052,6 @@ th {
   }
 
   .publishing-loadbar,
-  .intake-surface-grid,
   .marketing-event-library-grid,
   .marketing-media-grid,
   .marketing-new-post-grid,

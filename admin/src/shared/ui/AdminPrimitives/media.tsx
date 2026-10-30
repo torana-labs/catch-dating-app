@@ -223,33 +223,3 @@ export function AdminIntakeSourceList({
     </div>
   );
 }
-
-export function AdminIntakeGateList({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("intake-gate-list", className)}>
-      {children}
-    </div>
-  );
-}
-
-export function AdminIntakeGate({
-  children,
-  className = "",
-  tone,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-  tone?: AdminIntakeGateTone;
-}) {
-  return (
-    <div {...props} className={classNames("intake-gate", tone, className)}>
-      {children}
-    </div>
-  );
-}

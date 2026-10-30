@@ -1071,8 +1071,8 @@
     },
     {
       "id": "shared_admin_command_row",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
       "exportName": "AdminCommandRow",
       "css": [
@@ -1086,17 +1086,12 @@
           "with-action"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
-      "comparedWith": [
-        "catch.meta_row",
-        "catch.index_row"
-      ],
-      "comparisonReason": "Layout container with no heading, state or row anatomy of its own; the matched contract owns a different responsibility."
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
     },
     {
       "id": "shared_admin_command_stack",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
       "exportName": "AdminCommandStack",
       "css": [
@@ -1110,11 +1105,7 @@
           "commands"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
-      "comparedWith": [
-        "catch.section_stack"
-      ],
-      "comparisonReason": "Vertical stack of command rows, not of complete sections."
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
     },
     {
       "id": "shared_admin_decision_footer_shell",
@@ -1682,8 +1673,8 @@
     },
     {
       "id": "shared_admin_intake_decision_actions",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminIntakeDecisionActions",
       "css": [
@@ -1700,28 +1691,9 @@
       "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
     },
     {
-      "id": "shared_admin_intake_decision_box",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminIntakeDecisionBox",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminIntakeDecisionBoxStory",
-        "states": [
-          "note-and-actions"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_intake_decision_state",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminIntakeDecisionState",
       "css": [
@@ -1733,65 +1705,6 @@
         "exportName": "AdminIntakeDecisionStateStory",
         "states": [
           "saved"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_intake_gate",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
-      "exportName": "AdminIntakeGate",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminIntakeGateStory",
-        "states": [
-          "passed",
-          "blocked",
-          "neutral"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_intake_gate_list",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
-      "exportName": "AdminIntakeGateList",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminIntakeGateListStory",
-        "states": [
-          "passed-and-blocked"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_intake_layout",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
-      "exportName": "AdminIntakeLayout",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminIntakeLayoutStory",
-        "states": [
-          "summary-and-list"
         ]
       },
       "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
@@ -1900,8 +1813,8 @@
     },
     {
       "id": "shared_admin_intake_section_title",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/users",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminIntakeSectionTitle",
       "css": [
@@ -1919,8 +1832,8 @@
     },
     {
       "id": "shared_admin_intake_source_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/events",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminIntakeSourceList",
       "css": [
@@ -1934,12 +1847,7 @@
           "sources"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx.",
-      "comparedWith": [
-        "catch.journey_steps",
-        "catch.form_step_list"
-      ],
-      "comparisonReason": "Unordered container of intake source cards; not a numbered journey, and it neither selects a form section nor shows completion status like CatchFormStepList."
+      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
     },
     {
       "id": "shared_admin_intake_stage_rail",
@@ -3561,102 +3469,6 @@
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
-      "id": "shared_admin_organizer_curation_control_grid",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminOrganizerCurationControlGrid",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminOrganizerCurationControlGridStory",
-        "states": [
-          "checkboxes"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_organizer_curation_control_section",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminOrganizerCurationControlSection",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminOrganizerCurationControlSectionStory",
-        "states": [
-          "controls"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_organizer_intake_badges",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminOrganizerIntakeBadges",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminOrganizerIntakeBadgesStory",
-        "states": [
-          "mixed"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_organizer_intake_card",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminOrganizerIntakeCard",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminOrganizerIntakeCardStory",
-        "states": [
-          "default",
-          "with-decision"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_organizer_intake_card_header",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminOrganizerIntakeCardHeader",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminOrganizerIntakeCardHeaderStory",
-        "states": [
-          "title-and-badges"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_organizer_intake_checkbox_field",
       "kind": "feature-component",
       "owner": "features/intake",
@@ -3672,140 +3484,6 @@
         "states": [
           "checked",
           "unchecked"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_organizer_intake_curation_panel",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminOrganizerIntakeCurationPanel",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminOrganizerIntakeCurationPanelStory",
-        "states": [
-          "summary"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_organizer_intake_list",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminOrganizerIntakeList",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminOrganizerIntakeListStory",
-        "states": [
-          "cards"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_organizer_intake_surface_grid",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminOrganizerIntakeSurfaceGrid",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminOrganizerIntakeSurfaceGridStory",
-        "states": [
-          "surface-panels"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_organizer_location_resolution_form",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminOrganizerLocationResolutionForm",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminOrganizerLocationResolutionFormStory",
-        "states": [
-          "fields"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_organizer_policy_gap_columns",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminOrganizerPolicyGapColumns",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminOrganizerPolicyGapColumnsStory",
-        "states": [
-          "two-columns"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_organizer_surface_list",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminOrganizerSurfaceList",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminOrganizerSurfaceListStory",
-        "states": [
-          "rows"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_organizer_surface_row",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminOrganizerSurfaceRow",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminOrganizerSurfaceRowStory",
-        "states": [
-          "text",
-          "tagged"
         ]
       },
       "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
@@ -4099,48 +3777,9 @@
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
-      "id": "shared_admin_search_candidate_actions",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminSearchCandidateActions",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminSearchCandidateActionsStory",
-        "states": [
-          "actions"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_search_candidate_card",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminSearchCandidateCard",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminSearchCandidateCardStory",
-        "states": [
-          "default",
-          "with-actions"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_search_candidate_header",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/events",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminSearchCandidateHeader",
       "css": [
@@ -4152,69 +3791,6 @@
         "exportName": "AdminSearchCandidateHeaderStory",
         "states": [
           "title-status"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx.",
-      "comparedWith": [
-        "catch.step_header"
-      ],
-      "comparisonReason": "Heading row of a search-candidate card; no step navigation or progress."
-    },
-    {
-      "id": "shared_admin_search_candidate_list",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminSearchCandidateList",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminSearchCandidateListStory",
-        "states": [
-          "cards",
-          "empty"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_search_candidate_panel",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminSearchCandidatePanel",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminSearchCandidatePanelStory",
-        "states": [
-          "search-and-results"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx. Phase 7d: Bounded card around one search candidate: per D13, card containment is a CatchSurface recipe.",
-      "componentId": "catch.surface"
-    },
-    {
-      "id": "shared_admin_search_candidate_snippet",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminSearchCandidateSnippet",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminSearchCandidateSnippetStory",
-        "states": [
-          "default"
         ]
       },
       "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
