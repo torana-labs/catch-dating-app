@@ -42,8 +42,6 @@ const subtypeName = /(?:[Rr]un|Type)Club/u;
 export const keptEnumConstants = new Map([
   ["OrganizerType", new Set(["club"])],
   ["LaunchAccessEventType", new Set(["runClub"])],
-  ["ActivityNotificationType", new Set(["clubUpdate"])],
-  ["MatchConversationType", new Set(["clubHostInquiry"])],
 ]);
 // Text that names files: every moved path follows. Text that names symbols
 // (registries, inventories, tools and docs): type, provider and localization

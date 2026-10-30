@@ -146,6 +146,30 @@ export function buildPlan({files, read}) {
   return {wire, identifiers, moves, collisions};
 }
 
+// What this codemod would still rename. The nomenclature gate reports these,
+// so the club names it renamed cannot return.
+export function wireNameFindings({files, read}) {
+  const findings = [];
+  for (const file of files) {
+    if (matches(excluded, file)) continue;
+    if (contractSchema.test(file)) {
+      for (const name of contractWireNames(JSON.parse(read(file)))) {
+        findings.push({path: file, detail: `The contract declares ${name}; say organizer.`});
+      }
+    } else if (scriptFile.test(file)) {
+      for (const name of scriptIdentifiers(read(file), file)) {
+        if (isClubIdentifier(name) && isCodeWord(name)) {
+          findings.push({path: file, detail: `${name} names club in code; say organizer.`});
+        }
+      }
+    }
+  }
+  for (const [from, to] of planMoves(files).moves) {
+    findings.push({path: from, detail: `The file name says club; it is ${to}.`});
+  }
+  return findings;
+}
+
 // --- Strings -----------------------------------------------------------------
 
 // A string names a wire field when its whole value or one of its path

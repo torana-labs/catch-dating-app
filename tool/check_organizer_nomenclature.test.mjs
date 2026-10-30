@@ -113,6 +113,35 @@ test("organizer nomenclature gate rejects club in Flutter names but keeps the su
   assert.match(findings.find((item) => item.path === "lib/l10n/app_en.arb").detail, /clubsTitle$/u);
 });
 
+test("organizer nomenclature gate rejects club in wire names but keeps the subtype and warehouse columns", () => {
+  const root = fixtureRoot();
+  write(root, "contracts/firestore/events.schema.json", JSON.stringify({
+    title: "EventDocument",
+    properties: {
+      organizerId: {type: "string"},
+      clubName: {type: "string"},
+      organizerType: {enum: ["club", "venue"]},
+      club_id: {type: "string"},
+    },
+  }));
+  write(root, "functions/src/events/clubEvents.ts", [
+    "export const runClub = true;",
+    "export const type = \"club\";",
+    "export const row = {club_id: 1};",
+    "export function loadClub() {}",
+  ].join("\n"));
+  write(root, "functions/src/events/organizerEvents.ts", "export const label = \"Run clubs\";");
+
+  const findings = checkOrganizerNomenclature({root}).findings
+    .filter((item) => item.rule === "clubInWireNames");
+
+  assert.deepEqual(findings.map((item) => `${item.path}: ${item.detail}`).sort(), [
+    "contracts/firestore/events.schema.json: The contract declares clubName; say organizer.",
+    "functions/src/events/clubEvents.ts: The file name says club; it is functions/src/events/organizerEvents.ts.",
+    "functions/src/events/clubEvents.ts: loadClub names club in code; say organizer.",
+  ]);
+});
+
 function fixtureRoot() {
   return fs.mkdtempSync(path.join(os.tmpdir(), "organizer-gate-"));
 }
