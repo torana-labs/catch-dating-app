@@ -1,9 +1,6 @@
 {
   "domain": {
     ".github/workflows/_web-hosting-promote.yml": 2,
-    ".github/workflows/website-next-promote.yml": 1,
-    ".github/workflows/website-production-observability.yml": 1,
-    ".github/workflows/website-release.yml": 2,
     "apps/consumer/android/app/src/consumer/AndroidManifest.xml": 1,
     "apps/consumer/ios/Runner/Runner.entitlements": 1,
     "apps/consumer/ios/Runner/RunnerConsumer.entitlements": 1,
