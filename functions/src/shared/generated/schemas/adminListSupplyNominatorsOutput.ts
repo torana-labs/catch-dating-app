@@ -22,6 +22,7 @@ export const adminListSupplyNominatorsCallableResponseSchema: Record<string, unk
           "nominatorId",
           "channel",
           "phoneLast4",
+          "instagramHandle",
           "role",
           "uid",
           "displayName",
@@ -32,17 +33,28 @@ export const adminListSupplyNominatorsCallableResponseSchema: Record<string, unk
         "properties": {
           "nominatorId": {
             "type": "string",
-            "pattern": "^whatsapp-[a-f0-9]{64}$"
+            "pattern": "^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})$"
           },
           "channel": {
             "type": "string",
             "enum": [
-              "whatsapp"
+              "whatsapp",
+              "instagram"
             ]
           },
           "phoneLast4": {
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "pattern": "^[0-9]{4}$"
+          },
+          "instagramHandle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[a-z0-9._]{1,30}$"
           },
           "role": {
             "type": "string",

@@ -19,8 +19,9 @@ import {validateCallableWithAjv} from "../../shared/validation";
 import {intakeMarket} from "./requests";
 
 // Who may nominate organizers by messaging Catch. Staff register a person's
-// number against their Catch account; the number is kept only as the same
-// endpoint hash the WhatsApp receipts carry. A nominator's authority is the
+// WhatsApp number or Instagram username against their Catch account. The
+// number is kept only as the same endpoint hash the WhatsApp receipts carry;
+// the username is public, and the Instagram webhook reads it for each sender. A nominator's authority is the
 // account's, checked when staff register them and again on every message, so
 // removing someone's sales role or partner membership stops their messages
 // without touching this registry.
@@ -28,6 +29,7 @@ import {intakeMarket} from "./requests";
 export const SUPPLY_NOMINATORS = "supplyNominators";
 export const MAX_SUPPLY_NOMINATORS = 200;
 const associateRoles = ["admin", "adminOwner", "salesStaff"] as const;
+const instagramHandlePattern = /^[a-z0-9._]{1,30}$/u;
 
 export interface NominatorAuthority {
   nominatorId: string;
@@ -57,6 +59,10 @@ export function whatsappNominatorId(endpointHash: string): string {
   return `whatsapp-${endpointHash}`;
 }
 
+export function instagramNominatorId(handle: string): string {
+  return `instagram-${handle}`;
+}
+
 /**
  * Whether uid may act in role right now: an enabled account with a sales
  * role (associate), or a current accepted partner membership (partner).
@@ -83,10 +89,33 @@ export async function nominatorRoleIsCurrent(tx: Transaction, db: Firestore, dep
  */
 export async function resolveWhatsappNominator(tx: Transaction, db: Firestore, deps: Pick<NominatorDeps, "getUser">,
   endpointHash: string, now: Date): Promise<NominatorAuthority | null> {
-  const snapshot = await tx.get(db.collection(SUPPLY_NOMINATORS).doc(whatsappNominatorId(endpointHash)));
+  return resolveNominator(tx, db, deps, whatsappNominatorId(endpointHash),
+    (row) => row.channel === "whatsapp" && row.endpointHash === endpointHash, now);
+}
+
+/** The same, for an Instagram sender's username as the Graph API returns it. */
+export async function resolveInstagramNominator(tx: Transaction, db: Firestore, deps: Pick<NominatorDeps, "getUser">,
+  handle: string, now: Date): Promise<NominatorAuthority | null> {
+  if (!instagramHandlePattern.test(handle)) return null;
+  return resolveNominator(tx, db, deps, instagramNominatorId(handle),
+    (row) => row.channel === "instagram" && row.instagramHandle === handle, now);
+}
+
+/**
+ * A nominator by registry id, for checks after the message: auto-publish
+ * asks whether the person who sent a nomination still holds their role.
+ */
+export async function resolveNominatorById(tx: Transaction, db: Firestore, deps: Pick<NominatorDeps, "getUser">,
+  nominatorId: string, now: Date): Promise<NominatorAuthority | null> {
+  return resolveNominator(tx, db, deps, nominatorId, () => true, now);
+}
+
+async function resolveNominator(tx: Transaction, db: Firestore, deps: Pick<NominatorDeps, "getUser">,
+  nominatorId: string, matches: (row: SupplyNominatorDocument) => boolean, now: Date): Promise<NominatorAuthority | null> {
+  const snapshot = await tx.get(db.collection(SUPPLY_NOMINATORS).doc(nominatorId));
   if (!snapshot.exists) return null;
   const row = snapshot.data();
-  if (!validateSupplyNominatorDocument(row) || row.endpointHash !== endpointHash || !row.active) return null;
+  if (!validateSupplyNominatorDocument(row) || !matches(row) || !row.active) return null;
   if (!await nominatorRoleIsCurrent(tx, db, deps, row.role, row.uid, now)) return null;
   return {nominatorId: row.nominatorId, role: row.role, uid: row.uid,
     partnerId: row.role === "partner" ? row.uid : null, defaultMarket: row.defaultMarket};
@@ -99,8 +128,15 @@ export async function adminSetSupplyNominatorHandler(request: CallableRequest<un
     validateAdminSetSupplyNominatorCallablePayload, normalizeSetPayload);
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, context.uid, "adminSetSupplyNominator", {maxRequests: 30, windowMs: 60 * 1000});
-  const endpointHash = catchEndpointHash(data.phoneE164);
-  const nominatorId = whatsappNominatorId(endpointHash);
+  if ((data.phoneE164 === undefined) === (data.instagramHandle === undefined)) {
+    throw new HttpsError("invalid-argument", "Give either a WhatsApp number or an Instagram username.");
+  }
+  const endpoint = data.phoneE164 !== undefined ?
+    {channel: "whatsapp" as const, endpointHash: catchEndpointHash(data.phoneE164), phoneLast4: data.phoneE164.slice(-4),
+      instagramHandle: null} :
+    {channel: "instagram" as const, endpointHash: null, phoneLast4: null, instagramHandle: data.instagramHandle as string};
+  const nominatorId = endpoint.endpointHash !== null ? whatsappNominatorId(endpoint.endpointHash) :
+    instagramNominatorId(endpoint.instagramHandle as string);
   const market = data.defaultMarket === null ? null : intakeMarket(data.defaultMarket);
   const defaultMarket = market === "unassigned" ? null : market;
   if (data.defaultMarket !== null && defaultMarket === null) {
@@ -120,8 +156,7 @@ export async function adminSetSupplyNominatorHandler(request: CallableRequest<un
         "That account has no sales role (admin, adminOwner or salesStaff).");
     }
     const at = now.toISOString();
-    const row: SupplyNominatorDocument = {schemaVersion: 1, nominatorId, channel: "whatsapp", endpointHash,
-      phoneLast4: data.phoneE164.slice(-4), role: data.role, uid: data.uid, displayName: data.displayName,
+    const row: SupplyNominatorDocument = {schemaVersion: 1, nominatorId, ...endpoint, role: data.role, uid: data.uid, displayName: data.displayName,
       defaultMarket, active: data.active, createdAt: previous?.createdAt ?? at, updatedAt: at,
       updatedByUid: context.uid};
     if (!validateSupplyNominatorDocument(row)) {
@@ -137,7 +172,8 @@ export async function adminSetSupplyNominatorHandler(request: CallableRequest<un
       note: null,
       serverTimestamp: deps.serverTimestamp,
     });
-    return {nominatorId, created: !previous, phoneLast4: row.phoneLast4, defaultMarket, active: row.active};
+    return {nominatorId, created: !previous, phoneLast4: row.phoneLast4, instagramHandle: row.instagramHandle,
+      defaultMarket, active: row.active};
   });
 }
 
@@ -149,14 +185,15 @@ export async function adminListSupplyNominatorsHandler(request: CallableRequest<
     .orderBy("updatedAt", "desc").limit(MAX_SUPPLY_NOMINATORS).get();
   const nominators = snapshot.docs.map((doc) => doc.data())
     .filter((row): row is SupplyNominatorDocument => validateSupplyNominatorDocument(row))
-    .map((row) => ({nominatorId: row.nominatorId, channel: row.channel, phoneLast4: row.phoneLast4, role: row.role,
+    .map((row) => ({nominatorId: row.nominatorId, channel: row.channel, phoneLast4: row.phoneLast4,
+      instagramHandle: row.instagramHandle, role: row.role,
       uid: row.uid, displayName: row.displayName, defaultMarket: row.defaultMarket, active: row.active,
       updatedAt: row.updatedAt}));
   return {nominators};
 }
 
 function auditView(row: SupplyNominatorDocument): Record<string, unknown> {
-  return {phoneLast4: row.phoneLast4, role: row.role, uid: row.uid, defaultMarket: row.defaultMarket,
+  return {phoneLast4: row.phoneLast4, instagramHandle: row.instagramHandle, role: row.role, uid: row.uid, defaultMarket: row.defaultMarket,
     active: row.active};
 }
 
@@ -167,6 +204,10 @@ function normalizeSetPayload(value: unknown): unknown {
   return {
     ...data,
     phoneE164: typeof data.phoneE164 === "string" ? data.phoneE164.replace(/[\s()-]/gu, "") : data.phoneE164,
+    // Staff paste "@Name.Here" or a profile link; usernames are lowercase.
+    instagramHandle: typeof data.instagramHandle === "string" ? data.instagramHandle.trim()
+      .replace(/^(?:https?:\/\/)?(?:www\.)?instagram\.com\//iu, "").replace(/^@/u, "").replace(/\/+$/u, "")
+      .toLowerCase() : data.instagramHandle,
     displayName: trimmed(data.displayName),
     defaultMarket: trimmed(data.defaultMarket),
   };

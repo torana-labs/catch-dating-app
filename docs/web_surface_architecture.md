@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.47.0
+version: 0.48.0
 updated: 2026-10-30
 owner: web_platform
 status: active
@@ -247,6 +247,11 @@ dispatched) completes and hourly as a fallback:
    credentials.
 5. **Promote.** It dispatches `Next Website Promotion` with the approved
    preview run and waits for it.
+
+The gate and the promotion each state their own condition: the preview (and,
+for promotion, the gate) succeeded. A GitHub job without one inherits
+`success()` over every ancestor, so the usually skipped validation skipped
+both and the train passed without releasing (run 41092948800).
 
 Trains queue (`cancel-in-progress: false`), so a newer merge never resets an
 approval; the newest pending train waits behind it. After the live checks pass,

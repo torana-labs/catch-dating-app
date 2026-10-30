@@ -27,7 +27,24 @@ export interface InstagramInboundMessage {
   /** Instagram-scoped id of the sender. */
   senderId: string;
   text: string | null;
+  /**
+   * Shared posts, reels and stories. Meta documents only a CDN media URL in
+   * the payload, so a share rarely says whose it is; `pageUrl` is set
+   * when the payload does carry an instagram.com link.
+   */
+  attachments: InstagramMessageAttachment[];
+  /** Instagram could not show the content, e.g. some profile shares. */
+  unsupported: boolean;
 }
+
+export interface InstagramMessageAttachment {
+  type: string;
+  pageUrl: string | null;
+  /** Names of the payload's fields, never their values. */
+  payloadKeys: string[];
+}
+
+const MAX_ATTACHMENTS = 10;
 
 export async function handleInstagramClaimWebhook(
   request: InstagramClaimWebhookRequest,
@@ -98,8 +115,7 @@ export function parseInstagramWebhook(
       const event = record(rawEvent);
       if (event.message === undefined) continue;
       const message = record(event.message);
-      if (message.is_echo === true || message.is_deleted === true ||
-          message.is_unsupported === true) continue;
+      if (message.is_echo === true || message.is_deleted === true) continue;
       const senderId = String(record(event.sender).id ?? "");
       if (!/^[0-9]{1,32}$/.test(senderId) || senderId === accountId) continue;
       if (typeof message.mid !== "string" || !message.mid ||
@@ -111,6 +127,8 @@ export function parseInstagramWebhook(
         senderId,
         text: typeof message.text === "string" ?
           message.text.slice(0, 2000) : null,
+        attachments: parseAttachments(message.attachments),
+        unsupported: message.is_unsupported === true,
       });
       if (messages.length > MAX_INSTAGRAM_WEBHOOK_MESSAGES) {
         throw new Error("Too many messages.");
@@ -128,6 +146,41 @@ export function extractClaimCode(text: string | null): string | null {
   const match = /(?<![0-9])([0-9]{3})[ -]?([0-9]{3})(?![0-9])/.exec(
     text ?? "");
   return match ? `${match[1]}${match[2]}` : null;
+}
+
+function parseAttachments(value: unknown): InstagramMessageAttachment[] {
+  if (!Array.isArray(value)) return [];
+  return value.slice(0, MAX_ATTACHMENTS).flatMap((raw) => {
+    if (typeof raw !== "object" || raw === null) return [];
+    const attachment = raw as Record<string, unknown>;
+    const payload = typeof attachment.payload === "object" &&
+      attachment.payload !== null && !Array.isArray(attachment.payload) ?
+      attachment.payload as Record<string, unknown> : {};
+    return [{
+      type: typeof attachment.type === "string" ?
+        attachment.type.slice(0, 40) : "unknown",
+      pageUrl: instagramPageUrl(payload.url),
+      payloadKeys: Object.keys(payload).slice(0, 20)
+        .map((key) => key.slice(0, 40)),
+    }];
+  });
+}
+
+/**
+ * An instagram.com page link, as opposed to a CDN media URL: a profile, or
+ * a post or reel whose page names its author.
+ */
+function instagramPageUrl(value: unknown): string | null {
+  if (typeof value !== "string" || value.length > 2048) return null;
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase();
+    if (url.protocol !== "https:" ||
+        (host !== "instagram.com" && host !== "www.instagram.com")) return null;
+    return `https://www.instagram.com${url.pathname}`;
+  } catch {
+    return null;
+  }
 }
 
 function equalSecret(actual: unknown, expected: string): boolean {

@@ -27,7 +27,7 @@ function registerNominator(db: FakeFirestore, overrides: Record<string, unknown>
   const endpointHash = catchEndpointHash(`+${SENDER}`);
   const nominatorId = whatsappNominatorId(endpointHash);
   db.write(`${SUPPLY_NOMINATORS}/${nominatorId}`, {schemaVersion: 1, nominatorId, channel: "whatsapp", endpointHash,
-    phoneLast4: "2345", role: "associate", uid: "associate-1", displayName: "Asha", defaultMarket: "mumbai",
+    phoneLast4: "2345", instagramHandle: null, role: "associate", uid: "associate-1", displayName: "Asha", defaultMarket: "mumbai",
     active: true, createdAt: NOW.toISOString(), updatedAt: NOW.toISOString(), updatedByUid: "admin-1", ...overrides});
   return nominatorId;
 }

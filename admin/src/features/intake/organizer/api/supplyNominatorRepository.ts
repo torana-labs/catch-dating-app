@@ -12,10 +12,10 @@ export type SupplyNominator = AdminListSupplyNominatorsCallableResponse["nominat
 export type SupplyNominatorInput = AdminSetSupplyNominatorCallablePayload;
 
 const sampleNominators: SupplyNominator[] = [{nominatorId: `whatsapp-${"a".repeat(64)}`, channel: "whatsapp",
-  phoneLast4: "0000", role: "associate", uid: "sample-associate", displayName: "Sample associate",
+  phoneLast4: "0000", instagramHandle: null, role: "associate", uid: "sample-associate", displayName: "Sample associate",
   defaultMarket: "mumbai", active: true, updatedAt: "2026-10-30T08:00:00.000Z"}];
 
-/** Who may nominate organizers by messaging Catch's WhatsApp number. */
+/** Who may nominate organizers by messaging Catch's WhatsApp number or Instagram account. */
 export async function listSupplyNominators(): Promise<SupplyNominator[]> {
   if (dataMode() === "sample") return structuredClone(sampleNominators);
   const {validateAdminCallableRequest, validateAdminCallableResponse} =

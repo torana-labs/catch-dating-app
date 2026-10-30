@@ -34,7 +34,7 @@ function setup({nominator = true, limited = false} = {}) {
   const store = new TestDocStore();
   if (nominator) {
     store.records.set(`${SUPPLY_NOMINATORS}/${whatsappNominatorId(ENDPOINT)}`, {schemaVersion: 1,
-      nominatorId: whatsappNominatorId(ENDPOINT), channel: "whatsapp", endpointHash: ENDPOINT, phoneLast4: "2345",
+      nominatorId: whatsappNominatorId(ENDPOINT), channel: "whatsapp", endpointHash: ENDPOINT, phoneLast4: "2345", instagramHandle: null,
       role: "associate", uid: "associate-1", displayName: "Asha", defaultMarket: "mumbai", active: true,
       createdAt: NOW.toISOString(), updatedAt: NOW.toISOString(), updatedByUid: "admin-1"});
   }

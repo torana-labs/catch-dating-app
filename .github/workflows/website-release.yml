@@ -118,6 +118,10 @@ jobs:
   approve:
     name: Approve the preview for production
     needs: [plan, preview]
+    # Without its own condition a job inherits success() over every ancestor,
+    # so the skipped validate job (the usual case) skipped the gate and the
+    # promotion, and the train passed having released nothing (run 41092948800).
+    if: ${{ !cancelled() && needs.preview.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     # The prod environment is the release gate: a required reviewer on it
@@ -136,6 +140,7 @@ jobs:
   promote:
     name: Promote the approved preview
     needs: [plan, preview, approve]
+    if: ${{ !cancelled() && needs.preview.result == 'success' && needs.approve.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     permissions:

@@ -125,4 +125,13 @@ test("the train workflow gates production on the protected environment and never
   assert.match(job("preview"), /needs: \[plan, validate\]/u);
   assert.match(job("preview"), /needs\.validate\.result == 'skipped' \|\| \(needs\.validate\.result == 'success' && needs\.validate\.outputs\.current == 'true'\)/u);
   assert.match(job("approve"), /needs: \[plan, preview\]/u);
+  // A job with no condition of its own inherits success() over all its
+  // ancestors, so a skipped validate skipped the gate and the promotion and
+  // the train passed having released nothing (run 41092948800). Every job
+  // after a conditional one states its own condition on what it needs.
+  assert.match(job("approve"), /\n {4}if: \$\{\{ !cancelled\(\) && needs\.preview\.result == 'success' \}\}\n/u);
+  assert.match(job("promote"), /\n {4}if: \$\{\{ !cancelled\(\) && needs\.preview\.result == 'success' && needs\.approve\.result == 'success' \}\}\n/u);
+  for (const name of ["validate", "preview", "approve", "promote"]) {
+    assert.match(job(name), /\n {4}if: \$\{\{ /u, `${name} needs a condition of its own`);
+  }
 });

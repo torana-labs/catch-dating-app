@@ -56,8 +56,16 @@ test("other requests and updates that are not the finish are ignored", async () 
   assert.equal(await replyWhenListingReady(t.deps, "r", state("queued"), state("running")), "not_applicable");
   assert.equal(await replyWhenListingReady(t.deps, "r", state("running"),
     state("completed", {kind: "admin_nomination", id: "x"})), "not_applicable");
-  assert.equal(await replyWhenListingReady(t.deps, "r", state("running"),
-    state("completed", {kind: "message_nomination", id: `cwhe_${"d".repeat(64)}`})), "not_applicable");
   assert.equal(t.replies.length, 0);
   assert.equal(t.publishes.length, 0);
+});
+
+test("a nomination with no WhatsApp thread still publishes, and sends nothing", async () => {
+  // An Instagram nomination, or a WhatsApp one whose receipt expired:
+  // auto-publish decides from its own receipt check.
+  const t = setup({outcome: "published", organizerId: "org-1", canonicalPath: "/organizers/afterfly/"});
+  assert.equal(await replyWhenListingReady(t.deps, "r", state("running"),
+    state("completed", {kind: "message_nomination", id: "d".repeat(64)})), "not_applicable");
+  assert.deepEqual(t.publishes, ["r"]);
+  assert.equal(t.replies.length, 0);
 });

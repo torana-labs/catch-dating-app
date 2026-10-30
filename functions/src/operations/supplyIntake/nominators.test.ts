@@ -10,6 +10,8 @@ import {FakeFirestore} from "../testFirestore";
 import {
   adminListSupplyNominatorsHandler,
   adminSetSupplyNominatorHandler,
+  instagramNominatorId,
+  resolveInstagramNominator,
   resolveWhatsappNominator,
   whatsappNominatorId,
   type NominatorDeps,
@@ -55,7 +57,7 @@ test("staff register a WhatsApp nominator without storing the number", async () 
   const db = new FakeFirestore();
   const response = await adminSetSupplyNominatorHandler(adminRequest(payload()), nominatorDeps(db, users));
   const endpointHash = catchEndpointHash(PHONE);
-  assert.deepEqual(response, {nominatorId: whatsappNominatorId(endpointHash), created: true, phoneLast4: "2345",
+  assert.deepEqual(response, {nominatorId: whatsappNominatorId(endpointHash), created: true, phoneLast4: "2345", instagramHandle: null,
     defaultMarket: "mumbai", active: true});
   const stored = db.read(`supplyNominators/${response.nominatorId}`);
   assert.equal(validateSupplyNominatorDocument(stored), true, JSON.stringify(validateSupplyNominatorDocument.errors));
@@ -122,4 +124,33 @@ test("a partner nominator stops counting when their membership lapses", async ()
   assert.deepEqual(await resolve().then((row) => row && [row.role, row.partnerId]), ["partner", "partner-1"]);
   writePartnerMembership(db, "partner-1", {status: "revoked"});
   assert.equal(await resolve(), null);
+});
+
+test("staff register an Instagram nominator by username, however they paste it", async () => {
+  const db = new FakeFirestore();
+  const deps = nominatorDeps(db, users);
+  const response = await adminSetSupplyNominatorHandler(adminRequest(payload({phoneE164: undefined,
+    instagramHandle: " https://www.instagram.com/Asha.Runs/ "})), deps);
+  assert.deepEqual(response, {nominatorId: instagramNominatorId("asha.runs"), created: true, phoneLast4: null,
+    instagramHandle: "asha.runs", defaultMarket: "mumbai", active: true});
+  const stored = db.read(`supplyNominators/${response.nominatorId}`);
+  assert.equal(validateSupplyNominatorDocument(stored), true);
+  const firestore = db as unknown as Firestore;
+  const resolved = await firestore.runTransaction((tx) => resolveInstagramNominator(tx, firestore, deps, "asha.runs", NOW));
+  assert.equal(resolved?.uid, "associate-1");
+  assert.equal(await firestore.runTransaction((tx) => resolveInstagramNominator(tx, firestore, deps, "someone", NOW)), null);
+  assert.equal((await adminSetSupplyNominatorHandler(adminRequest(payload({phoneE164: undefined, instagramHandle: "@asha.runs"})),
+    deps)).created, false);
+});
+
+test("a nominator is named by exactly one of a number and a username", async () => {
+  const db = new FakeFirestore();
+  for (const data of [payload({instagramHandle: "asha.runs"}), payload({phoneE164: undefined})]) {
+    await assert.rejects(adminSetSupplyNominatorHandler(adminRequest(data), nominatorDeps(db, users)),
+      {code: "invalid-argument"});
+  }
+  assert.equal(validateSupplyNominatorDocument({schemaVersion: 1, nominatorId: "instagram-asha.runs", channel: "instagram",
+    endpointHash: "a".repeat(64), phoneLast4: "2345", instagramHandle: "asha.runs", role: "associate", uid: "u",
+    displayName: "A", defaultMarket: null, active: true, createdAt: NOW.toISOString(), updatedAt: NOW.toISOString(),
+    updatedByUid: "admin-1"}), false);
 });

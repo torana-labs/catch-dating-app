@@ -11,7 +11,7 @@ import {
   Panel,
   StateRow,
 } from "../../../../shared/ui/AdminPrimitives";
-import type {SupplyNominatorController} from "../controllers/useSupplyNominatorController";
+import {nominatorSender, type SupplyNominatorController} from "../controllers/useSupplyNominatorController";
 
 type Role = "associate" | "partner";
 
@@ -43,7 +43,7 @@ function SupplyNominators({controller}: {controller: SupplyNominatorController})
     {!controller.page.isPending && !controller.page.error && controller.nominators.length === 0 ?
       <CatchText as="p" variant="supporting">Nobody can nominate by WhatsApp yet.</CatchText> : null}
     {controller.nominators.map((nominator) => <AdminIntakeSection key={nominator.nominatorId}>
-      <StateRow label={`${nominator.displayName} · number ending ${nominator.phoneLast4}`} value={
+      <StateRow label={`${nominator.displayName} · ${nominatorSender(nominator).replace(/^the /u, "")}`} value={
         <CatchBadge recipe="status" tone={nominator.active ? "success" : "neutral"}
           label={nominator.active ? "Can nominate" : "Switched off"} />} />
       <CatchText as="p" variant="supporting">

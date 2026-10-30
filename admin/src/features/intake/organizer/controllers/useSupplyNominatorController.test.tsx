@@ -10,7 +10,7 @@ const repository = vi.hoisted(() => ({
 }));
 vi.mock("../api/supplyNominatorRepository", () => repository);
 
-const nominator = {nominatorId: `whatsapp-${"a".repeat(64)}`, channel: "whatsapp", phoneLast4: "2345",
+const nominator = {nominatorId: `whatsapp-${"a".repeat(64)}`, channel: "whatsapp", phoneLast4: "2345", instagramHandle: null,
   role: "associate", uid: "owner-1", displayName: "Suvrat", defaultMarket: "mumbai", active: true,
   updatedAt: "2026-10-30T08:00:00.000Z"};
 const input = {phoneE164: "+919800012345", uid: "owner-1", role: "associate" as const, displayName: "Suvrat",
@@ -28,7 +28,7 @@ describe("useSupplyNominatorController", () => {
     const {wrapper} = createQueryHarness();
     const onNotice = vi.fn();
     repository.setSupplyNominator.mockResolvedValue({nominatorId: nominator.nominatorId, created: true,
-      phoneLast4: "2345", defaultMarket: "mumbai", active: true});
+      phoneLast4: "2345", instagramHandle: null, defaultMarket: "mumbai", active: true});
     const {result} = renderHook(() => useSupplyNominatorController({onError: vi.fn(), onNotice}), {wrapper});
     await waitFor(() => expect(result.current.nominators).toHaveLength(1));
     await waitFor(() => expect(result.current.myUid).toBe("owner-1"));

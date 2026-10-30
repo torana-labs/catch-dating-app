@@ -8,6 +8,14 @@ import {
 } from "../api/supplyNominatorRepository";
 
 const nominatorsKey = ["organizer-intake", "supply-nominators"] as const;
+
+/** How a nominator is named in copy: their Instagram handle, or the number they message from. */
+export function nominatorSender({instagramHandle, phoneLast4}: {
+  instagramHandle: string | null;
+  phoneLast4: string | null;
+}): string {
+  return instagramHandle ? `@${instagramHandle}` : `the number ending ${phoneLast4}`;
+}
 const staffUidKey = ["organizer-intake", "current-staff-uid"] as const;
 
 export function useSupplyNominatorController({onError, onNotice}: {
@@ -23,9 +31,10 @@ export function useSupplyNominatorController({onError, onNotice}: {
     onError(null);
     try {
       const result = await saving.mutateAsync(input);
-      onNotice(!result.active ? `Messages from the number ending ${result.phoneLast4} no longer count as nominations.` :
-        result.created ? `Links sent from the number ending ${result.phoneLast4} now become nominations.` :
-          `Updated the nominator on the number ending ${result.phoneLast4}.`);
+      const sender = nominatorSender(result);
+      onNotice(!result.active ? `Messages from ${sender} no longer count as nominations.` :
+        result.created ? `Links sent from ${sender} now become nominations.` :
+          `Updated the nominator for ${sender}.`);
       await queryClient.invalidateQueries({queryKey: nominatorsKey});
       return true;
     } catch (error) {
