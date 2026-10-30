@@ -11202,6 +11202,12 @@ abstract class AppLocalizations {
   /// **'Paid booking unavailable'**
   String get eventsEventDetailScreenStateLabelPaidBookingUnavailable;
 
+  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (note): explains why paid booking is unavailable for an event that is not sold through the organiser's checkout.
+  ///
+  /// In en, this message translates to:
+  /// **'The organiser hasn’t opened paid booking in the app for this event.'**
+  String get eventsEventDetailScreenStateNotePaidBookingNotInApp;
+
   /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
@@ -17255,6 +17261,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Paid bookings are only available on Android and iOS.'**
   String get coreAppErrorMessageVisiblecopyPaidBookingsAreOnly;
+
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy): paid booking refused because the organiser's own payment account is not ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid booking is unavailable until the organiser finishes connecting their Razorpay account. You have not been charged.'**
+  String get coreAppErrorMessageVisiblecopyOrganizerPaymentsNotReady;
+
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy): the event's paid seats are not sold through the organiser's checkout in the app.
+  ///
+  /// In en, this message translates to:
+  /// **'This event isn’t taking paid bookings in the Catch app yet. You have not been charged.'**
+  String get coreAppErrorMessageVisiblecopyPaidBookingNotInApp;
 
   /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
@@ -40974,7 +40992,7 @@ abstract class AppLocalizations {
   /// Payouts screen: how money flows when the organiser connects Razorpay; mirrors the website organiser terms.
   ///
   /// In en, this message translates to:
-  /// **'Ticket and form payments go straight to your own Razorpay account, and refunds come out of it. Catch never holds your money. Catch’s fees are billed to you separately.'**
+  /// **'Ticket, membership and form payments go straight to your own Razorpay account, and refunds come out of it. Catch never holds your money. Catch’s fees are billed to you separately.'**
   String get hostPayoutsRazorpayIntroBody;
 
   /// Payouts screen: shown while Catch's Razorpay OAuth partner configuration is not set up.
@@ -41012,6 +41030,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'What connecting allows'**
   String get hostPayoutsRazorpayPermissionsTitle;
+
+  /// Payouts screen badge: the connected Razorpay account can no longer take payments.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs reconnect'**
+  String get hostPayoutsRazorpayNeedsReconnect;
+
+  /// Payouts and form fee settings: action that replaces a Razorpay connection that cannot take payments.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect Razorpay'**
+  String get hostPayoutsRazorpayReconnectTitle;
+
+  /// Payouts screen: why reconnecting is needed and what is paused until then.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay is no longer accepting Catch’s access to this account, so new paid bookings, memberships and form fees are paused. Reconnect your account to take payments again.'**
+  String get hostPayoutsRazorpayReconnectBody;
+
+  /// Payouts screen: help for a Razorpay connection whose sign-in was not finished.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn’t finish approving Catch in Razorpay? Start again here. Catch replaces the unfinished connection, so you keep one account.'**
+  String get hostPayoutsRazorpayConnectingBody;
 
   /// Membership price billed monthly.
   ///

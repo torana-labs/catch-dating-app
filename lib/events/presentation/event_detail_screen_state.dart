@@ -199,6 +199,8 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
   required DateTime now,
   required bool hasInviteCode,
   required bool supportsPaidBookings,
+  bool paidSeatsSoldInApp = true,
+  bool paidOffersSoldInApp = true,
   OrganizerSupplyCapabilities organizerCapabilities =
       const OrganizerSupplyCapabilities.claimedManaged(),
   bool isSaved = false,
@@ -216,6 +218,8 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
     now: now,
     hasInviteCode: hasInviteCode,
     supportsPaidBookings: supportsPaidBookings,
+    paidSeatsSoldInApp: paidSeatsSoldInApp,
+    paidOffersSoldInApp: paidOffersSoldInApp,
     organizerCapabilities: organizerCapabilities,
     isSaved: isSaved,
     isHosted: isHosted,
@@ -277,6 +281,8 @@ EventDetailBookingDockState _baseBookingDockState({
   required DateTime now,
   required bool hasInviteCode,
   required bool supportsPaidBookings,
+  bool paidSeatsSoldInApp = true,
+  bool paidOffersSoldInApp = true,
   OrganizerSupplyCapabilities organizerCapabilities =
       const OrganizerSupplyCapabilities.claimedManaged(),
   bool isSaved = false,
@@ -383,7 +389,10 @@ EventDetailBookingDockState _baseBookingDockState({
 
   if (currentViewer?.hasAdmission != true &&
       (currentViewer?.canAcceptOffer == true || hasActiveWaitlistOffer)) {
-    final paidUnsupported = !isFreeForViewer && !supportsPaidBookings;
+    // Paid offers are not sold through the organizer's checkout yet, so an
+    // INR offer cannot be paid in the app; say so before it is accepted.
+    final paidUnsupported =
+        !isFreeForViewer && (!supportsPaidBookings || !paidOffersSoldInApp);
     final currentOfferAllows =
         currentViewer == null || currentViewer.canAcceptOffer;
     return EventDetailBookingDockState(
@@ -444,7 +453,10 @@ EventDetailBookingDockState _baseBookingDockState({
       event: event,
       quotedPriceInPaise: quotedPriceInPaise,
       isFreeForViewer: isFreeForViewer,
-      supportsPaidBookings: supportsPaidBookings,
+      supportsPaidBookings: supportsPaidBookings && paidSeatsSoldInApp,
+      paidUnavailableNote: supportsPaidBookings && !paidSeatsSoldInApp
+          ? l10n.eventsEventDetailScreenStateNotePaidBookingNotInApp
+          : null,
       needsRunPreferences: needsRunPreferences,
       hasApprovedJoinRequest: hasApprovedJoinRequest,
       mutationState: mutationState,
@@ -528,6 +540,7 @@ EventDetailBookingDockState _eligibleBookingDockState({
   required bool needsRunPreferences,
   required bool hasApprovedJoinRequest,
   required EventDetailBookingDockMutationState mutationState,
+  String? paidUnavailableNote,
 }) {
   final paidUnsupported = !isFreeForViewer && !supportsPaidBookings;
   final presenter = EventCapacityLabels(event);
@@ -571,8 +584,9 @@ EventDetailBookingDockState _eligibleBookingDockState({
     priceWarn: !isFreeForViewer && isScarce,
     isLoading: mutationState.bookPending,
     useAccent: true,
-    catchLine:
-        l10n.eventsEventDetailScreenStateVisiblecopyMatchingOpensForEveryone,
+    catchLine: paidUnsupported && paidUnavailableNote != null
+        ? paidUnavailableNote
+        : l10n.eventsEventDetailScreenStateVisiblecopyMatchingOpensForEveryone,
     error: mutationState.error,
   );
 }

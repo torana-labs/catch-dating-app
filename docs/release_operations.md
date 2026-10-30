@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.0.2
+version: 3.1.0
 updated: 2026-10-30
 owner: recursive_audit_loop
 status: active
@@ -2094,15 +2094,22 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   them with the intended `RAZORPAY_PUBLIC_KEY_ID` parameter and
   `RAZORPAY_KEY_SECRET` secret per
   Firebase project.
-- [ ] Verify `createRazorpayOrder` returns the public `keyId` from the same
-  Firebase project configuration that created the order. Mobile builds do
-  not read a local Razorpay `.env` value or embed a generated key. The
-  `RAZORPAY_KEY_SECRET` remains server-only and must never enter a client
-  contract or artifact.
-- [ ] Enable Razorpay Route for each target account before exposing India host
-  payout setup, and verify linked-account, stakeholder, Route product, bank
-  settlement, and activation-status APIs with that environment's credentials.
-  A deployed callable and enabled secrets do not prove Route account approval.
+- [ ] Verify paid INR bookings, on the website and in the Consumer app, go
+  through `managePublicEventCheckout` on the organizer's own connected
+  Razorpay account when `eventAdmission` is `razorpayOAuth`. The checkout key
+  is that connection's OAuth public token, never a Catch key. The Consumer app
+  no longer calls `createRazorpayOrder`, which refuses new orders and keeps
+  only existing-order verification and refunds. `RAZORPAY_KEY_SECRET` remains
+  server-only and must never enter a client contract or artifact.
+- [ ] Verify an organizer with no ready connection sees paid booking refused
+  with the organizer-payments-not-ready message, and that Host Payouts shows
+  Reconnect for a connection that cannot take payments.
+- [ ] Only where a routing policy selects `razorpayRoute`: enable Razorpay Route
+  for each target account and verify linked-account, stakeholder, Route
+  product, bank settlement, and activation-status APIs with that
+  environment's credentials. Host Payouts shows the Route payout form only
+  then. A deployed callable and enabled secrets do not prove Route account
+  approval.
 - [ ] Smoke test India host setup with an organizer owner: verify Razorpay is
   recommended while Stripe remains available, KYC and bank fields are absent
   from Firestore, a failed retry continues the same linked account/product, and

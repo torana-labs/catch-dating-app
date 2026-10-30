@@ -79,10 +79,6 @@ class WidgetbookEventFakePaymentRepository implements PaymentRepository {
   Future<PaymentConfirmationData> processPayment({
     required String eventId,
     required String currencyCode,
-    required String description,
-    required String userName,
-    required String userEmail,
-    required String userContact,
     String? inviteCode,
     String? inviteLinkId,
     String? crossPathsPairHoldId,

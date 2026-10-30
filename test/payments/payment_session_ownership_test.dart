@@ -15,23 +15,14 @@ import 'package:url_launcher/url_launcher.dart';
 import '../test_pump_helpers.dart';
 import 'payment_test_fakes.dart';
 
-Future<PaymentConfirmationData> _pay(
-  PaymentRepository repository, {
-  String currency = 'INR',
-}) => repository.processPayment(
-  eventId: 'event-a',
-  currencyCode: currency,
-  description: 'Event',
-  userName: 'Guest',
-  userEmail: 'guest@example.com',
-  userContact: '+919876543210',
-);
+Future<PaymentConfirmationData> _payStripe(PaymentRepository repository) =>
+    repository.processPayment(eventId: 'event-a', currencyCode: 'USD');
 
 void main() {
   late StreamController<String?> auth;
   late ProviderContainer container;
   late TestFirebaseFunctions functions;
-  late TestHttpsCallable create;
+  late OrganizerCheckoutFake server;
   late TestHttpsCallable verify;
   late List<FakeRazorpay> checkouts;
   late List<Uri> launched;
@@ -40,16 +31,8 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     auth = StreamController<String?>();
     functions = TestFirebaseFunctions();
-    create = TestHttpsCallable('createRazorpayOrder')
-      ..resultData = {
-        'orderId': 'order-a',
-        'amount': 25000,
-        'currency': 'INR',
-        'keyId': 'rzp_test',
-      };
-    verify = TestHttpsCallable('verifyRazorpayPayment')
-      ..resultData = {'verified': true};
-    functions.callables.addAll({create.name: create, verify.name: verify});
+    server = OrganizerCheckoutFake(functions);
+    verify = server.callable;
     checkouts = [];
     launched = [];
     container = ProviderContainer(
@@ -94,25 +77,24 @@ void main() {
   }
 
   test(
-    'account switch disposes a delayed order before checkout can open',
+    'account switch retires an open checkout before it can verify',
     () async {
-      final order = Completer<Object?>();
-      create.onCall = (_) => order.future;
       final oldRepository = container.read(paymentRepositoryProvider);
-      final oldPayment = _pay(oldRepository);
+      final oldPayment = payOrganizer(oldRepository, server.session('event-a'));
       final failed = expectLater(
         oldPayment,
         throwsA(isA<SignInRequiredException>()),
       );
+      await flushTestEventQueue();
+      final lateSuccess = checkouts.single.successHandler!;
       await changeAccount('account-b');
       await failed;
       expect(
         container.read(paymentRepositoryProvider),
         isNot(same(oldRepository)),
       );
-      order.complete(create.resultData);
+      await lateSuccess(organizerSuccess('order_a'));
       await flushTestEventQueue();
-      expect(checkouts.single.openCalls, isEmpty);
       expect(checkouts.single.clearCalls, 1);
       expect(verify.calls, isEmpty);
     },
@@ -121,22 +103,17 @@ void main() {
   test(
     'signout and same-UID reentry cannot revive a verification attempt',
     () async {
+      final session = server.session('event-a');
       final verification = Completer<Object?>();
       verify.onCall = (_) => verification.future;
       final oldRepository = container.read(paymentRepositoryProvider);
-      final payment = _pay(oldRepository);
+      final payment = payOrganizer(oldRepository, session);
       final failed = expectLater(
         payment,
         throwsA(isA<SignInRequiredException>()),
       );
       await flushTestEventQueue();
-      checkouts.single.emitSuccess(
-        const RazorpaySuccessResponse(
-          paymentId: 'pay-a',
-          orderId: 'order-a',
-          signature: 'sig-a',
-        ),
-      );
+      checkouts.single.emitSuccess(organizerSuccess('order_a'));
       await flushTestEventQueue();
       await changeAccount(null);
       await changeAccount('account-a');
@@ -144,30 +121,31 @@ void main() {
       final currentRepository = container.read(paymentRepositoryProvider);
       expect(currentRepository, isNot(same(oldRepository)));
       await expectLater(
-        _pay(oldRepository),
+        payOrganizer(oldRepository, session),
         throwsA(isA<SignInRequiredException>()),
       );
-      verification.complete({'verified': true});
+      verification.complete(server.admittedFor(session));
       await flushTestEventQueue();
       expect(checkouts.single.clearCalls, 1);
-      verify.onCall = null;
-      final current = _pay(currentRepository);
+      verify.onCall = server.admit;
+      final current = payOrganizer(currentRepository, session);
       await flushTestEventQueue();
-      checkouts.last.emitSuccess(
-        const RazorpaySuccessResponse(
-          paymentId: 'pay-new',
-          orderId: 'order-a',
-          signature: 'sig-new',
-        ),
+      checkouts.last.emitSuccess(organizerSuccess('order_a', 'pay-new'));
+      expect((await current).paymentId, session.payment.paymentId);
+      expect(
+        (verify.calls.last! as Map)['callback'],
+        containsPair('paymentId', 'pay-new'),
       );
-      expect((await current).paymentId, 'pay-new');
     },
   );
 
   test(
     'auth error and recovery with the same UID invalidate checkout callbacks',
     () async {
-      final payment = _pay(container.read(paymentRepositoryProvider));
+      final payment = payOrganizer(
+        container.read(paymentRepositoryProvider),
+        server.session('event-a'),
+      );
       final failed = expectLater(
         payment,
         throwsA(isA<SignInRequiredException>()),
@@ -179,13 +157,7 @@ void main() {
       await container.pump();
       await failed;
       await changeAccount('account-a');
-      await oldSuccess(
-        const RazorpaySuccessResponse(
-          paymentId: 'old-pay',
-          orderId: 'order-a',
-          signature: 'old-signature',
-        ),
-      );
+      await oldSuccess(organizerSuccess('order_a', 'old-pay'));
       expect(verify.calls, isEmpty);
     },
   );
@@ -194,19 +166,15 @@ void main() {
     'uninterrupted session keeps one repository and completes the correct receipt',
     () async {
       final repository = container.read(paymentRepositoryProvider);
-      final payment = _pay(repository);
+      final session = server.session('event-a');
+      final payment = payOrganizer(repository, session);
       await flushTestEventQueue();
       await container.pump();
       expect(container.read(paymentRepositoryProvider), same(repository));
-      checkouts.single.emitSuccess(
-        const RazorpaySuccessResponse(
-          paymentId: 'pay-a',
-          orderId: 'order-a',
-          signature: 'sig-a',
-        ),
-      );
+      checkouts.single.emitSuccess(organizerSuccess('order_a'));
       final receipt = await payment;
-      expect(receipt.paymentId, 'pay-a');
+      expect(receipt.paymentId, session.payment.paymentId);
+      expect(receipt.orderId, 'order_a');
       expect(receipt.eventId, 'event-a');
       expect(receipt.amountInPaise, 25000);
     },
@@ -219,10 +187,7 @@ void main() {
       final stripe = TestHttpsCallable('createStripeCheckoutSession')
         ..onCall = (_) => session.future;
       functions.callables[stripe.name] = stripe;
-      final payment = _pay(
-        container.read(paymentRepositoryProvider),
-        currency: 'USD',
-      );
+      final payment = _payStripe(container.read(paymentRepositoryProvider));
       final failed = expectLater(
         payment,
         throwsA(isA<SignInRequiredException>()),

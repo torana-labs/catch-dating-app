@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definitio
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_razorpay_connection_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
@@ -37,6 +38,7 @@ class HostFormPaymentSection extends ConsumerWidget {
         definition: definition,
         onChanged: onChanged,
         onConnect: () => ref.read(provider.notifier).connect(),
+        onReconnect: () => ref.read(provider.notifier).reconnect(),
         onRefresh: () => ref
             .read(provider.notifier)
             .refresh(definition.payment?.connectionId),
@@ -55,11 +57,15 @@ class HostFormPaymentSetupSection extends StatelessWidget {
     required this.onConnect,
     required this.onRefresh,
     required this.onDisconnect,
+    this.onReconnect,
   });
   final HostFormPaymentSetupState state;
   final HostFormDefinition definition;
   final ValueChanged<HostFormPayment?> onChanged;
   final VoidCallback onConnect;
+
+  /// Replaces connections that cannot take payments; see Payouts.
+  final VoidCallback? onReconnect;
   final VoidCallback onRefresh;
   final ValueChanged<String> onDisconnect;
 
@@ -122,37 +128,51 @@ class HostFormPaymentSetupSection extends StatelessWidget {
             bodyMaxLines: 6,
           )
         else ...[
-          for (final connection in state.setup.connections) ...[
+          // The same single organizer account as Payouts: events, forms and
+          // memberships all collect through it.
+          for (final connection in state.setup.liveConnections) ...[
             CatchField.read(
               copy: catchFieldCopy(l10n),
               title: connection.accountId ?? l10n.hostFormPaymentConnect,
               body:
-                  '${_statusLabel(l10n, connection.status)} · '
+                  '${hostRazorpayConnectionStatusLabel(l10n, connection)} · '
                   '${connection.mode == HostFormPaymentMode.test ? l10n.hostFormPaymentTest : l10n.hostFormPaymentLive}',
               bodyMaxLines: 4,
             ),
-            if (connection.status !=
-                HostFormPaymentConnectionStatus.disconnected)
-              CatchField.action(
-                copy: catchFieldCopy(l10n),
-                title: l10n.hostFormPaymentDisconnect,
-                onTap: state.pending
-                    ? null
-                    : () =>
-                          _confirmDisconnect(context, connection.connectionId),
-              ),
+            CatchField.action(
+              copy: catchFieldCopy(l10n),
+              title: l10n.hostFormPaymentDisconnect,
+              onTap: state.pending
+                  ? null
+                  : () => _confirmDisconnect(context, connection.connectionId),
+            ),
           ],
-          CatchField.action(
-            copy: catchFieldCopy(l10n),
-            title: l10n.hostFormPaymentConnect,
-            body: l10n.hostFormPaymentConnectHelp,
-            bodyMaxLines: 12,
-            icon: CatchIcons.openExternal,
-            status: state.pending
-                ? CatchFieldStatus.saving
-                : CatchFieldStatus.idle,
-            onTap: state.pending ? null : onConnect,
-          ),
+          if (state.setup.liveConnections.isEmpty)
+            CatchField.action(
+              copy: catchFieldCopy(l10n),
+              title: l10n.hostFormPaymentConnect,
+              body: l10n.hostFormPaymentConnectHelp,
+              bodyMaxLines: 12,
+              icon: CatchIcons.openExternal,
+              status: state.pending
+                  ? CatchFieldStatus.saving
+                  : CatchFieldStatus.idle,
+              onTap: state.pending ? null : onConnect,
+            )
+          else if (state.setup.razorpayConnectionState !=
+                  HostRazorpayConnectionState.ready &&
+              onReconnect != null)
+            CatchField.action(
+              copy: catchFieldCopy(l10n),
+              title: l10n.hostPayoutsRazorpayReconnectTitle,
+              body: l10n.hostFormPaymentConnectHelp,
+              bodyMaxLines: 12,
+              icon: CatchIcons.openExternal,
+              status: state.pending
+                  ? CatchFieldStatus.saving
+                  : CatchFieldStatus.idle,
+              onTap: state.pending ? null : onReconnect,
+            ),
         ],
         CatchField.action(
           copy: catchFieldCopy(l10n),
@@ -245,15 +265,3 @@ class HostFormPaymentSetupSection extends StatelessWidget {
     if (confirmed == true) onDisconnect(id);
   }
 }
-
-String _statusLabel(
-  AppLocalizations l10n,
-  HostFormPaymentConnectionStatus status,
-) => switch (status) {
-  HostFormPaymentConnectionStatus.connecting => l10n.hostFormPaymentConnecting,
-  HostFormPaymentConnectionStatus.ready => l10n.hostFormPaymentReady,
-  HostFormPaymentConnectionStatus.needsAttention =>
-    l10n.hostFormPaymentAttention,
-  HostFormPaymentConnectionStatus.disconnected =>
-    l10n.hostFormPaymentDisconnected,
-};
