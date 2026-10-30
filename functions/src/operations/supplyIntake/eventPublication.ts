@@ -147,6 +147,8 @@ export interface ListingEventPublicationDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   now: () => Date;
+  /** Overrides the shipped policy file, so tests can pin a mode. */
+  loadEventPublicationPolicy?: () => Promise<EventPublicationPolicy>;
 }
 
 export const defaultListingEventPublicationDeps: ListingEventPublicationDeps = {
@@ -180,7 +182,7 @@ export async function publishListingEvents(input: {
   organizerId: string | null; results: ListingEventResult[]; policy: EventPublicationPolicy;
 }> {
   const runtime = await packagedEventPublication();
-  const policy = await runtime.loadEventPublicationPolicy();
+  const policy = await (deps.loadEventPublicationPolicy ?? runtime.loadEventPublicationPolicy)();
   const db = deps.firestore();
   const results: ListingEventResult[] = [];
   let organizerId: string | null = null;

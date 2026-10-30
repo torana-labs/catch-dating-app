@@ -60,7 +60,7 @@ export async function adminListListingEventImportsHandler(
     {maxRequests: 60, windowMs: 60 * 1000}
   );
   const runtime = await packagedEventPublication();
-  const policy = await runtime.loadEventPublicationPolicy();
+  const policy = await (deps.loadEventPublicationPolicy ?? runtime.loadEventPublicationPolicy)();
   const requests = db.collection(supplyIntakeCollections.requests);
   // Only approved requests carry approval.approvedAt (an ISO string, so it sorts by time).
   /* firestore-index: supplyIntakeRequests (
