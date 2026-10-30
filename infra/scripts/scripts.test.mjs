@@ -212,6 +212,26 @@ test("play fingerprints find a symlinked build-tools apksigner and read rotated-
     sha1: sha1("12"), sha256: sha256("ef"), reader: "apksigner"});
 });
 
+test("play fingerprints pick the signer Play reported from hybrid v3.2 output", (t) => {
+  const signer = (label, sha1Hex, sha256Hex) =>
+    `echo "${label} certificate SHA-256 digest: ${sha256Hex}"; echo "${label} certificate SHA-1 digest: ${sha1Hex}"`;
+  const result = play(t, {reported: sha256("ef"), keytool: 'echo "Not a signed jar file"',
+    apksigner: [
+      signer("V3.2 Hybrid Classical Signer: (minSdkVersion=37, maxSdkVersion=2147483647)", sha1("34"), sha256("56")),
+      signer("Signer (minSdkVersion=24, maxSdkVersion=36)", sha1("12"), sha256("ef")),
+    ].join("; ")});
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), {package: "com.catchdates.app", versionCode: "100001",
+    sha1: sha1("12"), sha256: sha256("ef"), reader: "apksigner"});
+});
+
+test("play fingerprints read a lone hybrid v3.2 signer", (t) => {
+  const result = play(t, {reported: sha256("56"), keytool: 'echo "Not a signed jar file"',
+    apksigner: `echo "V3.2 Hybrid Classical Signer: (minSdkVersion=37, maxSdkVersion=2147483647) certificate SHA-256 digest: ${sha256("56")}"; echo "V3.2 Hybrid Classical Signer: (minSdkVersion=37, maxSdkVersion=2147483647) certificate SHA-1 digest: ${sha1("34")}"`});
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).sha256, sha256("56"));
+});
+
 test("play fingerprints explain why neither reader worked", (t) => {
   const result = play(t, {reported: sha256("ef"), keytool: 'echo "Not a signed jar file"',
     apksigner: 'echo "DOES NOT VERIFY"; echo "ERROR: no signers" >&2; exit 1'});
