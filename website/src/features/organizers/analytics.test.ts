@@ -3,6 +3,7 @@ import {waitFor} from "@testing-library/react";
 import {setMarketingConsent} from "../../analytics";
 import {hostListings} from "./data";
 import {observeOrganizerPageView, trackOrganizerAnalytics, trackOrganizerLinkClick, trafficSourceOf} from "./analytics";
+import {brand} from "@catch/brand";
 
 const record = vi.hoisted(() => vi.fn());
 vi.mock("../../firebase", () => ({recordOrganizerAnalyticsEvent: record}));
@@ -115,7 +116,7 @@ describe("first-party organizer presence", () => {
 
 describe("owner link clicks", () => {
   it("maps ?via= and the referrer host to the fixed traffic sources", () => {
-    const origin = "https://catchdates.com";
+    const origin = brand.web.origin;
     expect([
       trafficSourceOf("https://l.instagram.com/?u=x", "", origin),
       trafficSourceOf("", "?via=QR", origin),
@@ -125,7 +126,7 @@ describe("owner link clicks", () => {
       trafficSourceOf("https://mail.google.com/mail/u/0/", "", origin),
       trafficSourceOf("https://www.google.com/", "", origin),
       trafficSourceOf("", "", origin),
-      trafficSourceOf("https://catchdates.com/explore/", "", origin),
+      trafficSourceOf(`${brand.web.origin}/explore/`, "", origin),
       trafficSourceOf("https://blog.example.org/post", "", origin),
       trafficSourceOf("", "?via=summer_sale_utm", origin),
       trafficSourceOf("not a url", "", origin),

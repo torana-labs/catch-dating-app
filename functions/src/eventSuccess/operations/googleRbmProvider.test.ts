@@ -4,6 +4,7 @@ import {GoogleRbmProvider} from "./googleRbmProvider";
 import {GOOGLE_RBM_MAX_BYTES} from "./googleRbmProtocol";
 import type {GoogleRbmSendRequest} from "./googleRbmProtocol";
 import {rcsNativeReplyId} from "./rcsWebhookProtocol";
+import {BRAND} from "../../shared/generated/brand";
 
 const now = 1788825600000;
 const messageId = "592b6f05-96b2-5a74-8b21-246c59e8b4e7";
@@ -11,7 +12,7 @@ const requestId = "1be8b706-2400-4153-b501-be19d9f951c4";
 const phoneE164 = "+919876543210";
 const accessToken = "fixture-only-access-token";
 const agentId = "fixture-agent@rbm.goog";
-const guestUrl = "https://catchdates.com/event-update/fixture#private-link";
+const guestUrl = `${BRAND.web.origin}/event-update/fixture#private-link`;
 const expiresAt = now + 60_000;
 const name = "phones/" + phoneE164 + "/agentMessages/" + messageId;
 const attemptId = "attempt:" + "a".repeat(64);
@@ -179,9 +180,9 @@ test("RBM validates content before submission", async () => {
     {suggestions: [{reply: {...reply.reply, text: "\udfff"}}]},
     {suggestions: [{action: {...action.action,
       dialAction: {phoneNumber: phoneE164}}}]},
-    ...["http://catchdates.com/", "javascript:alert(1)",
-      "https://token@catchdates.com/", "https://catchdates.com/\npath",
-      "https://catchdates.com\\evil.test", "x".repeat(2049)].map((url) =>
+    ...[`http://${BRAND.web.domain}/`, "javascript:alert(1)",
+      `https://token@${BRAND.web.domain}/`, `${BRAND.web.origin}/\npath`,
+      `${BRAND.web.origin}\\evil.test`, "x".repeat(2049)].map((url) =>
       ({suggestions: [{action: {...action.action, openUrlAction: {url}}}]})),
   ];
   for (const change of invalid) {

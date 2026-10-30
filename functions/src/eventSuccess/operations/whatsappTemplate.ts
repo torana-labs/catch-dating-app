@@ -15,6 +15,7 @@ import {parseMessageIntent} from "./messageProtocol";
 import {sameMessageContext} from "./messagingPolicy";
 import {whatsappEndpointHash, whatsappNativeReplyId} from
   "./whatsappReplyProtocol";
+import {brandWebUrl} from "../../shared/generated/brand";
 
 export type {WhatsappPolicy};
 type Intent = MessageRecord["intent"];
@@ -116,7 +117,7 @@ export function renderEventWhatsapp(input: {
   const values = {eventTitle: input.eventTitle,
     instruction: intent.kind === "joiningUpdate" ?
       intent.guidance.text : intent.body,
-    responseUrl: "https://catchdates.com/event-update/" + suffix,
+    responseUrl: brandWebUrl("/event-update/") + suffix,
     responseUrlSuffix: suffix};
   assertParameterMapping(template, approved);
   const variables = Object.fromEntries(approved.variables.map((variable) => {
@@ -206,7 +207,7 @@ function assertParameterMapping(template: MetaTemplateSnapshot,
       source !== "responseUrlSuffix" || binding.buttonIndex === null ||
         template.buttonKinds[binding.buttonIndex] !== "URL" ||
         template.buttonUrls?.[binding.buttonIndex] !==
-          "https://catchdates.com/event-update/{{1}}" ||
+          brandWebUrl("/event-update/{{1}}") ||
         binding.position !== 0 :
       source === "responseUrlSuffix" || binding.buttonIndex !== null)) {
       throw new Error("Unsupported WhatsApp parameter destination");

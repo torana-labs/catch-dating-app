@@ -5,9 +5,10 @@ import {
   FormPaymentProviderError, formWebhookEvents, isCapturedFormPayment,
   RazorpayFormProvider,
 } from "./razorpayFormProvider";
+import {BRAND} from "../../shared/generated/brand";
 
 const config = {clientId: "partner-client", clientSecret: "partner-secret",
-  redirectUri: "https://catchdates.com/razorpay/callback",
+  redirectUri: `${BRAND.web.origin}/razorpay/callback`,
   mode: "test" as const};
 const tokenResponse = {token_type: "Bearer", access_token: "private-access",
   refresh_token: "private-refresh", public_token: "rzp_test_oauth_public",
@@ -40,7 +41,7 @@ test("OAuth uses configured callback and server state; no secret in URL",
     assert.throws(() => new RazorpayFormProvider({...config, clientSecret: ""})
       .authorizationUrl("a".repeat(43)), /not configured/u);
     assert.throws(() => new RazorpayFormProvider({...config,
-      redirectUri: "https://secret@catchdates.com/callback"})
+      redirectUri: `https://secret@${BRAND.web.domain}/callback`})
       .authorizationUrl("a".repeat(43)));
   });
 
@@ -174,7 +175,7 @@ test("capture uses the stored amount and preserves payment identity",
 
 test("webhook verification binds merchant, URL, activation and required events",
   async () => {
-    const url = "https://catchdates.com/api/form-payment-hook/connection";
+    const url = `${BRAND.web.origin}/api/form-payment-hook/connection`;
     const body = {entity: "webhook", id: "webhook1", owner_id: "merchant",
       owner_type: "merchant", url, active: true, secret_exists: true,
       events: [...formWebhookEvents]};

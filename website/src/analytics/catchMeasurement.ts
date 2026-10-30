@@ -1,3 +1,5 @@
+import {brand} from "@catch/brand";
+
 /** Catch acquisition boundary. This module never reads the DOM or the local bus. */
 export const catchMeasurementVersion = 1 as const;
 export type AcquisitionForm = "member_waitlist" | "host_lead" | "host_application" | "claim";
@@ -78,7 +80,7 @@ export function safeAcquisitionEvent(input: CatchAcquisitionEvent, context: Meas
     contract_version: catchMeasurementVersion,
     page_path: path,
     // Fixed origin/title; never document.title, referrer, search, hash, or arbitrary host.
-    page_location: `https://catchdates.com${path}`,
+    page_location: `${brand.web.origin}${path}`,
     page_title: "Catch",
     page_name: routes[path],
     audience: "organizer",

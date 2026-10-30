@@ -14,6 +14,7 @@ import {
   StripeAccountSnapshot,
   StripeClient,
 } from "./stripe";
+import {BRAND} from "../shared/generated/brand";
 
 test("createStripeHostOnboardingLinkHandler creates and stores host account",
   async () => {
@@ -63,8 +64,8 @@ test("createStripeHostOnboardingLinkHandler creates and stores host account",
     }]);
     assert.deepEqual(linkInputs, [{
       accountId: "acct_host",
-      returnUrl: "https://catchdates.com/you",
-      refreshUrl: "https://catchdates.com/you",
+      returnUrl: `${BRAND.web.origin}/you`,
+      refreshUrl: `${BRAND.web.origin}/you`,
     }]);
     assert.deepEqual(response, {
       accountId: "acct_host",

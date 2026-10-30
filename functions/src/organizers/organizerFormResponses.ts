@@ -116,6 +116,7 @@ import {canonicalCityMarketId, publicFormCityOptions,
   publicFormPrefillSuggestions, reusablePublicFormFields,
   organizerFormAnswerSuggestions} from
   "./organizerFormPublicFields";
+import {BRAND} from "../shared/generated/brand";
 
 type FormDefinition = OrganizerFormVersionDocument["definition"];
 type PublicFormProjection = GetPublicOrganizerFormCallableResponse;
@@ -147,7 +148,7 @@ const supportedFileTypes = new Set([
   "image/webp",
   "application/pdf",
 ]);
-const publicFormsOrigin = "https://catchdates.com";
+const publicFormsOrigin = BRAND.web.origin;
 
 /** Resolves only the active immutable definition and bounded organizer copy. */
 export async function getPublicOrganizerFormHandler(

@@ -5,17 +5,18 @@ import {
   expireHostConsentRecords, hostAcquisitionConsent, hostConsentAllowedOrigin,
 } from "./consentHttp";
 import {newHostConsentAuthority} from "./consentPolicy";
+import {BRAND} from "../shared/generated/brand";
 
 test("privacy origin is exact and production custom hosts are project scoped",
   () => {
-    assert.equal(hostConsentAllowedOrigin("https://catchdates.com",
-      "catch-dating-app-64e51"), "https://catchdates.com");
-    for (const origin of [undefined, "null", "http://catchdates.com",
-      "https://catchdates.com.attacker.example", "http://localhost:5175"]) {
+    assert.equal(hostConsentAllowedOrigin(BRAND.web.origin,
+      "catch-dating-app-64e51"), BRAND.web.origin);
+    for (const origin of [undefined, "null", `http://${BRAND.web.domain}`,
+      `${BRAND.web.origin}.attacker.example`, "http://localhost:5175"]) {
       assert.equal(hostConsentAllowedOrigin(origin, "catch-dating-app-64e51"),
         null);
     }
-    assert.equal(hostConsentAllowedOrigin("https://catchdates.com",
+    assert.equal(hostConsentAllowedOrigin(BRAND.web.origin,
       "catchdates-dev"), null);
     assert.equal(hostConsentAllowedOrigin("https://catchdates-dev.web.app",
       "catchdates-dev"), "https://catchdates-dev.web.app");
@@ -30,7 +31,7 @@ test("disabled HTTP handshake rejects invalid requests without DB writes",
       else process.env.GCLOUD_PROJECT = previous;
     });
     const submit = async (method: string, body: unknown,
-      origin = "https://catchdates.com", size = 0) => {
+      origin: string = BRAND.web.origin, size = 0) => {
       const headers = new Map<string, string>();
       let status = 0;
       let result: unknown;

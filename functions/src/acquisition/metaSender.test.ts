@@ -2,11 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {createHostMetaSender, HOST_META_EVENTS_URL} from "./metaSender";
 import type {HostMetaLeadPayload} from "./metaPayload";
+import {BRAND} from "../shared/generated/brand";
 
 const payload: HostMetaLeadPayload = {
   event_name: "Lead", event_id: "host_lead_1792512000000_example",
   event_time: 1792512000, action_source: "website",
-  event_source_url: "https://catchdates.com/host/apply/",
+  event_source_url: `${BRAND.web.origin}/host/apply/`,
   user_data: {external_id: ["a".repeat(64)],
     client_user_agent: "Synthetic browser"},
 };

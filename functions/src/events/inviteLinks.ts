@@ -64,6 +64,7 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {eventAttendeeId, normalizeRosterPhone} from "./eventAttendees";
+import {BRAND} from "../shared/generated/brand";
 
 export type InviteLinkCounterField =
   | "openCount"
@@ -1044,7 +1045,7 @@ function inviteDestinationUrl(params: {
         "failed-precondition", "Event mode is no longer available."
       );
     }
-    return `https://catchdates.com/join/${encodeURIComponent(runtimeId)}` +
+    return `${BRAND.web.origin}/join/${encodeURIComponent(runtimeId)}` +
       `?il=${encodeURIComponent(params.inviteToken)}`;
   }
   if (params.destinationKind === "externalBooking") {
@@ -1060,7 +1061,7 @@ function inviteDestinationUrl(params: {
     destination.searchParams.set("catch_ref", params.inviteLinkId);
     return destination.toString();
   }
-  return `https://catchdates.com/events/${encodeURIComponent(params.eventId)}` +
+  return `${BRAND.web.origin}/events/${encodeURIComponent(params.eventId)}` +
     `?il=${encodeURIComponent(params.inviteToken)}`;
 }
 

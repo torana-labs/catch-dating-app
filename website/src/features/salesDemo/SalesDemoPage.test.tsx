@@ -7,6 +7,7 @@ import type {SalesDemoApi, SalesDemoPreview, SalesDemoSession, SalesDemoSetup} f
   "./salesDemoModel";
 import {salesDemoFormEditorUrl} from "./salesDemoModel";
 import {SalesDemoPage} from "./SalesDemoPage";
+import {brand} from "@catch/brand";
 
 const grant = "A".repeat(43);
 const preview: SalesDemoPreview = {schemaVersion: 1, synthetic: true,
@@ -194,7 +195,7 @@ describe("private demo landing", () => {
   });
 
   it("confirms a reviewed template and links to the Host Forms origin", async () => {
-    vi.stubEnv("VITE_CONSUMER_APP_URL", "https://app.catchdates.com");
+    vi.stubEnv("VITE_CONSUMER_APP_URL", brand.web.appOrigin);
     const api = renderCompleted(templateSetup);
     fireEvent.click(await screen.findByRole("button", {name: "Open interactive example"}));
     fireEvent.click(await screen.findByRole("button", {name: "Review setup options"}));
@@ -205,7 +206,7 @@ describe("private demo landing", () => {
       name: "Prepare template draft; finish setup in Forms"}));
     const link = await screen.findByRole("link", {name: "Finish setup in Forms"});
     expect(link.getAttribute("href")).toBe(
-      "https://app.catchdates.com/#/host/audience/forms/demo_123");
+      `${brand.web.appOrigin}/#/host/audience/forms/demo_123`);
     expect(api.prepareSetup).toHaveBeenCalledOnce();
   });
 });
@@ -213,10 +214,10 @@ describe("private demo landing", () => {
 describe("Host Forms editor link", () => {
   afterEach(() => vi.unstubAllEnvs());
   it("rejects arbitrary paths and unsafe origins", () => {
-    vi.stubEnv("VITE_CONSUMER_APP_URL", "https://app.catchdates.com");
+    vi.stubEnv("VITE_CONSUMER_APP_URL", brand.web.appOrigin);
     expect(salesDemoFormEditorUrl("https://example.com/x")).toBeNull();
     expect(salesDemoFormEditorUrl("/host/audience/forms/demo_123"))
-      .toBe("https://app.catchdates.com/#/host/audience/forms/demo_123");
+      .toBe(`${brand.web.appOrigin}/#/host/audience/forms/demo_123`);
     vi.stubEnv("VITE_CONSUMER_APP_URL", "https://evil.test/path");
     expect(salesDemoFormEditorUrl("/host/audience/forms/demo_123")).toBeNull();
   });

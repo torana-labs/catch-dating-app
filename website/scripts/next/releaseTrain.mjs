@@ -8,6 +8,7 @@ import {fileURLToPath} from "node:url";
 import {waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
 import {canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
 import {currentReleaseLineage} from "./previewRelease.mjs";
+import {brand} from "@catch/brand";
 
 // The website release train. After main CI completes (or on the hourly
 // fallback), it previews main's head through the existing preview workflow,
@@ -180,7 +181,7 @@ async function runPromotion() {
   const run = await dispatchAndWait({repository, workflow: PROMOTE_WORKFLOW,
     // Promotion binds to the preview's own source, so main may have moved.
     inputs: {preview_run_id: process.env.PREVIEW_RUN_ID}, timeoutMs: 45 * 60_000});
-  summary(`Released \`${process.env.SOURCE_SHA}\` to https://catchdates.com (${run.html_url}).`);
+  summary(`Released \`${process.env.SOURCE_SHA}\` to ${brand.web.origin} (${run.html_url}).`);
 }
 
 function output(values) {

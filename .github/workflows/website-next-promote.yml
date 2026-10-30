@@ -134,7 +134,8 @@ jobs:
           firebase hosting:clone "catch-dating-app-64e51@$version" catch-dating-app-64e51:live \
             --project catch-dating-app-64e51 --non-interactive --json > build/next-promote/promotion.json
           EXPECTED_HOSTING_VERSION="$version" node website/scripts/next/hostingState.mjs verify-next
-          node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" https://catchdates.com > build/next-promote/live-checks.json
+          origin="$(node -p 'require("./packages/brand/brand.json").web.origin')"
+          node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" "$origin" > build/next-promote/live-checks.json
       - name: Record the released commit
         run: node website/scripts/next/promoteRelease.mjs record
       - name: Retain exact release and rollback identities

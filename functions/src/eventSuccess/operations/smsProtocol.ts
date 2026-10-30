@@ -9,6 +9,7 @@ import {Grant, guestIdentity, parseGrant, threadIdentity} from "./guestRecords";
 import {grantSecret, GuestLinkSigningKeys, matchesGuestSecret} from
   "./guestLinkTokens";
 import {sameMessageContext} from "./messagingPolicy";
+import {brandWebUrl} from "../../shared/generated/brand";
 
 export type {SmsConfig};
 export type SmsTemplate = SmsConfig["templates"][number];
@@ -125,7 +126,7 @@ export function renderEventSms(input: {
     eventTitle,
     instruction: intent.kind === "joiningUpdate" ?
       intent.guidance.text : intent.body,
-    responseUrl: "https://catchdates.com/event-update/" + grant.linkId +
+    responseUrl: brandWebUrl("/event-update/") + grant.linkId +
       "#" + secret,
   };
   const text = template.parts.map((part) => {

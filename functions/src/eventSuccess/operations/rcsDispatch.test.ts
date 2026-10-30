@@ -20,6 +20,7 @@ import {VerifiedRcsCallback} from "./rcsWebhookProtocol";
 import {RcsCallbackStore} from "./rcsCallbackStore";
 import {newMessageRecord} from "./messageOutbox";
 import {operationContentHash} from "../../operations/durableActions";
+import {BRAND} from "../../shared/generated/brand";
 
 const onlyRcs = ["catchEventRcs"] as const;
 const posts = (h: Awaited<ReturnType<typeof rcsHarness>>) =>
@@ -301,7 +302,7 @@ test("provider features change presentation without discarding guest choices",
     h.behavior.supportsOpenUrl = false;
     await h.dispatch();
     const body = JSON.parse(posts(h)[0].body);
-    assert.ok(body.contentMessage.text.includes("https://catchdates.com/"));
+    assert.ok(body.contentMessage.text.includes(`${BRAND.web.origin}/`));
     assert.equal(body.contentMessage.suggestions.length, 1);
     assert.ok(body.contentMessage.suggestions[0].reply);
   });

@@ -4,6 +4,8 @@ import {
   trackPageView,
 } from "../analytics";
 import type {PageKey, PageMeta} from "./pageMeta";
+import {brand} from "@catch/brand";
+
 export function useDocumentMeta(meta: PageMeta) {
   useEffect(() => {
     document.title = meta.title;
@@ -11,11 +13,11 @@ export function useDocumentMeta(meta: PageMeta) {
     setMetaProperty("og:title", meta.title);
     setMetaProperty("og:description", meta.description);
     setMetaProperty("og:type", "website");
-    setMetaProperty("og:url", `https://catchdates.com${meta.canonicalPath}`);
+    setMetaProperty("og:url", `${brand.web.origin}${meta.canonicalPath}`);
     setMetaContent("twitter:card", "summary_large_image");
     setMetaContent("twitter:title", meta.title);
     setMetaContent("twitter:description", meta.twitterDescription);
-    setCanonical(`https://catchdates.com${meta.canonicalPath}`);
+    setCanonical(`${brand.web.origin}${meta.canonicalPath}`);
     setOptionalMetaContent("robots", meta.robots);
   }, [meta]);
 }

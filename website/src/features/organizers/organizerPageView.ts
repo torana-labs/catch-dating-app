@@ -1,6 +1,7 @@
 import {catchAvatarInitialsOf, catchFormatAccentOf, type CatchGround, type CatchIconName} from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../content/organizerPage";
 import type {OrganizerPageEvent, OrganizerPageRecord, OrganizerPageReview} from "./organizerPage";
+import {brand} from "@catch/brand";
 
 /** `claimed` is the organiser's own page; `generated` is built from public pages before a claim. */
 export type OrganizerPageKind = "claimed" | "generated";
@@ -116,7 +117,7 @@ export interface OrganizerPageView {
 }
 
 const defaultZone = "Asia/Kolkata";
-const siteOrigin = "https://catchdates.com";
+const siteOrigin = brand.web.origin;
 // Sources that describe how a listing was seeded, not a page a visitor can open.
 const internalSourceTypes = new Set(["user_supplied", "embedded_event_data", "catch_demo"]);
 // Review notes from listing intake that are not facts about the organiser.

@@ -20,11 +20,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          sparse-checkout: website/scripts/probeProduction.mjs
+          sparse-checkout: |
+            website/scripts/probeProduction.mjs
+            packages/brand/brand.json
           sparse-checkout-cone-mode: false
           persist-credentials: false
       - uses: actions/setup-node@v6
         with:
           node-version: 24
       - name: Check status, canonical metadata, and launch content
-        run: node website/scripts/probeProduction.mjs --base-url https://catchdates.com --json
+        run: |
+          origin="$(node -p 'require("./packages/brand/brand.json").web.origin')"
+          node website/scripts/probeProduction.mjs --base-url "$origin" --json
