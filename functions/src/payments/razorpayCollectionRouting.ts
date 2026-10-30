@@ -157,6 +157,44 @@ function unavailable(): never {
     "The selected payment collection route is not ready.");
 }
 
+/** Read-only answer to "can a new paid event attempt start for this organizer
+ * now?". It applies the same policy and account checks as preparation, but
+ * loads no credentials and calls no provider. False means paid booking is
+ * unavailable: it is never a reason to try another merchant. An OAuth policy
+ * needs exactly one ready connection in its mode, so Catch's own account is
+ * only ever used when the policy explicitly selects `razorpayRoute`.
+ */
+export async function eventAdmissionCollectionReady(input: {
+  db: FirebaseFirestore.Firestore; organizerId: string; nowMillis: number;
+}): Promise<boolean> {
+  const {db, organizerId, nowMillis} = input;
+  try {
+    // No legacy selection: an event with no policy has no collection route.
+    const {selection} = await readPaymentRoute({db, organizerId,
+      purpose: "eventAdmission"});
+    if (selection.currency !== "INR" || selection.merchantCountry !== "IN") {
+      return false;
+    }
+    if (selection.route === "razorpayOAuth") {
+      const candidates = await db.collection("organizerPaymentConnections")
+        .where("organizerId", "==", organizerId).where("status", "==", "ready")
+        .where("mode", "==", selection.mode).limit(2).get();
+      if (candidates.docs.length !== 1) return false;
+      requireReadyFormPaymentConnection(requireDoc<Connection>(
+        candidates.docs[0], "OrganizerPaymentConnectionDocument"),
+      organizerId, nowMillis);
+      return true;
+    }
+    if (selection.route === "razorpayRoute") {
+      await readReadyRouteAccount({db, organizerId});
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 export function loadRazorpayPlatformProfile(configurationVersion: string) {
   return platformLoader().load(configurationVersion);
 }
