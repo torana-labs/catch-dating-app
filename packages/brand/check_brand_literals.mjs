@@ -25,6 +25,7 @@ const literal = (text) => escape(text).replaceAll("\\.", "\\\\?\\.").replaceAll(
 const excluded = [
   /^packages\/brand\//u,
   /^functions\/src\/shared\/generated\/brand\.ts$/u,
+  /^website\/src\/content\/brand\.ts$/u,
   /\.md$/u,
   /^design\/source_packs\//u,
   /^design\/sync\//u,
@@ -42,6 +43,9 @@ export function rules(record = brand) {
     {id: "domain", pattern: new RegExp(literal(record.web.domain), "iu"), applies: () => true},
     {id: "instagram-handle", pattern: new RegExp(`\\b${literal(record.social.instagramHandle)}\\b`, "iu"), applies: () => true},
     {id: "support-email", pattern: new RegExp(literal(record.support.email), "iu"), applies: () => true},
+    ...[record.support.phone, record.support.phoneDisplay, record.support.whatsapp].filter(Boolean)
+      .filter((value, index, all) => all.indexOf(value) === index)
+      .map((value) => ({id: "support-phone", pattern: new RegExp(literal(value), "u"), applies: () => true})),
     {id: "name-in-copy", pattern: new RegExp(`\\b${escape(record.name)}\\b`, "u"),
       applies: (file) => copyFiles.some((copy) => copy.test(file))},
   ];

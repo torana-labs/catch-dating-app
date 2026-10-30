@@ -14,13 +14,18 @@ cannot switch.
 
 | Runtime | Reads | Notes |
 |---|---|---|
-| Website, admin, web UI (`@catch/brand`) | `import {brand, webUrl, applyBrand} from "@catch/brand"` | Workspace package; no copy. |
-| Node scripts (`website/scripts`, `tool/`) | the same import, or `@catch/brand/brand.json` | Plain ESM, no build step. |
-| Cloud Functions | `functions/src/shared/generated/brand.ts` (`BRAND`, `brandWebUrl`) | Functions deploys only `functions/`, so `generate.mjs` writes a copy. |
-| JSON copy (`legal.json`, `meta.json`, …) | `{{brand.name}}`, `{{brand.web.domain}}`, … | The importing module passes the document through `applyBrand`. An unknown token throws. |
+| Admin, web UI, website outside `src/content/`, Node scripts | `import {brand, webUrl, applyBrand} from "@catch/brand"` | Workspace package; plain ESM, no copy. |
+| Website copy (`website/src/content/`) | `./brand.ts` (generated) | Content modules may only import content, and the release smoke runs them from a bare worktree with no packages installed. |
+| Cloud Functions | `functions/src/shared/generated/brand.ts` (`BRAND`, `brandWebUrl`, `BRAND_ORIGIN_PATTERN`) | Functions deploys only `functions/`. |
+| JSON copy (`legal.json`, …) | `{{brand.name}}`, `{{brand.web.domain}}`, … | The importing module passes the document through `applyBrand`. An unknown token throws. |
 
 Run `node packages/brand/generate.mjs` after editing `brand.json`;
 `--check` fails while a generated copy is stale.
+
+CI runs `npm --workspace @catch/brand run check` and the package tests before
+the website and admin typecheck, and `functions/src/shared/brand.test.ts` runs
+the generator check and the guard in the Functions lane. A brand edit always
+touches the generated Functions copy, so both lanes run.
 
 ## Guard
 

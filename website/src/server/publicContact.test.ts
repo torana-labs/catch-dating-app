@@ -3,13 +3,14 @@ vi.mock("server-only", () => ({}));
 vi.mock("./publicCatalog", () => ({publicFirestore: vi.fn()}));
 import {fallbackPublicContact, parsePublicContactDocument} from "../content/publicContact";
 import {loadPublicContact} from "./publicContact";
+import {brand} from "@catch/brand";
 
 const doc = (revision: number, supportEmail: string) => ({schemaVersion: 1, revision, supportEmail});
 
 it("projects only the allowed public email and observes a new document on the next read", async () => {
-  let current: unknown = doc(1, "suvrat.garg@gmail.com");
+  let current: unknown = doc(1, brand.support.email);
   const read = vi.fn(async () => current);
-  expect(await loadPublicContact(read)).toEqual({supportEmail: "suvrat.garg@gmail.com"});
+  expect(await loadPublicContact(read)).toEqual({supportEmail: brand.support.email});
   current = doc(2, "support@example.org");
   expect(await loadPublicContact(read)).toEqual({supportEmail: "support@example.org"});
   expect(read).toHaveBeenCalledTimes(2);
@@ -46,6 +47,6 @@ it("does not share one request's contact with another or retain it after failure
   const second = await loadPublicContact(async () => doc(4, "second@example.org"));
   const third = await loadPublicContact(async () => {throw new Error("unavailable");});
   expect([first.supportEmail, second.supportEmail, third.supportEmail]).toEqual([
-    "first@example.org", "second@example.org", "suvrat.garg@gmail.com",
+    "first@example.org", "second@example.org", brand.support.email,
   ]);
 });

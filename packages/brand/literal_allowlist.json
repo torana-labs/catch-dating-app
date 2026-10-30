@@ -80,9 +80,7 @@
     "website/public/assets/app-screenshots/manifest.json": 1,
     "website/scripts/next/deployedSmoke.mjs": 4,
     "website/scripts/next/deployedSmoke.test.mjs": 7,
-    "website/scripts/ownerGatedContent.test.mjs": 1,
     "website/scripts/probeProduction.mjs": 1,
-    "website/src/content/legal.json": 3,
     "website/src/server/robotsPolicy.test.ts": 1,
     "website/src/server/robotsPolicy.ts": 2,
     "widgetbook/lib/event_success/event_departure_preview_repositories.dart": 1
@@ -93,43 +91,12 @@
   },
   "name-in-copy": {
     "lib/l10n/app_en.arb": 196,
-    "website/src/content/account.ts": 1,
     "website/src/content/contentContracts.test.ts": 3,
-    "website/src/content/eventAssistance.ts": 1,
-    "website/src/content/eventInvite.ts": 4,
-    "website/src/content/eventMessaging.ts": 2,
-    "website/src/content/eventOffer.ts": 2,
-    "website/src/content/eventRehearsal.ts": 1,
-    "website/src/content/eventRuntime.ts": 12,
-    "website/src/content/events.ts": 16,
-    "website/src/content/explorePage.ts": 3,
-    "website/src/content/forms.ts": 6,
-    "website/src/content/generated.ts": 67,
     "website/src/content/homePage.ts": 13,
-    "website/src/content/host.ts": 9,
-    "website/src/content/hostLanding.ts": 12,
-    "website/src/content/hostProduct.ts": 10,
-    "website/src/content/householdRsvp.ts": 1,
-    "website/src/content/legal.json": 51,
-    "website/src/content/marketing.ts": 2,
-    "website/src/content/marketingConsent.ts": 1,
     "website/src/content/markets/in.ts": 1,
     "website/src/content/meta.json": 57,
     "website/src/content/meta.schema.json": 1,
-    "website/src/content/organizer.ts": 2,
-    "website/src/content/organizerPage.ts": 9,
-    "website/src/content/previewCards.json": 7,
-    "website/src/content/routeRecovery.ts": 1,
-    "website/src/content/salesDemo.ts": 3,
-    "website/src/content/salesDemoContinuation.ts": 4,
-    "website/src/content/site.ts": 1,
-    "website/src/content/templates.ts": 2
+    "website/src/content/previewCards.json": 7
   },
-  "support-email": {
-    "website/scripts/next/publicContactOperator.test.mjs": 8,
-    "website/scripts/ownerGatedContent.test.mjs": 3,
-    "website/src/content/legal.json": 12,
-    "website/src/features/legal/LegalPage.test.tsx": 3,
-    "website/src/server/publicContact.test.ts": 3
-  }
+  "support-email": {}
 }

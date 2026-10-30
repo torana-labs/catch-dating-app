@@ -1,9 +1,9 @@
-import legalDocument from "./legal.json" with {type: "json"};
+import {brand} from "./brand.ts";
 
 /** Only this public field may leave the server-side configuration reader. */
 export type PublicContact = Readonly<{supportEmail: string}>;
 export const fallbackPublicContact: PublicContact = Object.freeze({
-  supportEmail: legalDocument.operator.supportEmail,
+  supportEmail: brand.support.email,
 });
 
 export type PublicContactDocument = Readonly<{

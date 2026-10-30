@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Writes the brand record into runtimes that cannot import packages/brand
-// directly. Functions deploys only functions/, so it gets a generated module.
+// directly. Functions deploys only functions/; the website's release smoke runs
+// its copy modules from a bare release worktree where only website/ resolves.
 // --check fails when an output is stale.
 import fs from "node:fs";
 import path from "node:path";
@@ -33,9 +34,53 @@ export const BRAND_ORIGIN_PATTERN = ${JSON.stringify(escapeRegExp(record.web.ori
 `;
 }
 
+export function renderWebsiteModule(record = brand) {
+  return `${header}
+// Website code imports the brand from here, never from @catch/brand: the
+// release smoke runs website modules where no package is installed.
+
+export const brand = ${JSON.stringify(record, null, 2)} as const;
+
+export type Brand = typeof brand;
+
+/** An absolute URL on the public website. \`path\` starts with "/". */
+export function webUrl(path: \`/\${string}\` = "/"): string {
+  return brand.web.origin + path;
+}
+
+const tokenPattern = /\\{\\{\\s*brand\\.([A-Za-z0-9_.]+)\\s*\\}\\}/gu;
+
+function resolveBrandToken(path: string): string {
+  let value: unknown = brand;
+  for (const key of path.split(".")) {
+    value = value !== null && typeof value === "object" && Object.hasOwn(value, key) ?
+      (value as Record<string, unknown>)[key] : undefined;
+  }
+  if (typeof value !== "string") throw new Error(\`Unknown brand token: {{brand.\${path}}}\`);
+  return value;
+}
+
+/** Resolves {{brand.*}} tokens; an unknown token throws. */
+export function applyBrandText(text: string): string {
+  return text.replace(tokenPattern, (_match, path: string) => resolveBrandToken(path));
+}
+
+/** Resolves brand tokens in every string of a JSON-like value. */
+export function applyBrand<T>(value: T): T {
+  if (typeof value === "string") return applyBrandText(value) as T;
+  if (Array.isArray(value)) return value.map(applyBrand) as T;
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, applyBrand(child)])) as T;
+  }
+  return value;
+}
+`;
+}
+
 export function outputs(record = brand) {
   return [
     {path: "functions/src/shared/generated/brand.ts", content: renderFunctionsModule(record)},
+    {path: "website/src/content/brand.ts", content: renderWebsiteModule(record)},
   ];
 }
 

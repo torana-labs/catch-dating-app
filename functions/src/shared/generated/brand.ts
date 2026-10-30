@@ -15,8 +15,9 @@ export const BRAND = {
   },
   "support": {
     "email": "suvrat.garg@gmail.com",
-    "phone": null,
-    "whatsapp": null
+    "phone": "+919893191829",
+    "phoneDisplay": "+91 98931 91829",
+    "whatsapp": "+919893191829"
   },
   "operator": {
     "legalName": "Torana",

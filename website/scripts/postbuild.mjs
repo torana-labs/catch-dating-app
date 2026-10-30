@@ -7,7 +7,7 @@ import {
   readWebsiteMeta,
   staticRouteMeta,
 } from "../../tool/marketing/website_meta_contract.mjs";
-import {brand} from "@catch/brand";
+import {applyBrand, brand} from "@catch/brand";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const websiteRoot = path.resolve(dirname, "..");
@@ -28,7 +28,7 @@ const legalContentPath = path.join(websiteRoot, "src", "content", "legal.json");
 const baseUrl = String(args.baseUrl ?? brand.web.origin).replace(/\/+$/, "");
 const hostListings = JSON.parse(fs.readFileSync(hostListingsPath, "utf8"));
 const websiteMeta = readWebsiteMeta(metaContentPath);
-const legalContent = JSON.parse(fs.readFileSync(legalContentPath, "utf8"));
+const legalContent = applyBrand(JSON.parse(fs.readFileSync(legalContentPath, "utf8")));
 const publicListings = hostListings.filter(isPubliclyReadableListing);
 const publicEvents = buildPublicEventRecords(publicListings);
 

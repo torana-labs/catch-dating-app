@@ -7,13 +7,13 @@ import {brand} from "@catch/brand";
 it.each(["help", "privacy", "terms", "account_deletion", "refunds", "contact"] as const)("renders a changed %s contact in text and every mailto without rebuilding", page => {
   const source = publishedLegalContent.pages[page];
   const first = renderToStaticMarkup(<LegalPage page={source} effectiveDate={publishedLegalContent.effectiveDate}
-    contact={{supportEmail: "suvrat.garg@gmail.com"}} />);
+    contact={{supportEmail: brand.support.email}} />);
   const changed = renderToStaticMarkup(<LegalPage page={source} effectiveDate={publishedLegalContent.effectiveDate}
     contact={{supportEmail: "support@example.org"}} />);
-  expect(first).toContain("mailto:suvrat.garg@gmail.com");
+  expect(first).toContain(`mailto:${brand.support.email}`);
   expect(changed).toContain("mailto:support@example.org");
   expect(changed).toContain("support@example.org");
-  expect(changed).not.toContain("suvrat.garg@gmail.com");
+  expect(changed).not.toContain(brand.support.email);
   expect(changed).not.toContain(`suvrat@${brand.web.domain}`);
   expect((changed.match(/mailto:support@example.org/gu) ?? []).length).toBe(1);
 });

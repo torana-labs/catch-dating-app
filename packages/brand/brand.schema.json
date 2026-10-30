@@ -25,11 +25,12 @@
     "support": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["email", "phone", "whatsapp"],
+      "required": ["email", "phone", "phoneDisplay", "whatsapp"],
       "properties": {
         "email": {"$ref": "#/$defs/email", "description": "Published support and grievance address. config/publicContact may override it at run time on the website."},
-        "phone": {"$ref": "#/$defs/optionalPhone"},
-        "whatsapp": {"$ref": "#/$defs/optionalPhone"}
+        "phone": {"$ref": "#/$defs/optionalPhone", "description": "E.164 support phone, or null when none is published."},
+        "phoneDisplay": {"type": ["string", "null"], "pattern": "^\\+[0-9 ]{8,20}$", "description": "The support phone as printed in copy."},
+        "whatsapp": {"$ref": "#/$defs/optionalPhone", "description": "E.164 WhatsApp support number, or null."}
       }
     },
     "operator": {
