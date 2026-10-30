@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/schema_contracts/generated/event_assistance_kinds.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/event_assistance_kinds.g.dart';
 
 enum EventAssistanceExecutionMode { live, rehearsal }
 

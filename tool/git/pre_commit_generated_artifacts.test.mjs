@@ -190,7 +190,7 @@ test("schema-generated Dart keeps exact generator ownership while source formats
       return {status: 0, stderr: "", stdout: ""};
     },
     stagedPaths: ["lib/example.dart",
-      "lib/core/schema_contracts/generated/schemas/example.g.dart"],
+      "lib/platform/schema_contracts/generated/schemas/example.g.dart"],
     unstagedPaths: [],
   });
   assert.deepEqual(result.formattedDartPaths, ["lib/example.dart"]);
@@ -222,7 +222,7 @@ test("stale generated Dart still rejects the commit without a formatter rewrite"
       calls.push(spec);
       return {status: 1, stderr: "stale schema output", stdout: ""};
     },
-    stagedPaths: ["lib/core/schema_contracts/generated/schemas/example.g.dart"],
+    stagedPaths: ["lib/platform/schema_contracts/generated/schemas/example.g.dart"],
     unstagedPaths: [],
   }), (error) => error instanceof PreCommitGeneratedArtifactError &&
     /Generated artifact drift/.test(error.message));

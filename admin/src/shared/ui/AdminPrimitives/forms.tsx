@@ -1,6 +1,11 @@
 // Slightly above the family target because the generic decision footer shares the review form-state types.
 import type {InputHTMLAttributes, ReactNode} from "react";
-import {CatchField, CheckboxControl} from "@catch/web-ui";
+import {
+  CatchAdminIntakeDecisionActions,
+  CatchAdminIntakeDecisionState,
+  CatchField,
+  CheckboxControl,
+} from "@catch/web-ui";
 import {CheckCircle2, FileWarning} from "lucide-react";
 
 import {
@@ -11,7 +16,7 @@ import {
 } from "./shared";
 
 import {AlertRow, Panel} from "./data";
-import {AdminDecisionFooterShell, AdminIntakeDecisionActions, AdminIntakeDecisionState} from "./intake";
+import {AdminDecisionFooterShell} from "./intake";
 import {AdminButton} from "./overview";
 
 export {selectOptions} from "./shared";
@@ -116,13 +121,13 @@ export function DecisionFooter<TTargetType extends string = string>({
   return (
     <AdminDecisionFooterShell compact={compact}>
       {localDecision ? (
-        <AdminIntakeDecisionState>
+        <CatchAdminIntakeDecisionState>
           <CheckCircle2 size={16} strokeWidth={1.9} />
           <div>
             <strong>{localDecision.decisionStatus.replaceAll("_", " ")}</strong>
             <span>{localDecision.decisionPath}</span>
           </div>
-        </AdminIntakeDecisionState>
+        </CatchAdminIntakeDecisionState>
       ) : (
         <>
           <CatchField
@@ -132,7 +137,7 @@ export function DecisionFooter<TTargetType extends string = string>({
             value={note}
             onChanged={onNoteChange}
           />
-          <AdminIntakeDecisionActions>
+          <CatchAdminIntakeDecisionActions>
             <AdminButton
               disabled={approveDisabled}
               onClick={() => onDecision({
@@ -196,7 +201,7 @@ export function DecisionFooter<TTargetType extends string = string>({
                 Export ready
               </AdminButton>
             ) : null}
-          </AdminIntakeDecisionActions>
+          </CatchAdminIntakeDecisionActions>
           {approvalDisabledReason ? (
             <AlertRow
               icon={<FileWarning size={16} strokeWidth={1.9} />}

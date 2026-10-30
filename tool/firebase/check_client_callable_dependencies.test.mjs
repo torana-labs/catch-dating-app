@@ -205,7 +205,7 @@ test("reads authored client source only", () => {
   writeFiles(root, {
     "lib/hosts/repository.dart": "'listOrganizerContacts'",
     "lib/hosts/repository.g.dart": "'generatedOnly'",
-    "lib/core/schema_contracts/generated/registry.dart": "'everyCallable'",
+    "lib/platform/schema_contracts/generated/registry.dart": "'everyCallable'",
     "website/src/account.ts": '"manageWebsiteAccount"',
     "website/src/account.test.ts": '"testOnly"',
     "website/src/notes.md": '"notSource"',

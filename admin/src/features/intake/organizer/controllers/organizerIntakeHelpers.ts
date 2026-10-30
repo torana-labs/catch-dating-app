@@ -1,6 +1,4 @@
 import type {
-  AdminDecideOrganizerIntakeResponse,
-  AdminDecideOrganizerPolicyGapResponse,
   AdminCreateOrganizerDraftFromCandidatePayload,
   AdminRecordOrganizerCurationPayload,
   OrganizerCurationSurface,
@@ -8,10 +6,6 @@ import type {
   OrganizerPolicyGapDecision,
 } from "../../../../shared/types/adminTypes";
 import type * as Intake from "../types/organizerIntakeTypes";
-
-export type OrganizerPendingInputSubmittedDecision =
-  | AdminDecideOrganizerIntakeResponse
-  | AdminDecideOrganizerPolicyGapResponse;
 
 export type OrganizerOperationStage =
   "incoming" | "verify" | "resolve" | "ready";
@@ -24,66 +18,6 @@ export function organizerOperationStage(
   if (reviewStatus === "needs_attention") return "resolve";
   if (reviewStatus === "ready") return "ready";
   return null;
-}
-
-export function pendingInputSubmittedDecision({
-  input,
-  policyDecisions,
-  publicationDecisions,
-}: {
-  input: Intake.OrganizerPendingInputItem;
-  policyDecisions: Record<string, AdminDecideOrganizerPolicyGapResponse>;
-  publicationDecisions: Record<string, AdminDecideOrganizerIntakeResponse>;
-}): OrganizerPendingInputSubmittedDecision | null {
-  if (input.requestType === "admin_publication_decision") {
-    return publicationDecisions[input.subjectId] ?? null;
-  }
-  if (input.requestType === "policy_decision") {
-    return policyDecisions[input.subjectId] ?? null;
-  }
-  return null;
-}
-
-export function pendingInputInFlightDecision({
-  input,
-  policyInFlight,
-  publicationInFlight,
-}: {
-  input: Intake.OrganizerPendingInputItem;
-  policyInFlight: Record<string, OrganizerPolicyGapDecision>;
-  publicationInFlight: Record<string, OrganizerIntakeDecision>;
-}): string | undefined {
-  if (input.requestType === "admin_publication_decision") {
-    return publicationInFlight[input.subjectId];
-  }
-  if (input.requestType === "policy_decision") {
-    return policyInFlight[input.subjectId];
-  }
-  return undefined;
-}
-
-export function pendingInputDecisionState(
-  decision: OrganizerPendingInputSubmittedDecision
-) {
-  return "projectionState" in decision ?
-    decision.projectionState :
-    decision.operationalState;
-}
-
-export function pendingInputDecisionLabel(decision: string) {
-  if (decision === "approve_public") return "Approve public";
-  if (decision === "accept") return "Accept";
-  return decision.charAt(0).toUpperCase() +
-    decision.slice(1).replaceAll("_", " ");
-}
-
-export function pendingInputDecisionProgressLabel(decision: string) {
-  if (decision === "approve_public") return "Approving";
-  if (decision === "accept") return "Accepting";
-  if (decision === "hold") return "Holding";
-  if (decision === "suppress") return "Suppressing";
-  if (decision === "reject") return "Rejecting";
-  return "Recording";
 }
 
 export function organizerIntakeDecisionFromString(
@@ -174,21 +108,6 @@ export function organizerDraftPayloadForCandidate(
       organizerType: form.organizerType,
       reviewNote,
     },
-  };
-}
-
-export function defaultCurationForm(
-  item: Intake.OrganizerIntakeItem
-): Intake.OrganizerCurationFormState {
-  return {
-    operationType: item.surfaces.length > 0 ?
-      "surface_decision" :
-      "suppress_entity",
-    targetEntityId: "",
-    surfaceId: item.surfaces[0]?.surfaceId ?? "",
-    newEntityId: "",
-    decision: "reject_wrong_entity",
-    reason: "",
   };
 }
 

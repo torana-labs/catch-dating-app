@@ -13,7 +13,7 @@ bool migrationScope(String relative) =>
         RegExp(r'^apps/[^/]+/lib/').hasMatch(relative) ||
         relative.startsWith('tool/catch_ui_lints_probe/')) &&
     !relative.startsWith('lib/platform/theme/') &&
-    !relative.startsWith('lib/core/schema_contracts/generated/') &&
+    !relative.startsWith('lib/platform/schema_contracts/generated/') &&
     !relative.startsWith('lib/l10n/generated/') &&
     !relative.endsWith('.g.dart') &&
     !relative.endsWith('.freezed.dart');

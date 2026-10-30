@@ -1,4 +1,10 @@
-import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
+import {
+  CatchAdminCommandRow,
+  CatchAdminCommandStack,
+  CatchBadge,
+  CatchField,
+  CatchText,
+} from "@catch/web-ui";
 import {
   CheckCircle2,
   Clock3,
@@ -23,8 +29,6 @@ import {
   CardHeader,
   EmptyState,
   QualityRow,
-  AdminCommandRow,
-  AdminCommandStack,
   AdminEyebrow,
   AdminMarketingAppCapturePreview,
   AdminMarketingAppMediaPaths,
@@ -223,14 +227,14 @@ function MarketingMediaLibrary({
         title="Media automation"
         action={media.sourceDocs.pipelineDoc}
       >
-        <AdminCommandStack>
+        <CatchAdminCommandStack>
           {Object.entries(media.commands).map(([label, command]) => (
-            <AdminCommandRow key={label}>
+            <CatchAdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </AdminCommandRow>
+            </CatchAdminCommandRow>
           ))}
-        </AdminCommandStack>
+        </CatchAdminCommandStack>
       </AdminPanel>
       <AdminPanel
         icon={<Lock size={18} strokeWidth={1.9} />}
@@ -558,14 +562,14 @@ function MarketingAppFeatureMediaView({
         title="Existing automation"
         action={media.sourceDocs.pipelineDoc}
       >
-        <AdminCommandStack>
+        <CatchAdminCommandStack>
           {Object.entries(media.commands).map(([label, command]) => (
-            <AdminCommandRow key={label}>
+            <CatchAdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </AdminCommandRow>
+            </CatchAdminCommandRow>
           ))}
-        </AdminCommandStack>
+        </CatchAdminCommandStack>
       </AdminPanel>
       <AdminPanel
         icon={<Lock size={18} strokeWidth={1.9} />}

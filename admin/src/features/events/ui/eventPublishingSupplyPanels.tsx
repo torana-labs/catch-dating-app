@@ -1,4 +1,10 @@
-import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
+import {
+  CatchAdminIntakeSourceList,
+  CatchAdminSearchCandidateHeader,
+  CatchBadge,
+  CatchField,
+  CatchText,
+} from "@catch/web-ui";
 import {useState} from "react";
 import {Clock3, ExternalLink, FileWarning, FolderSearch} from "lucide-react";
 import type {
@@ -20,8 +26,6 @@ import {
   StateRow,
   TableActionButton,
   AdminEyebrow,
-  AdminIntakeSourceList,
-  AdminSearchCandidateHeader,
   AdminMutedCell,
   AdminRowTitle,
   AdminTagRow,
@@ -220,13 +224,13 @@ function ExternalEventSupplyDetail({
     <AdminEventSupplyDetail
       aria-label={`External event supply detail for ${event.title}`}
     >
-      <AdminSearchCandidateHeader>
+      <CatchAdminSearchCandidateHeader>
         <div>
           <AdminEyebrow>{event.targetPath}</AdminEyebrow>
           <CatchText as="h3" variant="sectionTitle">{event.title}</CatchText>
         </div>
         <CatchBadge recipe="status" tone={externalEventNeedsReview(event) ? "neutral" : "success"} label={externalEventNeedsReview(event) ? "review open" : "reviewed"} />
-      </AdminSearchCandidateHeader>
+      </CatchAdminSearchCandidateHeader>
       <QualityList>
         <StateRow label="Canonical organizer" value={event.canonicalHostId} />
         <StateRow label="Compatibility club" value={event.compatibilityClubId} />
@@ -251,7 +255,7 @@ function ExternalEventSupplyDetail({
         <CatchBadge label={`${event.duplicateCandidateCount} duplicate candidates`} />
         <CatchBadge label={event.availability} />
       </AdminTagRow>
-      <AdminIntakeSourceList>
+      <CatchAdminIntakeSourceList>
         <StateRow label="Platform" value={event.platform} />
         <StateRow label="Source key" value={event.sourceEventKey} />
         <StateRow label="Candidate" value={event.candidateId} />
@@ -260,7 +264,7 @@ function ExternalEventSupplyDetail({
         <StateRow label="Review batch" value={event.reviewBatchId} />
         <StateRow label="Reviewer" value={event.reviewer} />
         <StateRow label="Decided" value={event.decidedAt} />
-      </AdminIntakeSourceList>
+      </CatchAdminIntakeSourceList>
       <AdminEventSupplyLinks>
         {event.eventUrl ? (
           <AdminLinkButton

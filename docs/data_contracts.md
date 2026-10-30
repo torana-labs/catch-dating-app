@@ -39,7 +39,7 @@ Read this before changing:
 | Storage path contracts (upload paths, content-type, size limits, owner) | `contracts/storage/` |
 | Generated TypeScript interfaces, Ajv validators, and Admin SDK Timestamp types | `functions/src/shared/generated/` |
 | Generated website and Admin browser contract types | `website/src/shared/contracts/generated/` and `admin/src/generated/contracts/` |
-| Generated Dart schema constants/registry | `lib/core/schema_contracts/generated/` |
+| Generated Dart schema constants/registry | `lib/platform/schema_contracts/generated/` |
 | Tool-side schema registry and validators | `tool/contracts/generated/` |
 | Firestore operation ownership metadata | `tool/contracts/firestore_contract.json` |
 | Human operation map | `docs/backend_operation_catalog.md` |
@@ -1403,7 +1403,7 @@ moments and fails closed when the live-reveal ceremony loses its countdown
 clock, positive phase durations, or particle field.
 
 The generator emits typed Dart into
-`lib/core/schema_contracts/generated/event_success_moment_presentations.g.dart`
+`lib/platform/schema_contracts/generated/event_success_moment_presentations.g.dart`
 and TypeScript into
 `functions/src/shared/generated/eventSuccessMomentPresentations.ts`. Both
 outputs implement `fnv1a32-utf8-fields-v1` over event id, moment kind, reveal
@@ -2294,7 +2294,7 @@ venue inputs produce clear commands rather than invalid set values.
 
 `tool/contracts/generate_schema_contracts.mjs` emits typed Dart classes for
 every callable payload schema (and the `update_user_profile` patch) into
-`lib/core/schema_contracts/generated/callable_request_dtos.g.dart`. Each class
+`lib/platform/schema_contracts/generated/callable_request_dtos.g.dart`. Each class
 has a named-parameter constructor, typed fields, and a `toJson()` that the
 existing `test/core/callable_dto_contracts_test.dart` validates against the
 source schema. Generated patch helpers expose `toFieldsJson()` for repository
@@ -2325,7 +2325,7 @@ decoders).
 ### Field Constraint Projection
 
 The schema generator also emits
-`lib/core/schema_contracts/generated/field_constraints.g.dart`. It projects
+`lib/platform/schema_contracts/generated/field_constraints.g.dart`. It projects
 UI-relevant requiredness, value and item types, string length, format, pattern,
 enum values, collection bounds, uniqueness, numeric bounds, and `multipleOf`
 steps from every registered schema into typed
