@@ -4170,7 +4170,47 @@
         "reconcileHostMembershipCharges"
       ],
       "migrationNotes": [
-        "Keyed by the provider payment id; the transfer lease prevents a second Route transfer after an unknown outcome."
+        "Keyed by the provider payment id. hostCollected charges (no fee, no transfer) and platformSplit charges (Route transfer behind a lease) both freeze commercialTerms; charges recorded before terms carry no snapshot and are reviewed by the commission statement."
+      ]
+    },
+    {
+      "id": "commercialTerms",
+      "path": "commercialTerms/{termsId}",
+      "rulesMatch": "/commercialTerms/{termsId}",
+      "typescriptInterface": "CommercialTermsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps commercial terms and their history server-only"
+      ],
+      "owner": "Catch operators (Finance, Admin Owner) through manageCommercialTerms",
+      "read": "server only; the payment resolver and the admin callable",
+      "write": "manageCommercialTerms only: expected-revision replacement with a reason, an immutable revision record and an admin audit log in one transaction",
+      "exportedFunctions": [
+        "manageCommercialTerms"
+      ],
+      "migrationNotes": [
+        "New collection. Until commercialTerms/platform exists, platformSplit (Route) payments and memberships fail closed and hostCollected ticket and form payments carry no terms snapshot. Seed it through manageCommercialTerms before relying on either; no backfill rewrites recorded payments."
+      ]
+    },
+    {
+      "id": "commercialTermsRevisions",
+      "path": "commercialTermsRevisions/{revisionId}",
+      "rulesMatch": "/commercialTermsRevisions/{revisionId}",
+      "typescriptInterface": "CommercialTermsRevisionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps commercial terms and their history server-only"
+      ],
+      "owner": "manageCommercialTerms",
+      "read": "server only; operator audit",
+      "write": "create-only in the same transaction as the commercialTerms write it records",
+      "exportedFunctions": [
+        "manageCommercialTerms"
+      ],
+      "migrationNotes": [
+        "New append-only history keyed <termsId>_r<revision>; never updated or deleted."
       ]
     },
     {

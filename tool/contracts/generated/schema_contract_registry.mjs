@@ -48482,6 +48482,188 @@ export const publicEventPaymentDocumentSchema = {
           ],
           "minLength": 1,
           "maxLength": 256
+        },
+        "commercialTerms": {
+          "description": "Effective commercial terms frozen when the attempt was prepared. Absent on payments prepared before commercial terms existed, or while platform defaults were unconfigured for a hostCollected route; a commission statement reviews those explicitly.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "purpose",
+            "organizerId",
+            "platformRevision",
+            "organizerRevision",
+            "moneyFlow",
+            "merchantOfRecord",
+            "currency",
+            "commission",
+            "trial",
+            "toolsOnly",
+            "gatewayFeeBearer",
+            "purposeTerms",
+            "resolvedAtMillis"
+          ],
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "purpose": {
+              "enum": [
+                "eventAdmission",
+                "formFee",
+                "hostMembership"
+              ]
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "platformRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "organizerRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "moneyFlow": {
+              "description": "hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.",
+              "enum": [
+                "hostCollected",
+                "platformSplit"
+              ]
+            },
+            "merchantOfRecord": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "commission": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "rateBasisPoints",
+                "capMinor",
+                "cycleDays",
+                "cycleAnchor",
+                "base",
+                "taxTreatment"
+              ],
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "capMinor": {
+                  "description": "Cap per cycle in minor units; null means uncapped.",
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cycleDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366
+                },
+                "cycleAnchor": {
+                  "enum": [
+                    "trialEnd"
+                  ]
+                },
+                "base": {
+                  "enum": [
+                    "netOfRefunds",
+                    "gross"
+                  ]
+                },
+                "taxTreatment": {
+                  "description": "exclusive: amounts are before GST, which is added on top.",
+                  "enum": [
+                    "exclusive",
+                    "inclusive"
+                  ]
+                }
+              }
+            },
+            "trial": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "days",
+                "anchor"
+              ],
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 366
+                },
+                "anchor": {
+                  "enum": [
+                    "firstEvent"
+                  ]
+                }
+              }
+            },
+            "toolsOnly": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "feeMinor"
+              ],
+              "properties": {
+                "feeMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+                }
+              }
+            },
+            "gatewayFeeBearer": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "purposeTerms": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "countsTowardCommission",
+                "atSourceFeeBasisPoints"
+              ],
+              "properties": {
+                "countsTowardCommission": {
+                  "type": "boolean"
+                },
+                "atSourceFeeBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9999,
+                  "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                }
+              }
+            },
+            "resolvedAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
         }
       }
     },
@@ -49141,6 +49323,188 @@ export const publicEventAdmissionReceiptDocumentSchema = {
           ],
           "minLength": 1,
           "maxLength": 256
+        },
+        "commercialTerms": {
+          "description": "Effective commercial terms frozen when the attempt was prepared. Absent on payments prepared before commercial terms existed, or while platform defaults were unconfigured for a hostCollected route; a commission statement reviews those explicitly.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "purpose",
+            "organizerId",
+            "platformRevision",
+            "organizerRevision",
+            "moneyFlow",
+            "merchantOfRecord",
+            "currency",
+            "commission",
+            "trial",
+            "toolsOnly",
+            "gatewayFeeBearer",
+            "purposeTerms",
+            "resolvedAtMillis"
+          ],
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "purpose": {
+              "enum": [
+                "eventAdmission",
+                "formFee",
+                "hostMembership"
+              ]
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "platformRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "organizerRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "moneyFlow": {
+              "description": "hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.",
+              "enum": [
+                "hostCollected",
+                "platformSplit"
+              ]
+            },
+            "merchantOfRecord": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "commission": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "rateBasisPoints",
+                "capMinor",
+                "cycleDays",
+                "cycleAnchor",
+                "base",
+                "taxTreatment"
+              ],
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "capMinor": {
+                  "description": "Cap per cycle in minor units; null means uncapped.",
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cycleDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366
+                },
+                "cycleAnchor": {
+                  "enum": [
+                    "trialEnd"
+                  ]
+                },
+                "base": {
+                  "enum": [
+                    "netOfRefunds",
+                    "gross"
+                  ]
+                },
+                "taxTreatment": {
+                  "description": "exclusive: amounts are before GST, which is added on top.",
+                  "enum": [
+                    "exclusive",
+                    "inclusive"
+                  ]
+                }
+              }
+            },
+            "trial": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "days",
+                "anchor"
+              ],
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 366
+                },
+                "anchor": {
+                  "enum": [
+                    "firstEvent"
+                  ]
+                }
+              }
+            },
+            "toolsOnly": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "feeMinor"
+              ],
+              "properties": {
+                "feeMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+                }
+              }
+            },
+            "gatewayFeeBearer": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "purposeTerms": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "countsTowardCommission",
+                "atSourceFeeBasisPoints"
+              ],
+              "properties": {
+                "countsTowardCommission": {
+                  "type": "boolean"
+                },
+                "atSourceFeeBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9999,
+                  "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                }
+              }
+            },
+            "resolvedAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
         }
       }
     },
@@ -50115,6 +50479,188 @@ export const organizerEventOfferPaymentDocumentSchema = {
           ],
           "minLength": 1,
           "maxLength": 256
+        },
+        "commercialTerms": {
+          "description": "Effective commercial terms frozen when the attempt was prepared. Absent on payments prepared before commercial terms existed, or while platform defaults were unconfigured for a hostCollected route; a commission statement reviews those explicitly.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "purpose",
+            "organizerId",
+            "platformRevision",
+            "organizerRevision",
+            "moneyFlow",
+            "merchantOfRecord",
+            "currency",
+            "commission",
+            "trial",
+            "toolsOnly",
+            "gatewayFeeBearer",
+            "purposeTerms",
+            "resolvedAtMillis"
+          ],
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "purpose": {
+              "enum": [
+                "eventAdmission",
+                "formFee",
+                "hostMembership"
+              ]
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "platformRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "organizerRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "moneyFlow": {
+              "description": "hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.",
+              "enum": [
+                "hostCollected",
+                "platformSplit"
+              ]
+            },
+            "merchantOfRecord": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "commission": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "rateBasisPoints",
+                "capMinor",
+                "cycleDays",
+                "cycleAnchor",
+                "base",
+                "taxTreatment"
+              ],
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "capMinor": {
+                  "description": "Cap per cycle in minor units; null means uncapped.",
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cycleDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366
+                },
+                "cycleAnchor": {
+                  "enum": [
+                    "trialEnd"
+                  ]
+                },
+                "base": {
+                  "enum": [
+                    "netOfRefunds",
+                    "gross"
+                  ]
+                },
+                "taxTreatment": {
+                  "description": "exclusive: amounts are before GST, which is added on top.",
+                  "enum": [
+                    "exclusive",
+                    "inclusive"
+                  ]
+                }
+              }
+            },
+            "trial": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "days",
+                "anchor"
+              ],
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 366
+                },
+                "anchor": {
+                  "enum": [
+                    "firstEvent"
+                  ]
+                }
+              }
+            },
+            "toolsOnly": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "feeMinor"
+              ],
+              "properties": {
+                "feeMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+                }
+              }
+            },
+            "gatewayFeeBearer": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "purposeTerms": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "countsTowardCommission",
+                "atSourceFeeBasisPoints"
+              ],
+              "properties": {
+                "countsTowardCommission": {
+                  "type": "boolean"
+                },
+                "atSourceFeeBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9999,
+                  "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                }
+              }
+            },
+            "resolvedAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
         }
       }
     },
@@ -50905,9 +51451,1635 @@ export const paymentRoutingSnapshotSchema = {
       ],
       "minLength": 1,
       "maxLength": 256
+    },
+    "commercialTerms": {
+      "description": "Effective commercial terms frozen when the attempt was prepared. Absent on payments prepared before commercial terms existed, or while platform defaults were unconfigured for a hostCollected route; a commission statement reviews those explicitly.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "purpose",
+        "organizerId",
+        "platformRevision",
+        "organizerRevision",
+        "moneyFlow",
+        "merchantOfRecord",
+        "currency",
+        "commission",
+        "trial",
+        "toolsOnly",
+        "gatewayFeeBearer",
+        "purposeTerms",
+        "resolvedAtMillis"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "purpose": {
+          "enum": [
+            "eventAdmission",
+            "formFee",
+            "hostMembership"
+          ]
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "platformRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "organizerRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "moneyFlow": {
+          "description": "hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.",
+          "enum": [
+            "hostCollected",
+            "platformSplit"
+          ]
+        },
+        "merchantOfRecord": {
+          "enum": [
+            "host",
+            "platform"
+          ]
+        },
+        "currency": {
+          "const": "INR"
+        },
+        "commission": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rateBasisPoints",
+            "capMinor",
+            "cycleDays",
+            "cycleAnchor",
+            "base",
+            "taxTreatment"
+          ],
+          "properties": {
+            "rateBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "capMinor": {
+              "description": "Cap per cycle in minor units; null means uncapped.",
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cycleDays": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 366
+            },
+            "cycleAnchor": {
+              "enum": [
+                "trialEnd"
+              ]
+            },
+            "base": {
+              "enum": [
+                "netOfRefunds",
+                "gross"
+              ]
+            },
+            "taxTreatment": {
+              "description": "exclusive: amounts are before GST, which is added on top.",
+              "enum": [
+                "exclusive",
+                "inclusive"
+              ]
+            }
+          }
+        },
+        "trial": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "days",
+            "anchor"
+          ],
+          "properties": {
+            "days": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 366
+            },
+            "anchor": {
+              "enum": [
+                "firstEvent"
+              ]
+            }
+          }
+        },
+        "toolsOnly": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "feeMinor"
+          ],
+          "properties": {
+            "feeMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000,
+              "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+            }
+          }
+        },
+        "gatewayFeeBearer": {
+          "enum": [
+            "host",
+            "platform"
+          ]
+        },
+        "purposeTerms": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "countsTowardCommission",
+            "atSourceFeeBasisPoints"
+          ],
+          "properties": {
+            "countsTowardCommission": {
+              "type": "boolean"
+            },
+            "atSourceFeeBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9999,
+              "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+            }
+          }
+        },
+        "resolvedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
     }
   },
   "title": "PaymentRoutingSnapshot"
+};
+
+export const commercialTermsSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "currency",
+    "commission",
+    "trial",
+    "toolsOnly",
+    "gatewayFeeBearer",
+    "purposes"
+  ],
+  "properties": {
+    "currency": {
+      "const": "INR"
+    },
+    "commission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rateBasisPoints",
+        "capMinor",
+        "cycleDays",
+        "cycleAnchor",
+        "base",
+        "taxTreatment"
+      ],
+      "properties": {
+        "rateBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "capMinor": {
+          "description": "Cap per cycle in minor units; null means uncapped.",
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cycleDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 366
+        },
+        "cycleAnchor": {
+          "enum": [
+            "trialEnd"
+          ]
+        },
+        "base": {
+          "enum": [
+            "netOfRefunds",
+            "gross"
+          ]
+        },
+        "taxTreatment": {
+          "description": "exclusive: amounts are before GST, which is added on top.",
+          "enum": [
+            "exclusive",
+            "inclusive"
+          ]
+        }
+      }
+    },
+    "trial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "days",
+        "anchor"
+      ],
+      "properties": {
+        "days": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 366
+        },
+        "anchor": {
+          "enum": [
+            "firstEvent"
+          ]
+        }
+      }
+    },
+    "toolsOnly": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feeMinor"
+      ],
+      "properties": {
+        "feeMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000,
+          "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+        }
+      }
+    },
+    "gatewayFeeBearer": {
+      "enum": [
+        "host",
+        "platform"
+      ]
+    },
+    "purposes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventAdmission",
+        "formFee",
+        "hostMembership"
+      ],
+      "properties": {
+        "eventAdmission": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "countsTowardCommission",
+            "atSourceFeeBasisPoints"
+          ],
+          "properties": {
+            "countsTowardCommission": {
+              "type": "boolean"
+            },
+            "atSourceFeeBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9999,
+              "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+            }
+          }
+        },
+        "formFee": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "countsTowardCommission",
+            "atSourceFeeBasisPoints"
+          ],
+          "properties": {
+            "countsTowardCommission": {
+              "type": "boolean"
+            },
+            "atSourceFeeBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9999,
+              "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+            }
+          }
+        },
+        "hostMembership": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "countsTowardCommission",
+            "atSourceFeeBasisPoints"
+          ],
+          "properties": {
+            "countsTowardCommission": {
+              "type": "boolean"
+            },
+            "atSourceFeeBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9999,
+              "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+            }
+          }
+        }
+      }
+    }
+  },
+  "title": "CommercialTerms"
+};
+
+export const commercialTermsOverrideSchema = {
+  "description": "Sparse organizer override. Every key is optional and an absent key inherits the platform default; commission.capMinor may be set to null to remove the cap.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "commission": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rateBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "capMinor": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cycleDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 366
+        },
+        "cycleAnchor": {
+          "enum": [
+            "trialEnd"
+          ]
+        },
+        "base": {
+          "enum": [
+            "netOfRefunds",
+            "gross"
+          ]
+        },
+        "taxTreatment": {
+          "enum": [
+            "exclusive",
+            "inclusive"
+          ]
+        }
+      }
+    },
+    "trial": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "days": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 366
+        },
+        "anchor": {
+          "enum": [
+            "firstEvent"
+          ]
+        }
+      }
+    },
+    "toolsOnly": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "feeMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        }
+      }
+    },
+    "gatewayFeeBearer": {
+      "enum": [
+        "host",
+        "platform"
+      ]
+    },
+    "purposes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eventAdmission": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "countsTowardCommission": {
+              "type": "boolean"
+            },
+            "atSourceFeeBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9999
+            }
+          }
+        },
+        "formFee": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "countsTowardCommission": {
+              "type": "boolean"
+            },
+            "atSourceFeeBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9999
+            }
+          }
+        },
+        "hostMembership": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "countsTowardCommission": {
+              "type": "boolean"
+            },
+            "atSourceFeeBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9999
+            }
+          }
+        }
+      }
+    }
+  },
+  "title": "CommercialTermsOverride"
+};
+
+export const commercialTermsSnapshotSchema = {
+  "description": "Effective terms for one purpose and organizer at the moment a payment or charge was created.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "purpose",
+    "organizerId",
+    "platformRevision",
+    "organizerRevision",
+    "moneyFlow",
+    "merchantOfRecord",
+    "currency",
+    "commission",
+    "trial",
+    "toolsOnly",
+    "gatewayFeeBearer",
+    "purposeTerms",
+    "resolvedAtMillis"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "purpose": {
+      "enum": [
+        "eventAdmission",
+        "formFee",
+        "hostMembership"
+      ]
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "platformRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "organizerRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "moneyFlow": {
+      "description": "hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.",
+      "enum": [
+        "hostCollected",
+        "platformSplit"
+      ]
+    },
+    "merchantOfRecord": {
+      "enum": [
+        "host",
+        "platform"
+      ]
+    },
+    "currency": {
+      "const": "INR"
+    },
+    "commission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rateBasisPoints",
+        "capMinor",
+        "cycleDays",
+        "cycleAnchor",
+        "base",
+        "taxTreatment"
+      ],
+      "properties": {
+        "rateBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "capMinor": {
+          "description": "Cap per cycle in minor units; null means uncapped.",
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cycleDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 366
+        },
+        "cycleAnchor": {
+          "enum": [
+            "trialEnd"
+          ]
+        },
+        "base": {
+          "enum": [
+            "netOfRefunds",
+            "gross"
+          ]
+        },
+        "taxTreatment": {
+          "description": "exclusive: amounts are before GST, which is added on top.",
+          "enum": [
+            "exclusive",
+            "inclusive"
+          ]
+        }
+      }
+    },
+    "trial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "days",
+        "anchor"
+      ],
+      "properties": {
+        "days": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 366
+        },
+        "anchor": {
+          "enum": [
+            "firstEvent"
+          ]
+        }
+      }
+    },
+    "toolsOnly": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feeMinor"
+      ],
+      "properties": {
+        "feeMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000,
+          "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+        }
+      }
+    },
+    "gatewayFeeBearer": {
+      "enum": [
+        "host",
+        "platform"
+      ]
+    },
+    "purposeTerms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "countsTowardCommission",
+        "atSourceFeeBasisPoints"
+      ],
+      "properties": {
+        "countsTowardCommission": {
+          "type": "boolean"
+        },
+        "atSourceFeeBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999,
+          "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+        }
+      }
+    },
+    "resolvedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "CommercialTermsSnapshot"
+};
+
+export const manageCommercialTermsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_commercial_terms_payload.schema.json",
+  "title": "ManageCommercialTermsCallablePayload",
+  "description": "Finance/Admin Owner read or full replacement of the platform commercial terms (organizerId null) or one organizer's sparse override. A write names the revision it reviewed and a reason for the audit trail.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Finance, Admin Owner)",
+  "required": [
+    "action",
+    "organizerId",
+    "expectedRevision",
+    "terms",
+    "reason"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "read",
+        "replace"
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "terms": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "currency",
+            "commission",
+            "trial",
+            "toolsOnly",
+            "gatewayFeeBearer",
+            "purposes"
+          ],
+          "properties": {
+            "currency": {
+              "const": "INR"
+            },
+            "commission": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "rateBasisPoints",
+                "capMinor",
+                "cycleDays",
+                "cycleAnchor",
+                "base",
+                "taxTreatment"
+              ],
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "capMinor": {
+                  "description": "Cap per cycle in minor units; null means uncapped.",
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cycleDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366
+                },
+                "cycleAnchor": {
+                  "enum": [
+                    "trialEnd"
+                  ]
+                },
+                "base": {
+                  "enum": [
+                    "netOfRefunds",
+                    "gross"
+                  ]
+                },
+                "taxTreatment": {
+                  "description": "exclusive: amounts are before GST, which is added on top.",
+                  "enum": [
+                    "exclusive",
+                    "inclusive"
+                  ]
+                }
+              }
+            },
+            "trial": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "days",
+                "anchor"
+              ],
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 366
+                },
+                "anchor": {
+                  "enum": [
+                    "firstEvent"
+                  ]
+                }
+              }
+            },
+            "toolsOnly": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "feeMinor"
+              ],
+              "properties": {
+                "feeMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+                }
+              }
+            },
+            "gatewayFeeBearer": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "purposes": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "eventAdmission",
+                "formFee",
+                "hostMembership"
+              ],
+              "properties": {
+                "eventAdmission": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                },
+                "formFee": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                },
+                "hostMembership": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "description": "Sparse organizer override. Every key is optional and an absent key inherits the platform default; commission.capMinor may be set to null to remove the cap.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "commission": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "capMinor": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cycleDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366
+                },
+                "cycleAnchor": {
+                  "enum": [
+                    "trialEnd"
+                  ]
+                },
+                "base": {
+                  "enum": [
+                    "netOfRefunds",
+                    "gross"
+                  ]
+                },
+                "taxTreatment": {
+                  "enum": [
+                    "exclusive",
+                    "inclusive"
+                  ]
+                }
+              }
+            },
+            "trial": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 366
+                },
+                "anchor": {
+                  "enum": [
+                    "firstEvent"
+                  ]
+                }
+              }
+            },
+            "toolsOnly": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "feeMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000
+                }
+              }
+            },
+            "gatewayFeeBearer": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "purposes": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "eventAdmission": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999
+                    }
+                  }
+                },
+                "formFee": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999
+                    }
+                  }
+                },
+                "hostMembership": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 3,
+      "maxLength": 500
+    }
+  }
+};
+
+export const manageCommercialTermsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_commercial_terms_response.schema.json",
+  "title": "ManageCommercialTermsCallableResponse",
+  "description": "The stored record for the requested scope plus, for an organizer, the merged effective terms (null while platform defaults are unconfigured).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "termsId",
+    "organizerId",
+    "revision",
+    "terms",
+    "reason",
+    "updatedAtMillis",
+    "effectiveTerms",
+    "platformRevision"
+  ],
+  "properties": {
+    "termsId": {
+      "type": "string",
+      "pattern": "^(platform|org_[a-f0-9]{64})$"
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "terms": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "currency",
+            "commission",
+            "trial",
+            "toolsOnly",
+            "gatewayFeeBearer",
+            "purposes"
+          ],
+          "properties": {
+            "currency": {
+              "const": "INR"
+            },
+            "commission": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "rateBasisPoints",
+                "capMinor",
+                "cycleDays",
+                "cycleAnchor",
+                "base",
+                "taxTreatment"
+              ],
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "capMinor": {
+                  "description": "Cap per cycle in minor units; null means uncapped.",
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cycleDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366
+                },
+                "cycleAnchor": {
+                  "enum": [
+                    "trialEnd"
+                  ]
+                },
+                "base": {
+                  "enum": [
+                    "netOfRefunds",
+                    "gross"
+                  ]
+                },
+                "taxTreatment": {
+                  "description": "exclusive: amounts are before GST, which is added on top.",
+                  "enum": [
+                    "exclusive",
+                    "inclusive"
+                  ]
+                }
+              }
+            },
+            "trial": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "days",
+                "anchor"
+              ],
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 366
+                },
+                "anchor": {
+                  "enum": [
+                    "firstEvent"
+                  ]
+                }
+              }
+            },
+            "toolsOnly": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "feeMinor"
+              ],
+              "properties": {
+                "feeMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+                }
+              }
+            },
+            "gatewayFeeBearer": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "purposes": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "eventAdmission",
+                "formFee",
+                "hostMembership"
+              ],
+              "properties": {
+                "eventAdmission": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                },
+                "formFee": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                },
+                "hostMembership": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "description": "Sparse organizer override. Every key is optional and an absent key inherits the platform default; commission.capMinor may be set to null to remove the cap.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "commission": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "capMinor": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cycleDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366
+                },
+                "cycleAnchor": {
+                  "enum": [
+                    "trialEnd"
+                  ]
+                },
+                "base": {
+                  "enum": [
+                    "netOfRefunds",
+                    "gross"
+                  ]
+                },
+                "taxTreatment": {
+                  "enum": [
+                    "exclusive",
+                    "inclusive"
+                  ]
+                }
+              }
+            },
+            "trial": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 366
+                },
+                "anchor": {
+                  "enum": [
+                    "firstEvent"
+                  ]
+                }
+              }
+            },
+            "toolsOnly": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "feeMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000
+                }
+              }
+            },
+            "gatewayFeeBearer": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "purposes": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "eventAdmission": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999
+                    }
+                  }
+                },
+                "formFee": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999
+                    }
+                  }
+                },
+                "hostMembership": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "updatedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "effectiveTerms": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "currency",
+            "commission",
+            "trial",
+            "toolsOnly",
+            "gatewayFeeBearer",
+            "purposes"
+          ],
+          "properties": {
+            "currency": {
+              "const": "INR"
+            },
+            "commission": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "rateBasisPoints",
+                "capMinor",
+                "cycleDays",
+                "cycleAnchor",
+                "base",
+                "taxTreatment"
+              ],
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "capMinor": {
+                  "description": "Cap per cycle in minor units; null means uncapped.",
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cycleDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366
+                },
+                "cycleAnchor": {
+                  "enum": [
+                    "trialEnd"
+                  ]
+                },
+                "base": {
+                  "enum": [
+                    "netOfRefunds",
+                    "gross"
+                  ]
+                },
+                "taxTreatment": {
+                  "description": "exclusive: amounts are before GST, which is added on top.",
+                  "enum": [
+                    "exclusive",
+                    "inclusive"
+                  ]
+                }
+              }
+            },
+            "trial": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "days",
+                "anchor"
+              ],
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 366
+                },
+                "anchor": {
+                  "enum": [
+                    "firstEvent"
+                  ]
+                }
+              }
+            },
+            "toolsOnly": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "feeMinor"
+              ],
+              "properties": {
+                "feeMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+                }
+              }
+            },
+            "gatewayFeeBearer": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "purposes": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "eventAdmission",
+                "formFee",
+                "hostMembership"
+              ],
+              "properties": {
+                "eventAdmission": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                },
+                "formFee": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                },
+                "hostMembership": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "platformRevision": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
 };
 
 export const managePaymentRoutingPolicyCallablePayloadSchema = {
@@ -51062,6 +53234,64 @@ export const managePaymentRoutingPolicyCallablePayloadSchema = {
           "type": "null"
         }
       ]
+    },
+    "hostMembership": {
+      "description": "Optional so older operator clients keep working: an omitted value keeps the stored membership route.",
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 };
@@ -51078,6 +53308,7 @@ export const managePaymentRoutingPolicyCallableResponseSchema = {
     "revision",
     "formFee",
     "eventAdmission",
+    "hostMembership",
     "updatedAtMillis"
   ],
   "properties": {
@@ -51159,6 +53390,63 @@ export const managePaymentRoutingPolicyCallableResponseSchema = {
       ]
     },
     "eventAdmission": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "hostMembership": {
       "anyOf": [
         {
           "anyOf": [
@@ -52846,6 +55134,188 @@ export const organizerFormAdmissionReceiptDocumentSchema = {
               ],
               "minLength": 1,
               "maxLength": 256
+            },
+            "commercialTerms": {
+              "description": "Effective commercial terms frozen when the attempt was prepared. Absent on payments prepared before commercial terms existed, or while platform defaults were unconfigured for a hostCollected route; a commission statement reviews those explicitly.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "version",
+                "purpose",
+                "organizerId",
+                "platformRevision",
+                "organizerRevision",
+                "moneyFlow",
+                "merchantOfRecord",
+                "currency",
+                "commission",
+                "trial",
+                "toolsOnly",
+                "gatewayFeeBearer",
+                "purposeTerms",
+                "resolvedAtMillis"
+              ],
+              "properties": {
+                "version": {
+                  "const": 1
+                },
+                "purpose": {
+                  "enum": [
+                    "eventAdmission",
+                    "formFee",
+                    "hostMembership"
+                  ]
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "platformRevision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "organizerRevision": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "moneyFlow": {
+                  "description": "hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.",
+                  "enum": [
+                    "hostCollected",
+                    "platformSplit"
+                  ]
+                },
+                "merchantOfRecord": {
+                  "enum": [
+                    "host",
+                    "platform"
+                  ]
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "commission": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "rateBasisPoints",
+                    "capMinor",
+                    "cycleDays",
+                    "cycleAnchor",
+                    "base",
+                    "taxTreatment"
+                  ],
+                  "properties": {
+                    "rateBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    },
+                    "capMinor": {
+                      "description": "Cap per cycle in minor units; null means uncapped.",
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 100000000000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "cycleDays": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 366
+                    },
+                    "cycleAnchor": {
+                      "enum": [
+                        "trialEnd"
+                      ]
+                    },
+                    "base": {
+                      "enum": [
+                        "netOfRefunds",
+                        "gross"
+                      ]
+                    },
+                    "taxTreatment": {
+                      "description": "exclusive: amounts are before GST, which is added on top.",
+                      "enum": [
+                        "exclusive",
+                        "inclusive"
+                      ]
+                    }
+                  }
+                },
+                "trial": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "days",
+                    "anchor"
+                  ],
+                  "properties": {
+                    "days": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 366
+                    },
+                    "anchor": {
+                      "enum": [
+                        "firstEvent"
+                      ]
+                    }
+                  }
+                },
+                "toolsOnly": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "feeMinor"
+                  ],
+                  "properties": {
+                    "feeMinor": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000,
+                      "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+                    }
+                  }
+                },
+                "gatewayFeeBearer": {
+                  "enum": [
+                    "host",
+                    "platform"
+                  ]
+                },
+                "purposeTerms": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                },
+                "resolvedAtMillis": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
             }
           }
         }
@@ -172238,7 +174708,7 @@ export const hostMembershipProgramDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/host_membership_programs.schema.json",
   "title": "HostMembershipProgramDocument",
-  "description": "Server-owned per-organizer paid membership program: the payment provider binding snapshot taken when the program was enabled, the host-wide billing pause and member counts.",
+  "description": "Server-owned per-organizer paid membership program: the payment binding snapshot taken when the program was enabled (its money flow, account and connection), the host-wide billing pause and member counts.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "hostMembershipPrograms",
@@ -172302,6 +174772,19 @@ export const hostMembershipProgramDocumentSchema = {
             "test",
             "live"
           ]
+        },
+        "moneyFlow": {
+          "description": "Absent on programs enabled under the original platform-account model, which is platformSplit.",
+          "enum": [
+            "hostCollected",
+            "platformSplit"
+          ]
+        },
+        "webhookId": {
+          "description": "hostCollected only: the membership webhook Catch registered on the organizer's merchant account.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
         }
       },
       "x-catch-ownership": "server-only"
@@ -172476,6 +174959,11 @@ export const hostMembershipPlanDocumentSchema = {
               "type": "integer",
               "minimum": 1,
               "maximum": 9007199254740990
+            },
+            "providerAccountId": {
+              "description": "Account the provider plan was created on. Absent on prices created under the original platform-account model.",
+              "type": "string",
+              "pattern": "^acc_[A-Za-z0-9]{4,40}$"
             }
           }
         },
@@ -172508,6 +174996,11 @@ export const hostMembershipPlanDocumentSchema = {
               "type": "integer",
               "minimum": 1,
               "maximum": 9007199254740990
+            },
+            "providerAccountId": {
+              "description": "Account the provider plan was created on. Absent on prices created under the original platform-account model.",
+              "type": "string",
+              "pattern": "^acc_[A-Za-z0-9]{4,40}$"
             }
           }
         }
@@ -172876,6 +175369,48 @@ export const hostMembershipDocumentSchema = {
       "pattern": "^plan_[A-Za-z0-9]{6,40}$",
       "x-catch-ownership": "server-only"
     },
+    "payment": {
+      "description": "The account that owns this subscription, copied from the checkout that created it. Absent on memberships created under the original platform-account model.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "moneyFlow",
+        "providerAccountId",
+        "bindingId",
+        "mode"
+      ],
+      "properties": {
+        "provider": {
+          "enum": [
+            "razorpay"
+          ]
+        },
+        "moneyFlow": {
+          "description": "hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.",
+          "enum": [
+            "hostCollected",
+            "platformSplit"
+          ]
+        },
+        "providerAccountId": {
+          "type": "string",
+          "pattern": "^acc_[A-Za-z0-9]{4,40}$"
+        },
+        "bindingId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "mode": {
+          "enum": [
+            "test",
+            "live"
+          ]
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
     "providerEventAtMillis": {
       "type": "integer",
       "minimum": 0,
@@ -172994,6 +175529,48 @@ export const hostMembershipCheckoutDocumentSchema = {
       "pattern": "^sub_[A-Za-z0-9]{6,40}$",
       "x-catch-ownership": "server-only"
     },
+    "payment": {
+      "description": "The program binding the subscription was created on. Absent on checkouts created under the original platform-account model.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "moneyFlow",
+        "providerAccountId",
+        "bindingId",
+        "mode"
+      ],
+      "properties": {
+        "provider": {
+          "enum": [
+            "razorpay"
+          ]
+        },
+        "moneyFlow": {
+          "description": "hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.",
+          "enum": [
+            "hostCollected",
+            "platformSplit"
+          ]
+        },
+        "providerAccountId": {
+          "type": "string",
+          "pattern": "^acc_[A-Za-z0-9]{4,40}$"
+        },
+        "bindingId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "mode": {
+          "enum": [
+            "test",
+            "live"
+          ]
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
     "authorizationUrl": {
       "type": [
         "string",
@@ -173028,7 +175605,7 @@ export const hostMembershipChargeDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/host_membership_charges.schema.json",
   "title": "HostMembershipChargeDocument",
-  "description": "Server-only ledger of one captured membership charge and its Route transfer to the host linked account minus the platform fee. Keyed by the provider payment id.",
+  "description": "Server-only ledger of every captured membership charge, keyed by the provider payment id, and the commission statement's membership source. hostCollected charges were paid to the organizer's own account: no fee is deducted and no transfer is made (transfer.state notRequired). platformSplit charges are split to the organizer's Route account minus the at-source fee. Each new charge freezes the effective commercial terms.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "hostMembershipCharges",
@@ -173132,6 +175709,197 @@ export const hostMembershipChargeDocumentSchema = {
         "test",
         "live"
       ],
+      "x-catch-ownership": "server-only"
+    },
+    "moneyFlow": {
+      "description": "Absent on charges recorded under the original platform-account model, which is platformSplit.",
+      "enum": [
+        "hostCollected",
+        "platformSplit"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "commercialTerms": {
+      "description": "Effective terms frozen when the charge was recorded. Absent on charges recorded before commercial terms existed.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "purpose",
+        "organizerId",
+        "platformRevision",
+        "organizerRevision",
+        "moneyFlow",
+        "merchantOfRecord",
+        "currency",
+        "commission",
+        "trial",
+        "toolsOnly",
+        "gatewayFeeBearer",
+        "purposeTerms",
+        "resolvedAtMillis"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "purpose": {
+          "enum": [
+            "eventAdmission",
+            "formFee",
+            "hostMembership"
+          ]
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "platformRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "organizerRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "moneyFlow": {
+          "description": "hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.",
+          "enum": [
+            "hostCollected",
+            "platformSplit"
+          ]
+        },
+        "merchantOfRecord": {
+          "enum": [
+            "host",
+            "platform"
+          ]
+        },
+        "currency": {
+          "const": "INR"
+        },
+        "commission": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rateBasisPoints",
+            "capMinor",
+            "cycleDays",
+            "cycleAnchor",
+            "base",
+            "taxTreatment"
+          ],
+          "properties": {
+            "rateBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "capMinor": {
+              "description": "Cap per cycle in minor units; null means uncapped.",
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cycleDays": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 366
+            },
+            "cycleAnchor": {
+              "enum": [
+                "trialEnd"
+              ]
+            },
+            "base": {
+              "enum": [
+                "netOfRefunds",
+                "gross"
+              ]
+            },
+            "taxTreatment": {
+              "description": "exclusive: amounts are before GST, which is added on top.",
+              "enum": [
+                "exclusive",
+                "inclusive"
+              ]
+            }
+          }
+        },
+        "trial": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "days",
+            "anchor"
+          ],
+          "properties": {
+            "days": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 366
+            },
+            "anchor": {
+              "enum": [
+                "firstEvent"
+              ]
+            }
+          }
+        },
+        "toolsOnly": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "feeMinor"
+          ],
+          "properties": {
+            "feeMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000,
+              "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+            }
+          }
+        },
+        "gatewayFeeBearer": {
+          "enum": [
+            "host",
+            "platform"
+          ]
+        },
+        "purposeTerms": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "countsTowardCommission",
+            "atSourceFeeBasisPoints"
+          ],
+          "properties": {
+            "countsTowardCommission": {
+              "type": "boolean"
+            },
+            "atSourceFeeBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9999,
+              "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+            }
+          }
+        },
+        "resolvedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
       "x-catch-ownership": "server-only"
     },
     "transfer": {
@@ -177481,6 +180249,64 @@ export const paymentRoutingPolicyDocumentSchema = {
         }
       ]
     },
+    "hostMembership": {
+      "description": "Membership money flow: razorpayOAuth is hostCollected (subscriptions on the organizer's own connected account), razorpayRoute is platformSplit. Absent on policies written before memberships had a route, and treated as null.",
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "updatedAt": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",
@@ -177535,6 +180361,1139 @@ export const paymentRoutingPolicyDocumentSchema = {
   "x-firestore-path": "paymentRoutingPolicies/{policyId}",
   "x-document-id-field": "policyId",
   "x-owner": "payment routing server operations"
+};
+
+export const commercialTermsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/commercial_terms.schema.json",
+  "title": "CommercialTermsDocument",
+  "description": "Operator-owned commercial terms. The platform document holds complete defaults; an organizer document (id org_<sha256(organizerId)>) holds a sparse override. Every write bumps revision and appends an immutable commercialTermsRevisions record and an admin audit log in the same transaction. Direct client access is denied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "scope",
+    "organizerId",
+    "revision",
+    "terms",
+    "reason",
+    "updatedByUid",
+    "updatedAtMillis",
+    "lastMutationHash"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "callable-owned"
+    },
+    "scope": {
+      "enum": [
+        "platform",
+        "organizer"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "callable-owned"
+    },
+    "terms": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "currency",
+            "commission",
+            "trial",
+            "toolsOnly",
+            "gatewayFeeBearer",
+            "purposes"
+          ],
+          "properties": {
+            "currency": {
+              "const": "INR"
+            },
+            "commission": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "rateBasisPoints",
+                "capMinor",
+                "cycleDays",
+                "cycleAnchor",
+                "base",
+                "taxTreatment"
+              ],
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "capMinor": {
+                  "description": "Cap per cycle in minor units; null means uncapped.",
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cycleDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366
+                },
+                "cycleAnchor": {
+                  "enum": [
+                    "trialEnd"
+                  ]
+                },
+                "base": {
+                  "enum": [
+                    "netOfRefunds",
+                    "gross"
+                  ]
+                },
+                "taxTreatment": {
+                  "description": "exclusive: amounts are before GST, which is added on top.",
+                  "enum": [
+                    "exclusive",
+                    "inclusive"
+                  ]
+                }
+              }
+            },
+            "trial": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "days",
+                "anchor"
+              ],
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 366
+                },
+                "anchor": {
+                  "enum": [
+                    "firstEvent"
+                  ]
+                }
+              }
+            },
+            "toolsOnly": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "feeMinor"
+              ],
+              "properties": {
+                "feeMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+                }
+              }
+            },
+            "gatewayFeeBearer": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "purposes": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "eventAdmission",
+                "formFee",
+                "hostMembership"
+              ],
+              "properties": {
+                "eventAdmission": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                },
+                "formFee": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                },
+                "hostMembership": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "description": "Sparse organizer override. Every key is optional and an absent key inherits the platform default; commission.capMinor may be set to null to remove the cap.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "commission": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "capMinor": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cycleDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366
+                },
+                "cycleAnchor": {
+                  "enum": [
+                    "trialEnd"
+                  ]
+                },
+                "base": {
+                  "enum": [
+                    "netOfRefunds",
+                    "gross"
+                  ]
+                },
+                "taxTreatment": {
+                  "enum": [
+                    "exclusive",
+                    "inclusive"
+                  ]
+                }
+              }
+            },
+            "trial": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 366
+                },
+                "anchor": {
+                  "enum": [
+                    "firstEvent"
+                  ]
+                }
+              }
+            },
+            "toolsOnly": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "feeMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000
+                }
+              }
+            },
+            "gatewayFeeBearer": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "purposes": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "eventAdmission": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999
+                    }
+                  }
+                },
+                "formFee": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999
+                    }
+                  }
+                },
+                "hostMembership": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastMutationHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "scope": {
+            "const": "platform"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "organizerId": {
+            "type": "null"
+          },
+          "terms": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "currency",
+              "commission",
+              "trial",
+              "toolsOnly",
+              "gatewayFeeBearer",
+              "purposes"
+            ],
+            "properties": {
+              "currency": {
+                "const": "INR"
+              },
+              "commission": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "rateBasisPoints",
+                  "capMinor",
+                  "cycleDays",
+                  "cycleAnchor",
+                  "base",
+                  "taxTreatment"
+                ],
+                "properties": {
+                  "rateBasisPoints": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "capMinor": {
+                    "description": "Cap per cycle in minor units; null means uncapped.",
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100000000000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "cycleDays": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 366
+                  },
+                  "cycleAnchor": {
+                    "enum": [
+                      "trialEnd"
+                    ]
+                  },
+                  "base": {
+                    "enum": [
+                      "netOfRefunds",
+                      "gross"
+                    ]
+                  },
+                  "taxTreatment": {
+                    "description": "exclusive: amounts are before GST, which is added on top.",
+                    "enum": [
+                      "exclusive",
+                      "inclusive"
+                    ]
+                  }
+                }
+              },
+              "trial": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "days",
+                  "anchor"
+                ],
+                "properties": {
+                  "days": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 366
+                  },
+                  "anchor": {
+                    "enum": [
+                      "firstEvent"
+                    ]
+                  }
+                }
+              },
+              "toolsOnly": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "feeMinor"
+                ],
+                "properties": {
+                  "feeMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000000,
+                    "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+                  }
+                }
+              },
+              "gatewayFeeBearer": {
+                "enum": [
+                  "host",
+                  "platform"
+                ]
+              },
+              "purposes": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "eventAdmission",
+                  "formFee",
+                  "hostMembership"
+                ],
+                "properties": {
+                  "eventAdmission": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "countsTowardCommission",
+                      "atSourceFeeBasisPoints"
+                    ],
+                    "properties": {
+                      "countsTowardCommission": {
+                        "type": "boolean"
+                      },
+                      "atSourceFeeBasisPoints": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9999,
+                        "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                      }
+                    }
+                  },
+                  "formFee": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "countsTowardCommission",
+                      "atSourceFeeBasisPoints"
+                    ],
+                    "properties": {
+                      "countsTowardCommission": {
+                        "type": "boolean"
+                      },
+                      "atSourceFeeBasisPoints": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9999,
+                        "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                      }
+                    }
+                  },
+                  "hostMembership": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "countsTowardCommission",
+                      "atSourceFeeBasisPoints"
+                    ],
+                    "properties": {
+                      "countsTowardCommission": {
+                        "type": "boolean"
+                      },
+                      "atSourceFeeBasisPoints": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9999,
+                        "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "organizerId": {
+            "type": "string"
+          },
+          "terms": {
+            "description": "Sparse organizer override. Every key is optional and an absent key inherits the platform default; commission.capMinor may be set to null to remove the cap.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "commission": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "rateBasisPoints": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "capMinor": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100000000000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "cycleDays": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 366
+                  },
+                  "cycleAnchor": {
+                    "enum": [
+                      "trialEnd"
+                    ]
+                  },
+                  "base": {
+                    "enum": [
+                      "netOfRefunds",
+                      "gross"
+                    ]
+                  },
+                  "taxTreatment": {
+                    "enum": [
+                      "exclusive",
+                      "inclusive"
+                    ]
+                  }
+                }
+              },
+              "trial": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "days": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 366
+                  },
+                  "anchor": {
+                    "enum": [
+                      "firstEvent"
+                    ]
+                  }
+                }
+              },
+              "toolsOnly": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "feeMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000000
+                  }
+                }
+              },
+              "gatewayFeeBearer": {
+                "enum": [
+                  "host",
+                  "platform"
+                ]
+              },
+              "purposes": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "eventAdmission": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "countsTowardCommission": {
+                        "type": "boolean"
+                      },
+                      "atSourceFeeBasisPoints": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9999
+                      }
+                    }
+                  },
+                  "formFee": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "countsTowardCommission": {
+                        "type": "boolean"
+                      },
+                      "atSourceFeeBasisPoints": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9999
+                      }
+                    }
+                  },
+                  "hostMembership": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "countsTowardCommission": {
+                        "type": "boolean"
+                      },
+                      "atSourceFeeBasisPoints": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9999
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "x-firestore-collection": "commercialTerms",
+  "x-firestore-path": "commercialTerms/{termsId}",
+  "x-document-id-field": "termsId",
+  "x-owner": "manageCommercialTerms admin callable"
+};
+
+export const commercialTermsRevisionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/commercial_terms_revisions.schema.json",
+  "title": "CommercialTermsRevisionDocument",
+  "description": "Immutable history of every commercial terms revision, keyed <termsId>_r<revision>. Created in the same transaction as the commercialTerms write it records and never updated.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "termsId",
+    "scope",
+    "organizerId",
+    "revision",
+    "terms",
+    "reason",
+    "actorUid",
+    "createdAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "callable-owned"
+    },
+    "termsId": {
+      "type": "string",
+      "pattern": "^(platform|org_[a-f0-9]{64})$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "scope": {
+      "enum": [
+        "platform",
+        "organizer"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "callable-owned"
+    },
+    "terms": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "currency",
+            "commission",
+            "trial",
+            "toolsOnly",
+            "gatewayFeeBearer",
+            "purposes"
+          ],
+          "properties": {
+            "currency": {
+              "const": "INR"
+            },
+            "commission": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "rateBasisPoints",
+                "capMinor",
+                "cycleDays",
+                "cycleAnchor",
+                "base",
+                "taxTreatment"
+              ],
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "capMinor": {
+                  "description": "Cap per cycle in minor units; null means uncapped.",
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cycleDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366
+                },
+                "cycleAnchor": {
+                  "enum": [
+                    "trialEnd"
+                  ]
+                },
+                "base": {
+                  "enum": [
+                    "netOfRefunds",
+                    "gross"
+                  ]
+                },
+                "taxTreatment": {
+                  "description": "exclusive: amounts are before GST, which is added on top.",
+                  "enum": [
+                    "exclusive",
+                    "inclusive"
+                  ]
+                }
+              }
+            },
+            "trial": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "days",
+                "anchor"
+              ],
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 366
+                },
+                "anchor": {
+                  "enum": [
+                    "firstEvent"
+                  ]
+                }
+              }
+            },
+            "toolsOnly": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "feeMinor"
+              ],
+              "properties": {
+                "feeMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+                }
+              }
+            },
+            "gatewayFeeBearer": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "purposes": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "eventAdmission",
+                "formFee",
+                "hostMembership"
+              ],
+              "properties": {
+                "eventAdmission": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                },
+                "formFee": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                },
+                "hostMembership": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "countsTowardCommission",
+                    "atSourceFeeBasisPoints"
+                  ],
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999,
+                      "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "description": "Sparse organizer override. Every key is optional and an absent key inherits the platform default; commission.capMinor may be set to null to remove the cap.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "commission": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "capMinor": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cycleDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366
+                },
+                "cycleAnchor": {
+                  "enum": [
+                    "trialEnd"
+                  ]
+                },
+                "base": {
+                  "enum": [
+                    "netOfRefunds",
+                    "gross"
+                  ]
+                },
+                "taxTreatment": {
+                  "enum": [
+                    "exclusive",
+                    "inclusive"
+                  ]
+                }
+              }
+            },
+            "trial": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 366
+                },
+                "anchor": {
+                  "enum": [
+                    "firstEvent"
+                  ]
+                }
+              }
+            },
+            "toolsOnly": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "feeMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000
+                }
+              }
+            },
+            "gatewayFeeBearer": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "purposes": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "eventAdmission": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999
+                    }
+                  }
+                },
+                "formFee": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999
+                    }
+                  }
+                },
+                "hostMembership": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "countsTowardCommission": {
+                      "type": "boolean"
+                    },
+                    "atSourceFeeBasisPoints": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9999
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    }
+  },
+  "x-firestore-collection": "commercialTermsRevisions",
+  "x-firestore-path": "commercialTermsRevisions/{revisionId}",
+  "x-document-id-field": "revisionId",
+  "x-owner": "manageCommercialTerms admin callable"
 };
 
 export const organizerFormPaymentDocumentSchema = {
@@ -177710,6 +181669,188 @@ export const organizerFormPaymentDocumentSchema = {
           ],
           "minLength": 1,
           "maxLength": 256
+        },
+        "commercialTerms": {
+          "description": "Effective commercial terms frozen when the attempt was prepared. Absent on payments prepared before commercial terms existed, or while platform defaults were unconfigured for a hostCollected route; a commission statement reviews those explicitly.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "purpose",
+            "organizerId",
+            "platformRevision",
+            "organizerRevision",
+            "moneyFlow",
+            "merchantOfRecord",
+            "currency",
+            "commission",
+            "trial",
+            "toolsOnly",
+            "gatewayFeeBearer",
+            "purposeTerms",
+            "resolvedAtMillis"
+          ],
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "purpose": {
+              "enum": [
+                "eventAdmission",
+                "formFee",
+                "hostMembership"
+              ]
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "platformRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "organizerRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "moneyFlow": {
+              "description": "hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.",
+              "enum": [
+                "hostCollected",
+                "platformSplit"
+              ]
+            },
+            "merchantOfRecord": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "commission": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "rateBasisPoints",
+                "capMinor",
+                "cycleDays",
+                "cycleAnchor",
+                "base",
+                "taxTreatment"
+              ],
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "capMinor": {
+                  "description": "Cap per cycle in minor units; null means uncapped.",
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cycleDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366
+                },
+                "cycleAnchor": {
+                  "enum": [
+                    "trialEnd"
+                  ]
+                },
+                "base": {
+                  "enum": [
+                    "netOfRefunds",
+                    "gross"
+                  ]
+                },
+                "taxTreatment": {
+                  "description": "exclusive: amounts are before GST, which is added on top.",
+                  "enum": [
+                    "exclusive",
+                    "inclusive"
+                  ]
+                }
+              }
+            },
+            "trial": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "days",
+                "anchor"
+              ],
+              "properties": {
+                "days": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 366
+                },
+                "anchor": {
+                  "enum": [
+                    "firstEvent"
+                  ]
+                }
+              }
+            },
+            "toolsOnly": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "feeMinor"
+              ],
+              "properties": {
+                "feeMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission."
+                }
+              }
+            },
+            "gatewayFeeBearer": {
+              "enum": [
+                "host",
+                "platform"
+              ]
+            },
+            "purposeTerms": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "countsTowardCommission",
+                "atSourceFeeBasisPoints"
+              ],
+              "properties": {
+                "countsTowardCommission": {
+                  "type": "boolean"
+                },
+                "atSourceFeeBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9999,
+                  "description": "Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit."
+                }
+              }
+            },
+            "resolvedAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
         }
       }
     },
@@ -266703,7 +270844,7 @@ export const manageHostMembershipProgramCallableResponseSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/manage_host_membership_program_response.schema.json",
   "title": "ManageHostMembershipProgramCallableResponse",
-  "description": "Bounded program projection plus readiness facts the host settings screen needs before enabling memberships.",
+  "description": "Bounded program projection plus readiness facts the host settings screen needs before enabling memberships. routeAccountReady means the payment account the effective money flow needs is ready (a connected Razorpay account for hostCollected, the Route linked account for platformSplit); feeConfigured means Catch's commercial terms resolve. unavailableReason names the first blocker.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -266779,6 +270920,39 @@ export const manageHostMembershipProgramCallableResponseSchema = {
     },
     "feeConfigured": {
       "type": "boolean"
+    },
+    "paymentMode": {
+      "description": "The organizer's effective membership money flow, or null when Catch has not offered memberships to this organizer.",
+      "anyOf": [
+        {
+          "description": "hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.",
+          "enum": [
+            "hostCollected",
+            "platformSplit"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "unavailableReason": {
+      "anyOf": [
+        {
+          "enum": [
+            "notOffered",
+            "termsNotConfigured",
+            "razorpayNotConnected",
+            "razorpayNeedsAttention",
+            "subscriptionsNotEnabled",
+            "payoutAccountNotReady",
+            "providerUnavailable"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 };

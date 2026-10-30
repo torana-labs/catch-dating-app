@@ -40,5 +40,22 @@ export interface ManagePaymentRoutingPolicyCallableResponse {
           }
       )
     | null;
+  hostMembership:
+    | (
+        | {
+            route: "disabled";
+          }
+        | {
+            route:
+              | "razorpayRoute"
+              | "razorpayOAuth"
+              | "stripeConnectDirect"
+              | "stripeConnectDestination";
+            mode: "test" | "live";
+            currency: string;
+            merchantCountry: string;
+          }
+      )
+    | null;
   updatedAtMillis: number | null;
 }

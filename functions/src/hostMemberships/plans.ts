@@ -22,6 +22,11 @@ import {
 import {maxPlansPerOrganizer} from "./entitlementReader";
 import {newHostMembershipPlanId} from "./ids";
 import {collections, readPlan, readProgram} from "./membershipStore";
+import {
+  bindingOf,
+  providerFor,
+  type MembershipPaymentBinding,
+} from "./runtime";
 
 type Draft = Extract<Payload, {action: "save"}>["plan"];
 type Interval = "monthly" | "annual";
@@ -87,11 +92,17 @@ export async function ensureProviderPrices(deps: HostMembershipCallableDeps,
   if (!validateHostMembershipPlanDocument(plan)) {
     throw new HttpsError("not-found", "Plan not found.");
   }
-  const missing = intervals.filter((interval) => plan.prices[interval] &&
-    !plan.prices[interval]!.providerPriceIds.razorpay);
+  const program = await db.runTransaction((tx) =>
+    readProgram(db, tx, plan.organizerId));
+  if (!program) return;
+  const binding = bindingOf(program.payment);
+  const account = await priceAccountFor(deps, binding);
+  const missing = intervals.filter((interval) => {
+    const price = plan.prices[interval];
+    return price && !priceOnAccount(price, binding, account);
+  });
   if (missing.length === 0) return;
-  const config = await deps.config();
-  const provider = deps.provider(config);
+  const provider = await providerFor(deps, plan.organizerId, binding);
   for (const interval of missing) {
     const price = plan.prices[interval]!;
     const {providerPriceId} = await provider.createPrice({
@@ -103,11 +114,32 @@ export async function ensureProviderPrices(deps: HostMembershipCallableDeps,
       const currentPrice = current?.prices[interval];
       // A concurrent edit changed the price; its own publish creates it.
       if (!currentPrice || currentPrice.revision !== price.revision ||
-          currentPrice.providerPriceIds.razorpay) return;
+          priceOnAccount(currentPrice, binding, account)) return;
+      // Existing subscriptions keep their own provider plan id, so a price
+      // can move to a newly bound account without touching them.
       tx.update(ref, {
-        [`prices.${interval}.providerPriceIds.razorpay`]: providerPriceId});
+        [`prices.${interval}.providerPriceIds.razorpay`]: providerPriceId,
+        [`prices.${interval}.providerAccountId`]: account});
     });
   }
+}
+
+/** The account that owns provider plans for a binding. */
+export async function priceAccountFor(
+  deps: Pick<HostMembershipCallableDeps, "platformConfig">,
+  binding: MembershipPaymentBinding): Promise<string> {
+  return binding.moneyFlow === "hostCollected" ? binding.providerAccountId :
+    (await deps.platformConfig()).platformAccountId;
+}
+
+/** Legacy prices without an account were created on the platform account. */
+export function priceOnAccount(price: {providerPriceIds: {razorpay?: string};
+  providerAccountId?: string}, binding: MembershipPaymentBinding,
+account: string): boolean {
+  if (!price.providerPriceIds.razorpay) return false;
+  return price.providerAccountId === account ||
+    price.providerAccountId === undefined &&
+      binding.moneyFlow === "platformSplit";
 }
 
 function pricesFor(draft: Draft, existing: HostMembershipPlanDocument | null):

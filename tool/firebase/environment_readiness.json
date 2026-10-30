@@ -971,7 +971,14 @@
         "managePublicEventCheckout",
         "reconcilePublicEventPayments",
         "onCancelledPublicEventPayments",
-        "organizerFormPaymentOauthCallback"
+        "organizerFormPaymentOauthCallback",
+        "manageHostMembershipProgram",
+        "manageHostMembershipPlans",
+        "manageHostMembershipCheckout",
+        "manageMyHostMembership",
+        "hostMembershipRazorpayWebhook",
+        "processHostMembershipBillingPause",
+        "requestAccountDeletion"
       ],
       "binding": {
         "kind": "parameter",
@@ -1045,7 +1052,14 @@
         "configureEventRegistration",
         "managePublicEventCheckout",
         "reconcilePublicEventPayments",
-        "onCancelledPublicEventPayments"
+        "onCancelledPublicEventPayments",
+        "manageHostMembershipProgram",
+        "manageHostMembershipPlans",
+        "manageHostMembershipCheckout",
+        "manageMyHostMembership",
+        "hostMembershipRazorpayWebhook",
+        "processHostMembershipBillingPause",
+        "requestAccountDeletion"
       ],
       "binding": {
         "kind": "record",

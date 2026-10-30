@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_commercial_terms_response.schema.json",
+  "title": "ManageCommercialTermsCallableResponse",
+  "description": "The stored record for the requested scope plus, for an organizer, the merged effective terms (null while platform defaults are unconfigured).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["termsId", "organizerId", "revision", "terms", "reason", "updatedAtMillis", "effectiveTerms", "platformRevision"],
+  "properties": {
+    "termsId": {"type": "string", "pattern": "^(platform|org_[a-f0-9]{64})$"},
+    "organizerId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "revision": {"type": "integer", "minimum": 0},
+    "terms": {"anyOf": [{"$ref": "../shared/commercial_terms.schema.json#/definitions/terms"}, {"$ref": "../shared/commercial_terms.schema.json#/definitions/termsOverride"}, {"type": "null"}]},
+    "reason": {"type": ["string", "null"], "maxLength": 500},
+    "updatedAtMillis": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
+    "effectiveTerms": {"anyOf": [{"$ref": "../shared/commercial_terms.schema.json#/definitions/terms"}, {"type": "null"}]},
+    "platformRevision": {"type": "integer", "minimum": 0}
+  }
+}

@@ -55,6 +55,7 @@
     "provider": {"$ref": "../shared/host_membership_common.schema.json#/definitions/provider", "x-catch-ownership": "server-only"},
     "providerSubscriptionId": {"type": "string", "pattern": "^sub_[A-Za-z0-9]{6,40}$", "x-catch-ownership": "server-only"},
     "providerPlanId": {"type": "string", "pattern": "^plan_[A-Za-z0-9]{6,40}$", "x-catch-ownership": "server-only"},
+    "payment": {"description": "The account that owns this subscription, copied from the checkout that created it. Absent on memberships created under the original platform-account model.", "$ref": "../shared/host_membership_common.schema.json#/definitions/paymentBinding", "x-catch-ownership": "server-only"},
     "providerEventAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/millis", "x-catch-ownership": "server-only"},
     "lastCheckoutId": {"$ref": "../shared/host_membership_common.schema.json#/definitions/checkoutId", "x-catch-ownership": "server-only"},
     "revision": {"$ref": "../shared/host_membership_common.schema.json#/definitions/revision", "x-catch-ownership": "server-only"},

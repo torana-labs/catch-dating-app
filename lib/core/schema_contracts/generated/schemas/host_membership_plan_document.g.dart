@@ -99,6 +99,11 @@ const schemaHostMembershipPlanDocumentSchema = <String, Object?>{
               'minimum': 1,
               'maximum': 9007199254740990,
             },
+            'providerAccountId': <String, Object?>{
+              'description': 'Account the provider plan was created on. Absent on prices created under the original platform-account model.',
+              'type': 'string',
+              'pattern': '^acc_[A-Za-z0-9]{4,40}\$',
+            },
           },
         },
         'annual': <String, Object?>{
@@ -130,6 +135,11 @@ const schemaHostMembershipPlanDocumentSchema = <String, Object?>{
               'type': 'integer',
               'minimum': 1,
               'maximum': 9007199254740990,
+            },
+            'providerAccountId': <String, Object?>{
+              'description': 'Account the provider plan was created on. Absent on prices created under the original platform-account model.',
+              'type': 'string',
+              'pattern': '^acc_[A-Za-z0-9]{4,40}\$',
             },
           },
         },

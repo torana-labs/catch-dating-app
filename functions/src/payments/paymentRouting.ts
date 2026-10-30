@@ -8,8 +8,13 @@ import {validatePaymentRoutingPolicyDocument} from
   "../shared/generated/validators/paymentRoutingPolicyDocument";
 import {validatePaymentRoutingSnapshot} from
   "../shared/generated/validators/paymentRoutingSnapshot";
+import {commercialTermsSnapshotsEqual} from "../commercialTerms/terms";
 
 export type PaymentPurpose = "formFee" | "eventAdmission";
+/** Routing policies also select the membership money flow. Memberships are
+ * subscriptions, not orders, so they never produce a PaymentRoutingSnapshot.
+ */
+export type PaymentRoutingPurpose = PaymentPurpose | "hostMembership";
 export type {PaymentRoutingSnapshot};
 export type PaymentRouteSelection = PaymentRoutingSnapshot["selection"];
 export type PaymentRoute = PaymentRouteSelection["route"];
@@ -33,7 +38,7 @@ export function organizerPaymentPolicyId(organizerId: string): string {
 /** These are server-owned policies, never unchecked client checkout options. */
 export async function readPaymentRoute(params: {
   db: FirebaseFirestore.Firestore; tx?: FirebaseFirestore.Transaction;
-  organizerId: string; purpose: PaymentPurpose;
+  organizerId: string; purpose: PaymentRoutingPurpose;
   legacySelection?: PaymentRouteSelection;
 }): Promise<SelectedPaymentRoute> {
   const {db, tx, organizerId} = params;
@@ -49,7 +54,7 @@ export async function readPaymentRoute(params: {
 }
 
 export function selectPaymentRoute(params: {
-  organizerId: string; purpose: PaymentPurpose;
+  organizerId: string; purpose: PaymentRoutingPurpose;
   app: Policy | null; organizer: Policy | null;
   legacySelection?: PaymentRouteSelection;
 }): SelectedPaymentRoute {
@@ -66,7 +71,7 @@ export function selectPaymentRoute(params: {
   const override = organizer?.[purpose];
   // Absence alone preserves the explicit legacy choice. A present app policy
   // A null purpose disables that purpose instead of reopening a legacy rail.
-  const selection = override ?? (app ? app[purpose] : legacySelection);
+  const selection = override ?? (app ? app[purpose] ?? null : legacySelection);
   if (!selection || selection.route === "disabled") {
     throw new HttpsError("failed-precondition",
       "Automatic payments are disabled for this purpose.");
@@ -205,9 +210,14 @@ export function paymentRoutingSnapshotsMatch(left: PaymentRoutingSnapshot,
   right: PaymentRoutingSnapshot): boolean {
   if (!validatePaymentRoutingSnapshot(left) ||
       !validatePaymentRoutingSnapshot(right)) return false;
-  for (const field of Object.keys(right) as
-    Array<keyof PaymentRoutingSnapshot>) {
+  for (const field of new Set([...Object.keys(left), ...Object.keys(right)]) as
+    Set<keyof PaymentRoutingSnapshot>) {
     if (field === "selection") continue;
+    if (field === "commercialTerms") {
+      if (!commercialTermsSnapshotsEqual(left.commercialTerms,
+        right.commercialTerms)) return false;
+      continue;
+    }
     if (left[field] !== right[field]) return false;
   }
   return (["route", "mode", "currency", "merchantCountry"] as const)

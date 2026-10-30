@@ -21,6 +21,10 @@ export interface HostMembershipPlanDocument {
         razorpay?: string;
       };
       revision: number;
+      /**
+       * Account the provider plan was created on. Absent on prices created under the original platform-account model.
+       */
+      providerAccountId?: string;
     };
     annual?: {
       /**
@@ -31,6 +35,10 @@ export interface HostMembershipPlanDocument {
         razorpay?: string;
       };
       revision: number;
+      /**
+       * Account the provider plan was created on. Absent on prices created under the original platform-account model.
+       */
+      providerAccountId?: string;
     };
   };
   memberCap: number | null;

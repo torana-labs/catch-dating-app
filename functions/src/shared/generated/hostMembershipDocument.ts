@@ -49,6 +49,19 @@ export interface HostMembershipDocument {
   provider: "razorpay";
   providerSubscriptionId: string;
   providerPlanId: string;
+  /**
+   * The account that owns this subscription, copied from the checkout that created it. Absent on memberships created under the original platform-account model.
+   */
+  payment?: {
+    provider: "razorpay";
+    /**
+     * hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.
+     */
+    moneyFlow: "hostCollected" | "platformSplit";
+    providerAccountId: string;
+    bindingId: string;
+    mode: "test" | "live";
+  };
   providerEventAtMillis: number;
   lastCheckoutId: string;
   revision: number;
