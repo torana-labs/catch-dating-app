@@ -3557,6 +3557,32 @@
       "role": "generator"
     },
     {
+      "id": "env:pinned-node",
+      "category": "env",
+      "path": "tool/ci/install_pinned_node.sh",
+      "command": "bash tool/ci/install_pinned_node.sh",
+      "safety": "remote-read-local-writes-artifacts",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/install_pinned_node.test.mjs",
+        "tool/ci/toolchain.env"
+      ],
+      "description": "Installs the checksum-verified latest release of the tool/ci/toolchain.env NODE_VERSION major into ~/.local/bin when the node on PATH is another major, for cloud agent setup scripts.",
+      "checks": [
+        "bash -n tool/ci/install_pinned_node.sh",
+        "node --test tool/ci/install_pinned_node.test.mjs",
+        "bash tool/ci/install_pinned_node.sh --help"
+      ],
+      "role": "operator"
+    },
+    {
       "id": "platform:mobile-package-policy",
       "category": "platform",
       "path": "tool/platform/check_mobile_package.mjs",
