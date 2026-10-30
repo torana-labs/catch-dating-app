@@ -1,0 +1,108 @@
+name: Infra Drift
+
+# Nightly read-only plan of infra/firebase against live state. Drift, such as
+# a fingerprint added or removed in the Firebase console, opens or updates one
+# issue; a clean plan closes it. A failing plan fails the run.
+# Operator guide: docs/infrastructure_as_code.md.
+
+on:
+  schedule:
+    - cron: "17 22 * * *" # 03:47 IST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: infra-drift
+  cancel-in-progress: false
+
+jobs:
+  drift:
+    name: Detect drift
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: platform-plan
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+      issues: write
+    env:
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+    defaults:
+      run:
+        working-directory: infra/firebase
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        working-directory: .
+        run: echo "terraform-version=$(sed -n 's/^TERRAFORM_VERSION=//p' tool/ci/toolchain.env)" >> "$GITHUB_OUTPUT"
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ steps.toolchain.outputs.terraform-version }}
+          terraform_wrapper: false
+      - id: ready
+        name: Check the identity is bootstrapped
+        env:
+          SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+        run: |
+          if [[ -z "$SERVICE_ACCOUNT" ]]; then
+            echo "The platform-plan environment has no identity yet; run infra/bootstrap/bootstrap.sh." >> "$GITHUB_STEP_SUMMARY"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Authenticate to Google without a stored key
+        if: ${{ steps.ready.outputs.ready == 'true' }}
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+      - id: plan
+        name: Plan against live state
+        if: ${{ steps.ready.outputs.ready == 'true' }}
+        run: |
+          set -euo pipefail
+          terraform init -lockfile=readonly
+          status=0
+          terraform plan -lock=false -detailed-exitcode -out=tfplan || status=$?
+          if [[ "$status" == 1 ]]; then exit 1; fi
+          terraform show -json tfplan > plan.json
+          ../scripts/plan_guard.sh plan.json > summary.md || true
+          cat summary.md >> "$GITHUB_STEP_SUMMARY"
+          echo "drift=$([[ "$status" == 2 ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - name: Maintain the drift issue
+        if: ${{ steps.ready.outputs.ready == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRIFT: ${{ steps.plan.outputs.drift }}
+        run: |
+          set -euo pipefail
+          title="[Infra drift] Live Firebase settings differ from infra/firebase"
+          issue_number="$(
+            gh issue list --state open --limit 100 --json number,title \
+              --jq "map(select(.title == \"$title\"))[0].number // empty"
+          )"
+          if [[ "$DRIFT" == true ]]; then
+            {
+              echo "The nightly read-only plan found live settings that differ from \`infra/firebase\`."
+              echo
+              echo "Either commit the live value in a PR (when the console change was intended) or run Infra Apply to restore the reviewed configuration. See docs/infrastructure_as_code.md."
+              echo
+              cat summary.md
+              echo
+              echo "Workflow: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            } > issue.md
+            if [[ -n "$issue_number" ]]; then
+              gh issue edit "$issue_number" --body-file issue.md
+            else
+              gh issue create --title "$title" --body-file issue.md --label "status: todo" --label "priority: high"
+            fi
+          elif [[ -n "$issue_number" ]]; then
+            gh issue close "$issue_number" \
+              --comment "The nightly plan is clean again: live state matches infra/firebase. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          fi

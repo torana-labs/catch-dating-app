@@ -61,8 +61,12 @@ Current state:
   and environment. `tool/flutter_with_env.sh` resolves the exact flavor and
   entrypoint from `tool/app_targets.json`.
 - Android upload-key SHA-1/SHA-256 fingerprints are registered on the dev,
-  staging, and production consumer and host Firebase Android apps. Add Play
-  app-signing certificate fingerprints after Play App Signing enrollment.
+  staging, and production consumer and host Firebase Android apps. The
+  Android apps' fingerprints and App Check Play Integrity configs are moving
+  under Terraform in `infra/firebase`, which adds the Play app-signing
+  fingerprints that Play-installed builds need. Change fingerprints there
+  through a PR, not in the Firebase console; see
+  [`docs/infrastructure_as_code.md`](../docs/infrastructure_as_code.md).
 - iOS schemes and build configurations are wired for consumer `dev`,
   `staging`, and `prod` in `apps/consumer/ios`, and host `host-dev`,
   `host-staging`, and `host-prod` in `apps/host/ios`, through
