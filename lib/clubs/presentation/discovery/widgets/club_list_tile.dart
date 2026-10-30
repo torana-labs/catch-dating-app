@@ -1,10 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
-import 'package:catch_dating_app/clubs/shared/club_host_identity_row.dart';
-import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/explore/explore.dart';
 import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

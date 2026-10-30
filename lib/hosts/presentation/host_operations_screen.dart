@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
-import 'package:catch_dating_app/clubs/clubs.dart'
+import 'package:catch_dating_app/organizers/organizers.dart'
     show ClubDetailReadOnlyPreview;
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';

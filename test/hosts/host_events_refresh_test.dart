@@ -31,12 +31,12 @@ import '../test_pump_helpers.dart';
 typedef _EventPage = CursorPage<Event, DocumentSnapshot<Event>>;
 
 const _actor = 'actor-a';
-const _organizer = 'org-a';
+const _organizerId = 'org-a';
 final _now = DateTime(2026, 6, 15, 12);
-final _club = buildClub(id: _organizer, ownerUserId: _actor);
+final _club = buildClub(id: _organizerId, ownerUserId: _actor);
 final _draft = EventDraft(
   id: 'draft-1',
-  clubId: _organizer,
+  clubId: _organizerId,
   savedAt: DateTime(2026, 6, 14, 10),
   customActivityLabel: 'Quiz night',
 );
@@ -112,7 +112,7 @@ void main() {
       fixture.events.active.add(
         buildEvent(
           id: 'new-published',
-          clubId: _organizer,
+          clubId: _organizerId,
           name: 'Harbour sunrise run',
           startTime: _now.add(const Duration(days: 3)),
         ),
@@ -169,7 +169,7 @@ void main() {
       );
       fixture.router.goNamed(
         Routes.hostEventsScreen.name,
-        queryParameters: {'organizerId': _organizer},
+        queryParameters: {'organizerId': _organizerId},
       );
       await pumpFeatureUi(tester);
       await pumpFeatureUiFor(tester, const Duration(minutes: 2));
@@ -266,7 +266,7 @@ class _Fixture {
           eventRepositoryProvider.overrideWithValue(events),
           privateEventSetupTimelineRepositoryProvider.overrideWithValue(setups),
           clubEventDraftsProvider(
-            clubId: _organizer,
+            clubId: _organizerId,
           ).overrideWith((_) async => [_draft]),
           programEventsControllerProvider.overrideWith((ref, _) {
             final controller = ProgramEventsController(

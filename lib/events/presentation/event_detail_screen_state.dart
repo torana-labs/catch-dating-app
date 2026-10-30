@@ -7,7 +7,6 @@ import 'package:catch_dating_app/contexts/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_profile_requirements.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';

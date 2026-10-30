@@ -1,14 +1,10 @@
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_contact_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_formatters.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_top_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_host_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_photo_rail.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
-import 'package:catch_dating_app/clubs/shared/club_host_identity_row.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/kernel/city_catalog.dart';

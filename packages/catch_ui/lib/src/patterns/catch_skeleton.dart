@@ -38,7 +38,6 @@ class CatchSkeleton extends StatelessWidget {
   static const sampleStatusText = 'Loading status';
   static const sampleFormTitle = 'Loading form';
   static const sampleRoleTitle = 'Loading host role';
-  static const sampleClubName = 'Loading club';
 
   const CatchSkeleton._({required this.child})
     : variant = CatchSkeletonVariant.shape,

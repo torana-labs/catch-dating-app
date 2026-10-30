@@ -1,8 +1,4 @@
 import 'package:catch_dating_app/clubs/shared/club_cover.dart';
-import 'package:catch_dating_app/clubs/shared/club_host_identity_row.dart';
-import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
-import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/explore/presentation/explore_club_display_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/organizers/organizers.dart';

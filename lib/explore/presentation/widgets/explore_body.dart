@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/clubs/clubs.dart'
+import 'package:catch_dating_app/organizers/organizers.dart'
     show ClubAvatarRail, buildClubDirectorySlivers;
 import 'package:catch_dating_app/contexts/discovery/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
