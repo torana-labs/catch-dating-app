@@ -50,11 +50,11 @@ function fixture(extra = {}) {
     "widgetbook/pubspec.yaml": "name: widgetbook_workspace\n",
     "widgetbook/lib/clubs/club_cases.dart": "final cases = 1;\n",
     "widgetbook/test/cases_test.dart": "import 'package:widgetbook_workspace/clubs/club_cases.dart';\n",
-    "design/screens/catch.screens.json": "{\"controller\": \"watchClub\", \"roles\": [\"Club.primaryClubPhotoUrl\"], \"values\": [\"clubUpdate\"]}\n",
+    "design/screens/catch.screens.json": "{\"controller\": \"watchClub\", \"roles\": [\"Club.primaryClubPhotoUrl\"], \"values\": [\"runClub\"]}\n",
     "design/website/components.json": "{\"source\": \"packages/web-ui/src/ClubCard.tsx\", \"exportName\": \"ClubCard\"}\n",
     "design/components/registry_aliases.json": "{\n  \"aliases\": [\"ClubCard\"],\n  \"symbol\": \"ClubCard\"\n}\n",
     "test/organizers/club_card_test.dart": "testWidgets('ClubCard shows the club name', (tester) async {});\n",
-    "lib/contexts/organizers/data/club_watch.dart": "Stream<Club> watchClub() => const Stream.empty();\nenum ActivityNotificationType { clubUpdate }\n",
+    "lib/contexts/organizers/data/club_watch.dart": "Stream<Club> watchClub() => const Stream.empty();\nenum LaunchAccessEventType { runClub }\n",
     "tool/check_names.mjs": "const keys = ['clubsDetailTitle', 'hostsOrganizerTypeClub']; const path = '/lib/clubs/';\n",
     "contracts/callable_responses/create_club_post_response.schema.json": "{\"title\": \"CreateClubPostResponse\"}\n",
     "lib/contexts/organizers/data/club_post_response.dart": "final class CreateClubPostResponse {}\n",
@@ -174,7 +174,7 @@ test("code registries rename Dart members but not stored values, web names or al
   const {plan, sources} = fixture();
   const screens = "design/screens/catch.screens.json";
   assert.equal(transformFile({file: screens, source: sources[screens], plan}),
-    "{\"controller\": \"watchOrganizer\", \"roles\": [\"Organizer.primaryClubPhotoUrl\"], \"values\": [\"clubUpdate\"]}\n");
+    "{\"controller\": \"watchOrganizer\", \"roles\": [\"Organizer.primaryClubPhotoUrl\"], \"values\": [\"runClub\"]}\n");
   const web = "design/website/components.json";
   assert.equal(transformFile({file: web, source: sources[web], plan}), sources[web]);
   const aliases = "design/components/registry_aliases.json";
