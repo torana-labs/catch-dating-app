@@ -27,52 +27,30 @@ void main() {
     });
 
     test(
-      'processPayment requests a trusted order and verifies without client event metadata',
+      'INR processPayment never creates an order on Catch\'s account',
       () async {
-        functions.callables['createRazorpayOrder'] =
-            TestHttpsCallable('createRazorpayOrder')
-              ..resultData = {
-                'orderId': 'order_123',
-                'amount': 25000,
-                'currency': 'INR',
-                'keyId': 'rzp_test_server_environment',
-              };
-        functions.callables['verifyRazorpayPayment'] = TestHttpsCallable(
-          'verifyRazorpayPayment',
-        )..resultData = {'verified': true, 'eventId': 'trusted-event'};
-
-        final future = repository.processPayment(
-          eventId: 'event-1',
-          currencyCode: 'INR',
-          description: 'Sunrise Event',
-          userName: 'Priya',
-          userEmail: 'priya@example.com',
-          userContact: '+919876543210',
+        var factoryCalls = 0;
+        final inrRepository = PaymentRepository(
+          functions,
+          razorpayFactory: () {
+            factoryCalls++;
+            return razorpay;
+          },
+          isWebOverride: false,
+          targetPlatformOverride: TargetPlatform.android,
         );
-        await flushTestEventQueue();
-
-        expect(functions.callables['createRazorpayOrder']!.calls.single, {
-          'eventId': 'event-1',
-        });
-        expect(razorpay.openCalls.single['order_id'], 'order_123');
-        expect(razorpay.openCalls.single['amount'], 25000);
-        expect(razorpay.openCalls.single['currency'], 'INR');
-        expect(razorpay.openCalls.single['key'], 'rzp_test_server_environment');
-
-        razorpay.emitSuccess(
-          const RazorpaySuccessResponse(
-            paymentId: 'pay_123',
-            orderId: 'order_123',
-            signature: 'sig_123',
+        await expectLater(
+          inrRepository.processPayment(eventId: 'event-1', currencyCode: 'inr'),
+          throwsA(
+            isA<PaidBookingUnavailableException>().having(
+              (error) => error.reason,
+              'reason',
+              PaidBookingUnavailableReason.notOfferedInApp,
+            ),
           ),
         );
-        await future;
-
-        expect(functions.callables['verifyRazorpayPayment']!.calls.single, {
-          'paymentId': 'pay_123',
-          'orderId': 'order_123',
-          'signature': 'sig_123',
-        });
+        expect(functions.callables, isEmpty);
+        expect(factoryCalls, 0);
       },
     );
 
@@ -122,10 +100,6 @@ void main() {
         final data = await stripeRepository.processPayment(
           eventId: 'event-1',
           currencyCode: 'USD',
-          description: 'Sunrise Event',
-          userName: 'Priya',
-          userEmail: 'priya@example.com',
-          userContact: '+919876543210',
           inviteCode: ' CATCH ',
           inviteLinkId: ' invite-link-1 ',
         );
@@ -208,23 +182,50 @@ void main() {
     );
 
     test(
-      'processPayment maps callable startup failures to PaymentFailedException',
+      'an organizer without a ready account is a typed unavailable booking',
       () async {
-        functions.callables['createRazorpayOrder'] =
-            TestHttpsCallable('createRazorpayOrder')
+        functions.callables['managePublicEventCheckout'] =
+            TestHttpsCallable('managePublicEventCheckout')
               ..error = TestFirebaseFunctionsException(
                 code: 'failed-precondition',
-                message: 'Event is full.',
+                message:
+                    'Paid booking is unavailable until this organiser '
+                    'finishes connecting their Razorpay account.',
+                details: const {'reason': 'organizerPaymentsNotReady'},
               );
 
         await expectLater(
-          repository.processPayment(
+          repository.prepareOrganizerCheckout(
             eventId: 'event-1',
-            currencyCode: 'INR',
-            description: 'Sunrise Event',
-            userName: 'Priya',
-            userEmail: 'priya@example.com',
-            userContact: '+919876543210',
+            displayName: 'Priya',
+          ),
+          throwsA(
+            isA<PaidBookingUnavailableException>().having(
+              (error) => error.reason,
+              'reason',
+              PaidBookingUnavailableReason.organizerPaymentsNotReady,
+            ),
+          ),
+        );
+        expect(razorpay.openCalls, isEmpty);
+      },
+    );
+
+    test(
+      'other checkout refusals stay payment failures with their message',
+      () async {
+        functions.callables['managePublicEventCheckout'] =
+            TestHttpsCallable('managePublicEventCheckout')
+              ..error = TestFirebaseFunctionsException(
+                code: 'failed-precondition',
+                message: 'Event is full.',
+                details: const {'reason': 'somethingElse'},
+              );
+
+        await expectLater(
+          repository.prepareOrganizerCheckout(
+            eventId: 'event-1',
+            displayName: 'Priya',
           ),
           throwsA(
             isA<PaymentFailedException>().having(
@@ -241,25 +242,21 @@ void main() {
     test(
       'unexpected payment errors use the stable user-safe fallback',
       () async {
-        functions.callables['createRazorpayOrder'] = TestHttpsCallable(
-          'createRazorpayOrder',
+        functions.callables['managePublicEventCheckout'] = TestHttpsCallable(
+          'managePublicEventCheckout',
         )..error = StateError('private SDK response');
 
         await expectLater(
-          repository.processPayment(
+          repository.prepareOrganizerCheckout(
             eventId: 'event-1',
-            currencyCode: 'INR',
-            description: 'Sunrise Event',
-            userName: 'Priya',
-            userEmail: 'priya@example.com',
-            userContact: '+919876543210',
+            displayName: 'Priya',
           ),
           throwsA(
             isA<PaymentFailedException>()
                 .having(
                   (error) => error.message,
                   'message',
-                  'Payment failed: Unable to start the payment.',
+                  'Payment failed: Unable to reach checkout right now.',
                 )
                 .having(
                   (error) => error.debugMessage,
@@ -273,53 +270,16 @@ void main() {
     );
 
     test(
-      'processPayment rejects malformed order responses before checkout',
-      () async {
-        functions.callables['createRazorpayOrder'] = TestHttpsCallable(
-          'createRazorpayOrder',
-        )..resultData = {'orderId': 'order_123', 'currency': 'INR'};
-
-        await expectLater(
-          repository.processPayment(
-            eventId: 'event-1',
-            currencyCode: 'INR',
-            description: 'Sunrise Event',
-            userName: 'Priya',
-            userEmail: 'priya@example.com',
-            userContact: '+919876543210',
-          ),
-          throwsA(isA<PaymentVerificationFailedException>()),
-        );
-        expect(razorpay.openCalls, isEmpty);
-      },
-    );
-
-    test(
       'success callback fails fast when Razorpay response is incomplete',
       () async {
-        functions.callables['createRazorpayOrder'] =
-            TestHttpsCallable('createRazorpayOrder')
-              ..resultData = {
-                'orderId': 'order_123',
-                'amount': 25000,
-                'currency': 'INR',
-                'keyId': 'rzp_test_server_environment',
-              };
-
-        final future = repository.processPayment(
-          eventId: 'event-1',
-          currencyCode: 'INR',
-          description: 'Sunrise Event',
-          userName: 'Priya',
-          userEmail: 'priya@example.com',
-          userContact: '+919876543210',
-        );
+        final server = OrganizerCheckoutFake(functions);
+        final future = payOrganizer(repository, server.session('event-1'));
         await flushTestEventQueue();
 
         razorpay.emitSuccess(
           const RazorpaySuccessResponse(
             paymentId: 'pay_123',
-            orderId: 'order_123',
+            orderId: 'order_a',
             signature: null,
           ),
         );
@@ -328,27 +288,13 @@ void main() {
           future,
           throwsA(isA<PaymentVerificationFailedException>()),
         );
+        expect(server.callable.calls, isEmpty);
       },
     );
 
     test('error callback maps cancelled payments cleanly', () async {
-      functions.callables['createRazorpayOrder'] =
-          TestHttpsCallable('createRazorpayOrder')
-            ..resultData = {
-              'orderId': 'order_123',
-              'amount': 25000,
-              'currency': 'INR',
-              'keyId': 'rzp_test_server_environment',
-            };
-
-      final future = repository.processPayment(
-        eventId: 'event-1',
-        currencyCode: 'INR',
-        description: 'Sunrise Event',
-        userName: 'Priya',
-        userEmail: 'priya@example.com',
-        userContact: '+919876543210',
-      );
+      final server = OrganizerCheckoutFake(functions);
+      final future = payOrganizer(repository, server.session('event-1'));
       await flushTestEventQueue();
 
       razorpay.emitError(
@@ -364,38 +310,15 @@ void main() {
     test(
       'verification callable failures surface as PaymentFailedException',
       () async {
-        functions.callables['createRazorpayOrder'] =
-            TestHttpsCallable('createRazorpayOrder')
-              ..resultData = {
-                'orderId': 'order_123',
-                'amount': 25000,
-                'currency': 'INR',
-                'keyId': 'rzp_test_server_environment',
-              };
-        functions.callables['verifyRazorpayPayment'] =
-            TestHttpsCallable('verifyRazorpayPayment')
-              ..error = TestFirebaseFunctionsException(
-                code: 'failed-precondition',
-                message: 'This event is now full.',
-              );
-
-        final future = repository.processPayment(
-          eventId: 'event-1',
-          currencyCode: 'INR',
-          description: 'Sunrise Event',
-          userName: 'Priya',
-          userEmail: 'priya@example.com',
-          userContact: '+919876543210',
+        final server = OrganizerCheckoutFake(functions);
+        server.callable.error = TestFirebaseFunctionsException(
+          code: 'failed-precondition',
+          message: 'This event is now full.',
         );
+        final future = payOrganizer(repository, server.session('event-1'));
         await flushTestEventQueue();
 
-        razorpay.emitSuccess(
-          const RazorpaySuccessResponse(
-            paymentId: 'pay_123',
-            orderId: 'order_123',
-            signature: 'sig_123',
-          ),
-        );
+        razorpay.emitSuccess(organizerSuccess('order_a'));
 
         await expectLater(
           future,

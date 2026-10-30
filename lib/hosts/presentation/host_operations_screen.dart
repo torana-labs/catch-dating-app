@@ -40,6 +40,7 @@ import 'package:catch_dating_app/hosts/presentation/organizer_management/create/
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_razorpay_connection_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_observed_stages_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_presence_section.dart';

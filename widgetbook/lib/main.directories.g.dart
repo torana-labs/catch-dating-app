@@ -12019,7 +12019,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'HostRazorpayConnectionSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Unavailable, connect and ready',
+                    name: 'Unavailable, connect, ready and needs reconnect',
                     builder:
                         _widgetbook_workspace_hosts_host_payout_connection_use_cases
                             .hostRazorpayConnectionSectionPreview,

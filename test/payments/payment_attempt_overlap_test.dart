@@ -10,31 +10,6 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 import 'payment_test_fakes.dart';
 
-Map<String, Object?> _order(String id, {int amount = 25000}) => {
-  'orderId': id,
-  'amount': amount,
-  'currency': 'INR',
-  'keyId': 'rzp_test_server_environment',
-};
-
-RazorpaySuccessResponse _success(String id) => RazorpaySuccessResponse(
-  paymentId: 'pay_$id',
-  orderId: id,
-  signature: 'sig_$id',
-);
-
-Future<PaymentConfirmationData> _pay(
-  PaymentRepository repository, [
-  String event = 'event-a',
-]) => repository.processPayment(
-  eventId: event,
-  currencyCode: 'INR',
-  description: 'Event',
-  userName: 'Guest',
-  userEmail: 'guest@example.com',
-  userContact: '+919876543210',
-);
-
 final class _ObservedPayment {
   _ObservedPayment(Future<PaymentConfirmationData> payment) {
     unawaited(
@@ -58,18 +33,15 @@ final class _ObservedPayment {
 
 void main() {
   late TestFirebaseFunctions functions;
-  late TestHttpsCallable create;
+  late OrganizerCheckoutFake server;
   late TestHttpsCallable verify;
   late List<FakeRazorpay> checkouts;
   late PaymentRepository repository;
 
   setUp(() {
     functions = TestFirebaseFunctions();
-    create = TestHttpsCallable('createRazorpayOrder')
-      ..resultData = _order('order-a');
-    verify = TestHttpsCallable('verifyRazorpayPayment')
-      ..resultData = {'verified': true};
-    functions.callables.addAll({create.name: create, verify.name: verify});
+    server = OrganizerCheckoutFake(functions);
+    verify = server.callable;
     checkouts = [];
     repository = PaymentRepository(
       functions,
@@ -86,34 +58,34 @@ void main() {
   tearDown(() => repository.dispose());
 
   testWidgets(
-    'reserves before delayed order creation across independent callers',
+    'an open checkout reserves the repository across independent callers',
     (tester) async {
-      final order = Completer<Object?>();
-      create.onCall = (_) => order.future;
-      final first = _ObservedPayment(_pay(repository));
-      final overlapping = _ObservedPayment(_pay(repository, 'event-b'));
-      final createCallsWhileOrderPending = create.calls.length;
+      final first = _ObservedPayment(
+        payOrganizer(repository, server.session('event-a')),
+      );
+      final overlapping = _ObservedPayment(
+        payOrganizer(
+          repository,
+          server.session('event-b', orderId: 'order_b', amountPaise: 99000),
+        ),
+      );
       try {
-        order.complete(_order('order-a'));
         await tester.pump();
-        checkouts.single.emitSuccess(_success('order-a'));
+        expect(checkouts, hasLength(1));
+        checkouts.single.emitSuccess(organizerSuccess('order_a'));
         await tester.pump();
-        // cb00 loses A's completer when B overwrites it. Advance its real
-        // repository deadline in the test clock so it settles before asserts.
         await pumpFeatureUiFor(tester, const Duration(minutes: 10));
         expect(first.settled, isTrue);
         expect(overlapping.settled, isTrue);
         expect(
           {
-            'createCallsWhileOrderPending': createCallsWhileOrderPending,
             'firstEventId': first.receipt?.eventId,
             'firstOrderId': first.receipt?.orderId,
             'firstAmount': first.receipt?.amountInPaise,
           },
           {
-            'createCallsWhileOrderPending': 1,
             'firstEventId': 'event-a',
-            'firstOrderId': 'order-a',
+            'firstOrderId': 'order_a',
             'firstAmount': 25000,
           },
         );
@@ -121,8 +93,6 @@ void main() {
         expect(overlapping.error, isA<PaymentFailedException>());
         expect(overlapping.receipt, isNull);
       } finally {
-        if (!order.isCompleted) order.complete(_order('order-a'));
-        await tester.pump();
         for (final checkout in checkouts) {
           checkout.emitError(const RazorpayFailureResponse(isCancelled: true));
         }
@@ -134,31 +104,35 @@ void main() {
   testWidgets(
     'holds ownership through delayed verification and preserves receipt metadata',
     (tester) async {
+      final firstSession = server.session('event-a');
       final verification = Completer<Object?>();
       verify.onCall = (_) => verification.future;
-      final first = _ObservedPayment(_pay(repository));
+      final first = _ObservedPayment(payOrganizer(repository, firstSession));
       try {
         await tester.pump();
-        checkouts.single.emitSuccess(_success('order-a'));
+        checkouts.single.emitSuccess(organizerSuccess('order_a'));
         await tester.pump();
-        create.resultData = _order('order-b', amount: 99000);
-        final overlapping = _ObservedPayment(_pay(repository, 'event-b'));
-        final createCallsWhileVerifying = create.calls.length;
-        // Deliver any incorrectly admitted B order before A verifies. This is
-        // the actual cross-attempt metadata race, not a simulated state model.
+        final secondSession = server.session(
+          'event-b',
+          orderId: 'order_b',
+          amountPaise: 99000,
+        );
+        final overlapping = _ObservedPayment(
+          payOrganizer(repository, secondSession),
+        );
+        final checkoutsWhileVerifying = checkouts.length;
         await tester.pump();
-        verification.complete({'verified': true});
+        verification.complete(server.admittedFor(firstSession));
         await tester.pump();
-        // Drain B if it was incorrectly admitted. On the repaired repository
-        // this is merely a stale callback to A and cannot change A's receipt.
-        checkouts.last.emitSuccess(_success('order-b'));
+        // A stale callback to A cannot change A's receipt.
+        checkouts.last.emitSuccess(organizerSuccess('order_b'));
         await tester.pump();
         await pumpFeatureUiFor(tester, const Duration(minutes: 10));
 
-        verify.onCall = null;
-        final next = _ObservedPayment(_pay(repository, 'event-b'));
+        verify.onCall = server.admit;
+        final next = _ObservedPayment(payOrganizer(repository, secondSession));
         await tester.pump();
-        checkouts.last.emitSuccess(_success('order-b'));
+        checkouts.last.emitSuccess(organizerSuccess('order_b'));
         await tester.pump();
         await pumpFeatureUiFor(tester, const Duration(minutes: 10));
         expect(first.settled, isTrue);
@@ -166,16 +140,16 @@ void main() {
         expect(next.settled, isTrue);
         expect(
           {
-            'createCallsWhileVerifying': createCallsWhileVerifying,
+            'checkoutsWhileVerifying': checkoutsWhileVerifying,
             'firstEventId': first.receipt?.eventId,
             'firstOrderId': first.receipt?.orderId,
             'firstAmount': first.receipt?.amountInPaise,
             'firstCurrency': first.receipt?.currency,
           },
           {
-            'createCallsWhileVerifying': 1,
+            'checkoutsWhileVerifying': 1,
             'firstEventId': 'event-a',
-            'firstOrderId': 'order-a',
+            'firstOrderId': 'order_a',
             'firstAmount': 25000,
             'firstCurrency': 'INR',
           },
@@ -188,7 +162,7 @@ void main() {
         expect(next.receipt?.amountInPaise, 99000);
       } finally {
         if (!verification.isCompleted) {
-          verification.complete({'verified': true});
+          verification.complete(server.admittedFor(firstSession));
         }
         await tester.pump();
         for (final checkout in checkouts) {

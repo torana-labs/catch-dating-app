@@ -40,6 +40,7 @@ void main() {
               setup: HostFormPaymentSetup(available: false, connections: []),
             ),
             onConnect: () => fail('Cannot connect while unavailable'),
+            onReconnect: () => fail('Cannot reconnect while unavailable'),
             onRefresh: () {},
             onDisconnect: (_) => fail('Nothing to disconnect'),
           ),
@@ -73,6 +74,7 @@ void main() {
           setup: HostFormPaymentSetup(available: true, connections: []),
         ),
         onConnect: () => connects++,
+        onReconnect: () => fail('Nothing to reconnect'),
         onRefresh: () {},
         onDisconnect: (_) {},
       ),
@@ -109,6 +111,7 @@ void main() {
             ),
           ),
           onConnect: () {},
+          onReconnect: () => fail('A ready account needs no reconnect'),
           onRefresh: () {},
           onDisconnect: disconnected.add,
         ),
@@ -158,6 +161,7 @@ void main() {
           pending: true,
         ),
         onConnect: () => fail('Pending blocks connect'),
+        onReconnect: () => fail('Pending blocks reconnect'),
         onRefresh: () => fail('Pending blocks refresh'),
         onDisconnect: (_) => fail('Pending blocks disconnect'),
       ),
@@ -166,8 +170,61 @@ void main() {
     expect(find.text('Connect Razorpay'), findsNothing);
     expect(_field(tester, 'Check connection').onTap, isNull);
     expect(_field(tester, 'Disconnect account').onTap, isNull);
+    expect(_field(tester, 'Reconnect Razorpay').onTap, isNull);
     _readable(tester);
   });
+
+  for (final dark in [false, true]) {
+    testWidgets(
+      'an account that cannot take payments asks to reconnect $dark',
+      (tester) async {
+        var reconnects = 0;
+        await _pump(
+          tester,
+          dark: dark,
+          textScale: dark ? 1 : 2,
+          child: HostRazorpayConnectionSection(
+            state: const HostFormPaymentSetupState(
+              setup: HostFormPaymentSetup(
+                available: true,
+                connections: [
+                  // Razorpay refused a token refresh: still `ready`, but the
+                  // server will not take payments on it.
+                  HostFormPaymentConnection(
+                    connectionId: 'rpc_example',
+                    status: HostFormPaymentConnectionStatus.ready,
+                    mode: HostFormPaymentMode.live,
+                    accountId: 'acc_organiser_demo',
+                    webhookVerified: true,
+                    lastErrorCode: 'refreshRejected',
+                  ),
+                ],
+              ),
+            ),
+            onConnect: () => fail('Reconnect replaces, never adds'),
+            onReconnect: () => reconnects++,
+            onRefresh: () {},
+            onDisconnect: (_) {},
+          ),
+        );
+        expect(_badge('Needs reconnect'), findsOneWidget);
+        expect(_badge('Ready'), findsNothing);
+        expect(
+          find.textContaining('Reconnect Razorpay to restore payments'),
+          findsOneWidget,
+        );
+        expect(find.text('Connect Razorpay'), findsNothing);
+        final reconnect = _field(tester, 'Reconnect Razorpay');
+        expect(reconnect.body, contains('new paid bookings'));
+        await tester.ensureVisible(find.text('Reconnect Razorpay'));
+        await pumpFeatureUi(tester);
+        await tester.tap(find.text('Reconnect Razorpay'));
+        expect(reconnects, 1);
+        _readable(tester);
+        await _capture(tester, 'needs-reconnect-${dark ? 'dark' : 'light'}');
+      },
+    );
+  }
 }
 
 Finder _badge(String label) =>
