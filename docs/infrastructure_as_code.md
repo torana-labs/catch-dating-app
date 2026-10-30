@@ -176,7 +176,8 @@ repository, so the first PR reads them:
      Android apps through the Firebase Management API, in API order, then
      appends the Play fingerprints that are not registered yet.
    - The run summary shows the fingerprints and a complete
-     `infra/firebase/terraform.tfvars`; the run also keeps it as an artifact.
+     `infra/firebase/terraform.tfvars`; the job log prints it too, and the run
+     keeps it as an artifact.
 2. Replace `infra/firebase/terraform.tfvars` with it in a PR. Infra Plan should
    show, for each of the six apps, an import of the Android app and of its Play
    Integrity config, and in-place updates only on `prod-consumer` and
