@@ -8,8 +8,10 @@ import type {CallableRequest} from "firebase-functions/v2/https";
 import {checkRateLimit} from "../shared/rateLimit";
 import {handleInstagramClaimWebhook} from "./instagramClaimProtocol";
 import {FakeInstagramProvider} from "./instagramMessagingProvider";
+import {FakeLumaClaimPageReader} from "./lumaClaimPage";
 import {organizerClaimRequestId} from "./organizerClaimApproval";
 import {
+  confirmOrganizerClaimVerificationHandler,
   processInstagramClaimMessages,
   startOrganizerClaimVerificationHandler,
 } from "./organizerClaimVerification";
@@ -52,6 +54,7 @@ test("a signed Instagram message claims the listing end to end",
         .padStart(6, "0"),
       checkRateLimit,
       provider: () => provider,
+      lumaPages: () => new FakeLumaClaimPageReader(),
     };
     const deliver = (mid: string, sender: string, text: string) =>
       handleInstagramClaimWebhook(signedDelivery(mid, sender, text), webhook,
@@ -103,6 +106,63 @@ test("a signed Instagram message claims the listing end to end",
       // The used code is refused from then on.
       await deliver(`m3-${suffix}`, ownerSender, started.code);
       assert.match(provider.replies[2].text, /used or replaced/);
+    } finally {
+      await deleteApp(app);
+    }
+  });
+
+test("a code on the listing's Luma calendar claims it end to end",
+  {skip: !emulator}, async () => {
+    const suffix = Date.now().toString();
+    const organizerId = `luma-organizer-${suffix}`;
+    const uid = `luma-owner-${suffix}`;
+    const calendar = `https://luma.com/harbour-line-${suffix}`;
+    const app = initializeApp({projectId: "demo-catch-claims"}, uid);
+    const db = getEmulatorFirestore(app);
+    const lumaPages = new FakeLumaClaimPageReader();
+    const deps: InstagramClaimMessageDeps = {
+      firestore: () => db,
+      serverTimestamp: () => FieldValue.serverTimestamp(),
+      now: () => Date.now(),
+      config: () => ({instagramEnabled: false, catchInstagramHandle: null}),
+      randomCode: () => String(Math.floor(Math.random() * 1_000_000))
+        .padStart(6, "0"),
+      checkRateLimit,
+      provider: () => new FakeInstagramProvider(),
+      lumaPages: () => lumaPages,
+    };
+    const call = (data: unknown) => ({auth: {uid, token: {}},
+      rawRequest: {headers: {}}, data}) as unknown as CallableRequest<unknown>;
+    try {
+      await db.doc(`organizers/${organizerId}`).set({
+        name: "Harbour Line Run Club", instagramHandle: null,
+        ownership: {state: "programmatic"},
+        claim: {state: "unclaimed", claimHref: null, lastClaimRequestId: null},
+        provenance: {origin: "import"}, publicSources: [{type: "luma",
+          label: "luma page", detail: "Public luma page.", href: calendar,
+          confidence: "medium", lastCheckedAt: null}],
+      });
+      await db.doc(`users/${uid}`).set({name: "Ravi Menon",
+        displayName: "Ravi Menon", phoneNumber: "+919800000002",
+        profileComplete: false});
+      const started = await startOrganizerClaimVerificationHandler(
+        call({organizerId, method: "lumaDescription"}), deps);
+      lumaPages.pages[calendar] = "Weekly runs along the harbour.";
+      const missing = await confirmOrganizerClaimVerificationHandler(
+        call({attemptId: started.attemptId}), deps);
+      assert.equal(missing.lastRejection, "codeNotFound");
+      lumaPages.pages[calendar] =
+        `Weekly runs along the harbour. ${started.proofText}`;
+      const verified = await confirmOrganizerClaimVerificationHandler(
+        call({attemptId: started.attemptId}), deps);
+      assert.equal(verified.status, "verified");
+      const organizer = (await db.doc(`organizers/${organizerId}`).get())
+        .data();
+      assert.equal(organizer?.ownerUserId, uid);
+      const request = (await db.doc(`organizerClaimRequests/${
+        organizerClaimRequestId(organizerId, uid)}`).get()).data();
+      assert.equal(request?.status, "approved");
+      assert.deepEqual(request?.proofUrls, [calendar]);
     } finally {
       await deleteApp(app);
     }
