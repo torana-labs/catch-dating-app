@@ -1,0 +1,7 @@
+/* Admin T4 section title, moved from admin/src/styles.css (.intake-section-title). */
+.title {
+  color: var(--catch-theme-ink2);
+  font-size: var(--catch-typography-web-status-size);
+  font-weight: var(--catch-typography-brand-kicker-weight);
+  text-transform: uppercase;
+}

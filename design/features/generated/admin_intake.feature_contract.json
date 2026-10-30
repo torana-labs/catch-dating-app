@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/admin_intake.feature.json",
   "generatedFor": "2026-10-29",
-  "sourceDigest": "sha256:680d4367abca548d1059624cc58eb6c343b8808fd8c67651f9e26868c1efe6e2",
+  "sourceDigest": "sha256:9ee6e86c7f512d84c628d76b8e4186827ac15a5ab4e17ff1d01ee2bab1468508",
   "resolvedDigest": "sha256:9c387562a86658de3c00b718af93c153f4ce60b0a6c094e0ed36d6684b30a4ab",
   "feature": {
     "id": "feature.admin_intake",
@@ -16,8 +16,8 @@
     "surfaces": 2,
     "states": 6,
     "scenarios": 6,
-    "actionCases": 15,
-    "actions": 13,
+    "actionCases": 14,
+    "actions": 12,
     "captures": 0,
     "previews": 2,
     "testFiles": 9,
@@ -464,7 +464,7 @@
         "id": "route_organizer_intake"
       },
       "actionScope": {
-        "included": "Switching review and diagnostics, scrolling the bounded candidate queue independently from review detail, deciding organizer intake, creating fail-closed organizer drafts from reviewed candidates, attaching or curating candidates, deciding policy gaps, classifying pending inputs, and freezing the complete Admin workspace during any organizer-intake write.",
+        "included": "Scrolling the bounded candidate queue independently from review detail, deciding organizer intake, creating fail-closed organizer drafts from reviewed candidates, attaching or curating candidates, deciding policy gaps, classifying pending inputs, and freezing the complete Admin workspace during any organizer-intake write.",
         "excluded": [
           "Decision notes, curation fields, and manual-report acknowledgement remain form data.",
           "Approval creates a publishing handoff; ownership, app visibility, claims, crawling, and canonical publication remain separately gated.",
@@ -562,21 +562,14 @@
       "coverage": {
         "states": 5,
         "scenarios": 5,
-        "actionCases": 9,
-        "actions": 7,
+        "actionCases": 8,
+        "actions": 6,
         "captures": 0,
         "previews": 1,
         "testFiles": 5,
         "evidenceExceptions": 0
       },
       "dimensions": {
-        "view": {
-          "default": "review",
-          "values": [
-            "review",
-            "diagnostics"
-          ]
-        },
         "mutation": {
           "default": "idle",
           "values": [
@@ -588,28 +581,6 @@
         }
       },
       "actions": [
-        {
-          "id": "toggle_organizer_intake_diagnostics",
-          "owner": "screen",
-          "codeValue": "setShowDiagnostics",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "adminSessionId",
-            "viewVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "default",
-                "workflow-readiness",
-                "publication-packets"
-              ]
-            }
-          ],
-          "description": "Switches between daily review work and generated diagnostics without losing controller evidence.",
-          "implementationStatus": "implemented"
-        },
         {
           "id": "decide_organizer_intake",
           "owner": "controller",
@@ -771,7 +742,6 @@
           "kind": "route_state",
           "status": "ready",
           "dimensions": {
-            "view": "review",
             "mutation": "idle"
           },
           "evidence": {
@@ -789,12 +759,10 @@
             {
               "id": "review_queue",
               "dimensions": {
-                "view": "review",
                 "mutation": "idle"
               },
               "actions": {
                 "enabled": [
-                  "toggle_organizer_intake_diagnostics",
                   "decide_organizer_intake",
                   "attach_organizer_candidate",
                   "create_organizer_draft_from_candidate",
@@ -810,40 +778,17 @@
             {
               "id": "decision_pending_frozen_workspace",
               "dimensions": {
-                "view": "review",
                 "mutation": "pending"
               },
               "actions": {
                 "enabled": [],
                 "disabled": [
-                  "toggle_organizer_intake_diagnostics",
                   "decide_organizer_intake",
                   "attach_organizer_candidate",
                   "create_organizer_draft_from_candidate",
                   "record_organizer_curation"
                 ],
                 "notAllowed": [
-                  "decide_organizer_policy_gap",
-                  "decide_pending_intake_input"
-                ]
-              }
-            },
-            {
-              "id": "diagnostics",
-              "dimensions": {
-                "view": "diagnostics",
-                "mutation": "idle"
-              },
-              "actions": {
-                "enabled": [
-                  "toggle_organizer_intake_diagnostics"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "decide_organizer_intake",
-                  "attach_organizer_candidate",
-                  "create_organizer_draft_from_candidate",
-                  "record_organizer_curation",
                   "decide_organizer_policy_gap",
                   "decide_pending_intake_input"
                 ]
@@ -857,7 +802,6 @@
           "kind": "route_state",
           "status": "ready",
           "dimensions": {
-            "view": "review",
             "mutation": "idle"
           },
           "evidence": {
@@ -875,12 +819,10 @@
             {
               "id": "readiness_tasks",
               "dimensions": {
-                "view": "review",
                 "mutation": "idle"
               },
               "actions": {
                 "enabled": [
-                  "toggle_organizer_intake_diagnostics",
                   "decide_organizer_policy_gap",
                   "decide_pending_intake_input"
                 ],
@@ -896,13 +838,11 @@
             {
               "id": "readiness_mutation_pending_frozen_workspace",
               "dimensions": {
-                "view": "review",
                 "mutation": "pending"
               },
               "actions": {
                 "enabled": [],
                 "disabled": [
-                  "toggle_organizer_intake_diagnostics",
                   "decide_organizer_policy_gap",
                   "decide_pending_intake_input"
                 ],
@@ -922,7 +862,6 @@
           "kind": "route_state",
           "status": "ready",
           "dimensions": {
-            "view": "review",
             "mutation": "idle"
           },
           "evidence": {
@@ -940,12 +879,10 @@
             {
               "id": "handoff_packets",
               "dimensions": {
-                "view": "review",
                 "mutation": "idle"
               },
               "actions": {
                 "enabled": [
-                  "toggle_organizer_intake_diagnostics",
                   "decide_organizer_intake",
                   "record_organizer_curation"
                 ],
@@ -966,7 +903,6 @@
           "kind": "route_state",
           "status": "ready",
           "dimensions": {
-            "view": "review",
             "mutation": "idle"
           },
           "evidence": {
@@ -983,12 +919,10 @@
             {
               "id": "long_review_queue",
               "dimensions": {
-                "view": "review",
                 "mutation": "idle"
               },
               "actions": {
                 "enabled": [
-                  "toggle_organizer_intake_diagnostics",
                   "create_organizer_draft_from_candidate"
                 ],
                 "disabled": [],
@@ -1009,7 +943,6 @@
           "kind": "route_state",
           "status": "ready",
           "dimensions": {
-            "view": "review",
             "mutation": "idle"
           },
           "evidence": {
@@ -1027,12 +960,10 @@
             {
               "id": "reviewed_candidate",
               "dimensions": {
-                "view": "review",
                 "mutation": "idle"
               },
               "actions": {
                 "enabled": [
-                  "toggle_organizer_intake_diagnostics",
                   "create_organizer_draft_from_candidate"
                 ],
                 "disabled": [],
@@ -1048,13 +979,11 @@
             {
               "id": "draft_creation_pending_frozen_workspace",
               "dimensions": {
-                "view": "review",
                 "mutation": "pending"
               },
               "actions": {
                 "enabled": [],
                 "disabled": [
-                  "toggle_organizer_intake_diagnostics",
                   "create_organizer_draft_from_candidate"
                 ],
                 "notAllowed": [

@@ -106,20 +106,6 @@ export function AdminIntakeWorkspaceTabs<T extends string>({
   );
 }
 
-export function AdminIntakeLayout({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <section {...props} className={classNames("main-grid", "intake-layout", className)}>
-      {children}
-    </section>
-  );
-}
-
 export function AdminMarketingStudioHeader({
   className = "",
   ...props
