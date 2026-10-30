@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/core/schema_contracts/generated/profile_schema_contracts.g.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/profile_schema_contracts.g.dart';
 
 const minimumProfileAge = schemaMinimumProfileAge;
 const preferredMatchAgeOpenEndedDisplayAge = 60;

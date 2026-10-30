@@ -730,7 +730,7 @@ test("ordinary and root documentation use the single docs lane", () => {
 });
 
 test("terminal generated Markdown does not collide with ordinary docs", () => {
-  const result = plan("lib/core/schema_contracts/generated/INDEX.md");
+  const result = plan("lib/platform/schema_contracts/generated/INDEX.md");
   assert.equal(result.complete, true);
   assert.deepEqual(result.directComponents, ["contracts.generated.flutter"]);
 });
@@ -952,7 +952,7 @@ test("callable contracts select both schema and admin validator codegen", () => 
 });
 
 test("generated Flutter bindings validate Flutter and Marketing without expanding upstream", () => {
-  const result = plan("lib/core/schema_contracts/generated/schema_paths.dart");
+  const result = plan("lib/platform/schema_contracts/generated/schema_paths.dart");
   assert.deepEqual(result.directComponents, ["contracts.generated.flutter"]);
   assert.deepEqual(result.affectedComponents, ["marketing.capture-freshness"]);
   assert.deepEqual(result.operations.ciTargets, ["capture_freshness", "contracts", "flutter"]);
@@ -1253,7 +1253,7 @@ test("capture provenance inputs add lightweight freshness without changing sourc
     "lib/auth/presentation/phone_step.dart", "lib/hosts/presentation/host_home.dart",
     "lib/main_consumer.dart", "lib/l10n/app_en.arb",
     "lib/l10n/generated/app_localizations.dart",
-    "lib/core/schema_contracts/generated/schema_paths.dart",
+    "lib/platform/schema_contracts/generated/schema_paths.dart",
     "test/ui_captures/fixtures/sales_demo_synthetic_fixtures.dart",
     "test/ui_captures/catalog/screen_capture_catalog.dart", "test/example_test.dart",
     "assets/images/sample.png", "assets/fonts/sample.ttf", "pubspec.yaml", "pubspec.lock",
@@ -1320,7 +1320,7 @@ test("minimum safety obligations cover source, tests, lockfiles and generated ou
     {paths: ["lib/routing/go_router.dart"], required: ["flutter", "visual_integration"]},
     {paths: ["lib/events/presentation/event_detail_cta.dart"], required: ["flutter", "visual_integration"]},
     {paths: ["lib/core/theme/app_theme.dart"], required: ["flutter", "visual_integration"]},
-    {paths: ["lib/core/schema_contracts/generated/field_constraints.g.dart"], required: ["contracts", "flutter"]},
+    {paths: ["lib/platform/schema_contracts/generated/field_constraints.g.dart"], required: ["contracts", "flutter"]},
     {paths: ["functions/src/shared/generated/schemaRegistry.ts"], required: ["contracts", "functions", "firestore_rules"]},
     {paths: ["website/src/shared/contracts/generated/withdrawEventAssistanceSmsCallablePayload.ts"], required: ["contracts", "marketing"]},
     // Renames retain both sides; additions/deletions use the same path obligation.

@@ -554,7 +554,7 @@
         "contracts/**/*.schema.json",
         "tool/contracts/generate_schema_contracts.mjs",
         "tool/contracts/generate_flutter_form_contract_inventory.mjs",
-        "lib/core/schema_contracts/generated/field_constraints.g.dart",
+        "lib/platform/schema_contracts/generated/field_constraints.g.dart",
         "packages/catch_ui/lib/src/components/catch_contract_field_constraints.dart",
         "packages/catch_ui/lib/src/components/catch_contract_field_policy.dart",
         "packages/catch_ui/lib/src/components/catch_chip*.dart",

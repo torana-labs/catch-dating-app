@@ -2,10 +2,10 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_c
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_result.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_setting.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callables/get_event_assistance_runtime_config_callable_request.g.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/callables/get_event_assistance_runtime_config_callable_request.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

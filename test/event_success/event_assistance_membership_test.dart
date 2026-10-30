@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
+import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
     as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';

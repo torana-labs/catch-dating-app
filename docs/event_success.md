@@ -3672,7 +3672,7 @@ rather than embedded in event-type logic.
 | `eventSuccessScorecards/{eventId}` | Server-owned aggregate coaching scorecard. Host-readable through event-success policy. |
 
 Schemas live under `contracts/firestore/` and generated outputs under
-`functions/src/shared/generated/`, `lib/core/schema_contracts/generated/`, and
+`functions/src/shared/generated/`, `lib/platform/schema_contracts/generated/`, and
 `tool/contracts/generated/`.
 
 ### Presence and late arrivals

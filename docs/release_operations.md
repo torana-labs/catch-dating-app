@@ -506,7 +506,7 @@ per-file plan into an environment variable:
 large pull requests can exceed the operating system argument limit before the
 summary shell even starts.
 
-Generated Dart bindings under `lib/core/schema_contracts/generated/**` are
+Generated Dart bindings under `lib/platform/schema_contracts/generated/**` are
 validation inputs, not mobile-release authorization. They run the Flutter
 analysis/test lane but do not select iOS, Android, web artifact builds, or a
 Consumer/Host internal release on their own. A mobile release requires an
