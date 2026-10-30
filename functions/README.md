@@ -415,6 +415,7 @@ enter previews.
 | `expireEventRehearsals` | `src/eventRehearsal/` | Hourly deletion of expired rehearsal sessions and isolated child projections |
 | `evaluateDueEventAssistanceWork` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Every minute: bounded recovery of saved roster, source, operational-notice, guest, delivery and checkpoint work; dormant pending operating-budget approval |
 | `recoverSupplyIntakeRequests` | `src/operations/supplyIntake/triggers.ts` | Hourly: picks up queued intake requests whose event was lost and requests whose worker stopped mid-lease |
+| `refreshInstagramAccessToken` | `src/organizers/instagramAccessTokenRefresh.ts` | Daily at 05:30 IST: with 30 days or less left, renews the Instagram Login token `instagramClaimWebhook` uses and records the new `CATCH_INSTAGRAM_ACCESS_TOKEN` version in `instagramAccessTokens`; does nothing where no Instagram account is set |
 
 ### Storage-triggered
 

@@ -2226,6 +2226,12 @@ const schemaSpecs = [
       "organizerClaimInstagramMessageDocument.ts",
   },
   {
+    name: "InstagramAccessTokenDocument",
+    source: "firestore/instagram_access_tokens.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/instagramAccessTokenDocument.ts",
+  },
+  {
     name: "OrganizerScheduleLockDocument",
     source: "firestore/organizer_schedule_locks.schema.json",
     typeOutput:

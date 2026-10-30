@@ -1434,8 +1434,8 @@ keep their existing versions so readiness passes; those values are unused.
 
 - `CATCH_INSTAGRAM_ACCESS_TOKEN`: in the Meta app, Instagram, API setup with
   Instagram login, Generate access tokens, Generate token on the @catch_dates
-  row. It is long-lived and lasts 60 days; a deploy is needed to pick up a new
-  version.
+  row. It is long-lived and lasts 60 days; `refreshInstagramAccessToken` renews
+  it without a deploy (Instagram access token renewal, below).
 - `CATCH_INSTAGRAM_APP_SECRET`: on the same page, Set up Instagram business
   login, Business login settings, Instagram app secret.
 - `CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: `openssl rand -hex 32`.
@@ -1465,6 +1465,83 @@ page.
 
 With the method switched off, the webhook still answers the handshake and
 acknowledges signed deliveries.
+
+#### Instagram access token renewal
+
+A token from Generate token lasts 60 days. Meta's
+[refresh endpoint](https://developers.facebook.com/docs/instagram-platform/reference/refresh_access_token)
+extends a valid token that is at least 24 hours old. A token nobody refreshes
+expires for good, and the webhook can no longer read usernames or reply.
+
+`refreshInstagramAccessToken` renews it. It runs daily at 05:30 IST:
+
+1. It reads `instagramAccessTokens/<account id>`. With more than 30 days
+   left it stops.
+2. It refreshes the recorded token, or the version pinned at deploy when
+   there is no record or Meta rejects the recorded one.
+3. It checks with `/me?fields=user_id` that the new token still acts for
+   `CATCH_INSTAGRAM_ACCOUNT_ID`.
+4. It adds the token as a new version of `CATCH_INSTAGRAM_ACCESS_TOKEN` and
+   records that exact version and its expiry. The token never enters
+   Firestore or logs.
+
+The webhook reads the recorded version, cached for five minutes, while it has
+more than an hour left. Otherwise it uses the version pinned at deploy, so no
+redeploy is needed after a renewal. The next deploy pins the newest version
+anyway.
+
+A failed run records `lastErrorCode` and tries again the next day, so a
+renewal has 30 daily attempts before the token lapses. Once two weeks or less
+remain, a failure logs the error `Instagram access token renewal failed`.
+Codes:
+
+- `refreshFailed`: Meta or the network failed. It retries.
+- `refreshRejected`: Meta says the token is invalid or expired. If the
+  recorded token was rejected, the record is cleared and the webhook falls
+  back to the pinned version. Replace the token by hand (below).
+- `accountMismatch`: the token acts for another account. Replace it by hand
+  with a token generated on the @catch_dates row.
+- `secretWriteFailed`: the runtime service account cannot add secret
+  versions. Grant Secret Version Adder (below).
+
+Dev and staging set no account id, so the function does nothing there.
+
+Permissions. The function runs as the default Functions runtime account. It
+needs `secretmanager.versions.add` on `CATCH_INSTAGRAM_ACCESS_TOKEN`. In prod
+that account has project Editor today, which includes it. So that renewal
+does not depend on Editor, grant the narrow role once:
+
+1. Open
+   [CATCH_INSTAGRAM_ACCESS_TOKEN in prod Secret Manager](https://console.cloud.google.com/security/secret-manager/secret/CATCH_INSTAGRAM_ACCESS_TOKEN/versions?project=catch-dating-app-64e51).
+2. Open the Permissions tab and click Grant access.
+3. New principals: `574779808785-compute@developer.gserviceaccount.com`.
+4. Role: Secret Manager Secret Version Adder. Save.
+
+Readiness checks this secret's accessor grant before deploys. It does not
+check the adder grant, and it does not flag it.
+
+Check a renewal:
+
+1. The first run needs a token at least 24 hours old. After the prod deploy
+   that adds the function, open
+   [Cloud Scheduler](https://console.cloud.google.com/cloudscheduler?project=catch-dating-app-64e51),
+   find `firebase-schedule-refreshInstagramAccessToken-asia-south1` and click
+   Force run.
+2. Open
+   [the record](https://console.firebase.google.com/project/catch-dating-app-64e51/firestore/databases/-default-/data/~2FinstagramAccessTokens~2F17841476918450741).
+   `expiresAt` should be about 60 days away and `lastErrorCode` null.
+3. If not, read
+   [the function's logs](https://console.cloud.google.com/run/detail/asia-south1/refreshinstagramaccesstoken/logs?project=catch-dating-app-64e51)
+   and the record's `lastErrorCode`.
+
+Replace the token by hand only after `refreshRejected` or `accountMismatch`,
+or after a password change on @catch_dates:
+
+1. Generate a token on the @catch_dates row, as when the webhook was set up.
+2. Add it as a new version of `CATCH_INSTAGRAM_ACCESS_TOKEN` in prod.
+3. Approve a prod `Deploy backend` run, which pins the new version.
+4. Wait a day, then Force run the job. It refreshes the pinned token and
+   records it.
 
 ### Protected Catch WhatsApp operator CLI
 

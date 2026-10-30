@@ -51,3 +51,16 @@ test("bad ids and Meta errors fail without leaking the token", async () => {
     error instanceof InstagramProviderError &&
       !error.message.includes("token-123"));
 });
+
+test("a token function is asked for the current token on each request",
+  async () => {
+    const {calls, fetchImpl} = recordingFetch(200, {username: "carter"});
+    const tokens = ["first-token", "second-token"];
+    const provider = new InstagramGraphProvider({...config,
+      accessToken: async () => tokens.shift()!}, fetchImpl);
+    await provider.lookupUsername("901");
+    await provider.lookupUsername("901");
+    assert.deepEqual(calls.map((call) =>
+      (call.init.headers as Record<string, string>).Authorization),
+    ["Bearer first-token", "Bearer second-token"]);
+  });

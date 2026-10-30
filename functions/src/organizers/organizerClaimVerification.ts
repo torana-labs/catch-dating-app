@@ -72,7 +72,7 @@ export const catchInstagramAccountId = defineString(
   "CATCH_INSTAGRAM_ACCOUNT_ID", {default: ""});
 const catchInstagramHandle = defineString("CATCH_INSTAGRAM_HANDLE",
   {default: ""});
-// instagramClaimWebhook.ts declares the same param; Firebase keeps one.
+// The one declaration; the webhook, token renewal and discovery share it.
 export const catchInstagramGraphVersion = defineString(
   "CATCH_INSTAGRAM_GRAPH_VERSION", {default: "v26.0"});
 

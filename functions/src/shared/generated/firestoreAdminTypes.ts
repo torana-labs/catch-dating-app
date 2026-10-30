@@ -13812,6 +13812,38 @@ export interface OrganizerClaimInstagramMessageDocument {
 }
 
 /**
+ * Server-only pointer to the renewed Instagram Login access token for Catch's Instagram account, stored at instagramAccessTokens/{accountId}. The token itself stays in Secret Manager: secretVersion names the exact CATCH_INSTAGRAM_ACCESS_TOKEN version that holds it. refreshInstagramAccessToken writes it; instagramClaimWebhook reads that version while it is unexpired and otherwise uses the version pinned at deploy.
+ */
+export interface InstagramAccessTokenDocument {
+  /**
+   * Catch's Instagram professional account id, the webhook's entry.id.
+   */
+  accountId: string;
+  /**
+   * Exact Secret Manager version holding the renewed token, or null when no renewed token is usable.
+   */
+  secretVersion: string | null;
+  /**
+   * When Meta said the renewed token expires.
+   */
+  expiresAt: FirebaseFirestore.Timestamp | null;
+  refreshedAt: FirebaseFirestore.Timestamp | null;
+  lastAttemptAt: FirebaseFirestore.Timestamp;
+  /**
+   * Why the last renewal failed, or null after a success.
+   */
+  lastErrorCode:
+    | (
+        | "refreshRejected"
+        | "refreshFailed"
+        | "accountMismatch"
+        | "secretWriteFailed"
+      )
+    | null;
+  revision: number;
+}
+
+/**
  * Server-owned time-slot claim stored at organizerScheduleLocks/{organizerId_slot}.
  */
 export interface OrganizerScheduleLockDocument {

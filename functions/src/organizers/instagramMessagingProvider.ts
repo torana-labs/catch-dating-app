@@ -14,8 +14,11 @@ export interface InstagramMessagingProvider {
 export interface InstagramGraphConfig {
   /** Catch's Instagram professional account id. */
   accountId: string;
-  /** Long-lived Instagram user access token for that account. */
-  accessToken: string;
+  /**
+   * Long-lived Instagram user access token for that account, or a function
+   * that returns the current one.
+   */
+  accessToken: string | (() => Promise<string>);
   graphVersion: string;
 }
 
@@ -72,11 +75,13 @@ export class InstagramGraphProvider implements InstagramMessagingProvider {
     let response: Response;
     let text: string;
     try {
+      const token = typeof this.config.accessToken === "string" ?
+        this.config.accessToken : await this.config.accessToken();
       response = await this.fetchImpl(url, {
         ...init,
         // The token travels in a header so it never lands in a request log.
         headers: {...init.headers as Record<string, string>,
-          Authorization: `Bearer ${this.config.accessToken}`},
+          Authorization: `Bearer ${token}`},
         redirect: "error",
         signal: AbortSignal.timeout(requestTimeoutMillis),
       });

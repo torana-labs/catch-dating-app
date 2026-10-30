@@ -812,7 +812,8 @@
       ],
       "requiredWhen": {
         "anyDeployTarget": [
-          "functions:instagramClaimWebhook"
+          "functions:instagramClaimWebhook",
+          "functions:refreshInstagramAccessToken"
         ]
       },
       "acceptedStates": [
@@ -820,9 +821,10 @@
       ],
       "owner": "organizer-claims",
       "sourcePaths": [
+        "functions/src/organizers/instagramAccessTokenRefresh.ts",
         "functions/src/organizers/instagramClaimWebhook.ts"
       ],
-      "credentialClass": "provider-secret",
+      "credentialClass": "provider-token",
       "binding": {
         "kind": "firebase-secret-param",
         "exactReference": "observed-numeric-version",
@@ -1126,6 +1128,26 @@
         "onAssistanceMessageChanged",
         "onAssistanceWorkChanged",
         "evaluateDueEventAssistanceWork"
+      ],
+      "binding": {
+        "kind": "record",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "per-record-runtime-authority",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": true
+    },
+    {
+      "id": "functions.reference.instagram-access-token",
+      "sourcePaths": [
+        "functions/src/organizers/instagramAccessTokenStore.ts"
+      ],
+      "owner": "organizer-claims",
+      "credentialClass": "provider-token",
+      "consumers": [
+        "instagramClaimWebhook",
+        "refreshInstagramAccessToken"
       ],
       "binding": {
         "kind": "record",

@@ -1683,6 +1683,12 @@ Two collections are server-only, and Firestore TTL deletes both after
   message, keyed by the SHA-256 of Meta's message id. It makes redeliveries
   count once, and it keeps no text or sender id.
 
+`instagramAccessTokens/{accountId}` is server-only too. It holds no token: it
+names the exact `CATCH_INSTAGRAM_ACCESS_TOKEN` version that
+`refreshInstagramAccessToken` last renewed, when that token expires and why the
+last renewal failed. The webhook sends that version's token while it has more
+than an hour left, and otherwise the version pinned at deploy.
+
 `instagramClaimWebhook` checks `X-Hub-Signature-256` with the app secret and
 ignores echoes and other accounts. It rate-limits each sender. It reads the
 sender's username through the Graph API user profile call. The claim completes
