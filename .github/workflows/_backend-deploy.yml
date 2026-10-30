@@ -224,8 +224,17 @@ jobs:
           fi
           # GitHub refuses to move a ref across workflow-file changes for a
           # token without the workflows permission, which GITHUB_TOKEN never
-          # has. Creating a tag on a commit main already holds is allowed, so
-          # delete it and create it again.
+          # has, so the tag is deleted and created again. Creating it is
+          # refused too when this commit's workflows differ from main's, which
+          # happens once main moves on during a long deploy. Then keep the
+          # old tag: this deploy succeeded, and the next one deploys
+          # everything since the old tag again.
+          git fetch --quiet origin main
+          if ! git diff --quiet FETCH_HEAD "$GITHUB_SHA" -- .github/workflows; then
+            echo "::warning::Workflows on main changed since $GITHUB_SHA, so $tag cannot move to it; it stays at ${current:-nothing}, and the next deploy repeats the changes since then."
+            echo "$tag stays at ${current:-nothing}: main's workflows changed during this deploy" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           if [[ -n "$current" ]]; then
             git push origin ":refs/tags/$tag"
           fi
