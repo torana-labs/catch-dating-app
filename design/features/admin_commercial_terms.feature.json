@@ -41,15 +41,15 @@
         "testEvidence": {
           "commercial-terms": [
             "admin/src/features/commercial-terms/controllers/useCommercialTermsController.test.tsx",
-            "admin/src/features/commercial-terms/controllers/commercialTermsForm.test.ts"
+            "admin/src/features/commercial-terms/controllers/commercialTermsForm.test.ts",
+            "admin/src/features/commercial-terms/ui/CommercialTermsScreen.test.tsx"
           ]
         }
       },
       "dimensions": {
         "scope": {"default": "platform", "values": ["platform", "organizer"]},
         "platform": {"default": "saved", "values": ["saved", "unsaved"]},
-        "edit": {"default": "viewing", "values": ["viewing", "editing", "preview", "unconfirmed"]},
-        "mutation": {"default": "idle", "values": ["idle", "pending"]}
+        "edit": {"default": "viewing", "values": ["viewing", "editing", "preview", "unconfirmed"]}
       },
       "actions": [
         {"id": "refresh_commercial_terms", "owner": "controller", "codeValue": "refresh", "cardinality": "singleton", "scopeKeys": ["adminSessionId", "termsScope"], "outcomes": [{"kind": "surface_state", "stateIds": ["commercial-terms"]}], "description": "Rereads the platform terms, the scope's newest revisions and the organizer overrides."},
@@ -74,7 +74,6 @@
             {"id": "platform_editing", "dimensions": {"edit": "editing"}, "enabledActions": ["review_terms_change", "cancel_terms_edit"], "disabledActions": ["save_terms_revision"]},
             {"id": "platform_preview", "dimensions": {"edit": "preview"}, "enabledActions": ["save_terms_revision", "cancel_terms_edit"]},
             {"id": "save_unconfirmed_retry", "dimensions": {"edit": "unconfirmed"}, "enabledActions": ["save_terms_revision", "cancel_terms_edit"]},
-            {"id": "save_pending_frozen_workspace", "dimensions": {"edit": "preview", "mutation": "pending"}, "disabledActions": ["save_terms_revision", "cancel_terms_edit", "refresh_commercial_terms", "open_organizer_terms"]},
             {"id": "organizer_override", "dimensions": {"scope": "organizer", "edit": "editing"}, "enabledActions": ["inherit_or_set_term", "review_terms_change", "cancel_terms_edit", "back_to_platform_terms"]},
             {"id": "organizer_without_platform", "dimensions": {"scope": "organizer", "platform": "unsaved"}, "enabledActions": ["back_to_platform_terms", "refresh_commercial_terms"], "disabledActions": ["start_terms_edit"]}
           ]

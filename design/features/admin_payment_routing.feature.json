@@ -38,15 +38,15 @@
         "testEvidence": {
           "payment-routing": [
             "admin/src/features/payment-routing/controllers/usePaymentRoutingController.test.tsx",
-            "admin/src/features/payment-routing/controllers/paymentRoutingForm.test.ts"
+            "admin/src/features/payment-routing/controllers/paymentRoutingForm.test.ts",
+            "admin/src/features/payment-routing/ui/PaymentRoutingScreen.test.tsx"
           ]
         }
       },
       "dimensions": {
         "policy": {"default": "saved", "values": ["saved", "unsaved"]},
         "edit": {"default": "viewing", "values": ["viewing", "editing", "preview"]},
-        "risk": {"default": "standard", "values": ["standard", "unconfirmed", "confirmed"]},
-        "mutation": {"default": "idle", "values": ["idle", "pending"]}
+        "risk": {"default": "standard", "values": ["standard", "unconfirmed", "confirmed"]}
       },
       "actions": [
         {"id": "refresh_payment_routing", "owner": "controller", "codeValue": "refresh", "cardinality": "singleton", "scopeKeys": ["adminSessionId", "policyRevision"], "outcomes": [{"kind": "surface_state", "stateIds": ["payment-routing"]}], "description": "Rereads the app payment routing policy."},
@@ -68,8 +68,7 @@
             {"id": "routing_editing", "dimensions": {"edit": "editing"}, "enabledActions": ["choose_purpose_route", "review_routing_change", "cancel_routing_edit"], "disabledActions": ["save_payment_routing"]},
             {"id": "routing_preview_standard", "dimensions": {"edit": "preview"}, "enabledActions": ["save_payment_routing", "cancel_routing_edit"]},
             {"id": "routing_preview_unconfirmed", "dimensions": {"edit": "preview", "risk": "unconfirmed"}, "enabledActions": ["type_routing_confirmation", "cancel_routing_edit"], "disabledActions": ["save_payment_routing"]},
-            {"id": "routing_preview_confirmed", "dimensions": {"edit": "preview", "risk": "confirmed"}, "enabledActions": ["type_routing_confirmation", "save_payment_routing", "cancel_routing_edit"]},
-            {"id": "save_pending_frozen_workspace", "dimensions": {"edit": "preview", "mutation": "pending"}, "disabledActions": ["save_payment_routing", "cancel_routing_edit", "type_routing_confirmation", "refresh_payment_routing"]}
+            {"id": "routing_preview_confirmed", "dimensions": {"edit": "preview", "risk": "confirmed"}, "enabledActions": ["type_routing_confirmation", "save_payment_routing", "cancel_routing_edit"]}
           ]
         }
       ],

@@ -144,10 +144,10 @@ function RoutingSummary({controller}: {controller: PaymentRoutingController}) {
 }
 
 function ModeBadge({mode}: {mode: "test" | "live" | "connection" | null}) {
+  if (mode === null) return null;
   const [label, tone]: [string, CatchBadgeTone] = mode === "live" ?
     ["Live: real money", "danger"] : mode === "test" ? ["Test mode", "neutral"] :
-      mode === "connection" ? ["Mode of each connection", "warning"] :
-        ["Off", "neutral"];
+      ["Mode of each connection", "warning"];
   return <CatchBadge recipe="status" tone={tone} label={label} />;
 }
 

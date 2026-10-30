@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_payment_routing.feature.json",
   "generatedFor": "2026-10-30",
-  "sourceDigest": "sha256:2f60b04b0b48c42dfd32229e1418bd92ebf47c4c9630f8f84ac4b7b9b93f2f93",
-  "resolvedDigest": "sha256:300f9f4124a6339f81d3d092bc974b6b7089cf37fa5d44c6405bc3ddfe6dca85",
+  "sourceDigest": "sha256:95dee1f35f20fefd589336f2e537047990a8afe416a3ee2dbf90d47bb6e0083f",
+  "resolvedDigest": "sha256:f55e8a92689e07798b739a73092531a5bfd963b1b4e5b8b4c8dcfc79c9464839",
   "feature": {
     "id": "feature.admin_payment_routing",
     "name": "Admin Payment Routing",
@@ -16,11 +16,11 @@
     "surfaces": 1,
     "states": 1,
     "scenarios": 1,
-    "actionCases": 7,
+    "actionCases": 6,
     "actions": 7,
     "captures": 0,
     "previews": 1,
-    "testFiles": 2,
+    "testFiles": 3,
     "evidenceExceptions": 0
   },
   "surfaces": [
@@ -78,18 +78,19 @@
         "testEvidence": {
           "payment-routing": [
             "admin/src/features/payment-routing/controllers/usePaymentRoutingController.test.tsx",
-            "admin/src/features/payment-routing/controllers/paymentRoutingForm.test.ts"
+            "admin/src/features/payment-routing/controllers/paymentRoutingForm.test.ts",
+            "admin/src/features/payment-routing/ui/PaymentRoutingScreen.test.tsx"
           ]
         }
       },
       "coverage": {
         "states": 1,
         "scenarios": 1,
-        "actionCases": 7,
+        "actionCases": 6,
         "actions": 7,
         "captures": 0,
         "previews": 1,
-        "testFiles": 2,
+        "testFiles": 3,
         "evidenceExceptions": 0
       },
       "dimensions": {
@@ -114,13 +115,6 @@
             "standard",
             "unconfirmed",
             "confirmed"
-          ]
-        },
-        "mutation": {
-          "default": "idle",
-          "values": [
-            "idle",
-            "pending"
           ]
         }
       },
@@ -279,8 +273,7 @@
           "dimensions": {
             "policy": "saved",
             "edit": "viewing",
-            "risk": "standard",
-            "mutation": "idle"
+            "risk": "standard"
           },
           "evidence": {
             "captureIds": [],
@@ -289,7 +282,8 @@
             ],
             "tests": [
               "admin/src/features/payment-routing/controllers/usePaymentRoutingController.test.tsx",
-              "admin/src/features/payment-routing/controllers/paymentRoutingForm.test.ts"
+              "admin/src/features/payment-routing/controllers/paymentRoutingForm.test.ts",
+              "admin/src/features/payment-routing/ui/PaymentRoutingScreen.test.tsx"
             ]
           },
           "actionCases": [
@@ -298,8 +292,7 @@
               "dimensions": {
                 "policy": "saved",
                 "edit": "viewing",
-                "risk": "standard",
-                "mutation": "idle"
+                "risk": "standard"
               },
               "actions": {
                 "enabled": [
@@ -321,8 +314,7 @@
               "dimensions": {
                 "policy": "unsaved",
                 "edit": "viewing",
-                "risk": "standard",
-                "mutation": "idle"
+                "risk": "standard"
               },
               "actions": {
                 "enabled": [
@@ -344,8 +336,7 @@
               "dimensions": {
                 "policy": "saved",
                 "edit": "editing",
-                "risk": "standard",
-                "mutation": "idle"
+                "risk": "standard"
               },
               "actions": {
                 "enabled": [
@@ -368,8 +359,7 @@
               "dimensions": {
                 "policy": "saved",
                 "edit": "preview",
-                "risk": "standard",
-                "mutation": "idle"
+                "risk": "standard"
               },
               "actions": {
                 "enabled": [
@@ -391,8 +381,7 @@
               "dimensions": {
                 "policy": "saved",
                 "edit": "preview",
-                "risk": "unconfirmed",
-                "mutation": "idle"
+                "risk": "unconfirmed"
               },
               "actions": {
                 "enabled": [
@@ -415,8 +404,7 @@
               "dimensions": {
                 "policy": "saved",
                 "edit": "preview",
-                "risk": "confirmed",
-                "mutation": "idle"
+                "risk": "confirmed"
               },
               "actions": {
                 "enabled": [
@@ -427,29 +415,6 @@
                 "disabled": [],
                 "notAllowed": [
                   "refresh_payment_routing",
-                  "start_routing_edit",
-                  "choose_purpose_route",
-                  "review_routing_change"
-                ]
-              }
-            },
-            {
-              "id": "save_pending_frozen_workspace",
-              "dimensions": {
-                "policy": "saved",
-                "edit": "preview",
-                "risk": "standard",
-                "mutation": "pending"
-              },
-              "actions": {
-                "enabled": [],
-                "disabled": [
-                  "save_payment_routing",
-                  "cancel_routing_edit",
-                  "type_routing_confirmation",
-                  "refresh_payment_routing"
-                ],
-                "notAllowed": [
                   "start_routing_edit",
                   "choose_purpose_route",
                   "review_routing_change"

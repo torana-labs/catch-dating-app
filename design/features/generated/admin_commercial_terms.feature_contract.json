@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_commercial_terms.feature.json",
   "generatedFor": "2026-10-30",
-  "sourceDigest": "sha256:0416f7d5a9aa0eb611188831b846f657e3ca8576fb416b939368ceece854e4b5",
-  "resolvedDigest": "sha256:d68594afc3adba44f6510399bc55f543e8f1017c3c1e5bceffb665306da15206",
+  "sourceDigest": "sha256:ca487e6337e97586de3c3d66dbe4ce48178937cc1390975bbac7f19a9d25e6d1",
+  "resolvedDigest": "sha256:8c448afcb70e760d5c57669184e284893716edd3e2dff99c92f9180a080ea8cb",
   "feature": {
     "id": "feature.admin_commercial_terms",
     "name": "Admin Commercial Terms",
@@ -16,11 +16,11 @@
     "surfaces": 1,
     "states": 1,
     "scenarios": 1,
-    "actionCases": 8,
+    "actionCases": 7,
     "actions": 10,
     "captures": 0,
     "previews": 1,
-    "testFiles": 2,
+    "testFiles": 3,
     "evidenceExceptions": 0
   },
   "surfaces": [
@@ -87,18 +87,19 @@
         "testEvidence": {
           "commercial-terms": [
             "admin/src/features/commercial-terms/controllers/useCommercialTermsController.test.tsx",
-            "admin/src/features/commercial-terms/controllers/commercialTermsForm.test.ts"
+            "admin/src/features/commercial-terms/controllers/commercialTermsForm.test.ts",
+            "admin/src/features/commercial-terms/ui/CommercialTermsScreen.test.tsx"
           ]
         }
       },
       "coverage": {
         "states": 1,
         "scenarios": 1,
-        "actionCases": 8,
+        "actionCases": 7,
         "actions": 10,
         "captures": 0,
         "previews": 1,
-        "testFiles": 2,
+        "testFiles": 3,
         "evidenceExceptions": 0
       },
       "dimensions": {
@@ -123,13 +124,6 @@
             "editing",
             "preview",
             "unconfirmed"
-          ]
-        },
-        "mutation": {
-          "default": "idle",
-          "values": [
-            "idle",
-            "pending"
           ]
         }
       },
@@ -352,8 +346,7 @@
           "dimensions": {
             "scope": "platform",
             "platform": "saved",
-            "edit": "viewing",
-            "mutation": "idle"
+            "edit": "viewing"
           },
           "evidence": {
             "captureIds": [],
@@ -362,7 +355,8 @@
             ],
             "tests": [
               "admin/src/features/commercial-terms/controllers/useCommercialTermsController.test.tsx",
-              "admin/src/features/commercial-terms/controllers/commercialTermsForm.test.ts"
+              "admin/src/features/commercial-terms/controllers/commercialTermsForm.test.ts",
+              "admin/src/features/commercial-terms/ui/CommercialTermsScreen.test.tsx"
             ]
           },
           "actionCases": [
@@ -371,8 +365,7 @@
               "dimensions": {
                 "scope": "platform",
                 "platform": "saved",
-                "edit": "viewing",
-                "mutation": "idle"
+                "edit": "viewing"
               },
               "actions": {
                 "enabled": [
@@ -397,8 +390,7 @@
               "dimensions": {
                 "scope": "platform",
                 "platform": "unsaved",
-                "edit": "viewing",
-                "mutation": "idle"
+                "edit": "viewing"
               },
               "actions": {
                 "enabled": [
@@ -423,8 +415,7 @@
               "dimensions": {
                 "scope": "platform",
                 "platform": "saved",
-                "edit": "editing",
-                "mutation": "idle"
+                "edit": "editing"
               },
               "actions": {
                 "enabled": [
@@ -450,8 +441,7 @@
               "dimensions": {
                 "scope": "platform",
                 "platform": "saved",
-                "edit": "preview",
-                "mutation": "idle"
+                "edit": "preview"
               },
               "actions": {
                 "enabled": [
@@ -476,8 +466,7 @@
               "dimensions": {
                 "scope": "platform",
                 "platform": "saved",
-                "edit": "unconfirmed",
-                "mutation": "idle"
+                "edit": "unconfirmed"
               },
               "actions": {
                 "enabled": [
@@ -498,38 +487,11 @@
               }
             },
             {
-              "id": "save_pending_frozen_workspace",
-              "dimensions": {
-                "scope": "platform",
-                "platform": "saved",
-                "edit": "preview",
-                "mutation": "pending"
-              },
-              "actions": {
-                "enabled": [],
-                "disabled": [
-                  "save_terms_revision",
-                  "cancel_terms_edit",
-                  "refresh_commercial_terms",
-                  "open_organizer_terms"
-                ],
-                "notAllowed": [
-                  "start_terms_edit",
-                  "start_from_owner_decision",
-                  "inherit_or_set_term",
-                  "review_terms_change",
-                  "find_organizer_for_override",
-                  "back_to_platform_terms"
-                ]
-              }
-            },
-            {
               "id": "organizer_override",
               "dimensions": {
                 "scope": "organizer",
                 "platform": "saved",
-                "edit": "editing",
-                "mutation": "idle"
+                "edit": "editing"
               },
               "actions": {
                 "enabled": [
@@ -554,8 +516,7 @@
               "dimensions": {
                 "scope": "organizer",
                 "platform": "unsaved",
-                "edit": "viewing",
-                "mutation": "idle"
+                "edit": "viewing"
               },
               "actions": {
                 "enabled": [
