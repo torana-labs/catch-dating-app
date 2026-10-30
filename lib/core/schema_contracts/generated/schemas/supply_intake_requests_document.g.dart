@@ -513,6 +513,7 @@ const schemaSupplyIntakeRequestsDocumentSchema = <String, Object?>{
                     'enum': <Object?>[
                       'page_fetch',
                       'static_page',
+                      'instagram_business_discovery',
                     ],
                   },
                   'policyVersion': <String, Object?>{
@@ -1071,6 +1072,7 @@ const schemaSupplyIntakeRequestsDocumentSchema = <String, Object?>{
           'enum': <Object?>[
             'page_fetch',
             'static_page',
+            'instagram_business_discovery',
           ],
         },
         'policyVersion': <String, Object?>{

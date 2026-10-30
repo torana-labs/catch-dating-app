@@ -1250,6 +1250,29 @@
       "recordReferences": false
     },
     {
+      "id": "functions.reference.instagram-discovery",
+      "sourcePaths": [
+        "functions/src/operations/supplyIntake/instagramDiscovery.ts"
+      ],
+      "owner": "supply-intake",
+      "credentialClass": "provider-token",
+      "consumers": [
+        "onSupplyIntakeRequestCreated",
+        "recoverSupplyIntakeRequests"
+      ],
+      "binding": {
+        "kind": "parameter",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "parameter": "CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION",
+        "optional": true,
+        "secret": "CATCH_INSTAGRAM_DISCOVERY_TOKEN"
+      },
+      "activationPolicy": "blank-current-reference-unconfigured",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": false
+    },
+    {
       "id": "functions.reference.event-approval",
       "sourcePaths": [
         "functions/src/events/approvalNotifications/transports.ts"

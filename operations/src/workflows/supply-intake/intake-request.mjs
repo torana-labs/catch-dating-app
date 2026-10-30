@@ -107,21 +107,29 @@ export async function gatherIntakeEvidence({request, pageSource, now, maxPages =
 
 // Follow only the organizer's own pages that an adapter can read, one hop
 // from a seed, so a nomination of one event page still yields the calendar.
+// A page's related links (an Instagram account's captions) may also be event
+// pages; each fetched page says what it is.
 function followUrls(extraction, via) {
   if (via !== "seed") return [];
   const urls = [
     ...(extraction.events ?? []).map((event) => event.organizerUrl),
     ...(extraction.organizers ?? []).flatMap((organizer) => [organizer.url, ...(organizer.sameAs ?? [])]),
   ];
-  return [...new Set(urls.filter(Boolean))].filter((url) => {
+  const readable = (url, kinds, asOrganizer) => {
     try {
-      const surface = surfaceForOrganizerPage(normalizeOrganizerSurfaceUrl(url));
-      return pageAdapterFor(surface.platform) !== null &&
-        ["organizerProfile", "eventCalendar"].includes(surface.surfaceKind);
+      const normalized = normalizeOrganizerSurfaceUrl(url);
+      const surface = asOrganizer ? surfaceForOrganizerPage(normalized) : normalized;
+      return surface.platform !== "instagram" && pageAdapterFor(surface.platform) !== null &&
+        kinds.includes(surface.surfaceKind);
     } catch {
       return false;
     }
-  });
+  };
+  return [...new Set([
+    ...urls.filter(Boolean).filter((url) => readable(url, ["organizerProfile", "eventCalendar"], true)),
+    ...(extraction.relatedUrls ?? []).filter((url) =>
+      readable(url, ["organizerProfile", "eventCalendar", "eventListing"], false)),
+  ])];
 }
 
 /**
