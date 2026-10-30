@@ -139,6 +139,10 @@ function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
     "website/scripts/next/externalEventProjection.mjs",
     "tool/contracts/generated/schema_contract_validators.mjs",
   ].some(target => targetAbsolutePath === path.join(repoRoot, target))) return true;
+  // The private page test drives the Next proxy itself, which sits beside
+  // website/src, to pin that receipts, offers and invitations stay unstored.
+  if (sourceRelativePath === "server/privateShellCache.test.ts" &&
+    targetAbsolutePath === path.join(repoRoot, "website/proxy")) return true;
   // The public page read models are Functions documents; their reader
   // validates them with the generated validators and types.
   if (sourceRelativePath === "server/repositories/publicPageRepository.ts" &&

@@ -563,6 +563,38 @@
       "notes": "The event page's booking in the library sticky aside: from 840px the booking card sticks beside the page, and on a phone a docked bar shows the price with the spots left, the date or the ticket source, and opens the card in a sheet."
     },
     {
+      "id": "event_booking_frame",
+      "kind": "section",
+      "routeIds": [
+        "event_booking",
+        "event_offer",
+        "event_invite"
+      ],
+      "owner": "shared/site",
+      "source": "website/src/shared/site/EventBookingFrame.tsx",
+      "exportName": "EventBookingFrame",
+      "comparedWith": [
+        "catch.screen_body",
+        "catch.text"
+      ],
+      "comparisonReason": "A website page frame for private bookings: it places the booking card in a CatchSplit rail beside a CatchText heading inside a CatchBand. It lays out library parts and implements neither the screen body nor the text contract.",
+      "css": [
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventPage.stories.tsx",
+        "exportName": "PrivateBookingPage",
+        "states": [
+          "booking-steps"
+        ]
+      },
+      "notes": "A booking with no event page around it: a payment receipt, an offer, an invitation on its way to its event, or an event whose public page is gone. The event page's booking card in its rail, beside a heading that says what the booking is for, with no event detail beyond what its steps show."
+    },
+    {
       "id": "event_booking_card",
       "kind": "section",
       "routeIds": [
@@ -2164,17 +2196,22 @@
       "source": "website/src/features/events/EventInvitePage.tsx",
       "exportName": "EventInvitePage",
       "css": [
-        "website/src/styles/event-runtime.css"
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
       ],
       "storybook": {
         "status": "ready",
         "story": "website/src/stories/MarketingRoutes.stories.tsx",
         "exportName": "EventInvite",
         "states": [
-          "resolved-external"
+          "opening"
         ]
       },
-      "notes": "Noindex opaque invitation landing for private and public operational events; records one deduplicated open before an external, Catch registration, or event-runtime handoff."
+      "notes": "Noindex opaque invitation resolver for private and public operational events. It records one deduplicated open, then sends a Catch event's invitation to its event page with the token as il, and an external or event-mode invitation to its issued destination (CAT-252). Only a link that cannot resolve stays here."
     },
     {
       "id": "route_public_form",
@@ -2592,7 +2629,13 @@
       "source": "website/src/features/eventOffers/EventOfferPage.tsx",
       "exportName": "EventOfferPage",
       "css": [
-        "website/src/styles/event-runtime.css"
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchField.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -2608,7 +2651,7 @@
           "unavailable"
         ]
       },
-      "notes": "Existing Catch runtime primitives for phone OTP and server-confirmed admission/payment recovery."
+      "notes": "An organiser's offer to an approved guest, on the event page's booking card (CAT-252): phone OTP, then server-confirmed admission and payment recovery. The offer link is a private credential whose event is known only after verification, so the offer keeps its own private, unstored page; a confirmed place goes on to the event."
     },
     {
       "id": "event_offer_view",
@@ -2620,7 +2663,13 @@
       "source": "website/src/features/eventOffers/EventOfferPage.tsx",
       "exportName": "EventOfferView",
       "css": [
-        "website/src/styles/event-runtime.css"
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchField.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -2636,7 +2685,7 @@
           "unavailable"
         ]
       },
-      "notes": "Existing Catch runtime primitives for phone OTP and server-confirmed admission/payment recovery."
+      "notes": "An organiser's offer to an approved guest, on the event page's booking card (CAT-252): phone OTP, then server-confirmed admission and payment recovery. The offer link is a private credential whose event is known only after verification, so the offer keeps its own private, unstored page; a confirmed place goes on to the event."
     },
     {
       "id": "public_paid_registration",
@@ -2702,7 +2751,13 @@
       "source": "website/src/features/events/PublicBookingPage.tsx",
       "exportName": "PublicBookingPage",
       "css": [
-        "website/src/styles/event-runtime.css"
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchField.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -2715,7 +2770,7 @@
           "refunded"
         ]
       },
-      "notes": "Authenticated booking management survives public listing removal; cannot create a new booking."
+      "notes": "The old booking link (CAT-252). It goes to the event page, whose booking card does its job. A payment receipt stays here, private and unstored, and survives public listing removal; so do the booking steps for an event with no public page, with no more event detail than before. It cannot create a new booking from a receipt."
     },
     {
       "id": "route_sales_demo",

@@ -1,19 +1,87 @@
-import {CatchField, CatchGap} from "@catch/web-ui";
+import {CatchButton, CatchField, CatchGap, CatchLoadingIndicator, CatchText} from "@catch/web-ui";
+import {useEffect, useRef} from "react";
 import {eventOfferCopy as text, offerCodeSent, offerHoldEnds, offerRefundDeadline, offerCancellationRefund} from "../../content/eventOffer";
+import {usePendingRequestNavigationBlocked} from "../../shared/pendingRequest";
+import {Form} from "../../shared/ui/primitives";
+import {EventBookingFrame} from "../../shared/site/EventBookingFrame";
 import type {OfferCredential} from "./offerCredential";
 import {useOfferCheckoutController} from "./useOfferCheckoutController";
 import {formatOfferAmount, paymentCopy} from "./offerCheckoutModel";
-import {Button, ButtonLink, FormStatus, EventRuntimeFrame,
-  EventRuntimePanel, EventRuntimeLoading, EventRuntimeForm,
-  EventRuntimeModule} from
-  "../../shared/ui/primitives";
+
+const noop = () => undefined;
 
 export function EventOfferPage({credential}: {credential: OfferCredential | null}) {
   const controller = useOfferCheckoutController(credential);
   return <EventOfferView {...controller} />;
 }
+
+/**
+ * An organiser's offer to an approved guest (CAT-252). The offer link is a
+ * private credential, and its event is known only once the guest has verified
+ * their phone, so the offer keeps its own private page. Its steps use the
+ * event page's booking card, and a confirmed place goes on to the event.
+ */
 export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutController>) {
   const {phase, pending, grant, payment, admission, cancellationReview} = controller;
+  // Links hold while an offer or payment request is in flight.
+  const go = usePendingRequestNavigationBlocked() ? null : noop;
+  // A cancellation review opens on the choice that keeps the place.
+  const keep = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (cancellationReview) keep.current?.querySelector("button")?.focus();
+  }, [cancellationReview]);
+  const status = (
+    <CatchText as="p" color={controller.status.tone === "is-error" ? "danger" : "ink2"} role="status" variant="bodyS">
+      {controller.status.message}
+    </CatchText>
+  );
+
+  if (phase === "loading") {
+    return <EventBookingFrame title={grant?.eventName ?? text.invitationTitle}><CatchLoadingIndicator label={text.loading} /></EventBookingFrame>;
+  }
+  if (phase === "phone" || phase === "otp") {
+    return (
+      <EventBookingFrame body={phase === "phone" ? text.phoneBody : offerCodeSent(controller.phone)}
+        title={phase === "phone" ? text.phoneTitle : text.otpTitle}>
+        <Form noValidate onSubmit={phase === "phone" ? controller.sendCode : controller.verifyCode} pending={pending}>
+          <CatchGap size="related">
+            {phase === "phone" ? (
+              <CatchField autoComplete="tel" id="offer-phone" inputHint={text.phonePlaceholder} keyboardType="phone"
+                onChanged={(value) => controller.setPhone(value.replace(/\s/gu, ""))} recipe="input" title={text.phoneLabel}
+                value={controller.phone} />
+            ) : (
+              <CatchField autoComplete="one-time-code" id="offer-code" keyboardType="number" maxLength={6}
+                onChanged={(value) => controller.setCode(value.replace(/\D/gu, ""))} recipe="input" title={text.codeLabel}
+                value={controller.code} />
+            )}
+            {phase === "phone" ? <div id={controller.recaptchaId} /> : null}
+            <CatchButton fullWidth label={phase === "phone" ? text.send : text.verify}
+              onPressed={phase === "otp" && controller.code.length !== 6 ? null : noop}
+              status={pending ? "loading" : "idle"} type="submit" />
+            {phase === "otp" ? (
+              <CatchButton fullWidth label={text.changeNumber} onPressed={pending ? null : controller.changePhone} variant="quiet" />
+            ) : null}
+            {status}
+          </CatchGap>
+        </Form>
+      </EventBookingFrame>
+    );
+  }
+  if (phase === "unavailable") {
+    return (
+      <EventBookingFrame body={text.unavailableBody} title={text.unavailableTitle}>
+        <CatchGap size="related">
+          {status}
+          {controller.hasInvitation ? <CatchButton fullWidth label={text.retry} onPressed={() => void controller.load()}
+            status={pending ? "loading" : "idle"} /> : null}
+          {controller.hasInvitation ? <CatchButton fullWidth label={text.verifyAnother}
+            onPressed={pending ? null : controller.changePhone} variant="secondary" /> : null}
+          <CatchButton fullWidth href="/help/" label={text.help} onPressed={go} variant="quiet" />
+        </CatchGap>
+      </EventBookingFrame>
+    );
+  }
+
   const policy = payment?.cancellationPolicy ?? (grant?.amountPaise ? grant.cancellationPolicy : null);
   const copy = admission ? {title: text.confirmed, body: text.eventAccess} : cancellationReview ? {title: text.cancelTitle,
     body: cancellationReview.refundAmountPaise > 0 ?
@@ -21,84 +89,57 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
     title: grant?.eventName ?? text.invitationTitle,
     body: grant?.freeAdmission ? text.freeInvitationBody : text.invitationBody,
   };
-  return <EventRuntimeFrame brandLabel={text.brandLabel} brandWord={text.brandWord}
-    eventTitle={grant?.eventName}>
-    {phase === "loading" ? <EventRuntimeLoading label={text.loading} /> :
-      phase === "phone" ? <EventRuntimePanel kicker={text.phoneKicker}
-        title={text.phoneTitle} body={text.phoneBody}>
-        <EventRuntimeForm onSubmit={controller.sendCode} pending={pending}>
-          <CatchField
-            recipe="input"
-            id="offer-phone"
-            title={text.phoneLabel}
-            autoComplete="tel"
-            inputHint={text.phonePlaceholder}
-            value={controller.phone}
-            onChanged={(value) => controller.setPhone(value.replace(/\s/gu, ""))}
-            keyboardType="phone"
-          />
-          <div id={controller.recaptchaId} />
-          <Button type="submit" loading={pending} loadingLabel={text.sending}>{text.send}</Button>
-          <FormStatus status={controller.status} />
-        </EventRuntimeForm>
-      </EventRuntimePanel> : phase === "otp" ? <EventRuntimePanel kicker={text.otpKicker}
-        title={text.otpTitle} body={offerCodeSent(controller.phone)}>
-        <EventRuntimeForm onSubmit={controller.verifyCode} pending={pending}>
-          <CatchField
-            recipe="input"
-            id="offer-code"
-            title={text.codeLabel}
-            autoComplete="one-time-code"
-            maxLength={6}
-            value={controller.code}
-            onChanged={(value) => controller.setCode(value.replace(/\D/gu, ""))}
-            keyboardType="number"
-          />
-          <Button type="submit" loading={pending} loadingLabel={text.verifying} disabled={controller.code.length !== 6}>{text.verify}</Button>
-          <Button type="button" variant="ghost" disabled={pending} onClick={controller.changePhone}>{text.changeNumber}</Button>
-          <FormStatus status={controller.status} />
-        </EventRuntimeForm>
-      </EventRuntimePanel> : phase === "unavailable" ? <EventRuntimePanel kicker={text.privateKicker}
-        title={text.unavailableTitle} body={text.unavailableBody}>
-        <CatchGap size="section">
-          <FormStatus status={controller.status} />
-          <CatchGap direction="horizontal" size="related" wrap>
-            {controller.hasInvitation ? <Button type="button" onClick={() => void controller.load()} loading={pending} loadingLabel={text.checking}>{text.retry}</Button> : null}
-            {controller.hasInvitation ? <Button type="button" variant="ghost" disabled={pending} onClick={controller.changePhone}>{text.verifyAnother}</Button> : null}
-            <ButtonLink href="/help" variant="ghost">{text.help}</ButtonLink>
-          </CatchGap>
+  const eventId = admission?.eventId ?? (payment?.status === "admitted" ? payment.eventId || grant?.eventId : undefined);
+  return (
+    <EventBookingFrame body={copy.body} title={copy.title}>
+      <CatchGap size="section">
+        <CatchGap size="related">
+          <CatchText as="h2" variant="titleS">
+            {payment?.status === "refunded" ? text.refund : admission || grant?.freeAdmission ? text.invitationTitle : text.bookingAmount}
+          </CatchText>
+          <CatchText as="p" variant="sectionTitle">
+            {admission || grant?.amountPaise === 0 ? text.freeAmount : formatOfferAmount(payment?.amountPaise ?? grant!.amountPaise)}
+          </CatchText>
+          {grant ? <CatchText as="p" variant="bodyM">
+            {new Intl.DateTimeFormat("en-IN", {dateStyle: "full", timeStyle: "short"}).format(grant.startTimeMillis)}
+          </CatchText> : null}
+          {payment?.mode === "test" ? <CatchText as="p" role="status" variant="bodyS">{text.testMode}</CatchText> : null}
+          {payment?.checkout ? <CatchText as="p" color="ink2" variant="bodyS">
+            {offerHoldEnds(new Intl.DateTimeFormat("en-IN", {timeStyle: "short"}).format(payment.expiresAtMillis))}
+          </CatchText> : null}
+          {policy && !cancellationReview ? <>
+            <CatchText as="p" variant="supportingStrong">{text.cancellationTerms}</CatchText>
+            <CatchText as="p" color="ink2" variant="bodyS">
+              {offerRefundDeadline(new Intl.DateTimeFormat("en-IN", {dateStyle: "medium", timeStyle: "short"}).format(policy.refundDeadlineMillis))}
+            </CatchText>
+          </> : null}
         </CatchGap>
-      </EventRuntimePanel> : <EventRuntimePanel kicker={cancellationReview ? text.cancellation : payment?.status === "admitted" ? text.confirmed : text.admission}
-        title={copy.title} body={copy.body}>
-        <CatchGap size="section">
-          <EventRuntimeModule title={payment?.status === "refunded" ? text.refund : admission || grant?.freeAdmission ? text.invitationTitle : text.bookingAmount}>
-            {admission || grant?.amountPaise === 0 ? <p>{text.freeAmount}</p> :
-              <p>{formatOfferAmount(payment?.amountPaise ?? grant!.amountPaise)}</p>}
-            {grant ? <p>{new Intl.DateTimeFormat("en-IN", {dateStyle: "full", timeStyle: "short"}).format(grant.startTimeMillis)}</p> : null}
-            {payment?.mode === "test" ? <p role="status">{text.testMode}</p> : null}
-            {payment?.checkout ? <p>{offerHoldEnds(new Intl.DateTimeFormat("en-IN", {timeStyle: "short"}).format(payment.expiresAtMillis))}</p> : null}
-          </EventRuntimeModule>
-          {policy && !cancellationReview ? <EventRuntimeModule title={text.cancellationTerms}>
-            <p>{offerRefundDeadline(new Intl.DateTimeFormat("en-IN", {dateStyle: "medium", timeStyle: "short"}).format(policy.refundDeadlineMillis))}</p>
-          </EventRuntimeModule> : null}
-          {cancellationReview ? <CatchGap direction="horizontal" size="related" wrap>
-              <Button type="button" onClick={() => void controller.cancelAdmission()} loading={pending} loadingLabel={text.cancelling}>{text.confirmCancellation}</Button>
-              <Button type="button" variant="ghost" onClick={controller.dismissCancellation} disabled={pending} autoFocus>{text.keepAdmission}</Button>
-          </CatchGap> : null}
-          <FormStatus status={controller.status} />
-          <CatchGap direction="horizontal" size="related" wrap>
-            {(admission?.eventId || payment?.status === "admitted" && (payment.eventId || grant?.eventId)) ?
-              <ButtonLink href={`/booking/${encodeURIComponent(admission?.eventId ?? payment?.eventId ?? grant!.eventId)}/`}>{text.eventAccess}</ButtonLink> : null}
-            {payment?.cancellationQuote && !cancellationReview ? <Button type="button" variant="ghost"
-              onClick={() => void controller.reviewCancellation()} disabled={pending}>{text.cancelAdmission}</Button> : null}
-            {!admission && (!payment || payment.checkout) ? <Button type="button" onClick={() => void controller.pay()}
-              loading={pending} loadingLabel={text.checkingPayment}>{grant?.freeAdmission ? text.acceptFree : payment ? text.continueCheckout : text.reservePay}</Button> : null}
-            {payment && !cancellationReview && !["refunded", "cancelled"].includes(payment.status) ? <Button type="button"
-              variant="ghost" onClick={() => void controller.check()} disabled={pending}>{text.refresh}</Button> : null}
-            {payment?.status === "admitted" || payment?.status === "refunded" || payment?.status === "cancelled" || payment?.status === "reviewRequired" ?
-              <ButtonLink href="/help" variant="ghost">{text.help}</ButtonLink> : null}
-          </CatchGap>
+        <CatchGap key={cancellationReview ? "cancel" : "offer"} size="related">
+          {cancellationReview ? <>
+            <CatchButton fullWidth label={text.confirmCancellation} onPressed={() => void controller.cancelAdmission()}
+              status={pending ? "loading" : "idle"} variant="danger" />
+            <div ref={keep}>
+              <CatchButton fullWidth label={text.keepAdmission} onPressed={pending ? null : controller.dismissCancellation}
+                variant="secondary" />
+            </div>
+          </> : <>
+            {!admission && (!payment || payment.checkout) ? (
+              <CatchButton fullWidth label={grant?.freeAdmission ? text.acceptFree : payment ? text.continueCheckout : text.reservePay}
+                onPressed={() => void controller.pay()} status={pending ? "loading" : "idle"} />
+            ) : null}
+            {eventId ? <CatchButton fullWidth href={`/booking/${encodeURIComponent(eventId)}/`} label={text.eventAccess}
+              onPressed={go} /> : null}
+            {payment?.cancellationQuote ? <CatchButton fullWidth label={text.cancelAdmission}
+              onPressed={pending ? null : () => void controller.reviewCancellation()} variant="quiet" /> : null}
+            {payment && !["refunded", "cancelled"].includes(payment.status) ? <CatchButton fullWidth label={text.refresh}
+              onPressed={pending ? null : () => void controller.check()} variant="quiet" /> : null}
+            {payment?.status === "admitted" || payment?.status === "refunded" || payment?.status === "cancelled" ||
+              payment?.status === "reviewRequired" ? <CatchButton fullWidth href="/help/" label={text.help} onPressed={go}
+                variant="quiet" /> : null}
+          </>}
         </CatchGap>
-      </EventRuntimePanel>}
-  </EventRuntimeFrame>;
+        {status}
+      </CatchGap>
+    </EventBookingFrame>
+  );
 }

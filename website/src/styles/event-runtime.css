@@ -104,12 +104,6 @@
   line-height: 1.55;
 }
 
-.event-runtime__form {
-  display: grid;
-  gap: var(--catch-space-micro18);
-}
-
-.event-runtime__form label,
 .event-runtime__fieldset legend {
   font-size: .83rem;
   font-weight: 760;

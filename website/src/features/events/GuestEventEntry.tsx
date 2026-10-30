@@ -143,7 +143,7 @@ function ApprovalNotifications({eventId, user}: {eventId: string; user: User}) {
   return (
     <Form noValidate onSubmit={c.save} pending={c.pending}>
       <CatchGap size="related">
-        <CatchText as="h3" variant="titleS">{notificationCopy.title}</CatchText>
+        <CatchText as="h2" variant="titleS">{notificationCopy.title}</CatchText>
         <CatchText as="p" color="ink2" variant="bodyS">{notificationCopy.explanation}</CatchText>
         {c.value && c.choices ? <>
           {!c.value.available ? <CatchText as="p" variant="bodyS">{notificationCopy.unavailable}</CatchText> : null}
