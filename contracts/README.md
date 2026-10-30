@@ -208,7 +208,7 @@ node tool/contracts/check_storage_contract.mjs
 
 `UpdateUserProfilePatch` and `UpdateClubPatch` are generated patch helper
 classes emitted into
-`lib/core/schema_contracts/generated/callable_request_dtos.g.dart`.
+`lib/platform/schema_contracts/generated/callable_request_dtos.g.dart`.
 The old domain paths remain compatibility exports so existing repository and
 controller imports do not need to move in the same pass. Their `toJson()` output
 is validated against
@@ -225,7 +225,7 @@ Remove the escape hatches once the remaining dynamic callers are migrated.
 ## Dart Callable Requests
 
 Callable request classes that are safe to generate live in
-`lib/core/schema_contracts/generated/callable_request_dtos.g.dart` and are
+`lib/platform/schema_contracts/generated/callable_request_dtos.g.dart` and are
 re-exported from feature-local `*_callable_dtos.dart` files. The generator
 emits typed nested/domain fields for create payloads that already have stable
 Dart domain objects, including `EventMeetingLocation`, `EventPolicyBundle`,

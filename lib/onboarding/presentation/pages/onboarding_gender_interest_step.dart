@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
@@ -7,6 +6,7 @@ import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_gender
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/mutation_error_util.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

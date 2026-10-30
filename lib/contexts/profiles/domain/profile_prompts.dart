@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/profiles/domain/profile_validation.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/profile_schema_contracts.g.dart'
-    as schema_contracts;
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/profile_schema_contracts.g.dart'
+    as schema_contracts;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'profile_prompts.freezed.dart';

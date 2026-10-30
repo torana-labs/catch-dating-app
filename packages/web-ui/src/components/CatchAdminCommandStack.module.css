@@ -1,0 +1,30 @@
+/* Admin T4 command list, moved from admin/src/styles.css (.command-stack, .command-row). */
+.stack {
+  display: grid;
+  gap: var(--catch-space-s2);
+}
+
+.row {
+  display: grid;
+  gap: var(--catch-space-s1);
+  padding: var(--catch-space-s2);
+  border: var(--catch-stroke-hairline) solid var(--catch-theme-line2);
+  border-radius: var(--catch-radius-sm);
+  background: var(--catch-theme-raised);
+}
+
+.row span {
+  color: var(--catch-theme-ink2);
+  font-size: var(--catch-typography-brand-kicker-size);
+  font-weight: var(--catch-typography-brand-kicker-weight);
+  text-transform: uppercase;
+}
+
+.row code {
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  color: var(--catch-theme-ink);
+  font-size: var(--catch-typography-web-status-size);
+  line-height: 1.4;
+}

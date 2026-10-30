@@ -3,9 +3,9 @@ import 'package:catch_dating_app/contexts/formats/domain/event_success_activity_
 import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_conversation_cue.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/event_success_moment_presentations.g.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/event_success_moment_presentations.g.dart';
 
 extension EventSuccessConversationCueMomentCopy
     on EventSuccessConversationCueMoment {

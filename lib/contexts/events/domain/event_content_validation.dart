@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
-import 'package:catch_dating_app/core/schema_contracts/field_value_validation.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/field_value_validation.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
 
 bool isValidEventMeetingLocation(EventMeetingLocation location) {
   final value = location.normalized();

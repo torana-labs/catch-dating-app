@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/kernel/labelled.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
 import 'package:catch_tokens/catch_tokens.dart' show CatchFieldTokens;
 import 'package:catch_ui/catch_ui.dart';

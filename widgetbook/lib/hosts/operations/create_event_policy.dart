@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_success_step.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/kernel/city_catalog.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

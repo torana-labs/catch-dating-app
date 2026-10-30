@@ -17,7 +17,9 @@ import 'package:catch_dating_app/contexts/organizers/data/club_callable_response
 import 'package:catch_dating_app/contexts/organizers/domain/update_club_patch.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_callable_requests.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_callable_responses.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show
         BlockUserCallableRequest,
         CancelEventCallableRequest,
@@ -39,10 +41,8 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         UpdateEventCallableRequest,
         UpdateEventReviewCallableRequest,
         UpdateUserProfilePatch;
-import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
+import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
     as schema_contracts;
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
-import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

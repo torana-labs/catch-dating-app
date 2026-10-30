@@ -43,8 +43,8 @@ test("modular Functions schemas preserve every canonical schema and catalog valu
 });
 
 const dartDirectories = [
-  "lib/core/schema_contracts/generated/schemas",
-  "lib/core/schema_contracts/generated/callables",
+  "lib/platform/schema_contracts/generated/schemas",
+  "lib/platform/schema_contracts/generated/callables",
 ];
 
 function outputFixture(t) {
@@ -136,8 +136,8 @@ test("check retains orphan detection in all exclusive Functions directories", (t
 test("check accepts outputs owned by other generators without writes", (t) => {
   const fixture = outputFixture(t);
   for (const relativePath of [
-    "lib/core/schema_contracts/generated/domain_producer.g.dart",
-    "lib/core/schema_contracts/generated/schemas_other/current.g.dart",
+    "lib/platform/schema_contracts/generated/domain_producer.g.dart",
+    "lib/platform/schema_contracts/generated/schemas_other/current.g.dart",
     "lib/l10n/generated/structured_domain_copy.g.dart",
     "functions/src/shared/generated/anotherProducer.ts",
   ]) fixture.write(relativePath, "// independently generated\n");
@@ -146,7 +146,7 @@ test("check accepts outputs owned by other generators without writes", (t) => {
 
 test("publication removes only owned stale outputs and restores expected contents", (t) => {
   const fixture = outputFixture(t);
-  const foreign = "lib/core/schema_contracts/generated/domain_producer.g.dart";
+  const foreign = "lib/platform/schema_contracts/generated/domain_producer.g.dart";
   fixture.write(foreign, "// keep this producer\n");
   const foreignHash = fixture.hashes()[foreign];
   for (const directory of dartDirectories) {
