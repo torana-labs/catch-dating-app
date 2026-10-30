@@ -27105,6 +27105,42 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const confirmOrganizerClaimVerificationCallablePayloadAttemptId = CatchContractFieldConstraints(
+    path: 'confirmOrganizerClaimVerificationCallablePayload.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmOrganizerClaimVerificationCallableResponseAttemptId = CatchContractFieldConstraints(
+    path: 'confirmOrganizerClaimVerificationCallableResponse.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmOrganizerClaimVerificationCallableResponseClaimRequestId = CatchContractFieldConstraints(
+    path: 'confirmOrganizerClaimVerificationCallableResponse.claimRequestId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmOrganizerClaimVerificationCallableResponseLastRejection = CatchContractFieldConstraints(
+    path: 'confirmOrganizerClaimVerificationCallableResponse.lastRejection',
+    valueTypes: <String>['string'],
+    enumValues: <String>['codeNotFound', 'pageUnavailable'],
+  );
+
+  static const confirmOrganizerClaimVerificationCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'confirmOrganizerClaimVerificationCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['awaitingProof', 'verified', 'expired', 'claimUnavailable'],
+  );
+
   static const connectOrganizerLumaProviderCallablePayloadApiKey = CatchContractFieldConstraints(
     path: 'connectOrganizerLumaProviderCallablePayload.apiKey',
     maxLength: 512,
@@ -98057,6 +98093,75 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const instagramAccessTokenDocumentAccountId = CatchContractFieldConstraints(
+    path: 'instagramAccessTokenDocument.accountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const instagramAccessTokenDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'instagramAccessTokenDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const instagramAccessTokenDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'instagramAccessTokenDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const instagramAccessTokenDocumentLastAttemptAtNanoseconds = CatchContractFieldConstraints(
+    path: 'instagramAccessTokenDocument.lastAttemptAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const instagramAccessTokenDocumentLastAttemptAtSeconds = CatchContractFieldConstraints(
+    path: 'instagramAccessTokenDocument.lastAttemptAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const instagramAccessTokenDocumentLastErrorCode = CatchContractFieldConstraints(
+    path: 'instagramAccessTokenDocument.lastErrorCode',
+    valueTypes: <String>['string'],
+    enumValues: <String>['refreshRejected', 'refreshFailed', 'accountMismatch', 'secretWriteFailed'],
+  );
+
+  static const instagramAccessTokenDocumentRefreshedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'instagramAccessTokenDocument.refreshedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const instagramAccessTokenDocumentRefreshedAtSeconds = CatchContractFieldConstraints(
+    path: 'instagramAccessTokenDocument.refreshedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const instagramAccessTokenDocumentRevision = CatchContractFieldConstraints(
+    path: 'instagramAccessTokenDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const instagramAccessTokenDocumentSecretVersion = CatchContractFieldConstraints(
+    path: 'instagramAccessTokenDocument.secretVersion',
+    valueTypes: <String>['string'],
+    pattern: '^projects/[a-z0-9-]+/secrets/CATCH_INSTAGRAM_ACCESS_TOKEN/versions/[1-9][0-9]*\$',
+  );
+
   static const inviteProgramStaffCallablePayloadDisplayName = CatchContractFieldConstraints(
     path: 'inviteProgramStaffCallablePayload.displayName',
     maxLength: 120,
@@ -164476,6 +164581,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const startOrganizerClaimVerificationCallableResponseProofText = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.proofText',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^(catch-)?[0-9]{6}\$',
+  );
+
   static const startOrganizerContactConversationCallablePayloadContactId = CatchContractFieldConstraints(
     path: 'startOrganizerContactConversationCallablePayload.contactId',
     maxLength: 180,
@@ -182980,6 +183092,11 @@ abstract final class CatchContractConstraints {
     'confirmEventAssistanceDepartureCallablePayload.command.payload.expectedProgressRevision': confirmEventAssistanceDepartureCallablePayloadCommandPayloadExpectedProgressRevision,
     'confirmEventAssistanceDepartureCallablePayload.command.payload.groupId': confirmEventAssistanceDepartureCallablePayloadCommandPayloadGroupId,
     'confirmEventAssistanceDepartureCallablePayload.expectedSourceHash': confirmEventAssistanceDepartureCallablePayloadExpectedSourceHash,
+    'confirmOrganizerClaimVerificationCallablePayload.attemptId': confirmOrganizerClaimVerificationCallablePayloadAttemptId,
+    'confirmOrganizerClaimVerificationCallableResponse.attemptId': confirmOrganizerClaimVerificationCallableResponseAttemptId,
+    'confirmOrganizerClaimVerificationCallableResponse.claimRequestId': confirmOrganizerClaimVerificationCallableResponseClaimRequestId,
+    'confirmOrganizerClaimVerificationCallableResponse.lastRejection': confirmOrganizerClaimVerificationCallableResponseLastRejection,
+    'confirmOrganizerClaimVerificationCallableResponse.status': confirmOrganizerClaimVerificationCallableResponseStatus,
     'connectOrganizerLumaProviderCallablePayload.apiKey': connectOrganizerLumaProviderCallablePayloadApiKey,
     'connectOrganizerLumaProviderCallablePayload.eventId': connectOrganizerLumaProviderCallablePayloadEventId,
     'connectOrganizerLumaProviderCallablePayload.externalEventId': connectOrganizerLumaProviderCallablePayloadExternalEventId,
@@ -192550,6 +192667,16 @@ abstract final class CatchContractConstraints {
     'injectEventRehearsalBehaviorCallablePayload.expectedRevision': injectEventRehearsalBehaviorCallablePayloadExpectedRevision,
     'injectEventRehearsalBehaviorCallablePayload.faultId': injectEventRehearsalBehaviorCallablePayloadFaultId,
     'injectEventRehearsalBehaviorCallablePayload.sessionId': injectEventRehearsalBehaviorCallablePayloadSessionId,
+    'instagramAccessTokenDocument.accountId': instagramAccessTokenDocumentAccountId,
+    'instagramAccessTokenDocument.expiresAt._nanoseconds': instagramAccessTokenDocumentExpiresAtNanoseconds,
+    'instagramAccessTokenDocument.expiresAt._seconds': instagramAccessTokenDocumentExpiresAtSeconds,
+    'instagramAccessTokenDocument.lastAttemptAt._nanoseconds': instagramAccessTokenDocumentLastAttemptAtNanoseconds,
+    'instagramAccessTokenDocument.lastAttemptAt._seconds': instagramAccessTokenDocumentLastAttemptAtSeconds,
+    'instagramAccessTokenDocument.lastErrorCode': instagramAccessTokenDocumentLastErrorCode,
+    'instagramAccessTokenDocument.refreshedAt._nanoseconds': instagramAccessTokenDocumentRefreshedAtNanoseconds,
+    'instagramAccessTokenDocument.refreshedAt._seconds': instagramAccessTokenDocumentRefreshedAtSeconds,
+    'instagramAccessTokenDocument.revision': instagramAccessTokenDocumentRevision,
+    'instagramAccessTokenDocument.secretVersion': instagramAccessTokenDocumentSecretVersion,
     'inviteProgramStaffCallablePayload.displayName': inviteProgramStaffCallablePayloadDisplayName,
     'inviteProgramStaffCallablePayload.duties': inviteProgramStaffCallablePayloadDuties,
     'inviteProgramStaffCallablePayload.duties.items.duty': inviteProgramStaffCallablePayloadDutiesItemsDuty,
@@ -201741,6 +201868,7 @@ abstract final class CatchContractConstraints {
     'startOrganizerClaimVerificationCallableResponse.method': startOrganizerClaimVerificationCallableResponseMethod,
     'startOrganizerClaimVerificationCallableResponse.organizerId': startOrganizerClaimVerificationCallableResponseOrganizerId,
     'startOrganizerClaimVerificationCallableResponse.proofTarget': startOrganizerClaimVerificationCallableResponseProofTarget,
+    'startOrganizerClaimVerificationCallableResponse.proofText': startOrganizerClaimVerificationCallableResponseProofText,
     'startOrganizerContactConversationCallablePayload.contactId': startOrganizerContactConversationCallablePayloadContactId,
     'startOrganizerContactConversationCallablePayload.organizerId': startOrganizerContactConversationCallablePayloadOrganizerId,
     'startOrganizerConversationCallablePayload.eventId': startOrganizerConversationCallablePayloadEventId,

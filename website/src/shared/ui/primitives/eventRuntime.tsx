@@ -1,6 +1,6 @@
 import {LottieAnimationControl} from "@catch/web-ui";
-import type {CSSProperties, FormHTMLAttributes, ReactNode} from "react";
-import {CheckboxField, Form} from "./forms";
+import type {CSSProperties, ReactNode} from "react";
+import {CheckboxField} from "./forms";
 import {PlainLink} from "./actions";
 import {classNames} from "./foundation";
 
@@ -59,12 +59,6 @@ export function EventRuntimePanel({
       {children}
     </main>
   );
-}
-
-export function EventRuntimeForm(
-  props: FormHTMLAttributes<HTMLFormElement> & {pending?: boolean}
-) {
-  return <Form {...props} className="event-runtime__form" />;
 }
 
 export function EventRuntimeFieldset({children}: {children: ReactNode}) {

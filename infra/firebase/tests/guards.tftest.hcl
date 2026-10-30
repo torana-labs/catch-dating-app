@@ -192,3 +192,61 @@ run "keys_must_name_environment_and_role" {
 
   expect_failures = [var.android_apps]
 }
+
+run "form_payment_secrets_are_containers_with_runtime_grants_only" {
+  command = plan
+
+  variables {
+    form_payment_environments = {
+      dev = {
+        project                           = "catchdates-dev"
+        functions_runtime_service_account = "619661127800-compute@developer.gserviceaccount.com"
+      }
+    }
+  }
+
+  assert {
+    condition     = length(google_secret_manager_secret.form_payment) == 2
+    error_message = "Each environment gets exactly the partner secret and the vault."
+  }
+
+  assert {
+    condition     = google_secret_manager_secret.form_payment["dev-partner"].secret_id == "FORM_RAZORPAY_PARTNER_CONFIG" && google_secret_manager_secret.form_payment["dev-vault"].secret_id == "FORM_RAZORPAY_MERCHANT_CREDENTIALS"
+    error_message = "Secret IDs must match what the owner script and the partner config name."
+  }
+
+  assert {
+    condition     = alltrue([for secret in google_secret_manager_secret.form_payment : secret.deletion_protection])
+    error_message = "Form payment secrets must have deletion protection."
+  }
+
+  assert {
+    condition     = google_secret_manager_secret_iam_member.form_partner_runtime_access["dev"].role == "roles/secretmanager.secretAccessor"
+    error_message = "The runtime only reads the partner config."
+  }
+
+  assert {
+    condition     = google_secret_manager_secret_iam_member.form_vault_runtime_access["dev"].role == "projects/catchdates-dev/roles/catchFormCredentialVault"
+    error_message = "The runtime gets the add/access/disable vault role."
+  }
+
+  assert {
+    condition     = google_secret_manager_secret_iam_member.form_vault_runtime_access["dev"].member == "serviceAccount:619661127800-compute@developer.gserviceaccount.com"
+    error_message = "Grants go to the configured Functions runtime identity."
+  }
+}
+
+run "form_payments_only_in_dev_and_prod" {
+  command = plan
+
+  variables {
+    form_payment_environments = {
+      staging = {
+        project                           = "catchdates-staging"
+        functions_runtime_service_account = "822303414140-compute@developer.gserviceaccount.com"
+      }
+    }
+  }
+
+  expect_failures = [var.form_payment_environments]
+}

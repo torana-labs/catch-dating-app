@@ -56,7 +56,7 @@ final class HostFormPaymentControllerProvider
 }
 
 String _$hostFormPaymentControllerHash() =>
-    r'8748abb7f86d642ea68591c2f74c667e67c5b1b8';
+    r'3fabde7e2e26276d03a4d5df82942c2bc97b9194';
 
 final class HostFormPaymentControllerFamily extends $Family
     with

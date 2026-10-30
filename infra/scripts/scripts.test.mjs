@@ -156,7 +156,7 @@ test("inventory refuses two active apps for one environment and role", (t) => {
 
 // --- play_signing_fingerprints.sh ------------------------------------------
 
-function play(t, {reported, keytool, apksigner}) {
+function play(t, {reported, keytool, apksigner, androidHomeApksigner}) {
   const root = sandbox(t);
   fs.writeFileSync(path.join(root, "generated.json"), JSON.stringify({generatedApks: [
     {certificateSha256Hash: reported, generatedUniversalApk: {downloadId: "dl/1"}},
@@ -168,9 +168,17 @@ function play(t, {reported, keytool, apksigner}) {
     'case "$url" in *":download?alt=media") echo apk > "$out";; *) cp "$PWD/generated.json" "$out";; esac',
   ].join("\n"));
   shim(root, "keytool", keytool);
-  shim(root, "apksigner", apksigner ?? "exit 1");
-  return run("scripts/play_signing_fingerprints.sh", ["com.catchdates.app", "100001"],
-    {root, env: {PLAY_ACCESS_TOKEN: "test"}});
+  const env = {PLAY_ACCESS_TOKEN: "test", ANDROID_HOME: path.join(root, "sdk"), ANDROID_SDK_ROOT: ""};
+  if (androidHomeApksigner) {
+    // The runner's build-tools apksigner, reached through a symlink.
+    const tools = path.join(root, "sdk", "build-tools", "37.0.0");
+    fs.mkdirSync(tools, {recursive: true});
+    fs.writeFileSync(path.join(root, "apksigner-real"), `#!/usr/bin/env bash\n${androidHomeApksigner}\n`, {mode: 0o755});
+    fs.symlinkSync(path.join(root, "apksigner-real"), path.join(tools, "apksigner"));
+  } else {
+    shim(root, "apksigner", apksigner ?? "exit 1");
+  }
+  return run("scripts/play_signing_fingerprints.sh", ["com.catchdates.app", "100001"], {root, env});
 }
 
 const colons = (hex) => hex.toUpperCase().match(/../gu).join(":");
@@ -196,6 +204,43 @@ test("play fingerprints fall back to apksigner for v2/v3-only APKs", (t) => {
   assert.equal(JSON.parse(result.stdout).reader, "apksigner");
 });
 
+test("play fingerprints find a symlinked build-tools apksigner and read rotated-key output", (t) => {
+  const result = play(t, {reported: sha256("ef"), keytool: 'echo "Not a signed jar file"',
+    androidHomeApksigner: `echo "Signer (minSdkVersion=24, maxSdkVersion=2147483647) certificate SHA-256 digest: ${sha256("ef")}"; echo "Signer (minSdkVersion=24, maxSdkVersion=2147483647) certificate SHA-1 digest: ${sha1("12")}"`});
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), {package: "com.catchdates.app", versionCode: "100001",
+    sha1: sha1("12"), sha256: sha256("ef"), reader: "apksigner"});
+});
+
+test("play fingerprints pick the signer Play reported from hybrid v3.2 output", (t) => {
+  const signer = (label, sha1Hex, sha256Hex) =>
+    `echo "${label} certificate SHA-256 digest: ${sha256Hex}"; echo "${label} certificate SHA-1 digest: ${sha1Hex}"`;
+  const result = play(t, {reported: sha256("ef"), keytool: 'echo "Not a signed jar file"',
+    apksigner: [
+      signer("V3.2 Hybrid Classical Signer: (minSdkVersion=37, maxSdkVersion=2147483647)", sha1("34"), sha256("56")),
+      signer("Signer (minSdkVersion=24, maxSdkVersion=36)", sha1("12"), sha256("ef")),
+    ].join("; ")});
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), {package: "com.catchdates.app", versionCode: "100001",
+    sha1: sha1("12"), sha256: sha256("ef"), reader: "apksigner"});
+});
+
+test("play fingerprints read a lone hybrid v3.2 signer", (t) => {
+  const result = play(t, {reported: sha256("56"), keytool: 'echo "Not a signed jar file"',
+    apksigner: `echo "V3.2 Hybrid Classical Signer: (minSdkVersion=37, maxSdkVersion=2147483647) certificate SHA-256 digest: ${sha256("56")}"; echo "V3.2 Hybrid Classical Signer: (minSdkVersion=37, maxSdkVersion=2147483647) certificate SHA-1 digest: ${sha1("34")}"`});
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).sha256, sha256("56"));
+});
+
+test("play fingerprints explain why neither reader worked", (t) => {
+  const result = play(t, {reported: sha256("ef"), keytool: 'echo "Not a signed jar file"',
+    apksigner: 'echo "DOES NOT VERIFY"; echo "ERROR: no signers" >&2; exit 1'});
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /keytool found no v1 \(JAR\) signature: Not a signed jar file/u);
+  assert.match(result.stderr, /apksigner verify --print-certs exited 1: DOES NOT VERIFY ERROR: no signers/u);
+  assert.match(result.stderr, /downloaded 4 bytes, starting with 61706b0a/u);
+});
+
 test("play fingerprints fail when the APK certificate does not match Play", (t) => {
   const result = play(t, {reported: sha256("99"), keytool: v1Cert});
   assert.equal(result.status, 1);
@@ -211,6 +256,7 @@ function bootstrap(t, {gh = true, protectedEnvironment = true} = {}) {
     `echo "gcloud $*" >> "${log}"`,
     'case "$*" in',
     '  "config get-value account") echo owner@example.com;;',
+    `  "storage cp --if-generation-match=0 - "*) cat > "${path.join(root, "seeded-state.json")}";;`,
     '  *" describe "*) exit 1;;',
     "esac",
   ].join("\n"));
@@ -233,7 +279,9 @@ function bootstrap(t, {gh = true, protectedEnvironment = true} = {}) {
   }
   const result = run("bootstrap/bootstrap.sh", [], {root,
     env: {PROTECTED: String(protectedEnvironment)}});
-  return {result, calls: fs.existsSync(log) ? fs.readFileSync(log, "utf8") : ""};
+  const seeded = path.join(root, "seeded-state.json");
+  return {result, calls: fs.existsSync(log) ? fs.readFileSync(log, "utf8") : "",
+    seededState: fs.existsSync(seeded) ? JSON.parse(fs.readFileSync(seeded, "utf8")) : null};
 }
 
 const applyTrust = /add-iam-policy-binding github-actions-platform-apply@\S+ .*workloadIdentityUser.*1170579691:prod-platform/u;
@@ -273,4 +321,136 @@ test("bootstrap without gh prints the GitHub steps and does not trust prod-platf
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /gh variable set GCP_SERVICE_ACCOUNT_EMAIL --repo torana-labs\/catch-dating-app --env prod-platform/u);
   assert.doesNotMatch(calls, applyTrust);
+});
+
+// --- phase 1b: Forms payment secrets -----------------------------------------
+
+const secretCreate = {
+  address: 'google_secret_manager_secret.form_payment["prod-partner"]', mode: "managed",
+  type: "google_secret_manager_secret",
+  change: {actions: ["create"], before: null, after: {secret_id: "FORM_RAZORPAY_PARTNER_CONFIG"}},
+};
+const grant = (role, member) => ({
+  address: 'google_secret_manager_secret_iam_member.form_partner_runtime_access["prod"]', mode: "managed",
+  type: "google_secret_manager_secret_iam_member",
+  change: {actions: ["create"], before: null, after: {role, member}},
+});
+
+test("plan guard lets Terraform create secret containers and the runtime grants", (t) => {
+  const result = guard(t, planWith([secretCreate,
+    grant("roles/secretmanager.secretAccessor", "serviceAccount:574779808785-compute@developer.gserviceaccount.com"),
+    grant("projects/catch-dating-app-64e51/roles/catchFormCredentialVault",
+      "serviceAccount:574779808785-compute@developer.gserviceaccount.com")]));
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+});
+
+for (const [label, change] of [
+  ["a secret version, which would put a value in state", {...secretCreate,
+    type: "google_secret_manager_secret_version", address: "google_secret_manager_secret_version.partner"}],
+  ["a broader secret role", grant("roles/secretmanager.admin",
+    "serviceAccount:574779808785-compute@developer.gserviceaccount.com")],
+  ["a grant to a platform identity", grant("roles/secretmanager.secretAccessor",
+    "serviceAccount:github-actions-platform-apply@catch-dating-app-64e51.iam.gserviceaccount.com")],
+]) {
+  test(`plan guard refuses ${label}`, (t) => {
+    const result = guard(t, planWith([change]));
+    assert.equal(result.status, 1, result.stdout);
+  });
+}
+
+function storePartner(t, args, input, {gh = true} = {}) {
+  const root = sandbox(t);
+  const log = path.join(root, "calls.log");
+  const stdin = path.join(root, "stdin.bin");
+  shim(root, "gcloud", [
+    `echo "gcloud $*" >> "${log}"`,
+    'case "$*" in',
+    '  "secrets describe "*) echo projects/x/secrets/FORM_RAZORPAY_PARTNER_CONFIG;;',
+    `  "secrets versions add "*) cat > "${stdin}"; case "$*" in *catchdates-dev*) n=619661127800;; *) n=574779808785;; esac;`,
+    '    echo "projects/$n/secrets/FORM_RAZORPAY_PARTNER_CONFIG/versions/7";;',
+    "  *) exit 9;;",
+    "esac",
+  ].join("\n"));
+  shim(root, "gh", gh ? `echo "gh $*" >> "${log}"` : "exit 127");
+  const result = run("scripts/store_razorpay_partner_secret.sh", args, {root, input});
+  return {
+    result,
+    calls: fs.existsSync(log) ? fs.readFileSync(log, "utf8") : "",
+    payload: fs.existsSync(stdin) ? fs.readFileSync(stdin, "utf8") : null,
+  };
+}
+
+const clientSecret = 'sEcReT-"quoted"\\back-9f8e7d';
+
+test("partner secret for dev is test mode, sent on stdin and pinned in the dev environment", (t) => {
+  const {result, calls, payload} = storePartner(t, ["dev"], `rzp_client_123\n${clientSecret}\n`);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout, "projects/catchdates-dev/secrets/FORM_RAZORPAY_PARTNER_CONFIG/versions/7\n");
+  assert.deepEqual(JSON.parse(payload), {schema: "catch.form-razorpay-partner/v1", clientId: "rzp_client_123",
+    clientSecret, mode: "test", credentialSecretId: "FORM_RAZORPAY_MERCHANT_CREDENTIALS"});
+  assert.deepEqual(Object.keys(JSON.parse(payload)), ["schema", "clientId", "clientSecret", "mode", "credentialSecretId"]);
+  assert.match(calls, /secrets versions add FORM_RAZORPAY_PARTNER_CONFIG --project=catchdates-dev --data-file=-/u);
+  assert.match(calls, /gh variable set FORM_RAZORPAY_PARTNER_CONFIG_VERSION --repo torana-labs\/catch-dating-app --env dev --body projects\/catchdates-dev\/secrets\/FORM_RAZORPAY_PARTNER_CONFIG\/versions\/7/u);
+  for (const output of [calls, result.stdout, result.stderr]) assert.ok(!output.includes("sEcReT"), "secret leaked");
+});
+
+test("partner secret for prod refuses without --live", (t) => {
+  const {result, payload} = storePartner(t, ["prod"], `id\n${clientSecret}\n`);
+  assert.equal(result.status, 2);
+  assert.equal(payload, null);
+});
+
+test("partner secret for prod refuses a wrong confirmation", (t) => {
+  const {result, payload} = storePartner(t, ["prod", "--live"], `yes\nid\n${clientSecret}\n`);
+  assert.equal(result.status, 1);
+  assert.equal(payload, null);
+});
+
+test("partner secret for prod is live mode after confirmation and pins the prod environment", (t) => {
+  const {result, calls, payload} = storePartner(t, ["prod", "--live"],
+    `live catch-dating-app-64e51\nrzp_live_client\n${clientSecret}\n`);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout, "projects/catch-dating-app-64e51/secrets/FORM_RAZORPAY_PARTNER_CONFIG/versions/7\n");
+  assert.equal(JSON.parse(payload).mode, "live");
+  assert.match(calls, /--env prod /u);
+});
+
+test("partner secret refuses --live in dev and values with spaces", (t) => {
+  assert.equal(storePartner(t, ["dev", "--live"], "id\nsecret\n").result.status, 2);
+  const spaced = storePartner(t, ["dev"], "id\nhas space\n");
+  assert.equal(spaced.result.status, 1);
+  assert.equal(spaced.payload, null);
+});
+
+test("partner secret without gh prints the command instead", (t) => {
+  const {result, calls} = storePartner(t, ["dev"], `id\n${clientSecret}\n`, {gh: false});
+  assert.equal(result.status, 0, result.stderr);
+  assert.doesNotMatch(calls, /gh variable set/u);
+  assert.match(result.stderr, /gh variable set FORM_RAZORPAY_PARTNER_CONFIG_VERSION .*--env dev/u);
+});
+
+test("bootstrap scopes platform secret access to FORM_RAZORPAY_ secrets and never to versions", (t) => {
+  const {result, calls} = bootstrap(t);
+  assert.equal(result.status, 0, result.stderr + result.stdout);
+  for (const [project, number] of [["catchdates-dev", "619661127800"], ["catch-dating-app-64e51", "574779808785"]]) {
+    assert.match(calls, new RegExp(`roles create catchFormCredentialVault --project=${project} .*--permissions=secretmanager\\.versions\\.add,secretmanager\\.versions\\.access,secretmanager\\.versions\\.disable `, "u"));
+    for (const [account, role] of [["plan", "catchPlatformSecretsReader"], ["apply", "catchPlatformSecretsAdmin"]]) {
+      assert.match(calls, new RegExp(`add-iam-policy-binding ${project} .*--condition=expression=resource\\.name\\.startsWith\\('projects/${number}/secrets/FORM_RAZORPAY_'\\).* --member=serviceAccount:github-actions-platform-${account}@\\S+ --role=projects/${project}/roles/${role}`, "u"));
+    }
+  }
+  assert.doesNotMatch(calls, /roles create catchFormCredentialVault --project=catchdates-staging/u);
+  // Only the runtime's vault role holds version permissions.
+  for (const line of calls.split("\n").filter((entry) => /secretmanager\.versions\./u.test(entry))) {
+    assert.match(line, /roles (create|update) catchFormCredentialVault /u);
+  }
+});
+
+test("bootstrap seeds an empty state once so read-only plans never create it", (t) => {
+  const {result, calls, seededState} = bootstrap(t);
+  assert.equal(result.status, 0, result.stderr + result.stdout);
+  assert.match(calls, /storage cp --if-generation-match=0 - gs:\/\/catch-dating-app-64e51-terraform-state\/firebase\/default\.tfstate/u);
+  assert.equal(seededState.version, 4);
+  assert.equal(seededState.serial, 0);
+  assert.deepEqual(seededState.resources, []);
+  assert.match(seededState.lineage, /^[0-9a-f-]{36}$/u);
 });

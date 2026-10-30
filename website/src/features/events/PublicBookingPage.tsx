@@ -1,41 +1,65 @@
+import {CatchLoadingIndicator, CatchText} from "@catch/web-ui";
+import {useEffect, useState} from "react";
+import {useParams, useSearchParams} from "react-router";
+import {publicCheckoutCopy as copy} from "../../content/events";
 import {GuestEventEntry} from "./GuestEventEntry";
-import { useParams, useSearchParams } from "react-router";
-import { publicCheckoutCopy as copy } from "../../content/events";
-import {
-  EventRuntimeFrame,
-  EventRuntimePanel,
-} from "../../shared/ui/primitives";
-import { PublicPaidEventRegistration } from "./PublicPaidEventRegistration";
+import {PublicPaidEventRegistration} from "./PublicPaidEventRegistration";
+import {EventBookingFrame} from "../../shared/site/EventBookingFrame";
 
-/** A listing can close or disappear while its guest still needs their receipt. */
-export function PublicBookingPage() {
-  const { eventId = "" } = useParams<{ eventId: string }>();
+const eventIdPattern = /^[A-Za-z0-9_:-]{1,180}$/u;
+const paymentIdPattern = /^pp_[a-f0-9]{32}$/u;
+
+/** Whether the event still has a public page to book on. */
+async function eventPageExists(path: string): Promise<boolean> {
+  try {
+    return (await fetch(path, {method: "HEAD", credentials: "omit"})).ok;
+  } catch {
+    return false;
+  }
+}
+
+function replaceLocation(path: string) {
+  window.location.replace(path);
+}
+
+/**
+ * The old booking link (CAT-252). The event page's booking card does what
+ * this page did, so the link goes there. A payment receipt stays here: a
+ * listing can close or disappear while its guest still needs the receipt,
+ * and a payment ID never goes onto a cached public page. So does a booking
+ * whose event has no public page any more, with no more event detail than
+ * this page ever showed.
+ */
+export function PublicBookingPage({pageExists = eventPageExists, redirect = replaceLocation}: {
+  pageExists?: (path: string) => Promise<boolean>;
+  redirect?: (path: string) => void;
+} = {}) {
+  const {eventId = ""} = useParams<{eventId: string}>();
   const [search] = useSearchParams();
   const paymentId = search.get("payment");
-  const validPayment =
-    paymentId === null || /^pp_[a-f0-9]{32}$/u.test(paymentId);
+  const valid = eventIdPattern.test(eventId) && (paymentId === null || paymentIdPattern.test(paymentId));
+  const eventPath = `/events/${encodeURIComponent(eventId)}/`;
+  const [stayed, setStayed] = useState(false);
+  useEffect(() => {
+    if (!valid || paymentId !== null) return undefined;
+    let active = true;
+    void pageExists(eventPath).then((exists) => {
+      if (!active) return;
+      if (exists) redirect(eventPath);
+      else setStayed(true);
+    });
+    return () => {
+      active = false;
+    };
+  }, [eventPath, pageExists, paymentId, redirect, valid]);
+
   return (
-    <EventRuntimeFrame
-      brandLabel={copy.bookingTitle}
-      brandWord={copy.bookingBrand}
-    >
-      <EventRuntimePanel
-        kicker={copy.bookingBrand}
-        title={copy.bookingTitle}
-        body={copy.bookingBody}
-      >
-        {validPayment && /^[A-Za-z0-9_:-]{1,180}$/u.test(eventId) ? (
-          paymentId === null ? <GuestEventEntry eventId={eventId} /> : <PublicPaidEventRegistration
-            key={`${eventId}:${paymentId ?? "latest"}`}
-            initialPaymentId={paymentId}
-            eventId={eventId}
-            inviteToken={null}
-            allowNewBookings={false}
-          />
-        ) : (
-          <p>{copy.unavailable}</p>
-        )}
-      </EventRuntimePanel>
-    </EventRuntimeFrame>
+    <EventBookingFrame body={copy.bookingBody} title={copy.bookingTitle}>
+      {!valid ? <CatchText as="p" role="status" variant="bodyM">{copy.unavailable}</CatchText> :
+        paymentId !== null ? (
+          <PublicPaidEventRegistration allowNewBookings={false} eventId={eventId} initialPaymentId={paymentId}
+            inviteToken={null} key={`${eventId}:${paymentId}`} />
+        ) : stayed ? <GuestEventEntry eventId={eventId} /> : <CatchLoadingIndicator label={copy.loading} />}
+    </EventBookingFrame>
   );
 }

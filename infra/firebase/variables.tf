@@ -65,3 +65,30 @@ variable "allow_fingerprint_removal" {
   type        = bool
   default     = false
 }
+
+variable "form_payment_environments" {
+  description = <<-EOT
+    Environments whose Functions take Forms payments through the Razorpay
+    Platform Partner application, keyed by GitHub environment (dev, prod).
+    functions_runtime_service_account is the identity the payment Functions
+    run as; they set no serviceAccount, so it is the project's default
+    compute identity. The deploy readiness gate compares it with the observed
+    runtime identity.
+  EOT
+  type = map(object({
+    project                           = string
+    functions_runtime_service_account = string
+  }))
+
+  validation {
+    condition     = alltrue([for key in keys(var.form_payment_environments) : contains(["dev", "prod"], key)])
+    error_message = "form_payment_environments keys must be dev or prod."
+  }
+
+  validation {
+    condition = alltrue([for settings in values(var.form_payment_environments) :
+      can(regex("^[a-z0-9-]+@[a-z0-9.-]+\\.gserviceaccount\\.com$", settings.functions_runtime_service_account))
+    ])
+    error_message = "functions_runtime_service_account must be a service account email."
+  }
+}

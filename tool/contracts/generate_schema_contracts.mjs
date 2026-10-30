@@ -2226,6 +2226,12 @@ const schemaSpecs = [
       "organizerClaimInstagramMessageDocument.ts",
   },
   {
+    name: "InstagramAccessTokenDocument",
+    source: "firestore/instagram_access_tokens.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/instagramAccessTokenDocument.ts",
+  },
+  {
     name: "OrganizerScheduleLockDocument",
     source: "firestore/organizer_schedule_locks.schema.json",
     typeOutput:
@@ -3638,6 +3644,22 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "organizerClaimVerificationOptionsCallableResponse.ts",
+  },
+  {
+    name: "ConfirmOrganizerClaimVerificationCallablePayload",
+    source:
+      "callables/confirm_organizer_claim_verification_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "confirmOrganizerClaimVerificationCallablePayload.ts",
+  },
+  {
+    name: "ConfirmOrganizerClaimVerificationCallableResponse",
+    source:
+      "callable_responses/confirm_organizer_claim_verification_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "confirmOrganizerClaimVerificationCallableResponse.ts",
   },
   {
     name: "AdminDecideOrganizerClaimCallablePayload",

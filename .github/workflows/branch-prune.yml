@@ -1,0 +1,81 @@
+name: Branch Prune
+
+# Weekly deletion of remote branches the Branch Hygiene classifier proves are
+# already in main. Abandoned or unproven branches are never touched; the daily
+# Branch Hygiene audit keeps reporting them for salvage review.
+on:
+  schedule:
+    - cron: "17 2 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: branch-hygiene
+  cancel-in-progress: false
+
+jobs:
+  prune:
+    name: Prune integrated branches
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout full Git history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+
+      - name: Refresh every remote branch
+        run: git fetch origin --prune "+refs/heads/*:refs/remotes/origin/*"
+
+      - name: Collect current pull-request state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p build/branch-prune
+          gh pr list \
+            --state all \
+            --limit 5000 \
+            --json number,state,mergedAt,headRefName,headRefOid,baseRefName,url,mergeCommit \
+            > build/branch-prune/pull-requests.json
+
+      - name: Delete branches proven integrated
+        run: |
+          node tool/git/branch_hygiene.mjs \
+            --base origin/main \
+            --remote origin \
+            --pull-requests build/branch-prune/pull-requests.json \
+            --stale-days 7 \
+            --prune-after-days 1 \
+            --prune \
+            --json > build/branch-prune/report.json
+
+      - name: Publish prune summary
+        if: always()
+        run: |
+          [[ -s build/branch-prune/report.json ]] || exit 0
+          {
+            echo "## Branch prune"
+            echo
+            jq -r '"- Remote branches audited: \(.summary.total)", "- Pruned: \([.pruned[] | select(.deleted)] | length)", "- Kept because the branch moved or the push failed: \([.pruned[] | select(.deleted | not)] | length)"' build/branch-prune/report.json
+            echo
+            jq -r '.pruned[] | "- \(if .deleted then "pruned" else "kept" end) `\(.name)` at `\(.tipCommit[0:12])` (\(.proof))"' build/branch-prune/report.json
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload prune evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: branch-prune-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/branch-prune
+          if-no-files-found: ignore
+          retention-days: 90

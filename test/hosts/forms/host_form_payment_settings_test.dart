@@ -251,6 +251,64 @@ void main() {
       await _capture(tester, 'ready-large-${dark ? 'dark' : 'light'}');
     });
   }
+
+  testWidgets('fee settings offer one Razorpay connection, never a second', (
+    tester,
+  ) async {
+    final definition = HostFormDefinition.fromMap(const {
+      'identityPolicy': 'phoneVerified',
+    });
+    Future<void> pump(List<HostFormPaymentConnection> connections) => _pump(
+      tester,
+      child: HostFormPaymentSetupSection(
+        state: HostFormPaymentSetupState(
+          setup: HostFormPaymentSetup(
+            available: true,
+            connections: connections,
+          ),
+        ),
+        definition: definition,
+        onChanged: (_) {},
+        onConnect: () {},
+        onReconnect: () {},
+        onRefresh: () {},
+        onDisconnect: (_) {},
+      ),
+    );
+    bool offered(String title) => find
+        .byWidgetPredicate((w) => w is CatchField && w.title == title)
+        .evaluate()
+        .isNotEmpty;
+
+    await pump(const [_connection]);
+    expect(offered('Connect Razorpay'), isFalse);
+    expect(offered('Reconnect Razorpay'), isFalse);
+
+    await pump(const [
+      HostFormPaymentConnection(
+        connectionId: 'rpc_stale',
+        status: HostFormPaymentConnectionStatus.needsAttention,
+        mode: HostFormPaymentMode.test,
+        accountId: 'acc_rsvp_demo',
+        webhookVerified: false,
+      ),
+    ]);
+    expect(offered('Connect Razorpay'), isFalse);
+    expect(offered('Reconnect Razorpay'), isTrue);
+
+    await pump(const [
+      HostFormPaymentConnection(
+        connectionId: 'rpc_old',
+        status: HostFormPaymentConnectionStatus.disconnected,
+        mode: HostFormPaymentMode.test,
+        accountId: 'acc_rsvp_demo',
+        webhookVerified: true,
+      ),
+    ]);
+    expect(offered('Connect Razorpay'), isTrue);
+    expect(find.text('acc_rsvp_demo'), findsNothing);
+    _readable(tester);
+  });
 }
 
 Future<void> _pump(

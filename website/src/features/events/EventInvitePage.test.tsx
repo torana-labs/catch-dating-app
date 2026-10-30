@@ -8,14 +8,7 @@ vi.mock("../../firebase", () => ({
   resolveEventInviteLanding,
 }));
 
-vi.mock("./PublicEventRegistration", () => ({
-  PublicEventRegistration: ({eventId, inviteToken, mode}: {
-    mode?: string;
-    eventId: string;
-    inviteToken?: string | null;
-  }) => <div data-testid="registration">{eventId}:{inviteToken}:{mode}</div>,
-}));
-
+import {brand} from "../../content/brand";
 import {EventInvitePage} from "./EventInvitePage";
 
 const landing = {
@@ -29,67 +22,62 @@ const landing = {
   sourceLabel: "Catch",
 };
 
-function renderInvite(path = "/invite/v2_link_token") {
-  return render(
+function renderInvite(redirect = vi.fn(), path = "/invite/v2_link_token") {
+  render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
-        <Route path="/invite/:inviteToken" element={<EventInvitePage />} />
+        <Route path="/invite/:inviteToken" element={<EventInvitePage redirect={redirect} />} />
       </Routes>
     </MemoryRouter>
   );
+  return redirect;
 }
 
 afterEach(cleanup);
 
 describe("EventInvitePage", () => {
   beforeEach(() => {
+    resolveEventInviteLanding.mockReset();
     resolveEventInviteLanding.mockResolvedValue(landing);
   });
 
-  it("resolves an opaque token and forwards it into Catch registration", async () => {
-    renderInvite();
-    await waitFor(() => expect(resolveEventInviteLanding).toHaveBeenCalledWith({
-      inviteToken: "v2_link_token",
-      sessionId: expect.any(String),
-    }));
-    expect((await screen.findAllByText("Courtyard Social")).length).toBe(2);
-    expect(screen.getByTestId("registration").textContent)
-      .toBe("event-1:v2_link_token:free");
+  it("resolves an opaque token and opens the event page with it as the invitation", async () => {
+    const redirect = renderInvite();
+    expect(screen.getByRole("progressbar", {name: "Opening your invitation"})).toBeTruthy();
+    await waitFor(() => expect(redirect).toHaveBeenCalledWith("/events/event-1/?il=v2_link_token"));
+    expect(resolveEventInviteLanding).toHaveBeenCalledWith({inviteToken: "v2_link_token", sessionId: expect.any(String)});
+    // The invite page shows no event detail of its own.
+    expect(screen.queryByText("Courtyard Social")).toBeNull();
   });
 
-  it("routes paid invites to paid checkout and closed invites to status", async () => {
-    resolveEventInviteLanding.mockResolvedValueOnce({...landing, registrationMode: "paid"});
-    const view = renderInvite();
-    expect((await screen.findByTestId("registration")).textContent).toBe("event-1:v2_link_token:paid");
-    view.unmount();
-    resolveEventInviteLanding.mockResolvedValueOnce({...landing, registrationMode: "closed"});
-    renderInvite();
-    await screen.findByText("Registration is closed for this event.");
-    expect(screen.queryByTestId("registration")).toBeNull();
+  it("encodes the event and the token into the event page's address", async () => {
+    resolveEventInviteLanding.mockResolvedValueOnce({...landing, eventId: "event 2/x"});
+    const redirect = renderInvite(vi.fn(), "/invite/token%2Bwith%20space");
+    await waitFor(() => expect(redirect).toHaveBeenCalledWith("/events/event%202%2Fx/?il=token%2Bwith%20space"));
   });
 
-  it("hands external invitations to the provider-labelled destination", () => {
-    render(
-      <MemoryRouter initialEntries={["/invite/v2_link_token"]}>
-        <Routes>
-          <Route path="/invite/:inviteToken" element={<EventInvitePage
-            initialLanding={{
-              ...landing,
-              destinationKind: "externalBooking",
-              destinationUrl: "https://lu.ma/event?catch_ref=link-1",
-              sourceLabel: "Luma",
-            }} />} />
-        </Routes>
-      </MemoryRouter>
-    );
-    const link = screen.getByRole("link", {name: /Luma/iu});
-    expect(link.getAttribute("href"))
-      .toBe("https://lu.ma/event?catch_ref=link-1");
+  it("hands external and event-mode invitations to the destination the server issued", async () => {
+    resolveEventInviteLanding.mockResolvedValueOnce({...landing, destinationKind: "externalBooking",
+      destinationUrl: "https://lu.ma/event?catch_ref=link-1", sourceLabel: "Luma"});
+    const external = renderInvite();
+    await waitFor(() => expect(external).toHaveBeenCalledWith("https://lu.ma/event?catch_ref=link-1"));
+    cleanup();
+    resolveEventInviteLanding.mockResolvedValueOnce({...landing, destinationKind: "eventRuntime",
+      destinationUrl: `${brand.web.origin}/join/runtime-1?il=v2_link_token`});
+    const runtime = renderInvite();
+    await waitFor(() => expect(runtime).toHaveBeenCalledWith(`${brand.web.origin}/join/runtime-1?il=v2_link_token`));
   });
 
-  it("fails closed for an invalid or expired token", async () => {
+  it("fails closed for an invalid or expired token, or one with nowhere to go", async () => {
     resolveEventInviteLanding.mockRejectedValueOnce(new Error("not found"));
-    renderInvite();
-    expect(await screen.findByText(/invitation.*unavailable/iu)).toBeTruthy();
+    const rejected = renderInvite();
+    expect(await screen.findByRole("heading", {name: "This invitation is unavailable"})).toBeTruthy();
+    expect(screen.getByRole("link", {name: "Open help"}).getAttribute("href")).toBe("/help/");
+    expect(rejected).not.toHaveBeenCalled();
+    cleanup();
+    resolveEventInviteLanding.mockResolvedValueOnce({...landing, destinationKind: "externalBooking", destinationUrl: null});
+    const nowhere = renderInvite();
+    expect(await screen.findByRole("heading", {name: "This invitation is unavailable"})).toBeTruthy();
+    expect(nowhere).not.toHaveBeenCalled();
   });
 });

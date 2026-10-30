@@ -653,6 +653,7 @@ export {validateOrganizerClaimRequestDocument} from "./validators/organizerClaim
 export {validateOrganizerClaimVerificationDocument} from "./validators/organizerClaimVerificationDocument";
 export {validateOrganizerClaimInstagramCodeDocument} from "./validators/organizerClaimInstagramCodeDocument";
 export {validateOrganizerClaimInstagramMessageDocument} from "./validators/organizerClaimInstagramMessageDocument";
+export {validateInstagramAccessTokenDocument} from "./validators/instagramAccessTokenDocument";
 export {validateOrganizerScheduleLockDocument} from "./validators/organizerScheduleLockDocument";
 export {validateClubPostDocument} from "./validators/clubPostDocument";
 export {validateClubMembershipDocument} from "./validators/clubMembershipDocument";
@@ -879,6 +880,8 @@ export {validateStartOrganizerClaimVerificationCallablePayload} from "./validato
 export {validateStartOrganizerClaimVerificationCallableResponse} from "./validators/startOrganizerClaimVerificationOutput";
 export {validateGetOrganizerClaimVerificationOptionsCallablePayload} from "./validators/getOrganizerClaimVerificationOptionsInput";
 export {validateOrganizerClaimVerificationOptionsCallableResponse} from "./validators/organizerClaimVerificationOptionsOutput";
+export {validateConfirmOrganizerClaimVerificationCallablePayload} from "./validators/confirmOrganizerClaimVerificationInput";
+export {validateConfirmOrganizerClaimVerificationCallableResponse} from "./validators/confirmOrganizerClaimVerificationOutput";
 export {validateAdminDecideOrganizerClaimCallablePayload} from "./validators/adminDecideOrganizerClaimInput";
 export {validateCreateClubCallableResponse} from "./validators/createClubOutput";
 export {validateCreateClubPostCallablePayload} from "./validators/createClubPostInput";

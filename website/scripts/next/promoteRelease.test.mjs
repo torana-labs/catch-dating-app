@@ -109,7 +109,6 @@ test("promotion smoke-checks the release with the release's own routes and copy"
   const smokes = workflow.split("\n").filter(line => line.includes("deployedSmoke.mjs") && !line.trim().startsWith("#"));
   assert.deepEqual(smokes.map(line => line.trim()), [
     'node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" "$url" > ../../next-promote/candidate-checks.json',
-    'node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" "$origin" > build/next-promote/live-checks.json',
   ]);
   // The preview checks the commit it runs on, so its checkout is the release.
   const previewWorkflow = fs.readFileSync(new URL("../../../.github/workflows/website-next-preview.yml", import.meta.url), "utf8");
@@ -132,8 +131,8 @@ test("promotion releases the preview's own source and moves the live tag only fo
   assert.match(workflow, /release="\$\(jq -er \.sourceSha build\/next-promote\/authorization\.json\)"/u);
   assert.doesNotMatch(workflow, /CATCH_RELEASE_SHA=\$GITHUB_SHA|source-sha=\$GITHUB_SHA|process\.env\.GITHUB_SHA/u);
   assert.match(workflow, /CATCH_RELEASE_SHA=\$RELEASE_SHA/u);
-  const liveSmoke = workflow.indexOf('deployedSmoke.mjs" "$origin"');
-  assert.ok(liveSmoke > 0 && liveSmoke < workflow.indexOf("promoteRelease.mjs record"),
+  const liveCheck = workflow.indexOf("liveOriginCheck.mjs --release");
+  assert.ok(liveCheck > 0 && liveCheck < workflow.indexOf("promoteRelease.mjs record"),
     "the tag moves only after the live checks pass");
   const live = "c".repeat(40);
   assert.deepEqual(releaseTagUpdate({existing: null, sourceSha, lineage: {sourceSha, liveSha: live}}),

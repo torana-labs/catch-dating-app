@@ -593,6 +593,8 @@ credentials and requires these 503s, each page's unavailable message and an
 answer within five seconds. `website/scripts/next/deployedSmoke.mjs` rejects a
 200 discovery page that shows its unavailable message, and
 `website/scripts/probeProduction.mjs` expects 200 on healthy production pages.
+Cloudflare challenges GitHub's runners, so run that probe by hand from your own
+machine.
 
 There is no server-side cross-request or process cache. Firebase Hosting's CDN
 keeps the rendered HTML of home, Explore, organiser and event pages for up to
@@ -1161,8 +1163,12 @@ pipeline:
   the response status is 404;
 - the deploy job also probes every launch-critical route for HTTP 200,
   route-specific canonical metadata, and required public content markers;
-- `.github/workflows/website-production-observability.yml` repeats those
-  launch-critical probes every 15 minutes and can be dispatched manually;
+- `.github/workflows/website-production-observability.yml` runs
+  `website/scripts/next/liveOriginCheck.mjs` every 15 minutes and can be
+  dispatched manually. Cloudflare challenges GitHub's runners on catchdates.com,
+  so the workflow reads the live release from the Firebase host and only checks
+  that the edge answers
+  ([release operations](release_operations.md#release-and-monitoring-checks-behind-the-edge));
 - deployment uses the checked `prod` Firebase alias plus the repo's existing
   Google Cloud Workload Identity environment variables.
 

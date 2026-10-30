@@ -139,6 +139,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `createOrganizerPost` | `src/organizers/` | Moderated, idempotent organizer follower update with quota, durable delivery operation and bounded immediate fan-out |
 | `requestOrganizerClaim` / `adminDecideOrganizerClaim` | `src/organizers/organizerClaims.ts` | Canonical organizer claim submission and audited admin decision; approval itself is `prepareOrganizerClaimApproval` in `src/organizers/organizerClaimApproval.ts` |
 | `getOrganizerClaimVerificationOptions` / `startOrganizerClaimVerification` | `src/organizers/organizerClaimVerification.ts` | Which proofs a listing offers, and a 30-minute claim code bound to one listing and account; Instagram stays off until `CATCH_INSTAGRAM_CLAIMS_ENABLED` |
+| `confirmOrganizerClaimVerification` | `src/organizers/organizerClaimVerification.ts` | Checks the listing's public Luma calendar for the attempt's `catch-<code>` marker through the guarded page fetcher; a match approves the claim. Hidden while page fetching is off |
 | `instagramClaimWebhook` | `src/organizers/instagramClaimWebhook.ts` | Meta webhook for direct messages to Catch's Instagram account: signed, once per message, rate-limited per sender; a code from the listing's own account approves the claim |
 | `startOrganizerConversation` | `src/clubs/clubHostConversations.ts` | Start or resume a viewer conversation with an organizer |
 | `sendEventBroadcast` | `src/events/` | Host-only, event-scoped Activity and preference-gated push broadcast with an idempotent receipt and organizer Sends projection |
@@ -415,6 +416,7 @@ enter previews.
 | `expireEventRehearsals` | `src/eventRehearsal/` | Hourly deletion of expired rehearsal sessions and isolated child projections |
 | `evaluateDueEventAssistanceWork` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Every minute: bounded recovery of saved roster, source, operational-notice, guest, delivery and checkpoint work; dormant pending operating-budget approval |
 | `recoverSupplyIntakeRequests` | `src/operations/supplyIntake/triggers.ts` | Hourly: picks up queued intake requests whose event was lost and requests whose worker stopped mid-lease |
+| `refreshInstagramAccessToken` | `src/organizers/instagramAccessTokenRefresh.ts` | Daily at 05:30 IST: with 30 days or less left, renews the Instagram Login token `instagramClaimWebhook` uses and records the new `CATCH_INSTAGRAM_ACCESS_TOKEN` version in `instagramAccessTokens`; does nothing where no Instagram account is set |
 
 ### Storage-triggered
 

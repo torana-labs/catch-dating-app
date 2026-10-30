@@ -14,8 +14,17 @@ const _ready = HostFormPaymentConnection(
   webhookVerified: true,
 );
 
+const _needsReconnect = HostFormPaymentConnection(
+  connectionId: 'rpc_demo_stale',
+  status: HostFormPaymentConnectionStatus.ready,
+  mode: HostFormPaymentMode.live,
+  accountId: 'acc_organiser_demo',
+  webhookVerified: true,
+  lastErrorCode: 'refreshRejected',
+);
+
 @widgetbook.UseCase(
-  name: 'Unavailable, connect and ready',
+  name: 'Unavailable, connect, ready and needs reconnect',
   type: HostRazorpayConnectionSection,
   path: '[P1 product surfaces]/Host operations/Sections',
 )
@@ -37,6 +46,13 @@ Widget hostRazorpayConnectionSectionPreview(BuildContext context) =>
             'Connected live account',
             HostFormPaymentSetup(available: true, connections: [_ready]),
           ),
+          (
+            'Needs reconnect',
+            HostFormPaymentSetup(
+              available: true,
+              connections: [_needsReconnect],
+            ),
+          ),
         ])
           WidgetbookPageStateCard(
             label: label,
@@ -44,6 +60,7 @@ Widget hostRazorpayConnectionSectionPreview(BuildContext context) =>
               child: HostRazorpayConnectionSection(
                 state: HostFormPaymentSetupState(setup: setup),
                 onConnect: () {},
+                onReconnect: () {},
                 onRefresh: () {},
                 onDisconnect: (_) {},
               ),

@@ -39,7 +39,7 @@ final class CrossPathsInvitationControllerProvider
 }
 
 String _$crossPathsInvitationControllerHash() =>
-    r'858f1c22baed512f1ab2ebedf0e21b7eb87213fb';
+    r'5acf5f817c598ea489d385cbaf5026ff5b82c42f';
 
 abstract class _$CrossPathsInvitationController
     extends $AsyncNotifier<CrossPathsInvitationReceipt?> {

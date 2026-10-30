@@ -49,6 +49,14 @@ class HostFormPaymentController extends _$HostFormPaymentController {
   }
 
   Future<void> connect() => _run(HostFormPaymentConnectionAction.begin);
+
+  /// Replaces connections that can no longer take payments with a fresh one.
+  /// The stale ones are disconnected first, so the organizer keeps a single
+  /// Razorpay account for events, forms and memberships.
+  Future<void> reconnect() => _run(
+    HostFormPaymentConnectionAction.begin,
+    replacing: state.asData?.value.setup.staleConnectionIds ?? const [],
+  );
   Future<void> disconnect(String connectionId) => _run(
     HostFormPaymentConnectionAction.disconnect,
     connectionId: connectionId,
@@ -57,6 +65,7 @@ class HostFormPaymentController extends _$HostFormPaymentController {
   Future<void> _run(
     HostFormPaymentConnectionAction action, {
     String? connectionId,
+    List<String> replacing = const [],
   }) async {
     final current = state.asData?.value;
     if (current == null ||
@@ -71,6 +80,14 @@ class HostFormPaymentController extends _$HostFormPaymentController {
       HostFormPaymentSetupState(setup: current.setup, pending: true),
     );
     try {
+      for (final staleId in replacing) {
+        await repository.managePaymentConnection(
+          organizerId: organizerId,
+          action: HostFormPaymentConnectionAction.disconnect,
+          connectionId: staleId,
+        );
+        if (!ref.mounted) return;
+      }
       final result = await repository.managePaymentConnection(
         organizerId: organizerId,
         action: action,

@@ -10,6 +10,10 @@ export interface StartOrganizerClaimVerificationCallableResponse {
   organizerId: string;
   method: "instagramMessage" | "lumaDescription";
   code: string;
+  /**
+   * Exactly what the organiser sends or pastes: the code for Instagram, catch-<code> for Luma.
+   */
+  proofText: string;
   proofTarget: string;
   /**
    * Catch's Instagram username without @, for instagramMessage attempts.

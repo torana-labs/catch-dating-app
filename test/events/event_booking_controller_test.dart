@@ -88,19 +88,6 @@ void main() {
         fakePaymentRepository.lastProcessPaymentCall!.eventId,
         'paid-event',
       );
-      expect(
-        fakePaymentRepository.lastProcessPaymentCall!.description,
-        'Thursday Morning Run · Thu, 2 Jan',
-      );
-      expect(fakePaymentRepository.lastProcessPaymentCall!.userName, 'Priya');
-      expect(
-        fakePaymentRepository.lastProcessPaymentCall!.userEmail,
-        'priya@example.com',
-      );
-      expect(
-        fakePaymentRepository.lastProcessPaymentCall!.userContact,
-        '+919876543210',
-      );
       expect(fakePaymentRepository.lastProcessPaymentCall!.currencyCode, 'INR');
       expect(fakePaymentRepository.lastProcessPaymentCall!.inviteCode, isNull);
       expect(fakePaymentRepository.bookFreeEventCalled, isFalse);

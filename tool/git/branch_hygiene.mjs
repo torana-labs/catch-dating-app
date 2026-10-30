@@ -12,10 +12,14 @@ const defaultRepoRoot = path.resolve(
 const isCliEntrypoint =
   process.argv[1] != null &&
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+// GitHub creates and deletes merge-queue refs itself; pruning one would
+// abort the queued group it is testing.
+const githubManagedBranchPrefixes = ["gh-readonly-queue/"];
 
 export function classifyBranchEvidence({
   ageDays,
   ancestorOfBase,
+  baseOfOpenPullRequest = false,
   changedPathsMatchBase,
   mergedPullRequest,
   openPullRequest,
@@ -24,6 +28,9 @@ export function classifyBranchEvidence({
 }) {
   if (openPullRequest) {
     return {category: "active", proof: "open-pull-request"};
+  }
+  if (baseOfOpenPullRequest) {
+    return {category: "active", proof: "base-of-open-pull-request"};
   }
   if (ancestorOfBase) {
     return {category: "integrated", proof: "ancestor-of-base"};
@@ -84,11 +91,15 @@ export function auditBranches({
       0,
       (now.getTime() / 1000 - entry.committerUnix) / 86_400,
     );
+    // Any open PR protects its head, whatever its base, and its base:
+    // deleting a PR's base branch closes the PR.
     const openPullRequest = pullRequests.find(
       (pullRequest) =>
-        pullRequest?.state === "OPEN" &&
-        pullRequest?.headRefName === entry.branch &&
-        pullRequest?.baseRefName === baseBranch,
+        pullRequest?.state === "OPEN" && pullRequest?.headRefName === entry.branch,
+    );
+    const baseOfOpenPullRequest = pullRequests.some(
+      (pullRequest) =>
+        pullRequest?.state === "OPEN" && pullRequest?.baseRefName === entry.branch,
     );
     const mergedPullRequest = pullRequests.find((pullRequest) => {
       const mergeCommit = pullRequest?.mergeCommit?.oid;
@@ -110,6 +121,7 @@ export function auditBranches({
     const classification = classifyBranchEvidence({
       ageDays,
       ancestorOfBase: isAncestor(repo, tipCommit, baseCommit),
+      baseOfOpenPullRequest,
       changedPathsMatchBase,
       mergedPullRequest: mergedPullRequest != null,
       openPullRequest: openPullRequest != null,
@@ -117,7 +129,9 @@ export function auditBranches({
       treeWitness: baseTrees.has(tipTree),
     });
     const safeToPrune =
-      classification.category === "integrated" && ageDays >= pruneAfterDays;
+      classification.category === "integrated" &&
+      ageDays >= pruneAfterDays &&
+      !githubManagedBranchPrefixes.some((prefix) => entry.branch.startsWith(prefix));
 
     return {
       name: entry.branch,
@@ -152,6 +166,33 @@ export function auditBranches({
   };
 }
 
+// Deletes each safe-to-prune remote branch only while the remote still points
+// at the audited tip, so a push made after the audit keeps the branch.
+export function pruneBranches({repo, remote, report}) {
+  return report.branches
+    .filter((branch) => branch.safeToPrune)
+    .map((branch) => {
+      const ref = `refs/heads/${branch.name}`;
+      const args = [
+        "push",
+        "--porcelain",
+        `--force-with-lease=${ref}:${branch.tipCommit}`,
+        remote,
+        `:${ref}`,
+      ];
+      const result = spawnSync("git", args, {cwd: repo, encoding: "utf8"});
+      return {
+        name: branch.name,
+        tipCommit: branch.tipCommit,
+        proof: branch.proof,
+        deleted: result.status === 0,
+        detail: result.status === 0
+          ? null
+          : (result.stderr || result.stdout || "git push failed").trim(),
+      };
+    });
+}
+
 function runCli() {
   try {
     const {values} = parseArgs({
@@ -166,6 +207,7 @@ function runCli() {
         "stale-days": {type: "string", default: "7"},
         "prune-after-days": {type: "string", default: "1"},
         "fail-on-abandoned": {type: "boolean", default: false},
+        prune: {type: "boolean", default: false},
         local: {type: "boolean", default: false},
         json: {type: "boolean", default: false, short: "j"},
         help: {type: "boolean", default: false, short: "h"},
@@ -180,6 +222,12 @@ function runCli() {
       values["prune-after-days"],
       "--prune-after-days",
     );
+    if (values.prune && values.local) {
+      throw new Error("--prune deletes remote branches and cannot be combined with --local.");
+    }
+    if (values.prune && !values["pull-requests"]) {
+      throw new Error("--prune requires --pull-requests so open-PR branches stay protected.");
+    }
     const pullRequests = values["pull-requests"]
       ? readPullRequests(values["pull-requests"])
       : [];
@@ -192,9 +240,19 @@ function runCli() {
       pruneAfterDays,
       pullRequests,
     });
+    if (values.prune) {
+      report.pruned = pruneBranches({
+        repo: path.resolve(values.repo),
+        remote: values.remote,
+        report,
+      });
+    }
     if (values.json) console.log(JSON.stringify(report, null, 2));
     else printHumanReport(report);
     if (values["fail-on-abandoned"] && report.summary.abandoned > 0) {
+      process.exitCode = 1;
+    }
+    if (report.pruned?.some((entry) => !entry.deleted)) {
       process.exitCode = 1;
     }
   } catch (error) {
@@ -351,15 +409,23 @@ function printHumanReport(report) {
         `${branch.aheadOfBase} ahead\t${branch.proof}`,
     );
   }
+  for (const entry of report.pruned ?? []) {
+    console.log(
+      `${entry.deleted ? "pruned" : "prune-failed"}\t${entry.name}\t${entry.proof}` +
+        (entry.detail ? `\t${entry.detail}` : ""),
+    );
+  }
 }
 
 function printHelp() {
   console.log(`Usage: node tool/git/branch_hygiene.mjs [options]
 
-Audits remote branches without mutating refs. A branch is safe to prune only
-when its tip is an ancestor of the base, its exact tree exists in base history,
-an exact-tip pull request was merged into the base, or every path changed by
-the branch has the same final Git identity in the base.
+Audits remote branches without mutating refs unless --prune is given. A branch
+is safe to prune only when its tip is an ancestor of the base, its exact tree
+exists in base history, an exact-tip pull request was merged into the base, or
+every path changed by the branch has the same final Git identity in the base.
+Heads and bases of open pull requests and GitHub merge-queue refs are never
+safe to prune.
 
 Options:
   --base <ref>                Base ref (default: origin/main)
@@ -370,6 +436,9 @@ Options:
   --stale-days <days>         Review window before abandonment (default: 7)
   --prune-after-days <days>   Minimum age for safe-to-prune output (default: 1)
   --fail-on-abandoned         Exit 1 when abandoned branches exist
+  --prune                     Delete safe-to-prune remote branches, each only
+                              while the remote still points at the audited tip
+                              (requires --pull-requests; exit 1 if one fails)
   --json, -j                  Print the stable JSON report
   --help, -h                  Show this help`);
 }

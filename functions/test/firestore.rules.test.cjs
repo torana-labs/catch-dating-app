@@ -1250,6 +1250,10 @@ describe("firestore.rules", () => {
         messageKey: "message-1",
         outcome: "verified",
       });
+      await seed(["instagramAccessTokens", "17841400000000001"], {
+        accountId: "17841400000000001",
+        secretVersion: null,
+      });
 
       const own = doc(authedDb("owner-1"), "organizerClaimVerifications",
         "attempt-1");
@@ -1262,7 +1266,8 @@ describe("firestore.rules", () => {
       await assertFails(getDocs(collection(authedDb("owner-1"),
         "organizerClaimVerifications")));
       for (const [name, id] of [["organizerClaimInstagramCodes", "482173"],
-        ["organizerClaimInstagramMessages", "message-1"]]) {
+        ["organizerClaimInstagramMessages", "message-1"],
+        ["instagramAccessTokens", "17841400000000001"]]) {
         await assertFails(getDoc(doc(authedDb("owner-1"), name, id)));
         await assertFails(setDoc(doc(authedDb("owner-1"), name, id), {}));
       }

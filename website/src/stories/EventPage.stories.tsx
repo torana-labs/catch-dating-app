@@ -1,9 +1,11 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {CatchBand, CatchGrid, CatchSplit} from "@catch/web-ui";
 import {expect, userEvent, waitFor, within} from "storybook/test";
+import {publicCheckoutCopy} from "../content/events";
 import {EventBooking} from "../features/events/EventBooking";
 import {buildEventPageView, type EventPageData} from "../features/events/eventPageModel";
 import {GuestEventEntryView} from "../features/events/GuestEventEntry";
+import {EventBookingFrame} from "../shared/site/EventBookingFrame";
 import {EventBookingCard, EventPageHeader, EventPageMain} from "../features/events/sections/EventPageSections";
 import {
   bareEventPage,
@@ -156,5 +158,26 @@ export const PhoneSheet: Story = {
     await expect(within(sheet).getByRole("button", {name: "Book now"})).toBeVisible();
     await userEvent.click(within(sheet).getByRole("button", {name: "Close"}));
     await waitFor(() => expect(sheet).not.toBeVisible());
+  },
+};
+
+/**
+ * A booking with no event page around it: a payment receipt, an offer, an
+ * invitation on its way, or an event whose public page is gone. The same
+ * booking card, beside a heading that says what it is for.
+ */
+export const PrivateBookingPage: Story = {
+  name: "Private booking page",
+  parameters: {catchComponent: {id: "event_booking_frame", routeIds: ["event_booking", "event_offer", "event_invite"],
+    states: ["booking-steps"]}},
+  render: () => (
+    <EventBookingFrame body={publicCheckoutCopy.bookingBody} title={publicCheckoutCopy.bookingTitle}>
+      <GuestEventEntryView controller={signedOut} eventId="story" />
+    </EventBookingFrame>
+  ),
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("heading", {level: 1, name: publicCheckoutCopy.bookingTitle})).toBeVisible();
+    await expect(canvas.getByLabelText("Mobile number")).toBeVisible();
   },
 };

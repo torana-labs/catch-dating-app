@@ -840,10 +840,6 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
   Future<PaymentConfirmationData> processPayment({
     required String eventId,
     required String currencyCode,
-    required String description,
-    required String userName,
-    required String userEmail,
-    required String userContact,
     String? inviteCode,
     String? inviteLinkId,
     String? crossPathsPairHoldId,
@@ -858,10 +854,6 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
     lastProcessPaymentCall = ProcessPaymentCall(
       eventId: eventId,
       currencyCode: currencyCode,
-      description: description,
-      userName: userName,
-      userEmail: userEmail,
-      userContact: userContact,
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
       crossPathsPairHoldId: crossPathsPairHoldId,
@@ -884,10 +876,6 @@ class ProcessPaymentCall {
   const ProcessPaymentCall({
     required this.eventId,
     required this.currencyCode,
-    required this.description,
-    required this.userName,
-    required this.userEmail,
-    required this.userContact,
     this.inviteCode,
     this.inviteLinkId,
     this.crossPathsPairHoldId,
@@ -895,10 +883,6 @@ class ProcessPaymentCall {
 
   final String eventId;
   final String currencyCode;
-  final String description;
-  final String userName;
-  final String userEmail;
-  final String userContact;
   final String? inviteCode;
   final String? inviteLinkId;
   final String? crossPathsPairHoldId;

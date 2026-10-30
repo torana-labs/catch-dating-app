@@ -134,8 +134,11 @@ jobs:
           firebase hosting:clone "catch-dating-app-64e51@$version" catch-dating-app-64e51:live \
             --project catch-dating-app-64e51 --non-interactive --json > build/next-promote/promotion.json
           EXPECTED_HOSTING_VERSION="$version" node website/scripts/next/hostingState.mjs verify-next
-          origin="$(node -p 'require("./packages/brand/brand.json").web.origin')"
-          node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" "$origin" > build/next-promote/live-checks.json
+          # The pages passed on the next-release channel with this exact Hosting
+          # version. Cloudflare challenges runners on the public domain (#1272),
+          # so main's live check reads the release from the Firebase host and
+          # only checks that the edge answers.
+          node website/scripts/next/liveOriginCheck.mjs --release "$RELEASE_SHA" --attempts 18 > build/next-promote/live-checks.json
       - name: Record the released commit
         run: node website/scripts/next/promoteRelease.mjs record
       - name: Retain exact release and rollback identities

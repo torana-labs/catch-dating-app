@@ -1,5 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {CatchField} from "@catch/web-ui";
+import {CatchField, CatchGap} from "@catch/web-ui";
 import {consumerHomeStoryListings} from "./fixtures/consumerHome";
 import {publicEventListingsContext} from "../features/organizers/usePublicEventListingsController";
 import {MemoryRouter} from "react-router";
@@ -26,13 +26,13 @@ import type {EventPageData} from "../features/events/eventPageModel";
 import {eventRuntimeCopy} from "../content/eventRuntime";
 import {
   Button,
-  EventRuntimeForm,
   EventRuntimeFrame,
   EventRuntimeKicker,
   EventRuntimeLive,
   EventRuntimeLiveHeader,
   EventRuntimePanel,
   EventRuntimeStageMarquee,
+  Form,
 } from "../shared/ui/primitives";
 import {
   deriveEventRuntimeMarqueeParticles,
@@ -118,7 +118,7 @@ export const EventRuntime: Story = {
           kicker={eventRuntimeCopy.phoneKicker}
           title={eventRuntimeCopy.phoneTitle}
         >
-          <EventRuntimeForm onSubmit={(event) => event.preventDefault()}>
+          <Form onSubmit={(event) => event.preventDefault()}><CatchGap size="formField">
             <CatchField
               recipe="input"
               id="storybook-event-runtime-phone"
@@ -127,7 +127,7 @@ export const EventRuntime: Story = {
               keyboardType="phone"
             />
             <Button type="submit">{eventRuntimeCopy.sendCode}</Button>
-          </EventRuntimeForm>
+          </CatchGap></Form>
         </EventRuntimePanel>
       </EventRuntimeFrame>
     </PageShell>
@@ -192,30 +192,22 @@ export const EventInvite: Story = {
     catchRoute: {
       id: "event_invite",
       pathPattern: "/invite/:inviteToken/",
-      reviewStates: ["loading", "resolved-external", "resolved-runtime", "unavailable"],
+      reviewStates: ["opening", "redirect-event", "redirect-external", "unavailable"],
       stateCoverage: {
-        storybook: ["resolved-external"],
-        manual: ["loading", "resolved-runtime", "unavailable"],
+        storybook: ["opening"],
+        manual: ["redirect-event", "redirect-external", "unavailable"],
       },
     },
     catchComponent: {
       id: "route_event_invite",
       routeIds: ["event_invite"],
-      states: ["resolved-external"],
+      states: ["opening"],
     },
   },
   render: () => (
     <MemoryRouter initialEntries={["/invite/v2_story_abcdefghijklmnopqrstuvwxyz12345678901234567/"]}>
-      <EventInvitePage initialLanding={{
-        destinationKind: "externalBooking",
-        destinationUrl: `https://luma.com/${demoEventName.toLowerCase().replaceAll(" ", "-")}?catch_ref=story`,
-        endTimeMillis: eventTimesMillis(demoEventId).endMillis,
-        eventId: demoEventId,
-        locationName: venueLabel(demoEventId),
-        sourceLabel: "Luma",
-        startTimeMillis: eventTimesMillis(demoEventId).startMillis,
-        title: demoEventName,
-      }} />
+      {/* The invitation is still resolving: the page then goes on to the event or its destination. */}
+      <EventInvitePage redirect={() => undefined} resolve={() => new Promise(() => undefined)} />
     </MemoryRouter>
   ),
 };

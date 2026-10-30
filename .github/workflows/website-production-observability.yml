@@ -21,14 +21,15 @@ jobs:
       - uses: actions/checkout@v6
         with:
           sparse-checkout: |
-            website/scripts/probeProduction.mjs
+            website/scripts/next/liveOriginCheck.mjs
             packages/brand/brand.json
           sparse-checkout-cone-mode: false
           persist-credentials: false
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-      - name: Check status, canonical metadata, and launch content
-        run: |
-          origin="$(node -p 'require("./packages/brand/brand.json").web.origin')"
-          node website/scripts/probeProduction.mjs --base-url "$origin" --json
+      # Cloudflare challenges GitHub-hosted runners on every public path
+      # (#1272), so the probe reads the live release from the Firebase host,
+      # checks that host still redirects pages, and checks the edge answers.
+      - name: Check the live release, the Firebase redirect and the edge
+        run: node website/scripts/next/liveOriginCheck.mjs

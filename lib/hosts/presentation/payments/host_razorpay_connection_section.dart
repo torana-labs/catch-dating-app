@@ -11,11 +11,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Organizer payout setup: the organizer connects their own Razorpay account,
-/// so guest payments for events and forms settle there, never with Catch.
+/// so guest payments for events, forms and memberships settle there, never
+/// with Catch. One connection serves all three.
 class HostRazorpayConnectionCard extends ConsumerWidget {
-  const HostRazorpayConnectionCard({super.key, required this.organizerId});
+  const HostRazorpayConnectionCard({
+    super.key,
+    required this.organizerId,
+    this.routeAccountSetup,
+  });
 
   final String organizerId;
+
+  /// Catch-collected Route payout setup. Shown only when the payment routing
+  /// policy explicitly selects `razorpayRoute`; never offered otherwise.
+  final WidgetBuilder? routeAccountSetup;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,12 +34,24 @@ class HostRazorpayConnectionCard extends ConsumerWidget {
       onRetry: () => ref.invalidate(provider),
       errorContext: AppErrorContext.payments,
       initialLoadTimeout: null,
-      builder: (context, state) => HostRazorpayConnectionSection(
-        state: state,
-        onConnect: () => ref.read(provider.notifier).connect(),
-        onRefresh: () => ref.read(provider.notifier).refresh(),
-        onDisconnect: (id) => ref.read(provider.notifier).disconnect(id),
-      ),
+      builder: (context, state) {
+        final section = HostRazorpayConnectionSection(
+          state: state,
+          onConnect: () => ref.read(provider.notifier).connect(),
+          onReconnect: () => ref.read(provider.notifier).reconnect(),
+          onRefresh: () => ref.read(provider.notifier).refresh(),
+          onDisconnect: (id) => ref.read(provider.notifier).disconnect(id),
+        );
+        final routeSetup = routeAccountSetup;
+        if (routeSetup == null ||
+            state.setup.collection?.throughCatch != true) {
+          return section;
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [section, routeSetup(context)],
+        );
+      },
     );
   }
 }
@@ -40,12 +61,14 @@ class HostRazorpayConnectionSection extends StatelessWidget {
     super.key,
     required this.state,
     required this.onConnect,
+    required this.onReconnect,
     required this.onRefresh,
     required this.onDisconnect,
   });
 
   final HostFormPaymentSetupState state;
   final VoidCallback onConnect;
+  final VoidCallback onReconnect;
   final VoidCallback onRefresh;
   final ValueChanged<String> onDisconnect;
 
@@ -53,18 +76,18 @@ class HostRazorpayConnectionSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final setup = state.setup;
-    final connections = setup.connections
-        .where(
-          (connection) =>
-              connection.status != HostFormPaymentConnectionStatus.disconnected,
-        )
-        .toList();
-    final ready = connections.any((connection) => connection.ready);
+    final connections = setup.liveConnections;
+    final connection = setup.razorpayConnectionState;
+    final ready = connection == HostRazorpayConnectionState.ready;
+    final needsReconnect =
+        connection == HostRazorpayConnectionState.needsReconnect;
     return CatchSection.fieldRows(
       title: l10n.hostsHostPaymentAccountCardTitlePayouts,
       trailing: CatchBadge.functional(
         label: ready
             ? l10n.hostsHostPaymentAccountCardVisiblecopyReady
+            : needsReconnect
+            ? l10n.hostPayoutsRazorpayNeedsReconnect
             : l10n.hostsHostPaymentAccountCardVisiblecopyNotSetUp,
         tone: ready ? CatchBadgeTone.success : CatchBadgeTone.warning,
       ),
@@ -89,7 +112,7 @@ class HostRazorpayConnectionSection extends StatelessWidget {
               copy: catchFieldCopy(l10n),
               title: connection.accountId ?? l10n.hostFormPaymentConnect,
               body:
-                  '${_statusLabel(l10n, connection.status)} · '
+                  '${hostRazorpayConnectionStatusLabel(l10n, connection)} · '
                   '${connection.mode == HostFormPaymentMode.test ? l10n.hostFormPaymentTest : l10n.hostFormPaymentLive}',
               bodyMaxLines: 4,
             ),
@@ -101,6 +124,22 @@ class HostRazorpayConnectionSection extends StatelessWidget {
                   : () => _confirmDisconnect(context, connection.connectionId),
             ),
           ],
+          // A connection that cannot take payments is replaced, not added to:
+          // event checkout needs exactly one connected merchant.
+          if (connections.isNotEmpty && !ready)
+            CatchField.action(
+              copy: catchFieldCopy(l10n),
+              title: l10n.hostPayoutsRazorpayReconnectTitle,
+              body: needsReconnect
+                  ? l10n.hostPayoutsRazorpayReconnectBody
+                  : l10n.hostPayoutsRazorpayConnectingBody,
+              bodyMaxLines: 12,
+              icon: CatchIcons.openExternal,
+              status: state.pending
+                  ? CatchFieldStatus.saving
+                  : CatchFieldStatus.idle,
+              onTap: state.pending ? null : onReconnect,
+            ),
           // Event checkout needs exactly one connected merchant, so a second
           // connection is only offered after the current one is disconnected.
           if (connections.isEmpty) ...[
@@ -172,12 +211,16 @@ class HostRazorpayConnectionSection extends StatelessWidget {
   }
 }
 
-String _statusLabel(
+/// A `ready` status with a refresh or setup error still needs reconnecting.
+String hostRazorpayConnectionStatusLabel(
   AppLocalizations l10n,
-  HostFormPaymentConnectionStatus status,
-) => switch (status) {
+  HostFormPaymentConnection connection,
+) => switch (connection.status) {
   HostFormPaymentConnectionStatus.connecting => l10n.hostFormPaymentConnecting,
-  HostFormPaymentConnectionStatus.ready => l10n.hostFormPaymentReady,
+  HostFormPaymentConnectionStatus.ready =>
+    connection.ready
+        ? l10n.hostFormPaymentReady
+        : l10n.hostFormPaymentAttention,
   HostFormPaymentConnectionStatus.needsAttention =>
     l10n.hostFormPaymentAttention,
   HostFormPaymentConnectionStatus.disconnected =>

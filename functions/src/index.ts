@@ -405,10 +405,13 @@ export {
   requestOrganizerClaim,
 } from "./organizers/organizerClaims";
 export {
+  confirmOrganizerClaimVerification,
   getOrganizerClaimVerificationOptions,
   startOrganizerClaimVerification,
 } from "./organizers/organizerClaimVerification";
 export {instagramClaimWebhook} from "./organizers/instagramClaimWebhook";
+export {refreshInstagramAccessToken} from
+  "./organizers/instagramAccessTokenRefresh";
 export {onSwipeCreated} from "./matching/onSwipeCreated";
 export {fetchSwipeCandidates} from "./matching/fetchSwipeCandidates";
 export {onMatchCreated} from "./matching/onMatchCreated";

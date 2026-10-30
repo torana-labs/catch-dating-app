@@ -194226,6 +194226,151 @@ export const organizerClaimInstagramMessageDocumentSchema = {
   }
 };
 
+export const instagramAccessTokenDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/instagram_access_tokens.schema.json",
+  "title": "InstagramAccessTokenDocument",
+  "description": "Server-only pointer to the renewed Instagram Login access token for Catch's Instagram account, stored at instagramAccessTokens/{accountId}. The token itself stays in Secret Manager: secretVersion names the exact CATCH_INSTAGRAM_ACCESS_TOKEN version that holds it. refreshInstagramAccessToken writes it; instagramClaimWebhook reads that version while it is unexpired and otherwise uses the version pinned at deploy.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "instagramAccessTokens",
+  "x-firestore-path": "instagramAccessTokens/{accountId}",
+  "x-document-id-field": "accountId",
+  "x-owner": "refreshInstagramAccessToken",
+  "required": [
+    "accountId",
+    "secretVersion",
+    "expiresAt",
+    "refreshedAt",
+    "lastAttemptAt",
+    "lastErrorCode",
+    "revision"
+  ],
+  "properties": {
+    "accountId": {
+      "description": "Catch's Instagram professional account id, the webhook's entry.id.",
+      "type": "string",
+      "pattern": "^[0-9]{1,32}$",
+      "x-catch-ownership": "server-only"
+    },
+    "secretVersion": {
+      "description": "Exact Secret Manager version holding the renewed token, or null when no renewed token is usable.",
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^projects/[a-z0-9-]+/secrets/CATCH_INSTAGRAM_ACCESS_TOKEN/versions/[1-9][0-9]*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "description": "When Meta said the renewed token expires.",
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "refreshedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "lastAttemptAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "lastErrorCode": {
+      "description": "Why the last renewal failed, or null after a success.",
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "refreshRejected",
+            "refreshFailed",
+            "accountMismatch",
+            "secretWriteFailed"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const organizerScheduleLockDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_schedule_locks.schema.json",
@@ -265090,6 +265235,7 @@ export const startOrganizerClaimVerificationCallableResponseSchema = {
     "organizerId",
     "method",
     "code",
+    "proofText",
     "proofTarget",
     "catchInstagramHandle",
     "expiresAt"
@@ -265115,6 +265261,11 @@ export const startOrganizerClaimVerificationCallableResponseSchema = {
     "code": {
       "type": "string",
       "pattern": "^[0-9]{6}$"
+    },
+    "proofText": {
+      "description": "Exactly what the organiser sends or pastes: the code for Instagram, catch-<code> for Luma.",
+      "type": "string",
+      "pattern": "^(catch-)?[0-9]{6}$"
     },
     "proofTarget": {
       "type": "string",
@@ -265228,6 +265379,83 @@ export const organizerClaimVerificationOptionsCallableResponseSchema = {
         "null"
       ],
       "maxLength": 30
+    }
+  }
+};
+
+export const confirmOrganizerClaimVerificationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/confirm_organizer_claim_verification_payload.schema.json",
+  "title": "ConfirmOrganizerClaimVerificationCallablePayload",
+  "description": "Callable payload accepted by confirmOrganizerClaimVerification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "attemptId"
+  ],
+  "properties": {
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const confirmOrganizerClaimVerificationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/confirm_organizer_claim_verification_response.schema.json",
+  "title": "ConfirmOrganizerClaimVerificationCallableResponse",
+  "description": "Callable response returned by confirmOrganizerClaimVerification after it reads the listing's Luma calendar for the attempt's code.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "attemptId",
+    "status",
+    "claimRequestId",
+    "lastRejection"
+  ],
+  "properties": {
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "description": "claimUnavailable: the page was claimed or closed meanwhile, so staff review is the way forward.",
+      "type": "string",
+      "enum": [
+        "awaitingProof",
+        "verified",
+        "expired",
+        "claimUnavailable"
+      ]
+    },
+    "claimRequestId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastRejection": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "codeNotFound",
+            "pageUnavailable"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 };

@@ -11,7 +11,13 @@ class HostOrganizerPaymentsScreen extends StatelessWidget {
       clubId: clubId,
       title: context.l10n.hostsHostOrganizerEditTabLabelPayments,
       builder: (context, organizer, _, isOwner) => isOwner
-          ? HostRazorpayConnectionCard(organizerId: organizer.id)
+          ? HostRazorpayConnectionCard(
+              organizerId: organizer.id,
+              // Route's Catch-collected payout form appears only when the
+              // routing policy explicitly selects razorpayRoute.
+              routeAccountSetup: (_) =>
+                  HostPaymentAccountControllerCard(organizer: organizer),
+            )
           : CatchSection.fieldRows(
               first: true,
               child: CatchField.read(

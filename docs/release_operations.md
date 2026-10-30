@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.0.3
+version: 3.1.1
 updated: 2026-10-31
 owner: recursive_audit_loop
 status: active
@@ -929,6 +929,20 @@ The production Firebase hosts (`catch-dating-app-64e51.web.app` and `.firebaseap
 
 **Rollback:** set the two records back to DNS-only in the dashboard (or `PATCH` `proxied: false`). The site then serves directly from Firebase Hosting again. The Bot Fight Mode and rule settings can stay; they only act on proxied traffic.
 
+### Release and monitoring checks behind the edge
+
+Bot Fight Mode answers GitHub-hosted runners with 403 on every catchdates.com path. Runners run on data-centre addresses, and on the free plan no WAF rule can let a request past Bot Fight Mode ([#1272](https://github.com/torana-labs/catch-dating-app/issues/1272)). Real visitors are not affected. So the automated checks don't read pages through the public domain. `website/scripts/next/liveOriginCheck.mjs` checks each leg of a visitor's path on its own:
+
+- **Origin:** `https://catch-dating-app-64e51.web.app/api/public-catalog` must answer 200, uncached, with the expected `x-catch-release`. That host skips its canonical redirect only for `/api/` and `/__/`, so this reads what live Hosting serves without passing through Cloudflare.
+- **Redirect:** every page on the Firebase host must still answer 301 to catchdates.com, so the host never becomes a way round Cloudflare.
+- **Edge:** catchdates.com must answer through Cloudflare (`server: cloudflare` and a `cf-ray`). A 200 must carry the same release; a Cloudflare 403 counts as "edge up".
+
+`Next Website Promotion` runs this check after cloning to live, with up to 18 attempts for the new release to reach the origin. It runs main's copy of the script, not the release's. The pages themselves are proven before that, on the `next-release` channel with the same Hosting version. `Website Production Observability` runs the same check every 15 minutes, accepting any release.
+
+These checks don't prove that a visitor at catchdates.com sees correct page content. Cloudflare passes HTML through uncached (`cf-cache-status: DYNAMIC`), so the origin and the edge serve the same pages, but nothing automated checks that end to end. To check it by hand, from a machine Cloudflare lets through, run `node website/scripts/probeProduction.mjs --json`.
+
+**Long-term fix: Cloudflare Pro.** Pro's Super Bot Fight Mode, unlike the free Bot Fight Mode, can be skipped by a WAF custom rule. A rule that skips it for requests carrying a secret probe header, with the secret held in GitHub, would let promotion and monitoring check the real public pages again while the bot protection stays on for everyone else.
+
 ## Custom form domain onboarding
 
 The trusted operator command is `node tool/firebase/form_domain_operator.mjs`.
@@ -1442,8 +1456,8 @@ keep their existing versions so readiness passes; those values are unused.
 
 - `CATCH_INSTAGRAM_ACCESS_TOKEN`: in the Meta app, Instagram, API setup with
   Instagram login, Generate access tokens, Generate token on the @catch_dates
-  row. It is long-lived and lasts 60 days; a deploy is needed to pick up a new
-  version.
+  row. It is long-lived and lasts 60 days; `refreshInstagramAccessToken` renews
+  it without a deploy (Instagram access token renewal, below).
 - `CATCH_INSTAGRAM_APP_SECRET`: on the same page, Set up Instagram business
   login, Business login settings, Instagram app secret.
 - `CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: `openssl rand -hex 32`.
@@ -1473,6 +1487,83 @@ page.
 
 With the method switched off, the webhook still answers the handshake and
 acknowledges signed deliveries.
+
+#### Instagram access token renewal
+
+A token from Generate token lasts 60 days. Meta's
+[refresh endpoint](https://developers.facebook.com/docs/instagram-platform/reference/refresh_access_token)
+extends a valid token that is at least 24 hours old. A token nobody refreshes
+expires for good, and the webhook can no longer read usernames or reply.
+
+`refreshInstagramAccessToken` renews it. It runs daily at 05:30 IST:
+
+1. It reads `instagramAccessTokens/<account id>`. With more than 30 days
+   left it stops.
+2. It refreshes the recorded token, or the version pinned at deploy when
+   there is no record or Meta rejects the recorded one.
+3. It checks with `/me?fields=user_id` that the new token still acts for
+   `CATCH_INSTAGRAM_ACCOUNT_ID`.
+4. It adds the token as a new version of `CATCH_INSTAGRAM_ACCESS_TOKEN` and
+   records that exact version and its expiry. The token never enters
+   Firestore or logs.
+
+The webhook reads the recorded version, cached for five minutes, while it has
+more than an hour left. Otherwise it uses the version pinned at deploy, so no
+redeploy is needed after a renewal. The next deploy pins the newest version
+anyway.
+
+A failed run records `lastErrorCode` and tries again the next day, so a
+renewal has 30 daily attempts before the token lapses. Once two weeks or less
+remain, a failure logs the error `Instagram access token renewal failed`.
+Codes:
+
+- `refreshFailed`: Meta or the network failed. It retries.
+- `refreshRejected`: Meta says the token is invalid or expired. If the
+  recorded token was rejected, the record is cleared and the webhook falls
+  back to the pinned version. Replace the token by hand (below).
+- `accountMismatch`: the token acts for another account. Replace it by hand
+  with a token generated on the @catch_dates row.
+- `secretWriteFailed`: the runtime service account cannot add secret
+  versions. Grant Secret Version Adder (below).
+
+Dev and staging set no account id, so the function does nothing there.
+
+Permissions. The function runs as the default Functions runtime account. It
+needs `secretmanager.versions.add` on `CATCH_INSTAGRAM_ACCESS_TOKEN`. In prod
+that account has project Editor today, which includes it. So that renewal
+does not depend on Editor, grant the narrow role once:
+
+1. Open
+   [CATCH_INSTAGRAM_ACCESS_TOKEN in prod Secret Manager](https://console.cloud.google.com/security/secret-manager/secret/CATCH_INSTAGRAM_ACCESS_TOKEN/versions?project=catch-dating-app-64e51).
+2. Open the Permissions tab and click Grant access.
+3. New principals: `574779808785-compute@developer.gserviceaccount.com`.
+4. Role: Secret Manager Secret Version Adder. Save.
+
+Readiness checks this secret's accessor grant before deploys. It does not
+check the adder grant, and it does not flag it.
+
+Check a renewal:
+
+1. The first run needs a token at least 24 hours old. After the prod deploy
+   that adds the function, open
+   [Cloud Scheduler](https://console.cloud.google.com/cloudscheduler?project=catch-dating-app-64e51),
+   find `firebase-schedule-refreshInstagramAccessToken-asia-south1` and click
+   Force run.
+2. Open
+   [the record](https://console.firebase.google.com/project/catch-dating-app-64e51/firestore/databases/-default-/data/~2FinstagramAccessTokens~2F17841476918450741).
+   `expiresAt` should be about 60 days away and `lastErrorCode` null.
+3. If not, read
+   [the function's logs](https://console.cloud.google.com/run/detail/asia-south1/refreshinstagramaccesstoken/logs?project=catch-dating-app-64e51)
+   and the record's `lastErrorCode`.
+
+Replace the token by hand only after `refreshRejected` or `accountMismatch`,
+or after a password change on @catch_dates:
+
+1. Generate a token on the @catch_dates row, as when the webhook was set up.
+2. Add it as a new version of `CATCH_INSTAGRAM_ACCESS_TOKEN` in prod.
+3. Approve a prod `Deploy backend` run, which pins the new version.
+4. Wait a day, then Force run the job. It refreshes the pinned token and
+   records it.
 
 ### Protected Catch WhatsApp operator CLI
 
@@ -1821,8 +1912,10 @@ decides; it changes production traffic. Run it from a shell signed in to
 2. Clone it to live:
    `firebase hosting:clone catch-dating-app-64e51@<version> catch-dating-app-64e51:live --project catch-dating-app-64e51`.
 3. Verify: `curl -sI https://catchdates.com/` has no `x-catch-release` header,
-   the page source has no `/_next/static/`, and a manual run of `Website
-   Production Observability` passes.
+   the page source has no `/_next/static/`, and
+   `node website/scripts/probeProduction.mjs --json` passes when run from your
+   own machine. `Website Production Observability` fails while the site is
+   rolled back, because the static site carries no release header.
 4. Hold the train. Add a required reviewer to the `prod` environment and
    reject `Website Release` approvals while rolled back, because a promotion
    moves live back to Next.
@@ -2102,15 +2195,22 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   them with the intended `RAZORPAY_PUBLIC_KEY_ID` parameter and
   `RAZORPAY_KEY_SECRET` secret per
   Firebase project.
-- [ ] Verify `createRazorpayOrder` returns the public `keyId` from the same
-  Firebase project configuration that created the order. Mobile builds do
-  not read a local Razorpay `.env` value or embed a generated key. The
-  `RAZORPAY_KEY_SECRET` remains server-only and must never enter a client
-  contract or artifact.
-- [ ] Enable Razorpay Route for each target account before exposing India host
-  payout setup, and verify linked-account, stakeholder, Route product, bank
-  settlement, and activation-status APIs with that environment's credentials.
-  A deployed callable and enabled secrets do not prove Route account approval.
+- [ ] Verify paid INR bookings, on the website and in the Consumer app, go
+  through `managePublicEventCheckout` on the organizer's own connected
+  Razorpay account when `eventAdmission` is `razorpayOAuth`. The checkout key
+  is that connection's OAuth public token, never a Catch key. The Consumer app
+  no longer calls `createRazorpayOrder`, which refuses new orders and keeps
+  only existing-order verification and refunds. `RAZORPAY_KEY_SECRET` remains
+  server-only and must never enter a client contract or artifact.
+- [ ] Verify an organizer with no ready connection sees paid booking refused
+  with the organizer-payments-not-ready message, and that Host Payouts shows
+  Reconnect for a connection that cannot take payments.
+- [ ] Only where a routing policy selects `razorpayRoute`: enable Razorpay Route
+  for each target account and verify linked-account, stakeholder, Route
+  product, bank settlement, and activation-status APIs with that
+  environment's credentials. Host Payouts shows the Route payout form only
+  then. A deployed callable and enabled secrets do not prove Route account
+  approval.
 - [ ] Smoke test India host setup with an organizer owner: verify Razorpay is
   recommended while Stripe remains available, KYC and bank fields are absent
   from Firestore, a failed retry continues the same linked account/product, and

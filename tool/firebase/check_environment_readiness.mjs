@@ -1038,7 +1038,7 @@ function classifyFirstDeploySecretVersion({base, consumer, phase, projectId, pro
 }
 
 function assessSecretBindings({requirement, targets, projectId, projectNumber,
-  functionsResult, candidate, phase, runCommand}) {
+  functionsResult, candidate, phase, runCommand, firstDeployIdentity}) {
   const failure = classifyCommandFailure(functionsResult);
   const functions = parseJsonOutput(functionsResult.stdout);
   const consumers = (requirement.requiredWhen.anyDeployTarget ?? [])
@@ -1070,14 +1070,21 @@ function assessSecretBindings({requirement, targets, projectId, projectNumber,
     }
     // A required SecretParam has no live binding before its first deploy
     // either. The deploy binds the secret's latest version, so that version
-    // must exist and be enabled; the post-deploy check still requires the
-    // Function.
+    // must exist and be enabled, and the runtime account the source names
+    // must already hold its role: the deployer cannot grant it. The
+    // post-deploy check still requires the Function.
     if (phase === "deployed" && !candidate && observed.reason === "function-binding-missing" &&
         requirement.kind === "secret-version") {
       results.push(classifyFirstDeploySecretVersion({base, consumer, phase, projectId, projectNumber,
         result: executeMetadataCommand(metadataOnlyCommand(["secrets", "versions", "describe", "latest",
           `--secret=${requirement.name}`, `--project=${projectId}`, "--format=json(name,state)", "--quiet"]),
         runCommand)}));
+      const serviceAccount = firstDeployIdentity?.({projectId, projectNumber, consumer}) ?? null;
+      const runtimeRequirement = {...requirement, id, runtimeRoles: requirement.runtimeRolesByConsumer?.[consumer] ??
+        requirement.runtimeRoles ?? ["roles/secretmanager.secretAccessor"]};
+      results.push(classifySecretRuntimeAccess({serviceAccount, requirement: runtimeRequirement,
+        result: serviceAccount ? executeMetadataCommand(buildSecretRuntimeAccessCommand({projectId,
+          requirement: runtimeRequirement}), runCommand) : null}));
       continue;
     }
     if (phase === "deployed" && !["ready", "inactive"].includes(observed.status)) {
@@ -1128,6 +1135,7 @@ export function runEnvironmentReadiness({
   aliases,
   candidate,
   candidateFactory,
+  firstDeployIdentity,
   sourceSha,
   phase = "deployed",
   capabilities = [],
@@ -1191,7 +1199,8 @@ export function runEnvironmentReadiness({
       if (["secret-version", "secret-reference"].includes(requirement.kind)) {
         if (identityResult.status === "ready" && !candidateProbeFailed) results.push(...assessSecretBindings({
           requirement, targets, projectId, projectNumber: identityResult.metadata.projectNumber,
-          functionsResult, candidate, phase, runCommand}));
+          functionsResult, candidate, phase, runCommand,
+          firstDeployIdentity: firstDeployIdentity && ((context) => firstDeployIdentity({environment, ...context}))}));
         continue;
       }
       if (requirement.kind === "form-upload-identity") {
@@ -1357,8 +1366,18 @@ export function executeReadinessCli(argv, dependencies = {}) {
       requirements, targets: args.targets, intent, paramsProvenance, runCommand: dependencies.runCommand});
     return generatedCandidate;
   } : undefined;
+  // A Function's first deploy has no observed runtime identity, so read the
+  // one its source names. An unreadable source leaves the identity unknown.
+  const firstDeployIdentity = args.sourceRoot ? ({environment, projectId, projectNumber, consumer}) => {
+    try {
+      return collectFunctionBindingIntent({sourceRoot: repoRoot, environment, projectId,
+        projectNumber: String(projectNumber), sourceSha, consumers: [consumer]}).functions[0]?.serviceAccount ?? null;
+    } catch {
+      return null;
+    }
+  } : undefined;
   const report = runEnvironmentReadiness({
-    aliases, candidate, candidateFactory, sourceSha, phase: args.phase,
+    aliases, candidate, candidateFactory, firstDeployIdentity, sourceSha, phase: args.phase,
     capabilities: args.capabilities,
     environments,
     manifest,

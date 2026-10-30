@@ -5,9 +5,11 @@ import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {FakeInstagramProvider} from "./instagramMessagingProvider";
+import {FakeLumaClaimPageReader} from "./lumaClaimPage";
 import {organizerClaimRequestId} from "./organizerClaimApproval";
 import {
   CLAIM_CODE_LIFETIME_MILLIS,
+  confirmOrganizerClaimVerificationHandler,
   getOrganizerClaimVerificationOptionsHandler,
   organizerClaimAttemptId,
   processInstagramClaimMessages,
@@ -82,7 +84,9 @@ const organizerId = "carter-road-runners";
 const requesterUid = "organiser-one";
 const startMillis = Date.UTC(2026, 9, 26, 9, 0, 0);
 
-function fixture(options: {enabled?: boolean} = {}) {
+const lumaUrl = "https://luma.com/carter-road-runners";
+
+function fixture(options: {enabled?: boolean; lumaEnabled?: boolean} = {}) {
   const {docs, db} = fakeFirestore();
   docs.set(`organizers/${organizerId}`, {
     name: "Carter Road Runners", instagramHandle: null,
@@ -92,12 +96,16 @@ function fixture(options: {enabled?: boolean} = {}) {
     publicSources: [{type: "instagram", label: "instagram page",
       detail: "Public instagram page.",
       href: `https://www.instagram.com/${handle}/`, confidence: "medium",
-      lastCheckedAt: null}],
+      lastCheckedAt: null}, {type: "luma", label: "luma page",
+      detail: "Public luma page.", href: "https://lu.ma/carter-road-runners",
+      confidence: "medium", lastCheckedAt: null}],
   });
   docs.set(`users/${requesterUid}`, {name: "Asha Rao",
     displayName: "Asha Rao", phoneNumber: "+919800000001",
     profileComplete: false});
   const provider = new FakeInstagramProvider(senderUsernames);
+  const lumaPages = new FakeLumaClaimPageReader();
+  lumaPages.enabled = async () => options.lumaEnabled ?? true;
   const limited = new Set<string>();
   const clock = {now: startMillis};
   const codes = ["482173", "551209", "730611", "118834"];
@@ -116,8 +124,9 @@ function fixture(options: {enabled?: boolean} = {}) {
       }
     },
     provider: () => provider,
+    lumaPages: () => lumaPages,
   };
-  return {docs, deps, provider, clock, limited};
+  return {docs, deps, provider, clock, limited, lumaPages};
 }
 
 function callable(data: unknown, uid = requesterUid) {
@@ -344,4 +353,91 @@ test("a page claimed meanwhile is not taken over", async () => {
     "earlier-owner");
   assert.equal(docs.get(attemptPath)?.status, "awaitingProof");
   assert.match(provider.replies[0].text, /our team/);
+});
+
+const lumaAttemptPath = `organizerClaimVerifications/${
+  organizerClaimAttemptId(organizerId, requesterUid, "lumaDescription")}`;
+
+async function startLuma(deps: InstagramClaimMessageDeps) {
+  return startOrganizerClaimVerificationHandler(callable({organizerId,
+    method: "lumaDescription"}), deps);
+}
+
+async function checkLuma(attemptId: string, deps: InstagramClaimMessageDeps,
+  uid = requesterUid) {
+  return confirmOrganizerClaimVerificationHandler(callable({attemptId}, uid),
+    deps);
+}
+
+test("Luma is offered only while page fetching is on", async () => {
+  const on = fixture();
+  const options = await getOrganizerClaimVerificationOptionsHandler(
+    callable({organizerId}), on.deps);
+  assert.deepEqual(options.methods[1], {method: "lumaDescription",
+    available: true, proofTarget: lumaUrl, unavailableReason: null});
+  const off = fixture({lumaEnabled: false});
+  const hidden = await getOrganizerClaimVerificationOptionsHandler(
+    callable({organizerId}), off.deps);
+  assert.equal(hidden.methods[1].unavailableReason, "turnedOff");
+  await assert.rejects(startLuma(off.deps), {code: "failed-precondition"});
+});
+
+test("the Luma code is a catch- marker bound to the calendar", async () => {
+  const {docs, deps} = fixture();
+  const started = await startLuma(deps);
+  assert.equal(started.proofText, `catch-${started.code}`);
+  assert.equal(started.proofTarget, lumaUrl);
+  assert.equal(started.catchInstagramHandle, null);
+  // Luma codes are checked on their own attempt, not reserved by value.
+  assert.equal(docs.has(`organizerClaimInstagramCodes/${started.code}`),
+    false);
+});
+
+test("the marker on the listing's calendar claims the page", async () => {
+  const {docs, deps, lumaPages} = fixture();
+  const started = await startLuma(deps);
+  lumaPages.pages[lumaUrl] = "Saturday runs on Carter Road.";
+  const missing = await checkLuma(started.attemptId, deps);
+  assert.equal(missing.status, "awaitingProof");
+  assert.equal(missing.lastRejection, "codeNotFound");
+  assert.equal(
+    (docs.get(lumaAttemptPath)?.lastRejection as Data).reason,
+    "codeNotFound");
+  lumaPages.pages[lumaUrl] =
+    `Saturday runs on Carter Road. ${started.proofText}`;
+  const verified = await checkLuma(started.attemptId, deps);
+  assert.equal(verified.status, "verified");
+  assert.equal(verified.claimRequestId, organizerClaimRequestId(organizerId,
+    requesterUid));
+  assert.equal(docs.get(`organizers/${organizerId}`)?.ownerUserId,
+    requesterUid);
+  assert.equal((docs.get(lumaAttemptPath)?.evidence as Data).source,
+    "lumaDescription");
+  assert.deepEqual(docs.get(requestPath)?.proofUrls, [lumaUrl]);
+  // Leaving the marker in the description is harmless.
+  assert.equal((await checkLuma(started.attemptId, deps)).status,
+    "verified");
+  assert.equal(lumaPages.reads.length, 2);
+});
+
+test("only the exact marker counts, and only for its owner", async () => {
+  const {deps, lumaPages} = fixture();
+  const started = await startLuma(deps);
+  lumaPages.pages[lumaUrl] = `catch-${started.code}0 and ${started.code}`;
+  assert.equal((await checkLuma(started.attemptId, deps)).lastRejection,
+    "codeNotFound");
+  await assert.rejects(checkLuma(started.attemptId, deps, "someone-else"),
+    {code: "not-found"});
+  delete lumaPages.pages[lumaUrl];
+  assert.equal((await checkLuma(started.attemptId, deps)).lastRejection,
+    "pageUnavailable");
+});
+
+test("an expired Luma code is not checked", async () => {
+  const {deps, lumaPages, clock} = fixture();
+  const started = await startLuma(deps);
+  lumaPages.pages[lumaUrl] = started.proofText;
+  clock.now += CLAIM_CODE_LIFETIME_MILLIS + 1;
+  assert.equal((await checkLuma(started.attemptId, deps)).status, "expired");
+  assert.equal(lumaPages.reads.length, 0);
 });
