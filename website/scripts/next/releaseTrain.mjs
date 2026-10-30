@@ -8,7 +8,7 @@ import {fileURLToPath} from "node:url";
 import {waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
 import {canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
 import {currentReleaseLineage} from "./previewRelease.mjs";
-import {brand} from "@catch/brand";
+import {brand} from "../../../packages/brand/index.mjs";
 
 // The website release train. After main CI completes (or on the hourly
 // fallback), it previews main's head through the existing preview workflow,
