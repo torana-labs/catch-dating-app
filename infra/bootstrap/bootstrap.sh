@@ -25,6 +25,12 @@
 #     project (also update Android apps and Play Integrity configs; no create
 #     or delete) and storage.objectUser on the state bucket. Trusted only by the
 #     reviewer-protected, main-only prod-platform GitHub environment.
+#   - Forms payment secrets (dev and prod): custom role
+#     catchFormCredentialVault (versions add/access/disable), which Terraform
+#     grants the Functions runtime on the merchant credential vault; and
+#     Secret Manager roles for the two platform identities that cover only
+#     secrets named FORM_RAZORPAY_* (IAM condition), plus create for apply.
+#     Neither platform identity can read, add or disable a secret version.
 #   - OIDC provider github-platform in the existing github-actions pool. It
 #     admits only repository 1170579691 jobs in platform-plan, or in
 #     prod-platform on refs/heads/main. The older catch-dating-app provider
@@ -37,6 +43,7 @@ PROD_PROJECT=catch-dating-app-64e51
 PROD_NUMBER=574779808785
 STAGING_PROJECT=catchdates-staging
 DEV_PROJECT=catchdates-dev
+DEV_NUMBER=619661127800
 MANAGED_PROJECTS=("$PROD_PROJECT" "$STAGING_PROJECT" "$DEV_PROJECT")
 
 REPOSITORY=torana-labs/catch-dating-app
@@ -68,6 +75,19 @@ PLAN_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.projects.ge
 # firebaseappcheck.services.update (App Check enforcement).
 APPLY_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.clients.update,firebase.projects.get,firebaseappcheck.playIntegrityConfig.get,firebaseappcheck.playIntegrityConfig.update
 
+# Forms payment secrets. Secret IAM conditions see secret names with the
+# project number. Custom roles live here, not in Terraform: an identity that
+# can edit roles could widen its own.
+FORM_SECRET_PREFIX=FORM_RAZORPAY_
+VAULT_ROLE=catchFormCredentialVault
+VAULT_PERMISSIONS=secretmanager.versions.add,secretmanager.versions.access,secretmanager.versions.disable
+SECRETS_READER_ROLE=catchPlatformSecretsReader
+SECRETS_READER_PERMISSIONS=secretmanager.secrets.get,secretmanager.secrets.getIamPolicy
+SECRETS_ADMIN_ROLE=catchPlatformSecretsAdmin
+SECRETS_ADMIN_PERMISSIONS=secretmanager.secrets.get,secretmanager.secrets.getIamPolicy,secretmanager.secrets.setIamPolicy,secretmanager.secrets.update
+SECRET_CREATOR_ROLE=catchPlatformSecretCreator
+SECRET_CREATOR_PERMISSIONS=secretmanager.secrets.create
+
 # The provider admits only this repository's jobs in the two platform
 # environments, and prod-platform only from main. Jobs without an environment
 # have no environment claim and are rejected.
@@ -94,6 +114,9 @@ gcloud services enable iam.googleapis.com iamcredentials.googleapis.com sts.goog
   --project="$PROD_PROJECT"
 for project in "$STAGING_PROJECT" "$DEV_PROJECT"; do
   gcloud services enable firebase.googleapis.com firebaseappcheck.googleapis.com --project="$project"
+done
+for project in "$PROD_PROJECT" "$DEV_PROJECT"; do
+  gcloud services enable secretmanager.googleapis.com --project="$project"
 done
 
 step "State bucket $BUCKET"
@@ -138,6 +161,28 @@ for project in "${MANAGED_PROJECTS[@]}"; do
     --member="serviceAccount:$PLAN_ACCOUNT" --role="projects/$project/roles/$PLAN_ROLE" >/dev/null
   gcloud projects add-iam-policy-binding "$project" --condition=None --quiet \
     --member="serviceAccount:$APPLY_ACCOUNT" --role="projects/$project/roles/$APPLY_ROLE" >/dev/null
+done
+
+step "Forms payment secret roles (dev and prod)"
+for entry in "$DEV_PROJECT:$DEV_NUMBER" "$PROD_PROJECT:$PROD_NUMBER"; do
+  project="${entry%%:*}"
+  number="${entry#*:}"
+  only_form_secrets="expression=resource.name.startsWith('projects/$number/secrets/$FORM_SECRET_PREFIX'),title=form-razorpay-secrets-only,description=Only the Forms Razorpay secrets"
+  ensure_role "$project" "$VAULT_ROLE" "Catch form credential vault" \
+    "Add, read and disable merchant credential versions. Granted on the vault secret only." "$VAULT_PERMISSIONS"
+  ensure_role "$project" "$SECRETS_READER_ROLE" "Catch platform secrets reader" \
+    "Read Forms payment secret metadata and IAM for Terraform plans; never values." "$SECRETS_READER_PERMISSIONS"
+  ensure_role "$project" "$SECRETS_ADMIN_ROLE" "Catch platform secrets admin" \
+    "Manage Forms payment secret settings and IAM for Terraform apply; never values." "$SECRETS_ADMIN_PERMISSIONS"
+  ensure_role "$project" "$SECRET_CREATOR_ROLE" "Catch platform secret creator" \
+    "Create secret containers for Terraform apply; never values." "$SECRET_CREATOR_PERMISSIONS"
+  gcloud projects add-iam-policy-binding "$project" --quiet --condition="$only_form_secrets" \
+    --member="serviceAccount:$PLAN_ACCOUNT" --role="projects/$project/roles/$SECRETS_READER_ROLE" >/dev/null
+  gcloud projects add-iam-policy-binding "$project" --quiet --condition="$only_form_secrets" \
+    --member="serviceAccount:$APPLY_ACCOUNT" --role="projects/$project/roles/$SECRETS_ADMIN_ROLE" >/dev/null
+  # Creation is checked on the project, where a name condition cannot apply.
+  gcloud projects add-iam-policy-binding "$project" --quiet --condition=None \
+    --member="serviceAccount:$APPLY_ACCOUNT" --role="projects/$project/roles/$SECRET_CREATOR_ROLE" >/dev/null
 done
 
 step "State bucket access"

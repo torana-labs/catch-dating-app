@@ -1,6 +1,6 @@
 ---
 doc_id: infrastructure_as_code
-version: 1.0.0
+version: 1.1.0
 updated: 2026-10-30
 owner: backend_platform
 status: active
@@ -27,8 +27,10 @@ staging and prod.
 |---|---|---|
 | `google_firebase_android_app` (google-beta provider) | Consumer and Host in `catchdates-dev`, `catchdates-staging` and `catch-dating-app-64e51` | display name, package name, SHA-1 and SHA-256 certificate fingerprints |
 | `google_firebase_app_check_play_integrity_config` (google provider) | The same six apps | adopted as is; `token_ttl` keeps its live value |
+| `google_secret_manager_secret` and `google_secret_manager_secret_iam_member` (google provider) | `catchdates-dev` and `catch-dating-app-64e51` | Forms payment secret containers and their runtime grants, never values; see [Forms payment secrets](#forms-payment-secrets) |
 
-The inventory lives in `infra/firebase/terraform.tfvars`. Everything in it is
+The Android inventory lives in `infra/firebase/terraform.tfvars`; the Forms
+payment inputs live in `infra/firebase/form_payments.auto.tfvars`. Everything in it is
 public: app IDs, which also ship in `firebase/<env>/**/google-services.json`,
 and certificate fingerprints. Never put a secret there.
 
@@ -41,8 +43,12 @@ Guards, from first to last:
 - A plan refuses to drop a fingerprint that is registered on the live app
   (preconditions read the live app through a data source). Retiring a signing
   key needs `allow_fingerprint_removal = true` in a reviewed PR.
-- `infra/scripts/plan_guard.sh` fails any plan that would delete, replace or
-  create a resource, or touch a resource type outside the phase 1 allowlist.
+- `infra/scripts/plan_guard.sh` fails any plan that would delete or replace a
+  resource, create a Firebase app or App Check config instead of importing
+  it, touch a resource type outside its allowlist (which leaves out
+  `google_secret_manager_secret_version`, so no secret value can enter state),
+  or grant a secret role other than the two the runtime needs, or to a
+  `github-actions` identity.
   This also covers a resource block deleted from the configuration, which
   takes its `prevent_destroy` with it.
 - The committed inventory has blank display names and fingerprint lists until
@@ -120,6 +126,7 @@ environment claim and is rejected.
 | | | `roles/storage.objectViewer` on the state bucket only | Read state. Plans run with `-lock=false`, so this identity never writes the bucket. |
 | `github-actions-platform-apply@catch-dating-app-64e51` | `principalSet://…/attribute.repository_environment/1170579691:prod-platform` | Custom `catchPlatformApplier` in each project: the reads above plus `firebase.clients.update` and `firebaseappcheck.playIntegrityConfig.update` | Update an existing app's fingerprints and its Play Integrity config. No `firebase.clients.create` or `delete`, and no `firebaseappcheck.services.update` (enforcement). The narrowest predefined role with `firebase.clients.update` is Firebase Admin. |
 | | | `roles/storage.objectUser` on the state bucket only | Write state and take the state lock. No bucket IAM. |
+| Both platform identities, dev and prod only | As above | Custom `catchPlatformSecretsReader` (plan: `secretmanager.secrets.get`, `secretmanager.secrets.getIamPolicy`) and `catchPlatformSecretsAdmin` (apply: those plus `secretmanager.secrets.setIamPolicy`, `secretmanager.secrets.update`), each with the IAM condition `resource.name.startsWith('projects/<number>/secrets/FORM_RAZORPAY_')`; apply also has `catchPlatformSecretCreator` (`secretmanager.secrets.create`) unconditionally, because creation is checked on the project | Manage the Forms payment secret containers and their IAM. Neither identity holds any `secretmanager.versions.*` permission, so neither can read, add or disable a value. |
 | `github-actions-play-publisher@catch-dating-app-64e51` (existing) | `prod-mobile`, `prod-mobile-release` | Unchanged | The fingerprints workflow reads generated APKs with it. |
 
 The `platform-plan` environment has no reviewers and allows every branch,
@@ -155,6 +162,10 @@ administrator bypass. Without gh it prints the GitHub commands and stops before
 that binding; run them, then rerun the script. `PLATFORM_REVIEWER=<login>`
 names a reviewer other than the signed-in gh user.
 
+The script also creates the Secret Manager roles behind
+[Forms payment secrets](#forms-payment-secrets). If you ran it before those
+existed, run it again: it only adds what is missing.
+
 ## First adoption
 
 The live display names and the fingerprints Firebase holds today are not in the
@@ -180,7 +191,10 @@ repository, so the first PR reads them:
 2. Replace `infra/firebase/terraform.tfvars` with it in a PR. Infra Plan should
    show, for each of the six apps, an import of the Android app and of its Play
    Integrity config, and in-place updates only on `prod-consumer` and
-   `prod-host`, each adding one SHA-1 and one SHA-256. Anything else means the
+   `prod-host`, each adding one SHA-1 and one SHA-256. Until the Forms
+   payment secrets exist, the same plan also creates the four secrets and
+   four runtime grants described in
+   [Forms payment secrets](#forms-payment-secrets). Anything else means the
    inventory is wrong: stop and compare with the Firebase console.
 3. Merge and approve the `prod-platform` deployment in Infra Apply.
 4. Verify with a Play-installed build: phone sign-in succeeds and App Check
@@ -192,6 +206,53 @@ reports the pending imports as drift.
 If the Play publisher identity gets a 403 on `generatedApks`, its Play Console
 invitation lacks access to the app bundle explorer downloads; add that
 permission for the two apps in Play Console (Users and permissions).
+
+## Forms payment secrets
+
+Forms payments use Catch's Razorpay Platform Partner OAuth application
+([`host_forms.md`](host_forms.md), the paragraph on
+`FORM_RAZORPAY_PARTNER_CONFIG_VERSION`). `infra/firebase/form_payments.tf`
+owns, in `catchdates-dev` and `catch-dating-app-64e51`:
+
+| Secret | Holds | Functions runtime grant |
+|---|---|---|
+| `FORM_RAZORPAY_PARTNER_CONFIG` | The partner application config, schema `catch.form-razorpay-partner/v1` | `roles/secretmanager.secretAccessor` on this secret only |
+| `FORM_RAZORPAY_MERCHANT_CREDENTIALS` | The merchant credential vault that the config's `credentialSecretId` names; the runtime adds one version per connected organizer | Custom `catchFormCredentialVault`: `secretmanager.versions.add`, `secretmanager.versions.access`, `secretmanager.versions.disable` on this secret only. It cannot destroy versions or change the secret. |
+
+The grants go to the Functions runtime identity, which is
+`<project-number>-compute@developer.gserviceaccount.com` because the payment
+Functions set no `serviceAccount` (see `form_payments.auto.tfvars`). The
+deploy readiness gate still compares the observed runtime identity before a
+deploy. `infra/bootstrap/bootstrap.sh` creates the custom roles, because an
+identity that can edit roles could widen its own. Secrets use automatic
+replication, like the Firebase CLI's Functions secrets, and have
+`deletion_protection` plus `prevent_destroy`. If a secret with one of these
+names already exists, add an `import` block for it in the same PR rather than
+letting the apply fail on a duplicate.
+
+Terraform never creates a secret version, so no credential reaches state or a
+plan. The owner enters the partner config once per environment, after Infra
+Apply has created the secrets:
+
+```sh
+bash infra/scripts/store_razorpay_partner_secret.sh dev
+bash infra/scripts/store_razorpay_partner_secret.sh prod --live
+```
+
+The script prompts for the OAuth client ID and secret with hidden input. It
+builds exactly `{"schema":"catch.form-razorpay-partner/v1","clientId":…,
+"clientSecret":…,"mode":…,"credentialSecretId":"FORM_RAZORPAY_MERCHANT_CREDENTIALS"}`,
+where `mode` is `test` in dev and `live` in prod. Prod refuses to run without
+`--live` and a typed confirmation. The script sends the JSON to `gcloud
+secrets versions add` on stdin, with no temporary file and nothing in a
+process list or on screen, and prints only the new version's name in the
+project-ID form the deploy materializer requires. With gh signed in, it sets
+`FORM_RAZORPAY_PARTNER_CONFIG_VERSION` in the matching `dev` or `prod` GitHub
+environment, which Deploy backend reads; otherwise it prints that command.
+The new config takes effect at the next Functions deploy. To rotate, run it
+again and disable the previous version after the deploy. Register the
+callback `https://asia-south1-<project>.cloudfunctions.net/organizerFormPaymentOauthCallback`
+in the partner application for each environment.
 
 ## What stays elsewhere
 
@@ -214,7 +275,9 @@ permission for the two apps in Play Console (Users and permissions).
 - **IAM and Workload Identity Federation**: the pool, providers, service
   accounts and bindings that the bootstrap script and
   `release_operations.md` set up by hand today.
-- **Secret Manager** secret definitions and access bindings (never values).
+- **Secret Manager** definitions and access bindings for the remaining
+  Functions secrets (never values). The Forms payment secrets above are the
+  first.
 
 Each phase extends the plan guard's allowlist and this document in the same
 PR.
