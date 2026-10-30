@@ -6,6 +6,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_sta
 import 'package:catch_dating_app/hosts/presentation/host_invite_link_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_display_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_row_state.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -203,7 +204,7 @@ void main() {
       accessState: CatchAsyncState.data(access),
       inviteLinksState: CatchAsyncState.data([inviteLink]),
       inviteLink:
-          'https://catchdates.com/organizers/${organizer.id}/events/${event.id}?invite=CATCH-DELHI',
+          '${Brand.webOrigin}/organizers/${organizer.id}/events/${event.id}?invite=CATCH-DELHI',
       sharePending: false,
     );
     final loading = HostPrivateLinkActionState.resolve(
@@ -225,14 +226,14 @@ void main() {
       accessState: CatchAsyncState.data(access),
       inviteLinksState: CatchAsyncState.data([inviteLink]),
       inviteLink:
-          'https://catchdates.com/organizers/${organizer.id}/events/${event.id}?invite=CATCH-DELHI',
+          '${Brand.webOrigin}/organizers/${organizer.id}/events/${event.id}?invite=CATCH-DELHI',
       sharePending: true,
     );
 
     expect(ready.inviteCode, 'CATCH-DELHI');
     expect(
       ready.inviteLink,
-      'https://catchdates.com/organizers/${organizer.id}/events/${event.id}?invite=CATCH-DELHI',
+      '${Brand.webOrigin}/organizers/${organizer.id}/events/${event.id}?invite=CATCH-DELHI',
     );
     expect(ready.shareDetail, '1 invite link');
     expect(ready.canShare, isTrue);
@@ -523,13 +524,13 @@ void main() {
     final activeState = HostInviteLinkRowDisplayState.resolve(
       link: active,
       url:
-          'https://catchdates.com/organizers/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
+          '${Brand.webOrigin}/organizers/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
       actionsDisabled: false,
     );
     final disabledState = HostInviteLinkRowDisplayState.resolve(
       link: disabled,
       url:
-          'https://catchdates.com/organizers/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
+          '${Brand.webOrigin}/organizers/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
       actionsDisabled: true,
     );
 
@@ -537,7 +538,7 @@ void main() {
     expect(activeState.source, 'instagram');
     expect(
       activeState.url,
-      'https://catchdates.com/organizers/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
+      '${Brand.webOrigin}/organizers/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
     );
     expect(
       activeState.stats,

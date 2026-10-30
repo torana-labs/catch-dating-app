@@ -7,6 +7,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_pro
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:flutter/services.dart';
 
 import 'event_assistance_preview_repositories.dart' show previewUnconfirmed;
@@ -33,7 +34,7 @@ class DeparturePreviewPracticeRepository implements EventRehearsalRepository {
         'session': sample['session'],
         'actors': sample['actors'],
         'actions': <Object?>[],
-        'guestUrl': 'https://catchdates.com/rehearse/practicepublic1234567890',
+        'guestUrl': '${Brand.webOrigin}/rehearse/practicepublic1234567890',
         'canUseInternalFaults': false,
         'movementReview': sample['review'],
         'staffReview': (sample['review'] as Map)['staffReview'],

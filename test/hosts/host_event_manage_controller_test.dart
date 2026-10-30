@@ -8,6 +8,7 @@ import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/platform/device/clipboard.dart';
 import 'package:catch_dating_app/platform/device/external_share.dart';
@@ -143,14 +144,14 @@ void main() {
     await controller.sharePrivateLink(
       organizer: organizer,
       event: event,
-      inviteLink: 'https://catchdates.com/events/e-1?invite=VIP123',
+      inviteLink: '${Brand.webOrigin}/events/e-1?invite=VIP123',
       l10n: AppLocalizationsEn(),
     );
 
     expect(sharedParams?.subject, contains(event.title));
     expect(
       sharedParams?.text,
-      contains('https://catchdates.com/events/e-1?invite=VIP123'),
+      contains('${Brand.webOrigin}/events/e-1?invite=VIP123'),
     );
   });
 

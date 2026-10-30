@@ -10,7 +10,9 @@ import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {outputs} from "./generate.mjs";
 import {brand} from "./index.mjs";
+import {surfacePaths} from "./managed.mjs";
 
 const packageDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(packageDir, "../..");
@@ -20,12 +22,11 @@ const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 // Also matches the value as written inside a regular expression (catchdates\.com).
 const literal = (text) => escape(text).replaceAll("\\.", "\\\\?\\.").replaceAll("_", "\\\\?_");
 
-// Never scanned: the record and its generated copies, prose, vendored design
-// handoffs that are not shipped, and the owner's design-tool account config.
+// Never scanned: the record and its generated copies, the managed surfaces the
+// generator rewrites and the files regenerated from them, prose, vendored
+// design handoffs that are not shipped, and the owner's design-tool config.
 const excluded = [
   /^packages\/brand\//u,
-  /^functions\/src\/shared\/generated\/brand\.ts$/u,
-  /^website\/src\/content\/brand\.ts$/u,
   /\.md$/u,
   /^design\/source_packs\//u,
   /^design\/sync\//u,
@@ -33,10 +34,19 @@ const excluded = [
 const binary = /\.(?:png|jpe?g|gif|webp|avif|ico|icns|svgz|pdf|ttf|otf|woff2?|mp4|mov|lottie|zip|gz|jar|keystore|p12|mobileprovision)$/iu;
 
 // Files where user-facing copy lives; the display name may not be typed there.
+// The ARB and copy/*.json catalogs are managed surfaces instead.
 const copyFiles = [
   /^website\/src\/content\/.+\.(?:json|ts)$/u,
-  /^lib\/l10n\/app_en\.arb$/u,
 ];
+
+export function managedFiles(root = repoRoot) {
+  const managed = JSON.parse(fs.readFileSync(path.join(packageDir, "managed_surfaces.json"), "utf8"));
+  return new Set([
+    ...outputs().map((output) => output.path),
+    ...managed.surfaces.flatMap((surface) => surfacePaths(root, surface)),
+    ...managed.regenerated,
+  ]);
+}
 
 export function rules(record = brand) {
   return [
@@ -57,8 +67,7 @@ const waiver = /brand-literal-ok: \S/u;
 
 export function scanText(file, text, ruleList = rules()) {
   const counts = {};
-  const lines = (file.endsWith(".arb") ? arbValueLines(text) : text.split("\n"))
-    .filter((line) => !waiver.test(line));
+  const lines = text.split("\n").filter((line) => !waiver.test(line));
   for (const rule of ruleList) {
     if (!rule.applies(file)) continue;
     const count = lines.filter((line) => rule.pattern.test(line)).length;
@@ -67,16 +76,11 @@ export function scanText(file, text, ruleList = rules()) {
   return counts;
 }
 
-// ARB descriptions and placeholder metadata are not shown to users.
-function arbValueLines(text) {
-  const document = JSON.parse(text);
-  return Object.entries(document).filter(([key, value]) => !key.startsWith("@") && typeof value === "string")
-    .map(([, value]) => value);
-}
-
 export function trackedFiles(root = repoRoot) {
+  const managed = managedFiles(root);
   return execFileSync("git", ["ls-files", "-z"], {cwd: root, encoding: "utf8", maxBuffer: 256 * 1024 * 1024})
-    .split("\0").filter((file) => file && !binary.test(file) && !excluded.some((pattern) => pattern.test(file)));
+    .split("\0").filter((file) => file && !binary.test(file) && !managed.has(file) &&
+      !excluded.some((pattern) => pattern.test(file)));
 }
 
 export function scanRepository(root = repoRoot, files = trackedFiles(root)) {

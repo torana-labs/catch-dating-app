@@ -11,6 +11,7 @@ import {
   staticRouteMeta,
   validateWebsiteMeta,
 } from "./website_meta_contract.mjs";
+import {brand} from "@catch/brand";
 
 const canonicalMetaPath = fromRepo("website/src/content/meta.json");
 const metaSchemaPath = fromRepo("website/src/content/meta.schema.json");
@@ -23,9 +24,9 @@ test("canonical website metadata satisfies the runtime content contract", () => 
   const content = readWebsiteMeta(canonicalMetaPath);
 
   assert.deepEqual(validateWebsiteMeta(content), []);
-  assert.deepEqual(staticRouteMeta(content, "host", "https://catchdates.com/"), {
+  assert.deepEqual(staticRouteMeta(content, "host", `${brand.web.origin}/`), {
     ...content.routes.host,
-    canonical: "https://catchdates.com/host/",
+    canonical: `${brand.web.origin}/host/`,
   });
   assert.equal(
     formatContentTemplate(content.listing.titleTemplate, {

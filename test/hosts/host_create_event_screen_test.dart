@@ -42,6 +42,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_sta
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_participants_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_section.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/platform/errors/error_logger.dart';
@@ -593,7 +594,7 @@ void main() {
         expect(find.text('PRIVATE LINK'), findsOneWidget);
         expect(
           find.text(
-            'https://catchdates.com/organizers/club-1/events/event-private?invite=CATCH-DELHI',
+            '${Brand.webOrigin}/organizers/club-1/events/event-private?invite=CATCH-DELHI',
           ),
           findsOneWidget,
         );

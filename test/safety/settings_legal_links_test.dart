@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/device/external_links.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
@@ -63,9 +64,9 @@ Future<void> _pumpSettings(
 
 void main() {
   for (final (rowKey, expected) in [
-    (SettingsKeys.privacyPolicyRow, 'https://catchdates.com/privacy/'),
-    (SettingsKeys.helpSupportRow, 'https://catchdates.com/help/'),
-    (SettingsKeys.termsRow, 'https://catchdates.com/terms/'),
+    (SettingsKeys.privacyPolicyRow, '${Brand.webOrigin}/privacy/'),
+    (SettingsKeys.helpSupportRow, '${Brand.webOrigin}/help/'),
+    (SettingsKeys.termsRow, '${Brand.webOrigin}/terms/'),
   ]) {
     testWidgets('consumer Settings opens $expected externally', (tester) async {
       _useProdLegalUrlDefines();

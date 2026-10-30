@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:flutter/foundation.dart';
 
 enum AppEnvironment {
@@ -229,7 +230,7 @@ class AppConfig {
   static final Uri hostAppUrl = Uri.parse(
     const String.fromEnvironment(
       'CATCH_HOST_APP_URL',
-      defaultValue: 'https://catchdates.com/host',
+      defaultValue: '${Brand.webOrigin}/host',
     ),
   );
 
@@ -238,7 +239,7 @@ class AppConfig {
   static final Uri publicSiteUrl = Uri.parse(
     const String.fromEnvironment(
       'CATCH_PUBLIC_SITE_URL',
-      defaultValue: 'https://catchdates.com',
+      defaultValue: Brand.webOrigin,
     ),
   );
 

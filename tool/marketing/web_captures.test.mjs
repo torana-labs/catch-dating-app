@@ -6,6 +6,7 @@ import {spawnSync} from "node:child_process";
 import {deflateSync} from "node:zlib";
 import test from "node:test";
 import {fromRepo} from "../lib/repo_paths.mjs";
+import {brand} from "@catch/brand";
 
 // A tiny repository with one web capture: a story importing copy through the
 // @content alias, a workspace package, world JSON and a public asset, under a
@@ -64,7 +65,7 @@ function fixture(t) {
   const capture = {id: "guest-join-phone", kind: "web-capture", audience: "guest", surface: "Event check-in",
     status: "active", device: "iphone-17-pro", routeId: "event_runtime",
     story: {file: "website/src/stories/WebCaptures.stories.tsx", id: "marketing-website-web-captures--join-phone-check-in"},
-    address: "catchdates.com",
+    address: brand.web.domain,
     sourcePath: "artifacts/marketing/app-screenshots/guest-join-phone.png",
     websitePath: "website/public/assets/app-screenshots/guest-join-phone.png",
     placeholderPath: "website/public/assets/app-screenshots/placeholders/guest-join-phone.svg",

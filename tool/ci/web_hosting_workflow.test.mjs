@@ -735,9 +735,9 @@ test("marketing production postconditions run only after exact promotion", () =>
   assert.ok(deploy >= 0 && deploy < removeCredentials &&
     removeCredentials < unknown404 && unknown404 < routeProbe);
   assert.match(promote,
-    /verifyHosting404\.mjs https:\/\/catchdates\.com/u);
+    /verifyHosting404\.mjs "\$\(node -p 'require\("\.\/packages\/brand\/brand\.json"\)\.web\.origin'\)"/u);
   assert.match(promote,
-    /probeProduction\.mjs --base-url https:\/\/catchdates\.com --json/u);
+    /probeProduction\.mjs --base-url "\$\(node -p 'require\("\.\/packages\/brand\/brand\.json"\)\.web\.origin'\)" --json/u);
   assert.match(promote,
     /if: \$\{\{ inputs\.surface == 'marketing' && steps\.legacy-runtime\.outputs\.retired != 'true' && /u);
 });

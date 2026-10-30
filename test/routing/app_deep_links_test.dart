@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,21 +10,21 @@ void main() {
     test('builds an organizer detail URL from the router path contract', () {
       expect(
         AppDeepLinks.organizer('club-1').toString(),
-        'https://catchdates.com/organizers/club-1',
+        '${Brand.webOrigin}/organizers/club-1',
       );
     });
 
     test('builds a nested event detail URL from the router path contract', () {
       expect(
         AppDeepLinks.event(clubId: 'club-1', eventId: 'event-1').toString(),
-        'https://catchdates.com/organizers/club-1/events/event-1',
+        '${Brand.webOrigin}/organizers/club-1/events/event-1',
       );
     });
 
     test('encodes route parameter values as path segments', () {
       expect(
         AppDeepLinks.organizer('club with spaces').toString(),
-        'https://catchdates.com/organizers/club%20with%20spaces',
+        '${Brand.webOrigin}/organizers/club%20with%20spaces',
       );
     });
 

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/platform/device/external_share.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -93,7 +94,7 @@ void main() {
                 event: event,
                 share: share,
                 inviteUri: Uri.parse(
-                  'https://catchdates.com/invite/v2_personal_token',
+                  '${Brand.webOrigin}/invite/v2_personal_token',
                 ),
                 onShareIntent: () async => shareIntentCount += 1,
               ),
@@ -120,7 +121,7 @@ void main() {
     expect(shareIntentCount, 1);
     expect(
       sharedParams?.text,
-      contains('https://catchdates.com/invite/v2_personal_token'),
+      contains('${Brand.webOrigin}/invite/v2_personal_token'),
     );
   });
 }

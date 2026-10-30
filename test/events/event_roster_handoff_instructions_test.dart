@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -7,7 +8,7 @@ void main() {
       'eventId': 'event-1',
       'expiresAtMillis': 1787594400000,
       'emailStatus': 'available',
-      'emailAlias': 'roster+token@inbound.catchdates.com',
+      'emailAlias': 'roster+token@inbound.${Brand.webDomain}',
       'whatsappStatus': 'providerSetupRequired',
       'whatsappNumber': null,
       'whatsappMessage': null,

@@ -18,6 +18,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_pat
 import 'package:catch_dating_app/contexts/payments/data/payment_callable_requests.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_callable_responses.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show
@@ -76,7 +77,7 @@ void main() {
           startingPointLat: meetingLocation.latitude,
           startingPointLng: meetingLocation.longitude,
           locationDetails: meetingLocation.notes,
-          photoUrl: 'https://catchdates.com/events/cubbon.jpg',
+          photoUrl: '${Brand.webOrigin}/events/cubbon.jpg',
           distanceKm: 5,
           pace: 'easy',
           capacityLimit: 24,
@@ -107,7 +108,7 @@ void main() {
             'startingPointLat': meetingLocation.latitude,
             'startingPointLng': meetingLocation.longitude,
             'locationDetails': meetingLocation.notes,
-            'photoUrl': 'https://catchdates.com/events/cubbon.jpg',
+            'photoUrl': '${Brand.webOrigin}/events/cubbon.jpg',
             'distanceKm': 5,
             'pace': 'easy',
             'description': 'Easy morning social run.',

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_service.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_dating_app/platform/time/time_formatters.dart';
 
@@ -26,7 +27,7 @@ extension EventX on Event {
   bool get isCancelled => status == EventLifecycleStatus.cancelled;
   bool get isExternalCompanion => eventOrigin?.isExternal ?? false;
   bool get hasWebRuntime => runtimeAccess?.isJoinable ?? false;
-  Uri? runtimeJoinUri({String baseUrl = 'https://catchdates.com'}) {
+  Uri? runtimeJoinUri({String baseUrl = Brand.webOrigin}) {
     final runtimeId = runtimeAccess?.publicRuntimeId;
     if (runtimeId == null || runtimeId.isEmpty) return null;
     return Uri.parse(

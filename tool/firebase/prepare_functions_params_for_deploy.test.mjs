@@ -8,6 +8,7 @@ import test from "node:test";
 
 import {prepareFunctionsParamsForDeploy, functionsParamsProvenance} from
   "./prepare_functions_params_for_deploy.mjs";
+import {brand} from "@catch/brand";
 
 const publicIds = {
   ALGOLIA_APPLICATION_ID: "CATCHDEV01",
@@ -157,10 +158,10 @@ test("custom form target is operator supplied and otherwise disabled", () => {
   const result = prepareFunctionsParamsForDeploy({
     functionsDir, projectId: "catchdates-dev",
     environment: {...publicIds,
-      FORM_DOMAIN_CNAME_TARGET: "custom.catchdates.com"},
+      FORM_DOMAIN_CNAME_TARGET: `custom.${brand.web.domain}`},
   });
   assert.match(fs.readFileSync(result.outputPath, "utf8"),
-    /FORM_DOMAIN_CNAME_TARGET="custom.catchdates.com"/);
+    new RegExp(`FORM_DOMAIN_CNAME_TARGET="custom\\.${brand.web.domain.replaceAll(".", "\\.")}"`, "u"));
   assert.throws(() => prepareFunctionsParamsForDeploy({
     functionsDir, projectId: "catchdates-dev",
     environment: {...publicIds,
@@ -267,13 +268,13 @@ test("Instagram claims switch on only with Catch's account and handle", () => {
       ...publicIds,
       CATCH_INSTAGRAM_CLAIMS_ENABLED: "true",
       CATCH_INSTAGRAM_ACCOUNT_ID: "17841400000000001",
-      CATCH_INSTAGRAM_HANDLE: "@Catch_Dates",
+      CATCH_INSTAGRAM_HANDLE: `@${brand.social.instagramHandle.toUpperCase()}`,
     },
   });
   const contents = fs.readFileSync(result.outputPath, "utf8");
   assert.match(contents, /CATCH_INSTAGRAM_CLAIMS_ENABLED="true"/);
   assert.match(contents, /CATCH_INSTAGRAM_ACCOUNT_ID="17841400000000001"/);
-  assert.match(contents, /CATCH_INSTAGRAM_HANDLE="catch_dates"/);
+  assert.ok(contents.includes(`CATCH_INSTAGRAM_HANDLE="${brand.social.instagramHandle}"`));
   for (const [environment, message] of [
     [{CATCH_INSTAGRAM_CLAIMS_ENABLED: "true"},
       /requires the Instagram account id and handle/],

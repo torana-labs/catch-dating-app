@@ -599,6 +599,8 @@ bool _isCandidate(String path, String root) {
       relative.startsWith('lib/platform/schema_contracts/generated/')) {
     return false;
   }
+  // Generated from packages/brand/brand.json; the brand record, not copy.
+  if (relative == 'lib/kernel/brand.dart') return false;
   return true;
 }
 

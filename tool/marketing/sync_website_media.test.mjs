@@ -3,6 +3,7 @@ import fs from "node:fs";
 import test from "node:test";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {buildWebsiteManifest, scenarioReferenceProblems, validateSourceManifest} from "./sync_website_media.mjs";
+import {brand} from "@catch/brand";
 
 const authored = JSON.parse(fs.readFileSync(fromRepo("tool/marketing/capture_manifest.json"), "utf8"));
 const liveConsole = authored.captures.find(capture => capture.id === "host-live-console");
@@ -42,7 +43,7 @@ test("website records carry the framed size and the pages that show them", () =>
 });
 
 test("a web capture names its story and address instead of a catalog fixture", () => {
-  const web = {kind: "web-capture", fixtureKey: undefined, address: "catchdates.com",
+  const web = {kind: "web-capture", fixtureKey: undefined, address: brand.web.domain,
     story: {file: "website/src/stories/WebCaptures.stories.tsx", id: "marketing-website-web-captures--join-phone-check-in"}};
   assert.deepEqual(validateSourceManifest(manifestWith(web)), []);
   assert.match(validateSourceManifest(manifestWith({...web, story: undefined})).join("\n"), /story needs the stories file/);

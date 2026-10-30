@@ -1,7 +1,8 @@
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 
-const _deepLinkHost = 'catchdates.com';
+const _deepLinkHost = Brand.webDomain;
 
 class AppDeepLinks {
   const AppDeepLinks._();

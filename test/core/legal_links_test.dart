@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,9 +9,9 @@ import 'package:flutter_test/flutter_test.dart';
 /// environments differ only in identity, so every build reads the same
 /// canonical public routes.
 const _expectedLegalDefines = {
-  'CATCH_PRIVACY_POLICY_URL': 'https://catchdates.com/privacy/',
-  'CATCH_TERMS_URL': 'https://catchdates.com/terms/',
-  'CATCH_HELP_URL': 'https://catchdates.com/help/',
+  'CATCH_PRIVACY_POLICY_URL': '${Brand.webOrigin}/privacy/',
+  'CATCH_TERMS_URL': '${Brand.webOrigin}/terms/',
+  'CATCH_HELP_URL': '${Brand.webOrigin}/help/',
 };
 
 void main() {
@@ -41,13 +42,13 @@ void main() {
 
     expect(
       AppConfig.privacyPolicyUrl,
-      Uri.parse('https://catchdates.com/privacy/'),
+      Uri.parse('${Brand.webOrigin}/privacy/'),
     );
-    expect(AppConfig.termsUrl, Uri.parse('https://catchdates.com/terms/'));
-    expect(AppConfig.helpUrl, Uri.parse('https://catchdates.com/help/'));
+    expect(AppConfig.termsUrl, Uri.parse('${Brand.webOrigin}/terms/'));
+    expect(AppConfig.helpUrl, Uri.parse('${Brand.webOrigin}/help/'));
 
     AppConfig.overrideLegalUrlDefinesForTesting(const {
-      'CATCH_PRIVACY_POLICY_URL': 'http://catchdates.com/privacy/',
+      'CATCH_PRIVACY_POLICY_URL': 'http://${Brand.webDomain}/privacy/',
       'CATCH_TERMS_URL': '',
     });
     expect(AppConfig.privacyPolicyUrl, isNull);
