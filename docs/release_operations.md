@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.0.1
+version: 3.0.2
 updated: 2026-10-30
 owner: recursive_audit_loop
 status: active
@@ -2623,7 +2623,7 @@ Each beta build runs the same checks as before upload: the IPA identity, the
 Google Maps configuration, the Android bundle identity and signing certificate,
 the package size and payload policy, and the live callable dependency check
 for the app's role. Android builds run only for the apps listed in the
-workflow's `PLAY_ROLES` (Host today). Google Play's API cannot create an app,
+workflow's `PLAY_ROLES` (Consumer and Host since 2026-10-30). Google Play's API cannot create an app,
 so a new app's record and its first bundle are made by hand in Play Console
 before the app is added there. For that first bundle, run `Mobile Beta` for the
 app with `android_upload` off: it builds, verifies and signs the bundle without
@@ -2778,9 +2778,11 @@ human confirmation outside repository checks:
 - Install and launch of the current Consumer and Host TestFlight builds with
   App Check, Maps, phone auth, push, and role-specific entrypoint proof
   (issue `#218`).
-- Consumer and Host Play internal-testing install and launch evidence; the
-  Consumer Play app record and its first hand upload remain open in issue
-  `#199`.
+- Host Play internal-testing install and launch evidence. Consumer has it: its
+  Play record exists, its first bundle `1.0.2 (100000)` was uploaded by hand on
+  2026-10-30, Mobile Beta run `41024235942` uploaded `100001`, and the owner
+  installed it and signed in by phone OTP after the Play app-signing
+  fingerprints were registered in Firebase.
 - Crashlytics visibility and symbolication evidence.
 - Analytics DebugView event evidence.
 - Store metadata, screenshots, privacy forms, support URL, privacy policy, and
