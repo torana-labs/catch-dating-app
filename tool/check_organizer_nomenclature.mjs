@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "./lib/repo_paths.mjs";
+import {clubNameFindings} from "./architecture/rename_to_organizer.mjs";
 
 const taxonomy = [
   "club",
@@ -82,6 +83,12 @@ const forbiddenClientAuthorityPatterns = [
   },
 ];
 
+// Flutter code names say organizer. What tool/architecture/
+// rename_to_organizer.mjs would still rename is a finding; it keeps the club
+// subtype and the names the generated schema contracts declare.
+const flutterNameRoots = ["lib", "test", "integration_test", "apps", "widgetbook", "packages", "tool"];
+const skippedDirectories = new Set(["node_modules", ".dart_tool", "build", ".git"]);
+
 const allowedClubCopyKeys = new Set([
   "hostsOrganizerTypeClub",
   "launchAccessLaunchAccessApplicationScreenBodyUsefulIfYouAlready",
@@ -116,7 +123,31 @@ export function checkOrganizerNomenclature({root = fromRepo()} = {}) {
   }
   checkClientAuthorityPatterns(root, findings);
   checkProductCopy(root, findings);
+  checkFlutterNames(root, findings);
   return {ok: findings.length === 0, findings};
+}
+
+function checkFlutterNames(root, findings) {
+  const files = flutterNameRoots.flatMap((dir) => flutterNameFiles(root, dir));
+  const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
+  for (const finding of clubNameFindings({files, read})) {
+    findings.push({rule: "clubInFlutterNames", ...finding});
+  }
+}
+
+function flutterNameFiles(root, relativeDir) {
+  const target = path.join(root, relativeDir);
+  if (!fs.existsSync(target)) return [];
+  const files = [];
+  for (const entry of fs.readdirSync(target, {withFileTypes: true})) {
+    const relativePath = `${relativeDir}/${entry.name}`;
+    if (entry.isDirectory()) {
+      if (!skippedDirectories.has(entry.name)) files.push(...flutterNameFiles(root, relativePath));
+    } else if (entry.name.endsWith(".dart") || relativePath === "lib/l10n/app_en.arb") {
+      files.push(relativePath);
+    }
+  }
+  return files;
 }
 
 function checkClientAuthorityPatterns(root, findings) {

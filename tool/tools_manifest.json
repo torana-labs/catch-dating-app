@@ -6123,7 +6123,7 @@
       "command": "node tool/check_organizer_nomenclature.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Keeps organizers canonical across contracts, Flutter, React, Functions, routes, media, and product copy while club remains a subtype and compatibility projection.",
+      "description": "Keeps organizers canonical across contracts, Flutter, React, Functions, routes, media, and product copy while club remains a subtype. Flutter Dart file names, identifiers and localization keys must say organizer: what tool/architecture/rename_to_organizer.mjs would still rename fails, apart from the club subtype and names the generated schema contracts declare.",
       "checks": [
         "node --check tool/check_organizer_nomenclature.mjs",
         "node --test tool/check_organizer_nomenclature.test.mjs",
@@ -6138,7 +6138,8 @@
         "path": "tool/check_organizer_nomenclature.test.mjs",
         "contains": [
           "organizer nomenclature gate rejects legacy authority and generic copy",
-          "organizer nomenclature gate passes a canonical fixture"
+          "organizer nomenclature gate passes a canonical fixture",
+          "organizer nomenclature gate rejects club in Flutter names but keeps the subtype and contract names"
         ]
       }
     },
