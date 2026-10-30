@@ -20,8 +20,10 @@ import {validateConfigureEventRegistrationCallableResponse} from
   "../../shared/generated/validators/configureEventRegistrationOutput";
 import type {ManagePublicEventCheckoutCallableResponse as Response} from
   "../../shared/generated/managePublicEventCheckoutCallableResponse";
-import {prepareRazorpayCollectionRouting} from
-  "../../payments/razorpayCollectionRouting";
+import {
+  eventAdmissionCollectionReady,
+  prepareRazorpayCollectionRouting,
+} from "../../payments/razorpayCollectionRouting";
 import {cancelPaidEventAdmission} from
   "../../payments/eventCheckout/eventPaymentCancellation";
 import {resolveInviteAttributionToken} from "../inviteLinks";
@@ -49,6 +51,33 @@ import {
   registrationChangeReceiptId,
 } from "./configure";
 
+/** Clients match `details.reason`, never the message text. */
+export const ORGANIZER_PAYMENTS_NOT_READY = "organizerPaymentsNotReady";
+
+/** Paid booking is closed because the organizer's collection account is not
+ * ready. Catch never falls back to collecting the payment itself.
+ */
+export function organizerPaymentsNotReady(): never {
+  throw new HttpsError(
+    "failed-precondition",
+    "Paid booking is unavailable until this organiser finishes " +
+      "connecting their Razorpay account.",
+    {reason: ORGANIZER_PAYMENTS_NOT_READY},
+  );
+}
+
+/** A routing refusal means no collection account can take this payment. */
+async function routingOrNotReady<T>(prepare: () => Promise<T>): Promise<T> {
+  try {
+    return await prepare();
+  } catch (error) {
+    if (error instanceof HttpsError && error.code === "failed-precondition") {
+      organizerPaymentsNotReady();
+    }
+    throw error;
+  }
+}
+
 export const publicCheckoutDefaults = {
   db: () => admin.firestore(),
   rateLimit: checkRateLimit,
@@ -56,6 +85,7 @@ export const publicCheckoutDefaults = {
   guest: assertCurrentPublicGuest,
   source: readPublicEventSource,
   prepareRouting: prepareRazorpayCollectionRouting,
+  collectionReady: eventAdmissionCollectionReady,
   reserve: reservePublicPayment,
   execution: publicPaymentExecutionFor,
   project: projectPublicPayment,
@@ -90,13 +120,13 @@ export async function managePublicEventCheckoutHandler(
     serverTimeMillis: deps.now(),
   };
   if (data.action === "quote") {
-    result.quote = await db.runTransaction(async (tx) => {
+    const quoted = await db.runTransaction(async (tx) => {
       const {event, organizer} = await deps.source({
         db,
         tx,
         eventId: data.eventId,
       });
-      return publicCheckoutQuote(
+      return {organizerId: event.organizerId!, quote: publicCheckoutQuote(
         data.eventId,
         event,
         organizer,
@@ -105,8 +135,12 @@ export async function managePublicEventCheckoutHandler(
           nowMillis: deps.now()}),
         await publicHostMembershipQuoteTerms({db, tx, eventId: data.eventId,
           event, uid, nowMillis: deps.now()}),
-      );
+      )};
     });
+    // Say so before the guest reviews a price nobody can collect.
+    if (!(await deps.collectionReady({db, organizerId: quoted.organizerId,
+      nowMillis: deps.now()}))) organizerPaymentsNotReady();
+    result.quote = quoted.quote;
   } else if (data.action === "find") {
     const rows = await db
       .collection(PUBLIC_PAYMENT_COLLECTION)
@@ -164,13 +198,13 @@ export async function managePublicEventCheckoutHandler(
           );
           return {organizerId: source.event.organizerId!, quote};
         });
-        routing = await deps.prepareRouting({
+        routing = await routingOrNotReady(() => deps.prepareRouting({
           db,
           organizerId: source.organizerId,
           purpose: "eventAdmission",
           connectionId: null,
           amountMinor: source.quote.amountPaise,
-        });
+        }));
         inviteLinkId =
           (
             await deps.invite({
@@ -300,13 +334,13 @@ export async function configureEventRegistrationHandler(
   if (prior.exists) return configure({db, actorUid, command});
   const routing =
     command.mode === "paid" ?
-      await prepareRazorpayCollectionRouting({
+      await routingOrNotReady(() => prepareRazorpayCollectionRouting({
         db,
         organizerId: command.organizerId,
         purpose: "eventAdmission",
         connectionId: null,
         amountMinor: source.event.priceInPaise ?? 0,
-      }) :
+      })) :
       undefined;
   const result = await configure({db, actorUid, command, routing});
   if (!validateConfigureEventRegistrationCallableResponse(result)) {

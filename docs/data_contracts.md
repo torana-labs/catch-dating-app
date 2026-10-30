@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.180.0
+version: 1.181.0
 updated: 2026-10-30
 owner: recursive_audit_loop
 status: active
@@ -3218,6 +3218,18 @@ price, reconciled seats and a ready event-admission payment route. Public phone
 OTP never substitutes for invitation, application approval, membership, cohort
 or pair eligibility. The legacy boolean editor cannot change paid mode.
 
+Catch never collects a paid event booking on its own merchant account unless
+the `eventAdmission` route explicitly selects `razorpayRoute`. With
+`razorpayOAuth` the order belongs to the organizer's single ready connection;
+an absent, null or `disabled` route, or zero or several ready connections in
+the selected mode, makes paid booking unavailable rather than falling back.
+`quote` checks this read-only, without credentials or provider calls, so the
+guest learns before reviewing a price. `quote`, `prepare` and paid
+`configureEventRegistration` refuse with `failed-precondition` and
+`details.reason: "organizerPaymentsNotReady"`; clients match the reason, not
+the message. The retired `createRazorpayOrder` refuses every new order, and
+the Consumer app no longer calls it.
+
 `managePublicEventCheckout` quotes, prepares, finds, reconciles and cancels a
 UID-owned public checkout. It requires App Check, rate limits and current phone
 Auth; deletion and disabled-account checks do not require a Consumer profile.
@@ -3278,7 +3290,13 @@ mode, verified merchant webhook and pinned Secret Manager credential version.
 expiring OAuth state. Tokens and webhook secrets never enter Firestore or
 client projections. Refresh rotation has an exclusive durable lease; uncertain
 rotation requires reconnection. Disconnection blocks new checkouts while
-retaining server access to settle existing payments.
+retaining server access to settle existing payments. An organizer has at most
+one ready connection per mode. `begin` refuses while one is ready
+(`details.reason: "razorpayAlreadyConnected"`), and the completing transaction
+leaves a second account in `needsAttention` if another became ready meanwhile.
+A connection whose `lastErrorCode` is set cannot take payments even while its
+status reads `ready`; the Host app shows it as needing reconnection and replaces
+it by disconnecting it before a new `begin`.
 
 `organizerFormPayments` freezes the fee, merchant, verified respondent,
 version, draft revision and answer hash before creating an order. The draft's
