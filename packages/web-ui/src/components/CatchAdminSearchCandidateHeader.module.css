@@ -1,0 +1,14 @@
+/* Admin T4 search candidate header, moved from admin/src/styles.css (.search-candidate-header). */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--catch-space-micro14);
+}
+
+.header h3 {
+  margin: var(--catch-space-micro3) 0 0;
+  font-size: var(--catch-typography-web-control-size);
+  line-height: var(--catch-typography-brand-meta-line-height);
+  overflow-wrap: anywhere;
+}

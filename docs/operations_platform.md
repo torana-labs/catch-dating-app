@@ -337,11 +337,16 @@ transaction then:
 An associate who nominated the organizer owns its Sales work; otherwise the
 approver does. Approval is idempotent per listing: an identical retry replays,
 and a different approval of the same listing is refused. Indexing and app
-discovery remain later decisions, after the organizer is verified. Supply
-Intake can compare a listing with the organizers Catch already lists
-(`organizer-matching/`) and, given that inventory, records a `duplicateCheck`
-and a `possible_duplicate_organizer` gap. The worker passes the market's
-organizers as that inventory.
+discovery remain later decisions, after the organizer is verified.
+
+Supply Intake compares each new listing with the organizers Catch already lists
+(`organizer-matching/`). The Functions worker reads published organizers in the
+request's city (every city for an unassigned one), at most 1,000, projected to
+their identity fields. It records an advisory `duplicateCheck` on the listing
+and the request, and a `possible_duplicate_organizer` gap for a likely or
+ambiguous match. The listing review shows each match with a link. The check
+never blocks a staff approval, though anything but a clear result keeps a
+nomination from auto-publishing (below). An event refresh is not compared.
 
 ##### Auto-publishing trusted nominations
 

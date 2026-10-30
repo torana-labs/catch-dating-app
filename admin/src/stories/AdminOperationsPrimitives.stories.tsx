@@ -1,4 +1,9 @@
-import {CatchBadge, CatchField} from "@catch/web-ui";
+import {
+  CatchAdminCommandRow,
+  CatchAdminCommandStack,
+  CatchBadge,
+  CatchField,
+} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
   Activity,
@@ -25,8 +30,6 @@ import {
   AdminChecklistCopy,
   AdminChecklistHeader,
   AdminChecklistStack,
-  AdminCommandRow,
-  AdminCommandStack,
   AdminDiffList,
   AdminDiffRow,
   AdminEditorGrid,
@@ -359,16 +362,16 @@ export const AdminCommandStackStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminCommandStack>
-        <AdminCommandRow>
+      <CatchAdminCommandStack>
+        <CatchAdminCommandRow>
           <strong>Refresh dashboard</strong>
           <AdminButton icon={<RefreshCw size={16} />}>Run</AdminButton>
-        </AdminCommandRow>
-        <AdminCommandRow>
+        </CatchAdminCommandRow>
+        <CatchAdminCommandRow>
           <strong>Publish selected</strong>
           <AdminButton variant="primary">Publish</AdminButton>
-        </AdminCommandRow>
-      </AdminCommandStack>
+        </CatchAdminCommandRow>
+      </CatchAdminCommandStack>
     </AdminWorkspace>
   ),
 };
@@ -383,10 +386,10 @@ export const AdminCommandRowStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminCommandRow>
+      <CatchAdminCommandRow>
         <span>Regenerate route manifest</span>
         <AdminButton>Queue job</AdminButton>
-      </AdminCommandRow>
+      </CatchAdminCommandRow>
     </AdminWorkspace>
   ),
 };

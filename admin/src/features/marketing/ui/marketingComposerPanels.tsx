@@ -1,4 +1,10 @@
-import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
+import {
+  CatchAdminCommandRow,
+  CatchAdminCommandStack,
+  CatchBadge,
+  CatchField,
+  CatchText,
+} from "@catch/web-ui";
 import {
   CheckCircle2,
   Download,
@@ -19,8 +25,6 @@ import {
   CheckboxField,
   EmptyState,
   SelectableCardButton,
-  AdminCommandRow,
-  AdminCommandStack,
   AdminEyebrow,
   AdminMarketingBrandContract,
   AdminMarketingBrandContractItem,
@@ -121,13 +125,13 @@ function MarketingActionBoundaryPanel({
           value="events/{id}, externalEvents/{id}, organizer imports, booking, payments, direct posting"
         />
       </AdminStatGrid>
-      <AdminCommandStack>
+      <CatchAdminCommandStack>
         {Object.entries(bridge.commands).length > 0 ? (
           Object.entries(bridge.commands).map(([label, command]) => (
-            <AdminCommandRow key={label}>
+            <CatchAdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </AdminCommandRow>
+            </CatchAdminCommandRow>
           ))
         ) : (
           <EmptyState
@@ -137,7 +141,7 @@ function MarketingActionBoundaryPanel({
             No generated marketing commands are attached to this dashboard.
           </EmptyState>
         )}
-      </AdminCommandStack>
+      </CatchAdminCommandStack>
     </AdminPanel>
   );
 }

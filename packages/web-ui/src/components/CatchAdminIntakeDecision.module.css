@@ -1,0 +1,57 @@
+/* Admin T4 review decision parts, moved from admin/src/styles.css
+ * (.intake-decision-actions, .intake-decision-state). */
+.actions {
+  display: flex;
+  gap: var(--catch-space-s2);
+  flex-wrap: wrap;
+}
+
+.actions button {
+  min-height: 32px;
+  padding: 0 var(--catch-space-s3);
+  border: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-ink) 22%, transparent);
+  border-radius: var(--catch-radius-xs);
+  background: var(--catch-theme-surface);
+  color: var(--catch-theme-ink);
+  cursor: pointer;
+  font-size: var(--catch-typography-web-status-size);
+  font-weight: var(--catch-typography-brand-kicker-weight);
+}
+
+.actions button:first-child {
+  border-color: var(--catch-theme-primary);
+  background: var(--catch-theme-primary);
+  color: var(--catch-theme-primary-ink);
+}
+
+.actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.54;
+}
+
+.state {
+  display: flex;
+  gap: var(--catch-space-s2);
+  padding: var(--catch-space-micro10);
+  border: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-success) 40%, var(--catch-theme-surface));
+  border-radius: var(--catch-radius-sm);
+  background: color-mix(in srgb, var(--catch-theme-success) 8%, var(--catch-theme-surface));
+  color: var(--catch-theme-positive-text);
+}
+
+.state strong,
+.state span {
+  display: block;
+}
+
+.state strong {
+  color: var(--catch-theme-ink);
+  font-size: var(--catch-typography-web-status-size);
+}
+
+.state span {
+  margin-top: var(--catch-space-micro2);
+  color: var(--catch-theme-ink2);
+  font-size: var(--catch-typography-web-status-size);
+  overflow-wrap: anywhere;
+}
