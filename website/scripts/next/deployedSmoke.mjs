@@ -46,14 +46,21 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
     }
     const text = await response.text(); evidence.push({path, status: response.status}); return {response, text};
   }
-  for (const [path, title] of [["/", homePageCopy.hero.title], ["/host/", hostLandingCopy.hero.title], ["/explore/", explorePageCopy.lead], ["/mumbai/", explorePageCopy.lead]]) {
+  // A page that could not read its plans answers 503, so a 200 never carries
+  // the unavailable message.
+  for (const [path, title, unavailable] of [["/", homePageCopy.hero.title, homePageCopy.week.unavailable],
+    ["/host/", hostLandingCopy.hero.title], ["/explore/", explorePageCopy.lead, explorePageCopy.unavailable],
+    ["/mumbai/", explorePageCopy.lead, explorePageCopy.unavailable]]) {
     const {response, text} = await get(path);
     assert.ok(text.includes(title) && text.includes("<h1"), `${path} rendered content`);
+    assert.ok(!unavailable || !text.includes(unavailable), `${path} rendered its unavailable state`);
     if (live && ["/", "/host/"].includes(path)) assert.doesNotMatch(response.headers.get("x-robots-tag") ?? "", /noindex/u);
   }
   // The directory is Explore's organisers view; its query comes along (CAT-261).
-  const directory = await get("/organizers/?q=run", 308);
-  assert.equal(directory.response.headers.get("location"), "/explore/?q=run&show=organisers", "/organizers/ redirect");
+  // The proxy answers it with the retired routes' 301 on the public origin.
+  const directory = await get("/organizers/?q=run", 301);
+  assert.equal(new URL(directory.response.headers.get("location") ?? "", base).href,
+    `${base}/explore/?q=run&show=organisers`, "/organizers/ redirect");
   const catalog = await get("/api/public-catalog");
   assert.match(catalog.response.headers.get("cache-control"), /no-store/u);
   const data = JSON.parse(catalog.text); assert.ok(Array.isArray(data.listings));

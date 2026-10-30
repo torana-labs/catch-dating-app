@@ -16,7 +16,7 @@ function responder(base, change = () => {}) {
     let body = "<h1>Content</h1>", status = path.includes("not-a-real") ? 404 : 200;
     const titles = {"/": homePageCopy.hero.title, "/host/": hostLandingCopy.hero.title, "/explore/": explorePageCopy.lead, "/mumbai/": explorePageCopy.lead};
     if (titles[path]) body = `<h1>${titles[path]}</h1>`;
-    if (path === "/organizers/?q=run") {status = 308; headers.location = "/explore/?q=run&show=organisers";}
+    if (path === "/organizers/?q=run") {status = 301; headers.location = `${base}/explore/?q=run&show=organisers`;}
     if (path === "/api/public-catalog") body = JSON.stringify({listings: [{path: "/organizers/mumbai/club/", catchEvents: [{id: "event"}]}]});
     if (path === "/robots.txt") body = live ? "User-agent: *\nAllow: /" : "User-agent: *\nDisallow: /";
     if (path === "/sitemap.xml") body = "<url><loc>https://catchdates.com/</loc></url>";
@@ -53,9 +53,21 @@ test("deployed acceptance rejects stale builds, bad status, indexing leaks and b
     (path, result) => {if (path === "/") delete result.headers["x-robots-tag"];},
     (path, result) => {if (path.startsWith("/f/")) result.body = "next-release-private-marker";},
     (path, result) => {if (path === "/api/public-catalog") result.headers["cache-control"] = "public, max-age=600";},
+    (path, result) => {if (path === "/organizers/?q=run") result.headers.location = "https://unrelated.example/explore/?q=run&show=organisers";},
   ]) await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, change)}));
   await assert.rejects(verifyDeployedWebsite("https://unrelated.example", sourceSha));
   await assert.rejects(verifyDeployedWebsite("https://catchdates.com", sourceSha, {fetchImpl: responder("https://catchdates.com", (path, result) => {result.headers["x-robots-tag"] = "noindex";})}));
+});
+
+test("a page that rendered its unavailable state never passes as healthy", async () => {
+  for (const [route, message] of [["/", homePageCopy.week.unavailable], ["/explore/", explorePageCopy.unavailable], ["/mumbai/", explorePageCopy.unavailable]]) {
+    const degraded = (path, result) => {if (path === route) result.body += `<p>${message}</p>`;};
+    await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, degraded)}),
+      new RegExp(`${route.replaceAll("/", "\\/")} rendered its unavailable state`, "u"));
+    // Failing closed is a failed release, not a pass.
+    const closed = (path, result) => {if (path === route) {result.status = 503; result.body += `<p>${message}</p>`;}};
+    await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, closed)}), /HTTP status/u);
+  }
 });
 
 test("only a positive shared lifetime counts as a shared cache", async () => {

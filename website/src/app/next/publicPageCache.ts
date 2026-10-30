@@ -14,6 +14,13 @@ export const PUBLIC_PAGE_CACHE_CONTROL = `public, s-maxage=${PUBLIC_PAGE_CACHE_S
  * after the preflight keeps Next's no-store 500. The mark never leaves.
  */
 export const PUBLIC_PAGE_CACHE_MARK = "x-catch-public-page";
+/**
+ * A page that rendered its unavailable state because its data could not be
+ * read. The server turns its 200 into an uncached 503, so the visitor still
+ * sees the page's own message while no cache keeps it and no monitor reads it
+ * as healthy. This mark never leaves either.
+ */
+export const PUBLIC_PAGE_UNAVAILABLE_MARK = "x-catch-public-page-unavailable";
 
 // Organiser, event and city-aware discovery pages render the same HTML for
 // every viewer. Claim, booking, follow, signed-in and private-shell routes stay
