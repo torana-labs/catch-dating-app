@@ -49,6 +49,7 @@ const generated = [
   /^lib\/l10n\//u,
   /^design\/source_packs\//u,
   /^analytics\//u,
+  /^tool\/analytics\//u,
 ];
 // The codemods, the nomenclature gate and their tests name club on purpose;
 // the tools' fixtures are synthetic sources.
@@ -72,9 +73,10 @@ const isCliEntrypoint =
 const matches = (patterns, file) => patterns.some((pattern) => pattern.test(file));
 const isClubWord = (name) => /club/iu.test(name) && !subtypeName.test(name);
 // Wire names keep the subtype's values and the warehouse columns; code
-// identifiers keep only the warehouse columns (a variable `club` renames).
+// identifiers keep snake_case warehouse and SQL names (club_id,
+// clubs_raw_latest) but rename a variable `club`.
 const isWireName = (name) => isClubWord(name) && !keptWireNames.has(name);
-const isClubIdentifier = (name) => isClubWord(name) && name !== "club_id";
+const isClubIdentifier = (name) => isClubWord(name) && !/^[a-z0-9]+(?:_[a-z0-9]+)+$/u.test(name);
 const wireTarget = (name) => wireOverrides.get(name) ?? renameWord(name);
 // A code word is an identifier spelling (clubId, ClubCover, club_posts), not
 // the prose word "club" or "Clubs".
