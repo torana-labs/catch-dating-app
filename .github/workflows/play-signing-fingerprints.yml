@@ -127,6 +127,10 @@ jobs:
           infra/scripts/firebase_android_inventory.sh --play build/infra/play.jsonl \
             prod=catch-dating-app-64e51 staging=catchdates-staging dev=catchdates-dev |
             terraform fmt - > build/infra/terraform.tfvars
+          # Also print to the log: the API serves job logs but not step
+          # summaries, and the file holds only app IDs, names and
+          # certificate fingerprints, none of them secret.
+          cat build/infra/terraform.tfvars
           {
             echo "### infra/firebase/terraform.tfvars"
             echo
