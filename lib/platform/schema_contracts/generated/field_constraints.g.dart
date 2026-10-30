@@ -162977,7 +162977,7 @@ abstract final class CatchContractConstraints {
   static const supplyIntakeRequestsDocumentResultCaptureReceiptsItemsAdapterId = CatchContractFieldConstraints(
     path: 'supplyIntakeRequestsDocument.result.captureReceipts.items.adapterId',
     required: true,
-    enumValues: <String>['page_fetch', 'static_page'],
+    enumValues: <String>['page_fetch', 'static_page', 'instagram_business_discovery'],
   );
 
   static const supplyIntakeRequestsDocumentResultCaptureReceiptsItemsBudgetWindowIntakeConsumed = CatchContractFieldConstraints(

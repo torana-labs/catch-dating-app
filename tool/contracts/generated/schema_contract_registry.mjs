@@ -31860,7 +31860,8 @@ export const supplyIntakeRequestsDocumentSchema = {
                   "adapterId": {
                     "enum": [
                       "page_fetch",
-                      "static_page"
+                      "static_page",
+                      "instagram_business_discovery"
                     ]
                   },
                   "policyVersion": {
@@ -32418,7 +32419,8 @@ export const supplyIntakeRequestsDocumentSchema = {
         "adapterId": {
           "enum": [
             "page_fetch",
-            "static_page"
+            "static_page",
+            "instagram_business_discovery"
           ]
         },
         "policyVersion": {
