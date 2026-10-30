@@ -557,7 +557,6 @@ void main() {
       'fetchUpcomingEventsForClubs returns empty without querying for no clubs',
       () async {
         await _seedEvent(firestore, buildEvent());
-
         expect(
           await repository.fetchUpcomingEventsForOrganizers(const []),
           isEmpty,
