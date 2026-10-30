@@ -46,7 +46,6 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_prese
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleton.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
-import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/kernel/labelled.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

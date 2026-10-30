@@ -191,7 +191,7 @@ class _HostWhatsappSetupSectionState
         variable: _isInviteVariable(variable)
             ? variable == 'invite_token'
                   ? 'catch-test'
-                  : Brand.webOrigin
+                  : AppConfig.publicSiteUrl.toString()
             : 'Catch test',
     };
     await ref
