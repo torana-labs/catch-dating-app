@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
-import {awaitServedRelease, expectedRelease, sharedCacheSeconds, sharedCachePage, verifyDeployedWebsite} from "./deployedSmoke.mjs";
+import {awaitServedRelease, expectedRelease, exploreLeads, sharedCacheSeconds, sharedCachePage, verifyDeployedWebsite} from "./deployedSmoke.mjs";
 import {homePageCopy} from "../../src/content/homePage.ts";
 import {hostLandingCopy} from "../../src/content/hostLanding.ts";
 import {explorePageCopy} from "../../src/content/explorePage.ts";
@@ -149,4 +149,18 @@ test("acceptance waits, within a bound, for the deployment to answer as the rele
     new RegExp(`did not serve ${sourceSha} after 4 attempts; last answer .*${previous}`, "u"));
   assert.equal(stuck.asked.length, 4);
   await assert.rejects(awaitServedRelease(candidate, "main", {fetchImpl: stuck.fetchImpl, sleep}));
+});
+
+test("a launching-soon Explore or city page is healthy; a page with neither lead is not", async () => {
+  const soon = `<h1>Catch is coming to Mumbai</h1><p>${explorePageCopy.soonLead.replace("{liveCity}", "Indore")}</p>`;
+  // Preview run 41083582506: a healthy launching-soon /explore/ failed on the live lead alone.
+  for (const route of ["/explore/", "/mumbai/"]) {
+    await verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, (path, result) => {if (path === route) result.body = soon;})});
+    await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, (path, result) => {if (path === route) result.body = "<h1>Something else</h1>";})}),
+      new RegExp(`${route.replaceAll("/", "\\/")} rendered content`, "u"));
+    await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, (path, result) => {if (path === route) result.body = `<p>${explorePageCopy.lead}</p>`;})}),
+      /rendered content/u);
+  }
+  assert.deepEqual(exploreLeads, [explorePageCopy.lead, "Hosts here are setting up their first plans. Here’s who’s joining, and what’s on in "]);
+  assert.ok(!exploreLeads.some(lead => lead.includes("{")), "a lead never carries a placeholder");
 });

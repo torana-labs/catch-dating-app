@@ -24,6 +24,13 @@ export function sharedCacheSeconds(cache) {
   if (Number.isFinite(shared)) return shared;
   return directives.includes("public") && Number.isFinite(seconds("max-age")) ? seconds("max-age") : 0;
 }
+/**
+ * What Explore and a city page lead with. A city with fewer than four plans in
+ * its two-week window is launching soon, a designed state, and leads with the
+ * soon copy (up to its live-city name) instead of the live lead. Preview run
+ * 41083582506 failed a healthy launching-soon /explore/ on the live lead alone.
+ */
+export const exploreLeads = Object.freeze([explorePageCopy.lead, explorePageCopy.soonLead.split("{liveCity}")[0]]);
 export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch} = {}) {
   assert.match(base ?? "", /^https:\/\/(?:catchdates\.com|catch-dating-app-64e51--next-(?:candidate|release)-[a-z0-9-]+\.web\.app)$/u);
   assert.match(sourceSha ?? "", /^[a-f0-9]{40}$/u);
@@ -48,11 +55,11 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
   }
   // A page that could not read its plans answers 503, so a 200 never carries
   // the unavailable message.
-  for (const [path, title, unavailable] of [["/", homePageCopy.hero.title, homePageCopy.week.unavailable],
-    ["/host/", hostLandingCopy.hero.title], ["/explore/", explorePageCopy.lead, explorePageCopy.unavailable],
-    ["/mumbai/", explorePageCopy.lead, explorePageCopy.unavailable]]) {
+  for (const [path, leads, unavailable] of [["/", [homePageCopy.hero.title], homePageCopy.week.unavailable],
+    ["/host/", [hostLandingCopy.hero.title]], ["/explore/", exploreLeads, explorePageCopy.unavailable],
+    ["/mumbai/", exploreLeads, explorePageCopy.unavailable]]) {
     const {response, text} = await get(path);
-    assert.ok(text.includes(title) && text.includes("<h1"), `${path} rendered content`);
+    assert.ok(leads.some(lead => text.includes(lead)) && text.includes("<h1"), `${path} rendered content`);
     assert.ok(!unavailable || !text.includes(unavailable), `${path} rendered its unavailable state`);
     if (live && ["/", "/host/"].includes(path)) assert.doesNotMatch(response.headers.get("x-robots-tag") ?? "", /noindex/u);
   }
