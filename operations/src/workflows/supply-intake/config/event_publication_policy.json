@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "policyVersion": "supply-event-publication-v1",
-  "mode": "auto_publish_approved_organizers",
+  "policyVersion": "supply-event-publication-v2",
+  "mode": "staff_review",
   "decision": {
     "decidedBy": "owner",
-    "decidedAt": "2026-10-25",
-    "reference": "Linear CAT-213, owner comment 2026-10-25",
-    "summary": "Imported events auto-publish for organisers whose listing staff have already approved, provided the event passes automated checks. Staff can withdraw any auto-published event. Everything else waits for staff review."
+    "decidedAt": "2026-10-30",
+    "reference": "Owner in chat 2026-10-30: pause auto-publishing until the site moves off catchdates.com",
+    "summary": "Every imported event waits for staff until the rebrand moves the website to its new domain. The 2026-10-25 auto-publish policy (CAT-213) returns as mode auto_publish_approved_organizers after the cutover. Staff can still publish what is waiting and withdraw anything published."
   }
 }

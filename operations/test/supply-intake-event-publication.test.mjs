@@ -17,12 +17,15 @@ const event = (overrides = {}) => ({title: "Android Dev Meetup", description: "T
   organizerName: "BlrDroid Community", organizerUrl: "https://luma.com/blrdroid",
   price: {min: 0, max: 0, currency: "INR"}, ...overrides});
 
-test("the shipped policy records the owner's decision to auto-publish approved organizers' events", async () => {
+test("the shipped policy records the owner's pause: every imported event waits for staff until the rebrand", async () => {
   const policy = await loadEventPublicationPolicy();
-  assert.equal(policy.mode, AUTO_PUBLISH_MODE);
+  assert.equal(policy.mode, "staff_review");
   assert.equal(policy.decision.decidedBy, "owner");
-  assert.match(policy.decision.reference, /CAT-213/u);
+  assert.match(policy.decision.reference, /catchdates\.com/u);
 });
+
+// The behaviour tests cover auto-publish, whatever mode the shipped policy is in.
+const autoPublishPolicy = async () => ({...await loadEventPublicationPolicy(), mode: AUTO_PUBLISH_MODE});
 
 test("a policy outside its schema fails closed", async () => {
   const readFile = async (file) => file.endsWith(".schema.json") ?
@@ -32,7 +35,7 @@ test("a policy outside its schema fails closed", async () => {
 });
 
 test("an attributed event with clean copy is eligible under auto-publish", async () => {
-  const policy = await loadEventPublicationPolicy();
+  const policy = await autoPublishPolicy();
   const result = automatedEventReview({event: event(), organizer, policy, now: NOW});
   assert.equal(result.eligible, true);
   assert.deepEqual(result.findings, []);
@@ -48,7 +51,7 @@ test("staff review mode never auto-publishes", async () => {
 });
 
 test("dating framing in the organizer's copy waits for a person", async () => {
-  const policy = await loadEventPublicationPolicy();
+  const policy = await autoPublishPolicy();
   for (const [field, text] of [["title", "Singles Mixer Night"], ["description", "Speed dating, then drinks."],
     ["title", "Find your match at the park"]]) {
     const result = automatedEventReview({event: event({[field]: text}), organizer, policy, now: NOW});
@@ -63,7 +66,7 @@ test("dating framing in the organizer's copy waits for a person", async () => {
 });
 
 test("an event whose page states no price waits for a person; a free one does not", async () => {
-  const policy = await loadEventPublicationPolicy();
+  const policy = await autoPublishPolicy();
   for (const price of [null, {min: null, max: null, currency: "INR"}]) {
     const result = automatedEventReview({event: event({price}), organizer, policy, now: NOW});
     assert.equal(result.eligible, false);

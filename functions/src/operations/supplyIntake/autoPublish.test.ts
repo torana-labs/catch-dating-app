@@ -107,8 +107,15 @@ async function harness({role = "associate", nominatorActive = true, claims = {sa
     return value;
   };
   return {db, deps, requestId, listing, state,
-    publish: (value = state()) => autoPublishNominatedListing(deps as never, requestId, value)};
+    publish: (value = state()) => autoPublishNominatedListing(deps as never, requestId, value, {paused: false})};
 }
+
+test("while auto-publishing is paused, even a complete associate nomination waits for staff", async () => {
+  const h = await harness();
+  assert.deepEqual(await autoPublishNominatedListing(h.deps as never, h.requestId, h.state()),
+    {outcome: "needs_review", reasons: ["auto_publish_paused"]});
+  assert.equal(h.db.entries().filter(([key]) => key.startsWith("organizers/")).length, 0);
+});
 
 test("a registered associate's complete WhatsApp nomination publishes without staff review, and says so honestly", async () => {
   const h = await harness();
@@ -177,7 +184,7 @@ test("a slug another organizer holds leaves the listing for staff", async () => 
   const deps = {...h.deps, reserveCanonicalRoute: async () => {
     throw new HttpsError("already-exists", "That public slug is taken.");
   }};
-  const outcome = await autoPublishNominatedListing(deps as never, h.requestId, h.state());
+  const outcome = await autoPublishNominatedListing(deps as never, h.requestId, h.state(), {paused: false});
   assert.deepEqual(outcome, {outcome: "needs_review", reasons: ["approval_refused:already-exists"]});
   assert.equal((h.db.read(`${supplyIntakeCollections.requests}/${h.requestId}`) as {approval: unknown}).approval, null);
 });
