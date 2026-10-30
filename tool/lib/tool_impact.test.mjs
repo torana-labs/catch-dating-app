@@ -976,7 +976,6 @@ test("backend control classifications retain every graph check without the full 
         assert.ok(plan.toolIds.includes(id), `${changedPath} omitted ${id}`);
       }
       assert.ok(plan.toolIds.includes("ci:web-hosting-delivery-package"));
-      assert.ok(plan.toolIds.includes("ci:mobile-release-package"));
       assert.ok(plan.toolIds.length < 40, `${changedPath} selected ${plan.toolIds.length}`);
       assert.deepEqual(plan.setupRequirements, ["node", "root-npm"]);
     }

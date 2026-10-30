@@ -10,23 +10,6 @@ import {
 
 const expectedRoles = ["consumer", "host"];
 const expectedEnvironments = ["dev", "staging", "prod"];
-const expectedExternalGates = new Map([
-  [
-    "APP-TARGET-IOS-GITHUB-CUTOVER-001",
-    {
-      issue: 218,
-      scope: "consumer-and-host-testflight-internal-distribution",
-    },
-  ],
-  [
-    "APP-TARGET-ANDROID-PLAY-001",
-    {
-      issue: 199,
-      scope: "consumer-and-host-google-play-internal-distribution",
-    },
-  ],
-]);
-
 export function packageVersionFromPubLock(source, packageName) {
   const lines = source.split(/\r?\n/u);
   const packageHeader = `  ${packageName}:`;
@@ -126,12 +109,6 @@ export function validateManifestShape(manifest) {
     if (!roleConfig.packageEntrypoint) {
       findings.push(`${role}: packageEntrypoint is required`);
     }
-    if (roleConfig.storeProduct?.testFlightDistributionPolicy !==
-        "all-existing-internal-groups-with-testers") {
-      findings.push(
-        `${role}: TestFlight distribution policy must target all existing internal groups with testers`,
-      );
-    }
   }
   for (const environment of expectedEnvironments) {
     if (!manifest?.environments?.[environment]) {
@@ -189,62 +166,6 @@ export function validateManifestShape(manifest) {
         findings.push(`missing target pair ${role}/${environment}`);
       }
     }
-  }
-  return findings;
-}
-
-export function validateExternalGateContract(contract) {
-  const findings = [];
-  if (contract?.$schema !== "catch.app-target-external-gates/v1") {
-    findings.push(
-      "external gates $schema must be catch.app-target-external-gates/v1",
-    );
-  }
-  if (contract?.schemaVersion !== 1) {
-    findings.push("external gates schemaVersion must be 1");
-  }
-  if (contract?.logicalName !== "catch-app-target-external-gates") {
-    findings.push(
-      "external gates logicalName must be catch-app-target-external-gates",
-    );
-  }
-  const gates = Array.isArray(contract?.gates) ? contract.gates : [];
-  if (gates.length !== expectedExternalGates.size) {
-    findings.push(
-      `expected ${expectedExternalGates.size} external gates, found ${gates.length}`,
-    );
-  }
-  const seen = new Set();
-  for (const gate of gates) {
-    const expected = expectedExternalGates.get(gate?.id);
-    if (!expected) {
-      findings.push(`unknown external gate ${gate?.id ?? "<missing-id>"}`);
-      continue;
-    }
-    if (seen.has(gate.id)) findings.push(`duplicate external gate ${gate.id}`);
-    seen.add(gate.id);
-    if (!["blocked_external", "resolved"].includes(gate.status)) {
-      findings.push(`${gate.id}: status must be blocked_external or resolved`);
-    }
-    if (gate.issue !== expected.issue) {
-      findings.push(`${gate.id}: issue must be ${expected.issue}`);
-    }
-    if (gate.scope !== expected.scope) {
-      findings.push(`${gate.id}: scope must be ${expected.scope}`);
-    }
-    if (!Array.isArray(gate.closureCriteria) || gate.closureCriteria.length === 0 ||
-        gate.closureCriteria.some((criterion) =>
-          typeof criterion !== "string" || criterion.trim().length === 0)) {
-      findings.push(`${gate.id}: closureCriteria must contain non-empty strings`);
-    }
-    for (const retiredKey of ["evidence", "removalProof", "runIds"]) {
-      if (Object.hasOwn(gate, retiredKey)) {
-        findings.push(`${gate.id}: ${retiredKey} belongs in Git, Issues, or the release runbook`);
-      }
-    }
-  }
-  for (const gateId of expectedExternalGates.keys()) {
-    if (!seen.has(gateId)) findings.push(`missing external gate ${gateId}`);
   }
   return findings;
 }
@@ -326,71 +247,98 @@ export function validateAutomaticAppleSigningSettings({
   return findings;
 }
 
-export function hasActiveExternalGate(contract, gateId) {
-  return (contract?.gates ?? []).some(
-    (gate) => gate.id === gateId && gate.status !== "resolved",
+// The fastlane release path: Mobile Beta builds, verifies and uploads every
+// test build in one job; Mobile Production only promotes a build testers
+// already have, behind a reviewer-gated environment.
+export const releaseFiles = Object.freeze({
+  lanes: "fastlane/Fastfile",
+  betaWorkflow: ".github/workflows/mobile-beta.yml",
+  productionWorkflow: ".github/workflows/mobile-production.yml",
+});
+
+const expectedReleasePolicy = [
+  ["release owner", (policy) => policy.owner, "github-actions"],
+  ["release tool", (policy) => policy.tool, "fastlane"],
+  ["release lanes", (policy) => policy.lanes, releaseFiles.lanes],
+  ["beta workflow", (policy) => policy.betaWorkflow, releaseFiles.betaWorkflow],
+  ["beta trigger", (policy) => policy.betaTrigger, "nightly-when-apps-changed-and-dispatch"],
+  ["beta environment", (policy) => policy.betaEnvironment, "prod-mobile"],
+  ["production workflow", (policy) => policy.productionWorkflow, releaseFiles.productionWorkflow],
+  ["production trigger", (policy) => policy.productionTrigger, "reviewer-approved-dispatch"],
+  ["production environment", (policy) => policy.productionEnvironment, "prod-mobile-release"],
+  ["release branch policy", (policy) => policy.branchPolicy, "main-only"],
+  ["iOS beta channel", (policy) => policy.ios?.betaChannel, "testflight"],
+  [
+    "iOS tester distribution",
+    (policy) => policy.ios?.testerDistribution,
+    "app-store-connect-automatic-internal-groups",
+  ],
+  [
+    "iOS production channel",
+    (policy) => policy.ios?.productionChannel,
+    "app-store-review-of-tested-build",
+  ],
+  ["iOS signing style", (policy) => policy.ios?.signingStyle, "automatic"],
+  [
+    "iOS development identity source",
+    (policy) => policy.ios?.developmentIdentitySource,
+    "reusable-ci-p12",
+  ],
+  [
+    "iOS distribution signing stage",
+    (policy) => policy.ios?.distributionSigningStage,
+    "export",
+  ],
+  ["Android beta track", (policy) => policy.android?.betaTrack, "internal"],
+  [
+    "Android production channel",
+    (policy) => policy.android?.productionChannel,
+    "staged-rollout-of-tested-version-code",
+  ],
+  ["Android publisher auth", (policy) => policy.android?.publisherAuth, "github-oidc"],
+  [
+    "Android publisher service account",
+    (policy) => policy.android?.publisherServiceAccount,
+    "github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com",
+  ],
+];
+
+const retiredReleaseFields = [
+  "githubMode",
+  "githubWorkflow",
+  "automaticTestFlightOnMain",
+  "legacyXcodeCloudWorkflow",
+];
+
+/** Returns the body of `lane :<name>` inside `platform :<platform>`, or "". */
+export function fastlaneLaneSource(source, platform, lane) {
+  const platformStart = source.indexOf(`platform :${platform} do`);
+  if (platformStart < 0) return "";
+  const platformEnd = source.indexOf("\nend\n", platformStart);
+  const platformSource = source.slice(
+    platformStart,
+    platformEnd < 0 ? source.length : platformEnd,
   );
+  const laneStart = platformSource.indexOf(`lane :${lane} do`);
+  if (laneStart < 0) return "";
+  const laneEnd = platformSource.indexOf("\n  end\n", laneStart);
+  return platformSource.slice(laneStart, laneEnd < 0 ? platformSource.length : laneEnd);
 }
 
 export function validateReleaseOwnership({
-  externalGates,
   manifest,
-  workflowSource,
+  fastfileSource,
+  betaWorkflowSource,
+  productionWorkflowSource,
 }) {
   const findings = [];
-  const warnings = [];
   const policy = manifest.releasePolicy ?? {};
-  const workflow = ".github/workflows/mobile-internal-release.yml";
-  const promotionWorkflow = ".github/workflows/mobile-internal-promote.yml";
-  for (const [label, actual, expected] of [
-    ["release owner", policy.owner, "github-actions"],
-    ["release workflow", policy.workflow, workflow],
-    ["release promotion workflow", policy.promotionWorkflow, promotionWorkflow],
-    [
-      "release trigger",
-      policy.trigger,
-      "successful-main-ci-exact-artifact-authority",
-    ],
-    ["release environment", policy.environment, "prod-mobile"],
-    [
-      "release approval mode",
-      policy.approvalMode,
-      "automatic-ios-exact-artifact-internal-promotion",
-    ],
-    ["release branch policy", policy.branchPolicy, "main-only"],
-    ["iOS channel", policy.ios?.channel, "testflight"],
-    ["iOS upload mode", policy.ios?.uploadMode, "separate-promotion-workflow"],
-    [
-      "iOS distribution policy",
-      policy.ios?.distributionPolicy,
-      "all-existing-internal-groups-with-testers",
-    ],
-    ["iOS signing style", policy.ios?.signingStyle, "automatic"],
-    [
-      "iOS development identity source",
-      policy.ios?.developmentIdentitySource,
-      "reusable-ci-p12",
-    ],
-    ["iOS distribution signing stage", policy.ios?.distributionSigningStage, "export"],
-    ["iOS upload artifact", policy.ios?.uploadArtifact, "verified-ipa"],
-    ["iOS upload tool", policy.ios?.uploadTool, "altool"],
-    ["Android channel", policy.android?.channel, "play-internal"],
-    ["Android track", policy.android?.track, "qa"],
-    ["Android upload mode", policy.android?.uploadMode, "separate-promotion-workflow"],
-    ["Android publisher auth", policy.android?.publisherAuth, "github-oidc"],
-    [
-      "Android publisher service account",
-      policy.android?.publisherServiceAccount,
-      "github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com",
-    ],
-  ]) {
+  for (const [label, read, expected] of expectedReleasePolicy) {
+    const actual = read(policy);
     if (actual !== expected) findings.push(`${label} was '${actual ?? ""}'; expected '${expected}'`);
   }
   if (JSON.stringify(policy.roles) !== JSON.stringify(expectedRoles)) {
     findings.push("release policy roles must be [consumer, host]");
-  }
-  if (JSON.stringify(policy.ios?.automaticRoles) !== JSON.stringify(expectedRoles)) {
-    findings.push("mobile package producer iOS automatic roles must be [consumer, host]");
   }
   if (!/^[A-F0-9]{64}$/u.test(policy.android?.uploadCertificateSha256 ?? "")) {
     findings.push("Android upload certificate SHA-256 must be a checked 64-digit hex value");
@@ -401,172 +349,120 @@ export function validateReleaseOwnership({
     if (target.release?.owner !== "github-actions") {
       findings.push(`${target.id}: release owner must be github-actions`);
     }
-    if (target.release?.githubMode !== "automatic-exact-artifact") {
-      findings.push(`${target.id}: githubMode must be automatic-exact-artifact`);
-    }
-    if (target.release?.automaticTestFlightOnMain !== true) {
-      findings.push(`${target.id}: automaticTestFlightOnMain must be true`);
-    }
-    if (target.release?.githubWorkflow !== workflow) {
-      findings.push(`${target.id}: release workflow must be ${workflow}`);
-    }
     if (target.release?.googlePlayPackageName !== target.android?.applicationId) {
       findings.push(`${target.id}: Google Play package must match Android application id`);
     }
-    if (!target.release?.legacyXcodeCloudWorkflow) {
-      findings.push(`${target.id}: legacy Xcode Cloud workflow name is required for cutover`);
+    for (const field of retiredReleaseFields) {
+      if (Object.hasOwn(target.release ?? {}, field)) {
+        findings.push(`${target.id}.release.${field} belonged to the retired release pipeline`);
+      }
     }
   }
 
+  const beta = betaWorkflowSource ?? "";
   for (const [label, marker] of [
-    ["successful CI workflow-run trigger", /workflow_run:[\s\S]*?workflows:\s*\["CI"\][\s\S]*?types:\s*\[completed\][\s\S]*?branches:\s*\[main\]/u],
-    ["CI authority v3 verification", /catch\.ci-delivery-authority\/v3/u],
-    ["immutable CI authority artifact download", /actions\/artifacts\/\$authority_id\/zip/u],
-    ["immutable CI plan artifact download", /actions\/artifacts\/\$plan_id\/zip/u],
-    ["exact mobile release target projection", /\.operations\.releaseTargets/u],
-    ["iOS target matrix", /prod-ios:[\s\S]*?matrix:[\s\S]*?release_target/u],
-    ["Android target matrix", /prod-android:[\s\S]*?matrix:[\s\S]*?release_target/u],
-    ["mobile credentials environment", /environment:\s*prod-mobile/u],
+    ["nightly schedule", /^on:[\s\S]*?^\s{2}schedule:\s*\n\s*- cron:/mu],
+    ["manual dispatch", /^\s{2}workflow_dispatch:/mu],
+    ["main-only guard", /github\.ref == 'refs\/heads\/main'/u],
+    ["beta credentials environment", /environment:\s*prod-mobile\s*$/mu],
+    ["serialized uploads", /concurrency:[\s\S]*?cancel-in-progress:\s*false/u],
+    ["iOS beta lane", /bundle exec fastlane ios beta role:/u],
+    ["Android beta lane", /bundle exec fastlane android beta role:/u],
     [
       "reusable iOS development certificate secret",
       /secrets\.IOS_CI_DEVELOPMENT_CERTIFICATE_P12_BASE64/u,
     ],
-    [
-      "reusable iOS development certificate password secret",
-      /secrets\.IOS_CI_DEVELOPMENT_CERTIFICATE_PASSWORD/u,
-    ],
-    [
-      "reusable iOS development certificate fingerprint",
-      /vars\.IOS_CI_DEVELOPMENT_CERTIFICATE_SHA256/u,
-    ],
-    [
-      "reusable iOS development certificate expiry metadata",
-      /vars\.IOS_CI_DEVELOPMENT_CERTIFICATE_EXPIRES_AT/u,
-    ],
-    [
-      "non-extractable reusable iOS identity import",
-      /security import "\$p12_path"[\s\S]*?-f pkcs12[\s\S]*?-x[\s\S]*?-T \/usr\/bin\/codesign/u,
-    ],
-    [
-      "reusable iOS identity team validation",
-      /PlistBuddy -c 'Print :teamID' "\$APP_PROJECT_ROOT\/ios\/ExportOptions\.prod\.plist"/u,
-    ],
-    [
-      "reusable iOS identity certificate subject validation",
-      /certificate_subject[\s\S]*?CN=Apple Development:[\s\S]*?OU=\$expected_team_id/u,
-    ],
-    [
-      "reusable iOS identity fingerprint derivation",
-      /actual_sha256=.*openssl x509[\s\S]*?-fingerprint -sha256/u,
-    ],
-    [
-      "reusable iOS identity fingerprint validation",
-      /"\$actual_sha256" != "\$expected_sha256"/u,
-    ],
-    [
-      "reusable iOS identity expiry metadata validation",
-      /"\$actual_expiry_epoch" != "\$configured_expiry_epoch"/u,
-    ],
-    [
-      "reusable iOS identity validity floor",
-      /openssl x509[\s\S]*?-checkend 2592000/u,
-    ],
-    [
-      "single valid reusable iOS development identity",
-      /security find-identity -v -p codesigning/u,
-    ],
-    [
-      "always-run reusable iOS identity cleanup",
-      /Remove ephemeral iOS signing material[\s\S]*?if:\s*\$\{\{ always\(\) \}\}[\s\S]*?security delete-keychain/u,
-    ],
-    ["automatic iOS distribution export", /xcodebuild\s*\\\s*\n\s*-exportArchive/u],
-    [
-      "role-specific iOS workspace",
-      /-workspace "\$APP_PROJECT_ROOT\/ios\/Runner\.xcworkspace"/u,
-    ],
-    [
-      "role-specific iOS export options",
-      /-exportOptionsPlist "\$APP_PROJECT_ROOT\/ios\/ExportOptions\.prod\.plist"/u,
-    ],
-    ["post-export iOS identity verification", /verify_ios_release_identity\.mjs\s*\\[\s\S]*?--ipa/u],
-    ["verified IPA checksum", /shasum\s+-a\s+256\s+"\$ipa_path"/u],
-    ["signed Android identity verification", /verify_android_release_bundle\.mjs/u],
-    [
-      "role-specific Android signing root",
-      /"\$APP_PROJECT_ROOT\/android\/key\.properties"/u,
-    ],
-    [
-      "role-specific Android bundle output",
-      /find "\$APP_PROJECT_ROOT\/build\/app\/outputs\/bundle"/u,
-    ],
-    ["serialized release concurrency", /concurrency:[\s\S]*?cancel-in-progress:\s*false/u],
-    ["read-only App Store build-floor proof", /verify_app_store_build\.mjs[\s\S]*?--check-candidate/u],
+    ["keyless Play authentication", /google-github-actions\/auth@/u],
     ["pinned bundletool checksum", /BUNDLETOOL_SHA256/u],
-    ["delivery-core mobile package adapter", /package_mobile_release\.mjs prepare/u],
-    ["immutable package upload binding", /package_mobile_release\.mjs bind-upload/u],
-    ["90-day package retention", /retention-days:\s*90/u],
-    ["cross-role package comparison", /compare-role-packages:[\s\S]*?check_mobile_package\.mjs --compare/u],
-    ["post-comparison build authority", /publish-authority:[\s\S]*?needs:\s*compare-role-packages[\s\S]*?catch\.mobile-build-authority\/v2/u],
+    ["build provenance attestation", /actions\/attest-build-provenance@/u],
   ]) {
-    if (!marker.test(workflowSource)) findings.push(`mobile release workflow is missing ${label}`);
+    if (!marker.test(beta)) findings.push(`${releaseFiles.betaWorkflow} is missing ${label}`);
   }
-  if (/CODE_SIGN_IDENTITY\s*=/u.test(workflowSource)) {
-    findings.push(
-      "mobile release workflow must defer CODE_SIGN_IDENTITY to Xcode automatic signing",
-    );
+  for (const [label, marker] of [
+    ["a production lane", /fastlane (?:ios|android) release/u],
+    ["the production environment", /prod-mobile-release/u],
+    ["a push or workflow_run trigger", /^\s{2}(?:push|workflow_run):/mu],
+  ]) {
+    if (marker.test(beta)) findings.push(`${releaseFiles.betaWorkflow} must not contain ${label}`);
   }
-  const exportArchiveCount = workflowSource.match(/-exportArchive/gu)?.length ?? 0;
-  if (exportArchiveCount !== 1) {
+
+  const production = productionWorkflowSource ?? "";
+  for (const [label, marker] of [
+    ["manual dispatch", /^\s{2}workflow_dispatch:/mu],
+    ["main-only guard", /github\.ref == 'refs\/heads\/main'/u],
+    ["iOS release lane", /bundle exec fastlane ios release role:/u],
+    ["Android release lane", /bundle exec fastlane android release role:/u],
+  ]) {
+    if (!marker.test(production)) {
+      findings.push(`${releaseFiles.productionWorkflow} is missing ${label}`);
+    }
+  }
+  const environments = [...production.matchAll(/^\s*environment:\s*(\S+)\s*$/gmu)]
+    .map((match) => match[1]);
+  if (environments.length === 0 || environments.some((name) => name !== "prod-mobile-release")) {
     findings.push(
-      `mobile release workflow must export exactly one IPA before verification and packaging; found ${exportArchiveCount} -exportArchive commands`,
+      `${releaseFiles.productionWorkflow} must run every job in the reviewer-gated prod-mobile-release environment`,
     );
   }
   for (const [label, marker] of [
-    ["TestFlight upload", /xcrun\s+altool|--upload-package/u],
-    ["Play upload", /upload_google_play_bundle\.mjs/u],
-    ["Play mutation probe", /probe_google_play_access\.mjs/u],
-    ["legacy Xcode Cloud mutation", /set_xcode_cloud_workflow_state\.mjs/u],
-    ["manual release dispatch", /^\s{2}workflow_dispatch:/mu],
-    ["store apply flag", /--apply|--allow-prod/u],
+    ["a beta lane", /fastlane (?:ios|android) beta/u],
+    ["an automatic trigger", /^\s{2}(?:schedule|push|workflow_run|pull_request):/mu],
   ]) {
-    if (marker.test(workflowSource)) {
-      findings.push(`mobile package producer must not contain ${label}`);
+    if (marker.test(production)) {
+      findings.push(`${releaseFiles.productionWorkflow} must not contain ${label}`);
     }
   }
 
-  for (const gateId of [
-    "APP-TARGET-IOS-GITHUB-CUTOVER-001",
-    "APP-TARGET-ANDROID-PLAY-001",
+  const fastfile = fastfileSource ?? "";
+  const lanes = {
+    iosBeta: fastlaneLaneSource(fastfile, "ios", "beta"),
+    iosRelease: fastlaneLaneSource(fastfile, "ios", "release"),
+    androidBeta: fastlaneLaneSource(fastfile, "android", "beta"),
+    androidRelease: fastlaneLaneSource(fastfile, "android", "release"),
+  };
+  for (const [name, source] of Object.entries(lanes)) {
+    if (!source) findings.push(`${releaseFiles.lanes} is missing the ${name} lane`);
+  }
+  for (const [lane, label, marker] of [
+    ["iosBeta", "prod build wrapper", /flutter_with_env\.sh", "prod"/u],
+    ["iosBeta", "live callable dependency check", /verify_callable_dependencies\(role\)/u],
+    ["iosBeta", "role-specific export options", /ExportOptions\.prod\.plist/u],
+    ["iosBeta", "post-export iOS identity verification", /verify_ios_release_identity\.mjs"[\s\S]*?"--ipa"/u],
+    ["iosBeta", "built Maps configuration check", /validate_google_maps_config\.mjs/u],
+    ["iosBeta", "iOS package policy", /check_mobile_package\.mjs"[\s\S]*?"ios"/u],
+    ["iosBeta", "internal-only TestFlight upload", /upload_to_testflight\([\s\S]*?distribute_external: false/u],
+    ["androidBeta", "prod build wrapper", /flutter_with_env\.sh", "prod"/u],
+    ["androidBeta", "live callable dependency check", /verify_callable_dependencies\(role\)/u],
+    ["androidBeta", "signed Android identity verification", /verify_android_release_bundle\.mjs/u],
+    ["androidBeta", "Android package policy", /check_mobile_package\.mjs"[\s\S]*?"android"/u],
+    ["androidBeta", "internal track upload", /track: "internal"/u],
+    ["iosRelease", "submission without a new binary", /skip_binary_upload: true/u],
+    ["androidRelease", "promotion without a new bundle", /skip_upload_aab: true/u],
+    ["androidRelease", "promotion from the internal track", /track: "internal",\s*track_promote_to: "production"/u],
   ]) {
-    const gate = (externalGates?.gates ?? []).find(
-      (candidate) => candidate.id === gateId,
-    );
-    if (!gate) {
-      findings.push(`${gateId}: missing external gate`);
-    } else if (hasActiveExternalGate(externalGates, gateId)) {
-      warnings.push(`${gateId}: external store distribution proof remains pending`);
+    if (lanes[lane] && !marker.test(lanes[lane])) {
+      findings.push(`${releaseFiles.lanes} ${lane} lane is missing ${label}`);
     }
   }
-  return {findings, warnings};
+  for (const lane of ["iosBeta", "androidBeta"]) {
+    if (/production|upload_to_app_store|submit_for_review/u.test(lanes[lane])) {
+      findings.push(`${releaseFiles.lanes} ${lane} lane must not reach production`);
+    }
+  }
+  for (const lane of ["iosRelease", "androidRelease"]) {
+    if (/build_app|flutter_with_env\.sh/u.test(lanes[lane])) {
+      findings.push(`${releaseFiles.lanes} ${lane} lane must promote a tested build, not rebuild`);
+    }
+  }
+  if (/CODE_SIGN_IDENTITY\s*=/u.test(fastfile)) {
+    findings.push(`${releaseFiles.lanes} must defer CODE_SIGN_IDENTITY to Xcode automatic signing`);
+  }
+  return findings;
 }
 
 export function scanAppTargets({root = defaultRepoRoot} = {}) {
   const manifest = loadAppTargets({root});
   const findings = validateManifestShape(manifest);
-  const warnings = [];
-  const externalGatesPath = path.join(
-    root,
-    "tool/app_target_external_gates.json",
-  );
-  let externalGates = null;
-  try {
-    externalGates = JSON.parse(fs.readFileSync(externalGatesPath, "utf8"));
-    findings.push(...validateExternalGateContract(externalGates));
-  } catch (error) {
-    findings.push(
-      `tool/app_target_external_gates.json: ${error.message}`,
-    );
-  }
   const read = (relativePath) =>
     fs.readFileSync(resolveRepoPath(root, relativePath, findings), "utf8");
 
@@ -741,29 +637,23 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
   validateDeepLinkOwnership({root, manifest, findings});
   validateRemoteConfigOwnership({root, manifest, findings});
 
-  const prodWorkflow = path.join(root, ".github/workflows/mobile-internal-release.yml");
-  if (fs.existsSync(prodWorkflow)) {
-    const releaseResult = validateReleaseOwnership({
-      externalGates,
-      manifest,
-      workflowSource: fs.readFileSync(prodWorkflow, "utf8") + "\n" +
-        fs.readFileSync(path.join(root, ".github/workflows/_mobile-platform-authority.yml"), "utf8"),
-    });
-    findings.push(...releaseResult.findings);
-    warnings.push(...releaseResult.warnings);
-  } else {
-    findings.push("missing .github/workflows/mobile-internal-release.yml");
+  const releaseSources = {};
+  for (const [key, relativePath] of Object.entries(releaseFiles)) {
+    const filePath = path.join(root, relativePath);
+    if (fs.existsSync(filePath)) {
+      releaseSources[key] = fs.readFileSync(filePath, "utf8");
+    } else {
+      findings.push(`missing ${relativePath}`);
+    }
   }
+  findings.push(...validateReleaseOwnership({
+    manifest,
+    fastfileSource: releaseSources.lanes,
+    betaWorkflowSource: releaseSources.betaWorkflow,
+    productionWorkflowSource: releaseSources.productionWorkflow,
+  }));
 
-  const promotionWorkflow = path.join(
-    root,
-    ".github/workflows/mobile-internal-promote.yml",
-  );
-  if (!fs.existsSync(promotionWorkflow)) {
-    findings.push("missing .github/workflows/mobile-internal-promote.yml");
-  }
-
-  return {manifest, findings, warnings};
+  return {manifest, findings};
 }
 
 function validateTarget({
@@ -1197,9 +1087,8 @@ function unquoteBuildSetting(value) {
 function runCli() {
   const result = scanAppTargets();
   console.log(
-    `App targets: ${result.manifest.targets.length} checked, ${result.findings.length} finding(s), ${result.warnings.length} external warning(s).`,
+    `App targets: ${result.manifest.targets.length} checked, ${result.findings.length} finding(s).`,
   );
-  for (const warning of result.warnings) console.warn(`- warning: ${warning}`);
   if (result.findings.length > 0) {
     for (const finding of result.findings) console.error(`- ${finding}`);
     process.exitCode = 1;

@@ -30,11 +30,10 @@ concurrency:
   # source before anything reaches main, so a PR result never needs to stay
   # current with main. Merge-queue groups key on their exact head. Main pushes
   # share one group, so a newer merge cancels the older main run instead of
-  # competing with the queue for runners. Delivery still covers the cancelled
-  # commits: the next run's window starts at the last successful main run
-  # (tool/ci/main_ci_baseline.mjs). Marketing Website reuses the cancelled
-  # run's capture and validation jobs that already succeeded, and otherwise
-  # captures and validates its exact source itself.
+  # competing with the queue for runners. The merge queue already validated
+  # every cancelled commit. Marketing Website reuses the cancelled run's
+  # capture and validation jobs that already succeeded, and otherwise captures
+  # and validates its exact source itself.
   group: ci-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.event_name == 'push' && github.ref || github.event.merge_group.head_sha || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
 
@@ -68,8 +67,6 @@ jobs:
       base_sha: ${{ steps.plan.outputs.base_sha }}
       source_sha: ${{ steps.plan.outputs.source_sha }}
       producer_attempt: ${{ steps.plan.outputs.producer_attempt }}
-      deploy_groups: ${{ steps.plan.outputs.deploy_groups }}
-      deploy_required: ${{ steps.plan.outputs.deploy_required }}
       mode: ${{ steps.plan.outputs.mode }}
       full: ${{ steps.plan.outputs.full }}
       commit_window: ${{ steps.plan.outputs.commit_window }}
@@ -89,7 +86,6 @@ jobs:
             /tool/harness.mjs
             /tool/harness/verify_local.mjs
             /tool/harness/compare_selectors.mjs
-            /tool/ci/main_ci_baseline.mjs
             /tool/ci/toolchain.env
             /tool/harness/component_graph.json
             /tool/harness/lib/component_graph.mjs
@@ -117,7 +113,6 @@ jobs:
         env:
           BEFORE_SHA: ${{ github.event.before }}
           EVENT_NAME: ${{ github.event_name }}
-          GH_TOKEN: ${{ github.token }}
           HEAD_SHA: ${{ github.sha }}
           MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -138,11 +133,7 @@ jobs:
               ;;
             push)
               event_mode="main"
-              baseline="$(node tool/ci/main_ci_baseline.mjs \
-                --repository "$GITHUB_REPOSITORY" \
-                --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
-                --source-sha "$HEAD_SHA" --fallback-base "$BEFORE_SHA")"
-              base_sha="$(jq -er '.baseSha' <<< "$baseline")"
+              base_sha="$BEFORE_SHA"
               window_flag=(--commit-window)
               ;;
             schedule)
@@ -236,8 +227,8 @@ jobs:
         run: |
           set -uo pipefail
           # The merge queue validated this exact commit before main moved to
-          # it, so main re-runs no validation lane: it only plans, finalizes
-          # and packages delivery. Any lookup failure keeps the full run.
+          # it, so main re-runs no validation lane: it only plans. Any lookup
+          # failure keeps the full run.
           run_id=""
           if runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?event=merge_group&head_sha=$SOURCE_SHA&per_page=20")"; then
             run_id="$(jq -r --arg sha "$SOURCE_SHA" '[.workflow_runs[]? | select(.event == "merge_group" and
@@ -292,7 +283,7 @@ jobs:
       - name: Upload planner evidence
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ github.event_name == 'push' && 'harness-validation-plan' || 'harness-plan' }}-${{ github.run_number }}-${{ github.run_id }}-${{ steps.plan.outputs.source_sha }}-${{ github.run_attempt }}
+          name: harness-plan-${{ github.run_number }}-${{ github.run_id }}-${{ steps.plan.outputs.source_sha }}-${{ github.run_attempt }}
           path: build/ci/impact-plan.json
           if-no-files-found: error
           retention-days: 90
@@ -573,249 +564,6 @@ jobs:
       web_smoke: ${{ needs.plan.outputs.flutter_web_smoke == 'true' }}
     secrets: inherit
 
-  finalize-plan:
-    name: Finalize the ordered delivery plan
-    if: >-
-      !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
-      needs.plan.result == 'success' &&
-      needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
-      !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
-    needs:
-      - plan
-      - source-preflight
-      - tools
-      - contracts
-      - functions
-      - firestore-rules
-      - flutter
-      - visual-integration
-      - admin
-      - marketing
-      - capture-freshness
-      - operations
-      - docs-policy
-      - app-builds
-    runs-on: ubuntu-latest
-    timeout-minutes: 180
-    outputs:
-      base_sha: ${{ steps.finalize.outputs.base_sha }}
-      deploy_groups: ${{ steps.finalize.outputs.deploy_groups }}
-      deploy_required: ${{ steps.finalize.outputs.deploy_required }}
-    steps:
-      - name: Checkout the validated source and history
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ needs.plan.outputs.source_sha }}
-          fetch-depth: 0
-      - id: toolchain
-        uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ steps.toolchain.outputs.node-version }}
-      - name: Download this attempt's validation plan
-        uses: actions/download-artifact@v7
-        with:
-          name: harness-validation-plan-${{ github.run_number }}-${{ github.run_id }}-${{ needs.plan.outputs.source_sha }}-${{ github.run_attempt }}
-          path: build/ci/validation
-      - id: finalize
-        name: Prove validation coverage before ordered publication
-        env:
-          BEFORE_SHA: ${{ github.event.before }}
-          GH_TOKEN: ${{ github.token }}
-          NEEDS_JSON: ${{ toJSON(needs) }}
-          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
-          FLUTTER_SELECTED: ${{ needs.plan.outputs.flutter }}
-          QUEUE_RUN: ${{ needs.plan.outputs.queue_verified_run }}
-        run: |
-          set -euo pipefail
-          printf '%s\n' "$NEEDS_JSON" > build/ci/validation-needs.json
-          proof_args=(
-            --validation-plan build/ci/validation/impact-plan.json
-            --needs-json build/ci/validation-needs.json
-            --source-sha "$SOURCE_SHA"
-            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT"
-          )
-          [[ -z "${QUEUE_RUN:-}" ]] || proof_args+=(--queue-verified-run "$QUEUE_RUN")
-          # Fail before waiting when a selected lane or this attempt's proof is missing.
-          node tool/ci/finalize_ci_plan.mjs validate "${proof_args[@]}"
-          validation_base_sha="$(jq -er '.baseSha' build/ci/validation/impact-plan.json)"
-          baseline="$(node tool/ci/main_ci_baseline.mjs \
-            --repository "$GITHUB_REPOSITORY" \
-            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
-            --source-sha "$SOURCE_SHA" --minimum-base-sha "$validation_base_sha" \
-            --fallback-base "$BEFORE_SHA" --wait)"
-          base_sha="$(jq -er '.baseSha' <<< "$baseline")"
-          node tool/ci/finalize_ci_plan.mjs finalize "${proof_args[@]}" \
-            --base-sha "$base_sha" --output build/ci/impact-plan.json \
-            --github-output "$GITHUB_OUTPUT"
-          # Removal/reintroduction can change these directional gates even
-          # though the union of tested files and dependency closures is covered.
-          node tool/docs/check_doc_metadata.mjs --base "$base_sha"
-          if [[ "$FLUTTER_SELECTED" == "true" ]]; then
-            node tool/design/check_new_widget_inventory.mjs --base "$base_sha" --check --no-write
-          fi
-      - name: Upload finalized planner evidence
-        uses: actions/upload-artifact@v7
-        with:
-          name: harness-plan-${{ github.run_number }}-${{ github.run_id }}-${{ needs.plan.outputs.source_sha }}-${{ github.run_attempt }}
-          path: build/ci/impact-plan.json
-          if-no-files-found: error
-          retention-days: 90
-
-  package-firebase:
-    name: Package approved Firebase backend
-    if: >-
-      !cancelled() &&
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main' &&
-      needs.plan.result == 'success' &&
-      needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
-      needs.finalize-plan.result == 'success' &&
-      needs.finalize-plan.outputs.deploy_required == 'true'
-    needs:
-      - plan
-      - source-preflight
-      - finalize-plan
-      - tools
-      - contracts
-      - functions
-      - firestore-rules
-      - flutter
-      - visual-integration
-      - admin
-      - marketing
-      - capture-freshness
-      - operations
-      - docs-policy
-      - app-builds
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Require every selected validation lane
-        env:
-          DEPLOY_GROUPS: ${{ needs.finalize-plan.outputs.deploy_groups }}
-          NEEDS_JSON: ${{ toJSON(needs) }}
-          QUEUE_RUN: ${{ needs.plan.outputs.queue_verified_run }}
-        run: |
-          set -euo pipefail
-          failures="$(
-            echo "$NEEDS_JSON" |
-              jq -r 'to_entries[] | select(.value.result != "success" and .value.result != "skipped") | "\(.key)=\(.value.result)"'
-          )"
-          if [[ -n "$failures" ]]; then
-            echo "Selected CI lanes did not pass:"
-            echo "$failures"
-            exit 1
-          fi
-
-          jq -e '
-            type == "array" and
-            length > 0 and
-            all(.[]; . == "functions" or
-              . == "firestore-indexes" or
-              . == "firestore-rules" or
-              . == "storage-rules")
-          ' <<< "$DEPLOY_GROUPS" > /dev/null
-          while IFS=$'\t' read -r deploy_group validation_job; do
-            result="$(jq -er --arg job "$validation_job" '.[$job].result' <<< "$NEEDS_JSON")"
-            # The cited merge-queue run validated this exact source.
-            if [[ "$result" == "skipped" && -n "${QUEUE_RUN:-}" ]]; then continue; fi
-            if [[ "$result" != "success" ]]; then
-              echo "Deploy group $deploy_group requires $validation_job=success; got $result."
-              exit 1
-            fi
-          done < <(
-            jq -r '.[] |
-              if . == "functions" then [. , "functions"]
-              elif . == "firestore-indexes" then [. , "contracts"]
-              elif . == "firestore-rules" or . == "storage-rules" then [. , "firestore-rules"]
-              else error("unsupported Firebase deploy group")
-              end | @tsv' <<< "$DEPLOY_GROUPS"
-          )
-
-      - name: Checkout the exact approved source
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ needs.plan.outputs.source_sha }}
-
-      - id: toolchain
-        uses: ./.github/actions/load-toolchain
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ steps.toolchain.outputs.node-version }}
-          cache: npm
-          cache-dependency-path: functions/package-lock.json
-
-      - name: Download the exact CI impact plan
-        uses: actions/download-artifact@v7
-        with:
-          name: harness-plan-${{ github.run_number }}-${{ github.run_id }}-${{ needs.plan.outputs.source_sha }}-${{ github.run_attempt }}
-          path: build/ci
-
-      - name: Download the exact tested Functions build
-        if: contains(fromJSON(needs.finalize-plan.outputs.deploy_groups), 'functions') && needs.functions.result == 'success'
-        uses: actions/download-artifact@v7
-        with:
-          name: functions-lib-${{ needs.plan.outputs.source_sha }}-${{ github.run_attempt }}
-          path: build/ci/tested-functions-lib
-
-      # When the merge queue proved this exact source, main runs no Functions
-      # lane; compile the same commit the queue tested instead.
-      - name: Build Functions from the queue-validated source
-        if: contains(fromJSON(needs.finalize-plan.outputs.deploy_groups), 'functions') && needs.functions.result == 'skipped' && needs.plan.outputs.queue_verified_run
-        run: |
-          set -euo pipefail
-          npm --prefix functions ci
-          npm --prefix functions run build
-          mkdir -p build/ci
-          cp -R functions/lib build/ci/tested-functions-lib
-
-      - id: package
-        name: Package the exact CI plan and bounded Firebase backend
-        env:
-          BASE_SHA: ${{ needs.finalize-plan.outputs.base_sha }}
-          CI_RUN_ATTEMPT: ${{ github.run_attempt }}
-          CI_RUN_ID: ${{ github.run_id }}
-          DEPLOY_GROUPS: ${{ needs.finalize-plan.outputs.deploy_groups }}
-          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
-        run: |
-          set -euo pipefail
-          mkdir -p build/ci/firebase-delivery
-          package_args=(
-            prepare
-            --impact-plan build/ci/impact-plan.json
-            --source-sha "$SOURCE_SHA"
-            --base-sha "$BASE_SHA"
-            --ci-run-id "$CI_RUN_ID"
-            --ci-run-attempt "$CI_RUN_ATTEMPT"
-            --stage-dir build/ci/firebase-package
-          )
-          if jq -e 'index("functions") != null' <<< "$DEPLOY_GROUPS" > /dev/null; then
-            package_args+=(--functions-lib-dir build/ci/tested-functions-lib)
-          fi
-          result="$(node tool/ci/package_firebase_delivery.mjs "${package_args[@]}")"
-          stages="$(jq -er '.stages | join(",")' <<< "$result")"
-          tar --sort=name --mtime='UTC 1970-01-01' \
-            --owner=0 --group=0 --numeric-owner \
-            -C build/ci/firebase-package \
-            -czf build/ci/firebase-delivery/firebase-backend.tar.gz .
-          node tool/ci/delivery_core.mjs manifest \
-            --artifact build/ci/firebase-delivery/firebase-backend.tar.gz \
-            --source-sha "$SOURCE_SHA" \
-            --ci-run-id "$CI_RUN_ID" \
-            --ci-run-attempt "$CI_RUN_ATTEMPT" \
-            --stages "$stages" \
-            --out build/ci/firebase-delivery/firebase-provenance.json
-
-      - name: Upload immutable Firebase delivery package
-        uses: actions/upload-artifact@v7
-        with:
-          name: firebase-delivery-${{ needs.plan.outputs.source_sha }}-${{ github.run_attempt }}
-          path: build/ci/firebase-delivery
-          if-no-files-found: error
-          retention-days: 90
-
   required:
     name: Required CI
     # A draft cannot merge or enter the merge queue; it validates once ready.
@@ -823,7 +571,6 @@ jobs:
     needs:
       - plan
       - source-preflight
-      - finalize-plan
       - tools
       - contracts
       - functions
@@ -836,7 +583,6 @@ jobs:
       - operations
       - docs-policy
       - app-builds
-      - package-firebase
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -854,12 +600,8 @@ jobs:
       - id: artifact_guard
         name: Require every selected lane
         env:
-          DEPLOY_REQUIRED: ${{ needs.finalize-plan.outputs.deploy_required || needs.plan.outputs.deploy_required }}
-          EVENT_NAME: ${{ github.event_name }}
           QUEUE_RUN: ${{ needs.plan.outputs.queue_verified_run }}
-          GH_TOKEN: ${{ github.token }}
           NEEDS_JSON: ${{ toJSON(needs) }}
-          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
         run: |
           set -euo pipefail
           failures="$(
@@ -897,142 +639,4 @@ jobs:
               else error("Selected lane " + $lane.key + " lacks successful execution or selection output")
               end)
           ' <<< "$NEEDS_JSON" > /dev/null
-          if [[ "$EVENT_NAME" == "push" && "$GITHUB_REF" == "refs/heads/main" ]]; then
-            test "$(jq -er '.["finalize-plan"].result' <<< "$NEEDS_JSON")" = success
-          fi
-          if [[ "$DEPLOY_REQUIRED" == "true" ]]; then
-            package_result="$(jq -er '.["package-firebase"].result' <<< "$NEEDS_JSON")"
-            if [[ "$package_result" != "success" ]]; then
-              echo "Backend delivery was authorized but package-firebase=$package_result."
-              exit 1
-            fi
-          fi
-          if [[ "$EVENT_NAME" == "push" && "$GITHUB_REF" == "refs/heads/main" ]]; then
-            artifact_pages="$(gh api --paginate --slurp \
-              -H "X-GitHub-Api-Version: 2026-03-10" \
-              "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?per_page=100")"
-            plan_name="harness-plan-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}-${SOURCE_SHA}-${GITHUB_RUN_ATTEMPT}"
-            plan_count="$(jq -r --arg name "$plan_name" \
-              '[.[].artifacts[] | select(.expired == false and .name == $name)] | length' \
-              <<< "$artifact_pages")"
-            if [[ "$plan_count" != "1" ]]; then
-              echo "This main CI attempt does not own exactly one $plan_name artifact. GitHub reused successful jobs from an older attempt; use Re-run all jobs."
-              exit 64
-            fi
-            plan_artifact="$(jq -c --arg name "$plan_name" \
-              '[.[].artifacts[] | select(.expired == false and .name == $name)][0]' \
-              <<< "$artifact_pages")"
-            plan_artifact_id="$(jq -er '.id' <<< "$plan_artifact")"
-            plan_artifact_digest="$(jq -er '.digest' <<< "$plan_artifact")"
-            [[ "$plan_artifact_id" =~ ^[1-9][0-9]*$ ]]
-            [[ "$plan_artifact_digest" =~ ^sha256:[0-9a-f]{64}$ ]]
-            echo "plan_artifact_id=$plan_artifact_id" >> "$GITHUB_OUTPUT"
-            echo "plan_artifact_digest=$plan_artifact_digest" >> "$GITHUB_OUTPUT"
-            if [[ "$DEPLOY_REQUIRED" == "true" ]]; then
-              package_name="firebase-delivery-${SOURCE_SHA}-${GITHUB_RUN_ATTEMPT}"
-              package_count="$(jq -r --arg name "$package_name" \
-                '[.[].artifacts[] | select(.expired == false and .name == $name)] | length' \
-                <<< "$artifact_pages")"
-              if [[ "$package_count" != "1" ]]; then
-                echo "This main CI attempt does not own exactly one $package_name artifact. GitHub reused successful jobs from an older attempt; use Re-run all jobs."
-                exit 64
-              fi
-              package_artifact="$(jq -c --arg name "$package_name" \
-                '[.[].artifacts[] | select(.expired == false and .name == $name)][0]' \
-                <<< "$artifact_pages")"
-              package_artifact_id="$(jq -er '.id' <<< "$package_artifact")"
-              package_artifact_digest="$(jq -er '.digest' <<< "$package_artifact")"
-              [[ "$package_artifact_id" =~ ^[1-9][0-9]*$ ]]
-              [[ "$package_artifact_digest" =~ ^sha256:[0-9a-f]{64}$ ]]
-              echo "package_artifact_id=$package_artifact_id" >> "$GITHUB_OUTPUT"
-              echo "package_artifact_digest=$package_artifact_digest" >> "$GITHUB_OUTPUT"
-            fi
-          fi
           echo "Every selected CI lane passed; unaffected lanes were explicitly skipped."
-
-      - id: authority
-        name: Write the immutable successful-attempt authority
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        env:
-          DEPLOY_REQUIRED: ${{ needs.finalize-plan.outputs.deploy_required || needs.plan.outputs.deploy_required }}
-          GH_TOKEN: ${{ github.token }}
-          PACKAGE_ARTIFACT_DIGEST: ${{ steps.artifact_guard.outputs.package_artifact_digest }}
-          PACKAGE_ARTIFACT_ID: ${{ steps.artifact_guard.outputs.package_artifact_id }}
-          PLAN_ARTIFACT_DIGEST: ${{ steps.artifact_guard.outputs.plan_artifact_digest }}
-          PLAN_ARTIFACT_ID: ${{ steps.artifact_guard.outputs.plan_artifact_id }}
-          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
-        run: |
-          set -euo pipefail
-          mkdir -p build/ci/authority
-          current_attempt="$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT")"
-          source_ci_workflow_id="$(jq -er \
-            --arg repository "$GITHUB_REPOSITORY" \
-            --arg run_id "$GITHUB_RUN_ID" \
-            --arg source_sha "$SOURCE_SHA" \
-            --argjson run_attempt "$GITHUB_RUN_ATTEMPT" \
-            --argjson run_number "$GITHUB_RUN_NUMBER" '
-              select(
-                (.id | tostring) == $run_id and
-                .run_attempt == $run_attempt and
-                .run_number == $run_number and
-                .head_sha == $source_sha and
-                .name == "CI" and
-                (.path | split("@")[0]) == ".github/workflows/ci.yml" and
-                .event == "push" and
-                .head_branch == "main" and
-                .head_repository.full_name == $repository and
-                (.workflow_id | type == "number" and . > 0 and floor == .)
-              ) |
-              .workflow_id
-            ' <<< "$current_attempt")"
-          [[ "$source_ci_workflow_id" =~ ^[1-9][0-9]*$ ]]
-          [[ "$PLAN_ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]
-          [[ "$PLAN_ARTIFACT_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
-          plan_artifact="harness-plan-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}-${SOURCE_SHA}-${GITHUB_RUN_ATTEMPT}"
-          package_artifact_json=null
-          if [[ "$DEPLOY_REQUIRED" == "true" ]]; then
-            [[ "$PACKAGE_ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]
-            [[ "$PACKAGE_ARTIFACT_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
-            package_artifact="firebase-delivery-${SOURCE_SHA}-${GITHUB_RUN_ATTEMPT}"
-            package_artifact_json="$(jq -n \
-              --arg digest "$PACKAGE_ARTIFACT_DIGEST" \
-              --arg name "$package_artifact" \
-              --argjson id "$PACKAGE_ARTIFACT_ID" \
-              '{id: $id, name: $name, digest: $digest}')"
-          fi
-          jq -n \
-            --arg deployRequired "$DEPLOY_REQUIRED" \
-            --arg planArtifactDigest "$PLAN_ARTIFACT_DIGEST" \
-            --arg planArtifactName "$plan_artifact" \
-            --arg sourceCiRunAttempt "$GITHUB_RUN_ATTEMPT" \
-            --arg sourceCiRunId "$GITHUB_RUN_ID" \
-            --arg sourceSha "$SOURCE_SHA" \
-            --argjson packageArtifact "$package_artifact_json" \
-            --argjson planArtifactId "$PLAN_ARTIFACT_ID" \
-            --argjson sourceCiWorkflowId "$source_ci_workflow_id" \
-            --argjson sourceCiRunNumber "$GITHUB_RUN_NUMBER" '{
-              schema: "catch.ci-delivery-authority/v3",
-              sourceCiWorkflowId: $sourceCiWorkflowId,
-              sourceCiRunNumber: $sourceCiRunNumber,
-              sourceCiRunId: $sourceCiRunId,
-              sourceCiRunAttempt: $sourceCiRunAttempt,
-              sourceSha: $sourceSha,
-              deployRequired: ($deployRequired == "true"),
-              planArtifact: {
-                id: $planArtifactId,
-                name: $planArtifactName,
-                digest: $planArtifactDigest
-              },
-              packageArtifact: $packageArtifact
-            }' > build/ci/authority/ci-delivery-authority.json
-          echo "source_ci_workflow_id=$source_ci_workflow_id" >> "$GITHUB_OUTPUT"
-
-      - name: Upload the immutable successful-attempt authority
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: harness-success-v3-${{ steps.authority.outputs.source_ci_workflow_id }}-${{ github.run_number }}-${{ github.run_id }}-${{ needs.plan.outputs.source_sha }}-${{ github.run_attempt }}
-          path: build/ci/authority/ci-delivery-authority.json
-          if-no-files-found: error
-          retention-days: 90

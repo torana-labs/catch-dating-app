@@ -2789,7 +2789,7 @@
       "instruction": "Consumer and Host are separate installable products. Entrypoints, native ids and capabilities, Firebase registrations, links, force-update keys, routine release ownership, and enabled release-critical callable dependencies must match checked target contracts. A production client feature cannot be enabled until its callable export and live Firebase callable/IAM reachability pass the release preflight; temporary release exceptions require a stable debt id and explicit removal proof.",
       "sunset_when": [
         "The app-target contract generates every native and release surface without duplicated identity values",
-        "Both products have three consecutive complete release receipts"
+        "Both products have shipped three consecutive Mobile Beta builds that passed the identity verifiers"
       ],
       "sunset_signals": [
         {
@@ -2836,7 +2836,7 @@
         {
           "tool": "firebase:client-callable-dependencies",
           "stage": "scanner-gate",
-          "docAnchor": "docs/release_operations.md#mobile-internal-release-ownership"
+          "docAnchor": "docs/release_operations.md#mobile-releases"
         }
       ]
     },

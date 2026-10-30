@@ -1188,16 +1188,11 @@
         "tool/platform/check_app_targets.mjs",
         "tool/flutter_with_env.sh",
         "tool/platform/configure_apple_flavors.rb",
-        "tool/platform/compute_mobile_build_number.mjs",
         "tool/platform/verify_ios_release_identity.mjs",
         "tool/platform/verify_android_release_bundle.mjs",
-        "tool/platform/verify_app_store_build.mjs",
-        "tool/platform/distribute_testflight_build.mjs",
-        "tool/platform/verify_ios_processing_receipts.mjs",
         "tool/platform/check_app_package_graph.mjs",
         "tool/platform/check_mobile_package.mjs",
-        "tool/ci/package_mobile_release.mjs",
-        "tool/ci/mobile_promotion_core.mjs"
+        "fastlane/Fastfile"
       ],
       "adopters": [
         {
@@ -1226,18 +1221,13 @@
           "status": "aligned"
         },
         {
-          "path": ".github/workflows/mobile-internal-release.yml",
-          "role": "successful-CI-authorized exact role/platform signed package producer and automatic iOS handoff with no direct store mutation",
+          "path": "fastlane/Fastfile and .github/workflows/mobile-beta.yml",
+          "role": "manifest-resolved prod build, identity verification, package policy and TestFlight or Play internal upload in one job",
           "status": "aligned"
         },
         {
-          "path": ".github/workflows/mobile-internal-promote.yml",
-          "role": "automatic iOS and recovery exact-package TestFlight and Play qa promoter with no build, archive, export, or signing authority",
-          "status": "aligned"
-        },
-        {
-          "path": "tool/platform/distribute_testflight_build.mjs",
-          "role": "exact VALID build assignment to existing internal TestFlight groups with testers plus relationship readback",
+          "path": ".github/workflows/mobile-production.yml",
+          "role": "reviewer-gated promotion of an already-tested TestFlight build or Play version code with no rebuild",
           "status": "aligned"
         },
         {
@@ -1251,34 +1241,16 @@
           "status": "aligned"
         },
         {
-          "path": "tool/platform/verify_app_store_build.mjs",
-          "role": "Apple build-floor preflight and exact processing receipt gate",
-          "status": "aligned"
-        },
-        {
-          "path": "tool/platform/verify_ios_processing_receipts.mjs",
-          "role": "cross-run TestFlight receipt provenance gate before legacy owner retirement",
+          "path": "tool/platform/verify_ios_release_identity.mjs",
+          "role": "exported IPA bundle id, target marker, entrypoint, Firebase, Maps and entitlement receipt gate",
           "status": "aligned"
         }
       ],
-      "exceptions": [
-        {
-          "id": "APP-TARGET-IOS-GITHUB-CUTOVER-001",
-          "path": ".github/workflows/mobile-internal-promote.yml",
-          "reason": "GitHub is canonical for both iOS roles, both exact builds processed, and both legacy Xcode Cloud workflows are disabled. Automatic distribution receipt plus install and launch proof remains external.",
-          "status": "blocked_external"
-        },
-        {
-          "id": "APP-TARGET-ANDROID-PLAY-001",
-          "path": ".github/workflows/mobile-internal-promote.yml",
-          "reason": "Both signed AAB lanes are implemented, but Play records, app signing, publisher authorization, tester configuration, and install proof remain external.",
-          "status": "blocked_external"
-        }
-      ],
-      "requiredBackPropagation": "When target fields, project roots, package entrypoints, or resolver output change, regenerate Apple configuration, inspect Android/Firebase/build wrappers plus the exact package producer and automatic promoter, then rerun app-target, package-graph, package-policy, role-comparison, producer, and promoter gates.",
+      "exceptions": [],
+      "requiredBackPropagation": "When target fields, project roots, package entrypoints, or resolver output change, regenerate Apple configuration, inspect Android/Firebase/build wrappers plus the fastlane lanes, then rerun app-target, package-graph, package-policy, and identity-verifier gates.",
       "requiredChecks": [
         "node --test tool/platform/check_app_targets.test.mjs",
-        "node tool/run.mjs check ci:mobile-release-package ci:mobile-release-workflow ci:mobile-promotion-core ci:mobile-promotion-workflow platform:app-targets platform:app-package-graphs platform:mobile-package-policy platform:mobile-build-number platform:verify-ios-release-identity platform:verify-app-store-build platform:distribute-testflight-build platform:verify-ios-processing-receipts platform:verify-android-release-identity platform:probe-google-play-access",
+        "node tool/run.mjs check platform:app-targets platform:app-package-graphs platform:mobile-package-policy platform:verify-ios-release-identity platform:verify-android-release-identity",
         "ruby -c tool/platform/configure_apple_flavors.rb",
         "bash -n tool/flutter_with_env.sh tool/use_firebase_environment.sh tool/validate_firebase_environment.sh",
         "flutter test test/force_update/app_version_config_provider_test.dart",

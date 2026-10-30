@@ -191,23 +191,19 @@ test("a manifest edit runs the edited tools and the validator unless selection p
   assert.equal(plan(manifest, policy).mode, "full");
 });
 
-test("mobile evidence and target contracts select producer-promoter compatibility gates", () => {
-  for (const changedPath of [
-    "tool/platform/check_mobile_package.mjs",
-    "tool/platform/verify_android_release_bundle.mjs",
-    "tool/platform/verify_ios_release_identity.mjs",
+test("mobile verifiers, lanes and target contracts select their own gates", () => {
+  for (const [changedPath, expected] of [
+    ["tool/platform/check_mobile_package.mjs", "platform:mobile-package-policy"],
+    ["tool/platform/verify_android_release_bundle.mjs", "platform:verify-android-release-identity"],
+    ["tool/platform/verify_ios_release_identity.mjs", "platform:verify-ios-release-identity"],
+    ["fastlane/Fastfile", "platform:app-targets"],
+    [".github/workflows/mobile-beta.yml", "platform:app-targets"],
+    [".github/workflows/mobile-production.yml", "platform:app-targets"],
   ]) {
     const result = run(["affected-tools", "--paths", changedPath, "--json"]);
     assert.equal(result.status, 0, result.stderr);
     const plan = JSON.parse(result.stdout);
-    for (const expected of [
-      "ci:mobile-release-package",
-      "ci:mobile-release-workflow",
-      "ci:mobile-promotion-core",
-      "ci:mobile-promotion-workflow",
-    ]) {
-      assert.ok(plan.toolIds.includes(expected), `${changedPath} must select ${expected}`);
-    }
+    assert.ok(plan.toolIds.includes(expected), `${changedPath} must select ${expected}`);
   }
 
   const targets = run([

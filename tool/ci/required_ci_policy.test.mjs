@@ -31,7 +31,7 @@ function run(name, env = {}, cwd = root) {
   return spawnSync("bash", ["-e", "-o", "pipefail", "-c", command(name)], {
     cwd, encoding: "utf8", timeout: 10000,
     env: {...process.env, NODE_OPTIONS: "", EVENT_NAME: "pull_request", GITHUB_REF: "refs/pull/42/merge",
-      DEPLOY_REQUIRED: "false", NEEDS_JSON: JSON.stringify(successfulNeeds()), ...env},
+      NEEDS_JSON: JSON.stringify(successfulNeeds()), ...env},
   });
 }
 function passed(result) {
@@ -43,7 +43,7 @@ function failed(result) {
 }
 
 test("Required CI retains every automated dependency without the human source gate", () => {
-  assert.deepEqual(dependencies, ["plan", "source-preflight", "finalize-plan", ...selectedLanes, "package-firebase"]);
+  assert.deepEqual(dependencies, ["plan", "source-preflight", ...selectedLanes]);
   assert.doesNotMatch(ci, /backend-review|Backend source review|BACKEND_REVIEW_REQUIRED/u);
   passed(run("Require every selected lane"));
   const needs = successfulNeeds();
@@ -89,63 +89,23 @@ test("Every ready PR validates in parallel; drafts wait until marked ready", () 
   assert.doesNotMatch(ci, /^  queue: max$/mu, "queue: max cannot combine with cancelling PR runs");
 });
 
-const source = "a".repeat(40), head = "b".repeat(40);
-const repository = "owner/repo", runId = "1000", attempt = "2", runNumber = "77";
-function mainGuard({mutateNeeds = () => {}, mutateArtifacts = () => {}, deployRequired = true} = {}) {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-required-artifacts-"));
+test("Required CI on main needs no delivery artifacts or release authority", () => {
+  // Main delivery planning, the Firebase package and the v3 authority existed
+  // only for the retired mobile release workflow.
+  for (const retired of [/finalize-plan/u, /package-firebase/u, /harness-success/u,
+    /ci-delivery-authority/u, /firebase-delivery-/u, /deploy_required|DEPLOY_REQUIRED/u]) {
+    assert.doesNotMatch(ci, retired);
+  }
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-required-main-"));
   try {
-    const needs = successfulNeeds();
-    needs["finalize-plan"].result = "success";
-    needs["package-firebase"].result = deployRequired ? "success" : "skipped";
-    mutateNeeds(needs);
-    const artifacts = [{id: 12, name: `harness-plan-${runNumber}-${runId}-${source}-${attempt}`,
-      digest: `sha256:${"d".repeat(64)}`, expired: false}];
-    if (deployRequired) artifacts.push({id: 13, name: `firebase-delivery-${source}-${attempt}`,
-      digest: `sha256:${"e".repeat(64)}`, expired: false});
-    mutateArtifacts(artifacts);
+    // A gh call would fail; Required CI on main reads only this run's needs.
     const gh = path.join(directory, "gh");
-    fs.writeFileSync(gh, '#!/bin/sh\nprintf "%s\\n" "$FIXTURE_ARTIFACT_PAGES"\n', {mode: 0o755});
-    const output = path.join(directory, "output");
-    const result = run("Require every selected lane", {
-      PATH: `${directory}:${process.env.PATH}`, EVENT_NAME: "push", GITHUB_REF: "refs/heads/main",
-      GITHUB_REPOSITORY: repository, GITHUB_RUN_ID: runId, GITHUB_RUN_ATTEMPT: attempt,
-      GITHUB_RUN_NUMBER: runNumber, SOURCE_SHA: source, GITHUB_OUTPUT: output,
-      DEPLOY_REQUIRED: String(deployRequired), NEEDS_JSON: JSON.stringify(needs),
-      FIXTURE_ARTIFACT_PAGES: JSON.stringify([{artifacts}]),
-    });
-    return {...result, output: fs.existsSync(output) ? fs.readFileSync(output, "utf8") : ""};
+    fs.writeFileSync(gh, "#!/bin/sh\nexit 99\n", {mode: 0o755});
+    passed(run("Require every selected lane", {PATH: `${directory}:${process.env.PATH}`,
+      EVENT_NAME: "push", GITHUB_REF: "refs/heads/main"}));
   } finally {
     fs.rmSync(directory, {recursive: true, force: true});
   }
-}
-test("Required CI main retains same-source/run/attempt artifact authority", () => {
-  const result = mainGuard();
-  passed(result);
-  assert.match(result.output, /plan_artifact_id=12/u);
-  assert.match(result.output, /package_artifact_id=13/u);
-  passed(mainGuard({deployRequired: false}));
-});
-for (const job of ["finalize-plan", "package-firebase"]) {
-  test(`Required CI main rejects skipped ${job}`, () => {
-    failed(mainGuard({mutateNeeds: (needs) => {needs[job].result = "skipped";}}));
-  });
-}
-for (const index of [0, 1]) {
-  for (const [label, mutate] of [
-    ["absent", (artifacts) => {artifacts.splice(index, 1);}],
-    ["expired", (artifacts) => {artifacts[index].expired = true;}],
-    ["older attempt", (artifacts) => {artifacts[index].name = artifacts[index].name.replace(/-2$/u, "-1");}],
-    ["different source", (artifacts) => {artifacts[index].name = artifacts[index].name.replace(source, head);}],
-    ["duplicate", (artifacts) => {artifacts.push({...artifacts[index], id: 99});}],
-    ["missing digest", (artifacts) => {delete artifacts[index].digest;}],
-  ]) {
-    test(`Required CI rejects ${index === 0 ? "plan" : "package"} artifact ${label}`, () => {
-      failed(mainGuard({mutateArtifacts: mutate}));
-    });
-  }
-}
-test("Required CI rejects a plan from another source CI run", () => {
-  failed(mainGuard({mutateArtifacts: (artifacts) => {artifacts[0].name = artifacts[0].name.replace(`-${runId}-`, "-999-");}}));
 });
 
 for (const target of graph.targets) {

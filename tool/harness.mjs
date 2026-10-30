@@ -61,12 +61,6 @@ export function projectPlanOutputs({plan, graph}) {
       entry.checkRequirements.packages.some(dependency =>
         dependency.kind === "node" && dependency.from === "functions/package.json")),
     build_targets: JSON.stringify([...plan.operations.buildTargets].sort()),
-    release_targets: JSON.stringify(plan.validationOnly ? [] : [...plan.operations.releaseTargets].sort()),
-    has_release_targets: !plan.validationOnly && plan.operations.releaseTargets.length > 0,
-    release_roles: JSON.stringify(plan.validationOnly ? [] : [...plan.operations.releaseRoles].sort()),
-    has_release_roles: !plan.validationOnly && plan.operations.releaseRoles.length > 0,
-    deploy_groups: JSON.stringify(plan.validationOnly ? [] : [...plan.operations.deployGroups].sort()),
-    deploy_required: !plan.validationOnly && plan.operations.deployGroups.length > 0,
     docs_checkout: JSON.stringify(resolveTargetCheckout({graph, target: "docs"})),
     mode: plan.mode,
     full: plan.full,
@@ -238,9 +232,6 @@ function printPlan(plan) {
   console.log(`CI targets: ${plan.operations.ciTargets.join(", ") || "none"}`);
   console.log(`Checks: ${plan.operations.checkIds.join(", ") || "none"}`);
   console.log(`Compile-codegen: ${plan.operations.codegenIds.join(", ") || "none"}`);
-  console.log(`Deploy groups: ${plan.operations.deployGroups.join(", ") || "none"}`);
-  console.log(`Release targets: ${plan.operations.releaseTargets.join(", ") || "none"}`);
-  console.log(`Release roles: ${plan.operations.releaseRoles.join(", ") || "none"}`);
   if (plan.unknownPaths.length > 0) console.error(`Unknown paths: ${plan.unknownPaths.join(", ")}`);
   if (plan.ambiguousPaths.length > 0) {
     console.error(`Ambiguous paths: ${plan.ambiguousPaths.map((entry) => entry.path).join(", ")}`);

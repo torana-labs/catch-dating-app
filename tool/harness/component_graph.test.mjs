@@ -100,7 +100,6 @@ test("Admin pending inputs add exact validation while preserving every source op
         checkIds: [...new Set([...baseline.operations.checkIds, scanner.id])].sort(),
       }, `${file} ${mode}`);
     }
-    assert.deepEqual(plan(file, "release").operations, plan(file, "release", before).operations);
   }
   for (const file of ["admin/src/shared/query/queryKeys.ts", "design/features/admin_finance_ops.feature.json"]) {
     for (const mode of graph.modes) {
@@ -139,13 +138,13 @@ test("iOS policy inputs and outputs retain native builds and generated freshness
       assert.deepEqual(result.operations.ciTargets, ["flutter_build_ios", "tools"], file);
       assert.deepEqual(result.operations.checkIds, ["platform:ios-pod-policy"], file);
       assert.deepEqual(result.operations.codegenIds, [generator.id], file);
-      assert.deepEqual(result.operations.deployGroups, [], file);
-      assert.deepEqual(result.operations.buildTargets, toolingOnly ? ["consumer-ios", "host-ios"] : [], file);
-      if (toolingOnly) assert.deepEqual(deriveAppRoles(result), ["consumer", "host"], file);
-      assert.deepEqual(result.operations.releaseTargets, mode === "main" && !toolingOnly
-        ? (expectedRole ? [`${expectedRole}-ios`] : ["consumer-ios", "host-ios"]) : [], file);
-      assert.deepEqual(result.operations.releaseRoles, mode === "main" && !toolingOnly
-        ? (expectedRole ? [expectedRole] : ["consumer", "host"]) : [], file);
+      // Main keeps each changed native output's own role; other modes and
+      // the policy inputs build both roles.
+      const mainRoleTargets = mode === "main" && !toolingOnly && expectedRole;
+      assert.deepEqual(result.operations.buildTargets, toolingOnly ? ["consumer-ios", "host-ios"]
+        : mainRoleTargets ? [`${expectedRole}-ios`]
+          : mode === "main" ? ["consumer-ios", "host-ios"] : [], file);
+      assert.deepEqual(deriveAppRoles(result), mainRoleTargets ? [expectedRole] : ["consumer", "host"], file);
       const tools = planAffectedToolChecks({changedPaths: [file],
         manifest: toolsManifest, componentGraph: graph, mode});
       assert.equal(tools.mode, "affected", file);
@@ -158,11 +157,10 @@ test("iOS policy inputs and outputs retain native builds and generated freshness
   }
   const testOnly = plan("tool/platform/sync_ios_pod_policy.test.mjs", "main");
   assert.deepEqual(testOnly.operations.ciTargets, ["tools"]);
-  assert.deepEqual(testOnly.operations.releaseTargets, []);
   const changedConsumerOutput = planAffected({graph, mode: "main",
-    changedPaths: [...generator.inputs, "apps/consumer/ios/Podfile"]});
-  assert.deepEqual(changedConsumerOutput.operations.releaseTargets, ["consumer-ios"]);
-  assert.deepEqual(changedConsumerOutput.operations.releaseRoles, ["consumer"]);
+    changedPaths: ["apps/consumer/ios/Podfile"]});
+  assert.deepEqual(changedConsumerOutput.operations.buildTargets, ["consumer-ios"]);
+  assert.deepEqual(deriveAppRoles(changedConsumerOutput), ["consumer"]);
   // The native profiles also cover ordinary app metadata. Their freshness gate
   // must not turn an unrelated iOS edit into the full Tools setup/matrix.
   for (const file of ["apps/host/ios/Runner/Info.plist",
@@ -183,7 +181,7 @@ test("shared screenshot runner validates every React caller with only its requir
     assert.deepEqual(result.directComponents, ["web.shared"]);
     assert.deepEqual(result.affectedComponents, ["marketing.capture-freshness", "web.admin", "web.marketing"]);
     assert.deepEqual(result.operations.ciTargets, ["admin", "capture_freshness", "marketing", "tools"]);
-    for (const key of ["deployGroups", "releaseTargets", "releaseRoles", "codegenIds", "buildTargets"]) {
+    for (const key of ["codegenIds", "buildTargets"]) {
       assert.deepEqual(result.operations[key], [], key);
     }
     const tools = planAffectedToolChecks({changedPaths: [file],
@@ -208,16 +206,13 @@ const organizerAuthorityEmulatorPaths = [
 
 function assertOrganizerAuthorityEmulatorSelection(sourceGraph) {
   for (const file of organizerAuthorityEmulatorPaths) {
-    for (const mode of ["pr", "merge_group", "main", "nightly", "release"]) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
       const result = plan(file, mode, sourceGraph);
       assert.equal(result.complete, true, `${file} ${mode}`);
-      if (mode === "release") assert.deepEqual(result.operations.ciTargets, []);
-      else for (const required of ["firestore_rules", "functions"]) {
+      for (const required of ["firestore_rules", "functions"]) {
         assert.ok(result.operations.ciTargets.includes(required), `${file} ${mode}: missing ${required}`);
       }
-      assert.deepEqual(result.operations.deployGroups,
-        ["main", "release"].includes(mode) ? ["functions"] : [], `${file} ${mode}`);
-      for (const key of ["releaseTargets", "releaseRoles", "buildTargets"]) {
+      for (const key of ["buildTargets"]) {
         assert.deepEqual(result.operations[key], [], `${file} ${mode} ${key}`);
       }
     }
@@ -262,7 +257,7 @@ test("organizer authority routing preserves unrelated and mixed source lanes", (
       const baseline = planAffected({changedPaths, graph: before, mode});
       const actual = planAffected({changedPaths, graph, mode});
       assert.equal(actual.complete, true);
-      const addedTargets = mode !== "release" &&
+      const addedTargets =
         changedPaths.includes(organizerAuthorityEmulatorPaths[1]) ? ["firestore_rules"] : [];
       assert.deepEqual(actual.operations, {...baseline.operations,
         ciTargets: [...new Set([...baseline.operations.ciTargets, ...addedTargets])].sort()},
@@ -289,22 +284,21 @@ test("rules emulator command executes the organizer authority regression", () =>
     /firebase emulators:exec[^\n]+--only firestore,storage[^\n]+npm --prefix functions run test:rules/u);
 });
 
-test("component graph validates and affected edges cannot authorize release", () => {
+test("component graph validates as a validation-only planner", () => {
   assert.deepEqual(validateComponentGraph(graph), []);
-  for (const profile of Object.values(graph.operationProfiles)) {
-    for (const operation of Object.values(profile.affected)) {
-      assert.deepEqual(operation.deployGroups ?? [], []);
-      assert.deepEqual(operation.releaseTargets ?? [], []);
-      assert.deepEqual(operation.releaseRoles ?? [], []);
-    }
-  }
+  assert.deepEqual(graph.modes, ["pr", "merge_group", "main", "nightly"]);
+  assert.equal(Object.hasOwn(graph, "deployGroupRequirements"), false);
 });
 
-test("component graph schema admits only signed mobile release targets", () => {
-  assert.deepEqual(
-    graphSchema.$defs.operation.properties.releaseTargets.items.enum,
-    ["consumer-android", "consumer-ios", "host-android", "host-ios"],
-  );
+test("component graph schema admits only validation operations", () => {
+  assert.deepEqual(Object.keys(graphSchema.$defs.operation.properties).sort(),
+    ["buildTargets", "checkIds", "ciTargets", "codegenIds"]);
+  assert.deepEqual(graphSchema.properties.modes.items.enum, ["pr", "merge_group", "main", "nightly"]);
+  for (const retired of ["releaseTargets", "releaseRoles", "deployGroups"]) {
+    const broken = clone(graph);
+    broken.operationProfiles["native-host-ios"].direct.main[retired] = ["host-ios"];
+    assert.ok(validateComponentGraph(broken).some((error) => error.includes(`unknown key "${retired}"`)), retired);
+  }
 });
 
 for (const [file, target] of [
@@ -324,8 +318,6 @@ for (const [file, target] of [
       const result = plan(filePath, mode);
       assert.equal(result.complete, true);
       assert.deepEqual(result.operations.ciTargets, [target, "policy_docs"].sort());
-      assert.deepEqual(result.operations.deployGroups, []);
-      assert.deepEqual(result.operations.releaseTargets, []);
       assert.deepEqual(result.operations.checkIds, ["agent:harness-v2", "meta:enforcement-integrity"]);
     }
   });
@@ -334,7 +326,7 @@ for (const [file, target] of [
 test("backend-only delivery controls validate the backend without granting mutation", () => {
   const paths = [
     ".github/workflows/backend-deploy.yml", ".github/workflows/_backend-deploy.yml",
-    "tool/ci/package_firebase_delivery.mjs", "tool/ci/package_firebase_delivery.test.mjs",
+    "functions/scripts/set-callable-invokers-public.cjs", "functions/test/callable-invokers.test.cjs",
   ];
   for (const file of paths) {
     assert.ok(fs.existsSync(new URL(`../../${file}`, import.meta.url)), file);
@@ -343,20 +335,17 @@ test("backend-only delivery controls validate the backend without granting mutat
       assert.equal(result.complete, true);
       assert.deepEqual(result.operations.ciTargets,
         ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], file);
-      assert.deepEqual(result.operations.deployGroups, []);
-      assert.deepEqual(result.operations.releaseTargets, []);
-      assert.deepEqual(result.operations.releaseRoles, []);
-      for (const check of ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package",
+      for (const check of ["agent:harness-v2", "ci:delivery-core",
         "firebase:affected-function-targets"]) {
         assert.ok(result.operations.checkIds.includes(check), `${file}: ${check}`);
       }
     }
   }
-  // A workflow-plus-packager repair must not rebuild either app.
-  const repair = planAffected({changedPaths: [paths[1], paths[3]], graph, mode: "pr"});
+  // A workflow-plus-invoker repair must not rebuild either app.
+  const repair = planAffected({changedPaths: [paths[1], paths[2]], graph, mode: "pr"});
   assert.deepEqual(repair.operations.ciTargets,
     ["contracts", "firestore_rules", "functions", "policy_docs", "tools"]);
-  const tools = planAffectedToolChecks({changedPaths: [paths[1], paths[3]],
+  const tools = planAffectedToolChecks({changedPaths: [paths[1], paths[2]],
     manifest: toolsManifest, componentGraph: graph, mode: "pr"});
   assert.equal(tools.mode, "affected");
   for (const id of repair.operations.checkIds) {
@@ -372,8 +361,6 @@ test("shared React validation runs both callers and retains Hosting and policy c
     assert.equal(result.complete, true);
     assert.deepEqual(result.operations.ciTargets,
       ["admin", "capture_freshness", "marketing", "policy_docs", "tools"]);
-    assert.deepEqual(result.operations.deployGroups, []);
-    assert.deepEqual(result.operations.releaseTargets, []);
     const tools = planAffectedToolChecks({changedPaths: [file],
       manifest: toolsManifest, componentGraph: graph, mode});
     assert.equal(tools.mode, "affected");
@@ -397,7 +384,7 @@ test("Hosting promotion controls select only their React callers and affected To
       assert.deepEqual(result.directComponents, ["ci.workflow.react"]);
       assert.deepEqual(result.operations.ciTargets,
         ["admin", "capture_freshness", "marketing", "policy_docs", "tools"]);
-      for (const key of ["deployGroups", "releaseTargets", "releaseRoles", "buildTargets"]) {
+      for (const key of ["buildTargets"]) {
         assert.deepEqual(result.operations[key], [], `${file} ${mode} ${key}`);
       }
       const tools = planAffectedToolChecks({changedPaths: [file],
@@ -414,13 +401,8 @@ test("Hosting promotion controls select only their React callers and affected To
     }
     const combined = planAffected({changedPaths: [file, "apps/host/lib/main.dart",
       "functions/src/payments/razorpay.ts"], graph, mode: "main"});
-    assert.deepEqual(combined.operations.deployGroups, ["functions"]);
-    assert.deepEqual(combined.operations.releaseTargets, ["host-android", "host-ios"]);
-    assert.deepEqual(combined.operations.releaseRoles, ["host"]);
-    const release = plan(file, "release");
-    assert.deepEqual(release.operations.ciTargets, []);
-    assert.deepEqual(release.operations.deployGroups, []);
-    assert.deepEqual(release.operations.releaseTargets, []);
+    assert.deepEqual(combined.operations.buildTargets, ["host-android", "host-ios"]);
+    assert.deepEqual(deriveAppRoles(combined), ["host"]);
   }
 });
 
@@ -436,7 +418,7 @@ test("Hosting promotion control routing preserves mixed Host and Functions owner
         assert.deepEqual(result.operations.ciTargets,
           [...new Set(["admin", "capture_freshness", "marketing", "policy_docs", "tools",
             ...own.operations.ciTargets])].sort());
-        for (const key of ["deployGroups", "releaseTargets", "releaseRoles", "buildTargets"]) {
+        for (const key of ["buildTargets"]) {
           assert.deepEqual(result.operations[key], own.operations[key], `${control} ${mode} ${key}`);
         }
         const tools = planAffectedToolChecks({changedPaths: [control, companion],
@@ -451,9 +433,6 @@ test("Hosting promotion control routing preserves mixed Host and Functions owner
           assert.deepEqual(result.operations.buildTargets, ["host-web-smoke"]);
           assert.deepEqual(deriveAppRoles(result), ["host"]);
         }
-        if (companion.startsWith("functions/") && mode === "main") {
-          assert.deepEqual(result.operations.deployGroups, ["functions"]);
-        }
       }
     }
   }
@@ -464,8 +443,7 @@ test("Hosting promotion exceptions leave shared and unknown controls full", () =
     "tool/ci/web_hosting_freshness.mjs", "tool/ci/web_hosting_workflow.test.mjs"];
   const broad = [".github/workflows/ci.yml", ".github/workflows/tools-ci.yml",
     ".github/workflows/unknown-hosting.yml", "tool/ci/package_web_hosting.mjs",
-    "tool/ci/unknown_hosting.mjs", "tool/ci/finalize_ci_plan.mjs",
-    "tool/ci/main_ci_baseline.mjs", "tool/ci/delivery_core.mjs",
+    "tool/ci/unknown_hosting.mjs", "tool/ci/delivery_core.mjs",
     ".github/workflows/_web-hosting-promote-other.yml",
     "tool/ci/web_hosting_freshness_other.mjs",
     "tool/ci/toolchain.env", "tool/harness/component_graph.json"];
@@ -475,8 +453,6 @@ test("Hosting promotion exceptions leave shared and unknown controls full", () =
         const changedPaths = [control, companion];
         const result = planAffected({changedPaths, graph, mode});
         assert.deepEqual(result.operations.ciTargets, [...graph.targets].sort(), companion);
-        assert.deepEqual(result.operations.deployGroups, []);
-        assert.deepEqual(result.operations.releaseTargets, []);
         const tools = planAffectedToolChecks({changedPaths,
           manifest: toolsManifest, componentGraph: graph, mode});
         assert.equal(tools.mode, "full", companion);
@@ -503,9 +479,6 @@ test("native build controls validate their callers with Node-only toolchain setu
       assert.equal(result.complete, true);
       assert.deepEqual(result.operations.ciTargets, targets);
       assert.deepEqual(deriveAppRoles(result), ["consumer", "host"]);
-      assert.deepEqual(result.operations.deployGroups, []);
-      assert.deepEqual(result.operations.releaseTargets, []);
-      assert.deepEqual(result.operations.releaseRoles, []);
       const tools = planAffectedToolChecks({changedPaths: [file],
         manifest: toolsManifest, componentGraph: graph, mode});
       assert.equal(tools.mode, "affected");
@@ -524,9 +497,7 @@ test("native cache ownership retains both callers when mixed with one app role",
   ], graph, mode: "main"});
   assert.deepEqual(deriveAppRoles(result), ["consumer", "host"]);
   assert.ok(result.operations.ciTargets.includes("functions"));
-  assert.deepEqual(result.operations.releaseTargets, ["host-ios"]);
-  assert.deepEqual(result.operations.releaseRoles, ["host"]);
-  assert.deepEqual(result.operations.deployGroups, ["functions"]);
+  assert.deepEqual(result.operations.buildTargets, ["consumer-ios", "host-ios"]);
   const shared = planAffected({changedPaths: [
     ".github/actions/cache-cocoapods/action.yml", ".github/actions/setup-flutter/action.yml",
   ], graph, mode: "pr"});
@@ -541,20 +512,18 @@ test("React workflow routing preserves mixed native and backend ownership", () =
   for (const target of ["admin", "capture_freshness", "marketing", "functions", "flutter_build_ios"]) {
     assert.ok(result.operations.ciTargets.includes(target), target);
   }
-  assert.deepEqual(result.operations.deployGroups, ["functions"]);
-  assert.deepEqual(result.operations.releaseTargets, ["host-ios"]);
-  assert.deepEqual(result.operations.releaseRoles, ["host"]);
+  assert.deepEqual(result.operations.buildTargets, ["host-ios"]);
+  assert.deepEqual(deriveAppRoles(result), ["host"]);
 });
 
-test("backend control routing cannot suppress a changed native app or its release ownership", () => {
+test("backend control routing cannot suppress a changed native app or its build role", () => {
   const result = planAffected({changedPaths: [
     ".github/workflows/_backend-deploy.yml", "apps/host/ios/Runner/Info.plist",
   ], graph, mode: "main"});
   assert.ok(result.operations.ciTargets.includes("flutter_build_ios"));
   assert.ok(result.operations.ciTargets.includes("functions"));
-  assert.deepEqual(result.operations.releaseTargets, ["host-ios"]);
-  assert.deepEqual(result.operations.releaseRoles, ["host"]);
-  assert.deepEqual(result.operations.deployGroups, []);
+  assert.deepEqual(result.operations.buildTargets, ["host-ios"]);
+  assert.deepEqual(deriveAppRoles(result), ["host"]);
 });
 
 test("shared CI controls and unknown workflow or verifier files retain full validation", () => {
@@ -576,7 +545,6 @@ test("a dedicated workflow cannot suppress another changed surface", () => {
   });
   assert.ok(result.operations.ciTargets.includes("firestore_rules"));
   assert.ok(result.operations.ciTargets.includes("functions"));
-  assert.deepEqual(result.operations.deployGroups, ["functions"]);
 });
 
 test("CI checkout requirements keep planner and docs narrow with a full fallback", () => {
@@ -589,7 +557,6 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/harness.mjs",
       "/tool/harness/verify_local.mjs",
       "/tool/harness/compare_selectors.mjs",
-      "/tool/ci/main_ci_baseline.mjs",
       "/tool/ci/toolchain.env",
       "/tool/harness/component_graph.json",
       "/tool/harness/lib/component_graph.mjs",
@@ -722,16 +689,13 @@ test("nightly full mode selects every declared validation component without depl
   const result = planAffected({changedPaths: [], graph, mode: "nightly", full: true});
   assert.equal(result.full, true);
   assert.equal(result.directComponents.length, graph.components.length);
-  assert.deepEqual(result.operations.deployGroups, []);
-  assert.deepEqual(result.operations.releaseTargets, []);
-  assert.deepEqual(result.operations.releaseRoles, []);
   assert.ok(result.operations.ciTargets.includes("flutter"));
   assert.ok(result.operations.ciTargets.includes("functions"));
   assert.ok(result.operations.ciTargets.includes("tools"));
 });
 
-test("full mode cannot grant main or release authority", () => {
-  for (const mode of ["main", "release"]) {
+test("full mode is nightly-only", () => {
+  for (const mode of ["pr", "merge_group", "main"]) {
     assert.throws(
       () => planAffected({changedPaths: [], graph, mode, full: true}),
       /validation-only and requires nightly mode/,
@@ -739,28 +703,20 @@ test("full mode cannot grant main or release authority", () => {
   }
 });
 
-test("operational app release status validates without authorizing signed packages", () => {
-  const status = plan("tool/app_target_external_gates.json", "main");
-  assert.deepEqual(status.directComponents, ["repo.tooling"]);
-  assert.deepEqual(status.operations.ciTargets, ["tools"]);
-  assert.deepEqual(status.operations.releaseTargets, []);
-  assert.deepEqual(status.operations.releaseRoles, []);
-});
-
-test("mobile build contracts authorize fresh signed packages for every installable target", () => {
+test("mobile build contracts build every installable target", () => {
   for (const path of [
     "tool/app_targets.json",
     "tool/platform/mobile_package_policy.json",
   ]) {
     const result = plan(path, "main");
     assert.deepEqual(result.directComponents, ["app.build-control"], path);
-    assert.deepEqual(result.operations.releaseTargets, [
+    assert.deepEqual(result.operations.buildTargets, [
       "consumer-android",
       "consumer-ios",
       "host-android",
       "host-ios",
     ], path);
-    assert.deepEqual(result.operations.releaseRoles, ["consumer", "host"], path);
+    assert.deepEqual(deriveAppRoles(result), ["consumer", "host"], path);
   }
 });
 
@@ -793,7 +749,6 @@ test("terminal Functions documentation never inherits deploy authority", () => {
   const result = plan("functions/README.md", "main");
   assert.deepEqual(result.directComponents, ["backend.functions-doc"]);
   assert.deepEqual(result.operations.ciTargets, ["functions"]);
-  assert.deepEqual(result.operations.deployGroups, []);
 });
 
 test("root operations README keeps its explicit workflow owner", () => {
@@ -824,21 +779,16 @@ test("host-only Flutter source keeps Host smoke while validating Marketing captu
   assert.deepEqual(deriveAppRoles(result), ["host"]);
 });
 
-test("retired native shell paths retain validation for deletions without release authority", () => {
+test("retired native shell paths retain validation for deletions", () => {
   const paths = ["android/gradle.properties", "ios/Runner/Info.plist",
     "ios/Podfile.template", "macos/Runner/Info.plist", "web/index.html"];
   // Git diffs retain deleted paths and both sides of a move. Root hygiene
   // separately rejects restoring these shells; routing must still cover them.
   for (const file of paths) {
-    for (const mode of ["pr", "merge_group", "main", "nightly", "release"]) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
       const result = plan(file, mode);
       assert.equal(result.complete, true, `${file} ${mode}`);
-      if (mode !== "release") {
-        assert.deepEqual(result.operations.ciTargets, [...graph.targets].sort(), `${file} ${mode}`);
-      }
-      assert.deepEqual(result.operations.deployGroups, [], `${file} ${mode}`);
-      assert.deepEqual(result.operations.releaseTargets, [], `${file} ${mode}`);
-      assert.deepEqual(result.operations.releaseRoles, [], `${file} ${mode}`);
+      assert.deepEqual(result.operations.ciTargets, [...graph.targets].sort(), `${file} ${mode}`);
     }
   }
 });
@@ -853,24 +803,23 @@ test("native and Firebase role fixtures retain platform-specific validation", ()
   const nativeHost = plan("apps/host/android/app/src/hostProd/AndroidManifest.xml", "main");
   assert.deepEqual(nativeHost.directComponents, ["app.host.native.android"]);
   assert.deepEqual(nativeHost.operations.ciTargets, ["flutter_build_android"]);
-  assert.deepEqual(nativeHost.operations.releaseTargets, ["host-android"]);
-  assert.deepEqual(nativeHost.operations.releaseRoles, ["host"]);
+  assert.deepEqual(nativeHost.operations.buildTargets, ["host-android"]);
+  assert.deepEqual(deriveAppRoles(nativeHost), ["host"]);
 
   const firebaseConsumer = plan("firebase/prod/android/google-services.json", "main");
   assert.deepEqual(firebaseConsumer.directComponents, ["infra.firebase.consumer-android"]);
   assert.deepEqual(firebaseConsumer.operations.ciTargets, ["flutter_build_android", "tools"]);
-  assert.deepEqual(firebaseConsumer.operations.releaseTargets, ["consumer-android"]);
-  assert.deepEqual(firebaseConsumer.operations.releaseRoles, ["consumer"]);
+  assert.deepEqual(firebaseConsumer.operations.buildTargets, ["consumer-android"]);
+  assert.deepEqual(deriveAppRoles(firebaseConsumer), ["consumer"]);
 
   const firebaseRoot = plan("firebase.json", "main");
   assert.deepEqual(firebaseRoot.directComponents, ["infra.firebase"]);
-  assert.deepEqual(firebaseRoot.operations.deployGroups, []);
 
   const packageIos = plan("apps/host/ios/Runner/Info.plist", "main");
   assert.deepEqual(packageIos.directComponents, ["app.host.native.ios"]);
   assert.deepEqual(packageIos.operations.ciTargets, ["flutter_build_ios", "tools"]);
-  assert.deepEqual(packageIos.operations.releaseTargets, ["host-ios"]);
-  assert.deepEqual(packageIos.operations.releaseRoles, ["host"]);
+  assert.deepEqual(packageIos.operations.buildTargets, ["host-ios"]);
+  assert.deepEqual(deriveAppRoles(packageIos), ["host"]);
 
   const packageAndroid = plan(
     "apps/consumer/android/app/src/main/AndroidManifest.xml",
@@ -878,8 +827,8 @@ test("native and Firebase role fixtures retain platform-specific validation", ()
   );
   assert.deepEqual(packageAndroid.directComponents, ["app.consumer.native.android"]);
   assert.deepEqual(packageAndroid.operations.ciTargets, ["flutter_build_android"]);
-  assert.deepEqual(packageAndroid.operations.releaseTargets, ["consumer-android"]);
-  assert.deepEqual(packageAndroid.operations.releaseRoles, ["consumer"]);
+  assert.deepEqual(packageAndroid.operations.buildTargets, ["consumer-android"]);
+  assert.deepEqual(deriveAppRoles(packageAndroid), ["consumer"]);
 
   const packageBoundary = plan("apps/host/pubspec.yaml");
   assert.deepEqual(packageBoundary.directComponents, ["app.host.dependencies"]);
@@ -908,8 +857,8 @@ test("signed mobile authority preserves platform ownership instead of widening r
 
   for (const fixture of fixtures) {
     const result = plan(fixture.path, "main");
-    assert.deepEqual(result.operations.releaseTargets, fixture.targets, fixture.path);
-    assert.deepEqual(result.operations.releaseRoles, fixture.roles, fixture.path);
+    assert.deepEqual(result.operations.buildTargets, fixture.targets, fixture.path);
+    assert.deepEqual(deriveAppRoles(result), fixture.roles, fixture.path);
   }
 
   const mixed = planAffected({
@@ -920,24 +869,21 @@ test("signed mobile authority preserves platform ownership instead of widening r
     graph,
     mode: "main",
   });
-  assert.deepEqual(mixed.operations.releaseTargets, ["consumer-android", "host-ios"]);
-  assert.deepEqual(mixed.operations.releaseRoles, ["consumer", "host"]);
+  assert.deepEqual(mixed.operations.buildTargets, ["consumer-android", "host-ios"]);
+  assert.deepEqual(deriveAppRoles(mixed), ["consumer", "host"]);
 });
 
-test("web and desktop shells cannot authorize a signed mobile release", () => {
+test("web and desktop shells never select signed mobile builds", () => {
   for (const path of [
     "apps/host/web/index.html",
     "apps/consumer/web/index.html",
     "apps/consumer/macos/Runner/Info.plist",
   ]) {
-    const main = plan(path, "main");
-    assert.deepEqual(main.operations.releaseTargets, [], path);
-    assert.deepEqual(main.operations.releaseRoles, [], path);
-
-    const release = plan(path, "release");
-    assert.deepEqual(release.operations.releaseTargets, [], path);
-    assert.deepEqual(release.operations.releaseRoles, [], path);
-    assert.ok(release.operations.buildTargets.every((target) => target.endsWith("-web")));
+    for (const mode of graph.modes) {
+      const result = plan(path, mode);
+      assert.ok(result.operations.buildTargets.every((target) => /-web(-smoke)?$/u.test(target)),
+        `${path} ${mode}`);
+    }
   }
 });
 
@@ -1027,10 +973,8 @@ test("form conversion authority selects emulator validation in every CI mode", (
       const result = plan(file, mode);
       assert.equal(result.complete, true, `${file} ${mode}`);
       assert.deepEqual(result.operations.ciTargets,
-        mode === "release" ? [] : ["contracts", "firestore_rules", "functions"], `${file} ${mode}`);
-      assert.deepEqual(result.operations.deployGroups,
-        ["main", "release"].includes(mode) ? ["functions"] : [], `${file} ${mode}`);
-      for (const key of ["releaseTargets", "releaseRoles", "buildTargets"]) {
+        ["contracts", "firestore_rules", "functions"], `${file} ${mode}`);
+      for (const key of ["buildTargets"]) {
         assert.deepEqual(result.operations[key], [], `${file} ${mode} ${key}`);
       }
     }
@@ -1046,7 +990,6 @@ test("backend integration conservatively covers runtime and mixed lanes", () => 
   assert.equal(mixed.complete, true);
   assert.deepEqual(mixed.operations.ciTargets,
     ["admin", "contracts", "firestore_rules", "functions"]);
-  assert.deepEqual(mixed.operations.deployGroups, []);
 });
 
 test("rules command executes both form conversion and attendee regressions", () => {
@@ -1064,15 +1007,8 @@ test("rules command executes both form conversion and attendee regressions", () 
 
 test("only direct ownership can authorize deploy groups", () => {
   const functionsPlan = plan("functions/src/index.ts", "main");
-  assert.deepEqual(functionsPlan.operations.deployGroups, ["functions"]);
-  assert.deepEqual(functionsPlan.operationSources.deployGroups, [{
-    component: "backend.functions",
-    relationship: "direct",
-    value: "functions",
-  }]);
 
   const contractPlan = plan("contracts/users/v1.schema.json", "main");
-  assert.deepEqual(contractPlan.operations.deployGroups, []);
 });
 
 test("Firebase mutations are authorized by exact direct owners", () => {
@@ -1083,22 +1019,11 @@ test("Firebase mutations are authorized by exact direct owners", () => {
   ];
   for (const [path, deployGroups, ciTargets] of expectations) {
     const result = plan(path, "main");
-    assert.deepEqual(result.operations.deployGroups, deployGroups);
     assert.deepEqual(result.operations.ciTargets, ciTargets);
   }
 
   const extension = plan("extensions/export-bigquery.env", "main");
   assert.deepEqual(extension.directComponents, ["infra.firebase.extensions"]);
-  assert.deepEqual(extension.operations.deployGroups, []);
-});
-
-test("deploy groups require their mandatory CI validation targets", () => {
-  const unsafe = clone(graph);
-  unsafe.operationProfiles["functions-source"].direct.main.ciTargets = [];
-  const errors = validateComponentGraph(unsafe);
-  assert.ok(errors.some((error) =>
-    error.includes('deploy group "functions" requires CI target "functions"')
-  ));
 });
 
 test("unknown paths fail closed in required planning commands", () => {
@@ -1140,72 +1065,6 @@ test("compile-codegen rejects mutation and network commands", () => {
   assert.ok(errors.some((error) => error.includes("unsupported executable")));
   assert.ok(errors.some((error) => error.includes("network or deployment CLI")));
   assert.ok(errors.some((error) => error.includes("forbidden mutation token")));
-});
-
-test("graph validation rejects release authority on an affected edge", () => {
-  const unsafe = clone(graph);
-  unsafe.operationProfiles["app-host"].affected.main = {
-    ciTargets: ["flutter_build_ios"],
-    releaseTargets: ["host-ios"],
-    releaseRoles: ["host"],
-  };
-  const errors = validateComponentGraph(unsafe);
-  assert.ok(errors.some((error) =>
-    error.includes("cannot authorize release from an affected edge")
-  ));
-  assert.ok(errors.some((error) =>
-    error.includes("cannot authorize signed mobile release from an affected edge")
-  ));
-});
-
-test("graph validation rejects role-only, cross-platform, and web release widening", () => {
-  const cases = [
-    {
-      name: "legacy role-only authority",
-      mutate(value) {
-        value.operationProfiles["native-host-web"].direct.main.releaseRoles = ["host"];
-      },
-      expected: "must be backed by exact releaseTargets",
-    },
-    {
-      name: "web target masquerading as signed mobile",
-      mutate(value) {
-        value.operationProfiles["native-host-web"].direct.main.releaseTargets = ["host-web"];
-        value.operationProfiles["native-host-web"].direct.main.releaseRoles = ["host"];
-      },
-      expected: 'unknown signed mobile release target "host-web"',
-    },
-    {
-      name: "iOS owner widening into Android",
-      mutate(value) {
-        value.operationProfiles["native-host-ios"].direct.main.releaseTargets = ["host-android"];
-      },
-      expected: 'requires CI target "flutter_build_android"',
-    },
-    {
-      name: "target and compatibility role disagree",
-      mutate(value) {
-        value.operationProfiles["native-host-ios"].direct.main.releaseTargets = ["consumer-ios"];
-      },
-      expected: "must exactly match roles implied by releaseTargets",
-    },
-    {
-      name: "release target lacks matching build",
-      mutate(value) {
-        value.operationProfiles["native-host-ios"].direct.release.buildTargets = [];
-      },
-      expected: 'requires matching build target "host-ios"',
-    },
-  ];
-
-  for (const fixture of cases) {
-    const unsafe = clone(graph);
-    fixture.mutate(unsafe);
-    assert.ok(
-      validateComponentGraph(unsafe).some((error) => error.includes(fixture.expected)),
-      fixture.name,
-    );
-  }
 });
 
 test("graph validation rejects unknown tool check ids when the manifest is supplied", () => {
@@ -1278,8 +1137,6 @@ test("post-deploy callable IAM helper is deployment control, without runtime mut
     assert.equal(plan.complete, true);
     assert.deepEqual(plan.directComponents, ["ci.backend-delivery"]);
     assert.ok(plan.operations.ciTargets.includes("functions"));
-    assert.deepEqual(plan.operations.deployGroups, []);
-    assert.deepEqual(plan.operations.releaseTargets, []);
   }
 });
 
@@ -1422,8 +1279,7 @@ test("capture provenance inputs add lightweight freshness without changing sourc
       assert.equal(after.complete, true, `${file} ${mode}`);
       assert.deepEqual(after.operations.ciTargets,
         [...new Set([...before.operations.ciTargets, "capture_freshness"])].sort(), `${file} ${mode}`);
-      for (const key of ["checkIds", "codegenIds", "buildTargets", "deployGroups",
-        "releaseTargets", "releaseRoles"]) {
+      for (const key of ["checkIds", "codegenIds", "buildTargets"]) {
         assert.deepEqual(after.operations[key], before.operations[key], `${file} ${mode} ${key}`);
       }
       if (before.operations.ciTargets.includes("tools")) {
@@ -1433,12 +1289,6 @@ test("capture provenance inputs add lightweight freshness without changing sourc
         assert.deepEqual(newTools, oldTools, `${file} ${mode} retains Tools ownership/setup`);
       }
     }
-  }
-  for (const file of ["lib/auth/presentation/phone_step.dart",
-    "test/ui_captures/fixtures/sales_demo_synthetic_fixtures.dart"]) {
-    const before = plan(file, "release", baseline);
-    const after = plan(file, "release");
-    assert.deepEqual(after.operations, before.operations, `${file} release`);
   }
 });
 
@@ -1454,10 +1304,9 @@ test("capture validation keeps unrelated tooling narrow and mixed Functions auth
     for (const target of ["capture_freshness", "functions"]) {
       assert.ok(result.operations.ciTargets.includes(target));
     }
-    assert.deepEqual(result.operations.deployGroups, mode === "main" ? ["functions"] : []);
     const nativeOnly = plan("lib/auth/presentation/phone_step.dart", mode);
-    assert.deepEqual(result.operations.releaseTargets, nativeOnly.operations.releaseTargets);
-    assert.deepEqual(result.operations.releaseRoles, nativeOnly.operations.releaseRoles);
+    assert.deepEqual(result.operations.buildTargets, nativeOnly.operations.buildTargets);
+    assert.deepEqual(deriveAppRoles(result), deriveAppRoles(nativeOnly));
   }
 });
 
@@ -1506,7 +1355,8 @@ test("every selector control input routes to full validation before comparison",
 // manifest stays a selector control because it places checks across lanes.
 test("harness tests and release workflows validate without full fan-out", () => {
   for (const file of ["tool/harness/workflow_wiring.test.mjs",
-    "tool/ci/delivery_core.test.mjs", ".github/workflows/mobile-internal-release.yml",
+    "tool/ci/delivery_core.test.mjs", ".github/workflows/mobile-beta.yml",
+    ".github/workflows/mobile-production.yml", "fastlane/Fastfile",
     ".github/workflows/marketing-website.yml"]) {
     for (const mode of ["pr", "merge_group", "main", "nightly"]) {
       const result = plan(file, mode);

@@ -44,11 +44,3 @@ jobs:
 
       - name: Functions tests
         run: npm --prefix functions test
-
-      - name: Upload the exact tested Functions build
-        uses: actions/upload-artifact@v7
-        with:
-          name: functions-lib-${{ github.sha }}-${{ github.run_attempt }}
-          path: functions/lib
-          if-no-files-found: error
-          retention-days: 14

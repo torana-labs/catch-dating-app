@@ -73,7 +73,7 @@ export function compareSelectors({cwd = process.cwd(), base, head = "HEAD", mode
   const missingTargets = requiredTargets.filter(target => !after.plan.operations.ciTargets.includes(target));
   assert.deepEqual(missingTargets, [], `Selector-control edits require full validation; missing ${missingTargets.join(", ")}. Restore fail-closed selection.`);
   const changes = {};
-  for (const key of ["ciTargets", "checkIds", "codegenIds", "buildTargets", "deployGroups", "releaseTargets", "releaseRoles"]) {
+  for (const key of ["ciTargets", "checkIds", "codegenIds", "buildTargets"]) {
     const oldIds = before.plan.operations[key] ?? [], newIds = after.plan.operations[key] ?? [];
     changes[key] = {removed: oldIds.filter(id => !newIds.includes(id)), added: newIds.filter(id => !oldIds.includes(id))};
   }

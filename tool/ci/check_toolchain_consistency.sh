@@ -95,8 +95,8 @@ fi
 
 apple_native_workflows=(
   ".github/workflows/app-build-matrix.yml"
-  ".github/workflows/mobile-internal-promote.yml"
-  ".github/workflows/mobile-internal-release.yml"
+  ".github/workflows/mobile-beta.yml"
+  ".github/workflows/mobile-production.yml"
   ".github/workflows/visual-integration-ci.yml"
 )
 for workflow in "${apple_native_workflows[@]}"; do

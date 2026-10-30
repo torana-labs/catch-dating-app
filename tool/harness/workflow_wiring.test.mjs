@@ -188,8 +188,8 @@ const toolPreflightCheckoutClosure = [
   "/functions/package.json",
   "/pubspec.yaml",
   "/.github/workflows/app-build-matrix.yml",
-  "/.github/workflows/mobile-internal-promote.yml",
-  "/.github/workflows/mobile-internal-release.yml",
+  "/.github/workflows/mobile-beta.yml",
+  "/.github/workflows/mobile-production.yml",
   "/.github/workflows/visual-integration-ci.yml",
 ];
 const affectedIndexCheckoutClosure = [
@@ -1176,14 +1176,17 @@ test("Host iOS builds keep retired shell references out of strict wiring", () =>
   assert.doesNotMatch(references, /host_clubs_management/u);
 });
 
-test("mobile release workflow consumes the exact successful CI plan authority", () => {
-  const mobile = workflow("mobile-internal-release.yml");
-  assert.match(mobile, /catch\.ci-delivery-authority\/v3/);
-  assert.match(mobile, /\.operations\.releaseTargets/);
-  assert.match(mobile, /needs\.authorize\.outputs\.ios_targets/);
-  assert.match(mobile, /needs\.authorize\.outputs\.android_targets/);
-  assert.doesNotMatch(mobile, /node tool\/harness\.mjs plan/);
-  assert.doesNotMatch(mobile, new RegExp(`mobile_release_roles|${retiredPlanner}`));
+test("mobile releases build and upload in one fastlane job without CI delivery authority", () => {
+  for (const retired of ["mobile-internal-release.yml", "mobile-internal-promote.yml",
+    "_mobile-platform-authority.yml"]) {
+    assert.equal(fs.existsSync(new URL(`../../.github/workflows/${retired}`, import.meta.url)), false, retired);
+  }
+  const beta = workflow("mobile-beta.yml");
+  assert.doesNotMatch(beta, /workflow_run:|ci-delivery-authority|harness-plan-|operations\.releaseTargets/u);
+  assert.doesNotMatch(beta, new RegExp(`node tool/harness\\.mjs plan|${retiredPlanner}`));
+  assert.match(beta, /bundle exec fastlane ios beta/u);
+  assert.match(beta, /bundle exec fastlane android beta/u);
+  assert.doesNotMatch(workflow("ci.yml"), /finalize-plan|package-firebase|harness-success/u);
 });
 
 test("reusable fanout workflows cannot cancel sibling lanes", () => {
@@ -1469,7 +1472,7 @@ test("canonical native captures reach consumers before dependency setup and buil
   assert.match(ci, /needs: \[plan, source-preflight, capture-freshness\]/u);
   assert.match(ci, /capture_binding: \$\{\{ needs.capture-freshness.outputs.capture_binding \}\}/u);
   assert.doesNotMatch(react, /capture_freshness_in_ci/u);
-  for (const id of ["finalize-plan", "package-firebase", "required"]) {
+  for (const id of ["required"]) {
     const job = ci.slice(ci.indexOf(`\n  ${id}:`)).split(/\n  [a-z-]+:/u)[1];
     assert.match(job, /- capture-freshness\n/u, id);
   }
@@ -1550,14 +1553,12 @@ test("cancelling a validation run makes every aggregate job terminal", () => {
     contains: (values, value) => values.includes(value), fromJSON: JSON.parse,
     github: {event_name: "pull_request", ref: "refs/pull/522/merge",
       event: {action: "synchronize", pull_request: {draft}}},
-    needs: {plan: {result},
-      "finalize-plan": {result, outputs: {deploy_required: "false"}}},
+    needs: {plan: {result}},
     results: [result],
   });
   const evaluate = (expression, ctx) => vm.runInNewContext(expression
-    .replaceAll("needs.*.result", "results")
-    .replaceAll("needs.finalize-plan", 'needs["finalize-plan"]'), ctx);
-  for (const id of ["plan", "finalize-plan", "package-firebase", "required"]) {
+    .replaceAll("needs.*.result", "results"), ctx);
+  for (const id of ["plan", "required"]) {
     const guard = guardFor(id);
     assert.match(guard, /!cancelled\(\)/u, id);
     for (const result of ["success", "failure", "cancelled", "skipped"]) {
@@ -1630,7 +1631,7 @@ test("complete source preflight gates fanout and cannot be bypassed by Required 
   assert.doesNotMatch(block, /--allow-deferred|continue-on-error/u);
   const after = ci.slice(ci.indexOf("  tools:\n"));
   assert.doesNotMatch(after, /^    needs: plan$/mu);
-  for (const id of ["required", "finalize-plan", "package-firebase"]) {
+  for (const id of ["required"]) {
     const job = ci.slice(ci.indexOf(`\n  ${id}:\n`)).split(/\n  [a-z-]+:\n/u)[1];
     assert.match(job, /- source-preflight/u);
   }
@@ -1683,9 +1684,9 @@ test("main reuses a successful merge-queue run of the exact source for every val
     "docs-policy", "functions", "firestore-rules", "contracts", "marketing", "capture-freshness", "app-builds"]) {
     assert.match(job(id), /!needs\.plan\.outputs\.queue_verified_run/u, `${id} skips when the queue proved main`);
   }
-  for (const id of ["finalize-plan", "package-firebase", "required"]) {
+  for (const id of ["required"]) {
     assert.doesNotMatch(job(id).split("\n    steps:")[0], /queue_verified_run/u,
-      `${id} plans, packages or checks delivery and always runs`);
+      `${id} checks every lane and always runs`);
   }
   // Execute the actual lookup against a fake GitHub API.
   const step = extractSteps(ci).find((entry) => entry.name === "Find the merge-queue validation of this exact source");

@@ -24,36 +24,30 @@
   },
   "releasePolicy": {
     "owner": "github-actions",
-    "workflow": ".github/workflows/mobile-internal-release.yml",
-    "promotionWorkflow": ".github/workflows/mobile-internal-promote.yml",
-    "trigger": "successful-main-ci-exact-artifact-authority",
-    "environment": "prod-mobile",
-    "approvalMode": "automatic-ios-exact-artifact-internal-promotion",
+    "tool": "fastlane",
+    "lanes": "fastlane/Fastfile",
+    "betaWorkflow": ".github/workflows/mobile-beta.yml",
+    "betaTrigger": "nightly-when-apps-changed-and-dispatch",
+    "betaEnvironment": "prod-mobile",
+    "productionWorkflow": ".github/workflows/mobile-production.yml",
+    "productionTrigger": "reviewer-approved-dispatch",
+    "productionEnvironment": "prod-mobile-release",
     "branchPolicy": "main-only",
     "roles": [
       "consumer",
       "host"
     ],
     "ios": {
-      "channel": "testflight",
-      "artifactMode": "automatic-role-impacted-main",
-      "uploadMode": "separate-promotion-workflow",
-      "automaticRoles": [
-        "consumer",
-        "host"
-      ],
-      "distributionPolicy": "all-existing-internal-groups-with-testers",
+      "betaChannel": "testflight",
+      "testerDistribution": "app-store-connect-automatic-internal-groups",
+      "productionChannel": "app-store-review-of-tested-build",
       "signingStyle": "automatic",
       "developmentIdentitySource": "reusable-ci-p12",
-      "distributionSigningStage": "export",
-      "uploadArtifact": "verified-ipa",
-      "uploadTool": "altool"
+      "distributionSigningStage": "export"
     },
     "android": {
-      "channel": "play-internal",
-      "track": "qa",
-      "artifactMode": "automatic-role-impacted-main",
-      "uploadMode": "separate-promotion-workflow",
+      "betaTrack": "internal",
+      "productionChannel": "staged-rollout-of-tested-version-code",
       "publisherAuth": "github-oidc",
       "publisherServiceAccount": "github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com",
       "uploadCertificateSha256": "3088F763A60FD9F7CA99204D6A68EF93A30263A697E563EF883B29DBBC7AE23E"
@@ -81,8 +75,7 @@
       "remoteConfigPrefix": "consumer",
       "storeProduct": {
         "displayName": "Catch",
-        "appStoreConnectAppId": "6765646860",
-        "testFlightDistributionPolicy": "all-existing-internal-groups-with-testers"
+        "appStoreConnectAppId": "6765646860"
       }
     },
     "host": {
@@ -104,8 +97,7 @@
       "remoteConfigPrefix": "host",
       "storeProduct": {
         "displayName": "Catch Host",
-        "appStoreConnectAppId": "6778927317",
-        "testFlightDistributionPolicy": "all-existing-internal-groups-with-testers"
+        "appStoreConnectAppId": "6778927317"
       }
     }
   },
@@ -385,12 +377,8 @@
       },
       "release": {
         "owner": "github-actions",
-        "githubMode": "automatic-exact-artifact",
-        "githubWorkflow": ".github/workflows/mobile-internal-release.yml",
-        "automaticTestFlightOnMain": true,
         "appStoreConnectAppId": "6765646860",
-        "googlePlayPackageName": "com.catchdates.app",
-        "legacyXcodeCloudWorkflow": "Default"
+        "googlePlayPackageName": "com.catchdates.app"
       }
     },
     {
@@ -446,12 +434,8 @@
       },
       "release": {
         "owner": "github-actions",
-        "githubMode": "automatic-exact-artifact",
-        "githubWorkflow": ".github/workflows/mobile-internal-release.yml",
-        "automaticTestFlightOnMain": true,
         "appStoreConnectAppId": "6778927317",
-        "googlePlayPackageName": "com.catchdates.host",
-        "legacyXcodeCloudWorkflow": "Default"
+        "googlePlayPackageName": "com.catchdates.host"
       }
     }
   ]

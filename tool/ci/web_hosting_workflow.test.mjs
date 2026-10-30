@@ -219,8 +219,6 @@ test("caller triggers cover the exact build dependency closure", () => {
   }
   assert.doesNotMatch(host, /- "tool\/platform\/\*\*"/u,
     "Host validation helpers must not trigger a production Hosting deploy");
-  assert.ok(!host.includes("tool/app_target_external_gates.json"),
-    "external store status must not trigger a production Hosting deploy");
 });
 
 test("production Hosting push filters never grant test files deploy authority", () => {
