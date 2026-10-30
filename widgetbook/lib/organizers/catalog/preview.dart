@@ -37,7 +37,10 @@ class _OrganizerDiscoveryFrame extends StatelessWidget {
 }
 
 class WidgetbookOrganizerOrganizerMediaFrame extends StatelessWidget {
-  const WidgetbookOrganizerOrganizerMediaFrame({super.key, required this.child});
+  const WidgetbookOrganizerOrganizerMediaFrame({
+    super.key,
+    required this.child,
+  });
 
   final Widget child;
 

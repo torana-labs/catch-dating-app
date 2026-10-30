@@ -103,7 +103,10 @@ class CreateEventSuccessNavigationEffect {
       CreateEventSuccessNavigationIntent.manageEvent =>
         CreateEventSuccessNavigationEffect(
           destination: CreateEventSuccessNavigationDestination.manageEventRoute,
-          pathParameters: {'clubId': state.organizer.id, 'eventId': state.event.id},
+          pathParameters: {
+            'clubId': state.organizer.id,
+            'eventId': state.event.id,
+          },
           extra: state.event,
         ),
       CreateEventSuccessNavigationIntent.backToOrganizer =>

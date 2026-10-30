@@ -62,7 +62,10 @@ void _registerExploreErrorsAndCreationTests() {
   testWidgets('ExploreMapScreen selects pin before navigating from card', (
     tester,
   ) async {
-    final organizer = buildOrganizer(id: 'club-map-nav', name: 'Race Course Road Club');
+    final organizer = buildOrganizer(
+      id: 'club-map-nav',
+      name: 'Race Course Road Club',
+    );
     final event = event_test.buildEvent(
       id: 'event-map-nav',
       clubId: organizer.id,
@@ -201,7 +204,10 @@ void _registerExploreErrorsAndCreationTests() {
   testWidgets('ExploreMapScreen background tap dismisses selected card', (
     tester,
   ) async {
-    final organizer = buildOrganizer(id: 'club-map-clear', name: 'Map Clear Club');
+    final organizer = buildOrganizer(
+      id: 'club-map-clear',
+      name: 'Map Clear Club',
+    );
     final event = event_test.buildEvent(
       id: 'event-map-clear',
       clubId: organizer.id,
@@ -250,7 +256,10 @@ void _registerExploreErrorsAndCreationTests() {
     'ExploreMapScreen clears selected card when feed refresh drops event',
     (tester) async {
       var showSelectedEvent = true;
-      final organizer = buildOrganizer(id: 'club-map-refresh', name: 'Map Refresh Club');
+      final organizer = buildOrganizer(
+        id: 'club-map-refresh',
+        name: 'Map Refresh Club',
+      );
       final event = event_test.buildEvent(
         id: 'event-map-refresh',
         clubId: organizer.id,
@@ -307,7 +316,10 @@ void _registerExploreErrorsAndCreationTests() {
     'ExploreMapScreen clears selected card when selected event loses its pin',
     (tester) async {
       var showExactPin = true;
-      final organizer = buildOrganizer(id: 'club-map-pin-loss', name: 'Map Pin Club');
+      final organizer = buildOrganizer(
+        id: 'club-map-pin-loss',
+        name: 'Map Pin Club',
+      );
       final pinnedEvent = event_test.buildEvent(
         id: 'event-map-pin-loss',
         clubId: organizer.id,
@@ -464,7 +476,9 @@ void _registerExploreErrorsAndCreationTests() {
     await tester.pump();
 
     try {
-      await OrganizerMembershipController.joinMutation.run(container, (tx) async {
+      await OrganizerMembershipController.joinMutation.run(container, (
+        tx,
+      ) async {
         throw StateError('join failed');
       });
     } catch (_) {}
@@ -486,7 +500,9 @@ void _registerExploreErrorsAndCreationTests() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchOrganizerProvider(organizer.id).overrideWith((ref) => controller.stream),
+            watchOrganizerProvider(
+              organizer.id,
+            ).overrideWith((ref) => controller.stream),
             watchEventsForOrganizerProvider(
               organizer.id,
             ).overrideWith((ref) => Stream.value(const <Event>[])),
@@ -504,7 +520,10 @@ void _registerExploreErrorsAndCreationTests() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: OrganizerDetailScreen(clubId: organizer.id, initialOrganizer: organizer),
+            home: OrganizerDetailScreen(
+              clubId: organizer.id,
+              initialOrganizer: organizer,
+            ),
           ),
         ),
       );
@@ -515,7 +534,9 @@ void _registerExploreErrorsAndCreationTests() {
     },
   );
 
-  testWidgets('OrganizerDetailScreen shows detail-provider errors', (tester) async {
+  testWidgets('OrganizerDetailScreen shows detail-provider errors', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -604,7 +625,9 @@ void _registerExploreErrorsAndCreationTests() {
     await tester.pump();
 
     try {
-      await OrganizerMembershipController.joinMutation.run(container, (tx) async {
+      await OrganizerMembershipController.joinMutation.run(container, (
+        tx,
+      ) async {
         throw StateError('join failed');
       });
     } catch (_) {}
@@ -663,7 +686,9 @@ void _registerExploreErrorsAndCreationTests() {
     await tester.pump();
 
     try {
-      await OrganizerMembershipController.leaveMutation.run(container, (tx) async {
+      await OrganizerMembershipController.leaveMutation.run(container, (
+        tx,
+      ) async {
         throw StateError('leave failed');
       });
     } catch (_) {}
@@ -720,7 +745,9 @@ void _registerExploreErrorsAndCreationTests() {
     expect(find.bySemanticsLabel('Photo 1'), findsOneWidget);
   });
 
-  testWidgets('CreateOrganizerScreen shows mutation errors inline', (tester) async {
+  testWidgets('CreateOrganizerScreen shows mutation errors inline', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final container = ProviderContainer(
       retry: (_, _) => null,
@@ -808,149 +835,151 @@ void _registerExploreErrorsAndCreationTests() {
     },
   );
 
-  testWidgets('CreateOrganizerScreen reviews and pops after a successful submit', (
-    tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({});
-    final fakeRepository = FakeOrganizersRepository();
-    final fakeImageUploadRepository = FakeImageUploadRepository(
-      pickedImage: XFile('/tmp/club-cover.jpg'),
-    );
-    final container = ProviderContainer(
-      overrides: [
-        organizersRepositoryProvider.overrideWith((ref) => fakeRepository),
-        imageUploadRepositoryProvider.overrideWith(
-          (ref) => fakeImageUploadRepository,
-        ),
-        uidProvider.overrideWith((ref) => Stream.value('host-1')),
-        watchUserProfileProvider.overrideWith(
-          (ref) => Stream.value(buildUser(uid: 'host-1', name: 'Priya')),
-        ),
-      ],
-    );
-    addTearDown(container.dispose);
-    final uidSubscription = container.listen(
-      uidProvider,
-      (_, _) {},
-      fireImmediately: true,
-    );
-    addTearDown(uidSubscription.close);
-    final userProfileSubscription = container.listen(
-      watchUserProfileProvider,
-      (_, _) {},
-      fireImmediately: true,
-    );
-    addTearDown(userProfileSubscription.close);
-    await container.pump();
-    await container.pump();
+  testWidgets(
+    'CreateOrganizerScreen reviews and pops after a successful submit',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final fakeRepository = FakeOrganizersRepository();
+      final fakeImageUploadRepository = FakeImageUploadRepository(
+        pickedImage: XFile('/tmp/club-cover.jpg'),
+      );
+      final container = ProviderContainer(
+        overrides: [
+          organizersRepositoryProvider.overrideWith((ref) => fakeRepository),
+          imageUploadRepositoryProvider.overrideWith(
+            (ref) => fakeImageUploadRepository,
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(buildUser(uid: 'host-1', name: 'Priya')),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      final userProfileSubscription = container.listen(
+        watchUserProfileProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(userProfileSubscription.close);
+      await container.pump();
+      await container.pump();
 
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: Builder(
-            builder: (context) => Scaffold(
-              body: Center(
-                child: FilledButton(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) =>
-                          const CreateOrganizerScreen(restoreSavedDraft: false),
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Builder(
+              builder: (context) => Scaffold(
+                body: Center(
+                  child: FilledButton(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const CreateOrganizerScreen(
+                          restoreSavedDraft: false,
+                        ),
+                      ),
                     ),
+                    child: const Text('Open create screen'),
                   ),
-                  child: const Text('Open create screen'),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.tap(find.text('Open create screen'));
-    await _pumpOrganizerUi(tester);
+      );
+      await tester.tap(find.text('Open create screen'));
+      await _pumpOrganizerUi(tester);
 
-    await tester.tap(find.text('Next'));
-    await _pumpOrganizerUi(tester);
+      await tester.tap(find.text('Next'));
+      await _pumpOrganizerUi(tester);
 
-    expect(find.text('Organizer details'), findsOneWidget);
-    expect(find.text('Please enter an organizer name'), findsNothing);
+      expect(find.text('Organizer details'), findsOneWidget);
+      expect(find.text('Please enter an organizer name'), findsNothing);
 
-    await tester.tap(find.text('Previous'));
-    await _pumpOrganizerUi(tester);
-    expect(find.text('Organizer basics'), findsOneWidget);
+      await tester.tap(find.text('Previous'));
+      await _pumpOrganizerUi(tester);
+      expect(find.text('Organizer basics'), findsOneWidget);
 
-    await tester.enterText(
-      find.descendant(
-        of: _field('Organizer name'),
-        matching: find.byType(EditableText),
-      ),
-      'Sunset Striders',
-    );
-    await tester.enterText(
-      find.descendant(
-        of: _field('Area / neighbourhood'),
-        matching: find.byType(EditableText),
-      ),
-      'Bandra',
-    );
+      await tester.enterText(
+        find.descendant(
+          of: _field('Organizer name'),
+          matching: find.byType(EditableText),
+        ),
+        'Sunset Striders',
+      );
+      await tester.enterText(
+        find.descendant(
+          of: _field('Area / neighbourhood'),
+          matching: find.byType(EditableText),
+        ),
+        'Bandra',
+      );
 
-    tester.testTextInput.hide();
-    await tester.pump();
-    final cityField = _field('City');
-    await tester.ensureVisible(cityField);
-    await tester.tap(cityField);
-    await _pumpOrganizerUi(tester);
-    await tester.tap(_fieldChoice('Mumbai'));
-    await _pumpOrganizerUi(tester);
+      tester.testTextInput.hide();
+      await tester.pump();
+      final cityField = _field('City');
+      await tester.ensureVisible(cityField);
+      await tester.tap(cityField);
+      await _pumpOrganizerUi(tester);
+      await tester.tap(_fieldChoice('Mumbai'));
+      await _pumpOrganizerUi(tester);
 
-    await tester.tap(find.text('Next'));
-    await _pumpOrganizerUi(tester);
+      await tester.tap(find.text('Next'));
+      await _pumpOrganizerUi(tester);
 
-    await tester.tap(find.text('Next'));
-    await _pumpOrganizerUi(tester);
+      await tester.tap(find.text('Next'));
+      await _pumpOrganizerUi(tester);
 
-    expect(find.text('DEFAULT EVENT POLICY'), findsOneWidget);
+      expect(find.text('DEFAULT EVENT POLICY'), findsOneWidget);
 
-    await tester.tap(find.text('Previous'));
-    await _pumpOrganizerUi(tester);
+      await tester.tap(find.text('Previous'));
+      await _pumpOrganizerUi(tester);
 
-    await tester.enterText(
-      find.descendant(
-        of: _field('Description'),
-        matching: find.byType(EditableText),
-      ),
-      'Easy social club',
-    );
-    tester.testTextInput.hide();
-    await tester.pump();
+      await tester.enterText(
+        find.descendant(
+          of: _field('Description'),
+          matching: find.byType(EditableText),
+        ),
+        'Easy social club',
+      );
+      tester.testTextInput.hide();
+      await tester.pump();
 
-    await tester.tap(find.text('Next'));
-    await _pumpOrganizerUi(tester);
+      await tester.tap(find.text('Next'));
+      await _pumpOrganizerUi(tester);
 
-    expect(find.text('DEFAULT EVENT POLICY'), findsOneWidget);
-    expect(_field('Cohort caps'), findsOneWidget);
-    await tester.tap(_field('Admission format'));
-    await _pumpOrganizerUi(tester);
-    expect(_fieldOptionCard('OPEN', selected: true), findsOneWidget);
+      expect(find.text('DEFAULT EVENT POLICY'), findsOneWidget);
+      expect(_field('Cohort caps'), findsOneWidget);
+      await tester.tap(_field('Admission format'));
+      await _pumpOrganizerUi(tester);
+      expect(_fieldOptionCard('OPEN', selected: true), findsOneWidget);
 
-    await tester.tap(find.text('Next'));
-    await _pumpOrganizerUi(tester);
+      await tester.tap(find.text('Next'));
+      await _pumpOrganizerUi(tester);
 
-    expect(find.text('Live event guide'), findsOneWidget);
-    expect(_field('Live event guide'), findsOneWidget);
+      expect(find.text('Live event guide'), findsOneWidget);
+      expect(_field('Live event guide'), findsOneWidget);
 
-    await tester.tap(find.text('Review organizer'));
-    await _pumpOrganizerUi(tester);
+      await tester.tap(find.text('Review organizer'));
+      await _pumpOrganizerUi(tester);
 
-    expect(find.text('COMPLETE'), findsNWidgets(2));
-    expect(find.text('OPTIONAL'), findsNWidgets(2));
+      expect(find.text('COMPLETE'), findsNWidgets(2));
+      expect(find.text('OPTIONAL'), findsNWidgets(2));
 
-    await tester.tap(find.text('Create organizer'));
-    await _pumpOrganizerUi(tester);
+      await tester.tap(find.text('Create organizer'));
+      await _pumpOrganizerUi(tester);
 
-    expect(find.text('Open create screen'), findsOneWidget);
-    expect(fakeRepository.lastCreateCall, isNotNull);
-    expect(fakeRepository.lastCreateCall!.name, 'Sunset Striders');
-  });
+      expect(find.text('Open create screen'), findsOneWidget);
+      expect(fakeRepository.lastCreateCall, isNotNull);
+      expect(fakeRepository.lastCreateCall!.name, 'Sunset Striders');
+    },
+  );
 }

@@ -250,7 +250,9 @@ class CreateEventController extends _$CreateEventController {
     );
     return ref
         .read(
-          createEventPhotoRecoveryControllerProvider(normalizedOrganizerId).notifier,
+          createEventPhotoRecoveryControllerProvider(
+            normalizedOrganizerId,
+          ).notifier,
         )
         .create(
           event: event,

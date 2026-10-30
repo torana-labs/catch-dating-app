@@ -121,8 +121,9 @@ class _HostFollowerUpdateComposerSheetState
               contract: CatchContractConstraints
                   .createOrganizerPostCallablePayloadText,
               controller: _controller,
-              placeholder:
-                  context.l10n.hostsHostOrganizerToolsPlaceholderShareARouteNote,
+              placeholder: context
+                  .l10n
+                  .hostsHostOrganizerToolsPlaceholderShareARouteNote,
               keyboardType: TextInputType.multiline,
               textInputAction: TextInputAction.newline,
               textCapitalization: TextCapitalization.sentences,

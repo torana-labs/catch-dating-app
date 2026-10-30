@@ -163,7 +163,11 @@ class HostMarketingIndiaScenarioFixture {
       );
     }
     return fixtures
-        .hostDemoEvent(role: role, organizer: organizerValue, scenario: scenario)
+        .hostDemoEvent(
+          role: role,
+          organizer: organizerValue,
+          scenario: scenario,
+        )
         .copyWith(
           name: eventName,
           synthetic: true,
@@ -643,7 +647,8 @@ class SalesDemoSyntheticFixtures {
       id: id,
       clubId: organizer.id,
       savedAt: savedAt,
-      name: '${resolvedScenario.organizer.name} ${setupEvent.activityKind.label}',
+      name:
+          '${resolvedScenario.organizer.name} ${setupEvent.activityKind.label}',
       activityKind: setupEvent.activityKind.name,
       capacity: setupEvent.capacityLimit.toString(),
       price: (setupEvent.priceInPaise ~/ 100).toString(),

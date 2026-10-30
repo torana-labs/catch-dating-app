@@ -49,7 +49,9 @@ void main() {
           theme: AppTheme.light,
           home: Scaffold(
             body: CustomScrollView(
-              slivers: [OrganizerHeroTopBar(organizer: organizer, isHost: false)],
+              slivers: [
+                OrganizerHeroTopBar(organizer: organizer, isHost: false),
+              ],
             ),
           ),
         ),

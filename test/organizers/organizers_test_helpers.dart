@@ -308,31 +308,41 @@ class FakeOrganizersRepository implements OrganizersRepository {
   }
 
   @override
-  Stream<Organizer?> watchOrganizer(String id) => Stream.value(organizersById[id]);
+  Stream<Organizer?> watchOrganizer(String id) =>
+      Stream.value(organizersById[id]);
 
   @override
   Stream<List<Organizer>> watchOrganizersByLocation(String location) =>
       Stream.value(organizersByLocation[location] ?? const []);
 
   @override
-  Stream<List<Organizer>> watchOrganizersByLocationSortedByRating(String location) {
-    final organizers = <Organizer>[...(organizersByLocation[location] ?? const <Organizer>[])]
-      ..sort((a, b) => b.rating.compareTo(a.rating));
+  Stream<List<Organizer>> watchOrganizersByLocationSortedByRating(
+    String location,
+  ) {
+    final organizers = <Organizer>[
+      ...(organizersByLocation[location] ?? const <Organizer>[]),
+    ]..sort((a, b) => b.rating.compareTo(a.rating));
     return Stream.value(organizers);
   }
 
   @override
   Stream<List<Organizer>> watchOrganizersHostedBy(String uid) => Stream.value(
-    organizersById.values.where((organizer) => organizer.isHostedBy(uid)).toList(),
+    organizersById.values
+        .where((organizer) => organizer.isHostedBy(uid))
+        .toList(),
   );
 
   @override
   Stream<List<Organizer>> watchOrganizersOwnedBy(String uid) => Stream.value(
-    organizersById.values.where((organizer) => organizer.isOwnedBy(uid)).toList(),
+    organizersById.values
+        .where((organizer) => organizer.isOwnedBy(uid))
+        .toList(),
   );
 
   @override
-  Stream<List<Organizer>> watchOrganizersByIds({required List<String> organizerIds}) {
+  Stream<List<Organizer>> watchOrganizersByIds({
+    required List<String> organizerIds,
+  }) {
     watchOrganizersByIdsCalls.add(List.unmodifiable(organizerIds));
     return Stream.value([
       for (final id in organizerIds)

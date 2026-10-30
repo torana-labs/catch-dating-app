@@ -286,7 +286,8 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       if (!mounted) {
         return;
       }
-      if (summary.eventId != eventId || summary.organizerId != widget.organizer.id) {
+      if (summary.eventId != eventId ||
+          summary.organizerId != widget.organizer.id) {
         throw const FormatException('Private event read changed identity');
       }
       final basics = PrivateEventBasics(

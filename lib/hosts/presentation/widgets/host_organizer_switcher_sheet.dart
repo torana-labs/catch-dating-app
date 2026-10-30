@@ -10,7 +10,10 @@ Future<String?> showHostOrganizerSwitcherSheet({
   required List<Organizer> organizers,
   required String selectedOrganizerId,
 }) {
-  assert(organizers.length > 1, 'Organizer switcher requires multiple organizers.');
+  assert(
+    organizers.length > 1,
+    'Organizer switcher requires multiple organizers.',
+  );
   return showCatchBottomSheet<String>(
     context: context,
     builder: (sheetContext) => HostOrganizerSwitcherSheet(

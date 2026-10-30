@@ -66,7 +66,10 @@ void registerHostEventEntryTests() {
   testWidgets('Host Today owns the dedicated dress rehearsal entry point', (
     tester,
   ) async {
-    final organizer = buildOrganizer(id: 'rehearsal-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'rehearsal-club',
+      ownerUserId: _hostUid,
+    );
 
     await _pumpHostScreen(
       tester,
@@ -233,7 +236,9 @@ void registerHostWorkspacePagingTest() {
           ownedOrganizer.id,
         ).overrideWithValue(const AsyncData<List<Event>>([])),
         organizerDetailViewModelProvider(ownedOrganizer.id).overrideWithValue(
-          AsyncData<OrganizerDetailViewModel?>(_previewViewModel(ownedOrganizer)),
+          AsyncData<OrganizerDetailViewModel?>(
+            _previewViewModel(ownedOrganizer),
+          ),
         ),
         watchHostPaymentAccountsProvider(
           _hostUid,
@@ -305,8 +310,9 @@ class _RecordingHostOrganizerEditActions implements HostOrganizerEditActions {
   }
 
   @override
-  Future<List<HostPickedOrganizerPhoto>> pickOrganizerPhotos({int? limit}) async =>
-      limit == null
+  Future<List<HostPickedOrganizerPhoto>> pickOrganizerPhotos({
+    int? limit,
+  }) async => limit == null
       ? pickedPhotos
       : pickedPhotos.take(limit).toList(growable: false);
 
@@ -327,7 +333,8 @@ class _RecordingHostOrganizerEditActions implements HostOrganizerEditActions {
       mediaFailuresRemaining -= 1;
       final error = StateError('media update failed');
       final newInputs =
-          photoInputs?.whereType<HostNewOrganizerPhotoInput>().toList() ?? const [];
+          photoInputs?.whereType<HostNewOrganizerPhotoInput>().toList() ??
+          const [];
       final failedId = newInputs.isEmpty ? null : newInputs.first.id;
       return HostOrganizerMediaSaveResult(
         photoInputs: photoInputs,

@@ -70,7 +70,9 @@ void main() {
           eventId: 'event-1',
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventDetailViewModelProvider(
             'event-1',
           ).overrideWith((ref) => const AsyncLoading()),
@@ -98,7 +100,9 @@ void main() {
         signedInUid: null,
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          fetchOrganizerProvider('club-1').overrideWith((ref) async => buildOrganizer()),
+          fetchOrganizerProvider(
+            'club-1',
+          ).overrideWith((ref) async => buildOrganizer()),
           eventDetailViewModelProvider(
             'event-1',
           ).overrideWith((ref) => const AsyncLoading()),
@@ -157,7 +161,9 @@ void main() {
           eventId: 'event-1',
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventDetailViewModelProvider('event-1').overrideWith(
             (ref) => AsyncError(StateError('boom'), StackTrace.empty),
           ),
@@ -179,7 +185,9 @@ void main() {
           eventId: 'event-1',
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventDetailViewModelProvider(
             'event-1',
           ).overrideWith((ref) => const AsyncData(null)),
@@ -199,7 +207,9 @@ void main() {
           eventId: 'event-1',
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventDetailViewModelProvider('event-1').overrideWith(
             (ref) => AsyncError(
               StateError('No network connection for Event Detail'),
@@ -227,7 +237,9 @@ void main() {
         ),
         viewerState: viewerFixture(),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventDetailViewModelProvider('event-1').overrideWith(
             (ref) => AsyncData(
               EventDetailViewModel(
@@ -266,7 +278,9 @@ void main() {
         ),
         viewerState: viewerFixture(),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventDetailViewModelProvider('event-1').overrideWith(
             (ref) => AsyncData(
               EventDetailViewModel(
@@ -298,7 +312,9 @@ void main() {
         ),
         viewerState: viewerFixture(reason: 'past'),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventDetailViewModelProvider('event-1').overrideWith(
             (ref) => AsyncData(
               EventDetailViewModel(
@@ -762,7 +778,9 @@ void main() {
           companionState: const EventDetailCompanionState.available(),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -794,7 +812,9 @@ void main() {
           participation: _participation(),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           watchEventSuccessPlanProvider(
             event.id,
@@ -836,7 +856,9 @@ void main() {
           now: now,
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           watchEventSuccessPlanProvider(
             event.id,
@@ -981,7 +1003,9 @@ void main() {
           participation: null,
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -1082,7 +1106,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+            organizersRepositoryProvider.overrideWithValue(
+              FakeOrganizersRepository(),
+            ),
             paymentRepositoryProvider.overrideWithValue(
               FakePaymentRepository(),
             ),
@@ -1197,7 +1223,9 @@ void main() {
           now: DateTime(2026, 5, 25),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           watchEventSuccessPlanProvider(
             event.id,
@@ -1252,7 +1280,9 @@ void main() {
         ),
         viewerState: viewerFixture(),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventDetailViewModelProvider('event-1').overrideWith(
             (ref) => AsyncData(
               EventDetailViewModel(
@@ -1298,7 +1328,9 @@ void main() {
         ),
         viewerState: viewerFixture(),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventDetailViewModelProvider('event-1').overrideWith(
             (ref) => AsyncData(
               EventDetailViewModel(
@@ -1369,7 +1401,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+            organizersRepositoryProvider.overrideWithValue(
+              FakeOrganizersRepository(),
+            ),
             paymentRepositoryProvider.overrideWithValue(
               FakePaymentRepository(),
             ),

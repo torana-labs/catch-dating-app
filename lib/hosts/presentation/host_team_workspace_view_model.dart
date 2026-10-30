@@ -52,7 +52,9 @@ HostTeamProfileState buildHostTeamProfileState({
 HostTeamHostedOrganizersState buildHostTeamHostedOrganizersState(
   CatchAsyncState<List<Organizer>> organizers,
 ) {
-  if (organizers.hasError) return HostTeamHostedOrganizersError(error: organizers.error!);
+  if (organizers.hasError) {
+    return HostTeamHostedOrganizersError(error: organizers.error!);
+  }
   if (organizers.isLoading) return const HostTeamHostedOrganizersLoading();
   final value = organizers.value ?? const <Organizer>[];
   return value.isEmpty
@@ -60,9 +62,14 @@ HostTeamHostedOrganizersState buildHostTeamHostedOrganizersState(
       : HostTeamHostedOrganizersContent(organizers: value);
 }
 
-HostProfile? _fallbackHostProfileFromOrganizers(String uid, List<Organizer>? organizers) {
+HostProfile? _fallbackHostProfileFromOrganizers(
+  String uid,
+  List<Organizer>? organizers,
+) {
   if (organizers == null || organizers.isEmpty) return null;
-  final hostedOrganizers = organizers.where((organizer) => organizer.isHostedBy(uid)).toList();
+  final hostedOrganizers = organizers
+      .where((organizer) => organizer.isHostedBy(uid))
+      .toList();
   if (hostedOrganizers.isEmpty) return null;
   final firstOrganizer = hostedOrganizers.first;
   OrganizerHostProfile? organizerHostProfile;
@@ -86,7 +93,9 @@ HostProfile? _fallbackHostProfileFromOrganizers(String uid, List<Organizer>? org
     organizerHostProfile?.avatarUrl,
     firstOrganizer.hostAvatarUrl,
   ]);
-  final ownsAnyOrganizer = hostedOrganizers.any((organizer) => organizer.isOwnedBy(uid));
+  final ownsAnyOrganizer = hostedOrganizers.any(
+    (organizer) => organizer.isOwnedBy(uid),
+  );
 
   return HostProfile(
     uid: uid,
@@ -94,7 +103,9 @@ HostProfile? _fallbackHostProfileFromOrganizers(String uid, List<Organizer>? org
     avatarUrl: avatarUrl,
     roleTitle: ownsAnyOrganizer ? 'Owner' : 'Host team',
     status: HostProfileStatus.active,
-    linkedOrganizerIds: [for (final organizer in hostedOrganizers) organizer.id],
+    linkedOrganizerIds: [
+      for (final organizer in hostedOrganizers) organizer.id,
+    ],
     createdAt: null,
     updatedAt: null,
   );

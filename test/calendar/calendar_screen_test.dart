@@ -753,9 +753,12 @@ void main() {
               ).overrideWithValue(const AsyncData(null)),
               organizersRepositoryProvider.overrideWith(
                 (ref) =>
-                    organizer_test.FakeOrganizersRepository()..organizersById[organizer.id] = organizer,
+                    organizer_test.FakeOrganizersRepository()
+                      ..organizersById[organizer.id] = organizer,
               ),
-              fetchOrganizerProvider(organizer.id).overrideWithValue(AsyncData(organizer)),
+              fetchOrganizerProvider(
+                organizer.id,
+              ).overrideWithValue(AsyncData(organizer)),
               watchReviewsForEventProvider(
                 event.id,
               ).overrideWithValue(const AsyncData([])),

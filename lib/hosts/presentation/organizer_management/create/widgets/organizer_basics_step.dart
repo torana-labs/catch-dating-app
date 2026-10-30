@@ -110,7 +110,8 @@ class OrganizerBasicsStep extends StatelessWidget {
                 ),
                 CatchField.input(
                   copy: catchFieldCopy(context.l10n),
-                  title: context.l10n.hostsOrganizerBasicsStepTitleOrganizerName,
+                  title:
+                      context.l10n.hostsOrganizerBasicsStepTitleOrganizerName,
                   contract:
                       CatchContractConstraints.createClubCallablePayloadName,
                   controller: nameController,
@@ -174,7 +175,9 @@ class OrganizerBasicsStep extends StatelessWidget {
                 ),
                 CatchField.input(
                   copy: catchFieldCopy(context.l10n),
-                  title: context.l10n.hostsOrganizerBasicsStepTitleAreaNeighbourhood,
+                  title: context
+                      .l10n
+                      .hostsOrganizerBasicsStepTitleAreaNeighbourhood,
                   contract:
                       CatchContractConstraints.createClubCallablePayloadArea,
                   controller: areaController,

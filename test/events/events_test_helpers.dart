@@ -491,7 +491,9 @@ class FakeEventRepository extends Fake implements EventRepository {
       Stream.value(organizerEvents[clubId] ?? const []);
 
   @override
-  Future<List<Event>> fetchUpcomingEventsForOrganizers(List<String> organizerIds) async {
+  Future<List<Event>> fetchUpcomingEventsForOrganizers(
+    List<String> organizerIds,
+  ) async {
     recommendedOrganizerIds = organizerIds;
     return recommendedEvents;
   }

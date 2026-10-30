@@ -68,8 +68,10 @@ HostAnalyticsGranularity _granularityFor(
 ) {
   return switch (rangePreset) {
     HostOrganizerInsightsRangePreset.thirtyDays ||
-    HostOrganizerInsightsRangePreset.ninetyDays => HostAnalyticsGranularity.week,
-    HostOrganizerInsightsRangePreset.twelveMonths => HostAnalyticsGranularity.month,
+    HostOrganizerInsightsRangePreset.ninetyDays =>
+      HostAnalyticsGranularity.week,
+    HostOrganizerInsightsRangePreset.twelveMonths =>
+      HostAnalyticsGranularity.month,
   };
 }
 

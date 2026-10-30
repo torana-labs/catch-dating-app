@@ -58,7 +58,10 @@ void _registerHostOperationsStateEventsTests() {
       final editState = buildHostTeamWorkspaceState(
         uid: _hostUid,
         profile: CatchAsyncState<HostProfile?>.data(profile),
-        organizers: CatchAsyncState<List<Organizer>>.data([ownedOrganizer, cohostOrganizer]),
+        organizers: CatchAsyncState<List<Organizer>>.data([
+          ownedOrganizer,
+          cohostOrganizer,
+        ]),
       );
       expect(editState.actions.canCreateProfile, isFalse);
       expect(editState.actions.canEditProfile, isTrue);
@@ -90,45 +93,50 @@ void _registerHostOperationsStateEventsTests() {
     },
   );
 
-  test('HostOrganizersScreenState resolves selected club, tab, and owner role', () {
-    final ownedOrganizer = buildOrganizer(
-      id: 'owned-club',
-      name: 'Owner Club',
-      ownerUserId: _hostUid,
-    );
-    final cohostOrganizer = buildOrganizer(
-      id: 'cohost-club',
-      name: 'Co-host Club',
-      hostUserId: 'owner-2',
-      hostUserIds: const [_hostUid],
-    );
+  test(
+    'HostOrganizersScreenState resolves selected club, tab, and owner role',
+    () {
+      final ownedOrganizer = buildOrganizer(
+        id: 'owned-club',
+        name: 'Owner Club',
+        ownerUserId: _hostUid,
+      );
+      final cohostOrganizer = buildOrganizer(
+        id: 'cohost-club',
+        name: 'Co-host Club',
+        hostUserId: 'owner-2',
+        hostUserIds: const [_hostUid],
+      );
 
-    final state = HostOrganizersScreenState.resolve(
-      organizers: [ownedOrganizer, cohostOrganizer],
-      currentUid: _hostUid,
-      selectedOrganizerId: cohostOrganizer.id,
-      selectedTab: HostOrganizerTab.insights,
-    );
+      final state = HostOrganizersScreenState.resolve(
+        organizers: [ownedOrganizer, cohostOrganizer],
+        currentUid: _hostUid,
+        selectedOrganizerId: cohostOrganizer.id,
+        selectedTab: HostOrganizerTab.insights,
+      );
 
-    expect(state.selectedOrganizer, cohostOrganizer);
-    expect(state.title(AppLocalizationsEn()), 'Co-host Club');
-    expect(state.selectedOrganizerIsOwner, isFalse);
-    expect(state.showOrganizerPicker, isTrue);
-    expect(state.selectedTab, HostOrganizerTab.insights);
+      expect(state.selectedOrganizer, cohostOrganizer);
+      expect(state.title(AppLocalizationsEn()), 'Co-host Club');
+      expect(state.selectedOrganizerIsOwner, isFalse);
+      expect(state.showOrganizerPicker, isTrue);
+      expect(state.selectedTab, HostOrganizerTab.insights);
 
-    final ownerState = state.selectOrganizerIndex(0).selectTab(HostOrganizerTab.preview);
-    expect(ownerState.selectedOrganizer, ownedOrganizer);
-    expect(ownerState.selectedOrganizerIsOwner, isTrue);
-    expect(ownerState.selectedTab, HostOrganizerTab.preview);
+      final ownerState = state
+          .selectOrganizerIndex(0)
+          .selectTab(HostOrganizerTab.preview);
+      expect(ownerState.selectedOrganizer, ownedOrganizer);
+      expect(ownerState.selectedOrganizerIsOwner, isTrue);
+      expect(ownerState.selectedTab, HostOrganizerTab.preview);
 
-    final clampedState = HostOrganizersScreenState.resolve(
-      organizers: [ownedOrganizer],
-      currentUid: _hostUid,
-      selectedOrganizerIndex: 99,
-    );
-    expect(clampedState.selectedOrganizer, ownedOrganizer);
-    expect(clampedState.selectedTab, HostOrganizerTab.edit);
-  });
+      final clampedState = HostOrganizersScreenState.resolve(
+        organizers: [ownedOrganizer],
+        currentUid: _hostUid,
+        selectedOrganizerIndex: 99,
+      );
+      expect(clampedState.selectedOrganizer, ownedOrganizer);
+      expect(clampedState.selectedTab, HostOrganizerTab.edit);
+    },
+  );
 
   test('HostOrganizerInsightsState owns only club and narrative range', () {
     final state = HostOrganizerInsightsState.initial(clubId: 'club-1');
@@ -136,12 +144,17 @@ void _registerHostOperationsStateEventsTests() {
     expect(state.rangePreset, HostOrganizerInsightsRangePreset.thirtyDays);
     expect(state.query.clubId, 'club-1');
 
-    final ranged = state.selectRange(HostOrganizerInsightsRangePreset.twelveMonths);
+    final ranged = state.selectRange(
+      HostOrganizerInsightsRangePreset.twelveMonths,
+    );
     expect(ranged.rangePreset, HostOrganizerInsightsRangePreset.twelveMonths);
 
     final switchedOrganizer = ranged.selectOrganizer('club-2');
     expect(switchedOrganizer.query.clubId, 'club-2');
-    expect(switchedOrganizer.rangePreset, HostOrganizerInsightsRangePreset.twelveMonths);
+    expect(
+      switchedOrganizer.rangePreset,
+      HostOrganizerInsightsRangePreset.twelveMonths,
+    );
   });
 
   test('HostEventsRouteState maps auth and organizer async branches', () {
@@ -180,7 +193,10 @@ void _registerHostOperationsStateEventsTests() {
 
     final organizersErrorState = buildHostEventsRouteState(
       uid: const CatchAsyncState<String?>.data(_hostUid),
-      organizers: CatchAsyncState<List<Organizer>>.error(organizersError, stackTrace),
+      organizers: CatchAsyncState<List<Organizer>>.error(
+        organizersError,
+        stackTrace,
+      ),
     );
     expect(organizersErrorState.status, HostEventsRouteStatus.error);
     expect(organizersErrorState.uid, _hostUid);

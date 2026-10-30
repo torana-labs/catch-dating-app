@@ -26,7 +26,10 @@ Widget organizerAvatarRailStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'joined clubs',
         child: OrganizerAvatarRail(
-          organizers: [widgetbookOrganizerOrganizer, widgetbookOrganizerMinimalOrganizer],
+          organizers: [
+            widgetbookOrganizerOrganizer,
+            widgetbookOrganizerMinimalOrganizer,
+          ],
         ),
       ),
     ],
@@ -45,12 +48,18 @@ Widget organizerIndexRowStates(BuildContext context) {
     children: [
       WidgetbookPageStateCard(
         label: 'photo / joined',
-        child: OrganizerIndexRow(organizer: widgetbookOrganizerOrganizer, isJoined: true),
+        child: OrganizerIndexRow(
+          organizer: widgetbookOrganizerOrganizer,
+          isJoined: true,
+        ),
       ),
       WidgetbookPageStateCard(
         label: 'fallback / joinable',
         child: WidgetbookOrganizerOrganizerDirectoryPreviewScope(
-          child: OrganizerIndexRow(organizer: widgetbookOrganizerMinimalOrganizer, isJoined: false),
+          child: OrganizerIndexRow(
+            organizer: widgetbookOrganizerMinimalOrganizer,
+            isJoined: false,
+          ),
         ),
       ),
       WidgetbookPageStateCard(
@@ -79,7 +88,10 @@ Widget avatarChipStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'event soon',
-        child: AvatarChip(organizer: widgetbookOrganizerMinimalOrganizer, showLiveBadge: true),
+        child: AvatarChip(
+          organizer: widgetbookOrganizerMinimalOrganizer,
+          showLiveBadge: true,
+        ),
       ),
     ],
   );
@@ -104,7 +116,10 @@ Widget organizerImageStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'profile first',
         child: WidgetbookOrganizerOrganizerMediaFrame(
-          child: OrganizerImage(organizer: _logoOrganizer, preferProfileImage: true),
+          child: OrganizerImage(
+            organizer: _logoOrganizer,
+            preferProfileImage: true,
+          ),
         ),
       ),
       WidgetbookPageStateCard(

@@ -277,7 +277,8 @@ String _contextTitle(AppLocalizations l10n, AppErrorContext context) {
       l10n.coreAppErrorMessageVisiblecopyProfileUnavailable,
     AppErrorContext.event =>
       l10n.coreAppErrorMessageVisiblecopyEventUnavailable,
-    AppErrorContext.organizer => l10n.coreAppErrorMessageVisiblecopyOrganizerUnavailable,
+    AppErrorContext.organizer =>
+      l10n.coreAppErrorMessageVisiblecopyOrganizerUnavailable,
     AppErrorContext.customers => l10n.hostCustomersUnavailable,
     AppErrorContext.customer => l10n.hostCustomersDetailUnavailable,
     AppErrorContext.applications => l10n.hostApplicationsUnavailable,
@@ -350,7 +351,8 @@ String _retryLabelFor(
     AppErrorContext.explore => l10n.coreAppErrorMessageVisiblecopyReloadExplore,
     AppErrorContext.profile => l10n.coreAppErrorMessageVisiblecopyReloadProfile,
     AppErrorContext.event => l10n.coreAppErrorMessageVisiblecopyReloadEvent,
-    AppErrorContext.organizer => l10n.coreAppErrorMessageVisiblecopyReloadOrganizer,
+    AppErrorContext.organizer =>
+      l10n.coreAppErrorMessageVisiblecopyReloadOrganizer,
     AppErrorContext.customers => l10n.hostCustomersReload,
     AppErrorContext.customer => l10n.hostCustomersReloadDetail,
     AppErrorContext.applications => l10n.hostApplicationsReload,
@@ -404,7 +406,8 @@ String _notFoundTitle(AppLocalizations l10n, AppErrorContext context) {
     AppErrorContext.explore =>
       l10n.coreAppErrorMessageVisiblecopyExploreItemNotFound,
     AppErrorContext.event => l10n.coreAppErrorMessageVisiblecopyEventNotFound,
-    AppErrorContext.organizer => l10n.coreAppErrorMessageVisiblecopyOrganizerNotFound,
+    AppErrorContext.organizer =>
+      l10n.coreAppErrorMessageVisiblecopyOrganizerNotFound,
     AppErrorContext.customers => l10n.hostCustomersUnavailable,
     AppErrorContext.customer => l10n.hostCustomersDetailNotFound,
     AppErrorContext.applications => l10n.hostApplicationNotFound,

@@ -64,7 +64,9 @@ class _HostOrganizerInsightsSectionState
 
   @override
   Widget build(BuildContext context) {
-    final fallbackTimezone = marketForCityName(widget.organizer.location).timeZone;
+    final fallbackTimezone = marketForCityName(
+      widget.organizer.location,
+    ).timeZone;
     final timezone =
         ref.watch(hostAnalyticsDeviceTimezoneProvider).value ??
         fallbackTimezone;
@@ -114,7 +116,9 @@ class _HostOrganizerInsightsSectionState
   }
 
   Future<void> _refresh() async {
-    final fallbackTimezone = marketForCityName(widget.organizer.location).timeZone;
+    final fallbackTimezone = marketForCityName(
+      widget.organizer.location,
+    ).timeZone;
     final timezone =
         await ref.read(hostAnalyticsDeviceTimezoneProvider.future) ??
         fallbackTimezone;
@@ -258,7 +262,8 @@ HostAnalyticsQuery _hostAnalyticsQueryFor(
     },
     granularity: switch (state.rangePreset) {
       HostOrganizerInsightsRangePreset.thirtyDays ||
-      HostOrganizerInsightsRangePreset.ninetyDays => HostAnalyticsGranularity.week,
+      HostOrganizerInsightsRangePreset.ninetyDays =>
+        HostAnalyticsGranularity.week,
       HostOrganizerInsightsRangePreset.twelveMonths =>
         HostAnalyticsGranularity.month,
     },

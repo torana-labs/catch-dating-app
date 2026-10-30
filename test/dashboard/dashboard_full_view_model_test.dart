@@ -48,8 +48,13 @@ void main() {
         overrides: [
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
           uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-          watchActiveOrganizerMembershipsForUserProvider(user.uid).overrideWithValue(
-            const AsyncError<List<OrganizerMembership>>('clubs', StackTrace.empty),
+          watchActiveOrganizerMembershipsForUserProvider(
+            user.uid,
+          ).overrideWithValue(
+            const AsyncError<List<OrganizerMembership>>(
+              'clubs',
+              StackTrace.empty,
+            ),
           ),
           watchSignedUpEventsProvider(
             user.uid,
@@ -157,7 +162,9 @@ void main() {
           dashboardNowProvider.overrideWithValue(DateTime(2026, 5, 13, 8)),
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
           uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-          watchActiveOrganizerMembershipsForUserProvider(user.uid).overrideWithValue(
+          watchActiveOrganizerMembershipsForUserProvider(
+            user.uid,
+          ).overrideWithValue(
             AsyncData<List<OrganizerMembership>>([
               membership(clubId: 'club-a', uid: user.uid),
             ]),

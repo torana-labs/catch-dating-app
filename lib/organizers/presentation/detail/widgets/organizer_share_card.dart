@@ -21,7 +21,8 @@ Future<void> showOrganizerShareCardSheet(
       media: OrganizerShareCard(organizer: organizer),
       share: share,
       fileName: 'catch-organizer-card.png',
-      buttonLabel: context.l10n.organizersOrganizerHeroAppBarTooltipShareOrganizer,
+      buttonLabel:
+          context.l10n.organizersOrganizerHeroAppBarTooltipShareOrganizer,
       footnote: context.l10n.organizersOrganizerShareCardFootnote,
       subject: organizer.name,
       text: organizerShareText(organizer, context.l10n),
@@ -46,7 +47,10 @@ class OrganizerShareCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final tags = visibleOrganizerTags(organizer, limit: CatchLayout.richShareCardMaxTags);
+    final tags = visibleOrganizerTags(
+      organizer,
+      limit: CatchLayout.richShareCardMaxTags,
+    );
 
     return AspectRatio(
       aspectRatio: CatchLayout.richShareCardAspectRatio,
@@ -74,7 +78,9 @@ class OrganizerShareCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CatchKickerText(
-                    label: context.l10n.organizersOrganizerShareCardTextOrganizerOnCatch,
+                    label: context
+                        .l10n
+                        .organizersOrganizerShareCardTextOrganizerOnCatch,
                     color: t.primary,
                   ),
                   gapH6,
@@ -87,17 +93,21 @@ class OrganizerShareCard extends StatelessWidget {
                   gapH8,
                   CatchMetaRow(
                     icon: CatchIcons.location,
-                    label: context.l10n.organizersOrganizerShareCardLabelAreaCitylabel(
-                      area: organizer.area,
-                      cityLabel: cityLabel(organizer.location),
-                    ),
+                    label: context.l10n
+                        .organizersOrganizerShareCardLabelAreaCitylabel(
+                          area: organizer.area,
+                          cityLabel: cityLabel(organizer.location),
+                        ),
                   ),
                   gapH8,
                   CatchMetaRow(
                     icon: CatchIcons.people,
                     label: organizerMemberCountLabel(organizer),
                   ),
-                  if (tags.isNotEmpty) ...[gapH10, OrganizerTagList(tags: tags)],
+                  if (tags.isNotEmpty) ...[
+                    gapH10,
+                    OrganizerTagList(tags: tags),
+                  ],
                   const Spacer(),
                   CatchAttributionRow(
                     brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
@@ -127,7 +137,9 @@ class OrganizerShareCover extends StatelessWidget {
       return CatchHeroImage(
         imageUrl: photoUrl,
         semanticLabel: context.l10n
-            .organizersOrganizerShareCardSemanticlabelNameCoverPhoto(name: organizer.name),
+            .organizersOrganizerShareCardSemanticlabelNameCoverPhoto(
+              name: organizer.name,
+            ),
         showScrim: false,
       );
     }

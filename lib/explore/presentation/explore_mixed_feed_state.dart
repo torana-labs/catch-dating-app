@@ -180,8 +180,12 @@ List<ExploreMixedCard> buildExploreMixedFeedCards({
   final timedCardCount = cards.length;
 
   if (cards.isEmpty) {
-    if (firstOrganizer != null) cards.add(ExploreMixedOrganizerSpotlightCard(firstOrganizer));
-    if (secondOrganizer != null) cards.add(ExploreMixedOrganizerRowCard(secondOrganizer));
+    if (firstOrganizer != null) {
+      cards.add(ExploreMixedOrganizerSpotlightCard(firstOrganizer));
+    }
+    if (secondOrganizer != null) {
+      cards.add(ExploreMixedOrganizerRowCard(secondOrganizer));
+    }
     return cards;
   }
 

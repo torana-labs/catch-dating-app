@@ -17,7 +17,10 @@ class OrganizerPlaceholderCover extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = OrganizerCoverVisualPalette.forOrganizer(context, organizer);
+    final palette = OrganizerCoverVisualPalette.forOrganizer(
+      context,
+      organizer,
+    );
 
     return CatchSurface(
       duration: Duration.zero,
@@ -88,10 +91,15 @@ class OrganizerCoverVisualPalette {
   final Color icon;
   final Color text;
 
-  static OrganizerCoverVisualPalette forOrganizer(BuildContext context, Organizer organizer) =>
-      forSeed('${organizer.id}:${organizer.name}', context: context);
+  static OrganizerCoverVisualPalette forOrganizer(
+    BuildContext context,
+    Organizer organizer,
+  ) => forSeed('${organizer.id}:${organizer.name}', context: context);
 
-  static OrganizerCoverVisualPalette forSeed(String seed, {BuildContext? context}) {
+  static OrganizerCoverVisualPalette forSeed(
+    String seed, {
+    BuildContext? context,
+  }) {
     final t = context != null
         ? CatchTokens.of(context)
         : CatchTokens.editorialLight;
@@ -126,8 +134,12 @@ class OrganizerCoverVisualPalette {
       line: accent.withValues(alpha: CatchOpacity.organizerCoverPaletteLine),
       block: accent.withValues(alpha: CatchOpacity.organizerCoverPaletteBlock),
       accent: accent,
-      iconFill: t.surface.withValues(alpha: CatchOpacity.organizerCoverChipFill),
-      iconBorder: accent.withValues(alpha: CatchOpacity.organizerCoverPatternLine),
+      iconFill: t.surface.withValues(
+        alpha: CatchOpacity.organizerCoverChipFill,
+      ),
+      iconBorder: accent.withValues(
+        alpha: CatchOpacity.organizerCoverPatternLine,
+      ),
       icon: accent,
       text: t.ink2,
     );

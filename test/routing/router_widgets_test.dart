@@ -387,7 +387,9 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
-          fetchOrganizerProvider('club-1').overrideWith((ref) async => organizer),
+          fetchOrganizerProvider(
+            'club-1',
+          ).overrideWith((ref) async => organizer),
           commandJournalStorageProvider.overrideWith((ref) {
             final storage = MemoryCommandJournalStorage();
             return () async => storage;

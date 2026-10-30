@@ -31,7 +31,9 @@ void main() {
   test(
     'revocation is not undone by a delayed owner-labelled display entry',
     () {
-      final managed = _revokedOrganizer().copyWith(hostUserIds: ['owner', _removed]);
+      final managed = _revokedOrganizer().copyWith(
+        hostUserIds: ['owner', _removed],
+      );
       expect(managed.isHostedBy(_removed), isTrue);
       final revoked = managed.copyWith(hostUserIds: ['owner']);
       expect(revoked.isHostedBy(_removed), isFalse);
@@ -149,7 +151,10 @@ void main() {
       await expectLater(
         container
             .read(hostOrganizerEditControllerProvider)
-            .updateOrganizerMedia(organizer: _revokedOrganizer(), removeLogo: true),
+            .updateOrganizerMedia(
+              organizer: _revokedOrganizer(),
+              removeLogo: true,
+            ),
         throwsA(
           isA<BackendOperationException>().having(
             (error) => error.code,

@@ -241,7 +241,10 @@ void main() {
         addTearDown(tester.view.resetPhysicalSize);
         final formRequests = <HostFormListRequest>[];
         final responseRequests = <HostFormResponseListRequest>[];
-        final organizer = buildOrganizer(id: 'forms-club', ownerUserId: 'host-1');
+        final organizer = buildOrganizer(
+          id: 'forms-club',
+          ownerUserId: 'host-1',
+        );
 
         final router = GoRouter(
           initialLocation: '/host/audience?view=forms&organizerId=forms-club',
@@ -481,7 +484,9 @@ void main() {
           firebaseAuthProvider.overrideWithValue(_TestAuth('host-1')),
           uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
           hostOperableOrganizersProvider('host-1').overrideWithValue(
-            AsyncData([buildOrganizer(id: 'forms-club', ownerUserId: 'host-1')]),
+            AsyncData([
+              buildOrganizer(id: 'forms-club', ownerUserId: 'host-1'),
+            ]),
           ),
           hostFormsDirectoryControllerProvider.overrideWith2(
             (_) => _FixedHostFormsDirectoryController([]),
@@ -534,10 +539,14 @@ void main() {
               firebaseAuthProvider.overrideWithValue(auth),
               uidProvider.overrideWith((ref) => accounts.stream),
               hostOperableOrganizersProvider('host-1').overrideWithValue(
-                AsyncData([buildOrganizer(id: 'forms-club', ownerUserId: 'host-1')]),
+                AsyncData([
+                  buildOrganizer(id: 'forms-club', ownerUserId: 'host-1'),
+                ]),
               ),
               hostOperableOrganizersProvider('host-2').overrideWithValue(
-                AsyncData([buildOrganizer(id: 'forms-club', ownerUserId: 'host-2')]),
+                AsyncData([
+                  buildOrganizer(id: 'forms-club', ownerUserId: 'host-2'),
+                ]),
               ),
               hostFormsDirectoryControllerProvider.overrideWith2(
                 (_) => _AccountSwitchDirectoryController(

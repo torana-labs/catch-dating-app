@@ -132,7 +132,9 @@ void main() {
         organizerProgramListProvider(
           'org',
         ).overrideWithValue(const AsyncData([])),
-        watchEventsForOrganizerProvider('org').overrideWithValue(AsyncData([event])),
+        watchEventsForOrganizerProvider(
+          'org',
+        ).overrideWithValue(AsyncData([event])),
         watchEventParticipationsForEventProvider('event').overrideWithValue(
           AsyncData([buildEventParticipation(event: event, uid: 'guest')]),
         ),

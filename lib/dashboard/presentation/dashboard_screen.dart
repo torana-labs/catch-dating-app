@@ -68,7 +68,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             case DashboardHomeRetryTarget.memberships:
               final uid = error.uid;
               if (uid != null) {
-                ref.invalidate(watchActiveOrganizerMembershipsForUserProvider(uid));
+                ref.invalidate(
+                  watchActiveOrganizerMembershipsForUserProvider(uid),
+                );
               }
             case DashboardHomeRetryTarget.signedUpEvents:
               final uid = error.uid;
@@ -147,7 +149,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         AnalyticsEvents.homeModuleImpression,
         parameters: {AnalyticsParameters.homeModule: module},
       );
-      if (module == context.l10n.dashboardDashboardScreenVisiblecopyOrganizerPosts) {
+      if (module ==
+          context.l10n.dashboardDashboardScreenVisiblecopyOrganizerPosts) {
         analytics.logEvent(
           AnalyticsEvents.organizerPostImpression,
           parameters: {

@@ -93,7 +93,9 @@ class HostOrganizerSpokeAsyncBoundary extends ConsumerWidget {
         ),
       ),
       builder: (context, organizers) {
-        final organizer = organizers.where((item) => item.id == clubId).firstOrNull;
+        final organizer = organizers
+            .where((item) => item.id == clubId)
+            .firstOrNull;
         if (organizer == null) {
           return CatchRouteScaffold(
             topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
@@ -109,7 +111,8 @@ class HostOrganizerSpokeAsyncBoundary extends ConsumerWidget {
               child: CatchLocalizedErrorState(
                 StateError('Organizer unavailable'),
                 context: AppErrorContext.organizer,
-                onRetry: () => ref.invalidate(_hostOrganizersForUserProvider(uid)),
+                onRetry: () =>
+                    ref.invalidate(_hostOrganizersForUserProvider(uid)),
               ),
             ),
           );
@@ -156,7 +159,10 @@ class HostOrganizerSpokeScaffold extends StatelessWidget {
 }
 
 class HostOrganizerDefaultsEditor extends ConsumerStatefulWidget {
-  const HostOrganizerDefaultsEditor._({required this.organizer, required this.builder});
+  const HostOrganizerDefaultsEditor._({
+    required this.organizer,
+    required this.builder,
+  });
 
   final Organizer organizer;
   final Widget Function(
@@ -186,15 +192,16 @@ class _HostOrganizerDefaultsEditorState
   HostOrganizerDefaultsSaver _createSaver() {
     return HostOrganizerDefaultsSaver(
       initial: widget.organizer.hostDefaults,
-      writer: (defaults) => HostOrganizerEditController.updateOrganizerMutation.run(
-        ref,
-        (tx) => tx
-            .get(hostOrganizerEditControllerProvider)
-            .updateOrganizer(
-              clubId: widget.organizer.id,
-              patch: UpdateOrganizerPatch(hostDefaults: defaults),
-            ),
-      ),
+      writer: (defaults) =>
+          HostOrganizerEditController.updateOrganizerMutation.run(
+            ref,
+            (tx) => tx
+                .get(hostOrganizerEditControllerProvider)
+                .updateOrganizer(
+                  clubId: widget.organizer.id,
+                  patch: UpdateOrganizerPatch(hostDefaults: defaults),
+                ),
+          ),
       errorMessageFor: (error) => appErrorMessage(
         error,
         l10n: context.l10n,
@@ -289,10 +296,11 @@ class HostOrganizerReadOnlyDefaultsSection extends StatelessWidget {
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostOrganizerProfileTitleAgeRange,
-          valueText: context.l10n.hostsHostOrganizerProfileVisiblecopyMinageMaxage(
-            minAge: policy.minAge,
-            maxAge: policy.maxAge,
-          ),
+          valueText: context.l10n
+              .hostsHostOrganizerProfileVisiblecopyMinageMaxage(
+                minAge: policy.minAge,
+                maxAge: policy.maxAge,
+              ),
           icon: CatchIcons.birthday,
         ),
         CatchField.read(

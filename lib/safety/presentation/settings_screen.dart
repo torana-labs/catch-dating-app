@@ -467,8 +467,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     key: SettingsKeys.organizerUpdatesSwitch,
                     contract: CatchContractConstraints
                         .updateUserProfilePatchPrefsClubUpdates,
-                    title:
-                        context.l10n.safetySettingsScreenTitleOrganizerAnnouncements,
+                    title: context
+                        .l10n
+                        .safetySettingsScreenTitleOrganizerAnnouncements,
                     icon: CatchIcons.notificationsOn,
                     value: state.preferences.organizerUpdates,
                     onChanged: preferenceChangesBlocked

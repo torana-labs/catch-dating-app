@@ -60,7 +60,9 @@ class _DashboardFullSliverBodyState
         OrganizerNameLookupQuery(focusEvents.map((event) => event.clubId)),
       ),
     );
-    final organizerNames = catchAsyncStateFromAsyncValue(organizerNamesAsync).value;
+    final organizerNames = catchAsyncStateFromAsyncValue(
+      organizerNamesAsync,
+    ).value;
     final checkInMutation = ref.watch(
       DashboardEventFocusController.selfCheckInMutation,
     );
@@ -154,7 +156,10 @@ class _DashboardFullSliverBodyState
     context.go(Routes.exploreScreen.path);
   }
 
-  void _openOrganizerPost(BuildContext context, ActivityNotification notification) {
+  void _openOrganizerPost(
+    BuildContext context,
+    ActivityNotification notification,
+  ) {
     _logAction(
       context.l10n.dashboardDashboardFullVisiblecopyOrganizerPosts,
       context.l10n.dashboardDashboardFullVisiblecopyOpenPost,

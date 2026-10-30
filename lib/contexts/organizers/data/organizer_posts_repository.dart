@@ -86,10 +86,11 @@ class OrganizerPostsRepository {
 // keepalive: club post composer and quota streams share one Functions-backed
 // repository instance across host panels during a session.
 @Riverpod(keepAlive: true)
-OrganizerPostsRepository organizerPostsRepository(Ref ref) => OrganizerPostsRepository(
-  ref.watch(firebaseFirestoreProvider),
-  ref.watch(firebaseFunctionsProvider),
-);
+OrganizerPostsRepository organizerPostsRepository(Ref ref) =>
+    OrganizerPostsRepository(
+      ref.watch(firebaseFirestoreProvider),
+      ref.watch(firebaseFunctionsProvider),
+    );
 
 @riverpod
 Stream<int> watchOrganizerPostRemainingWeeklyQuota(Ref ref, String clubId) {

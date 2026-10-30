@@ -288,6 +288,8 @@ EventTileStatus _statusForAvailability(
     ViewerEventAvailabilityStatus.runPreferencesRequired ||
     ViewerEventAvailabilityStatus.open ||
     null =>
-      isJoinedOrganizerMember ? EventTileStatus.recommended : EventTileStatus.open,
+      isJoinedOrganizerMember
+          ? EventTileStatus.recommended
+          : EventTileStatus.open,
   };
 }

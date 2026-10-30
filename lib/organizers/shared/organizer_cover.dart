@@ -19,7 +19,10 @@ class OrganizerCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final url = organizer.primaryOrganizerPhotoUrl?.trim();
-    final fallback = OrganizerPlaceholderCover(organizer: organizer, compact: compact);
+    final fallback = OrganizerPlaceholderCover(
+      organizer: organizer,
+      compact: compact,
+    );
     if (url == null || url.isEmpty) return fallback;
     return CatchGradedImage(
       child: CatchNetworkImage(

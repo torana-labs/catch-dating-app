@@ -458,7 +458,9 @@ class PaymentConfirmedBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final organizerAsync = ref.watch(watchOrganizerProvider(event.clubId));
-    final organizerName = catchAsyncStateFromAsyncValue(organizerAsync).value?.name;
+    final organizerName = catchAsyncStateFromAsyncValue(
+      organizerAsync,
+    ).value?.name;
     final controller = ref.watch(paymentConfirmationControllerProvider);
     final share = ref.watch(externalShareControllerProvider);
 

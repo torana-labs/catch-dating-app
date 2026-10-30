@@ -39,10 +39,15 @@ ChatRouteState chatRouteState(Ref ref, ChatRouteStateArgs args) {
     match: match,
     routeProfile: args.initialProfile,
   );
-  final hostInquiryOrganizerAsync = initialLookupState.hostInquiryOrganizerId == null
+  final hostInquiryOrganizerAsync =
+      initialLookupState.hostInquiryOrganizerId == null
       ? const AsyncData<Organizer?>(null)
-      : ref.watch(watchOrganizerProvider(initialLookupState.hostInquiryOrganizerId!));
-  final hostInquiryOrganizer = _catchAsyncState(hostInquiryOrganizerAsync).value;
+      : ref.watch(
+          watchOrganizerProvider(initialLookupState.hostInquiryOrganizerId!),
+        );
+  final hostInquiryOrganizer = _catchAsyncState(
+    hostInquiryOrganizerAsync,
+  ).value;
   final lookupState = ChatThreadLookupState.resolve(
     matchId: args.matchId,
     uid: uid,

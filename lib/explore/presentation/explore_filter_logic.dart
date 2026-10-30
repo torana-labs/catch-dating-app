@@ -40,7 +40,9 @@ bool organizerMatchesScopeFilters({
   final activityTag = filters.activityTag;
   if (activityTag != null &&
       !activityHandledByEventFilter &&
-      !organizer.tags.any((tag) => exploreFilterValuesMatch(tag, activityTag))) {
+      !organizer.tags.any(
+        (tag) => exploreFilterValuesMatch(tag, activityTag),
+      )) {
     return false;
   }
   final area = filters.area;

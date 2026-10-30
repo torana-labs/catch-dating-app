@@ -82,7 +82,9 @@ void main() {
             uidProvider.overrideWith((ref) => Stream.value(user.uid)),
             watchActiveOrganizerMembershipsForUserProvider(
               user.uid,
-            ).overrideWith((ref) => Stream.value(const <OrganizerMembership>[])),
+            ).overrideWith(
+              (ref) => Stream.value(const <OrganizerMembership>[]),
+            ),
             exploreFeedViewModelProvider.overrideWithValue(
               const AsyncData(ExploreFeedViewModel(items: [])),
             ),
@@ -184,7 +186,9 @@ void main() {
             overrides: [
               organizerDetailViewModelProvider(
                 'club-loading',
-              ).overrideWithValue(const AsyncLoading<OrganizerDetailViewModel?>()),
+              ).overrideWithValue(
+                const AsyncLoading<OrganizerDetailViewModel?>(),
+              ),
             ],
             child: MaterialApp(
               theme: AppTheme.light,
@@ -307,7 +311,10 @@ void main() {
       await tester.tap(find.text(event.eventFormat.label));
       await _pumpOrganizerFlow(tester);
 
-      expect(find.text('Host event ${organizer.id}/${event.id}'), findsOneWidget);
+      expect(
+        find.text('Host event ${organizer.id}/${event.id}'),
+        findsOneWidget,
+      );
     });
 
     testWidgets(
@@ -343,7 +350,10 @@ void main() {
             ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: OrganizerDetailScreen(clubId: organizer.id, initialOrganizer: organizer),
+              home: OrganizerDetailScreen(
+                clubId: organizer.id,
+                initialOrganizer: organizer,
+              ),
             ),
           ),
         );
@@ -356,7 +366,9 @@ void main() {
         expect(find.text('Follow organizer'), findsOneWidget);
         expect(find.text('Following'), findsNothing);
 
-        membershipController.add(_membership(clubId: organizer.id, uid: 'runner-2'));
+        membershipController.add(
+          _membership(clubId: organizer.id, uid: 'runner-2'),
+        );
         await _pumpOrganizerFlow(tester);
 
         expect(find.text('Follow organizer'), findsNothing);
@@ -394,7 +406,10 @@ Event _buildEvent({required String id, required String clubId}) {
   );
 }
 
-Organizer _buildOrganizer({String id = 'club-1', String hostUserId = 'host-1'}) {
+Organizer _buildOrganizer({
+  String id = 'club-1',
+  String hostUserId = 'host-1',
+}) {
   return Organizer(
     id: id,
     name: 'Stride Social',
@@ -423,12 +438,14 @@ UserProfile _buildUser({required String uid}) {
   );
 }
 
-OrganizerMembership _membership({required String clubId, required String uid}) =>
-    OrganizerMembership(
-      id: organizerMembershipId(clubId: clubId, uid: uid),
-      clubId: clubId,
-      uid: uid,
-      role: OrganizerMembershipRole.member,
-      status: OrganizerMembershipStatus.active,
-      joinedAt: DateTime(2026),
-    );
+OrganizerMembership _membership({
+  required String clubId,
+  required String uid,
+}) => OrganizerMembership(
+  id: organizerMembershipId(clubId: clubId, uid: uid),
+  clubId: clubId,
+  uid: uid,
+  role: OrganizerMembershipRole.member,
+  status: OrganizerMembershipStatus.active,
+  joinedAt: DateTime(2026),
+);

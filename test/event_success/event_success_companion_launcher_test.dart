@@ -16,7 +16,8 @@ import 'package:go_router/go_router.dart';
 
 import '../events/events_test_helpers.dart'
     show buildEvent, buildEventParticipation;
-import '../organizers/organizers_test_helpers.dart' show FakeOrganizersRepository, buildOrganizer;
+import '../organizers/organizers_test_helpers.dart'
+    show FakeOrganizersRepository, buildOrganizer;
 import '../test_pump_helpers.dart';
 
 void main() {

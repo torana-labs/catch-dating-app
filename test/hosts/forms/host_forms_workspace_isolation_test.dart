@@ -650,7 +650,15 @@ class _Harness {
       ),
     );
     await _frames(tester);
-    return _Harness(container, router, repo, importer, auth, actors, organizers);
+    return _Harness(
+      container,
+      router,
+      repo,
+      importer,
+      auth,
+      actors,
+      organizers,
+    );
   }
 }
 

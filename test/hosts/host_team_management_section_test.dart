@@ -83,7 +83,11 @@ void main() {
     final repository = FakeOrganizersRepository();
     final organizer = _hostTeamOrganizer();
 
-    await _pumpHostTeamSection(tester, repository: repository, organizer: organizer);
+    await _pumpHostTeamSection(
+      tester,
+      repository: repository,
+      organizer: organizer,
+    );
 
     await tester.tap(find.byKey(const ValueKey('host-team-actions-host-2')));
     await pumpFeatureUi(tester);
@@ -112,7 +116,11 @@ void main() {
     final repository = FakeOrganizersRepository();
     final organizer = _hostTeamOrganizer();
 
-    await _pumpHostTeamSection(tester, repository: repository, organizer: organizer);
+    await _pumpHostTeamSection(
+      tester,
+      repository: repository,
+      organizer: organizer,
+    );
 
     await tester.tap(find.byKey(const ValueKey('host-team-actions-host-2')));
     await pumpFeatureUi(tester);
@@ -195,7 +203,11 @@ void main() {
       hostProfiles: const [],
     );
 
-    await _pumpHostTeamSection(tester, repository: repository, organizer: organizer);
+    await _pumpHostTeamSection(
+      tester,
+      repository: repository,
+      organizer: organizer,
+    );
 
     expect(
       find.byWidgetPredicate(

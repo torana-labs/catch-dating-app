@@ -32,11 +32,13 @@ class OrganizerPostsHomeSection extends ConsumerWidget {
     );
     final organizersState = catchAsyncStateFromAsyncValue(organizersAsync);
     final organizersById = {
-      for (final organizer in organizersState.value ?? const <Organizer>[]) organizer.id: organizer,
+      for (final organizer in organizersState.value ?? const <Organizer>[])
+        organizer.id: organizer,
     };
 
     return CatchSection.fieldRows(
-      title: context.l10n.dashboardOrganizerPostsHomeSectionTitleOrganizerUpdates,
+      title:
+          context.l10n.dashboardOrganizerPostsHomeSectionTitleOrganizerUpdates,
       children: [
         for (final entry in notifications.indexed)
           OrganizerPostHomeCard(
@@ -67,7 +69,8 @@ class OrganizerPostHomeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final organizerName = organizer?.name ?? notification.actorName ?? notification.title;
+    final organizerName =
+        organizer?.name ?? notification.actorName ?? notification.title;
     final hasEventLink = notification.eventId != null;
 
     return CatchSurface(

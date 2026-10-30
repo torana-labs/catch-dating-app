@@ -34,9 +34,10 @@ class ExploreScreenEmptyState extends StatelessWidget {
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
             icon: CatchIcons.people,
-            title: context.l10n.exploreExploreScreenTitleNoOrganizersInCitylabel(
-              cityLabel: state.cityLabel,
-            ),
+            title: context.l10n
+                .exploreExploreScreenTitleNoOrganizersInCitylabel(
+                  cityLabel: state.cityLabel,
+                ),
             message: context.l10n.exploreExploreScreenMessageTryAnotherCityFrom,
             actions: [
               CatchButton(

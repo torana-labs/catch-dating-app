@@ -1,6 +1,11 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 
-enum HostOrganizerPublicationKind { private, catchOnly, websiteOnly, everywhere }
+enum HostOrganizerPublicationKind {
+  private,
+  catchOnly,
+  websiteOnly,
+  everywhere,
+}
 
 /// Keeps native-app discovery and website publication separate in Host UI.
 ///

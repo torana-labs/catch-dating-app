@@ -279,7 +279,9 @@ Stream<List<Event>> watchEventsForOrganizerIdsStream({
 
   controller = StreamController<List<Event>>(
     onListen: () {
-      final chunks = chunkedForWhereIn(uniqueOrganizerIds).toList(growable: false);
+      final chunks = chunkedForWhereIn(
+        uniqueOrganizerIds,
+      ).toList(growable: false);
       final eventsByChunk = <int, List<Event>>{};
       for (var index = 0; index < chunks.length; index += 1) {
         final chunk = chunks[index];

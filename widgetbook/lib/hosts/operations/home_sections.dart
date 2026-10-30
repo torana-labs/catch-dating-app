@@ -98,9 +98,10 @@ Widget hostHomeEventSectionStates(BuildContext context) {
         label: 'events error',
         child: WidgetbookHostHomeSectionFrame(
           organizerEventStreams: {
-            widgetbookOrganizer.id: HostOperationsFixtures.errorStream<List<Event>>(
-              'Upcoming events failed',
-            ),
+            widgetbookOrganizer.id:
+                HostOperationsFixtures.errorStream<List<Event>>(
+                  'Upcoming events failed',
+                ),
           },
           child: HostEventsOrganizerCard(
             organizer: widgetbookOrganizer,

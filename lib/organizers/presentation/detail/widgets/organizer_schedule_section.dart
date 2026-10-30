@@ -48,7 +48,8 @@ class OrganizerScheduleSection extends StatelessWidget {
           ),
           sliver: SliverToBoxAdapter(
             child: CatchSection.divided(
-              title: context.l10n.organizersOrganizerScheduleSectionTitleSchedule,
+              title:
+                  context.l10n.organizersOrganizerScheduleSectionTitleSchedule,
               child: const SizedBox.shrink(),
             ),
           ),
@@ -64,8 +65,9 @@ class OrganizerScheduleSection extends StatelessWidget {
             sliver: SliverToBoxAdapter(
               child: CatchEmptyState(
                 icon: CatchIcons.date,
-                title:
-                    context.l10n.organizersOrganizerScheduleSectionTitleNoEventsScheduled,
+                title: context
+                    .l10n
+                    .organizersOrganizerScheduleSectionTitleNoEventsScheduled,
                 message: context
                     .l10n
                     .organizersOrganizerScheduleSectionMessageFutureEventsWillAppear,

@@ -32,7 +32,9 @@ class HostAudienceNoOrganizerEmptyState extends StatelessWidget {
           icon: forms ? CatchIcons.document : CatchIcons.people,
           title: forms
               ? context.l10n.hostFormsNoOrganizerTitle
-              : context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstOrganizer,
+              : context
+                    .l10n
+                    .hostsHostEventsScaffoldTitleCreateYourFirstOrganizer,
           message: forms
               ? context.l10n.hostFormsNoOrganizerBody
               : context.l10n.hostsHostEventsScaffoldBodyCreateAOrganizerTo,

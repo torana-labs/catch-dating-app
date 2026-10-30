@@ -56,7 +56,9 @@ class WidgetbookDashboardScope extends StatelessWidget {
     final focusOrganizerQuery = OrganizerNameLookupQuery(
       effectiveSignedUpEvents.map((event) => event.clubId),
     );
-    final organizersByIdQuery = OrganizersByIdQuery([widgetbookDashboardOrganizer.id]);
+    final organizersByIdQuery = OrganizersByIdQuery([
+      widgetbookDashboardOrganizer.id,
+    ]);
 
     return WidgetbookFixtureScope(
       overrides: [
@@ -101,11 +103,12 @@ class WidgetbookDashboardScope extends StatelessWidget {
           focusOrganizerQuery,
         ).overrideWith((ref) async => organizerNames),
         watchOrganizersByIdsProvider(organizersByIdQuery).overrideWith(
-          (ref) => Stream<List<Organizer>>.value([widgetbookDashboardOrganizer]),
+          (ref) =>
+              Stream<List<Organizer>>.value([widgetbookDashboardOrganizer]),
         ),
-        watchOrganizerProvider(
-          widgetbookDashboardOrganizer.id,
-        ).overrideWith((ref) => Stream<Organizer?>.value(widgetbookDashboardOrganizer)),
+        watchOrganizerProvider(widgetbookDashboardOrganizer.id).overrideWith(
+          (ref) => Stream<Organizer?>.value(widgetbookDashboardOrganizer),
+        ),
         externalUrlLauncherProvider.overrideWithValue(_noopLauncher),
         nativeCalendarLauncherProvider.overrideWithValue(_noopCalendarLauncher),
       ],

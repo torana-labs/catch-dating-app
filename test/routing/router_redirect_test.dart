@@ -665,7 +665,10 @@ void main() {
         '/host/organizers/live-guide',
       );
       expect(Routes.hostOrganizerTeamScreen.path, '/host/organizers/team');
-      expect(Routes.hostOrganizerPaymentsScreen.path, '/host/organizers/payments');
+      expect(
+        Routes.hostOrganizerPaymentsScreen.path,
+        '/host/organizers/payments',
+      );
       expect(
         Routes.hostEventRehearsalStartScreen.path,
         '/host/organizers/:clubId/rehearsals/new',

@@ -189,14 +189,16 @@ class HostCreateEventRouteBody extends ConsumerWidget {
       HostCreateEventRouteStatus.notFound => CatchScaffold.stepFlow(
         body: CatchErrorState(
           title: context.l10n.hostsHostCreateEventScreenTitleOrganizerNotFound,
-          message: context.l10n.hostsHostCreateEventScreenMessageThisOrganizerIsNo,
+          message:
+              context.l10n.hostsHostCreateEventScreenMessageThisOrganizerIsNo,
           actions: const [CatchErrorBackButton()],
         ),
       ),
       HostCreateEventRouteStatus.forbidden => CatchScaffold.stepFlow(
         body: CatchErrorState(
           title: context.l10n.hostsHostCreateEventScreenTitleHostAccessRequired,
-          message: context.l10n.hostsHostCreateEventScreenMessageOnlyThisOrganizerS,
+          message:
+              context.l10n.hostsHostCreateEventScreenMessageOnlyThisOrganizerS,
           actions: const [CatchErrorBackButton()],
         ),
       ),

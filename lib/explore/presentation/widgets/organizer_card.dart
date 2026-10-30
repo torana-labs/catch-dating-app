@@ -7,7 +7,11 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 class OrganizerCard extends StatelessWidget {
-  const OrganizerCard({super.key, required this.organizer, this.onOrganizerSelected});
+  const OrganizerCard({
+    super.key,
+    required this.organizer,
+    this.onOrganizerSelected,
+  });
 
   final Organizer organizer;
   final ValueChanged<Organizer>? onOrganizerSelected;
@@ -16,7 +20,9 @@ class OrganizerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final state = ExploreOrganizerCardState.from(organizer, l10n: context.l10n);
-    final onTap = onOrganizerSelected == null ? null : () => onOrganizerSelected!(organizer);
+    final onTap = onOrganizerSelected == null
+        ? null
+        : () => onOrganizerSelected!(organizer);
     final card = CatchPoster(
       onTap: onTap,
       media: OrganizerCover(organizer: organizer),
@@ -92,9 +98,14 @@ class ExploreFeedOrganizerRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final palette = OrganizerCoverVisualPalette.forOrganizer(context, organizer);
+    final palette = OrganizerCoverVisualPalette.forOrganizer(
+      context,
+      organizer,
+    );
     final state = ExploreOrganizerCardState.from(organizer, l10n: context.l10n);
-    final onTap = onOrganizerSelected == null ? null : () => onOrganizerSelected!(organizer);
+    final onTap = onOrganizerSelected == null
+        ? null
+        : () => onOrganizerSelected!(organizer);
     final card = CatchSurface.card(
       key: ValueKey<String>('explore-club-row-${organizer.id}'),
       onTap: onTap,

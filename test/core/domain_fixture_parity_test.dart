@@ -127,14 +127,17 @@ void main() {
       expect(organizer.organizerType, OrganizerType.club);
     });
 
-    test('OrganizerHostProfile decodes event_common fixture shape directly', () {
-      final host = OrganizerHostProfile.fromJson(
-        _fixtureListItemMap('club_doc.json', 'hostProfiles', 0),
-      );
-      expect(host.uid, 'host-1');
-      expect(host.displayName, 'Subrath');
-      expect(host.role, OrganizerHostRole.owner);
-    });
+    test(
+      'OrganizerHostProfile decodes event_common fixture shape directly',
+      () {
+        final host = OrganizerHostProfile.fromJson(
+          _fixtureListItemMap('club_doc.json', 'hostProfiles', 0),
+        );
+        expect(host.uid, 'host-1');
+        expect(host.displayName, 'Subrath');
+        expect(host.role, OrganizerHostRole.owner);
+      },
+    );
 
     test('OrganizerMembership decodes club_membership_doc.json', () {
       final json = _loadFixture(

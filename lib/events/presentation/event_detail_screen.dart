@@ -132,7 +132,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
     final uidState = _catchAsyncState(uidAsync);
     final vm = vmState.value;
     final resolvedOrganizerId = vm?.event.clubId ?? widget.clubId;
-    final organizerAsync = ref.watch(fetchOrganizerProvider(resolvedOrganizerId));
+    final organizerAsync = ref.watch(
+      fetchOrganizerProvider(resolvedOrganizerId),
+    );
     final organizerState = _catchAsyncState(organizerAsync);
     final isHostApp = AppConfig.appRole.isHost;
 
@@ -214,7 +216,8 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
         currentUid: vm.userProfile?.uid,
         canMessageHost:
             sectionVisibility.showConsumerActions &&
-            (organizerState.value?.supplyCapabilities.hostContactEnabled ?? false) &&
+            (organizerState.value?.supplyCapabilities.hostContactEnabled ??
+                false) &&
             vm.userProfile?.hasSocialReadyProfileOn(now) == true,
       );
       final socialState = eventDetailSocialStateFrom(
@@ -350,7 +353,8 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
           onOpenCompanion: () => context.pushNamed(
             Routes.eventSuccessCompanionScreen.name,
             pathParameters: {
-              context.l10n.eventsEventDetailScreenBodyOrganizerid: widget.clubId,
+              context.l10n.eventsEventDetailScreenBodyOrganizerid:
+                  widget.clubId,
               context.l10n.eventsEventDetailScreenBodyEventid: vm.event.id,
             },
             extra: vm.event,
@@ -539,7 +543,8 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
               eventId: widget.eventId,
             ),
           ),
-          onRetryHosts: () => ref.invalidate(fetchOrganizerProvider(widget.clubId)),
+          onRetryHosts: () =>
+              ref.invalidate(fetchOrganizerProvider(widget.clubId)),
           inviteCode: widget.inviteCode,
           inviteLinkId: widget.inviteLinkId,
           now: now,

@@ -69,7 +69,11 @@ void main() {
       basePriceInPaise: 0,
     );
     expect(
-      decide(policy: ordinary, attendee: attendee, isOrganizerMember: true).type,
+      decide(
+        policy: ordinary,
+        attendee: attendee,
+        isOrganizerMember: true,
+      ).type,
       EventAdmissionDecisionType.manualReviewRequired,
     );
   });

@@ -507,7 +507,10 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     if (GoRouter.maybeOf(context) != null) {
       context.pushNamed(
         Routes.hostEventRosterScreen.name,
-        pathParameters: {'clubId': widget.organizer.id, 'eventId': widget.event.id},
+        pathParameters: {
+          'clubId': widget.organizer.id,
+          'eventId': widget.event.id,
+        },
         extra: widget.event,
       );
     }

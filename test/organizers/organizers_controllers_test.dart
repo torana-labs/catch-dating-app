@@ -274,7 +274,9 @@ void main() {
     test('host runtime may preview a hidden organizer', () {
       final result = buildOrganizerDetailViewModel(
         organizerAsync: AsyncData(
-          buildOrganizer().copyWith(appVisibility: OrganizerAppVisibility.hidden),
+          buildOrganizer().copyWith(
+            appVisibility: OrganizerAppVisibility.hidden,
+          ),
         ),
         eventsAsync: const AsyncData(<Event>[]),
         reviewsAsync: const AsyncData(<Review>[]),
@@ -548,13 +550,18 @@ void main() {
                 appRole: AppRole.consumer,
               )
               as HostOrganizerDetailError;
-      expect(errorState.retryIntent, HostOrganizerDetailRetryIntent.reloadDetail);
+      expect(
+        errorState.retryIntent,
+        HostOrganizerDetailRetryIntent.reloadDetail,
+      );
 
       expect(errorState, isA<HostOrganizerDetailError>());
 
       expect(
         HostOrganizerDetailScreenState.fromState(
-          viewModel: const CatchAsyncState<OrganizerDetailViewModel?>.data(null),
+          viewModel: const CatchAsyncState<OrganizerDetailViewModel?>.data(
+            null,
+          ),
           initialOrganizer: null,
           currentUid: null,
           currentUserProfile: null,
@@ -714,7 +721,9 @@ void main() {
       );
       addTearDown(uidSubscription.close);
       await container.pump();
-      final controller = container.read(createOrganizerControllerProvider.notifier);
+      final controller = container.read(
+        createOrganizerControllerProvider.notifier,
+      );
 
       final first = controller.submit(
         name: 'Sunset Striders',
@@ -817,7 +826,8 @@ void main() {
     );
 
     test('creates the club before uploading new club media', () async {
-      final fakeRepository = FakeOrganizersRepository()..generatedId = 'club-42';
+      final fakeRepository = FakeOrganizersRepository()
+        ..generatedId = 'club-42';
       final fakeImageUploadRepository = FakeImageUploadRepository(
         pickedImage: XFile('/tmp/club-photo.jpg'),
       );
@@ -874,7 +884,8 @@ void main() {
     });
 
     test('creates a club with multiple ordered club photos', () async {
-      final fakeRepository = FakeOrganizersRepository()..generatedId = 'club-42';
+      final fakeRepository = FakeOrganizersRepository()
+        ..generatedId = 'club-42';
       final photos = [XFile('/tmp/club-a.jpg'), XFile('/tmp/club-b.jpg')];
       final fakeImageUploadRepository = FakeImageUploadRepository();
       final container = ProviderContainer(

@@ -46,8 +46,11 @@ class EventMapItem extends EventMapPinItem {
   @override
   String get locationName => event.locationName;
 
-  EventTileData get tileData =>
-      EventTileData.fromEvent(event: event, status: status, organizerName: organizerName);
+  EventTileData get tileData => EventTileData.fromEvent(
+    event: event,
+    status: status,
+    organizerName: organizerName,
+  );
 
   @override
   String get pinFlagLabel {
@@ -340,7 +343,9 @@ AsyncValue<EventMapViewModel> eventMapViewModel(Ref ref) {
       OrganizerNameLookupQuery(allEvents.map((event) => event.clubId)),
     ),
   );
-  final organizerNamesState = catchAsyncStateFromAsyncValue(organizerNamesAsync);
+  final organizerNamesState = catchAsyncStateFromAsyncValue(
+    organizerNamesAsync,
+  );
   if (organizerNamesState.isLoading) return const AsyncLoading();
   if (organizerNamesState.hasError) {
     return AsyncError(

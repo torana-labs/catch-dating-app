@@ -28,7 +28,9 @@ class _HostWhatsappSetupSectionState
 
   @override
   Widget build(BuildContext context) {
-    final messaging = ref.watch(hostMessagingSetupProvider(widget.organizer.id));
+    final messaging = ref.watch(
+      hostMessagingSetupProvider(widget.organizer.id),
+    );
     final loadedSetup = catchAsyncStateFromAsyncValue(messaging).value;
     if (loadedSetup != null &&
         !loadedSetup.canManageWhatsappSender(

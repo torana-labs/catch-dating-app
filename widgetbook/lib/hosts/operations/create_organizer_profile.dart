@@ -321,7 +321,8 @@ class _OrganizerBasicsStepFrame extends StatefulWidget {
   final bool validate;
 
   @override
-  State<_OrganizerBasicsStepFrame> createState() => _OrganizerBasicsStepFrameState();
+  State<_OrganizerBasicsStepFrame> createState() =>
+      _OrganizerBasicsStepFrameState();
 }
 
 class _OrganizerBasicsStepFrameState extends State<_OrganizerBasicsStepFrame> {
@@ -383,10 +384,12 @@ class _OrganizerDetailsStepFrame extends StatefulWidget {
   const _OrganizerDetailsStepFrame();
 
   @override
-  State<_OrganizerDetailsStepFrame> createState() => _OrganizerDetailsStepFrameState();
+  State<_OrganizerDetailsStepFrame> createState() =>
+      _OrganizerDetailsStepFrameState();
 }
 
-class _OrganizerDetailsStepFrameState extends State<_OrganizerDetailsStepFrame> {
+class _OrganizerDetailsStepFrameState
+    extends State<_OrganizerDetailsStepFrame> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _descriptionController;
   late final TextEditingController _instagramController;

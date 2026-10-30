@@ -51,14 +51,18 @@ class WidgetbookOrganizerOrganizerScreenPreview extends StatelessWidget {
           watchOrganizerMembershipProvider(
             widgetbookOrganizerOrganizer.id,
             effectiveUid,
-          ).overrideWith((ref) => Stream<OrganizerMembership?>.value(membership)),
+          ).overrideWith(
+            (ref) => Stream<OrganizerMembership?>.value(membership),
+          ),
         organizerDetailViewModelProvider(
           widgetbookOrganizerOrganizer.id,
         ).overrideWith((ref) => viewModel),
       ],
       child: OrganizerDetailScreen(
         clubId: widgetbookOrganizerOrganizer.id,
-        initialOrganizer: useInitialOrganizer ? widgetbookOrganizerOrganizer : null,
+        initialOrganizer: useInitialOrganizer
+            ? widgetbookOrganizerOrganizer
+            : null,
       ),
     );
   }
@@ -151,7 +155,9 @@ class WidgetbookOrganizerOrganizerReadOnlyPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return WidgetbookFixtureScope(
       overrides: [
-        organizerDetailViewModelProvider(widgetbookOrganizerOrganizer.id).overrideWithValue(
+        organizerDetailViewModelProvider(
+          widgetbookOrganizerOrganizer.id,
+        ).overrideWithValue(
           AsyncData<OrganizerDetailViewModel?>(
             OrganizerDetailViewModel(
               organizer: widgetbookOrganizerOrganizer,
@@ -180,7 +186,8 @@ class WidgetbookOrganizerOrganizerReadOnlyPreview extends StatelessWidget {
   }
 }
 
-class WidgetbookOrganizerOrganizerDirectoryPreviewScope extends StatelessWidget {
+class WidgetbookOrganizerOrganizerDirectoryPreviewScope
+    extends StatelessWidget {
   const WidgetbookOrganizerOrganizerDirectoryPreviewScope({
     super.key,
     required this.child,

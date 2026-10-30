@@ -313,72 +313,76 @@ void _registerExploreScreenFiltersTests() {
     },
   );
 
-  testWidgets('OrganizerDetailBody agenda taps navigate to the selected event', (
-    tester,
-  ) async {
-    final organizer = buildOrganizer(id: 'club-schedule');
-    final today = DateTime.now();
-    final event = buildEvent(
-      id: 'event-42',
-      clubId: organizer.id,
-      startTime: DateTime(today.year, today.month, today.day, 8),
-      endTime: DateTime(today.year, today.month, today.day, 9),
-    );
-    final router = GoRouter(
-      initialLocation: '/',
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, _) => Scaffold(
-            body: OrganizerDetailBody(
-              state: OrganizerDetailBodyState.fromDomain(
-                organizer: organizer,
-                upcomingEvents: [event],
-                userProfile: buildUser(uid: 'runner-1'),
-                uid: 'runner-1',
-                isMember: true,
-                isAuthenticated: true,
-              ),
-              onEventSelected: (selectedEvent) => unawaited(
-                context.pushNamed<void>(
-                  Routes.eventDetailScreen.name,
-                  pathParameters: {
-                    'clubId': organizer.id,
-                    'eventId': selectedEvent.id,
-                  },
+  testWidgets(
+    'OrganizerDetailBody agenda taps navigate to the selected event',
+    (tester) async {
+      final organizer = buildOrganizer(id: 'club-schedule');
+      final today = DateTime.now();
+      final event = buildEvent(
+        id: 'event-42',
+        clubId: organizer.id,
+        startTime: DateTime(today.year, today.month, today.day, 8),
+        endTime: DateTime(today.year, today.month, today.day, 9),
+      );
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, _) => Scaffold(
+              body: OrganizerDetailBody(
+                state: OrganizerDetailBodyState.fromDomain(
+                  organizer: organizer,
+                  upcomingEvents: [event],
+                  userProfile: buildUser(uid: 'runner-1'),
+                  uid: 'runner-1',
+                  isMember: true,
+                  isAuthenticated: true,
+                ),
+                onEventSelected: (selectedEvent) => unawaited(
+                  context.pushNamed<void>(
+                    Routes.eventDetailScreen.name,
+                    pathParameters: {
+                      'clubId': organizer.id,
+                      'eventId': selectedEvent.id,
+                    },
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        GoRoute(
-          path: '/events/:clubId/:eventId',
-          name: Routes.eventDetailScreen.name,
-          builder: (_, state) => Text(
-            'Event ${state.pathParameters['eventId']}',
-            textDirection: TextDirection.ltr,
+          GoRoute(
+            path: '/events/:clubId/:eventId',
+            name: Routes.eventDetailScreen.name,
+            builder: (_, state) => Text(
+              'Event ${state.pathParameters['eventId']}',
+              textDirection: TextDirection.ltr,
+            ),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
           ),
         ),
-      ],
-    );
+      );
+      await _pumpOrganizerUi(tester);
 
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
-      ),
-    );
-    await _pumpOrganizerUi(tester);
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
+      await _pumpOrganizerUi(tester);
 
-    await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
-    await _pumpOrganizerUi(tester);
+      await tester.tap(
+        find.byKey(const ValueKey<String>('club-schedule-event-event-42')),
+      );
+      await _pumpOrganizerUi(tester);
 
-    await tester.tap(
-      find.byKey(const ValueKey<String>('club-schedule-event-event-42')),
-    );
-    await _pumpOrganizerUi(tester);
-
-    expect(find.text('Event event-42'), findsOneWidget);
-  });
+      expect(find.text('Event event-42'), findsOneWidget);
+    },
+  );
 
   testWidgets('ExploreScreen renders a navigable guest club directory', (
     tester,
@@ -440,7 +444,9 @@ void _registerExploreScreenFiltersTests() {
             const AsyncData(<Organizer>[]),
           ),
           exploreOrganizersViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
+            const AsyncData(
+              ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+            ),
           ),
           exploreRecommendationsProvider.overrideWithValue(
             const AsyncData(<ExploreEventRecommendation>[]),
@@ -472,7 +478,9 @@ void _registerExploreScreenFiltersTests() {
             const AsyncData(<Organizer>[]),
           ),
           exploreOrganizersViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
+            const AsyncData(
+              ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+            ),
           ),
           exploreRecommendationsProvider.overrideWithValue(
             const AsyncData(<ExploreEventRecommendation>[]),
@@ -501,7 +509,9 @@ void _registerExploreScreenFiltersTests() {
           watchOrganizersByLocationProvider(
             'mumbai',
           ).overrideWith((ref) => Stream.value(const [])),
-          exploreOrganizersViewModelProvider.overrideWithValue(const AsyncLoading()),
+          exploreOrganizersViewModelProvider.overrideWithValue(
+            const AsyncLoading(),
+          ),
           _emptyExploreFeedOverride,
         ],
         child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
@@ -536,7 +546,9 @@ void _registerExploreScreenFiltersTests() {
             const AsyncData(<Organizer>[]),
           ),
           exploreOrganizersViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
+            const AsyncData(
+              ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+            ),
           ),
           exploreFeedViewModelProvider.overrideWith((ref) {
             feedBuilds += 1;
@@ -583,7 +595,9 @@ void _registerExploreScreenFiltersTests() {
             const AsyncData(<Organizer>[]),
           ),
           exploreOrganizersViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
+            const AsyncData(
+              ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+            ),
           ),
           exploreFeedViewModelProvider.overrideWith((ref) {
             feedBuilds += 1;
@@ -616,7 +630,9 @@ void _registerExploreScreenFiltersTests() {
               'mumbai',
             ).overrideWith((ref) => Stream.value(const [])),
             exploreOrganizersViewModelProvider.overrideWithValue(
-              const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
+              const AsyncData(
+                ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+              ),
             ),
             _emptyExploreFeedOverride,
           ],
@@ -676,15 +692,22 @@ void _registerExploreScreenFiltersTests() {
   testWidgets('ExploreScreen empty state clears search and filters', (
     tester,
   ) async {
-    final sourceOrganizer = buildOrganizer(id: 'source-club', name: 'Bandra Pacers');
+    final sourceOrganizer = buildOrganizer(
+      id: 'source-club',
+      name: 'Bandra Pacers',
+    );
     final container = ProviderContainer(
       retry: (_, _) => null,
       overrides: [
         cityListProvider.overrideWith((ref) async => _testCities),
         deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
-        exploreSourceOrganizersProvider.overrideWithValue(AsyncData([sourceOrganizer])),
+        exploreSourceOrganizersProvider.overrideWithValue(
+          AsyncData([sourceOrganizer]),
+        ),
         exploreOrganizersViewModelProvider.overrideWithValue(
-          const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
+          const AsyncData(
+            ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+          ),
         ),
         _emptyExploreFeedOverride,
       ],
@@ -712,7 +735,10 @@ void _registerExploreScreenFiltersTests() {
   testWidgets(
     'ExploreScreen keeps the featured event in the feed during search',
     (tester) async {
-      final organizer = buildOrganizer(id: 'search-cover-club', name: 'Search Social');
+      final organizer = buildOrganizer(
+        id: 'search-cover-club',
+        name: 'Search Social',
+      );
       final event = event_test.buildEvent(
         id: 'search-cover-event',
         clubId: organizer.id,
@@ -729,7 +755,9 @@ void _registerExploreScreenFiltersTests() {
               const AsyncData(<Organizer>[]),
             ),
             exploreOrganizersViewModelProvider.overrideWithValue(
-              const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
+              const AsyncData(
+                ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+              ),
             ),
             exploreFeedViewModelProvider.overrideWithValue(
               AsyncData(
@@ -785,7 +813,10 @@ void _registerExploreScreenFiltersTests() {
   testWidgets('ExploreScreen renders internal feed when clubs are empty', (
     tester,
   ) async {
-    final organizer = buildOrganizer(id: 'club-event-only', name: 'Pace Social');
+    final organizer = buildOrganizer(
+      id: 'club-event-only',
+      name: 'Pace Social',
+    );
     final event = event_test.buildEvent(
       id: 'event-only',
       clubId: organizer.id,
@@ -803,7 +834,9 @@ void _registerExploreScreenFiltersTests() {
             const AsyncData(<Organizer>[]),
           ),
           exploreOrganizersViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
+            const AsyncData(
+              ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+            ),
           ),
           exploreFeedViewModelProvider.overrideWithValue(
             AsyncData(

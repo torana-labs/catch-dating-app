@@ -65,7 +65,9 @@ Widget hostInsightsScorecardStates(BuildContext context) {
             analyticsRepository: HostFixtureAnalyticsRepository(
               report: _emptyHostAnalyticsReport(),
             ),
-            child: const HostOrganizersScreen(initialTab: HostOrganizerTab.insights),
+            child: const HostOrganizersScreen(
+              initialTab: HostOrganizerTab.insights,
+            ),
           ),
         ),
       ),
@@ -76,7 +78,9 @@ Widget hostInsightsScorecardStates(BuildContext context) {
             analyticsRepository: HostFixtureAnalyticsRepository(
               report: _emptyHostAnalyticsReport(unavailable: false),
             ),
-            child: const HostOrganizersScreen(initialTab: HostOrganizerTab.insights),
+            child: const HostOrganizersScreen(
+              initialTab: HostOrganizerTab.insights,
+            ),
           ),
         ),
       ),
@@ -96,7 +100,9 @@ Widget hostInsightsScorecardStates(BuildContext context) {
             analyticsRepository: HostFixtureAnalyticsRepository(
               report: _partialHostAnalyticsReport(),
             ),
-            child: const HostOrganizersScreen(initialTab: HostOrganizerTab.insights),
+            child: const HostOrganizersScreen(
+              initialTab: HostOrganizerTab.insights,
+            ),
           ),
         ),
       ),
@@ -107,7 +113,9 @@ Widget hostInsightsScorecardStates(BuildContext context) {
             analyticsRepository: HostFixtureAnalyticsRepository(
               report: _coachHostAnalyticsReport(),
             ),
-            child: const HostOrganizersScreen(initialTab: HostOrganizerTab.insights),
+            child: const HostOrganizersScreen(
+              initialTab: HostOrganizerTab.insights,
+            ),
           ),
         ),
       ),
@@ -117,7 +125,9 @@ Widget hostInsightsScorecardStates(BuildContext context) {
           child: WidgetbookMediaOverride(
             textScaler: const TextScaler.linear(2),
             child: const WidgetbookHostShellScope(
-              child: HostOrganizersScreen(initialTab: HostOrganizerTab.insights),
+              child: HostOrganizersScreen(
+                initialTab: HostOrganizerTab.insights,
+              ),
             ),
           ),
         ),

@@ -153,7 +153,8 @@ class OrganizerHostRow extends StatelessWidget {
         if (onMessage != null) ...[
           gapW8,
           Tooltip(
-            message: context.l10n.organizersOrganizerHostSectionMessageMessageHost,
+            message:
+                context.l10n.organizersOrganizerHostSectionMessageMessageHost,
             child: CatchIconAction(
               key: ValueKey<String>('club-host-message-${host.uid}'),
               onPressed: onMessage,

@@ -17,7 +17,8 @@ class HostOrganizerPaymentsScreen extends StatelessWidget {
               child: CatchField.read(
                 copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsHostOrganizerEditTabLabelPayments,
-                valueText: context.l10n.hostsHostOrganizersScaffoldVisiblecopyOwner,
+                valueText:
+                    context.l10n.hostsHostOrganizersScaffoldVisiblecopyOwner,
                 icon: CatchIcons.locked,
               ),
             ),

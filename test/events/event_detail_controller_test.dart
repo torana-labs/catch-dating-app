@@ -128,7 +128,10 @@ void main() {
           eventAsync: AsyncData(buildEvent()),
           userProfileAsync: AsyncData(buildUser(uid: 'host-1')),
           reviewsAsync: const AsyncData(<Review>[]),
-          organizerAsync: AsyncError(StateError('club failed'), StackTrace.empty),
+          organizerAsync: AsyncError(
+            StateError('club failed'),
+            StackTrace.empty,
+          ),
           savedEventAsync: const AsyncData(null),
           participationAsync: const AsyncData(null),
           currentUid: 'host-1',
@@ -190,7 +193,9 @@ void main() {
         userProfileAsync: AsyncData(buildUser(uid: 'host-1')),
         reviewsAsync: const AsyncData(<Review>[]),
         organizerAsync: AsyncData(
-          buildOrganizer().copyWith(appVisibility: OrganizerAppVisibility.hidden),
+          buildOrganizer().copyWith(
+            appVisibility: OrganizerAppVisibility.hidden,
+          ),
         ),
         savedEventAsync: const AsyncData(null),
         participationAsync: const AsyncData(null),
@@ -399,9 +404,9 @@ void main() {
               event.id,
             ).overrideWith((ref) => Stream.value(event)),
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            fetchOrganizerProvider(
-              event.clubId,
-            ).overrideWith((ref) async => buildOrganizer(hostUserId: 'host-77')),
+            fetchOrganizerProvider(event.clubId).overrideWith(
+              (ref) async => buildOrganizer(hostUserId: 'host-77'),
+            ),
             watchReviewsForEventProvider(
               event.id,
             ).overrideWith((ref) => Stream.value([review])),

@@ -1,6 +1,10 @@
 part of 'host_event_manage_screen.dart';
 
-typedef _HostEventManageRouteData = ({String? uid, Organizer? organizer, Event? event});
+typedef _HostEventManageRouteData = ({
+  String? uid,
+  Organizer? organizer,
+  Event? event,
+});
 
 class HostEventManageRouteScreen extends ConsumerWidget {
   const HostEventManageRouteScreen({

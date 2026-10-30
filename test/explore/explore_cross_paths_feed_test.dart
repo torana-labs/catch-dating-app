@@ -87,7 +87,10 @@ void main() {
   test('second organizer stays outside the first eight mixed cards', () {
     final eventOrganizer = organizers.buildOrganizer(id: 'cadence-event-club');
     final candidateOrganizers = [
-      organizers.buildOrganizer(id: 'cadence-spotlight', nextEventLabel: 'Friday'),
+      organizers.buildOrganizer(
+        id: 'cadence-spotlight',
+        nextEventLabel: 'Friday',
+      ),
       organizers.buildOrganizer(id: 'cadence-row', nextEventLabel: 'Saturday'),
     ];
 
@@ -114,7 +117,10 @@ void main() {
       );
     }
     final eightEventCards = cardsFor(8);
-    expect(eightEventCards.whereType<ExploreMixedOrganizerRowCard>(), hasLength(1));
+    expect(
+      eightEventCards.whereType<ExploreMixedOrganizerRowCard>(),
+      hasLength(1),
+    );
     expect(eightEventCards.last, isA<ExploreMixedOrganizerRowCard>());
     expect(
       eightEventCards.take(8).whereType<ExploreMixedOrganizerRowCard>(),
@@ -171,9 +177,14 @@ void main() {
   });
 
   test('mixed feed stays event-majority and separates people', () {
-    final eventOrganizer = organizers.buildOrganizer(id: 'cross-paths-event-club');
+    final eventOrganizer = organizers.buildOrganizer(
+      id: 'cross-paths-event-club',
+    );
     final candidateOrganizers = [
-      organizers.buildOrganizer(id: 'cross-paths-organizer-1', nextEventLabel: 'Friday'),
+      organizers.buildOrganizer(
+        id: 'cross-paths-organizer-1',
+        nextEventLabel: 'Friday',
+      ),
       organizers.buildOrganizer(
         id: 'cross-paths-organizer-2',
         nextEventLabel: 'Saturday',
@@ -213,7 +224,10 @@ void main() {
     final firstEight = cards.take(8).toList(growable: false);
     expect(firstEight.whereType<ExploreMixedEventRowCard>(), hasLength(5));
     expect(firstEight.whereType<ExploreMixedPersonCard>(), hasLength(2));
-    expect(firstEight.whereType<ExploreMixedOrganizerSpotlightCard>(), hasLength(1));
+    expect(
+      firstEight.whereType<ExploreMixedOrganizerSpotlightCard>(),
+      hasLength(1),
+    );
     for (var index = 0; index < cards.length - 1; index += 1) {
       final leftIsEvent =
           cards[index] is ExploreMixedEventRowCard ||

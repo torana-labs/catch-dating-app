@@ -24,7 +24,9 @@ Widget organizerShareCardStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'polaroid fallback',
-        child: OrganizerShareCard(organizer: widgetbookOrganizerMinimalOrganizer),
+        child: OrganizerShareCard(
+          organizer: widgetbookOrganizerMinimalOrganizer,
+        ),
       ),
     ],
   );
@@ -49,7 +51,9 @@ Widget organizerShareArtworkStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'polaroid fallback',
         child: WidgetbookOrganizerOrganizerMediaFrame(
-          child: OrganizerShareCover(organizer: widgetbookOrganizerMinimalOrganizer),
+          child: OrganizerShareCover(
+            organizer: widgetbookOrganizerMinimalOrganizer,
+          ),
         ),
       ),
     ],

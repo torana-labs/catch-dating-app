@@ -591,9 +591,9 @@ class _HostEditEventScope extends StatelessWidget {
       child: WidgetbookFixtureScope(
         overrides: [
           uidProvider.overrideWithValue(AsyncData<String?>(effectiveUid)),
-          fetchOrganizerProvider(
-            widgetbookOrganizer.id,
-          ).overrideWithValue(organizerValue ?? AsyncData<Organizer?>(widgetbookOrganizer)),
+          fetchOrganizerProvider(widgetbookOrganizer.id).overrideWithValue(
+            organizerValue ?? AsyncData<Organizer?>(widgetbookOrganizer),
+          ),
           watchEventProvider(widgetbookEditableEvent.id).overrideWithValue(
             eventValue ?? AsyncData<Event?>(widgetbookEditableEvent),
           ),

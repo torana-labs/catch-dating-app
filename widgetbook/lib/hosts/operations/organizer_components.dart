@@ -20,7 +20,9 @@ Widget _hostOrganizerExactCatalog(BuildContext context, String focus) {
     children: [
       WidgetbookPageStateCard(
         label: 'exact component',
-        child: WidgetbookHostComponentFrame(child: _hostOrganizerPreviewFor(focus)),
+        child: WidgetbookHostComponentFrame(
+          child: _hostOrganizerPreviewFor(focus),
+        ),
       ),
     ],
   );
@@ -37,8 +39,12 @@ Widget _hostOrganizerPreviewFor(String focus) {
   final team = organizer.displayHostProfiles;
   final payment = HostOperationsFixtures.readyPaymentAccount;
   return switch (focus) {
-    'HostClubInsightsSection' => HostOrganizerInsightsSection(organizer: organizer),
-    'HostClubOrganizerSectionList' => HostOrganizerSectionList(organizer: organizer),
+    'HostClubInsightsSection' => HostOrganizerInsightsSection(
+      organizer: organizer,
+    ),
+    'HostClubOrganizerSectionList' => HostOrganizerSectionList(
+      organizer: organizer,
+    ),
     'HostClubEditBody' => HostOrganizerEditBody(
       organizer: organizer,
       currentUid: widgetbookHostUid,
@@ -99,17 +105,17 @@ Widget _hostOrganizerPreviewFor(String focus) {
   type: HostOrganizerInsightsSection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostOrganizerInsightsSectionCatalogStates(BuildContext context) =>
-    _hostOrganizerExactCatalog(context, 'HostClubInsightsSection');
+Widget hostStrictHostOrganizerInsightsSectionCatalogStates(
+  BuildContext context,
+) => _hostOrganizerExactCatalog(context, 'HostClubInsightsSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
   type: HostOrganizerSectionList,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostOrganizerSectionListCatalogStates(
-  BuildContext context,
-) => _hostOrganizerExactCatalog(context, 'HostClubOrganizerSectionList');
+Widget hostStrictHostOrganizerSectionListCatalogStates(BuildContext context) =>
+    _hostOrganizerExactCatalog(context, 'HostClubOrganizerSectionList');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -158,7 +164,9 @@ Widget hostOrganizerLiveGuideScreenLoaded(BuildContext context) =>
 )
 Widget hostOrganizerTeamScreenLoaded(BuildContext context) =>
     WidgetbookHostShellScope(
-      child: HostOrganizerTeamScreen(clubId: HostOperationsFixtures.primaryOrganizer.id),
+      child: HostOrganizerTeamScreen(
+        clubId: HostOperationsFixtures.primaryOrganizer.id,
+      ),
     );
 
 @widgetbook.UseCase(

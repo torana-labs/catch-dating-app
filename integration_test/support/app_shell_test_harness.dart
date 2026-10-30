@@ -74,7 +74,8 @@ import 'package:go_router/go_router.dart';
 import '../../test/events/events_test_helpers.dart' as event_helpers;
 import '../../test/onboarding/onboarding_test_helpers.dart'
     as onboarding_helpers;
-import '../../test/organizers/organizers_test_helpers.dart' as organizer_helpers;
+import '../../test/organizers/organizers_test_helpers.dart'
+    as organizer_helpers;
 import '../../test/support/empty_event_chat_repository.dart';
 
 const testShellCity = CityData(
@@ -156,7 +157,10 @@ Future<void> pumpMutationUi(WidgetTester tester) async {
 
 Future<void> pumpSheet(WidgetTester tester) => pumpAppShellFrames(tester);
 
-Future<void> openOrganizerDetail(WidgetTester tester, Organizer organizer) async {
+Future<void> openOrganizerDetail(
+  WidgetTester tester,
+  Organizer organizer,
+) async {
   if (await _tapVisibleOrganizerCard(tester, organizer)) return;
 
   final router = _routerFor(tester);
@@ -278,7 +282,9 @@ List<Object> appShellTestOverrides({
     for (final event in organizerEvents.values.expand((events) => events))
       event.id: event,
   };
-  final organizersById = {for (final organizer in organizers) organizer.id: organizer};
+  final organizersById = {
+    for (final organizer in organizers) organizer.id: organizer,
+  };
   final knownOrganizerIds = knownEventsById.values
       .map((event) => event.clubId)
       .toSet();
@@ -381,7 +387,9 @@ List<Object> appShellTestOverrides({
             reviewsByUser: reviewsByUser,
           ),
     ),
-    organizersRepositoryProvider.overrideWithValue(resolvedOrganizersRepository),
+    organizersRepositoryProvider.overrideWithValue(
+      resolvedOrganizersRepository,
+    ),
     organizerDraftRepositoryProvider.overrideWithValue(
       FakeShellOrganizerDraftRepository(),
     ),
@@ -411,7 +419,9 @@ List<Object> appShellTestOverrides({
           : UnsupportedTestFcmService(),
     ),
     for (final organizer in organizers) ...[
-      watchOrganizerProvider(organizer.id).overrideWith((ref) => Stream.value(organizer)),
+      watchOrganizerProvider(
+        organizer.id,
+      ).overrideWith((ref) => Stream.value(organizer)),
       watchEventsForOrganizerProvider(organizer.id).overrideWithValue(
         AsyncData<List<Event>>(organizerEvents[organizer.id] ?? const []),
       ),
@@ -468,7 +478,9 @@ List<Object> appShellTestOverrides({
         ),
       ),
     ),
-    exploreSourceOrganizersProvider.overrideWithValue(AsyncData<List<Organizer>>(organizers)),
+    exploreSourceOrganizersProvider.overrideWithValue(
+      AsyncData<List<Organizer>>(organizers),
+    ),
     exploreFeedViewModelProvider.overrideWithValue(
       const AsyncData(ExploreFeedViewModel(items: [])),
     ),
@@ -531,7 +543,9 @@ List<Object> appShellTestOverrides({
       ),
       watchOrganizersHostedByProvider(uid).overrideWithValue(
         AsyncData<List<Organizer>>(
-          organizers.where((organizer) => organizer.hostUserId == uid).toList(growable: false),
+          organizers
+              .where((organizer) => organizer.hostUserId == uid)
+              .toList(growable: false),
         ),
       ),
       watchMatchesForUserProvider(
@@ -568,7 +582,10 @@ List<Object> appShellTestOverrides({
   ];
 }
 
-Future<bool> _tapVisibleOrganizerCard(WidgetTester tester, Organizer organizer) async {
+Future<bool> _tapVisibleOrganizerCard(
+  WidgetTester tester,
+  Organizer organizer,
+) async {
   final candidates = [
     find.byKey(ValueKey<String>('explore-organizer-${organizer.id}')),
     find.byKey(ValueKey<String>('explore-club-row-${organizer.id}')),

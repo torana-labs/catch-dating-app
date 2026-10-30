@@ -231,9 +231,15 @@ enum Routes {
     '/host/organizers/event-defaults',
     AppRouteAudience.host,
   ),
-  hostOrganizerLiveGuideScreen('/host/organizers/live-guide', AppRouteAudience.host),
+  hostOrganizerLiveGuideScreen(
+    '/host/organizers/live-guide',
+    AppRouteAudience.host,
+  ),
   hostOrganizerTeamScreen('/host/organizers/team', AppRouteAudience.host),
-  hostOrganizerPaymentsScreen('/host/organizers/payments', AppRouteAudience.host),
+  hostOrganizerPaymentsScreen(
+    '/host/organizers/payments',
+    AppRouteAudience.host,
+  ),
   hostOrganizerMembershipsScreen(
     '/host/organizers/memberships',
     AppRouteAudience.host,

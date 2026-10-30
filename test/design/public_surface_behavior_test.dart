@@ -47,7 +47,9 @@ void main() {
 
   test('synthetic organizers are never publicly browseable', () {
     expect(
-      _organizerForValues(const {}).copyWith(synthetic: true).isPubliclyBrowseable,
+      _organizerForValues(
+        const {},
+      ).copyWith(synthetic: true).isPubliclyBrowseable,
       isFalse,
     );
   });
@@ -553,7 +555,10 @@ bool _authorityRouteAllowed(Map<String, String> values) {
           .isPubliclyBrowseable,
       isFalse,
     );
-    expect(activeOrganizer.copyWith(archived: true).isPubliclyBrowseable, isFalse);
+    expect(
+      activeOrganizer.copyWith(archived: true).isPubliclyBrowseable,
+      isFalse,
+    );
   }
   if (values['runtime.appRole'] == 'host') {
     return values['viewer.relationship'] == 'host' &&

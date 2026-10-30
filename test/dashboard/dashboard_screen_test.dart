@@ -541,7 +541,9 @@ void main() {
     testWidgets('club posts home section renders unread post cards', (
       tester,
     ) async {
-      final joinedOrganizer = organizer_test.buildOrganizer(name: 'Race Course Road Runners');
+      final joinedOrganizer = organizer_test.buildOrganizer(
+        name: 'Race Course Road Runners',
+      );
       final user = buildUser();
       final notifications = [
         _activityNotification(

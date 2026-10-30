@@ -11,7 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
-import '../organizers/organizers_test_helpers.dart' show FakeOrganizersRepository;
+import '../organizers/organizers_test_helpers.dart'
+    show FakeOrganizersRepository;
 
 void main() {
   group('Cross Paths Event Detail integration', () {
@@ -31,7 +32,9 @@ void main() {
           eventId: event.id,
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventDetailViewModelProvider(event.id).overrideWith(
             (ref) => AsyncData(
               EventDetailViewModel(
@@ -81,7 +84,9 @@ void main() {
           eventId: event.id,
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventDetailViewModelProvider(event.id).overrideWith(
             (ref) => AsyncData(
               EventDetailViewModel(

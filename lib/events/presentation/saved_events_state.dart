@@ -33,7 +33,8 @@ class SavedEventsListState {
 
   DateTime get today => DateUtils.dateOnly(now);
   bool get isEmpty => orderedEvents.isEmpty;
-  Iterable<String> get organizerIds => orderedEvents.map((event) => event.clubId);
+  Iterable<String> get organizerIds =>
+      orderedEvents.map((event) => event.clubId);
 
   String badgeLabelFor(Event event) => _isPast(event) ? 'PAST' : 'SAVED';
 

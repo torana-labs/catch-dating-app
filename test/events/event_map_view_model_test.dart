@@ -18,15 +18,17 @@ import 'package:flutter_test/flutter_test.dart';
 import '../organizers/organizers_test_helpers.dart' as organizer_test;
 import 'events_test_helpers.dart';
 
-OrganizerMembership _membership({required String clubId, String uid = 'runner-1'}) =>
-    OrganizerMembership(
-      id: organizerMembershipId(clubId: clubId, uid: uid),
-      clubId: clubId,
-      uid: uid,
-      role: OrganizerMembershipRole.member,
-      status: OrganizerMembershipStatus.active,
-      joinedAt: DateTime(2026),
-    );
+OrganizerMembership _membership({
+  required String clubId,
+  String uid = 'runner-1',
+}) => OrganizerMembership(
+  id: organizerMembershipId(clubId: clubId, uid: uid),
+  clubId: clubId,
+  uid: uid,
+  role: OrganizerMembershipRole.member,
+  status: OrganizerMembershipStatus.active,
+  joinedAt: DateTime(2026),
+);
 
 void main() {
   group('buildEventMapViewModel', () {
@@ -217,7 +219,9 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            watchActiveOrganizerMembershipsForUserProvider(user.uid).overrideWith(
+            watchActiveOrganizerMembershipsForUserProvider(
+              user.uid,
+            ).overrideWith(
               (ref) => Stream.value([_membership(clubId: 'club-1')]),
             ),
             eventRepositoryProvider.overrideWith((ref) => repository),
@@ -257,7 +261,9 @@ void main() {
           ).future,
         );
         await container.read(
-          organizerNameLookupProvider(OrganizerNameLookupQuery(const ['club-1'])).future,
+          organizerNameLookupProvider(
+            OrganizerNameLookupQuery(const ['club-1']),
+          ).future,
         );
         await container.pump();
 
@@ -272,9 +278,10 @@ void main() {
           EventTileStatus.joined,
           EventTileStatus.recommended,
         ]);
-        expect(viewModel.effectiveItems.map((item) => item.organizerName).toSet(), {
-          'Stride Social',
-        });
+        expect(
+          viewModel.effectiveItems.map((item) => item.organizerName).toSet(),
+          {'Stride Social'},
+        );
         expect(viewModel.pinnedEvents.length, 3);
         expect(repository.recommendedOrganizerIds, ['club-1']);
       },

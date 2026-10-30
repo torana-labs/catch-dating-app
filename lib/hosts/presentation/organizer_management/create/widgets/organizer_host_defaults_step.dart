@@ -96,7 +96,8 @@ class OrganizerPolicyDefaultsCard extends StatefulWidget {
   final bool advancedOnly;
 
   @override
-  State<OrganizerPolicyDefaultsCard> createState() => _PolicyDefaultsCardState();
+  State<OrganizerPolicyDefaultsCard> createState() =>
+      _PolicyDefaultsCardState();
 }
 
 class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
@@ -246,7 +247,9 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
       footer: Padding(
         padding: CatchInsets.fieldSectionChildTop,
         child: CatchText(
-          context.l10n.hostsOrganizerHostDefaultsStepTextTheseDefaultsPrefillNew,
+          context
+              .l10n
+              .hostsOrganizerHostDefaultsStepTextTheseDefaultsPrefillNew,
           variant: CatchTextVariant.supporting,
         ),
       ),
@@ -254,12 +257,14 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
         if (widget.activityKind case final activityKind?)
           CatchField<ActivityKind>.choices(
             copy: catchFieldCopy(context.l10n),
-            title: context.l10n.hostsOrganizerHostDefaultsStepTextDefaultActivity,
+            title:
+                context.l10n.hostsOrganizerHostDefaultsStepTextDefaultActivity,
             contract: CatchContractConstraints
                 .createClubCallablePayloadHostDefaultsPrimaryActivityKind,
             contractValueBuilder: (value) => value.name,
-            helperText:
-                context.l10n.hostsOrganizerHostDefaultsStepTextNewEventsStartFrom,
+            helperText: context
+                .l10n
+                .hostsOrganizerHostDefaultsStepTextNewEventsStartFrom,
             values: ActivityKind.eventCreationDefaults,
             itemLabelBuilder: (value) => value.label,
             itemAccentBuilder: (value) =>
@@ -273,7 +278,8 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
         if (!widget.advancedOnly)
           CatchField<EventAdmissionDefaultPreset>.optionCards(
             copy: catchFieldCopy(context.l10n),
-            title: context.l10n.hostsOrganizerHostDefaultsStepLabelAdmissionFormat,
+            title:
+                context.l10n.hostsOrganizerHostDefaultsStepLabelAdmissionFormat,
             contract: CatchContractConstraints
                 .createClubCallablePayloadHostDefaultsEventPolicyAdmissionPreset,
             contractValueBuilder: (value) => value.name,
@@ -397,7 +403,8 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
             EventAdmissionDefaultPreset.balancedSingles) ...[
           CatchField.toggle(
             copy: catchFieldCopy(context.l10n),
-            title: context.l10n.hostsOrganizerHostDefaultsStepTitleDemandPricing,
+            title:
+                context.l10n.hostsOrganizerHostDefaultsStepTitleDemandPricing,
             contract: CatchContractConstraints
                 .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingEnabled,
             body: context
@@ -424,7 +431,9 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
                     Expanded(
                       child: CatchField.inputActions(
                         copy: catchFieldCopy(context.l10n),
-                        title: context.l10n.hostsOrganizerHostDefaultsStepTitleStep,
+                        title: context
+                            .l10n
+                            .hostsOrganizerHostDefaultsStepTitleStep,
                         contract: CatchContractConstraints
                             .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingStepInPaise,
                         controller: _pricingStepController,
@@ -467,7 +476,8 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
                     Expanded(
                       child: CatchField.inputActions(
                         copy: catchFieldCopy(context.l10n),
-                        title: context.l10n.hostsOrganizerHostDefaultsStepTitleMax,
+                        title:
+                            context.l10n.hostsOrganizerHostDefaultsStepTitleMax,
                         contract: CatchContractConstraints
                             .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingMaxInPaise,
                         controller: _pricingMaxController,
@@ -524,8 +534,9 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
           ),
           CatchField<EventCancellationPolicyId>.optionCards(
             copy: catchFieldCopy(context.l10n),
-            title:
-                context.l10n.hostsOrganizerHostDefaultsStepLabelCancellationPolicy,
+            title: context
+                .l10n
+                .hostsOrganizerHostDefaultsStepLabelCancellationPolicy,
             contract: CatchContractConstraints
                 .createClubCallablePayloadHostDefaultsEventPolicyCancellationPolicyId,
             contractValueBuilder: (value) => value.name,

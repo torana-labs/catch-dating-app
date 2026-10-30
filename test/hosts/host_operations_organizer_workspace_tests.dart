@@ -226,7 +226,10 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
     'Host Today loading centers progress below the persistent root title',
     (tester) async {
       final now = DateTime(2026, 6, 15, 12);
-      final organizer = buildOrganizer(id: 'today-loading-club', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'today-loading-club',
+        ownerUserId: _hostUid,
+      );
       await _pumpHostScreen(
         tester,
         CatchRootScreenScaffold.sections(
@@ -320,7 +323,10 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     final now = DateTime(2026, 6, 15, 12);
-    final organizer = buildOrganizer(id: 'large-text-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'large-text-club',
+      ownerUserId: _hostUid,
+    );
     final event = buildEvent(
       id: 'large-text-event',
       clubId: organizer.id,
@@ -400,7 +406,10 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     final now = DateTime(2026, 6, 15, 12);
-    final organizer = buildOrganizer(id: 'wide-today-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'wide-today-club',
+      ownerUserId: _hostUid,
+    );
     final hero = buildEvent(
       id: 'wide-hero-event',
       clubId: organizer.id,
@@ -527,7 +536,10 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
     tester,
   ) async {
     final now = DateTime(2026, 6, 15, 12);
-    final organizer = buildOrganizer(id: 'history-only-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'history-only-club',
+      ownerUserId: _hostUid,
+    );
     final past = buildEvent(
       id: 'history-only-event',
       clubId: organizer.id,
@@ -859,7 +871,10 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
       tester,
       const HostCustomersScreen(),
       overrides: [
-        ..._hostOrganizerOverrides(owned: [ownedOrganizer], hosted: [cohostOrganizer]),
+        ..._hostOrganizerOverrides(
+          owned: [ownedOrganizer],
+          hosted: [cohostOrganizer],
+        ),
         for (final organizer in [ownedOrganizer, cohostOrganizer])
           hostCustomerSegmentCountProvider(
             HostCustomerSegmentCountRequest(

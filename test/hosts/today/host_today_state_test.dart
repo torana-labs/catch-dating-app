@@ -8,7 +8,8 @@ import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../organizers/organizers_test_helpers.dart' show buildOrganizer, buildEvent;
+import '../../organizers/organizers_test_helpers.dart'
+    show buildOrganizer, buildEvent;
 
 final _l10n = AppLocalizationsEn();
 

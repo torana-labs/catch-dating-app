@@ -130,7 +130,9 @@ void _registerExploreOrganizerDetailTests() {
       tester,
       Column(
         children: [
-          Expanded(child: OrganizerIndexRow(organizer: organizer, isJoined: true)),
+          Expanded(
+            child: OrganizerIndexRow(organizer: organizer, isJoined: true),
+          ),
           AvatarChip(organizer: organizer, showLiveBadge: true),
         ],
       ),
@@ -167,7 +169,10 @@ void _registerExploreOrganizerDetailTests() {
   ) async {
     await pumpTestApp(
       tester,
-      OrganizerIndexRow(organizer: buildOrganizer(name: 'Host Club'), isJoined: true),
+      OrganizerIndexRow(
+        organizer: buildOrganizer(name: 'Host Club'),
+        isJoined: true,
+      ),
       overrides: [uidProvider.overrideWith((ref) => Stream.value('runner-1'))],
     );
 
@@ -218,68 +223,69 @@ void _registerExploreOrganizerDetailTests() {
     },
   );
 
-  testWidgets('OrganizerMembershipDock join and leave actions hit the repository', (
-    tester,
-  ) async {
-    final fakeRepository = FakeOrganizersRepository();
-    final container = ProviderContainer(
-      retry: (_, _) => null,
-      overrides: [
-        cityListProvider.overrideWith((ref) async => _testCities),
-        deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
-        organizersRepositoryProvider.overrideWith((ref) => fakeRepository),
-        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-      ],
-    );
-    addTearDown(container.dispose);
-    final uidSubscription = container.listen(
-      uidProvider,
-      (_, _) {},
-      fireImmediately: true,
-    );
-    addTearDown(uidSubscription.close);
-    await container.pump();
+  testWidgets(
+    'OrganizerMembershipDock join and leave actions hit the repository',
+    (tester) async {
+      final fakeRepository = FakeOrganizersRepository();
+      final container = ProviderContainer(
+        retry: (_, _) => null,
+        overrides: [
+          cityListProvider.overrideWith((ref) async => _testCities),
+          deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+          organizersRepositoryProvider.overrideWith((ref) => fakeRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
 
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(
-            body: Column(
-              children: [
-                OrganizerMembershipDock(
-                  organizer: buildOrganizer(id: 'club-join'),
-                  isMember: false,
-                  isAuthenticated: true,
-                  isMutating: false,
-                  pushNotificationsEnabled: false,
-                  isPushMutating: false,
-                ),
-                OrganizerMembershipDock(
-                  organizer: buildOrganizer(id: 'club-leave'),
-                  isMember: true,
-                  isAuthenticated: true,
-                  isMutating: false,
-                  pushNotificationsEnabled: false,
-                  isPushMutating: false,
-                ),
-              ],
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: Column(
+                children: [
+                  OrganizerMembershipDock(
+                    organizer: buildOrganizer(id: 'club-join'),
+                    isMember: false,
+                    isAuthenticated: true,
+                    isMutating: false,
+                    pushNotificationsEnabled: false,
+                    isPushMutating: false,
+                  ),
+                  OrganizerMembershipDock(
+                    organizer: buildOrganizer(id: 'club-leave'),
+                    isMember: true,
+                    isAuthenticated: true,
+                    isMutating: false,
+                    pushNotificationsEnabled: false,
+                    isPushMutating: false,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
-    await _pumpOrganizerUi(tester);
+      );
+      await _pumpOrganizerUi(tester);
 
-    await tester.tap(find.text('Follow organizer'));
-    await _pumpOrganizerUi(tester);
-    await tester.tap(find.text('Following'));
-    await _pumpOrganizerUi(tester);
+      await tester.tap(find.text('Follow organizer'));
+      await _pumpOrganizerUi(tester);
+      await tester.tap(find.text('Following'));
+      await _pumpOrganizerUi(tester);
 
-    expect(fakeRepository.joinedOrganizerId, 'club-join');
-    expect(fakeRepository.leftOrganizerId, 'club-leave');
-  });
+      expect(fakeRepository.joinedOrganizerId, 'club-join');
+      expect(fakeRepository.leftOrganizerId, 'club-leave');
+    },
+  );
 
   testWidgets('metric strip shows its provided values', (tester) async {
     await pumpTestApp(
@@ -423,7 +429,9 @@ void _registerExploreOrganizerDetailTests() {
               ),
               child: Scaffold(
                 body: CustomScrollView(
-                  slivers: [OrganizerHeroTopBar(organizer: organizer, isHost: false)],
+                  slivers: [
+                    OrganizerHeroTopBar(organizer: organizer, isHost: false),
+                  ],
                 ),
               ),
             ),
@@ -512,7 +520,10 @@ void _registerExploreOrganizerDetailTests() {
       tester,
       CustomScrollView(
         slivers: [
-          OrganizerHeroTopBar(organizer: buildOrganizer(name: 'Morning Miles'), isHost: false),
+          OrganizerHeroTopBar(
+            organizer: buildOrganizer(name: 'Morning Miles'),
+            isHost: false,
+          ),
         ],
       ),
     );
@@ -523,56 +534,58 @@ void _registerExploreOrganizerDetailTests() {
     expect(find.text('Bandra, Mumbai'), findsOneWidget);
   });
 
-  testWidgets('OrganizerHeroTopBar reveals the club name in the collapsed toolbar', (
-    tester,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(430, 800);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
+  testWidgets(
+    'OrganizerHeroTopBar reveals the club name in the collapsed toolbar',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(430, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
 
-    await pumpTestApp(
-      tester,
-      CustomScrollView(
-        slivers: [
-          OrganizerHeroTopBar(
-            organizer: buildOrganizer(
-              name: 'Vijay Nagar Event Collective',
-              imageUrl: 'https://example.com/club.jpg',
+      await pumpTestApp(
+        tester,
+        CustomScrollView(
+          slivers: [
+            OrganizerHeroTopBar(
+              organizer: buildOrganizer(
+                name: 'Vijay Nagar Event Collective',
+                imageUrl: 'https://example.com/club.jpg',
+              ),
+              isHost: false,
             ),
-            isHost: false,
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 900)),
-        ],
-      ),
-    );
+            const SliverToBoxAdapter(child: SizedBox(height: 900)),
+          ],
+        ),
+      );
 
-    expect(
-      find.byKey(const ValueKey('club-detail-collapsed-title')),
-      findsNothing,
-    );
+      expect(
+        find.byKey(const ValueKey('club-detail-collapsed-title')),
+        findsNothing,
+      );
 
-    await tester.drag(find.byType(CustomScrollView), const Offset(0, -520));
-    await _pumpOrganizerUi(tester);
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -520));
+      await _pumpOrganizerUi(tester);
 
-    final collapsedTitle = find.byKey(
-      const ValueKey('club-detail-collapsed-title'),
-    );
-    expect(collapsedTitle, findsOneWidget);
-    expect(tester.getTopLeft(collapsedTitle).dy, lessThan(96));
-    final collapsedTitleText = tester.widget<Text>(collapsedTitle);
-    expect(
-      collapsedTitleText.style?.fontFamily,
-      contains(CatchFonts.voiceFamily.split(' ').first),
-    );
-  });
+      final collapsedTitle = find.byKey(
+        const ValueKey('club-detail-collapsed-title'),
+      );
+      expect(collapsedTitle, findsOneWidget);
+      expect(tester.getTopLeft(collapsedTitle).dy, lessThan(96));
+      final collapsedTitleText = tester.widget<Text>(collapsedTitle);
+      expect(
+        collapsedTitleText.style?.fontFamily,
+        contains(CatchFonts.voiceFamily.split(' ').first),
+      );
+    },
+  );
 
   testWidgets('club index row and avatar chip navigate to detail routes', (
     tester,
   ) async {
     Future<void> pumpRow({
       required String id,
-      required Widget Function(BuildContext context, Organizer organizer) childBuilder,
+      required Widget Function(BuildContext context, Organizer organizer)
+      childBuilder,
     }) async {
       final organizer = buildOrganizer(
         id: id,
@@ -613,7 +626,8 @@ void _registerExploreOrganizerDetailTests() {
       await tester.tap(
         find.byWidgetPredicate(
           (widget) =>
-              (widget is OrganizerIndexRow && widget.organizer.id == organizer.id) ||
+              (widget is OrganizerIndexRow &&
+                  widget.organizer.id == organizer.id) ||
               (widget is AvatarChip && widget.organizer.id == organizer.id),
         ),
       );
@@ -648,26 +662,29 @@ void _registerExploreOrganizerDetailTests() {
     );
   });
 
-  testWidgets('OrganizerIndexRow uses club cover fallback when image is absent', (
+  testWidgets(
+    'OrganizerIndexRow uses club cover fallback when image is absent',
+    (tester) async {
+      await pumpTestApp(
+        tester,
+        OrganizerIndexRow(
+          organizer: buildOrganizer(name: 'No Cover Club', area: 'Signal Hill'),
+          isJoined: false,
+        ),
+      );
+
+      expect(find.byType(OrganizerPlaceholderCover), findsWidgets);
+      expect(find.text('NC'), findsNothing);
+      expect(find.byIcon(CatchIcons.location), findsOneWidget);
+      // Index rows use the area/city/member line as the mono meta row; the
+      // fallback artwork itself should not add a duplicate footer label.
+      expect(find.text('SIGNAL HILL / MUMBAI · 1 FOLLOWER'), findsOneWidget);
+    },
+  );
+
+  testWidgets('OrganizerIndexRow surfaces directory join failures', (
     tester,
   ) async {
-    await pumpTestApp(
-      tester,
-      OrganizerIndexRow(
-        organizer: buildOrganizer(name: 'No Cover Club', area: 'Signal Hill'),
-        isJoined: false,
-      ),
-    );
-
-    expect(find.byType(OrganizerPlaceholderCover), findsWidgets);
-    expect(find.text('NC'), findsNothing);
-    expect(find.byIcon(CatchIcons.location), findsOneWidget);
-    // Index rows use the area/city/member line as the mono meta row; the
-    // fallback artwork itself should not add a duplicate footer label.
-    expect(find.text('SIGNAL HILL / MUMBAI · 1 FOLLOWER'), findsOneWidget);
-  });
-
-  testWidgets('OrganizerIndexRow surfaces directory join failures', (tester) async {
     final fakeRepository = FakeOrganizersRepository()
       ..joinError = StateError('join failed');
     final container = ProviderContainer(

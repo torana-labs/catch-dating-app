@@ -388,7 +388,9 @@ class _HostInboxFrame extends StatelessWidget {
         ).overrideWithValue(
           AsyncData(_messagingSetup(HostInboxSurfaceFixtures.organizer.id)),
         ),
-        hostSendsProvider(HostInboxSurfaceFixtures.organizer.id).overrideWithValue(
+        hostSendsProvider(
+          HostInboxSurfaceFixtures.organizer.id,
+        ).overrideWithValue(
           AsyncData(
             HostSendsPage(
               organizerId: HostInboxSurfaceFixtures.organizer.id,

@@ -15,7 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../organizers/organizers_test_helpers.dart' show FakeOrganizersRepository;
+import '../organizers/organizers_test_helpers.dart'
+    show FakeOrganizersRepository;
 import 'event_viewer_state_fixtures.dart';
 import 'events_test_helpers.dart';
 
@@ -38,7 +39,9 @@ void main() {
           ),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
@@ -74,7 +77,9 @@ void main() {
           ),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
@@ -115,7 +120,9 @@ void main() {
           ),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
@@ -152,7 +159,9 @@ void main() {
           ),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -181,7 +190,9 @@ void main() {
           ),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
@@ -222,7 +233,9 @@ void main() {
           ),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(
             FakePaymentRepository(supportsPaid: false),
           ),
@@ -253,7 +266,9 @@ void main() {
           ),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
@@ -282,7 +297,9 @@ void main() {
           ),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -326,7 +343,9 @@ void main() {
       final fakeEventRepository = FakeEventRepository();
       final container = ProviderContainer(
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           uidProvider.overrideWith((ref) => Stream.value('runner-9')),
@@ -401,7 +420,9 @@ void main() {
       final fakeEventRepository = FakeEventRepository();
       final container = ProviderContainer(
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           uidProvider.overrideWith((ref) => Stream.value('runner-9')),
@@ -472,7 +493,9 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
           uidProvider.overrideWith((ref) => Stream.value('runner-9')),
         ],
@@ -607,7 +630,9 @@ void main() {
           ),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -647,7 +672,9 @@ void main() {
           ),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -712,7 +739,9 @@ void main() {
           ),
         ),
         overrides: [
-          organizersRepositoryProvider.overrideWithValue(FakeOrganizersRepository()),
+          organizersRepositoryProvider.overrideWithValue(
+            FakeOrganizersRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );

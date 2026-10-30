@@ -29,7 +29,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class OrganizerDetailScreen extends ConsumerWidget {
-  const OrganizerDetailScreen({super.key, required this.clubId, this.initialOrganizer});
+  const OrganizerDetailScreen({
+    super.key,
+    required this.clubId,
+    this.initialOrganizer,
+  });
 
   final String clubId;
   final Organizer? initialOrganizer;
@@ -77,7 +81,9 @@ class OrganizerDetailScreen extends ConsumerWidget {
     }
 
     final joinMutation = ref.watch(OrganizerMembershipController.joinMutation);
-    final leaveMutation = ref.watch(OrganizerMembershipController.leaveMutation);
+    final leaveMutation = ref.watch(
+      OrganizerMembershipController.leaveMutation,
+    );
     final pushMutation = ref.watch(
       OrganizerMembershipController.pushNotificationsMutation,
     );
@@ -151,15 +157,17 @@ class OrganizerDetailScreen extends ConsumerWidget {
       return CatchScaffold.workspace(
         body: OrganizerDetailBody(
           state: bodyState,
-          onShareOrganizer: (buttonContext, organizer) => showOrganizerShareCardSheet(
-            buttonContext,
-            organizer: organizer,
-            share: ref.read(externalShareControllerProvider),
-          ),
+          onShareOrganizer: (buttonContext, organizer) =>
+              showOrganizerShareCardSheet(
+                buttonContext,
+                organizer: organizer,
+                share: ref.read(externalShareControllerProvider),
+              ),
           onEventSelected: (event) => context.pushNamed(
             _eventDetailRouteName(bodyState.eventRouteTarget),
             pathParameters: {
-              context.l10n.organizersOrganizerDetailScreenBodyOrganizerid: bodyState.organizer.id,
+              context.l10n.organizersOrganizerDetailScreenBodyOrganizerid:
+                  bodyState.organizer.id,
               context.l10n.organizersOrganizerDetailScreenBodyEventid: event.id,
             },
             extra: event,
@@ -205,8 +213,12 @@ class OrganizerDetailScreen extends ConsumerWidget {
             },
           ),
         HostOrganizerDetailNotFound() => CatchErrorState(
-          title: context.l10n.organizersOrganizerDetailScreenTitleOrganizerNotFound,
-          message: context.l10n.organizersOrganizerDetailScreenMessageThisOrganizerIsNo,
+          title: context
+              .l10n
+              .organizersOrganizerDetailScreenTitleOrganizerNotFound,
+          message: context
+              .l10n
+              .organizersOrganizerDetailScreenMessageThisOrganizerIsNo,
           icon: CatchIcons.people,
           actions: const [CatchErrorBackButton()],
         ),

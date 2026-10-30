@@ -21,7 +21,11 @@ void main() {
       await pumpCatchAppShell(
         tester,
         initialRoute: Routes.exploreScreen.path,
-        overrides: appShellTestOverrides(uid: null, user: null, organizers: [organizer]),
+        overrides: appShellTestOverrides(
+          uid: null,
+          user: null,
+          organizers: [organizer],
+        ),
       );
 
       await openOrganizerDetail(tester, organizer);

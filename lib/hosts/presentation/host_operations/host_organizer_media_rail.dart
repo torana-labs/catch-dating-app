@@ -125,7 +125,8 @@ class HostOrganizerLogoManagerHeader extends StatefulWidget {
       _HostOrganizerLogoManagerHeaderState();
 }
 
-class _HostOrganizerLogoManagerHeaderState extends State<HostOrganizerLogoManagerHeader> {
+class _HostOrganizerLogoManagerHeaderState
+    extends State<HostOrganizerLogoManagerHeader> {
   late Uint8List? _imageBytes;
   late String? _existingImageUrl;
 
@@ -184,7 +185,8 @@ class HostOrganizerMediaManagerDock extends StatefulWidget {
       _HostOrganizerMediaManagerDockState();
 }
 
-class _HostOrganizerMediaManagerDockState extends State<HostOrganizerMediaManagerDock> {
+class _HostOrganizerMediaManagerDockState
+    extends State<HostOrganizerMediaManagerDock> {
   bool _saving = false;
   bool _showError = false;
 
@@ -231,8 +233,9 @@ class _HostOrganizerMediaManagerDockState extends State<HostOrganizerMediaManage
                   Expanded(
                     child: CatchButton(
                       key: const ValueKey('host-media-discard'),
-                      label:
-                          context.l10n.hostsHostOrganizerEditTabActionDiscardMedia,
+                      label: context
+                          .l10n
+                          .hostsHostOrganizerEditTabActionDiscardMedia,
                       onPressed: _saving
                           ? null
                           : () => Navigator.of(context).pop(false),
@@ -244,7 +247,8 @@ class _HostOrganizerMediaManagerDockState extends State<HostOrganizerMediaManage
                   Expanded(
                     child: CatchButton(
                       key: const ValueKey('host-media-save'),
-                      label: context.l10n.hostsHostOrganizerEditTabActionSaveMedia,
+                      label:
+                          context.l10n.hostsHostOrganizerEditTabActionSaveMedia,
                       onPressed: _saving ? null : () => unawaited(_save()),
                       status: (_saving)
                           ? CatchButtonStatus.loading
@@ -311,7 +315,11 @@ final class _HostPickedOrganizerMediaDraft extends _HostOrganizerMediaDraft {
   String get id => photo.id;
 
   _HostPickedOrganizerMediaDraft withJob(ImageUploadJobState job) =>
-      _HostPickedOrganizerMediaDraft(photo, uploadedPhoto: uploadedPhoto, job: job);
+      _HostPickedOrganizerMediaDraft(
+        photo,
+        uploadedPhoto: uploadedPhoto,
+        job: job,
+      );
 
   _HostPickedOrganizerMediaDraft withResolvedInput(
     HostOrganizerMediaInput? resolved, {

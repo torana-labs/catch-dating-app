@@ -415,7 +415,10 @@ void _registerHostOperationsCustomersTests() {
   testWidgets('customer search debounces and unavailable SMS stays hidden', (
     tester,
   ) async {
-    final organizer = buildOrganizer(id: 'customers-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'customers-club',
+      ownerUserId: _hostUid,
+    );
     final requests = <HostCustomersDirectoryRequest>[];
     await _pumpHostScreen(
       tester,
@@ -469,7 +472,10 @@ void _registerHostOperationsCustomersTests() {
       tester.view.physicalSize = const Size(1200, 900);
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
-      final organizer = buildOrganizer(id: 'organizer-1', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'organizer-1',
+        ownerUserId: _hostUid,
+      );
 
       await _pumpHostScreen(
         tester,
@@ -523,7 +529,10 @@ void _registerHostOperationsCustomersTests() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       final requests = <HostCustomersDirectoryRequest>[];
-      final organizer = buildOrganizer(id: 'organizer-1', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'organizer-1',
+        ownerUserId: _hostUid,
+      );
       await _pumpHostScreen(
         tester,
         const HostCustomersScreen(),

@@ -54,7 +54,8 @@ class HostTeamHostedOrganizersSection extends StatelessWidget {
               title: actions.organizerNavigationFor(organizer).roleLabel,
               valueText: organizer.name,
               icon: CatchIcons.people,
-              onTap: () => onOpenOrganizer(actions.organizerNavigationFor(organizer)),
+              onTap: () =>
+                  onOpenOrganizer(actions.organizerNavigationFor(organizer)),
             ),
           ),
       ],

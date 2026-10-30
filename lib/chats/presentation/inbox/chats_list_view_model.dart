@@ -127,7 +127,8 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
     final organizersById = hostInquiryOrganizerIds.isEmpty
         ? const <String, Organizer>{}
         : {
-            for (final organizer in organizersState?.value ?? const <Organizer>[])
+            for (final organizer
+                in organizersState?.value ?? const <Organizer>[])
               organizer.id: organizer,
           };
     final publicProfileUids = <String>{};
@@ -139,7 +140,8 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
       final hostProfile = _hostProfileFor(organizer, otherUid);
       final otherParticipantIsHost = hostProfile != null;
       final shouldReadPublicProfile =
-          !match.isOrganizerHostInquiry || (organizer != null && !otherParticipantIsHost);
+          !match.isOrganizerHostInquiry ||
+          (organizer != null && !otherParticipantIsHost);
       if (shouldReadPublicProfile) publicProfileUids.add(otherUid);
     }
     final profilesState = publicProfileUids.isEmpty

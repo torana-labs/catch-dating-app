@@ -897,8 +897,9 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.organizer,
     path: Routes.hostOrganizerTeamScreen.path,
     name: Routes.hostOrganizerTeamScreen.name,
-    builder: (context, state) =>
-        HostOrganizerTeamScreen(clubId: state.uri.queryParameters['clubId'] ?? ''),
+    builder: (context, state) => HostOrganizerTeamScreen(
+      clubId: state.uri.queryParameters['clubId'] ?? '',
+    ),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.organizer,
@@ -1516,10 +1517,11 @@ EventDetailScreen _eventDetailScreen(GoRouterState state) => EventDetailScreen(
   attribution: _eventDetailAttribution(state),
 );
 
-OrganizerDetailScreen _organizerDetailScreen(GoRouterState state) => OrganizerDetailScreen(
-  clubId: state.pathParameters['clubId']!,
-  initialOrganizer: _organizerDetailInitialOrganizer(state),
-);
+OrganizerDetailScreen _organizerDetailScreen(GoRouterState state) =>
+    OrganizerDetailScreen(
+      clubId: state.pathParameters['clubId']!,
+      initialOrganizer: _organizerDetailInitialOrganizer(state),
+    );
 
 class _RouteLoadingScreen extends StatelessWidget {
   const _RouteLoadingScreen({required this.isHostApp});

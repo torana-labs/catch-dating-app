@@ -100,7 +100,9 @@ final widgetbookExploreOrganizers = [
   ),
 ];
 
-final widgetbookExploreJoinedOrganizerIds = {widgetbookExploreOrganizers.first.id};
+final widgetbookExploreJoinedOrganizerIds = {
+  widgetbookExploreOrganizers.first.id,
+};
 
 final widgetbookExploreFeedItems = [
   _item(

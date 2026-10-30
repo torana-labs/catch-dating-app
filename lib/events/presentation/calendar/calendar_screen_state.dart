@@ -33,7 +33,8 @@ class CalendarHomeState {
   final bool expanded;
 
   bool get hasEvents => summary.events.isNotEmpty;
-  Iterable<String> get organizerIds => summary.events.map((event) => event.clubId);
+  Iterable<String> get organizerIds =>
+      summary.events.map((event) => event.clubId);
 
   CalendarAgendaSectionState agendaSection({
     required CalendarOrganizerNameLookupState organizerNames,
@@ -78,9 +79,8 @@ sealed class CalendarAgendaSectionState {
     return switch (organizerNames.status) {
       CalendarOrganizerNameLookupStatus.loading =>
         const CalendarAgendaOrganizerNamesLoadingState(),
-      CalendarOrganizerNameLookupStatus.failure => CalendarAgendaOrganizerNamesErrorState(
-        organizerNames.error!,
-      ),
+      CalendarOrganizerNameLookupStatus.failure =>
+        CalendarAgendaOrganizerNamesErrorState(organizerNames.error!),
       CalendarOrganizerNameLookupStatus.ready => CalendarAgendaReadyState(
         rows: [
           for (final event in summary.agendaEvents)
@@ -109,13 +109,15 @@ class CalendarAgendaEmptyState extends CalendarAgendaSectionState {
       l10n.eventsCalendarScreenStateBodyEventsYouBookOr;
 }
 
-class CalendarAgendaOrganizerNamesLoadingState extends CalendarAgendaSectionState {
+class CalendarAgendaOrganizerNamesLoadingState
+    extends CalendarAgendaSectionState {
   const CalendarAgendaOrganizerNamesLoadingState();
 
   int get skeletonCount => 3;
 }
 
-class CalendarAgendaOrganizerNamesErrorState extends CalendarAgendaSectionState {
+class CalendarAgendaOrganizerNamesErrorState
+    extends CalendarAgendaSectionState {
   const CalendarAgendaOrganizerNamesErrorState(this.error);
 
   final Object error;

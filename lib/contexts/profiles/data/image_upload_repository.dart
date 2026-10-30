@@ -380,7 +380,11 @@ class ImageUploadRepository {
     required String clubId,
     required XFile image,
   }) async {
-    final upload = await uploadOrganizerLogo(uid: uid, clubId: clubId, image: image);
+    final upload = await uploadOrganizerLogo(
+      uid: uid,
+      clubId: clubId,
+      image: image,
+    );
     return upload.url;
   }
 

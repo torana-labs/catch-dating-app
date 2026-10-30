@@ -63,7 +63,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../events/events_test_helpers.dart';
-import '../organizers/organizers_test_helpers.dart' show FakeImageUploadRepository;
+import '../organizers/organizers_test_helpers.dart'
+    show FakeImageUploadRepository;
 import '../test_pump_helpers.dart';
 import 'host_control_room_test_helpers.dart';
 
@@ -150,7 +151,10 @@ void main() {
     ) async {
       await pumpEventsTestApp(
         tester,
-        HostCreateEventRouteScreen(clubId: 'club-1', initialOrganizer: buildOrganizer()),
+        HostCreateEventRouteScreen(
+          clubId: 'club-1',
+          initialOrganizer: buildOrganizer(),
+        ),
       );
       await tester.pump();
       expect(find.text('Host access required'), findsOneWidget);

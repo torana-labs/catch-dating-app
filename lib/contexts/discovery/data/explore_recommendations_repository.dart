@@ -56,8 +56,11 @@ Future<List<ExploreEventRecommendationCandidate>> exploreRecommendedEvents(
   if (events.isEmpty) return const [];
 
   final organizersRepository = ref.watch(organizersRepositoryProvider);
-  final organizerIds = events.map((event) => event.clubId).toSet().toList()..sort();
-  final organizers = await Future.wait(organizerIds.map(organizersRepository.fetchOrganizer));
+  final organizerIds = events.map((event) => event.clubId).toSet().toList()
+    ..sort();
+  final organizers = await Future.wait(
+    organizerIds.map(organizersRepository.fetchOrganizer),
+  );
   final organizersById = <String, Organizer>{};
   for (final organizer in organizers) {
     if (organizer != null) {

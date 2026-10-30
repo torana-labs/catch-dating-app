@@ -165,7 +165,12 @@ void main() {
       ),
     );
 
-    await openEventDetail(tester, organizer: organizer, event: run, settle: false);
+    await openEventDetail(
+      tester,
+      organizer: organizer,
+      event: run,
+      settle: false,
+    );
     await tester.tap(find.byKey(EventActionKeys.cancelBookingButton));
     await flushAppShellCallbacks(tester);
     await pumpMutationUi(tester);

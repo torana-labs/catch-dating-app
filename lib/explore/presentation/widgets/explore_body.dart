@@ -84,7 +84,10 @@ List<Widget> buildExploreBodySlivers({
         viewModel != null &&
         viewModel.joinedOrganizers.isNotEmpty)
       SliverToBoxAdapter(
-        child: OrganizerAvatarRail(organizers: viewModel.joinedOrganizers, fullBleed: true),
+        child: OrganizerAvatarRail(
+          organizers: viewModel.joinedOrganizers,
+          fullBleed: true,
+        ),
       ),
     if (pinnedExploreDayHeaders)
       SliverMainAxisGroup(slivers: eventSlivers)

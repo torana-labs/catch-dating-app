@@ -262,7 +262,8 @@ abstract class ExploreViewModel with _$ExploreViewModel {
     required Set<String> joinedOrganizerIds,
     Set<String>? followedOrganizerIds,
   }) {
-    final effectiveFollowedOrganizerIds = followedOrganizerIds ?? joinedOrganizerIds;
+    final effectiveFollowedOrganizerIds =
+        followedOrganizerIds ?? joinedOrganizerIds;
     final joinedOrganizers = <Organizer>[];
     final activeOrganizerIds = <String>{};
 
@@ -498,7 +499,9 @@ AsyncValue<List<Organizer>> exploreSourceOrganizers(Ref ref) {
   final locationOrganizersAsync = ref.watch(
     watchOrganizersByLocationProvider(city.effectiveMarketId),
   );
-  final locationOrganizersState = catchAsyncStateFromAsyncValue(locationOrganizersAsync);
+  final locationOrganizersState = catchAsyncStateFromAsyncValue(
+    locationOrganizersAsync,
+  );
 
   if (locationOrganizersState.isLoading) {
     return const AsyncLoading();
@@ -509,7 +512,8 @@ AsyncValue<List<Organizer>> exploreSourceOrganizers(Ref ref) {
       locationOrganizersState.stackTrace ?? StackTrace.current,
     );
   }
-  final locationOrganizers = locationOrganizersState.value ?? const <Organizer>[];
+  final locationOrganizers =
+      locationOrganizersState.value ?? const <Organizer>[];
   return AsyncData(List.unmodifiable(locationOrganizers));
 }
 
@@ -535,7 +539,10 @@ AsyncValue<List<Organizer>> filteredExploreOrganizers(Ref ref) {
   }
 
   final localFallback = sourceOrganizers
-      .where((organizer) => matchesExploreOrganizerSearchQuery(organizer, normalizedQuery))
+      .where(
+        (organizer) =>
+            matchesExploreOrganizerSearchQuery(organizer, normalizedQuery),
+      )
       .toList(growable: false);
   // Server search keys off the debounced query so typing doesn't fire a
   // Cloud Function call per keystroke. Until it settles, `localFallback`
@@ -568,9 +575,13 @@ AsyncValue<List<Organizer>> filteredExploreOrganizers(Ref ref) {
   }
 
   final searchedOrganizersAsync = ref.watch(
-    watchOrganizersByIdsProvider(OrganizersByIdQuery(searchResult.organizerIds)),
+    watchOrganizersByIdsProvider(
+      OrganizersByIdQuery(searchResult.organizerIds),
+    ),
   );
-  final searchedOrganizersState = catchAsyncStateFromAsyncValue(searchedOrganizersAsync);
+  final searchedOrganizersState = catchAsyncStateFromAsyncValue(
+    searchedOrganizersAsync,
+  );
   if (searchedOrganizersState.isLoading) {
     return const AsyncLoading();
   }
@@ -620,7 +631,9 @@ AsyncValue<ExploreViewModel> exploreOrganizersViewModel(Ref ref) {
 
   final sourceOrganizers = filteredState.value ?? const <Organizer>[];
   if (sourceOrganizers.isEmpty) {
-    return const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: []));
+    return const AsyncData(
+      ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+    );
   }
 
   final uidAsync = ref.watch(uidProvider);
@@ -636,7 +649,9 @@ AsyncValue<ExploreViewModel> exploreOrganizersViewModel(Ref ref) {
   }
 
   final uid = uidState.value;
-  final followedOrganizerIdsAsync = ref.watch(currentUserFollowedOrganizerIdsProvider);
+  final followedOrganizerIdsAsync = ref.watch(
+    currentUserFollowedOrganizerIdsProvider,
+  );
   final followedOrganizerIdsState = catchAsyncStateFromAsyncValue(
     followedOrganizerIdsAsync,
   );
@@ -668,7 +683,10 @@ AsyncValue<ExploreViewModel> exploreOrganizersViewModel(Ref ref) {
   );
 }
 
-bool matchesExploreOrganizerSearchQuery(Organizer organizer, String normalizedQuery) {
+bool matchesExploreOrganizerSearchQuery(
+  Organizer organizer,
+  String normalizedQuery,
+) {
   return organizer.name.toLowerCase().contains(normalizedQuery) ||
       organizer.area.toLowerCase().contains(normalizedQuery) ||
       organizer.displayHostName.toLowerCase().contains(normalizedQuery) ||
@@ -686,7 +704,11 @@ List<Organizer> applyExploreFilters({
   final referenceNow = now ?? DateTime.now();
   return organizers
       .where((organizer) {
-        if (!_organizerMatchesTimeFilter(organizer, filters.timeFilter, referenceNow)) {
+        if (!_organizerMatchesTimeFilter(
+          organizer,
+          filters.timeFilter,
+          referenceNow,
+        )) {
           return false;
         }
         return organizerMatchesScopeFilters(
@@ -698,7 +720,11 @@ List<Organizer> applyExploreFilters({
       .toList(growable: false);
 }
 
-bool _organizerMatchesTimeFilter(Organizer organizer, ExploreTimeFilter filter, DateTime now) {
+bool _organizerMatchesTimeFilter(
+  Organizer organizer,
+  ExploreTimeFilter filter,
+  DateTime now,
+) {
   if (filter == ExploreTimeFilter.anytime) return true;
   final nextEventAt = organizer.nextEventAt;
   if (nextEventAt == null || nextEventAt.isBefore(now)) return false;

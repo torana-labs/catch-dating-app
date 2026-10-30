@@ -117,7 +117,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               )
             : const AsyncData(<String, String>{});
         final agendaState = calendarState.agendaSection(
-          organizerNames: _calendarOrganizerNameLookupState(organizerNamesAsync),
+          organizerNames: _calendarOrganizerNameLookupState(
+            organizerNamesAsync,
+          ),
         );
         topBarSelectedDate = calendarState.selectedDate;
         topBarToday = calendarState.summary.today;
@@ -148,7 +150,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 state: agendaState,
                 dayKeyBuilder: _agendaDayKey,
                 onEventSelected: (event) => _openEventDetail(context, event),
-                onRetryOrganizerNames: () => ref.invalidate(organizerNameLookupProvider),
+                onRetryOrganizerNames: () =>
+                    ref.invalidate(organizerNameLookupProvider),
               ),
               const CatchScrollTerminalGap.sliver(),
             ],
@@ -281,7 +284,9 @@ CalendarOrganizerNameLookupState _calendarOrganizerNameLookupState(
 ) {
   final names = value.asData?.value;
   if (names != null) return CalendarOrganizerNameLookupState.ready(names);
-  if (value.hasError) return CalendarOrganizerNameLookupState.failure(value.error!);
+  if (value.hasError) {
+    return CalendarOrganizerNameLookupState.failure(value.error!);
+  }
   return const CalendarOrganizerNameLookupState.loading();
 }
 

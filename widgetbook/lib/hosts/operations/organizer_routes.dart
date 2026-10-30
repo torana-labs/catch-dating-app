@@ -23,7 +23,10 @@ Widget hostOrganizersRouteStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'auth required',
         child: const WidgetbookHostDeviceFrame(
-          child: WidgetbookHostShellScope(uid: null, child: HostOrganizersScreen()),
+          child: WidgetbookHostShellScope(
+            uid: null,
+            child: HostOrganizersScreen(),
+          ),
         ),
       ),
       WidgetbookPageStateCard(
@@ -42,9 +45,10 @@ Widget hostOrganizersRouteStates(BuildContext context) {
         label: 'clubs error',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedOrganizersStream: HostOperationsFixtures.errorStream<List<Organizer>>(
-              'Hosted clubs failed',
-            ),
+            hostedOrganizersStream:
+                HostOperationsFixtures.errorStream<List<Organizer>>(
+                  'Hosted clubs failed',
+                ),
             child: const HostOrganizersScreen(),
           ),
         ),

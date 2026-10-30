@@ -651,7 +651,9 @@ Widget _app({
   double floatingBottomOverlayInset = 0,
   bool whatsappProviderConfigured = true,
 }) {
-  final organizer = organizer_test.buildOrganizer(id: event?.clubId ?? 'club-1');
+  final organizer = organizer_test.buildOrganizer(
+    id: event?.clubId ?? 'club-1',
+  );
   final inbox = ChatsListViewModel(
     newMatches: const [],
     conversations: previews,
@@ -677,8 +679,12 @@ Widget _app({
       eventRepositoryProvider.overrideWithValue(
         event_test.FakeEventRepository(),
       ),
-      hostOperableOrganizersProvider('host-1').overrideWithValue(AsyncData([organizer])),
-      hostOperableOrganizersProvider('host-2').overrideWithValue(AsyncData([organizer])),
+      hostOperableOrganizersProvider(
+        'host-1',
+      ).overrideWithValue(AsyncData([organizer])),
+      hostOperableOrganizersProvider(
+        'host-2',
+      ).overrideWithValue(AsyncData([organizer])),
       organizerProgramListProvider(
         organizer.id,
       ).overrideWithValue(const AsyncData([])),
@@ -701,7 +707,11 @@ Widget _app({
       ).overrideWithValue(AsyncData(_crmSummary(organizer.id))),
       hostSendsProvider(organizer.id).overrideWithValue(
         AsyncData(
-          HostSendsPage(organizerId: organizer.id, sends: sends, nextCursor: null),
+          HostSendsPage(
+            organizerId: organizer.id,
+            sends: sends,
+            nextCursor: null,
+          ),
         ),
       ),
       hostManualSendTasksProvider(organizer.id).overrideWithValue(

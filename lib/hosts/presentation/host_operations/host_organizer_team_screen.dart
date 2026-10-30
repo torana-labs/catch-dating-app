@@ -6,10 +6,12 @@ class HostOrganizerTeamScreen extends ConsumerStatefulWidget {
   final String clubId;
 
   @override
-  ConsumerState<HostOrganizerTeamScreen> createState() => _HostOrganizerTeamScreenState();
+  ConsumerState<HostOrganizerTeamScreen> createState() =>
+      _HostOrganizerTeamScreenState();
 }
 
-class _HostOrganizerTeamScreenState extends ConsumerState<HostOrganizerTeamScreen>
+class _HostOrganizerTeamScreenState
+    extends ConsumerState<HostOrganizerTeamScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   final _displayNameController = TextEditingController();
@@ -117,7 +119,9 @@ class _HostOrganizerTeamScreenState extends ConsumerState<HostOrganizerTeamScree
       return HostLoadingScreen(title: routeTitle);
     }
     final organizers = organizersState.value ?? const <Organizer>[];
-    final organizer = organizers.where((item) => item.id == widget.clubId).firstOrNull;
+    final organizer = organizers
+        .where((item) => item.id == widget.clubId)
+        .firstOrNull;
     if (organizer == null) {
       return CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
@@ -222,7 +226,8 @@ class _HostOrganizerTeamScreenState extends ConsumerState<HostOrganizerTeamScree
                 HostTeamHostedOrganizersSection(
                   actions: actions,
                   state: state.organizers,
-                  onRetry: () => ref.invalidate(_hostOrganizersForUserProvider(uid)),
+                  onRetry: () =>
+                      ref.invalidate(_hostOrganizersForUserProvider(uid)),
                   onOpenOrganizer: _openHostedOrganizer,
                 ),
               ],
@@ -326,7 +331,10 @@ class _HostOrganizerTeamScreenState extends ConsumerState<HostOrganizerTeamScree
     }
     context.goNamed(
       Routes.hostOrganizerScreen.name,
-      queryParameters: {'clubId': widget.clubId, 'tab': HostOrganizerTab.edit.name},
+      queryParameters: {
+        'clubId': widget.clubId,
+        'tab': HostOrganizerTab.edit.name,
+      },
     );
   }
 }
@@ -358,11 +366,17 @@ class HostTeamProfessionalProfilePreview extends StatelessWidget {
       ),
       HostTeamProfileMissing() => CatchEmptyState(
         icon: CatchIcons.person,
-        title: context.l10n.hostsHostOrganizerTeamScreenVisiblecopyCreateHostProfile,
-        message: context.l10n.hostsHostOrganizerTeamScreenVisiblecopyAddAHostBio,
+        title: context
+            .l10n
+            .hostsHostOrganizerTeamScreenVisiblecopyCreateHostProfile,
+        message:
+            context.l10n.hostsHostOrganizerTeamScreenVisiblecopyAddAHostBio,
       ),
       HostTeamProfileContent(:final profile) =>
-        _HostTeamProfessionalProfileContent(profile: profile, organizers: organizers),
+        _HostTeamProfessionalProfileContent(
+          profile: profile,
+          organizers: organizers,
+        ),
     };
   }
 }
@@ -436,7 +450,8 @@ class _HostTeamProfessionalProfileContent extends StatelessWidget {
           ),
         ),
         CatchSection.fieldRows(
-          title: context.l10n.hostsHostOrganizerTeamScreenTitleOrganizersYouHost,
+          title:
+              context.l10n.hostsHostOrganizerTeamScreenTitleOrganizersYouHost,
           children: [
             for (final organizer in hostedOrganizers)
               CatchField.read(
@@ -497,7 +512,9 @@ class HostTeamProfileSection extends StatelessWidget {
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostOrganizerTeamScreenTitleDisplayName,
             valueText: creatingProfile
-                ? context.l10n.hostsHostOrganizerTeamScreenVisiblecopyCreatingProfile
+                ? context
+                      .l10n
+                      .hostsHostOrganizerTeamScreenVisiblecopyCreatingProfile
                 : context
                       .l10n
                       .hostsHostOrganizerTeamScreenVisiblecopyCreateHostProfile,
@@ -596,7 +613,9 @@ class _HostTeamProfileListState extends State<HostTeamProfileList> {
             title: context.l10n.hostsHostOrganizerTeamScreenTitleRoleTitle,
             valueText: profile.roleTitle?.trim().isNotEmpty == true
                 ? profile.roleTitle!.trim()
-                : context.l10n.hostsHostOrganizerTeamScreenVisiblecopyAddRoleTitle,
+                : context
+                      .l10n
+                      .hostsHostOrganizerTeamScreenVisiblecopyAddRoleTitle,
             icon: CatchIcons.membership,
           ),
           CatchField.read(
@@ -610,7 +629,9 @@ class _HostTeamProfileListState extends State<HostTeamProfileList> {
             title: context.l10n.hostsHostOrganizerTeamScreenTitleAboutYouAsA,
             valueText: profile.bio?.trim().isNotEmpty == true
                 ? profile.bio!.trim()
-                : context.l10n.hostsHostOrganizerTeamScreenVisiblecopyAddAHostBio,
+                : context
+                      .l10n
+                      .hostsHostOrganizerTeamScreenVisiblecopyAddAHostBio,
             icon: CatchIcons.chat,
             valueMaxLines: 3,
           ),

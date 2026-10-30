@@ -22,7 +22,9 @@ Widget catchOrganizerPosterStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'editorial paper',
         child: CatchPoster(
-          media: OrganizerPlaceholderCover(organizer: widgetbookOrganizerOrganizer),
+          media: OrganizerPlaceholderCover(
+            organizer: widgetbookOrganizerOrganizer,
+          ),
           kicker: 'Run club · Mumbai',
           title: widgetbookOrganizerOrganizer.name,
           tagline: widgetbookOrganizerOrganizer.description,
@@ -35,7 +37,9 @@ Widget catchOrganizerPosterStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'photo ink',
         child: CatchPoster(
-          media: OrganizerPlaceholderCover(organizer: widgetbookOrganizerOrganizer),
+          media: OrganizerPlaceholderCover(
+            organizer: widgetbookOrganizerOrganizer,
+          ),
           kicker: 'Run club · Mumbai',
           title: widgetbookOrganizerOrganizer.name,
           tagline: widgetbookOrganizerOrganizer.description,
@@ -47,7 +51,9 @@ Widget catchOrganizerPosterStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'split signal',
         child: CatchPoster(
-          media: OrganizerPlaceholderCover(organizer: widgetbookOrganizerOrganizer),
+          media: OrganizerPlaceholderCover(
+            organizer: widgetbookOrganizerOrganizer,
+          ),
           kicker: 'Run club · Mumbai',
           title: widgetbookOrganizerOrganizer.name,
           tagline: widgetbookOrganizerOrganizer.description,
@@ -59,7 +65,9 @@ Widget catchOrganizerPosterStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'minimal paper',
         child: CatchPoster(
-          media: OrganizerPlaceholderCover(organizer: widgetbookOrganizerOrganizer),
+          media: OrganizerPlaceholderCover(
+            organizer: widgetbookOrganizerOrganizer,
+          ),
           kicker: 'Run club · Mumbai',
           title: widgetbookOrganizerOrganizer.name,
           tagline: widgetbookOrganizerOrganizer.description,
@@ -85,7 +93,9 @@ Widget organizerPlaceholderCoverStates(BuildContext context) {
         label: 'standard',
         child: AspectRatio(
           aspectRatio: 1,
-          child: OrganizerPlaceholderCover(organizer: widgetbookOrganizerOrganizer),
+          child: OrganizerPlaceholderCover(
+            organizer: widgetbookOrganizerOrganizer,
+          ),
         ),
       ),
       WidgetbookPageStateCard(
@@ -117,7 +127,9 @@ Widget catchPosterImageStates(BuildContext context) {
         child: SizedBox(
           height: WidgetbookPreviewLayout.mediaPanelHeight,
           child: CatchPosterImage(
-            media: OrganizerPlaceholderCover(organizer: widgetbookOrganizerOrganizer),
+            media: OrganizerPlaceholderCover(
+              organizer: widgetbookOrganizerOrganizer,
+            ),
           ),
         ),
       ),
@@ -126,7 +138,9 @@ Widget catchPosterImageStates(BuildContext context) {
         child: SizedBox(
           height: WidgetbookPreviewLayout.mediaPanelHeight,
           child: CatchPosterImage(
-            media: OrganizerPlaceholderCover(organizer: widgetbookOrganizerOrganizer),
+            media: OrganizerPlaceholderCover(
+              organizer: widgetbookOrganizerOrganizer,
+            ),
             radius: 0,
           ),
         ),

@@ -172,14 +172,20 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
         try {
           await ref
               .read(hostOrganizerPostControllerProvider)
-              .createPost(clubId: organizer.id, requestId: requestId, text: text);
+              .createPost(
+                clubId: organizer.id,
+                requestId: requestId,
+                text: text,
+              );
         } finally {
           if (mounted && _sameScope(generation)) _setBusy(false);
         }
       },
     );
     if (!mounted || !_sameScope(generation) || !sent) return;
-    ref.invalidate(watchOrganizerPostRemainingWeeklyQuotaProvider(widget.organizer.id));
+    ref.invalidate(
+      watchOrganizerPostRemainingWeeklyQuotaProvider(widget.organizer.id),
+    );
     ref.invalidate(hostSendsProvider(widget.organizer.id));
     setState(() => _flow = const _SendHistory());
   }

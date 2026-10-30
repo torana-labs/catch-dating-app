@@ -292,7 +292,8 @@ sealed class HostOrganizerDetailScreenState {
       return const HostOrganizerDetailNotFound();
     }
 
-    if (viewModel.status == CatchAsyncStatus.loading && initialOrganizer != null) {
+    if (viewModel.status == CatchAsyncStatus.loading &&
+        initialOrganizer != null) {
       final isAuthenticated = currentUid != null;
       return HostOrganizerDetailContent(
         organizer: initialOrganizer,
@@ -314,7 +315,9 @@ sealed class HostOrganizerDetailScreenState {
     }
 
     return switch (viewModel.status) {
-      CatchAsyncStatus.error => HostOrganizerDetailError(error: viewModel.error!),
+      CatchAsyncStatus.error => HostOrganizerDetailError(
+        error: viewModel.error!,
+      ),
       CatchAsyncStatus.loading => const HostOrganizerDetailLoading(),
       CatchAsyncStatus.data => const HostOrganizerDetailNotFound(),
     };
@@ -398,7 +401,8 @@ List<OrganizerContactAction> _organizerContactActions(Organizer organizer) {
   return [
     if (organizer.instagramHandle != null)
       OrganizerContactAction.instagram(organizer.instagramHandle!),
-    if (organizer.phoneNumber != null) OrganizerContactAction.phone(organizer.phoneNumber!),
+    if (organizer.phoneNumber != null)
+      OrganizerContactAction.phone(organizer.phoneNumber!),
     if (organizer.email != null) OrganizerContactAction.email(organizer.email!),
   ];
 }

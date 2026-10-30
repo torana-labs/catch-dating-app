@@ -26,7 +26,10 @@ class PickedOrganizerPhoto extends PickedOrganizerImage {
 }
 
 class PickedOrganizerProfileImage extends PickedOrganizerImage {
-  const PickedOrganizerProfileImage({required super.image, required super.bytes});
+  const PickedOrganizerProfileImage({
+    required super.image,
+    required super.bytes,
+  });
 }
 
 sealed class OrganizerPhotoInput {
@@ -150,7 +153,8 @@ class CreateOrganizerController extends _$CreateOrganizerController {
     final uid = requireSignedInUid(ref, action: 'create an organizer');
 
     final organizersRepo = ref.read(organizersRepositoryProvider);
-    final selectedOrganizerPhotoInputs = organizerPhotoInputs ?? const <OrganizerPhotoInput>[];
+    final selectedOrganizerPhotoInputs =
+        organizerPhotoInputs ?? const <OrganizerPhotoInput>[];
     final reservedOrganizerId =
         selectedOrganizerPhotoInputs.isNotEmpty || profileImage != null
         ? organizersRepo.generateId()

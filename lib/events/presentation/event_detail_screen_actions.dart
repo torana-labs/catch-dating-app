@@ -58,7 +58,8 @@ mixin _EventDetailScreenActions on ConsumerState<EventDetailScreen> {
     required String hostUid,
     required String eventId,
   }) async {
-    final matchId = await OrganizerHostContactController.startConversationMutation
+    final matchId = await OrganizerHostContactController
+        .startConversationMutation
         .run(
           ref,
           (tx) => tx

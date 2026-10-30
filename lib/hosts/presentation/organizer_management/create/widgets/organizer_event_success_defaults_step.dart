@@ -35,7 +35,9 @@ class OrganizerEventSuccessDefaultsStep extends StatelessWidget {
           ),
         );
       },
-      title: context.l10n.hostsOrganizerEventSuccessDefaultsStepTitleLiveEventGuide,
+      title: context
+          .l10n
+          .hostsOrganizerEventSuccessDefaultsStepTitleLiveEventGuide,
       subtitle: context
           .l10n
           .hostsOrganizerEventSuccessDefaultsStepSubtitleNewEventsStartWithAReadyToRunPlanForThisActivity,

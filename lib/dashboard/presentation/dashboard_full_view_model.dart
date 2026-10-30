@@ -440,7 +440,8 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
         signedUpEventsAsync,
       );
 
-      if (followedOrganizerIdsState.isLoading || signedUpEventsState.isLoading) {
+      if (followedOrganizerIdsState.isLoading ||
+          signedUpEventsState.isLoading) {
         return DashboardHomeScreenState.loading();
       }
       if (followedOrganizerIdsState.hasError) {
@@ -463,7 +464,8 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
       }
 
       final signedUpEvents = signedUpEventsState.value ?? const <Event>[];
-      final followedOrganizerIds = [...?followedOrganizerIdsState.value]..sort();
+      final followedOrganizerIds = [...?followedOrganizerIdsState.value]
+        ..sort();
       final viewModel = ref.watch(
         dashboardFullViewModelProvider(
           signedUpEvents: signedUpEvents,

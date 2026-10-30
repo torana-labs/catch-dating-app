@@ -33,12 +33,19 @@ void _registerHostOperationsTeamFailuresTests() {
       tester,
       const HostOrganizersScreen(),
       overrides: [
-        ..._hostOrganizerOverrides(owned: [ownedOrganizer], hosted: [cohostOrganizer]),
+        ..._hostOrganizerOverrides(
+          owned: [ownedOrganizer],
+          hosted: [cohostOrganizer],
+        ),
         organizerDetailViewModelProvider(ownedOrganizer.id).overrideWithValue(
-          AsyncData<OrganizerDetailViewModel?>(_previewViewModel(ownedOrganizer)),
+          AsyncData<OrganizerDetailViewModel?>(
+            _previewViewModel(ownedOrganizer),
+          ),
         ),
         organizerDetailViewModelProvider(cohostOrganizer.id).overrideWithValue(
-          AsyncData<OrganizerDetailViewModel?>(_previewViewModel(cohostOrganizer)),
+          AsyncData<OrganizerDetailViewModel?>(
+            _previewViewModel(cohostOrganizer),
+          ),
         ),
         watchHostPaymentAccountsProvider(
           _hostUid,
@@ -491,7 +498,9 @@ void _registerHostOperationsTeamFailuresTests() {
         tester,
         const HostOrganizerTeamScreen(clubId: 'owned-club'),
         overrides: [
-          ..._hostOrganizerOverrides(owned: [_hostTeamOrganizerWithoutProfile()]),
+          ..._hostOrganizerOverrides(
+            owned: [_hostTeamOrganizerWithoutProfile()],
+          ),
           watchHostProfileProvider(
             _hostUid,
           ).overrideWithValue(const AsyncData<HostProfile?>(null)),
@@ -633,7 +642,10 @@ void _registerHostOperationsTeamFailuresTests() {
     await _pumpHostScreen(
       tester,
       const HostOrganizerTeamScreen(clubId: 'owned-club'),
-      overrides: _hostOrganizerOverrides(owned: [ownedOrganizer], hosted: [hostedOrganizer]),
+      overrides: _hostOrganizerOverrides(
+        owned: [ownedOrganizer],
+        hosted: [hostedOrganizer],
+      ),
     );
 
     final organizersSection = find.ancestor(

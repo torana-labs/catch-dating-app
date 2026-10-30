@@ -42,7 +42,9 @@ Widget organizerScheduleSectionStates(BuildContext context) {
         label: 'upcoming events',
         child: WidgetbookOrganizerSliverFrame(
           height: WidgetbookPreviewLayout.defaultPhonePreviewHeight,
-          slivers: [OrganizerScheduleSection(events: widgetbookOrganizerEvents)],
+          slivers: [
+            OrganizerScheduleSection(events: widgetbookOrganizerEvents),
+          ],
         ),
       ),
       WidgetbookPageStateCard(
@@ -57,7 +59,10 @@ Widget organizerScheduleSectionStates(BuildContext context) {
         child: WidgetbookOrganizerSliverFrame(
           height: WidgetbookPreviewLayout.feedbackViewportHeight,
           slivers: [
-            OrganizerScheduleSection(events: _sameDayScheduleEvents, isHost: true),
+            OrganizerScheduleSection(
+              events: _sameDayScheduleEvents,
+              isHost: true,
+            ),
           ],
         ),
       ),

@@ -488,7 +488,10 @@ void _registerExploreAsyncPhaseTests() {
     tester,
   ) async {
     final organizer = buildOrganizer(id: 'phase-club');
-    final event = event_test.buildEvent(id: 'phase-event', clubId: organizer.id);
+    final event = event_test.buildEvent(
+      id: 'phase-event',
+      clubId: organizer.id,
+    );
     final feed = ExploreFeedViewModel(
       items: [
         ExploreEventItem(
@@ -510,7 +513,10 @@ void _registerExploreAsyncPhaseTests() {
       final failed = state.hasStaleError || state.isTerminalError;
       await _pumpOrganizersSlivers(tester, [
         _exploreBodySliverGroup(
-          organizersViewModel: const ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+          organizersViewModel: const ExploreViewModel(
+            joinedOrganizers: [],
+            allOrganizers: [],
+          ),
           feedState: state,
           onRetryFeed: () => retries++,
           onLoadMore: () => loads++,
@@ -552,7 +558,10 @@ void _registerExploreAsyncPhaseTests() {
     }
     await _pumpOrganizersSlivers(tester, [
       _exploreBodySliverGroup(
-        organizersViewModel: const ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+        organizersViewModel: const ExploreViewModel(
+          joinedOrganizers: [],
+          allOrganizers: [],
+        ),
         feedAsync: AsyncData(
           ExploreFeedViewModel(
             items: feed.items,
@@ -589,7 +598,10 @@ void _registerExploreAsyncPhaseTests() {
       final failed = state.hasStaleError || state.isTerminalError;
       await _pumpOrganizersSlivers(tester, [
         _exploreBodySliverGroup(
-          organizersViewModel: const ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+          organizersViewModel: const ExploreViewModel(
+            joinedOrganizers: [],
+            allOrganizers: [],
+          ),
           recommendationsState: state,
           onRetryFeed: () => retries++,
         ),
@@ -626,7 +638,10 @@ void _registerExploreAsyncPhaseTests() {
     ]) {
       await _pumpOrganizersSlivers(tester, [
         _exploreBodySliverGroup(
-          organizersViewModel: const ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+          organizersViewModel: const ExploreViewModel(
+            joinedOrganizers: [],
+            allOrganizers: [],
+          ),
           recommendationsState: recommendations,
         ),
       ]);

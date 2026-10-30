@@ -51,7 +51,8 @@ class CreateOrganizerScreen extends ConsumerStatefulWidget {
   final PickedOrganizerProfileImage? initialProfileImage;
 
   @override
-  ConsumerState<CreateOrganizerScreen> createState() => _CreateOrganizerScreenState();
+  ConsumerState<CreateOrganizerScreen> createState() =>
+      _CreateOrganizerScreenState();
 }
 
 sealed class HostOrganizerCreateRouteIntent {
@@ -91,7 +92,8 @@ final class HostOrganizerCreateReorderOrganizerPhotoIntent
   final int toIndex;
 }
 
-final class HostOrganizerCreateCityChangedIntent extends HostOrganizerCreateRouteIntent {
+final class HostOrganizerCreateCityChangedIntent
+    extends HostOrganizerCreateRouteIntent {
   const HostOrganizerCreateCityChangedIntent(this.city);
 
   final CityOption? city;
@@ -386,14 +388,18 @@ class _CreateOrganizerScreenState extends ConsumerState<CreateOrganizerScreen> {
                               defaults: _hostDefaults,
                               currencyCode: screenState.fields.currencyCode,
                               onChanged: (defaults) => _handleRouteIntent(
-                                HostOrganizerCreateDefaultsChangedIntent(defaults),
+                                HostOrganizerCreateDefaultsChangedIntent(
+                                  defaults,
+                                ),
                               ),
                             ),
                             OrganizerEventSuccessDefaultsStep(
                               formKey: _eventSuccessFormKey,
                               defaults: _hostDefaults,
                               onChanged: (defaults) => _handleRouteIntent(
-                                HostOrganizerCreateDefaultsChangedIntent(defaults),
+                                HostOrganizerCreateDefaultsChangedIntent(
+                                  defaults,
+                                ),
                               ),
                             ),
                           ],

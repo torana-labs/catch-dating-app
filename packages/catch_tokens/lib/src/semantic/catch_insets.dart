@@ -286,12 +286,13 @@ abstract final class CatchInsets {
   );
 
   /// Bottom action skeleton inset used while the Host club editor is loading.
-  static const EdgeInsets hostOrganizerEditorLoadingAction = EdgeInsets.fromLTRB(
-    CatchSpacing.s3,
-    CatchSpacing.s2,
-    CatchSpacing.s3,
-    CatchSpacing.s3,
-  );
+  static const EdgeInsets hostOrganizerEditorLoadingAction =
+      EdgeInsets.fromLTRB(
+        CatchSpacing.s3,
+        CatchSpacing.s2,
+        CatchSpacing.s3,
+        CatchSpacing.s3,
+      );
 
   /// Loading body rhythm for the Host create-event route.
   static const EdgeInsets hostCreateEventLoadingBody = EdgeInsets.fromLTRB(

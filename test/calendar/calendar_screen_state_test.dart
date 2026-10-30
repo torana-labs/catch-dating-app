@@ -103,7 +103,9 @@ void main() {
       );
 
       final agenda = state.agendaSection(
-        organizerNames: CalendarOrganizerNameLookupState.failure(Exception('ignored')),
+        organizerNames: CalendarOrganizerNameLookupState.failure(
+          Exception('ignored'),
+        ),
       );
 
       expect(

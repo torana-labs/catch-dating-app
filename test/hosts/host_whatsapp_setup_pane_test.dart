@@ -27,7 +27,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          watchOrganizerProvider(organizerId).overrideWithValue(AsyncData(organizer)),
+          watchOrganizerProvider(
+            organizerId,
+          ).overrideWithValue(AsyncData(organizer)),
           hostMessagingSetupProvider(organizerId).overrideWithValue(
             AsyncData(_messagingSetup(organizerId, providerConfigured: false)),
           ),

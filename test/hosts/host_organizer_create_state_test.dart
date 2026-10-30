@@ -32,7 +32,10 @@ void main() {
     expect(state.isLoading, isTrue);
     expect(state.mutationError, 'Unable to save draft.');
     expect(state.footer.primaryEnabled, isFalse);
-    expect(state.footer.primaryIntent, HostOrganizerCreatePrimaryIntent.nextStep);
+    expect(
+      state.footer.primaryIntent,
+      HostOrganizerCreatePrimaryIntent.nextStep,
+    );
     expect(
       state.footer.previousIntent,
       HostOrganizerCreatePreviousIntent.previousStep,
@@ -40,33 +43,36 @@ void main() {
     expect(state.closeIntent, HostOrganizerCreateCloseIntent.close);
   });
 
-  test('HostOrganizerCreateState maps draft restore retry and disable state', () {
-    final error = StateError('Unable to reload draft.');
-    final retry = HostOrganizerCreateState.resolve(
-      currentStep: 0,
-      activeSteps: steps,
-      submitPending: false,
-      saveDraftPending: false,
-      draftLoadError: error,
-      mutationError: null,
-    );
-    final disabled = HostOrganizerCreateState.resolve(
-      currentStep: 0,
-      activeSteps: steps,
-      submitPending: false,
-      saveDraftPending: false,
-      draftLoadError: error,
-      draftRestoreEnabled: false,
-      mutationError: null,
-    );
+  test(
+    'HostOrganizerCreateState maps draft restore retry and disable state',
+    () {
+      final error = StateError('Unable to reload draft.');
+      final retry = HostOrganizerCreateState.resolve(
+        currentStep: 0,
+        activeSteps: steps,
+        submitPending: false,
+        saveDraftPending: false,
+        draftLoadError: error,
+        mutationError: null,
+      );
+      final disabled = HostOrganizerCreateState.resolve(
+        currentStep: 0,
+        activeSteps: steps,
+        submitPending: false,
+        saveDraftPending: false,
+        draftLoadError: error,
+        draftRestoreEnabled: false,
+        mutationError: null,
+      );
 
-    expect(retry.draftRestore.error, error);
-    expect(
-      retry.draftRestore.retryIntent,
-      HostOrganizerCreateDraftRestoreIntent.retry,
-    );
-    expect(disabled.draftRestore.hasError, isFalse);
-  });
+      expect(retry.draftRestore.error, error);
+      expect(
+        retry.draftRestore.retryIntent,
+        HostOrganizerCreateDraftRestoreIntent.retry,
+      );
+      expect(disabled.draftRestore.hasError, isFalse);
+    },
+  );
 
   test('HostOrganizerCreateState maps city and selected media', () {
     const pickedPreview = OrderedPhotoPreview(id: 'picked-1');
@@ -145,13 +151,18 @@ void main() {
       toIndex: 3,
     );
     final defaults = OrganizerHostDefaults(
-      eventPolicy: const OrganizerHostDefaults().eventPolicy.copyWith(minAge: 24),
+      eventPolicy: const OrganizerHostDefaults().eventPolicy.copyWith(
+        minAge: 24,
+      ),
     );
 
     expect((const HostOrganizerCreateRemoveOrganizerPhotoIntent(2)).index, 2);
     expect(reorderIntent.fromIndex, 1);
     expect(reorderIntent.toIndex, 3);
-    expect(HostOrganizerCreateDefaultsChangedIntent(defaults).defaults, defaults);
+    expect(
+      HostOrganizerCreateDefaultsChangedIntent(defaults).defaults,
+      defaults,
+    );
   });
 
   test('HostOrganizerCreateDraftRequest trims optional draft fields', () {

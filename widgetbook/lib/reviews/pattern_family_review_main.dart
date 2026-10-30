@@ -479,7 +479,10 @@ class _IdentitySwitcherFamily extends StatelessWidget {
       profileImageUrl:
           'packages/catch_dating_app/assets/fixtures/club_hero_portrait.jpg',
     );
-    final organizers = [logoOrganizer, ...HostOperationsFixtures.organizers.skip(1)];
+    final organizers = [
+      logoOrganizer,
+      ...HostOperationsFixtures.organizers.skip(1),
+    ];
     final longOrganizer = logoOrganizer.copyWith(
       name: 'Sea Face Social With A Deliberately Long Club Name',
     );

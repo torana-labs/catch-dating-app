@@ -42,7 +42,10 @@ abstract class OrganizerDetailViewModel with _$OrganizerDetailViewModel {
 /// they hydrate the detail screen when available without hiding newly-created
 /// events behind the route's placeholder body.
 @riverpod
-AsyncValue<OrganizerDetailViewModel?> organizerDetailViewModel(Ref ref, String clubId) {
+AsyncValue<OrganizerDetailViewModel?> organizerDetailViewModel(
+  Ref ref,
+  String clubId,
+) {
   final organizerAsync = ref.watch(watchOrganizerProvider(clubId));
   final eventsAsync = ref.watch(watchEventsForOrganizerProvider(clubId));
   final reviewsAsync = ref.watch(watchReviewsForOrganizerProvider(clubId));
@@ -114,7 +117,10 @@ AsyncValue<OrganizerDetailViewModel?> buildOrganizerDetailViewModel({
   }
 
   if (organizer.hasError) {
-    return AsyncError(organizer.error!, organizer.stackTrace ?? StackTrace.current);
+    return AsyncError(
+      organizer.error!,
+      organizer.stackTrace ?? StackTrace.current,
+    );
   }
   if (events.hasError) {
     return AsyncError(events.error!, events.stackTrace ?? StackTrace.current);
@@ -124,7 +130,8 @@ AsyncValue<OrganizerDetailViewModel?> buildOrganizerDetailViewModel({
   }
   final organizerValue = organizer.value;
   if (organizerValue == null) return const AsyncData(null);
-  final isOwnedHostRoute = uidValue != null && organizerValue.isHostedBy(uidValue);
+  final isOwnedHostRoute =
+      uidValue != null && organizerValue.isHostedBy(uidValue);
   if (appRole.isHost && !isOwnedHostRoute) {
     return const AsyncData(null);
   }
@@ -154,7 +161,8 @@ AsyncValue<OrganizerDetailViewModel?> buildOrganizerDetailViewModel({
       : const <Review>[];
   final userProfileValue = isAuthenticated ? userProfile.value : null;
   final membershipValue = membership.value;
-  final isActiveMember = membershipValue?.status == OrganizerMembershipStatus.active;
+  final isActiveMember =
+      membershipValue?.status == OrganizerMembershipStatus.active;
 
   return AsyncData(
     OrganizerDetailViewModel(

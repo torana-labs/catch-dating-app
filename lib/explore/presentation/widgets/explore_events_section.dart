@@ -103,10 +103,11 @@ List<Widget> buildExploreEventsSlivers(
     ) =>
       () {
         if (value == null) return [const ExploreEventsSkeleton()];
-        final hasDiscoverableOrganizerCandidates = rankExploreOrganizerIntermixCandidates(
-          candidateOrganizers,
-          joinedOrganizerIds: joinedOrganizerIds,
-        ).isNotEmpty;
+        final hasDiscoverableOrganizerCandidates =
+            rankExploreOrganizerIntermixCandidates(
+              candidateOrganizers,
+              joinedOrganizerIds: joinedOrganizerIds,
+            ).isNotEmpty;
         return value.isEmpty && !hasDiscoverableOrganizerCandidates
             ? [
                 ExploreFeedEmptyState(
@@ -276,14 +277,16 @@ class ExploreFeedSliverBody extends StatelessWidget {
                       item: item,
                       onExternalEventOpened: onExternalEventOpened,
                     ),
-                  ExploreMixedOrganizerSpotlightCard(:final organizer) => OrganizerCard(
-                    organizer: organizer,
-                    onOrganizerSelected: onOrganizerSelected,
-                  ),
-                  ExploreMixedOrganizerRowCard(:final organizer) => ExploreFeedOrganizerRow(
-                    organizer: organizer,
-                    onOrganizerSelected: onOrganizerSelected,
-                  ),
+                  ExploreMixedOrganizerSpotlightCard(:final organizer) =>
+                    OrganizerCard(
+                      organizer: organizer,
+                      onOrganizerSelected: onOrganizerSelected,
+                    ),
+                  ExploreMixedOrganizerRowCard(:final organizer) =>
+                    ExploreFeedOrganizerRow(
+                      organizer: organizer,
+                      onOrganizerSelected: onOrganizerSelected,
+                    ),
                   ExploreMixedPersonCard(:final suggestion, :final eventItem) =>
                     CrossPathsExploreCard(
                       suggestion: suggestion,

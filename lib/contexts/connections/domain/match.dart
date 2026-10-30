@@ -54,7 +54,8 @@ abstract class Match with _$Match {
   bool get isCrossPathsEventPlan =>
       conversationType == MatchConversationType.crossPathsEventPlan;
 
-  bool get isScopedConversation => isOrganizerHostInquiry || isCrossPathsEventPlan;
+  bool get isScopedConversation =>
+      isOrganizerHostInquiry || isCrossPathsEventPlan;
 
   bool hasUnreadIncomingFor(String uid) =>
       !isBlocked &&

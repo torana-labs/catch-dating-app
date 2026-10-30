@@ -79,7 +79,9 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWithValue(const AsyncData('owner')),
-            hostOperableOrganizersProvider('owner').overrideWithValue(membership),
+            hostOperableOrganizersProvider(
+              'owner',
+            ).overrideWithValue(membership),
             hostCrmSummaryProvider(organizer.id).overrideWith((ref) async {
               audienceReads++;
               return _summary(organizer.id, count: 1);

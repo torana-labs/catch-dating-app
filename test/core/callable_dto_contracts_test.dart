@@ -492,7 +492,8 @@ void main() {
         throwsStateError,
       );
       expect(
-        () => StartOrganizerHostConversationCallableResponse.fromCallableData(42),
+        () =>
+            StartOrganizerHostConversationCallableResponse.fromCallableData(42),
         throwsStateError,
       );
       expect(

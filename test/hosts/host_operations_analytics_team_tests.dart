@@ -4,7 +4,10 @@ void _registerHostOperationsAnalyticsTeamTests() {
   testWidgets(
     'Organizer audience retry preserves unknown versus measured zero',
     (tester) async {
-      final organizer = buildOrganizer(id: 'audience-layout', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'audience-layout',
+        ownerUserId: _hostUid,
+      );
       var attempts = 0;
       await _pumpHostScreen(
         tester,
@@ -233,7 +236,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
     );
     expect(
       tester
-          .widget<CatchChoiceInput<HostOrganizerInsightsRangePreset>>(rangeOptions)
+          .widget<CatchChoiceInput<HostOrganizerInsightsRangePreset>>(
+            rangeOptions,
+          )
           .selected,
       {HostOrganizerInsightsRangePreset.thirtyDays},
     );
@@ -246,7 +251,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await pumpFeatureUi(tester);
     expect(
       tester
-          .widget<CatchChoiceInput<HostOrganizerInsightsRangePreset>>(rangeOptions)
+          .widget<CatchChoiceInput<HostOrganizerInsightsRangePreset>>(
+            rangeOptions,
+          )
           .selected,
       {HostOrganizerInsightsRangePreset.ninetyDays},
     );
@@ -294,7 +301,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await pumpFeatureUi(tester);
     expect(
       tester
-          .widget<CatchChoiceInput<HostOrganizerInsightsRangePreset>>(rangeOptions)
+          .widget<CatchChoiceInput<HostOrganizerInsightsRangePreset>>(
+            rangeOptions,
+          )
           .selected,
       {HostOrganizerInsightsRangePreset.ninetyDays},
     );
@@ -386,7 +395,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
     );
     final organizer = buildOrganizer(id: 'media-pick', ownerUserId: _hostUid);
 
-    await _pumpHostOrganizerEditTab(tester, organizer: organizer, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
     final add = find.byKey(OrderedPhotoPickerKeys.addAction('Add photos'));
     await Scrollable.ensureVisible(tester.element(add));
     await tester.tap(add);
@@ -407,7 +420,10 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
     expect(actions.mediaWrites, hasLength(1));
     expect(actions.mediaWrites.single, hasLength(1));
-    expect(actions.mediaWrites.single.single, isA<HostNewOrganizerPhotoInput>());
+    expect(
+      actions.mediaWrites.single.single,
+      isA<HostNewOrganizerPhotoInput>(),
+    );
   });
 
   testWidgets(
@@ -424,7 +440,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
         ],
       );
 
-      await _pumpHostOrganizerEditTab(tester, organizer: organizer, actions: actions);
+      await _pumpHostOrganizerEditTab(
+        tester,
+        organizer: organizer,
+        actions: actions,
+      );
 
       expect(find.byKey(HostOrganizerMediaKeys.summaryStrip), findsOneWidget);
       expect(find.byType(CreateOrganizerProfileImagePicker), findsNothing);
@@ -435,7 +455,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
       expect(find.text('3 photos'), findsOneWidget);
       expect(find.text('Save media'), findsNothing);
 
-      final logoSize = tester.getSize(find.byKey(HostOrganizerMediaKeys.logoTile));
+      final logoSize = tester.getSize(
+        find.byKey(HostOrganizerMediaKeys.logoTile),
+      );
       final coverSize = tester.getSize(
         find.byKey(const ValueKey('host-media-summary-photo-existing-one')),
       );
@@ -475,9 +497,16 @@ void _registerHostOperationsAnalyticsTeamTests() {
         ),
       ],
     );
-    final organizer = buildOrganizer(id: 'media-discard', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'media-discard',
+      ownerUserId: _hostUid,
+    );
 
-    await _pumpHostOrganizerEditTab(tester, organizer: organizer, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
     final add = find.byKey(OrderedPhotoPickerKeys.addAction('Add photos'));
     await Scrollable.ensureVisible(tester.element(add));
     await tester.tap(add);
@@ -503,7 +532,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
     final actions = _RecordingHostOrganizerEditActions();
     final organizer = buildOrganizer(id: 'media-empty', ownerUserId: _hostUid);
 
-    await _pumpHostOrganizerEditTab(tester, organizer: organizer, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
 
     final summary = find.byKey(HostOrganizerMediaKeys.summaryStrip);
     final add = find.byKey(OrderedPhotoPickerKeys.addAction('Add photos'));
@@ -530,7 +563,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
         profileImageUrl: 'https://example.test/logo.png',
       );
 
-      await _pumpHostOrganizerEditTab(tester, organizer: organizer, actions: actions);
+      await _pumpHostOrganizerEditTab(
+        tester,
+        organizer: organizer,
+        actions: actions,
+      );
       await tester.tap(find.byKey(OrderedPhotoPickerKeys.manageAction));
       await pumpFeatureUi(tester);
       await tester.tap(find.text('Remove'));
@@ -560,7 +597,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
     );
     final organizer = buildOrganizer(id: 'media-retry', ownerUserId: _hostUid);
 
-    await _pumpHostOrganizerEditTab(tester, organizer: organizer, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
     final add = find.byKey(OrderedPhotoPickerKeys.addAction('Add photos'));
     await Scrollable.ensureVisible(tester.element(add));
     await tester.tap(add);
@@ -588,14 +629,24 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
     expect(actions.mediaUpdateCalls, 2);
     expect(actions.mediaWrites, hasLength(1));
-    expect(actions.mediaWrites.single.single, isA<HostNewOrganizerPhotoInput>());
+    expect(
+      actions.mediaWrites.single.single,
+      isA<HostNewOrganizerPhotoInput>(),
+    );
   });
 
   testWidgets('Organizer owners can edit the organizer type', (tester) async {
     final actions = _RecordingHostOrganizerEditActions();
-    final organizer = buildOrganizer(id: 'typed-organizer', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'typed-organizer',
+      ownerUserId: _hostUid,
+    );
 
-    await _pumpHostOrganizerEditTab(tester, organizer: organizer, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
     final organizerTypeEditor = find.byKey(
       const ValueKey('catch-form-single-choice-organizerType'),
     );
@@ -639,7 +690,8 @@ void _registerHostOperationsAnalyticsTeamTests() {
     );
 
     for (final entry in {
-      'host-club-settings-event-defaults': Routes.hostOrganizerEventDefaultsScreen,
+      'host-club-settings-event-defaults':
+          Routes.hostOrganizerEventDefaultsScreen,
       'host-club-settings-live-guide': Routes.hostOrganizerLiveGuideScreen,
       'host-club-settings-payments': Routes.hostOrganizerPaymentsScreen,
       'host-club-settings-host-team': Routes.hostOrganizerTeamScreen,
@@ -725,7 +777,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
       clubPhotos: [_uploadedOrganizerPhoto('one', position: 0)],
     );
 
-    await _pumpHostOrganizerEditTab(tester, organizer: organizer, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
     final manage = find.byKey(OrderedPhotoPickerKeys.manageAction);
     await Scrollable.ensureVisible(tester.element(manage));
     await tester.tap(manage);
@@ -758,7 +814,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
       ],
     );
 
-    await _pumpHostOrganizerEditTab(tester, organizer: organizer, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
     final manage = find.byKey(OrderedPhotoPickerKeys.manageAction);
     await Scrollable.ensureVisible(tester.element(manage));
     await tester.tap(manage);

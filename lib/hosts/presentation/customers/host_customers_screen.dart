@@ -134,7 +134,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     final uidAsync = ref.watch(uidProvider);
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     final uid = uidState.value;
-    final organizersAsync = uid != null && !uidState.hasError && !uidState.isLoading
+    final organizersAsync =
+        uid != null && !uidState.hasError && !uidState.isLoading
         ? ref.watch(hostOperableOrganizersProvider(uid))
         : const AsyncLoading<List<Organizer>>();
     final organizersState = catchAsyncStateFromAsyncValue(organizersAsync);
@@ -181,7 +182,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                 CatchLocalizedSliverErrorState(
                   organizersState.error!,
                   context: AppErrorContext.organizer,
-                  onRetry: () => ref.invalidate(hostOperableOrganizersProvider(uid)),
+                  onRetry: () =>
+                      ref.invalidate(hostOperableOrganizersProvider(uid)),
                 )
               else
                 const CatchStateViewport.sliverLoading(),
@@ -347,7 +349,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                   unawaited(_reviewDuplicates(selectedOrganizer.id));
                 }
                 if (action == HostAudienceMenuAction.export) {
-                  unawaited(_exportCustomers(selectedOrganizer, effectiveFilters));
+                  unawaited(
+                    _exportCustomers(selectedOrganizer, effectiveFilters),
+                  );
                 }
               },
               search: CatchTopBarSearch(
@@ -391,7 +395,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
           actions: HostAudienceTabRail(
             selected: _view,
             selectionPosition: _view.index.toDouble(),
-            onChanged: (view) => _selectAudienceView(view, selectedOrganizer.id),
+            onChanged: (view) =>
+                _selectAudienceView(view, selectedOrganizer.id),
           ),
           body: CatchRootScreenBody.single(
             page: peopleView
@@ -409,8 +414,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                 HostCustomersSummarySection(
                                   summary: summary,
                                   newCustomerCount: newCustomerCount,
-                                  onRetry: () =>
-                                      _refreshPeopleCounts(selectedOrganizer.id),
+                                  onRetry: () => _refreshPeopleCounts(
+                                    selectedOrganizer.id,
+                                  ),
                                   selectedFilter:
                                       _manualTags.isEmpty &&
                                           effectiveFilters.length <= 1 &&
@@ -535,8 +541,10 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                       organizerId: selectedOrganizer.id,
                       query: _audienceSearch,
 
-                      onOpen: (audience) =>
-                          _openAudienceEditor(selectedOrganizer, audience: audience),
+                      onOpen: (audience) => _openAudienceEditor(
+                        selectedOrganizer,
+                        audience: audience,
+                      ),
                     ),
                   ),
           ),
@@ -746,12 +754,14 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     }
   }
 
-  void _openCustomer(Organizer organizer, HostCustomerDirectoryContact contact) =>
-      _openCustomerById(
-        organizer,
-        contact.contactId,
-        displayName: contact.displayName,
-      );
+  void _openCustomer(
+    Organizer organizer,
+    HostCustomerDirectoryContact contact,
+  ) => _openCustomerById(
+    organizer,
+    contact.contactId,
+    displayName: contact.displayName,
+  );
 
   void _openCustomerById(
     Organizer organizer,

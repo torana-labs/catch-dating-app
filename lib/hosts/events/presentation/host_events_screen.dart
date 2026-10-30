@@ -236,7 +236,8 @@ class _HostEventsRouteScaffoldState
         organizer: selectedOrganizer,
         initialProgramRow:
             widget.initialProgramAnchor?.accountId == widget.currentUid &&
-                widget.initialProgramAnchor?.organizerId == selectedOrganizer.id &&
+                widget.initialProgramAnchor?.organizerId ==
+                    selectedOrganizer.id &&
                 widget.initialProgramAnchor?.row.programId ==
                     widget.initialProgramId
             ? widget.initialProgramAnchor!.row
@@ -257,7 +258,8 @@ class _HostEventsRouteScaffoldState
       children: [
         CatchSliverEmptyState(
           icon: CatchIcons.people,
-          title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstOrganizer,
+          title:
+              context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstOrganizer,
           message: context.l10n.hostsHostEventsScaffoldBodyCreateAOrganizerTo,
           actions: [
             CatchButton(

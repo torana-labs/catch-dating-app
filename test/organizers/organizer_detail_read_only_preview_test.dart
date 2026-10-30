@@ -20,7 +20,11 @@ void main() {
   ) async {
     final organizer = buildOrganizer();
 
-    await _pumpPreview(tester, organizer: organizer, viewModel: const AsyncLoading());
+    await _pumpPreview(
+      tester,
+      organizer: organizer,
+      viewModel: const AsyncLoading(),
+    );
 
     expect(
       find.byKey(const ValueKey('club-detail-hero-module')),
@@ -54,7 +58,11 @@ void main() {
   ) async {
     final organizer = buildOrganizer();
 
-    await _pumpPreview(tester, organizer: organizer, viewModel: const AsyncData(null));
+    await _pumpPreview(
+      tester,
+      organizer: organizer,
+      viewModel: const AsyncData(null),
+    );
 
     expect(find.text('Organizer not found'), findsOneWidget);
     expect(find.byKey(const ValueKey('club-detail-hero-module')), findsNothing);
@@ -63,7 +71,9 @@ void main() {
   testWidgets('loaded preview renders canonical content behind one boundary', (
     tester,
   ) async {
-    final organizer = buildOrganizer(description: 'A consumer-facing club description.');
+    final organizer = buildOrganizer(
+      description: 'A consumer-facing club description.',
+    );
     final viewModel = OrganizerDetailViewModel(
       organizer: organizer,
       isHost: true,
@@ -75,7 +85,11 @@ void main() {
       isAuthenticated: true,
     );
 
-    await _pumpPreview(tester, organizer: organizer, viewModel: AsyncData(viewModel));
+    await _pumpPreview(
+      tester,
+      organizer: organizer,
+      viewModel: AsyncData(viewModel),
+    );
 
     expect(
       find.byKey(const ValueKey('club-detail-hero-module')),
@@ -135,7 +149,11 @@ void main() {
         isAuthenticated: false,
       );
 
-      await _pumpPreview(tester, organizer: organizer, viewModel: AsyncData(viewModel));
+      await _pumpPreview(
+        tester,
+        organizer: organizer,
+        viewModel: AsyncData(viewModel),
+      );
 
       expect(find.text('SOURCE BACKED'), findsOneWidget);
       expect(find.text('Your hosts'), findsNothing);
@@ -165,7 +183,11 @@ void main() {
       isAuthenticated: false,
     );
 
-    await _pumpPreview(tester, organizer: organizer, viewModel: AsyncData(viewModel));
+    await _pumpPreview(
+      tester,
+      organizer: organizer,
+      viewModel: AsyncData(viewModel),
+    );
 
     expect(find.text('OWNER VERIFIED'), findsOneWidget);
   });
@@ -179,7 +201,9 @@ Future<void> _pumpPreview(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        organizerDetailViewModelProvider(organizer.id).overrideWithValue(viewModel),
+        organizerDetailViewModelProvider(
+          organizer.id,
+        ).overrideWithValue(viewModel),
       ],
       child: MaterialApp(
         theme: AppTheme.light,

@@ -45,9 +45,13 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
     if (organizersState.isLoading) return const ChatsListSkeleton();
     final organizer = selectedOrganizer;
     if (organizer == null) return const _HostNoOrganizerSliver();
-    final eventsAsync = ref.watch(watchEventsForOrganizerProvider(organizer.id));
+    final eventsAsync = ref.watch(
+      watchEventsForOrganizerProvider(organizer.id),
+    );
     final inboxAsync = ref.watch(hostInboxCatchViewModelProvider);
-    final whatsappAsync = ref.watch(hostInboxWhatsappPagesProvider(organizer.id));
+    final whatsappAsync = ref.watch(
+      hostInboxWhatsappPagesProvider(organizer.id),
+    );
     final programsAsync = ref.watch(organizerProgramListProvider(organizer.id));
     final eventsState = catchAsyncStateFromAsyncValue(eventsAsync);
     final inboxState = catchAsyncStateFromAsyncValue(inboxAsync);
@@ -61,7 +65,10 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
     final programPagesAsync = requestedProgramId == null
         ? null
         : ref.watch(
-            hostInboxProgramAudiencePagesProvider(organizer.id, requestedProgramId),
+            hostInboxProgramAudiencePagesProvider(
+              organizer.id,
+              requestedProgramId,
+            ),
           );
     final programPagesState = programPagesAsync == null
         ? null
@@ -225,7 +232,9 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
                     CatchButton(
                       label: context.l10n.sharedActionTryAgain,
                       onPressed: () {
-                        ref.invalidate(hostWhatsappThreadsProvider(organizer.id));
+                        ref.invalidate(
+                          hostWhatsappThreadsProvider(organizer.id),
+                        );
                         onRetry(organizer.id);
                       },
                     ),
@@ -286,7 +295,9 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
                     ? null
                     : () => ref
                           .read(
-                            hostInboxWhatsappPagesProvider(organizer.id).notifier,
+                            hostInboxWhatsappPagesProvider(
+                              organizer.id,
+                            ).notifier,
                           )
                           .loadMore(),
               ),

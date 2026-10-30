@@ -221,7 +221,9 @@ Widget calendarLoadingScreenStates(BuildContext context) {
 Widget calendarAgendaSliverSectionStates(BuildContext context) {
   final readyState = CalendarAgendaSectionState.from(
     summary: _calendarSummary,
-    organizerNames: const CalendarOrganizerNameLookupState.ready(_calendarOrganizerNames),
+    organizerNames: const CalendarOrganizerNameLookupState.ready(
+      _calendarOrganizerNames,
+    ),
   );
   final emptyState = CalendarAgendaSectionState.from(
     summary: CalendarEventSummary.from(
@@ -229,7 +231,9 @@ Widget calendarAgendaSliverSectionStates(BuildContext context) {
       savedEvents: const <Event>[],
       now: widgetbookUtilityCalendarNow,
     ),
-    organizerNames: const CalendarOrganizerNameLookupState.ready(_calendarOrganizerNames),
+    organizerNames: const CalendarOrganizerNameLookupState.ready(
+      _calendarOrganizerNames,
+    ),
   );
 
   Key dayKey(DateTime date) {

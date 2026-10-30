@@ -22,20 +22,29 @@ void main() {
         OrganizerHeroVariant.poster,
       );
       expect(
-        organizerHeroVariantFor(buildOrganizer(imageUrl: 'https://example.com/old.jpg')),
+        organizerHeroVariantFor(
+          buildOrganizer(imageUrl: 'https://example.com/old.jpg'),
+        ),
         OrganizerHeroVariant.poster,
       );
       expect(
         organizerHeroVariantFor(buildOrganizer(logoPhoto: logoPhoto)),
         OrganizerHeroVariant.masthead,
       );
-      expect(organizerHeroVariantFor(buildOrganizer()), OrganizerHeroVariant.poster);
+      expect(
+        organizerHeroVariantFor(buildOrganizer()),
+        OrganizerHeroVariant.poster,
+      );
     });
 
     testWidgets('photo clubs render the poster hero shell', (tester) async {
       final organizer = buildOrganizer(clubPhotos: [_photo('cover', 0)]);
 
-      await _pumpHeroModule(tester, organizer, organizerHeroVariantFor(organizer));
+      await _pumpHeroModule(
+        tester,
+        organizer,
+        organizerHeroVariantFor(organizer),
+      );
 
       expect(find.byType(CatchPoster), findsOneWidget);
       expect(find.byType(OrganizerCover), findsOneWidget);
@@ -53,7 +62,11 @@ void main() {
     ) async {
       final organizer = buildOrganizer();
 
-      await _pumpHeroModule(tester, organizer, organizerHeroVariantFor(organizer));
+      await _pumpHeroModule(
+        tester,
+        organizer,
+        organizerHeroVariantFor(organizer),
+      );
 
       expect(find.byType(CatchPoster), findsOneWidget);
       expect(find.byType(OrganizerPlaceholderCover), findsOneWidget);
@@ -68,7 +81,11 @@ void main() {
     ) async {
       final organizer = buildOrganizer(logoPhoto: _photo('logo', 0));
 
-      await _pumpHeroModule(tester, organizer, organizerHeroVariantFor(organizer));
+      await _pumpHeroModule(
+        tester,
+        organizer,
+        organizerHeroVariantFor(organizer),
+      );
 
       expect(
         find.byKey(const ValueKey('club-detail-hero-masthead')),
@@ -127,7 +144,9 @@ Future<void> _pumpHeroModule(
   const mediaHeight = CatchLayout.organizerDetailHeroNoCoverPhoneHeight;
   const captionExtent = CatchLayout.organizerDetailHeroCaptionExtent;
   const moduleHeight =
-      mediaHeight + captionExtent + (CatchLayout.organizerInteractionMediaInset * 2);
+      mediaHeight +
+      captionExtent +
+      (CatchLayout.organizerInteractionMediaInset * 2);
 
   await tester.pumpWidget(
     MaterialApp(

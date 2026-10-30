@@ -49,10 +49,11 @@ class ExploreOrganizerCardState {
     final hasHostIdentity = organizer.displayHostProfiles.isNotEmpty;
     final hostEyebrow = l10n.exploreExploreScreenStateLabelHostedBy;
     final hostName = organizer.displayHostName;
-    final ratingReviewLabel = l10n.exploreExploreScreenStateOrganizerRatingReviews(
-      rating: organizer.rating.toStringAsFixed(1),
-      reviewCount: organizer.reviewCount,
-    );
+    final ratingReviewLabel = l10n
+        .exploreExploreScreenStateOrganizerRatingReviews(
+          rating: organizer.rating.toStringAsFixed(1),
+          reviewCount: organizer.reviewCount,
+        );
     final trustLabel = organizerTrustLabel(
       organizer.organizerAuthority.trustState,
       l10n,
@@ -102,10 +103,11 @@ String _organizerSupportingLabel(Organizer organizer, AppLocalizations l10n) {
   }
   final area = organizer.area.trim();
   if (area.isNotEmpty) {
-    return l10n.exploreExploreScreenStateVisiblecopyOrganizermembercountlabelArea(
-      organizerMemberCountLabel: organizerMemberCountLabel(organizer),
-      area: area,
-    );
+    return l10n
+        .exploreExploreScreenStateVisiblecopyOrganizermembercountlabelArea(
+          organizerMemberCountLabel: organizerMemberCountLabel(organizer),
+          area: area,
+        );
   }
   return organizerMemberCountLabel(organizer);
 }

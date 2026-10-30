@@ -33,16 +33,10 @@ OrganizerHeroVariant organizerHeroVariantFor(Organizer organizer) {
   return OrganizerHeroVariant.poster;
 }
 
-final EdgeInsets _organizerHeroLeadingPadding = CatchInsets.pageHorizontal.copyWith(
-  top: CatchSpacing.micro10,
-  bottom: CatchSpacing.micro6,
-  right: 0,
-);
-final EdgeInsets _organizerHeroActionPadding = CatchInsets.pageHorizontal.copyWith(
-  top: CatchSpacing.micro10,
-  bottom: CatchSpacing.micro6,
-  left: 0,
-);
+final EdgeInsets _organizerHeroLeadingPadding = CatchInsets.pageHorizontal
+    .copyWith(top: CatchSpacing.micro10, bottom: CatchSpacing.micro6, right: 0);
+final EdgeInsets _organizerHeroActionPadding = CatchInsets.pageHorizontal
+    .copyWith(top: CatchSpacing.micro10, bottom: CatchSpacing.micro6, left: 0);
 
 class OrganizerHeroTopBar extends StatelessWidget {
   const OrganizerHeroTopBar({
@@ -70,7 +64,8 @@ class OrganizerHeroTopBar extends StatelessWidget {
         final variant = organizerHeroVariantFor(organizer);
         final hasCover = organizer.primaryOrganizerPhotoUrl != null;
         final mediaHeight = _heroMediaHeightFor(width, hasCover: hasCover);
-        final resolvedLocationLabel = locationLabel ?? _organizerLocationLabel(organizer);
+        final resolvedLocationLabel =
+            locationLabel ?? _organizerLocationLabel(organizer);
         final kickerLabel = _organizerHeroKicker(organizer);
         final captionExtent = _heroCaptionExtentFor(
           context,
@@ -115,7 +110,9 @@ class OrganizerHeroTopBar extends StatelessWidget {
           title: CatchCollapsedHeaderTitle(
             title: organizer.name,
             textKey: ValueKey(
-              context.l10n.organizersOrganizerHeroAppBarTitleOrganizerDetailCollapsedTitle,
+              context
+                  .l10n
+                  .organizersOrganizerHeroAppBarTitleOrganizerDetailCollapsedTitle,
             ),
             style: CatchTextStyles.displayXs(context, color: t.ink),
           ),
@@ -133,7 +130,9 @@ class OrganizerHeroTopBar extends StatelessWidget {
               padding: _organizerHeroActionPadding,
               child: Builder(
                 builder: (buttonContext) => CatchIconAction(
-                  tooltip: context.l10n.organizersOrganizerHeroAppBarTooltipShareOrganizer,
+                  tooltip: context
+                      .l10n
+                      .organizersOrganizerHeroAppBarTooltipShareOrganizer,
                   variant: CatchIconActionVariant.float,
                   onPressed: () => unawaited(
                     onShareOrganizer != null
@@ -183,7 +182,8 @@ class OrganizerHeroTopBar extends StatelessWidget {
 
 double _heroMediaHeightFor(double width, {required bool hasCover}) {
   final mediaWidth = width - (organizerInteractionMediaInset * 2);
-  final aspectHeight = mediaWidth * CatchLayout.organizerDetailHeroCoverHeightRatio;
+  final aspectHeight =
+      mediaWidth * CatchLayout.organizerDetailHeroCoverHeightRatio;
   if (!hasCover) {
     return width > CatchLayout.maxContentWidth
         ? CatchLayout.organizerDetailHeroNoCoverWideHeight
@@ -353,13 +353,17 @@ class OrganizerHeroHeader extends StatelessWidget {
             CatchText(
               organizer.name,
               key: ValueKey(
-                context.l10n.organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle,
+                context
+                    .l10n
+                    .organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle,
               ),
               variant: CatchTextVariant.displayS,
               color: t.ink,
               maxLines: 2,
             ),
-            const SizedBox(height: CatchLayout.organizerDetailHeroTitleLocationGap),
+            const SizedBox(
+              height: CatchLayout.organizerDetailHeroTitleLocationGap,
+            ),
             Row(
               children: [
                 Icon(
@@ -452,7 +456,9 @@ class OrganizerHeroHeader extends StatelessWidget {
               CatchText(
                 organizer.name,
                 key: ValueKey(
-                  context.l10n.organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle,
+                  context
+                      .l10n
+                      .organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle,
                 ),
                 variant: CatchTextVariant.displayS,
                 color: t.ink,
@@ -488,7 +494,8 @@ class OrganizerHeroHeader extends StatelessWidget {
   }
 }
 
-String? _organizerHeroLogoUrl(Organizer organizer) => _trimmedOrNull(organizer.logoPhotoUrl);
+String? _organizerHeroLogoUrl(Organizer organizer) =>
+    _trimmedOrNull(organizer.logoPhotoUrl);
 
 String? _trimmedOrNull(String? value) {
   final trimmed = value?.trim();
@@ -566,5 +573,9 @@ Future<void> shareOrganizer(
   Organizer organizer,
   ExternalShareController share,
 ) async {
-  await showOrganizerShareCardSheet(context, organizer: organizer, share: share);
+  await showOrganizerShareCardSheet(
+    context,
+    organizer: organizer,
+    share: share,
+  );
 }

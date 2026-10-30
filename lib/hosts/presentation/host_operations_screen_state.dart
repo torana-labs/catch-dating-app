@@ -41,10 +41,13 @@ class HostOrganizersScreenState {
 
   bool get hasOrganizers => organizers.isNotEmpty;
   bool get showOrganizerPicker => organizers.length > 1;
-  Organizer? get selectedOrganizer => hasOrganizers ? organizers[selectedOrganizerIndex] : null;
+  Organizer? get selectedOrganizer =>
+      hasOrganizers ? organizers[selectedOrganizerIndex] : null;
   String title(AppLocalizations l10n) =>
-      selectedOrganizer?.name ?? l10n.hostsHostOperationsScreenStateTitleOrganizers;
-  bool get selectedOrganizerIsOwner => selectedOrganizer?.isOwnedBy(currentUid) ?? false;
+      selectedOrganizer?.name ??
+      l10n.hostsHostOperationsScreenStateTitleOrganizers;
+  bool get selectedOrganizerIsOwner =>
+      selectedOrganizer?.isOwnedBy(currentUid) ?? false;
 
   HostOrganizersScreenState selectOrganizerIndex(int index) {
     return HostOrganizersScreenState.resolve(
@@ -72,11 +75,15 @@ class HostOrganizersScreenState {
     if (organizers.isEmpty) return 0;
     final selectedId = selectedOrganizerId;
     if (selectedId != null) {
-      final index = organizers.indexWhere((organizer) => organizer.id == selectedId);
+      final index = organizers.indexWhere(
+        (organizer) => organizer.id == selectedId,
+      );
       if (index != -1) return index;
     }
     if (selectedOrganizerIndex < 0) return 0;
-    if (selectedOrganizerIndex >= organizers.length) return organizers.length - 1;
+    if (selectedOrganizerIndex >= organizers.length) {
+      return organizers.length - 1;
+    }
     return selectedOrganizerIndex;
   }
 }
@@ -116,7 +123,9 @@ class HostOrganizerInsightsState {
     return _copyWith(clubId: clubId);
   }
 
-  HostOrganizerInsightsState selectRange(HostOrganizerInsightsRangePreset rangePreset) {
+  HostOrganizerInsightsState selectRange(
+    HostOrganizerInsightsRangePreset rangePreset,
+  ) {
     return _copyWith(rangePreset: rangePreset);
   }
 

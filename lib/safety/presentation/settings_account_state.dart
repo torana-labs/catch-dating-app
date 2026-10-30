@@ -125,7 +125,10 @@ final class SettingsPreferenceValues {
         SettingsPreference.eventStatusUpdates,
         eventStatusUpdates,
       ),
-      organizerUpdates: selected(SettingsPreference.organizerUpdates, organizerUpdates),
+      organizerUpdates: selected(
+        SettingsPreference.organizerUpdates,
+        organizerUpdates,
+      ),
       weeklyDigest: selected(SettingsPreference.weeklyDigest, weeklyDigest),
     );
   }

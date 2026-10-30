@@ -36,26 +36,33 @@ class OrganizerDetailReadOnlyPreview extends ConsumerWidget {
             uid: currentUid,
             isAuthenticated: currentUid != null,
           ),
-          presentationMode: OrganizerDetailPresentationMode.embeddedReadOnlyPreview,
+          presentationMode:
+              OrganizerDetailPresentationMode.embeddedReadOnlyPreview,
         ),
       ),
       error: (error, _) => CatchLocalizedSliverErrorState(
         error,
         context: AppErrorContext.organizer,
         fillRemaining: false,
-        onRetry: () =>
-            ref.invalidate(organizerDetailViewModelProvider(initialOrganizer.id)),
+        onRetry: () => ref.invalidate(
+          organizerDetailViewModelProvider(initialOrganizer.id),
+        ),
       ),
       data: (viewModel) {
         if (viewModel == null) {
           return CatchSliverErrorState(
             retryLabel: context.l10n.sharedActionTryAgain,
-            title: context.l10n.organizersOrganizerDetailScreenTitleOrganizerNotFound,
-            message: context.l10n.organizersOrganizerDetailScreenMessageThisOrganizerIsNo,
+            title: context
+                .l10n
+                .organizersOrganizerDetailScreenTitleOrganizerNotFound,
+            message: context
+                .l10n
+                .organizersOrganizerDetailScreenMessageThisOrganizerIsNo,
             icon: CatchIcons.people,
             fillRemaining: false,
-            onRetry: () =>
-                ref.invalidate(organizerDetailViewModelProvider(initialOrganizer.id)),
+            onRetry: () => ref.invalidate(
+              organizerDetailViewModelProvider(initialOrganizer.id),
+            ),
           );
         }
 

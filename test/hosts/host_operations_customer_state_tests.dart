@@ -4,7 +4,10 @@ void _registerHostOperationsCustomerStateTests() {
   testWidgets(
     'customer directory keeps initial loading distinct from failure',
     (tester) async {
-      final organizer = buildOrganizer(id: 'loading-club', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'loading-club',
+        ownerUserId: _hostUid,
+      );
       await _pumpHostScreen(
         tester,
         const HostCustomersScreen(),

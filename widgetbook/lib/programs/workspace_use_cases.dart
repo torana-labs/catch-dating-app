@@ -337,7 +337,9 @@ const _importResult = ProgramManifestImportResult(
 
 List<Override> _workspaceOverrides() => [
   uidProvider.overrideWithValue(const AsyncData<String?>('uid_org')),
-  hostOperableOrganizersProvider('uid_org').overrideWithValue(AsyncData([_organizer])),
+  hostOperableOrganizersProvider(
+    'uid_org',
+  ).overrideWithValue(AsyncData([_organizer])),
   organizerProgramListProvider(
     _organizerId,
   ).overrideWithValue(AsyncData(_summaries)),

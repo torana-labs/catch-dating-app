@@ -4,7 +4,10 @@ import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-String eventTileKickerLabel(EventTileData data, {required bool showOrganizerName}) {
+String eventTileKickerLabel(
+  EventTileData data, {
+  required bool showOrganizerName,
+}) {
   final organizerName = data.organizerName?.trim();
   if (showOrganizerName && organizerName != null && organizerName.isNotEmpty) {
     return organizerName;

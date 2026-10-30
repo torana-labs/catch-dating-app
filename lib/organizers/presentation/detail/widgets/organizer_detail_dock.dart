@@ -71,7 +71,10 @@ class OrganizerDetailDock extends StatelessWidget {
           Row(
             children: [
               if (showCount) ...[
-                OrganizerMemberCountText(members: members!, label: membersLabel),
+                OrganizerMemberCountText(
+                  members: members!,
+                  label: membersLabel,
+                ),
                 const SizedBox(width: CatchSpacing.s3),
               ],
               _OrganizerDetailDockControls(
@@ -228,7 +231,9 @@ class OrganizerMemberCountText extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          context.l10n.organizersOrganizerDetailDockTextMembers(members: members),
+          context.l10n.organizersOrganizerDetailDockTextMembers(
+            members: members,
+          ),
           style: CatchTextStyles.numericLarge(
             context,
           ).copyWith(fontSize: 17, height: 1),
@@ -274,8 +279,12 @@ class OrganizerBellButton extends StatelessWidget {
       toggled: active,
       enabled: enabled,
       label: active
-          ? context.l10n.organizersOrganizerDetailDockLabelDisableOrganizerPushNotifications
-          : context.l10n.organizersOrganizerDetailDockLabelEnableOrganizerPushNotifications,
+          ? context
+                .l10n
+                .organizersOrganizerDetailDockLabelDisableOrganizerPushNotifications
+          : context
+                .l10n
+                .organizersOrganizerDetailDockLabelEnableOrganizerPushNotifications,
       child: CatchIconAction(
         size: CatchSpacing.s12,
         backgroundColor: active ? accent : t.raised,
@@ -327,7 +336,9 @@ class OrganizerMembershipDock extends ConsumerWidget {
       OrganizerDetailDockRole.visitor =>
         context.l10n.organizersOrganizerDetailDockVisiblecopyFreeToJoinLeave,
       OrganizerDetailDockRole.member =>
-        context.l10n.organizersOrganizerDetailDockVisiblecopyMemberManageAnytime,
+        context
+            .l10n
+            .organizersOrganizerDetailDockVisiblecopyMemberManageAnytime,
       _ => null,
     };
 
@@ -349,13 +360,15 @@ class OrganizerMembershipDock extends ConsumerWidget {
       ),
       onJoin: () => OrganizerMembershipController.joinMutation.run(
         ref,
-        (tx) async =>
-            tx.get(organizerMembershipControllerProvider.notifier).join(organizer.id),
+        (tx) async => tx
+            .get(organizerMembershipControllerProvider.notifier)
+            .join(organizer.id),
       ),
       onManage: () => OrganizerMembershipController.leaveMutation.run(
         ref,
-        (tx) async =>
-            tx.get(organizerMembershipControllerProvider.notifier).leave(organizer.id),
+        (tx) async => tx
+            .get(organizerMembershipControllerProvider.notifier)
+            .leave(organizer.id),
       ),
       onBell: isMutating
           ? null

@@ -53,7 +53,10 @@ Widget organizerActivitySectionStates(BuildContext context) {
         label: 'generic dinner tags',
         child: OrganizerActivitySection(
           organizer: widgetbookOrganizerMinimalOrganizer,
-          tags: visibleOrganizerTags(widgetbookOrganizerMinimalOrganizer, limit: 4),
+          tags: visibleOrganizerTags(
+            widgetbookOrganizerMinimalOrganizer,
+            limit: 4,
+          ),
         ),
       ),
     ],

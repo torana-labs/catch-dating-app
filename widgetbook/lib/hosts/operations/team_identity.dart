@@ -65,7 +65,9 @@ Widget hostTeamRouteStates(BuildContext context) {
           child: WidgetbookHostShellScope(
             hostProfileStream:
                 HostOperationsFixtures.loadingStream<HostProfile?>(),
-            child: const HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
+            child: const HostOrganizerTeamScreen(
+              clubId: 'design-host-sea-face',
+            ),
           ),
         ),
       ),
@@ -83,7 +85,9 @@ Widget hostTeamRouteStates(BuildContext context) {
           child: WidgetbookHostShellScope(
             hostedOrganizersStream:
                 HostOperationsFixtures.loadingStream<List<Organizer>>(),
-            child: const HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
+            child: const HostOrganizerTeamScreen(
+              clubId: 'design-host-sea-face',
+            ),
           ),
         ),
       ),
@@ -91,10 +95,13 @@ Widget hostTeamRouteStates(BuildContext context) {
         label: 'clubs error',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            ownedOrganizersStream: HostOperationsFixtures.errorStream<List<Organizer>>(
-              'Hosted clubs failed',
+            ownedOrganizersStream:
+                HostOperationsFixtures.errorStream<List<Organizer>>(
+                  'Hosted clubs failed',
+                ),
+            child: const HostOrganizerTeamScreen(
+              clubId: 'design-host-sea-face',
             ),
-            child: const HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
           ),
         ),
       ),

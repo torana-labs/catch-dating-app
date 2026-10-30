@@ -30,12 +30,16 @@ Organizer? resolveSelectedHostOrganizer(
   if (organizers.isEmpty) return null;
   final preferredId = preferredOrganizerId?.trim();
   if (preferredId != null && preferredId.isNotEmpty) {
-    final preferred = organizers.where((organizer) => organizer.id == preferredId).firstOrNull;
+    final preferred = organizers
+        .where((organizer) => organizer.id == preferredId)
+        .firstOrNull;
     if (preferred != null) return preferred;
   }
   final selectedId = selectedOrganizerId?.trim();
   if (selectedId != null && selectedId.isNotEmpty) {
-    final selected = organizers.where((organizer) => organizer.id == selectedId).firstOrNull;
+    final selected = organizers
+        .where((organizer) => organizer.id == selectedId)
+        .firstOrNull;
     if (selected != null) return selected;
   }
   return organizers.first;

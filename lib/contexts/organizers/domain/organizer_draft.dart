@@ -28,7 +28,8 @@ abstract class OrganizerDraft with _$OrganizerDraft {
   static OrganizerDraft? fromJsonString(String jsonString) =>
       OrganizerDraft.fromJson(jsonDecode(jsonString) as Map<String, dynamic>);
 
-  static String toJsonString(OrganizerDraft draft) => jsonEncode(draft.toJson());
+  static String toJsonString(OrganizerDraft draft) =>
+      jsonEncode(draft.toJson());
 }
 
 extension OrganizerDraftX on OrganizerDraft {

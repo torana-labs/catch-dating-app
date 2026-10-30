@@ -45,7 +45,9 @@ class WidgetbookExploreScope extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveSourceOrganizers =
         sourceOrganizers ??
-        AsyncData<List<Organizer>>(List.unmodifiable(widgetbookExploreOrganizers));
+        AsyncData<List<Organizer>>(
+          List.unmodifiable(widgetbookExploreOrganizers),
+        );
     final effectiveViewModel =
         viewModel ??
         AsyncData(
@@ -78,8 +80,12 @@ class WidgetbookExploreScope extends StatelessWidget {
         deviceLocationProvider.overrideWith(
           () => _PreviewDeviceLocation(deviceLocation),
         ),
-        exploreSourceOrganizersProvider.overrideWithValue(effectiveSourceOrganizers),
-        exploreOrganizersViewModelProvider.overrideWithValue(effectiveViewModel),
+        exploreSourceOrganizersProvider.overrideWithValue(
+          effectiveSourceOrganizers,
+        ),
+        exploreOrganizersViewModelProvider.overrideWithValue(
+          effectiveViewModel,
+        ),
         exploreFeedViewModelProvider.overrideWithValue(effectiveFeed),
         if (uid != null)
           watchOutgoingCrossPathsInvitationProvider(

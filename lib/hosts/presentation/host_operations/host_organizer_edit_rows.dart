@@ -62,7 +62,8 @@ extension _HostOrganizerEditRows on _HostOrganizerEditBodyState {
         allowEmptySelection: false,
         contract: CatchContractConstraints.updateClubPatchOrganizerType,
         contractValue: (option) => option.value.name,
-        patchForValue: (value) => UpdateOrganizerPatch(organizerType: value!.value),
+        patchForValue: (value) =>
+            UpdateOrganizerPatch(organizerType: value!.value),
       ),
       CatchFormTextRow<UpdateOrganizerPatch>(
         validationCopy: catchFormValidationCopy(context.l10n),
@@ -82,7 +83,9 @@ extension _HostOrganizerEditRows on _HostOrganizerEditBodyState {
         icon: CatchIcons.city,
         label: context.l10n.hostsHostOrganizerProfileLabelCity,
         values: cityOptions,
-        value: cityOptions.firstWhere((city) => city.value == organizer.location),
+        value: cityOptions.firstWhere(
+          (city) => city.value == organizer.location,
+        ),
         allowEmptySelection: false,
         contract: CatchContractConstraints.updateClubPatchLocation,
         contractValue: (option) => option.value,
@@ -113,7 +116,8 @@ extension _HostOrganizerEditRows on _HostOrganizerEditBodyState {
         minLines: 2,
         normalizeInput: _normalizeMultilineInput,
         contract: CatchContractConstraints.updateClubPatchDescription,
-        patchForValue: (value) => UpdateOrganizerPatch(description: value as String),
+        patchForValue: (value) =>
+            UpdateOrganizerPatch(description: value as String),
       ),
     ];
   }
@@ -152,7 +156,9 @@ extension _HostOrganizerEditRows on _HostOrganizerEditBodyState {
         label: context.l10n.hostsHostOrganizerProfileLabelInstagram,
         currentValue: organizer.instagramHandle ?? '',
         currentFieldValue: organizer.instagramHandle,
-        placeholder: context.l10n.hostsHostOrganizerProfilePlaceholderYourorganizer
+        placeholder: context
+            .l10n
+            .hostsHostOrganizerProfilePlaceholderYourorganizer
             .replaceFirst(RegExp(r'^@'), ''),
         keyboardType: TextInputType.text,
         normalizeInput: (value) =>
@@ -182,8 +188,9 @@ extension _HostOrganizerEditRows on _HostOrganizerEditBodyState {
         label: context.l10n.hostsHostOrganizerProfileLabelEmail,
         currentValue: organizer.email ?? '',
         currentFieldValue: organizer.email,
-        placeholder:
-            context.l10n.hostsHostOrganizerProfilePlaceholderHelloYourorganizerCom,
+        placeholder: context
+            .l10n
+            .hostsHostOrganizerProfilePlaceholderHelloYourorganizerCom,
         keyboardType: TextInputType.emailAddress,
         normalizeInput: _normalizeSingleLineInput,
         validator: (value) => _optionalEmailValidator(value, context.l10n),

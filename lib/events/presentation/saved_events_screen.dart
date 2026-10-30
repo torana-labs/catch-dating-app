@@ -102,7 +102,9 @@ class SavedEventsScreen extends ConsumerWidget {
                     now: referenceNow ?? DateTime.now(),
                   );
                   final organizerNames = ref.watch(
-                    organizerNameLookupProvider(OrganizerNameLookupQuery(state.organizerIds)),
+                    organizerNameLookupProvider(
+                      OrganizerNameLookupQuery(state.organizerIds),
+                    ),
                   );
                   return CatchAsyncBoundary<Map<String, String>>.sliver(
                     value: organizerNames,

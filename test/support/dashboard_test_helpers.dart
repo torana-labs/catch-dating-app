@@ -14,7 +14,10 @@ const noRecommendationCandidates =
 ExploreRecommendationsQuery recommendationsQueryFor(
   String uid,
   List<String> followedOrganizerIds,
-) => ExploreRecommendationsQuery(userId: uid, followedOrganizerIds: followedOrganizerIds);
+) => ExploreRecommendationsQuery(
+  userId: uid,
+  followedOrganizerIds: followedOrganizerIds,
+);
 
 AsyncData<WeeklyActivitySnapshot> emptyWeeklyActivitySnapshot() {
   return AsyncData(
@@ -35,7 +38,10 @@ ExploreEventRecommendationCandidate recommendationCandidate(
   organizerLocation: organizerLocation,
 );
 
-OrganizerMembership membership({required String clubId, String uid = 'runner-1'}) {
+OrganizerMembership membership({
+  required String clubId,
+  String uid = 'runner-1',
+}) {
   return OrganizerMembership(
     id: organizerMembershipId(clubId: clubId, uid: uid),
     clubId: clubId,

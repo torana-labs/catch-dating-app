@@ -96,7 +96,9 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final messaging = ref.watch(hostMessagingSetupProvider(widget.organizer.id));
+    final messaging = ref.watch(
+      hostMessagingSetupProvider(widget.organizer.id),
+    );
     final savedAudiences = catchAsyncStateFromAsyncValue(
       ref.watch(hostSavedAudiencesProvider(widget.organizer.id)),
     );
@@ -120,7 +122,9 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
           final approved = setup.approvedTemplates;
           final events =
               catchAsyncStateFromAsyncValue(
-                    ref.watch(watchEventsForOrganizerProvider(widget.organizer.id)),
+                    ref.watch(
+                      watchEventsForOrganizerProvider(widget.organizer.id),
+                    ),
                   ).value
                   ?.where((event) => !event.isCancelled)
                   .toList(growable: false) ??
@@ -144,8 +148,9 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
               savedAudiences.error!,
               context: AppErrorContext.customers,
               mode: CatchErrorStateMode.compact,
-              onRetry: () =>
-                  ref.invalidate(hostSavedAudiencesProvider(widget.organizer.id)),
+              onRetry: () => ref.invalidate(
+                hostSavedAudiencesProvider(widget.organizer.id),
+              ),
             );
           }
           if (savedAudiences.status == CatchAsyncStatus.loading) {
@@ -452,14 +457,20 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
   Future<void> _approveCampaign() => _run(() async {
     final campaign = await ref
         .read(hostAudienceControllerProvider)
-        .approveCampaign(organizerId: widget.organizer.id, campaign: _campaign!);
+        .approveCampaign(
+          organizerId: widget.organizer.id,
+          campaign: _campaign!,
+        );
     if (mounted) setState(() => _campaign = campaign);
   });
 
   Future<void> _dispatchCampaign() => _run(() async {
     final campaign = await ref
         .read(hostAudienceControllerProvider)
-        .dispatchCampaign(organizerId: widget.organizer.id, campaign: _campaign!);
+        .dispatchCampaign(
+          organizerId: widget.organizer.id,
+          campaign: _campaign!,
+        );
     if (mounted) setState(() => _campaign = campaign);
   });
 

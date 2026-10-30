@@ -1,7 +1,8 @@
 part of '../organizer_list_tile.dart';
 
 const double _avatarChipTileSize = CatchSpacing.s16;
-const double _avatarChipColumnWidth = CatchLayout.organizerAvatarRailColumnWidth;
+const double _avatarChipColumnWidth =
+    CatchLayout.organizerAvatarRailColumnWidth;
 
 class AvatarChip extends StatelessWidget {
   const AvatarChip({
@@ -21,7 +22,9 @@ class AvatarChip extends StatelessWidget {
 
     return Semantics(
       button: onTap != null,
-      label: context.l10n.organizersAvatarChipLabelOpenNameOrganizer(name: organizer.name),
+      label: context.l10n.organizersAvatarChipLabelOpenNameOrganizer(
+        name: organizer.name,
+      ),
       child: CatchSurface(
         tone: CatchSurfaceTone.transparent,
         radius: CatchRadius.none,
@@ -45,7 +48,10 @@ class AvatarChip extends StatelessWidget {
                   tone: CatchSurfaceTone.transparent,
                   radius: CatchRadius.pill,
                   clipBehavior: Clip.antiAlias,
-                  child: OrganizerImage(organizer: organizer, preferProfileImage: true),
+                  child: OrganizerImage(
+                    organizer: organizer,
+                    preferProfileImage: true,
+                  ),
                 ),
               ),
               gapH6,

@@ -20,7 +20,9 @@ void _registerExploreMapTests() {
             const AsyncData(<Organizer>[]),
           ),
           exploreOrganizersViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
+            const AsyncData(
+              ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+            ),
           ),
           exploreFeedViewModelProvider.overrideWithValue(
             AsyncData(
@@ -66,7 +68,9 @@ void _registerExploreMapTests() {
             const AsyncData(<Organizer>[]),
           ),
           exploreOrganizersViewModelProvider.overrideWithValue(
-            const AsyncData(ExploreViewModel(joinedOrganizers: [], allOrganizers: [])),
+            const AsyncData(
+              ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+            ),
           ),
           exploreFeedViewModelProvider.overrideWithValue(
             AsyncData(
@@ -122,9 +126,9 @@ void _registerExploreMapTests() {
           currentUserFollowedOrganizerIdsProvider.overrideWithValue(
             const AsyncData(<String>{}),
           ),
-          watchOrganizersByLocationProvider(
-            'mumbai',
-          ).overrideWith((ref) => Stream.value([socialOrganizer, tempoOrganizer])),
+          watchOrganizersByLocationProvider('mumbai').overrideWith(
+            (ref) => Stream.value([socialOrganizer, tempoOrganizer]),
+          ),
           exploreSourceOrganizersProvider.overrideWithValue(
             AsyncData([socialOrganizer, tempoOrganizer]),
           ),
@@ -186,7 +190,10 @@ void _registerExploreMapTests() {
   testWidgets('ExploreFilterSheet toggles secondary filter state', (
     tester,
   ) async {
-    final bandraOrganizer = buildOrganizer(id: 'area-bandra', name: 'Bandra Pacers');
+    final bandraOrganizer = buildOrganizer(
+      id: 'area-bandra',
+      name: 'Bandra Pacers',
+    );
     final juhuOrganizer = buildOrganizer(
       id: 'area-juhu',
       name: 'Tempo Queens',
@@ -485,7 +492,10 @@ void _registerExploreMapTests() {
   ) async {
     final organizer = buildOrganizer(id: 'ineligible-club');
     final item = ExploreEventItem(
-      event: event_test.buildEvent(id: 'ineligible-event', clubId: organizer.id),
+      event: event_test.buildEvent(
+        id: 'ineligible-event',
+        clubId: organizer.id,
+      ),
       organizer: organizer,
       availability: const ViewerEventAvailability(
         status: ViewerEventAvailabilityStatus.fullForViewer,
@@ -509,8 +519,14 @@ void _registerExploreMapTests() {
   });
 
   testWidgets('ExploreScreen map pill opens the map route', (tester) async {
-    final organizer = buildOrganizer(id: 'club-map-pill', name: 'Bandra Pacers');
-    final event = event_test.buildEvent(id: 'event-map-pill', clubId: organizer.id);
+    final organizer = buildOrganizer(
+      id: 'club-map-pill',
+      name: 'Bandra Pacers',
+    );
+    final event = event_test.buildEvent(
+      id: 'event-map-pill',
+      clubId: organizer.id,
+    );
     final router = GoRouter(
       initialLocation: '/',
       routes: [
@@ -574,7 +590,10 @@ void _registerExploreMapTests() {
         CatchLayout.tabBarExtent +
         CatchLayout.tabBarFloatingBottomInset +
         bottomSafeArea;
-    final organizer = buildOrganizer(id: 'club-map-clearance', name: 'Bandra Pacers');
+    final organizer = buildOrganizer(
+      id: 'club-map-clearance',
+      name: 'Bandra Pacers',
+    );
     final event = event_test.buildEvent(
       id: 'event-map-clearance',
       clubId: organizer.id,
@@ -635,7 +654,10 @@ void _registerExploreMapTests() {
   testWidgets('ExploreMapScreen can seed selected pin for captures', (
     tester,
   ) async {
-    final organizer = buildOrganizer(id: 'club-map-selected', name: 'Bandra Map Club');
+    final organizer = buildOrganizer(
+      id: 'club-map-selected',
+      name: 'Bandra Map Club',
+    );
     final selectedEvent = event_test.buildEvent(
       id: 'event-map-selected',
       clubId: organizer.id,
@@ -687,7 +709,10 @@ void _registerExploreMapTests() {
   testWidgets('ExploreMapScreen defaults to the native Google map', (
     tester,
   ) async {
-    final organizer = buildOrganizer(id: 'club-map-default', name: 'Default Map Club');
+    final organizer = buildOrganizer(
+      id: 'club-map-default',
+      name: 'Default Map Club',
+    );
     final event = event_test.buildEvent(
       id: 'event-map-default',
       clubId: organizer.id,
@@ -729,8 +754,14 @@ void _registerExploreMapTests() {
   testWidgets('ExploreMapScreen keeps Any until distance is activated', (
     tester,
   ) async {
-    final organizer = buildOrganizer(id: 'club-map-ring', name: 'Ring Map Club');
-    final event = event_test.buildEvent(id: 'event-map-ring', clubId: organizer.id);
+    final organizer = buildOrganizer(
+      id: 'club-map-ring',
+      name: 'Ring Map Club',
+    );
+    final event = event_test.buildEvent(
+      id: 'event-map-ring',
+      clubId: organizer.id,
+    );
     await tester.pumpWidget(
       ProviderScope(
         overrides: [

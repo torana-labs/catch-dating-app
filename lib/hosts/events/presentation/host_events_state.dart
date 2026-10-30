@@ -8,7 +8,8 @@ import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-typedef HostEventsManageEventCallback = void Function(Organizer organizer, Event event);
+typedef HostEventsManageEventCallback =
+    void Function(Organizer organizer, Event event);
 
 enum HostEventsRouteStatus { authRequired, loading, error, empty, loaded }
 

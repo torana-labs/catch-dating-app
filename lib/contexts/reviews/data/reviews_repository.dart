@@ -78,7 +78,8 @@ class ReviewsRepository {
         ),
       );
 
-  Future<CursorPage<Review, DocumentSnapshot<Review>>> fetchOrganizerReviewsPage({
+  Future<CursorPage<Review, DocumentSnapshot<Review>>>
+  fetchOrganizerReviewsPage({
     required String clubId,
     DocumentSnapshot<Review>? startAfter,
     int limit = ReadLimitPolicy.historyPage,

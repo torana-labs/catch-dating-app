@@ -30,7 +30,9 @@ Widget hostOrganizerDetailPublicPreviewStates(BuildContext context) {
     children: [
       WidgetbookPageStateCard(
         label: 'host public preview',
-        child: const WidgetbookHostDeviceFrame(child: _HostOrganizerDetailScope()),
+        child: const WidgetbookHostDeviceFrame(
+          child: _HostOrganizerDetailScope(),
+        ),
       ),
       WidgetbookPageStateCard(
         label: 'initial club loading fallback',
@@ -86,7 +88,10 @@ Widget hostOrganizerDetailPublicPreviewStates(BuildContext context) {
           child: _HostOrganizerDetailScope(
             uid: 'design-host-non-team',
             viewModel: AsyncData<OrganizerDetailViewModel?>(
-              _organizerDetailViewModel(isHost: false, uid: 'design-host-non-team'),
+              _organizerDetailViewModel(
+                isHost: false,
+                uid: 'design-host-non-team',
+              ),
             ),
           ),
         ),

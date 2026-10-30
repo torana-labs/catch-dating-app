@@ -349,7 +349,10 @@ void _registerHostOperationsPresenceTests() {
   testWidgets(
     'Host analytics permission denied does not display presence totals',
     (tester) async {
-      final organizer = buildOrganizer(id: 'denied-analytics', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'denied-analytics',
+        ownerUserId: _hostUid,
+      );
       await _pumpHostScreen(
         tester,
         RepaintBoundary(

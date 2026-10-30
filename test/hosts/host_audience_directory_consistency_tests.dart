@@ -4,7 +4,10 @@ void _registerAudienceDirectoryConsistencyTests() {
   testWidgets(
     'Groups owns app-bar creation, explicit ordering and clearable filters',
     (tester) async {
-      final organizer = buildOrganizer(id: 'customers-club', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'customers-club',
+        ownerUserId: _hostUid,
+      );
       final requests = <HostCustomersDirectoryRequest>[];
       final audience = HostSavedAudience(
         organizerId: organizer.id,

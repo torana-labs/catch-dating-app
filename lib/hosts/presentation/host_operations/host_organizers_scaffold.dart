@@ -1,6 +1,8 @@
 part of '../host_operations_screen.dart';
 
-List<CatchOption<HostOrganizerTab>> _hostOrganizerTabOptions(BuildContext context) => [
+List<CatchOption<HostOrganizerTab>> _hostOrganizerTabOptions(
+  BuildContext context,
+) => [
   CatchOption(
     value: HostOrganizerTab.edit,
     label: context.l10n.hostsHostOrganizersScaffoldLabelEdit,
@@ -53,8 +55,9 @@ class HostOrganizerStateScaffold extends StatelessWidget {
             selectionPosition: selectedTab.index.toDouble(),
             options: _hostOrganizerTabOptions(context),
           ),
-          semanticsLabel:
-              context.l10n.hostsHostOrganizersScaffoldLabelOrganizerWorkspaceTabs,
+          semanticsLabel: context
+              .l10n
+              .hostsHostOrganizersScaffoldLabelOrganizerWorkspaceTabs,
           body: CatchRootScreenBody.single(
             page: CatchRootScreenPageSpec.scroll(
               page: CatchRootScreenPageScrollView.standard(
@@ -86,7 +89,8 @@ class HostOrganizersScaffold extends ConsumerStatefulWidget {
   final String? initialExpandedEditField;
 
   @override
-  ConsumerState<HostOrganizersScaffold> createState() => _HostOrganizersScaffoldState();
+  ConsumerState<HostOrganizersScaffold> createState() =>
+      _HostOrganizersScaffoldState();
 }
 
 class _HostOrganizersScaffoldState extends ConsumerState<HostOrganizersScaffold>
@@ -231,11 +235,16 @@ class _HostOrganizersScaffoldState extends ConsumerState<HostOrganizersScaffold>
         slivers: [
           CatchSliverEmptyState(
             icon: CatchIcons.people,
-            title: context.l10n.hostsHostOrganizersScaffoldTitleNoHostOrganizersYet,
-            message: context.l10n.hostsHostOrganizersScaffoldBodyCreateAOrganizerOr,
+            title: context
+                .l10n
+                .hostsHostOrganizersScaffoldTitleNoHostOrganizersYet,
+            message:
+                context.l10n.hostsHostOrganizersScaffoldBodyCreateAOrganizerOr,
             actions: [
               CatchButton(
-                label: context.l10n.hostsHostOrganizersScaffoldLabelCreateOrganizer,
+                label: context
+                    .l10n
+                    .hostsHostOrganizersScaffoldLabelCreateOrganizer,
                 leading: Icon(CatchIcons.add, size: CatchIconSize.md),
                 size: CatchButtonSize.md,
                 onPressed: () =>
@@ -268,14 +277,17 @@ class _HostOrganizersScaffoldState extends ConsumerState<HostOrganizersScaffold>
         groupKey: _hostOrganizerTabRailKey,
         options: _hostOrganizerTabOptions(context),
       ),
-      semanticsLabel: context.l10n.hostsHostOrganizersScaffoldLabelOrganizerWorkspaceTabs,
-      semanticsHint: context.l10n.hostsHostOrganizersScaffoldBodyDragLeftOrRight,
+      semanticsLabel:
+          context.l10n.hostsHostOrganizersScaffoldLabelOrganizerWorkspaceTabs,
+      semanticsHint:
+          context.l10n.hostsHostOrganizersScaffoldBodyDragLeftOrRight,
       body: CatchRootScreenBody.paged(
         controller: _tabController,
         pages: [
           CatchRootScreenPageSpec.scroll(
             page: CatchRootScreenPageScrollView.sections(
-              scrollStateController: _pageScrollControllers[HostOrganizerTab.edit],
+              scrollStateController:
+                  _pageScrollControllers[HostOrganizerTab.edit],
               scrollKey: PageStorageKey(
                 'host-club-${selectedOrganizer.id}-edit-scroll',
               ),
@@ -311,7 +323,9 @@ class _HostOrganizersScaffoldState extends ConsumerState<HostOrganizersScaffold>
                   child: SizedBox(
                     width: double.infinity,
                     child: HostOrganizerInsightsSection(
-                      key: ValueKey('host-club-${selectedOrganizer.id}-insights'),
+                      key: ValueKey(
+                        'host-club-${selectedOrganizer.id}-insights',
+                      ),
                       organizer: selectedOrganizer,
                       refreshController: _insightsRefreshController,
                     ),

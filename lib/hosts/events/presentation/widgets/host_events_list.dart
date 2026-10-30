@@ -99,7 +99,9 @@ class HostEventsOrganizerCard extends ConsumerWidget {
       pastError: timeline?.pastError,
       pastStackTrace: timeline?.pastStackTrace,
     );
-    final draftsAsync = ref.watch(organizerEventDraftsProvider(clubId: organizer.id));
+    final draftsAsync = ref.watch(
+      organizerEventDraftsProvider(clubId: organizer.id),
+    );
     final drafts = switch (draftsAsync) {
       AsyncData<List<EventDraft>>(:final value) => value,
       _ => const <EventDraft>[],
@@ -223,7 +225,8 @@ class HostEventsOrganizerSection extends StatefulWidget {
   final HostEventsManageEventCallback onManageEvent;
 
   @override
-  State<HostEventsOrganizerSection> createState() => _HostEventsOrganizerSectionState();
+  State<HostEventsOrganizerSection> createState() =>
+      _HostEventsOrganizerSectionState();
 }
 
 class _HostEventsOrganizerSectionState extends State<HostEventsOrganizerSection>
@@ -318,7 +321,9 @@ class _HostEventsOrganizerSectionState extends State<HostEventsOrganizerSection>
           for (final view in HostEventsView.values)
             CatchRootScreenPageSpec.scroll(
               page: HostEventsTimelineBody(
-                key: ValueKey('host-events-${widget.organizer.id}-${view.name}'),
+                key: ValueKey(
+                  'host-events-${widget.organizer.id}-${view.name}',
+                ),
                 organizerId: widget.organizer.id,
                 programs: widget.programs,
                 now: widget.now,

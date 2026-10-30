@@ -178,7 +178,10 @@ void _registerHostOperationsCustomerDetailTests() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final organizer = buildOrganizer(id: 'phone-sort-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'phone-sort-club',
+      ownerUserId: _hostUid,
+    );
     final requests = <HostCustomersDirectoryRequest>[];
     await _pumpHostScreen(
       tester,
@@ -221,7 +224,10 @@ void _registerHostOperationsCustomerDetailTests() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final organizer = buildOrganizer(id: 'compact-overview-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'compact-overview-club',
+      ownerUserId: _hostUid,
+    );
 
     await _pumpHostScreen(
       tester,
@@ -292,7 +298,10 @@ void _registerHostOperationsCustomerDetailTests() {
   testWidgets('sender recovery opens dedicated WhatsApp Business setup', (
     tester,
   ) async {
-    final organizer = buildOrganizer(id: 'messaging-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'messaging-club',
+      ownerUserId: _hostUid,
+    );
     await _pumpHostScreen(
       tester,
       const HostCustomersScreen(),
@@ -343,7 +352,10 @@ void _registerHostOperationsCustomerDetailTests() {
   testWidgets(
     'sender recovery stays hidden where a sender cannot be connected',
     (tester) async {
-      final organizer = buildOrganizer(id: 'messaging-club', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'messaging-club',
+        ownerUserId: _hostUid,
+      );
       await _pumpHostScreen(
         tester,
         const HostCustomersScreen(),
@@ -445,7 +457,10 @@ void _registerHostOperationsCustomerDetailTests() {
     tester.view.physicalSize = const Size(393, 852);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
-    final organizer = buildOrganizer(id: 'compact-header-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'compact-header-club',
+      ownerUserId: _hostUid,
+    );
     await _pumpHostScreen(
       tester,
       const MediaQuery(

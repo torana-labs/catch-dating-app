@@ -5,7 +5,9 @@ extension _CreateEventActions on _CreateEventScreenState {
     if (!mounted || _sessionReplaced) return;
     await ref
         .read(
-          createEventPhotoRecoveryControllerProvider(widget.organizer.id).notifier,
+          createEventPhotoRecoveryControllerProvider(
+            widget.organizer.id,
+          ).notifier,
         )
         .restore();
     if (!mounted || _sessionReplaced) return;
@@ -428,7 +430,9 @@ extension _CreateEventActions on _CreateEventScreenState {
   bool get _hasUnsavedChanges {
     return ref
                 .read(
-                  createEventPhotoRecoveryControllerProvider(widget.organizer.id),
+                  createEventPhotoRecoveryControllerProvider(
+                    widget.organizer.id,
+                  ),
                 )
                 .event ==
             null &&

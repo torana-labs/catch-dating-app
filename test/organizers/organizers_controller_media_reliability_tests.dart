@@ -82,7 +82,10 @@ void _registerOrganizerMediaReliabilityTests() {
 
     final retryResult = await container
         .read(hostOrganizerEditControllerProvider)
-        .updateOrganizerMedia(organizer: organizer, photoInputs: firstResult.photoInputs);
+        .updateOrganizerMedia(
+          organizer: organizer,
+          photoInputs: firstResult.photoInputs,
+        );
 
     expect(retryResult.attached, isTrue);
     expect(uploads.uploadedOrganizerMediaIds, [

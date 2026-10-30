@@ -34,7 +34,11 @@ void main() {
     (hostStrictHostOrganizerMetricRowCatalogStates, HostOrganizerMetricRow, 1),
     (hostCrmAudienceCardStates, HostCrmAudienceCard, 3),
     (hostCrmChannelRowStates, HostCrmChannelRow, 2),
-    (hostOrganizerPublicationChannelRowStates, HostOrganizerPublicationChannelRow, 2),
+    (
+      hostOrganizerPublicationChannelRowStates,
+      HostOrganizerPublicationChannelRow,
+      2,
+    ),
     (hostOrganizerLogoManagerHeaderStates, HostOrganizerLogoManagerHeader, 2),
     (hostOrganizerMediaManagerDockStates, HostOrganizerMediaManagerDock, 1),
     (hostCustomerIdentitySectionStates, HostCustomerIdentitySection, 1),

@@ -23,7 +23,11 @@ void main() {
     await pumpCatchAppShell(
       tester,
       initialRoute: Routes.exploreScreen.path,
-      overrides: appShellTestOverrides(uid: null, user: null, organizers: [organizer]),
+      overrides: appShellTestOverrides(
+        uid: null,
+        user: null,
+        organizers: [organizer],
+      ),
     );
 
     expect(find.text('Explore'), findsOneWidget);
@@ -123,7 +127,9 @@ void main() {
     tester,
   ) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
-    final joinedOrganizer = organizer_helpers.buildOrganizer(nextEventLabel: 'Sat 6:30 AM');
+    final joinedOrganizer = organizer_helpers.buildOrganizer(
+      nextEventLabel: 'Sat 6:30 AM',
+    );
     final nextRun = event_helpers.buildEvent(
       id: 'run-1',
       clubId: joinedOrganizer.id,

@@ -370,7 +370,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           message: context.l10n.hostsEventPhotoRecoverySession,
           actions: [
             CatchButton(
-              label: context.l10n.hostsCreateEventSuccessScreenLabelBackToOrganizer,
+              label: context
+                  .l10n
+                  .hostsCreateEventSuccessScreenLabelBackToOrganizer,
               onPressed: () => Navigator.of(context).maybePop(),
             ),
           ],

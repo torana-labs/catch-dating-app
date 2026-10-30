@@ -56,18 +56,20 @@ class OrganizerDraftRepository {
     }
   }
 
-  Future<void> saveDraft({required String userId, required OrganizerDraft draft}) =>
-      withBackendErrorContext(
-        () async {
-          final prefs = await _prefs;
-          await prefs.setString(_key(userId), OrganizerDraft.toJsonString(draft));
-        },
-        context: const BackendErrorContext(
-          service: BackendService.local,
-          action: 'save organizer draft',
-          resource: 'shared_preferences',
-        ),
-      );
+  Future<void> saveDraft({
+    required String userId,
+    required OrganizerDraft draft,
+  }) => withBackendErrorContext(
+    () async {
+      final prefs = await _prefs;
+      await prefs.setString(_key(userId), OrganizerDraft.toJsonString(draft));
+    },
+    context: const BackendErrorContext(
+      service: BackendService.local,
+      action: 'save organizer draft',
+      resource: 'shared_preferences',
+    ),
+  );
 
   Future<void> deleteDraft({required String userId}) => withBackendErrorContext(
     () async {

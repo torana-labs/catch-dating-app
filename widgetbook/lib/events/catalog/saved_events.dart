@@ -133,7 +133,8 @@ Widget savedEventsAgendaSliverStates(BuildContext context) {
         SavedEventsAgendaList(
           state: SavedEventsListState.from(events, now: widgetbookEventsNow),
           organizerNames: {
-            for (final event in events) event.clubId: widgetbookEventsOrganizer.name,
+            for (final event in events)
+              event.clubId: widgetbookEventsOrganizer.name,
           },
           onEventSelected: (_) {},
         ),

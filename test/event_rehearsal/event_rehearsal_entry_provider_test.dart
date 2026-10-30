@@ -100,15 +100,17 @@ void main() {
 
 class _Organizers extends Fake implements OrganizersRepository {
   @override
-  Future<Organizer?> fetchOrganizer(String id) async => buildOrganizer().copyWith(id: id);
+  Future<Organizer?> fetchOrganizer(String id) async =>
+      buildOrganizer().copyWith(id: id);
 }
 
 class _Events extends Fake implements EventRepository {
   _Events(this.event);
   final Event event;
   @override
-  Future<List<Event>> fetchUpcomingEventsForOrganizers(List<String> organizerIds) async =>
-      [event];
+  Future<List<Event>> fetchUpcomingEventsForOrganizers(
+    List<String> organizerIds,
+  ) async => [event];
   @override
   Future<Event?> fetchEvent(String id) async => event;
 }

@@ -145,7 +145,10 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
     if (!mounted) return null;
     final uid = ref.read(uidProvider).asData?.value;
     if (uid == null) return null;
-    final organizers = ref.read(hostOperableOrganizersProvider(uid)).asData?.value;
+    final organizers = ref
+        .read(hostOperableOrganizersProvider(uid))
+        .asData
+        ?.value;
     if (organizers == null) return null;
     final selection = ref.read(hostOrganizerSelectionProvider(uid));
     final organizer = resolveSelectedHostOrganizer(
@@ -456,7 +459,8 @@ class HostTodayLoadedRoute extends ConsumerWidget {
   final DateTime clockNow;
   final DateTime sessionBoundary;
   final void Function(Organizer organizer, Event event) onOpenEvent;
-  final void Function(Organizer organizer, HostAttentionItem item) onOpenAttention;
+  final void Function(Organizer organizer, HostAttentionItem item)
+  onOpenAttention;
   final VoidCallback onViewEvents;
   final void Function(
     Organizer organizer,

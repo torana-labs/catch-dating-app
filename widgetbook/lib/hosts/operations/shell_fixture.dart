@@ -82,10 +82,14 @@ class WidgetbookHostShellScope extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveHostedOrganizers = hostedOrganizers ?? HostOperationsFixtures.organizers;
+    final effectiveHostedOrganizers =
+        hostedOrganizers ?? HostOperationsFixtures.organizers;
     final effectiveOwnedOrganizers =
         ownedOrganizers ??
-        [HostOperationsFixtures.primaryOrganizer, HostOperationsFixtures.dinnerOrganizer];
+        [
+          HostOperationsFixtures.primaryOrganizer,
+          HostOperationsFixtures.dinnerOrganizer,
+        ];
     final effectiveUid = uid ?? widgetbookHostUid;
     final eventOrganizerIds = <String>{
       for (final organizer in HostOperationsFixtures.organizers) organizer.id,
@@ -94,8 +98,10 @@ class WidgetbookHostShellScope extends StatelessWidget {
       ...organizerEventStreams.keys,
     };
     final organizersById = <String, Organizer>{
-      for (final organizer in HostOperationsFixtures.organizers) organizer.id: organizer,
-      for (final organizer in effectiveHostedOrganizers) organizer.id: organizer,
+      for (final organizer in HostOperationsFixtures.organizers)
+        organizer.id: organizer,
+      for (final organizer in effectiveHostedOrganizers)
+        organizer.id: organizer,
       for (final organizer in effectiveOwnedOrganizers) organizer.id: organizer,
     };
     final overrides = [
@@ -132,11 +138,13 @@ class WidgetbookHostShellScope extends StatelessWidget {
       ),
       watchOrganizersHostedByProvider(effectiveUid).overrideWith(
         (ref) =>
-            hostedOrganizersStream ?? Stream<List<Organizer>>.value(effectiveHostedOrganizers),
+            hostedOrganizersStream ??
+            Stream<List<Organizer>>.value(effectiveHostedOrganizers),
       ),
       watchOrganizersOwnedByProvider(effectiveUid).overrideWith(
         (ref) =>
-            ownedOrganizersStream ?? Stream<List<Organizer>>.value(effectiveOwnedOrganizers),
+            ownedOrganizersStream ??
+            Stream<List<Organizer>>.value(effectiveOwnedOrganizers),
       ),
       watchHostPaymentAccountsProvider(effectiveUid).overrideWithValue(
         switch (paymentAccountValue) {
@@ -170,7 +178,8 @@ class WidgetbookHostShellScope extends StatelessWidget {
                 isHost: true,
                 isMember: false,
                 upcomingEvents:
-                    HostOperationsFixtures.eventsByOrganizer[clubId] ?? const [],
+                    HostOperationsFixtures.eventsByOrganizer[clubId] ??
+                    const [],
                 reviews: const [],
                 userProfile: uid == null ? null : HostOperationsFixtures.owner,
                 uid: uid,
@@ -286,7 +295,8 @@ class _WidgetbookHostEventsTimelineController
     final stream =
         eventStreamsByOrganizer[request.organizerId] ??
         Stream<List<Event>>.value(
-          HostOperationsFixtures.eventsByOrganizer[request.organizerId] ?? const [],
+          HostOperationsFixtures.eventsByOrganizer[request.organizerId] ??
+              const [],
         );
     final events = await _readWidgetbookEvents(ref, stream);
     return HostEventsTimelineData(
@@ -334,8 +344,9 @@ final class _NoopHostOrganizerEditActions implements HostOrganizerEditActions {
   }) async {}
 
   @override
-  Future<List<HostPickedOrganizerPhoto>> pickOrganizerPhotos({int? limit}) async =>
-      const [];
+  Future<List<HostPickedOrganizerPhoto>> pickOrganizerPhotos({
+    int? limit,
+  }) async => const [];
 
   @override
   Future<HostPickedOrganizerLogo?> pickOrganizerLogo() async => null;

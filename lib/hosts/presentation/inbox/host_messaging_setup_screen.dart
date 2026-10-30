@@ -37,7 +37,8 @@ class HostMessagingSetupScreen extends ConsumerWidget {
                   ? CatchLocalizedErrorState(
                       StateError('Organizer not found.'),
                       context: AppErrorContext.organizer,
-                      onRetry: () => ref.invalidate(watchOrganizerProvider(clubId)),
+                      onRetry: () =>
+                          ref.invalidate(watchOrganizerProvider(clubId)),
                     )
                   : HostWhatsappSetupSection(organizer: value),
             ),

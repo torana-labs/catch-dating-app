@@ -18,7 +18,9 @@ Widget organizerTagWrapStates(BuildContext context) {
     children: [
       WidgetbookPageStateCard(
         label: 'brand tags',
-        child: OrganizerTagList(tags: visibleOrganizerTags(widgetbookOrganizerOrganizer, limit: 4)),
+        child: OrganizerTagList(
+          tags: visibleOrganizerTags(widgetbookOrganizerOrganizer, limit: 4),
+        ),
       ),
       const WidgetbookPageStateCard(
         label: 'neutral mixed case',

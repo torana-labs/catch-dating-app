@@ -4,7 +4,10 @@ void _registerExploreOrganizerCardsTests() {
   testWidgets('ExploreDiscoveryCoverHeader search opens the compact field', (
     tester,
   ) async {
-    final organizer = buildOrganizer(id: 'club-cover-search', name: 'Pace Social');
+    final organizer = buildOrganizer(
+      id: 'club-cover-search',
+      name: 'Pace Social',
+    );
     final event = event_test.buildEvent(
       id: 'event-cover-search',
       clubId: organizer.id,
@@ -218,7 +221,10 @@ void _registerExploreOrganizerCardsTests() {
         home: Scaffold(
           body: SizedBox(
             width: 360,
-            child: OrganizerCard(organizer: organizer, onOrganizerSelected: (_) {}),
+            child: OrganizerCard(
+              organizer: organizer,
+              onOrganizerSelected: (_) {},
+            ),
           ),
         ),
       ),
@@ -300,7 +306,9 @@ void _registerExploreOrganizerCardsTests() {
           theme: AppTheme.light,
           home: Scaffold(
             body: CustomScrollView(
-              slivers: [OrganizerHeroTopBar(organizer: organizer, isHost: false)],
+              slivers: [
+                OrganizerHeroTopBar(organizer: organizer, isHost: false),
+              ],
             ),
           ),
         ),

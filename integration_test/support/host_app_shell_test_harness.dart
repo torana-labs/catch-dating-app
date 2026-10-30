@@ -408,7 +408,10 @@ Future<List<Object>> hostAppShellTestOverrides({
     ...appShellTestOverrides(
       uid: backend.uid,
       user: user,
-      organizersRepository: OrganizersRepository(backend.firestore, backend.functions),
+      organizersRepository: OrganizersRepository(
+        backend.firestore,
+        backend.functions,
+      ),
       eventRepository: EventRepository(backend.firestore, backend.functions),
     ),
     firebaseFirestoreProvider.overrideWithValue(backend.firestore),

@@ -142,7 +142,8 @@ class EventPolicyEngine {
     EventAdmissionRequest request,
   ) {
     if (admissionPolicy.manualApprovalRequired &&
-        !(admissionPolicy.approvedMembersSkipReview && request.isOrganizerMember)) {
+        !(admissionPolicy.approvedMembersSkipReview &&
+            request.isOrganizerMember)) {
       return decision(
         type: EventAdmissionDecisionType.manualReviewRequired,
         reason: EventAdmissionDecisionReason.manualApprovalRequired,

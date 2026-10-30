@@ -583,7 +583,9 @@ class _HostCreateEventScope extends StatelessWidget {
               AsyncData(:final value) => value,
               AsyncError(:final error, :final stackTrace) =>
                 Future<Organizer?>.error(error, stackTrace),
-              AsyncLoading() => Future<Organizer?>.delayed(const Duration(days: 1)),
+              AsyncLoading() => Future<Organizer?>.delayed(
+                const Duration(days: 1),
+              ),
               null => widgetbookOrganizer,
             },
           ),

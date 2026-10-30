@@ -21,7 +21,9 @@ Widget exploreOrganizerPosterCardStates(BuildContext context) {
     children: [
       WidgetbookPageStateCard(
         label: 'image-backed club',
-        child: AbsorbPointer(child: OrganizerCard(organizer: widgetbookExploreOrganizers[1])),
+        child: AbsorbPointer(
+          child: OrganizerCard(organizer: widgetbookExploreOrganizers[1]),
+        ),
       ),
       WidgetbookPageStateCard(
         label: 'fallback artwork',
@@ -48,13 +50,17 @@ Widget exploreFeedOrganizerRowStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'compact club',
         child: AbsorbPointer(
-          child: ExploreFeedOrganizerRow(organizer: widgetbookExploreOrganizers[0]),
+          child: ExploreFeedOrganizerRow(
+            organizer: widgetbookExploreOrganizers[0],
+          ),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'host unknown',
         child: AbsorbPointer(
-          child: ExploreFeedOrganizerRow(organizer: widgetbookExploreOrganizers[2]),
+          child: ExploreFeedOrganizerRow(
+            organizer: widgetbookExploreOrganizers[2],
+          ),
         ),
       ),
     ],

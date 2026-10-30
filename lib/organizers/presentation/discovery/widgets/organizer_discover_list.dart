@@ -18,7 +18,8 @@ List<Widget> buildOrganizerDirectorySlivers({
   return [
     SliverToBoxAdapter(
       child: CatchSectionHeader(
-        title: context.l10n.organizersOrganizerDiscoverListTitleOrganizerDirectory,
+        title:
+            context.l10n.organizersOrganizerDiscoverListTitleOrganizerDirectory,
         titleStyle: CatchTextStyles.titleL(context),
         padding: CatchInsets.sectionHeader,
       ),

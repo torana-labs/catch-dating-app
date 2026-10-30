@@ -135,7 +135,9 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   }
 
   final sourceOrganizers = organizersState.value ?? const <Organizer>[];
-  final sourceOrganizerIds = sourceOrganizers.map((organizer) => organizer.id).toSet();
+  final sourceOrganizerIds = sourceOrganizers
+      .map((organizer) => organizer.id)
+      .toSet();
   final searchResult = searchState.value;
   final serverEventIds = searchResult?.eventIds.toSet();
   final serverOrganizerIds = searchResult?.organizerIds.toSet();
@@ -147,7 +149,9 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final userProfileAsync = uid == null
       ? const AsyncData(null)
       : ref.watch(watchUserProfileProvider);
-  final followedOrganizerIdsAsync = ref.watch(currentUserFollowedOrganizerIdsProvider);
+  final followedOrganizerIdsAsync = ref.watch(
+    currentUserFollowedOrganizerIdsProvider,
+  );
   final participationsAsync = uid == null
       ? const AsyncData<List<EventParticipation>>([])
       : ref.watch(watchEventParticipationsForUserProvider(uid));
@@ -252,7 +256,8 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final eventsById = <String, Event>{
     for (final event in discoveryWindow.internalEvents) event.id: event,
   };
-  final followedRecommendationsAsync = uid == null || followedOrganizerIds.isEmpty
+  final followedRecommendationsAsync =
+      uid == null || followedOrganizerIds.isEmpty
       ? const AsyncData<List<ExploreEventRecommendationCandidate>>([])
       : ref.watch(
           exploreRecommendedEventsProvider(
@@ -344,9 +349,13 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final extraOrganizersAsync = extraOrganizerIds.isEmpty
       ? const AsyncData<List<Organizer>>([])
       : ref.watch(
-          watchOrganizersForMessagingByIdsProvider(OrganizersByIdQuery(extraOrganizerIds)),
+          watchOrganizersForMessagingByIdsProvider(
+            OrganizersByIdQuery(extraOrganizerIds),
+          ),
         );
-  final extraOrganizersState = catchAsyncStateFromAsyncValue(extraOrganizersAsync);
+  final extraOrganizersState = catchAsyncStateFromAsyncValue(
+    extraOrganizersAsync,
+  );
   if (extraOrganizersState.isLoading) return const AsyncLoading();
   if (extraOrganizersState.hasError) {
     return AsyncError(
@@ -356,7 +365,8 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   }
   final organizerById = {
     for (final organizer in sourceOrganizers) organizer.id: organizer,
-    for (final organizer in extraOrganizersState.value ?? const <Organizer>[]) organizer.id: organizer,
+    for (final organizer in extraOrganizersState.value ?? const <Organizer>[])
+      organizer.id: organizer,
   };
   final deviceLocation = deviceLocationState.value;
   final allItems = eventsById.values
@@ -391,7 +401,9 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
             now: now,
           ),
           isJoinedOrganizerMember: isOrganizerMember,
-          isFollowedOrganizerSignal: followedOrganizerIds.contains(event.clubId),
+          isFollowedOrganizerSignal: followedOrganizerIds.contains(
+            event.clubId,
+          ),
           distanceFromUserKm: distanceFromUserKm,
         );
       })
@@ -494,7 +506,9 @@ Map<ExploreTimeFilter, int> _exploreDateSupplyCounts({
 @riverpod
 AsyncValue<List<ExploreEventRecommendation>> exploreRecommendations(Ref ref) {
   final uidAsync = ref.watch(uidProvider);
-  final followedOrganizerIdsAsync = ref.watch(currentUserFollowedOrganizerIdsProvider);
+  final followedOrganizerIdsAsync = ref.watch(
+    currentUserFollowedOrganizerIdsProvider,
+  );
   final uidState = catchAsyncStateFromAsyncValue(uidAsync);
   final followedOrganizerIdsState = catchAsyncStateFromAsyncValue(
     followedOrganizerIdsAsync,

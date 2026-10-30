@@ -78,7 +78,8 @@ class HostCreateEventRouteState {
         ? HostCreateEventRouteState.initial(initialOrganizer)
         : HostCreateEventRouteState.fromOrganizerState(fetchedOrganizer!);
     final organizer = organizerState.organizer;
-    if (organizerState.status != HostCreateEventRouteStatus.ready || organizer == null) {
+    if (organizerState.status != HostCreateEventRouteStatus.ready ||
+        organizer == null) {
       return organizerState;
     }
 

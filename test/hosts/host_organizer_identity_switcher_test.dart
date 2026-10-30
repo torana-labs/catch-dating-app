@@ -35,7 +35,10 @@ void main() {
 
       expect(resolveSelectedHostOrganizer(organizers), first);
       expect(
-        resolveSelectedHostOrganizer(organizers, selectedOrganizerId: second.id),
+        resolveSelectedHostOrganizer(
+          organizers,
+          selectedOrganizerId: second.id,
+        ),
         second,
       );
       expect(
@@ -47,7 +50,10 @@ void main() {
         second,
       );
       expect(
-        resolveSelectedHostOrganizer(organizers, selectedOrganizerId: 'missing'),
+        resolveSelectedHostOrganizer(
+          organizers,
+          selectedOrganizerId: 'missing',
+        ),
         first,
       );
       expect(resolveSelectedHostOrganizer(const []), isNull);
@@ -87,8 +93,14 @@ void main() {
   testWidgets(
     'switcher sheet marks the current organizer and returns a choice',
     (tester) async {
-      final ownerOrganizer = buildOrganizer(id: 'owner-club', name: 'Sea Face Social');
-      final teamOrganizer = buildOrganizer(id: 'team-club', name: 'Long Table Club');
+      final ownerOrganizer = buildOrganizer(
+        id: 'owner-club',
+        name: 'Sea Face Social',
+      );
+      final teamOrganizer = buildOrganizer(
+        id: 'team-club',
+        name: 'Long Table Club',
+      );
       String? selectedOrganizerId;
 
       await _pumpSheetLauncher(

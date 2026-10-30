@@ -167,7 +167,9 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
   }
 
   @override
-  Future<List<HostPickedOrganizerPhoto>> pickOrganizerPhotos({int? limit}) async {
+  Future<List<HostPickedOrganizerPhoto>> pickOrganizerPhotos({
+    int? limit,
+  }) async {
     final repository = _ref.read(imageUploadRepositoryProvider);
     final images = await repository.pickImages(
       purpose: ImageUploadPurpose.organizerPhoto,
@@ -315,7 +317,10 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
       if (patch.isNotEmpty) {
         await _ref
             .read(organizersRepositoryProvider)
-            .updateOrganizer(clubId: organizer.id, patch: UpdateOrganizerPatch.raw(patch));
+            .updateOrganizer(
+              clubId: organizer.id,
+              patch: UpdateOrganizerPatch.raw(patch),
+            );
       }
     } catch (_) {
       await discardOrganizerMedia(

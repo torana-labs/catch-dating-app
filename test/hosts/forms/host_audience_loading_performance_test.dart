@@ -105,7 +105,9 @@ void main() {
           firebaseAuthProvider.overrideWithValue(_Auth()),
           uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
           hostOperableOrganizersProvider('host-1').overrideWithValue(
-            AsyncData([buildOrganizer(id: 'forms-club', ownerUserId: 'host-1')]),
+            AsyncData([
+              buildOrganizer(id: 'forms-club', ownerUserId: 'host-1'),
+            ]),
           ),
           hostContactsRepositoryProvider.overrideWithValue(contacts),
           hostAllSavedAudiencesProvider('forms-club').overrideWithValue(

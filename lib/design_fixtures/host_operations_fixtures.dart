@@ -201,7 +201,11 @@ final class HostOperationsFixtures {
     reviewCount: 19,
   );
 
-  static final organizers = [primaryOrganizer, dinnerOrganizer, coHostedOrganizer];
+  static final organizers = [
+    primaryOrganizer,
+    dinnerOrganizer,
+    coHostedOrganizer,
+  ];
 
   static final upcomingEvent = event(
     id: 'design-host-event-upcoming',

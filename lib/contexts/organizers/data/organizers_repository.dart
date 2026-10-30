@@ -43,12 +43,15 @@ class OrganizersRepository {
         toJson: (organizer) => organizer.toJson(),
       );
 
-  DocumentReference<Organizer> _organizerRef([String? id]) => _organizersRef.doc(id);
+  DocumentReference<Organizer> _organizerRef([String? id]) =>
+      _organizersRef.doc(id);
 
   // ── Read ───────────────────────────────────────────────────────────────────
 
   Stream<Organizer?> watchOrganizer(String id) => withBackendErrorStream(
-    () => _organizerRef(id).snapshots().map((doc) => doc.exists ? doc.data() : null),
+    () => _organizerRef(
+      id,
+    ).snapshots().map((doc) => doc.exists ? doc.data() : null),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch organizer',
@@ -77,7 +80,8 @@ class OrganizersRepository {
             .limit(ReadLimitPolicy.directoryPage)
             .snapshots()
             .map(
-              (snap) => _appDiscoverableOrganizers(snap.docs.map((d) => d.data())),
+              (snap) =>
+                  _appDiscoverableOrganizers(snap.docs.map((d) => d.data())),
             ),
         context: const BackendErrorContext(
           service: BackendService.firestore,
@@ -86,75 +90,79 @@ class OrganizersRepository {
         ),
       );
 
-  Stream<List<Organizer>> watchOrganizersByLocationSortedByRating(String location) =>
+  Stream<List<Organizer>> watchOrganizersByLocationSortedByRating(
+    String location,
+  ) => withBackendErrorStream(
+    () => _organizersRef
+        .where('locationMarketId', isEqualTo: location)
+        .where('appVisibility', isEqualTo: _discoverable)
+        .orderBy('rating', descending: true)
+        .limit(ReadLimitPolicy.directoryPage)
+        .snapshots()
+        .map(
+          (snap) => _appDiscoverableOrganizers(snap.docs.map((d) => d.data())),
+        ),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch organizers by rating',
+      resource: _collectionPath,
+    ),
+  );
+
+  Stream<List<Organizer>> watchOrganizersHostedBy(String uid) =>
       withBackendErrorStream(
         () => _organizersRef
-            .where('locationMarketId', isEqualTo: location)
-            .where('appVisibility', isEqualTo: _discoverable)
-            .orderBy('rating', descending: true)
+            .where(
+              Filter.or(
+                Filter('hostUserId', isEqualTo: uid),
+                Filter('hostUserIds', arrayContains: uid),
+              ),
+            )
             .limit(ReadLimitPolicy.directoryPage)
             .snapshots()
-            .map(
-              (snap) => _appDiscoverableOrganizers(snap.docs.map((d) => d.data())),
-            ),
+            .map((snap) => snap.docs.map((d) => d.data()).toList()),
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'watch organizers by rating',
+          action: 'watch hosted organizers',
           resource: _collectionPath,
         ),
       );
 
-  Stream<List<Organizer>> watchOrganizersHostedBy(String uid) => withBackendErrorStream(
-    () => _organizersRef
-        .where(
-          Filter.or(
-            Filter('hostUserId', isEqualTo: uid),
-            Filter('hostUserIds', arrayContains: uid),
-          ),
-        )
-        .limit(ReadLimitPolicy.directoryPage)
-        .snapshots()
-        .map((snap) => snap.docs.map((d) => d.data()).toList()),
-    context: const BackendErrorContext(
-      service: BackendService.firestore,
-      action: 'watch hosted organizers',
-      resource: _collectionPath,
-    ),
-  );
-
-  Stream<List<Organizer>> watchOrganizersOwnedBy(String uid) => withBackendErrorStream(
-    () => _organizersRef
-        .where(
-          Filter.or(
-            Filter('hostUserId', isEqualTo: uid),
-            Filter('ownerUserId', isEqualTo: uid),
-          ),
-        )
-        .limit(ReadLimitPolicy.directoryPage)
-        .snapshots()
-        .map((snap) => snap.docs.map((d) => d.data()).toList()),
-    context: const BackendErrorContext(
-      service: BackendService.firestore,
-      action: 'watch owned organizers',
-      resource: _collectionPath,
-    ),
-  );
+  Stream<List<Organizer>> watchOrganizersOwnedBy(String uid) =>
+      withBackendErrorStream(
+        () => _organizersRef
+            .where(
+              Filter.or(
+                Filter('hostUserId', isEqualTo: uid),
+                Filter('ownerUserId', isEqualTo: uid),
+              ),
+            )
+            .limit(ReadLimitPolicy.directoryPage)
+            .snapshots()
+            .map((snap) => snap.docs.map((d) => d.data()).toList()),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch owned organizers',
+          resource: _collectionPath,
+        ),
+      );
 
   /// Search matches resolve by id, one read per organizer: Firestore rules
   /// check an id-list query against every matched document, so one hidden
   /// organizer among the ids would deny the whole query. Hidden organizers
   /// are then dropped here.
-  Stream<List<Organizer>> watchOrganizersByIds({required List<String> organizerIds}) =>
-      watchDocumentsOneByOne(
-        ids: organizerIds,
-        collection: _organizersRef,
-        transform: _appDiscoverableOrganizers,
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'watch organizers by ids',
-          resource: _collectionPath,
-        ),
-      );
+  Stream<List<Organizer>> watchOrganizersByIds({
+    required List<String> organizerIds,
+  }) => watchDocumentsOneByOne(
+    ids: organizerIds,
+    collection: _organizersRef,
+    transform: _appDiscoverableOrganizers,
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch organizers by ids',
+      resource: _collectionPath,
+    ),
+  );
 
   /// Resolves conversation identity even when a club is intentionally hidden
   /// from discovery. Authorization still comes from the match and Firestore
@@ -173,8 +181,11 @@ class OrganizersRepository {
     ),
   );
 
-  static List<Organizer> _appDiscoverableOrganizers(Iterable<Organizer> organizers) =>
-      organizers.where((organizer) => organizer.isPubliclyBrowseable).toList(growable: false);
+  static List<Organizer> _appDiscoverableOrganizers(
+    Iterable<Organizer> organizers,
+  ) => organizers
+      .where((organizer) => organizer.isPubliclyBrowseable)
+      .toList(growable: false);
 
   // ── Write ──────────────────────────────────────────────────────────────────
 
@@ -310,22 +321,24 @@ class OrganizersRepository {
     ),
   );
 
-  Future<void> removeOrganizerHost({required String clubId, required String uid}) =>
-      withBackendErrorContext(
-        () => _functions
-            .httpsCallable('removeOrganizerManager')
-            .call(
-              RemoveOrganizerManagerCallableRequest(
-                organizerId: clubId,
-                uid: uid,
-              ).toJson(),
-            ),
-        context: const BackendErrorContext(
-          service: BackendService.functions,
-          action: 'remove organizer manager',
-          resource: _collectionPath,
+  Future<void> removeOrganizerHost({
+    required String clubId,
+    required String uid,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('removeOrganizerManager')
+        .call(
+          RemoveOrganizerManagerCallableRequest(
+            organizerId: clubId,
+            uid: uid,
+          ).toJson(),
         ),
-      );
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'remove organizer manager',
+      resource: _collectionPath,
+    ),
+  );
 
   Future<void> transferOrganizerOwnership({
     required String clubId,
@@ -418,14 +431,20 @@ Future<Organizer?> fetchOrganizer(Ref ref, String id) =>
     ref.watch(organizersRepositoryProvider).fetchOrganizer(id);
 
 @riverpod
-Stream<List<Organizer>> watchOrganizersByIds(Ref ref, OrganizersByIdQuery query) =>
-    ref.watch(organizersRepositoryProvider).watchOrganizersByIds(organizerIds: query.organizerIds);
+Stream<List<Organizer>> watchOrganizersByIds(
+  Ref ref,
+  OrganizersByIdQuery query,
+) => ref
+    .watch(organizersRepositoryProvider)
+    .watchOrganizersByIds(organizerIds: query.organizerIds);
 
 @riverpod
-Stream<List<Organizer>> watchOrganizersForMessagingByIds(Ref ref, OrganizersByIdQuery query) =>
-    ref
-        .watch(organizersRepositoryProvider)
-        .watchOrganizersForMessagingByIds(organizerIds: query.organizerIds);
+Stream<List<Organizer>> watchOrganizersForMessagingByIds(
+  Ref ref,
+  OrganizersByIdQuery query,
+) => ref
+    .watch(organizersRepositoryProvider)
+    .watchOrganizersForMessagingByIds(organizerIds: query.organizerIds);
 
 @riverpod
 AsyncValue<List<Organizer>> hostOperableOrganizers(Ref ref, String uid) {
@@ -471,7 +490,8 @@ class OrganizersByIdQuery {
   OrganizersByIdQuery._(Iterable<String> organizerIds)
     : organizerIds = List.unmodifiable(organizerIds.toSet().toList()..sort());
 
-  factory OrganizersByIdQuery(Iterable<String> organizerIds) => OrganizersByIdQuery._(organizerIds);
+  factory OrganizersByIdQuery(Iterable<String> organizerIds) =>
+      OrganizersByIdQuery._(organizerIds);
 
   static const _equality = ListEquality<String>();
 
@@ -479,7 +499,8 @@ class OrganizersByIdQuery {
 
   @override
   bool operator ==(Object other) {
-    return other is OrganizersByIdQuery && _equality.equals(other.organizerIds, organizerIds);
+    return other is OrganizersByIdQuery &&
+        _equality.equals(other.organizerIds, organizerIds);
   }
 
   @override

@@ -145,9 +145,9 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
       child: WidgetbookFixtureScope(
         overrides: [
           uidProvider.overrideWithValue(AsyncData<String?>(uid)),
-          fetchOrganizerProvider(
-            effectiveOrganizer.id,
-          ).overrideWith((ref) => _futureOrValue(organizerValue, effectiveOrganizer)),
+          fetchOrganizerProvider(effectiveOrganizer.id).overrideWith(
+            (ref) => _futureOrValue(organizerValue, effectiveOrganizer),
+          ),
           watchEventProvider(
             effectiveEvent.id,
           ).overrideWith((ref) => _streamValue(eventValue, effectiveEvent)),
@@ -248,7 +248,10 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
   }
 }
 
-Future<Organizer?> _futureOrValue(AsyncValue<Organizer?>? value, Organizer fallback) {
+Future<Organizer?> _futureOrValue(
+  AsyncValue<Organizer?>? value,
+  Organizer fallback,
+) {
   return switch (value) {
     AsyncData(:final value) => Future.value(value),
     AsyncError(:final error, :final stackTrace) => Future<Organizer?>.error(

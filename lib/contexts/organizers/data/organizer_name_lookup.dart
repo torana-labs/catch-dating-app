@@ -12,7 +12,8 @@ class OrganizerNameLookupQuery {
 
   @override
   bool operator ==(Object other) {
-    return other is OrganizerNameLookupQuery && listEquals(other.organizerIds, organizerIds);
+    return other is OrganizerNameLookupQuery &&
+        listEquals(other.organizerIds, organizerIds);
   }
 
   @override
@@ -29,7 +30,9 @@ Future<Map<String, String>> organizerNameLookup(
   if (query.organizerIds.isEmpty) return const <String, String>{};
 
   final repository = ref.watch(organizersRepositoryProvider);
-  final organizers = await Future.wait(query.organizerIds.map(repository.fetchOrganizer));
+  final organizers = await Future.wait(
+    query.organizerIds.map(repository.fetchOrganizer),
+  );
 
   return {
     for (final organizer in organizers)

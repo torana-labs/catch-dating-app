@@ -22,7 +22,9 @@ class OrganizerIndexRow extends StatelessWidget {
     return Semantics(
       key: ValueKey<String>('club-directory-${organizer.id}'),
       button: onTap != null,
-      label: context.l10n.organizersDirectoryCardLabelOpenNameOrganizer(name: organizer.name),
+      label: context.l10n.organizersDirectoryCardLabelOpenNameOrganizer(
+        name: organizer.name,
+      ),
       child: CatchSurface(
         onTap: onTap,
         borderRole: CatchBorderRole.separator,
@@ -71,7 +73,10 @@ class OrganizerIndexRow extends StatelessWidget {
                     ],
                   ),
                   gapH6,
-                  CatchMetadataText(_organizerIndexMetaLabel(organizer), color: t.ink3),
+                  CatchMetadataText(
+                    _organizerIndexMetaLabel(organizer),
+                    color: t.ink3,
+                  ),
                 ],
               ),
             ),

@@ -55,7 +55,9 @@ void main() {
     });
 
     test('serializes organizer type by its canonical contract name', () {
-      final patch = UpdateOrganizerPatch(organizerType: OrganizerType.eventProducer);
+      final patch = UpdateOrganizerPatch(
+        organizerType: OrganizerType.eventProducer,
+      );
       expect(patch.toFieldsJson(), {'organizerType': 'eventProducer'});
     });
 
@@ -75,7 +77,9 @@ void main() {
     });
 
     test('typed host defaults serialize to schema-valid JSON', () {
-      final patch = UpdateOrganizerPatch(hostDefaults: const OrganizerHostDefaults());
+      final patch = UpdateOrganizerPatch(
+        hostDefaults: const OrganizerHostDefaults(),
+      );
       final schema = JsonSchema.create(
         schema_contracts
             .schemaContractsByName['UpdateOrganizerCallablePayload']!,

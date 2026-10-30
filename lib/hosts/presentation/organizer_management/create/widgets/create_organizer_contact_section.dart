@@ -34,14 +34,17 @@ class CreateOrganizerContactSection extends StatelessWidget {
       children: [
         CatchField.input(
           copy: catchFieldCopy(context.l10n),
-          title: context.l10n.hostsCreateOrganizerContactFieldsTitleInstagramHandle,
+          title: context
+              .l10n
+              .hostsCreateOrganizerContactFieldsTitleInstagramHandle,
           contract:
               CatchContractConstraints.createClubCallablePayloadInstagramHandle,
           controller: instagramController,
           labelMode: CatchFieldLabelTextMode.optional,
           icon: CatchIcons.handle,
-          inputHint:
-              context.l10n.hostsCreateOrganizerContactFieldsPlaceholderYourorganizer,
+          inputHint: context
+              .l10n
+              .hostsCreateOrganizerContactFieldsPlaceholderYourorganizer,
           keyboardType: TextInputType.text,
           textInputAction: TextInputAction.next,
         ),

@@ -43,15 +43,17 @@ CityData _city(String name) => cityOptionByName(name)!.toCityData();
 
 String get _mumbaiMarketId => _city('mumbai').effectiveMarketId;
 
-OrganizerMembership _membership({required String clubId, String uid = 'runner-1'}) =>
-    OrganizerMembership(
-      id: organizerMembershipId(clubId: clubId, uid: uid),
-      clubId: clubId,
-      uid: uid,
-      role: OrganizerMembershipRole.member,
-      status: OrganizerMembershipStatus.active,
-      joinedAt: DateTime(2026),
-    );
+OrganizerMembership _membership({
+  required String clubId,
+  String uid = 'runner-1',
+}) => OrganizerMembership(
+  id: organizerMembershipId(clubId: clubId, uid: uid),
+  clubId: clubId,
+  uid: uid,
+  role: OrganizerMembershipRole.member,
+  status: OrganizerMembershipStatus.active,
+  joinedAt: DateTime(2026),
+);
 
 ExploreEventItem _exploreItem({
   required String id,
@@ -971,7 +973,10 @@ void main() {
     test(
       'ExploreEventRowState keeps organizer identity for followed clubs',
       () {
-        final organizer = buildOrganizer(id: 'member-row-club', name: 'Member Club');
+        final organizer = buildOrganizer(
+          id: 'member-row-club',
+          name: 'Member Club',
+        );
         final item = _exploreItem(
           id: 'member-row-event',
           organizer: organizer,
@@ -1085,7 +1090,10 @@ void main() {
         hasSearch: false,
         filters: const ExploreFilterSelection(),
       );
-      const emptyViewModel = ExploreViewModel(joinedOrganizers: [], allOrganizers: []);
+      const emptyViewModel = ExploreViewModel(
+        joinedOrganizers: [],
+        allOrganizers: [],
+      );
       final populatedViewModel = ExploreViewModel(
         joinedOrganizers: const [],
         allOrganizers: [buildOrganizer(id: 'club-content')],
@@ -1163,7 +1171,10 @@ void main() {
     });
 
     test('ExploreDiscoveryScreenState derives route display state', () {
-      const emptyViewModel = ExploreViewModel(joinedOrganizers: [], allOrganizers: []);
+      const emptyViewModel = ExploreViewModel(
+        joinedOrganizers: [],
+        allOrganizers: [],
+      );
       final state = ExploreDiscoveryScreenState.from(
         l10n: _l10n,
         cityLabel: 'Mumbai',
@@ -1426,10 +1437,22 @@ void main() {
           tags: const ['tempo', 'community'],
         );
 
-        expect(matchesExploreOrganizerSearchQuery(bandraOrganizer, 'bandra'), isTrue);
-        expect(matchesExploreOrganizerSearchQuery(hostOrganizer, 'asha'), isTrue);
-        expect(matchesExploreOrganizerSearchQuery(taggedOrganizer, 'tempo'), isTrue);
-        expect(matchesExploreOrganizerSearchQuery(taggedOrganizer, 'missing'), isFalse);
+        expect(
+          matchesExploreOrganizerSearchQuery(bandraOrganizer, 'bandra'),
+          isTrue,
+        );
+        expect(
+          matchesExploreOrganizerSearchQuery(hostOrganizer, 'asha'),
+          isTrue,
+        );
+        expect(
+          matchesExploreOrganizerSearchQuery(taggedOrganizer, 'tempo'),
+          isTrue,
+        );
+        expect(
+          matchesExploreOrganizerSearchQuery(taggedOrganizer, 'missing'),
+          isFalse,
+        );
       },
     );
 
@@ -1462,7 +1485,12 @@ void main() {
       );
 
       final filtered = applyExploreFilters(
-        organizers: [matchingOrganizer, staleEventOrganizer, lowRatedOrganizer, wrongAreaOrganizer],
+        organizers: [
+          matchingOrganizer,
+          staleEventOrganizer,
+          lowRatedOrganizer,
+          wrongAreaOrganizer,
+        ],
         filters: const ExploreFilterSelection(
           timeFilter: ExploreTimeFilter.thisWeek,
           highRatedOnly: true,
@@ -1470,7 +1498,11 @@ void main() {
           activityTag: 'Tempo',
           area: 'bandra',
         ),
-        joinedOrganizerIds: {'matching-club', 'stale-event-club', 'wrong-area-club'},
+        joinedOrganizerIds: {
+          'matching-club',
+          'stale-event-club',
+          'wrong-area-club',
+        },
         now: now,
       );
 
@@ -1621,12 +1653,17 @@ void main() {
           id: 'discover-club',
           hostUserId: 'host-3',
         );
-        final hostedOrganizer = buildOrganizer(id: 'hosted-club', hostUserId: 'runner-1');
+        final hostedOrganizer = buildOrganizer(
+          id: 'hosted-club',
+          hostUserId: 'runner-1',
+        );
 
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            watchActiveOrganizerMembershipsForUserProvider('runner-1').overrideWith(
+            watchActiveOrganizerMembershipsForUserProvider(
+              'runner-1',
+            ).overrideWith(
               (ref) => Stream.value([
                 _membership(clubId: 'member-club'),
                 _membership(clubId: 'followed-club'),
@@ -1720,9 +1757,9 @@ void main() {
             exploreSearchRepositoryProvider.overrideWithValue(
               _FakeExploreSearchRepository(error: StateError('search offline')),
             ),
-            watchOrganizersByLocationProvider(
-              _mumbaiMarketId,
-            ).overrideWith((ref) => Stream.value([bandraOrganizer, ashaOrganizer])),
+            watchOrganizersByLocationProvider(_mumbaiMarketId).overrideWith(
+              (ref) => Stream.value([bandraOrganizer, ashaOrganizer]),
+            ),
           ],
         );
         addTearDown(container.dispose);
@@ -1974,7 +2011,9 @@ void main() {
             ).overrideWith((ref) => Stream.value([organizer])),
             watchActiveOrganizerMembershipsForUserProvider(
               user.uid,
-            ).overrideWith((ref) => Stream.value(const <OrganizerMembership>[])),
+            ).overrideWith(
+              (ref) => Stream.value(const <OrganizerMembership>[]),
+            ),
             watchEventParticipationsForUserProvider(user.uid).overrideWith(
               (ref) => Stream.value([
                 event_test.buildEventParticipation(
@@ -2071,7 +2110,9 @@ void main() {
             ).overrideWith((ref) => Stream.value([organizer])),
             watchActiveOrganizerMembershipsForUserProvider(
               user.uid,
-            ).overrideWith((ref) => Stream.value(const <OrganizerMembership>[])),
+            ).overrideWith(
+              (ref) => Stream.value(const <OrganizerMembership>[]),
+            ),
             watchEventParticipationsForUserProvider(user.uid).overrideWith(
               (ref) => Stream.value([
                 event_test.buildEventParticipation(
@@ -2125,30 +2166,33 @@ void main() {
       },
     );
 
-    test('exploreOrganizersViewModelProvider surfaces auth uid errors', () async {
-      final container = ProviderContainer(
-        overrides: [
-          uidProvider.overrideWith(
-            (ref) => Stream.error(StateError('uid failed')),
-          ),
-          filteredExploreOrganizersProvider.overrideWithValue(
-            AsyncData([buildOrganizer(id: 'available-club')]),
-          ),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'exploreOrganizersViewModelProvider surfaces auth uid errors',
+      () async {
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWith(
+              (ref) => Stream.error(StateError('uid failed')),
+            ),
+            filteredExploreOrganizersProvider.overrideWithValue(
+              AsyncData([buildOrganizer(id: 'available-club')]),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      final subscription = container.listen(
-        exploreOrganizersViewModelProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(subscription.close);
-      await container.pump();
+        final subscription = container.listen(
+          exploreOrganizersViewModelProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
+        await container.pump();
 
-      expect(subscription.read().hasError, isTrue);
-      expect(subscription.read().error, isA<StateError>());
-    });
+        expect(subscription.read().hasError, isTrue);
+        expect(subscription.read().error, isA<StateError>());
+      },
+    );
 
     test(
       'exploreOrganizersViewModelProvider surfaces filtered list errors',

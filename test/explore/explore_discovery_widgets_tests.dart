@@ -107,7 +107,10 @@ void _registerExploreDiscoveryWidgetsTests() {
 
     await _pumpOrganizersSlivers(tester, [
       _exploreBodySliverGroup(
-        organizersViewModel: const ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+        organizersViewModel: const ExploreViewModel(
+          joinedOrganizers: [],
+          allOrganizers: [],
+        ),
         feedAsync: AsyncData(
           ExploreFeedViewModel(
             items: [ExploreEventItem(event: event, organizer: organizer)],
@@ -483,7 +486,10 @@ void _registerExploreDiscoveryWidgetsTests() {
 
     await _pumpOrganizersSlivers(tester, [
       _exploreBodySliverGroup(
-        organizersViewModel: const ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+        organizersViewModel: const ExploreViewModel(
+          joinedOrganizers: [],
+          allOrganizers: [],
+        ),
         feedAsync: AsyncData(
           ExploreFeedViewModel(
             items: [
@@ -573,7 +579,10 @@ void _registerExploreDiscoveryWidgetsTests() {
       );
     }
 
-    final organizer = buildOrganizer(id: 'club-cover-safe', name: 'Pace Social');
+    final organizer = buildOrganizer(
+      id: 'club-cover-safe',
+      name: 'Pace Social',
+    );
     final event = event_test.buildEvent(
       id: 'event-cover-safe',
       clubId: organizer.id,

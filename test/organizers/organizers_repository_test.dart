@@ -157,7 +157,10 @@ void main() {
       'watchClubsByLocation filters by city and orders by createdAt',
       () async {
         final older = buildOrganizer(id: 'older', createdAt: DateTime(2025));
-        final newer = buildOrganizer(id: 'newer', createdAt: DateTime(2025, 1, 2));
+        final newer = buildOrganizer(
+          id: 'newer',
+          createdAt: DateTime(2025, 1, 2),
+        );
         await _seedOrganizer(firestore, older);
         await _seedOrganizer(firestore, newer);
         await _seedOrganizer(
@@ -220,7 +223,9 @@ void main() {
         emits(
           allOf(
             hasLength(ReadLimitPolicy.directoryPage),
-            predicate<List<Organizer>>((organizers) => organizers.first.id == 'club-34'),
+            predicate<List<Organizer>>(
+              (organizers) => organizers.first.id == 'club-34',
+            ),
           ),
         ),
       );
@@ -256,7 +261,9 @@ void main() {
       await _seedOrganizer(firestore, hidden);
 
       await expectLater(
-        repository.watchOrganizersByIds(organizerIds: const ['hidden', 'visible']),
+        repository.watchOrganizersByIds(
+          organizerIds: const ['hidden', 'visible'],
+        ),
         emits([visible]),
       );
     });
@@ -311,7 +318,10 @@ void main() {
       await _seedOrganizer(firestore, owned);
       await _seedOrganizer(firestore, coHosted);
 
-      await expectLater(repository.watchOrganizersOwnedBy('host-1'), emits([owned]));
+      await expectLater(
+        repository.watchOrganizersOwnedBy('host-1'),
+        emits([owned]),
+      );
     });
 
     test('createClub delegates creation to the organizer callable', () async {
@@ -393,7 +403,9 @@ void main() {
       () async {
         await repository.updateOrganizer(
           clubId: 'club-1',
-          patch: UpdateOrganizerPatch(imageUrl: 'https://example.com/updated.jpg'),
+          patch: UpdateOrganizerPatch(
+            imageUrl: 'https://example.com/updated.jpg',
+          ),
         );
 
         final callable =
@@ -425,17 +437,23 @@ void main() {
       expect(functions.callables.containsKey('followOrganizer'), isFalse);
     });
 
-    test('organizersRepositoryProvider builds from firebaseFirestoreProvider', () {
-      final container = ProviderContainer(
-        overrides: [
-          firebaseFirestoreProvider.overrideWithValue(firestore),
-          firebaseFunctionsProvider.overrideWithValue(functions),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'organizersRepositoryProvider builds from firebaseFirestoreProvider',
+      () {
+        final container = ProviderContainer(
+          overrides: [
+            firebaseFirestoreProvider.overrideWithValue(firestore),
+            firebaseFunctionsProvider.overrideWithValue(functions),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      expect(container.read(organizersRepositoryProvider), isA<OrganizersRepository>());
-    });
+        expect(
+          container.read(organizersRepositoryProvider),
+          isA<OrganizersRepository>(),
+        );
+      },
+    );
 
     test('repository provider wrappers delegate to the repository', () async {
       final fakeRepository = FakeOrganizersRepository();
@@ -443,7 +461,10 @@ void main() {
       final topOrganizer = buildOrganizer(id: 'club-top', rating: 4.9);
       fakeRepository.organizersById[organizer.id] = organizer;
       fakeRepository.organizersById[topOrganizer.id] = topOrganizer;
-      fakeRepository.organizersByLocation['in-mh-mumbai'] = [organizer, topOrganizer];
+      fakeRepository.organizersByLocation['in-mh-mumbai'] = [
+        organizer,
+        topOrganizer,
+      ];
 
       final container = ProviderContainer(
         overrides: [
@@ -482,7 +503,10 @@ void main() {
       expect(locationSubscription.read().value, [organizer, topOrganizer]);
       expect(ratingSubscription.read().value?.first.id, 'club-top');
       expect(hostedSubscription.read().value, [organizer, topOrganizer]);
-      expect(await container.read(fetchOrganizerProvider(organizer.id).future), organizer);
+      expect(
+        await container.read(fetchOrganizerProvider(organizer.id).future),
+        organizer,
+      );
     });
 
     testWidgets(
@@ -521,8 +545,14 @@ void main() {
   });
 }
 
-Future<void> _seedOrganizer(FakeFirebaseFirestore firestore, Organizer organizer) {
-  return firestore.collection('organizers').doc(organizer.id).set(organizer.toJson());
+Future<void> _seedOrganizer(
+  FakeFirebaseFirestore firestore,
+  Organizer organizer,
+) {
+  return firestore
+      .collection('organizers')
+      .doc(organizer.id)
+      .set(organizer.toJson());
 }
 
 class _IdleOrganizersRepository extends Fake implements OrganizersRepository {

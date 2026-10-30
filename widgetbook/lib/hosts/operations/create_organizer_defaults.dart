@@ -23,7 +23,9 @@ Widget organizerHostDefaultsStepCatalogStates(BuildContext context) {
     children: [
       WidgetbookPageStateCard(
         label: 'prefilled',
-        child: WidgetbookHostDeviceFrame(child: _OrganizerHostDefaultsStepFrame()),
+        child: WidgetbookHostDeviceFrame(
+          child: _OrganizerHostDefaultsStepFrame(),
+        ),
       ),
     ],
   );
@@ -41,7 +43,9 @@ Widget organizerPolicyDefaultsCardCatalogStates(BuildContext context) {
     children: [
       WidgetbookPageStateCard(
         label: 'editable',
-        child: WidgetbookHostDeviceFrame(child: _OrganizerPolicyDefaultsCardFrame()),
+        child: WidgetbookHostDeviceFrame(
+          child: _OrganizerPolicyDefaultsCardFrame(),
+        ),
       ),
     ],
   );

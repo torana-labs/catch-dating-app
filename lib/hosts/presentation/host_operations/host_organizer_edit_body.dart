@@ -20,7 +20,8 @@ abstract final class HostOrganizerMediaKeys {
   static const logoTile = ValueKey('host-media-logo-tile');
 }
 
-typedef HostOrganizerSettingsNavigation = void Function(Routes route, String clubId);
+typedef HostOrganizerSettingsNavigation =
+    void Function(Routes route, String clubId);
 
 class HostOrganizerEditBody extends ConsumerStatefulWidget {
   const HostOrganizerEditBody({
@@ -39,7 +40,8 @@ class HostOrganizerEditBody extends ConsumerStatefulWidget {
   final HostOrganizerSettingsNavigation? onOpenSettingsRoute;
 
   @override
-  ConsumerState<HostOrganizerEditBody> createState() => _HostOrganizerEditBodyState();
+  ConsumerState<HostOrganizerEditBody> createState() =>
+      _HostOrganizerEditBodyState();
 }
 
 class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
@@ -91,7 +93,8 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
       _setExpandedField(widget.initialExpandedField);
     }
     if (oldWidget.organizer.clubPhotos != widget.organizer.clubPhotos ||
-        oldWidget.organizer.profileImageUrl != widget.organizer.profileImageUrl ||
+        oldWidget.organizer.profileImageUrl !=
+            widget.organizer.profileImageUrl ||
         oldWidget.organizer.logoPhoto != widget.organizer.logoPhoto) {
       _mediaSourceRevision += 1;
       _mediaAwaitingSnapshot = false;
@@ -142,7 +145,9 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
   }
 
   Future<HostPickedOrganizerLogo?> _pickLogo() async {
-    final logo = await ref.read(hostOrganizerEditControllerProvider).pickOrganizerLogo();
+    final logo = await ref
+        .read(hostOrganizerEditControllerProvider)
+        .pickOrganizerLogo();
     if (!mounted || logo == null) return null;
     final previousLogo = _pickedLogo;
     setState(() {
@@ -307,7 +312,8 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
       _mediaError = null;
       _mediaDrafts = [
         for (final draft in _mediaDrafts)
-          if (draft is _HostPickedOrganizerMediaDraft && !draft.input.isUploaded)
+          if (draft is _HostPickedOrganizerMediaDraft &&
+              !draft.input.isUploaded)
             draft.withJob(const ImageUploadJobState.queued())
           else
             draft,
@@ -392,7 +398,8 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
 
   void _applyResolvedInputs(HostOrganizerMediaSaveResult result) {
     final resolvedById = {
-      for (final input in result.photoInputs ?? const <HostOrganizerMediaInput>[])
+      for (final input
+          in result.photoInputs ?? const <HostOrganizerMediaInput>[])
         input.id: input,
     };
     _mediaDrafts = [
@@ -436,7 +443,9 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
     final publicationMutation = ref.watch(
       HostOrganizerEditController.publicationMutation,
     );
-    final publicationState = HostOrganizerPublicationState.fromOrganizer(organizer);
+    final publicationState = HostOrganizerPublicationState.fromOrganizer(
+      organizer,
+    );
     final publicationBody = switch (publicationState.kind) {
       HostOrganizerPublicationKind.private =>
         context.l10n.hostsHostOrganizerPublicationBodyPrivate,
@@ -459,9 +468,13 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
     };
     final cityOptions = <_HostOrganizerCityOption>[
       for (final city in defaultCityOptions.where((city) => city.hostCreatable))
-        _HostOrganizerCityOption(value: city.effectiveMarketId, label: city.label),
+        _HostOrganizerCityOption(
+          value: city.effectiveMarketId,
+          label: city.label,
+        ),
       if (!defaultCityOptions.any(
-        (city) => city.hostCreatable && city.effectiveMarketId == organizer.location,
+        (city) =>
+            city.hostCreatable && city.effectiveMarketId == organizer.location,
       ))
         _HostOrganizerCityOption(
           value: organizer.location,
@@ -503,19 +516,30 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
                 children: [
                   HostOrganizerPublicationChannelRow(
                     key: const ValueKey('host-publication-catch-app'),
-                    label: context.l10n.hostsHostOrganizerPublicationChannelCatch,
+                    label:
+                        context.l10n.hostsHostOrganizerPublicationChannelCatch,
                     status: publicationState.catchAppVisible
-                        ? context.l10n.hostsHostOrganizerPublicationStatusVisible
-                        : context.l10n.hostsHostOrganizerPublicationStatusHidden,
+                        ? context
+                              .l10n
+                              .hostsHostOrganizerPublicationStatusVisible
+                        : context
+                              .l10n
+                              .hostsHostOrganizerPublicationStatusHidden,
                     visible: publicationState.catchAppVisible,
                   ),
                   gapH8,
                   HostOrganizerPublicationChannelRow(
                     key: const ValueKey('host-publication-website'),
-                    label: context.l10n.hostsHostOrganizerPublicationChannelWebsite,
+                    label: context
+                        .l10n
+                        .hostsHostOrganizerPublicationChannelWebsite,
                     status: publicationState.websiteEnabled
-                        ? context.l10n.hostsHostOrganizerPublicationStatusEnabled
-                        : context.l10n.hostsHostOrganizerPublicationStatusNotEnabled,
+                        ? context
+                              .l10n
+                              .hostsHostOrganizerPublicationStatusEnabled
+                        : context
+                              .l10n
+                              .hostsHostOrganizerPublicationStatusNotEnabled,
                     visible: publicationState.websiteEnabled,
                   ),
                 ],
@@ -532,7 +556,8 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
                   ? CatchButtonStatus.loading
                   : CatchButtonStatus.idle,
               actionEmphasis:
-                  publicationState.kind == HostOrganizerPublicationKind.everywhere
+                  publicationState.kind ==
+                      HostOrganizerPublicationKind.everywhere
                   ? CatchSectionEmphasis.secondary
                   : CatchSectionEmphasis.primary,
               footer: publicationMutation.hasError
@@ -565,7 +590,9 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
             children: [
               HostOrganizerMediaRail(
                 logoImageBytes: _pickedLogo?.bytes,
-                logoImageUrl: _removeLogoOnSave ? null : organizer.profileImageUrl,
+                logoImageUrl: _removeLogoOnSave
+                    ? null
+                    : organizer.profileImageUrl,
                 photos: visibleMediaPreviews,
                 logoBadgeLabel: context.l10n.hostsHostOrganizerEditTabBadgeLogo,
                 addPhotosLabel: context
@@ -648,7 +675,9 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
 
   Future<bool> _savePatch(UpdateOrganizerPatch patch) async {
     if (patch.isEmpty) return true;
-    if (ref.read(HostOrganizerEditController.updateOrganizerMutation).isPending) {
+    if (ref
+        .read(HostOrganizerEditController.updateOrganizerMutation)
+        .isPending) {
       return false;
     }
     await HostOrganizerEditController.updateOrganizerMutation.run(
@@ -660,8 +689,11 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
     return true;
   }
 
-  String _errorText(BuildContext context, Object error) =>
-      appErrorMessage(error, l10n: context.l10n, context: AppErrorContext.organizer);
+  String _errorText(BuildContext context, Object error) => appErrorMessage(
+    error,
+    l10n: context.l10n,
+    context: AppErrorContext.organizer,
+  );
 
   void _openSpoke(Routes route) {
     final onOpenSettingsRoute = widget.onOpenSettingsRoute;

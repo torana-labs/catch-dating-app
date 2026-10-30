@@ -5,7 +5,8 @@ extension _CreateOrganizerActions on _CreateOrganizerScreenState {
     try {
       final draft = await CreateOrganizerDraftController.loadDraftMutation.run(
         ref,
-        (tx) => tx.get(createOrganizerDraftControllerProvider.notifier).loadDraft(),
+        (tx) =>
+            tx.get(createOrganizerDraftControllerProvider.notifier).loadDraft(),
       );
       if (!mounted || draft == null || draft.isEmpty) {
         return;
@@ -20,7 +21,9 @@ extension _CreateOrganizerActions on _CreateOrganizerScreenState {
 
       showCatchNotice(
         context,
-        context.l10n.hostsCreateOrganizerScreenVisiblecopyRestoredYourOrganizerDraft,
+        context
+            .l10n
+            .hostsCreateOrganizerScreenVisiblecopyRestoredYourOrganizerDraft,
       );
     } catch (error, stackTrace) {
       ref
@@ -41,7 +44,8 @@ extension _CreateOrganizerActions on _CreateOrganizerScreenState {
     if (widget.initialPickedOrganizerPhotos.isEmpty) return;
     _clubPhotos.addAll(
       widget.initialPickedOrganizerPhotos.map(
-        (photo) => _PickedOrganizerPhotoDraft(_nextPickedOrganizerPhotoId++, photo),
+        (photo) =>
+            _PickedOrganizerPhotoDraft(_nextPickedOrganizerPhotoId++, photo),
       ),
     );
     _organizerPhotosTouched = true;
@@ -73,7 +77,8 @@ extension _CreateOrganizerActions on _CreateOrganizerScreenState {
     _setLocalState(() {
       _clubPhotos.addAll(
         photos.map(
-          (photo) => _PickedOrganizerPhotoDraft(_nextPickedOrganizerPhotoId++, photo),
+          (photo) =>
+              _PickedOrganizerPhotoDraft(_nextPickedOrganizerPhotoId++, photo),
         ),
       );
       _organizerPhotosTouched = true;
@@ -264,12 +269,13 @@ extension _CreateOrganizerActions on _CreateOrganizerScreenState {
       hostDefaults: _hostDefaults,
     );
 
-    final savedDraft = await CreateOrganizerDraftController.saveDraftMutation.run(
-      ref,
-      (tx) async => tx
-          .get(createOrganizerDraftControllerProvider.notifier)
-          .saveDraft(draftRequest.toDraft(savedAt: DateTime.now())),
-    );
+    final savedDraft = await CreateOrganizerDraftController.saveDraftMutation
+        .run(
+          ref,
+          (tx) async => tx
+              .get(createOrganizerDraftControllerProvider.notifier)
+              .saveDraft(draftRequest.toDraft(savedAt: DateTime.now())),
+        );
     if (savedDraft == null) return false;
 
     _lastSavedDraftSignature = _currentDraftContentSignature;
@@ -397,12 +403,13 @@ extension _CreateOrganizerActions on _CreateOrganizerScreenState {
     if (mounted && selected != null) _showStep(selected);
   }
 
-  String _primaryLabel(HostOrganizerCreatePrimaryIntent intent) => switch (intent) {
-    HostOrganizerCreatePrimaryIntent.nextStep =>
-      context.l10n.hostsStepperFooterLabelNext,
-    HostOrganizerCreatePrimaryIntent.review =>
-      context.l10n.hostsCreateOrganizerReviewTitle,
-    HostOrganizerCreatePrimaryIntent.submit =>
-      context.l10n.hostsCreateOrganizerCreateAction,
-  };
+  String _primaryLabel(HostOrganizerCreatePrimaryIntent intent) =>
+      switch (intent) {
+        HostOrganizerCreatePrimaryIntent.nextStep =>
+          context.l10n.hostsStepperFooterLabelNext,
+        HostOrganizerCreatePrimaryIntent.review =>
+          context.l10n.hostsCreateOrganizerReviewTitle,
+        HostOrganizerCreatePrimaryIntent.submit =>
+          context.l10n.hostsCreateOrganizerCreateAction,
+      };
 }

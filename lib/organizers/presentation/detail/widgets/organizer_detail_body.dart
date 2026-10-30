@@ -103,7 +103,8 @@ class OrganizerDetailSliverBody extends StatelessWidget {
     final showTrailingSections =
         state.showReviews || state.contactActions.isNotEmpty;
     final embeddedPreview =
-        presentationMode == OrganizerDetailPresentationMode.embeddedReadOnlyPreview;
+        presentationMode ==
+        OrganizerDetailPresentationMode.embeddedReadOnlyPreview;
     final effectiveEventSelection = embeddedPreview ? null : onEventSelected;
     final effectiveHostProfileSelection = embeddedPreview
         ? null
@@ -167,17 +168,25 @@ class OrganizerDetailSliverBody extends StatelessWidget {
                 ),
                 if (tags.isNotEmpty)
                   CatchSection.divided(
-                    title: context.l10n.organizersOrganizerDetailBodyTitleWhatWeDo,
-                    child: OrganizerActivitySection(organizer: organizer, tags: tags),
+                    title:
+                        context.l10n.organizersOrganizerDetailBodyTitleWhatWeDo,
+                    child: OrganizerActivitySection(
+                      organizer: organizer,
+                      tags: tags,
+                    ),
                   ),
                 if (organizer.clubPhotos.isNotEmpty)
                   CatchSection.divided(
-                    title: context.l10n.organizersOrganizerDetailBodyTitleFromTheOrganizer,
+                    title: context
+                        .l10n
+                        .organizersOrganizerDetailBodyTitleFromTheOrganizer,
                     child: OrganizerPhotoRail(organizer: organizer),
                   ),
                 if (organizer.displayHostProfiles.isNotEmpty)
                   CatchSection.divided(
-                    title: context.l10n.organizersOrganizerDetailBodyTitleYourHosts,
+                    title: context
+                        .l10n
+                        .organizersOrganizerDetailBodyTitleYourHosts,
                     count: organizer.displayHostProfiles.length,
                     child: OrganizerHostSection(
                       organizer: organizer,
@@ -221,7 +230,8 @@ class OrganizerDetailSliverBody extends StatelessWidget {
                 ),
               if (state.contactActions.isNotEmpty)
                 CatchSection.divided(
-                  title: context.l10n.organizersOrganizerDetailBodyTitleGetInTouch,
+                  title:
+                      context.l10n.organizersOrganizerDetailBodyTitleGetInTouch,
                   child: OrganizerContactSection(
                     actions: state.contactActions,
                     showTitle: false,
@@ -235,7 +245,10 @@ class OrganizerDetailSliverBody extends StatelessWidget {
   }
 }
 
-List<CatchMetricValue> _organizerMetricItems(Organizer organizer, AppLocalizations l10n) {
+List<CatchMetricValue> _organizerMetricItems(
+  Organizer organizer,
+  AppLocalizations l10n,
+) {
   return [
     CatchMetricValue(
       value: '${organizer.memberCount}',

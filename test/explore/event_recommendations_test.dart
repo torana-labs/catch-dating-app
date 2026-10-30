@@ -174,7 +174,10 @@ void main() {
     final results = rankExploreEventRecommendations(
       candidates: [
         for (final event in [dinner, alternateLegacyValues, run])
-          ExploreEventRecommendationCandidate(event: event, organizerName: 'Club'),
+          ExploreEventRecommendationCandidate(
+            event: event,
+            organizerName: 'Club',
+          ),
       ],
       signedUpEventIds: {},
       attendedEvents: [],

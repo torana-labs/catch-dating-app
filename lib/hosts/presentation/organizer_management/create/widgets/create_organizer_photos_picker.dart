@@ -52,13 +52,16 @@ class CreateOrganizerPhotosPicker extends StatelessWidget {
               children: [
                 CatchFieldLabelText(
                   copy: catchFieldLabelTextCopy(context.l10n),
-                  label:
-                      context.l10n.hostsCreateOrganizerPhotosPickerLabelOrganizerPhotos,
+                  label: context
+                      .l10n
+                      .hostsCreateOrganizerPhotosPickerLabelOrganizerPhotos,
                   mode: CatchFieldLabelTextMode.optional,
                 ),
                 gapH4,
                 CatchText(
-                  context.l10n.hostsCreateOrganizerPhotosPickerTextDragToReorderThe,
+                  context
+                      .l10n
+                      .hostsCreateOrganizerPhotosPickerTextDragToReorderThe,
                   variant: CatchTextVariant.supporting,
                   color: CatchTokens.of(context).ink3,
                 ),
@@ -72,7 +75,9 @@ class CreateOrganizerPhotosPicker extends StatelessWidget {
       onAddPhotosInManager: onAddPhotosInManager,
       emptyActionLabel: editStrip
           ? context.l10n.hostsCreateOrganizerPhotosPickerVisiblecopyAddPhotos
-          : context.l10n.hostsCreateOrganizerPhotosPickerVisiblecopyAddOrganizerPhotos,
+          : context
+                .l10n
+                .hostsCreateOrganizerPhotosPickerVisiblecopyAddOrganizerPhotos,
       addActionLabel:
           context.l10n.hostsCreateOrganizerPhotosPickerVisiblecopyAddPhotos,
       showCoverBadge: true,
@@ -117,7 +122,8 @@ class CreateOrganizerProfileImagePicker extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     final hasImage = imageBytes != null || existingImageUrl != null;
-    final compact = variant == CreateOrganizerProfileImagePickerVariant.editLogo;
+    final compact =
+        variant == CreateOrganizerProfileImagePickerVariant.editLogo;
     final content = Row(
       children: [
         OrganizerProfileImageTile(
@@ -134,7 +140,9 @@ class CreateOrganizerProfileImagePicker extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CatchText(
-                context.l10n.hostsCreateOrganizerPhotosPickerTextASquareLogoShown,
+                context
+                    .l10n
+                    .hostsCreateOrganizerPhotosPickerTextASquareLogoShown,
                 variant: CatchTextVariant.supporting,
                 color: t.ink2,
               ),
@@ -148,7 +156,9 @@ class CreateOrganizerProfileImagePicker extends StatelessWidget {
                         ? context
                               .l10n
                               .hostsCreateOrganizerPhotosPickerActionReplaceLogo
-                        : context.l10n.hostsCreateOrganizerPhotosPickerActionAddLogo,
+                        : context
+                              .l10n
+                              .hostsCreateOrganizerPhotosPickerActionAddLogo,
                     onPressed: onTap,
                     padding: EdgeInsets.zero,
                   ),
@@ -175,7 +185,9 @@ class CreateOrganizerProfileImagePicker extends StatelessWidget {
       children: [
         CatchFieldLabelText(
           copy: catchFieldLabelTextCopy(context.l10n),
-          label: context.l10n.hostsCreateOrganizerPhotosPickerLabelOrganizerProfileImage,
+          label: context
+              .l10n
+              .hostsCreateOrganizerPhotosPickerLabelOrganizerProfileImage,
           mode: CatchFieldLabelTextMode.optional,
         ),
         gapH8,
@@ -273,8 +285,9 @@ class OrganizerProfileImageTile extends StatelessWidget {
       return hasImage
           ? Semantics(
               image: true,
-              label:
-                  context.l10n.hostsCreateOrganizerPhotosPickerLabelOrganizerProfileImage,
+              label: context
+                  .l10n
+                  .hostsCreateOrganizerPhotosPickerLabelOrganizerProfileImage,
               child: tile,
             )
           : ExcludeSemantics(child: tile);
@@ -283,8 +296,12 @@ class OrganizerProfileImageTile extends StatelessWidget {
     return Semantics(
       button: true,
       label: hasImage
-          ? context.l10n.hostsCreateOrganizerPhotosPickerLabelChangeOrganizerProfileImage
-          : context.l10n.hostsCreateOrganizerPhotosPickerLabelAddOrganizerProfileImage,
+          ? context
+                .l10n
+                .hostsCreateOrganizerPhotosPickerLabelChangeOrganizerProfileImage
+          : context
+                .l10n
+                .hostsCreateOrganizerPhotosPickerLabelAddOrganizerProfileImage,
       child: tile,
     );
   }

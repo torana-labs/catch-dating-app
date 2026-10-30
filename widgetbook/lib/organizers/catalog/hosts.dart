@@ -74,7 +74,9 @@ Widget organizerHostRowStates(BuildContext context) {
     context,
     widgetbookOrganizerOrganizer.hostDefaults.primaryActivityKind,
   ).accent;
-  final establishedLabel = organizerEstablishedLabel(widgetbookOrganizerOrganizer);
+  final establishedLabel = organizerEstablishedLabel(
+    widgetbookOrganizerOrganizer,
+  );
 
   return WidgetbookScrollCatalogFrame(
     title: 'ClubHostRow',
@@ -112,7 +114,9 @@ Widget organizerHostRowStates(BuildContext context) {
   path: '[Club Detail]/Sections',
 )
 Widget organizerContactSectionStates(BuildContext context) {
-  final contactState = OrganizerDetailBodyState.fromDomain(organizer: widgetbookOrganizerOrganizer);
+  final contactState = OrganizerDetailBodyState.fromDomain(
+    organizer: widgetbookOrganizerOrganizer,
+  );
 
   return WidgetbookScrollCatalogFrame(
     title: 'ClubContactSection',

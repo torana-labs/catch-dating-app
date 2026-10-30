@@ -584,7 +584,9 @@ class _Fixture {
               draftReads.add(org);
               return [];
             }),
-            fetchOrganizerProvider(org).overrideWithValue(const AsyncData(null)),
+            fetchOrganizerProvider(
+              org,
+            ).overrideWithValue(const AsyncData(null)),
             watchEventProvider(
               '$org-event',
             ).overrideWith((_) => Stream.value(null)),

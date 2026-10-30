@@ -282,7 +282,9 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
     _businessModel = TextEditingController(text: widget.organizer.description);
     _beneficiaryName = TextEditingController(text: contactName);
     _stakeholderName = TextEditingController(text: contactName);
-    _stakeholderEmail = TextEditingController(text: widget.organizer.email ?? '');
+    _stakeholderEmail = TextEditingController(
+      text: widget.organizer.email ?? '',
+    );
     _stakeholderPhone = TextEditingController(
       text: widget.organizer.phoneNumber ?? '',
     );

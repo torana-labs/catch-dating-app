@@ -223,7 +223,10 @@ int activeExploreFilterCount(ExploreFilterSelection filters) {
   return count;
 }
 
-List<String> _areaOptions(Iterable<Organizer> organizers, String? selectedArea) {
+List<String> _areaOptions(
+  Iterable<Organizer> organizers,
+  String? selectedArea,
+) {
   final areas = <String>{};
   for (final organizer in organizers) {
     final area = organizer.area.trim();

@@ -7,7 +7,9 @@ class HostOrganizerSectionList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final eventsAsync = ref.watch(watchEventsForOrganizerProvider(organizer.id));
+    final eventsAsync = ref.watch(
+      watchEventsForOrganizerProvider(organizer.id),
+    );
     final crmAsync = ref.watch(hostCrmSummaryProvider(organizer.id));
     final eventsState = catchAsyncStateFromAsyncValue(eventsAsync);
     final crmState = catchAsyncStateFromAsyncValue(crmAsync);

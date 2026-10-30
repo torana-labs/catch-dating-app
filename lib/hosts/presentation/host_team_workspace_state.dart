@@ -107,21 +107,25 @@ sealed class HostTeamHostedOrganizersState {
   const HostTeamHostedOrganizersState();
 }
 
-final class HostTeamHostedOrganizersLoading extends HostTeamHostedOrganizersState {
+final class HostTeamHostedOrganizersLoading
+    extends HostTeamHostedOrganizersState {
   const HostTeamHostedOrganizersLoading();
 }
 
-final class HostTeamHostedOrganizersError extends HostTeamHostedOrganizersState {
+final class HostTeamHostedOrganizersError
+    extends HostTeamHostedOrganizersState {
   const HostTeamHostedOrganizersError({required this.error});
 
   final Object error;
 }
 
-final class HostTeamHostedOrganizersEmpty extends HostTeamHostedOrganizersState {
+final class HostTeamHostedOrganizersEmpty
+    extends HostTeamHostedOrganizersState {
   const HostTeamHostedOrganizersEmpty();
 }
 
-final class HostTeamHostedOrganizersContent extends HostTeamHostedOrganizersState {
+final class HostTeamHostedOrganizersContent
+    extends HostTeamHostedOrganizersState {
   const HostTeamHostedOrganizersContent({required this.organizers});
 
   final List<Organizer> organizers;

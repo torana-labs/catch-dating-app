@@ -287,7 +287,9 @@ class EventRepository with EventRepositoryActions {
     );
   }
 
-  Stream<List<Event>> watchEventsForOrganizers({required List<String> organizerIds}) =>
+  Stream<List<Event>> watchEventsForOrganizers({
+    required List<String> organizerIds,
+  }) =>
       watchEventsForOrganizerIdsStream(
         organizerIds: organizerIds,
         eventsRef: _eventsRef,
@@ -419,10 +421,12 @@ Stream<EventVenueSession> eventVenueSession(Ref ref, String eventId) async* {
 }
 
 @riverpod
-Stream<List<Event>> watchEventsForOrganizers(Ref ref, EventsForOrganizersQuery query) =>
-    ref
-        .watch(eventRepositoryProvider)
-        .watchEventsForOrganizers(organizerIds: query.organizerIds);
+Stream<List<Event>> watchEventsForOrganizers(
+  Ref ref,
+  EventsForOrganizersQuery query,
+) => ref
+    .watch(eventRepositoryProvider)
+    .watchEventsForOrganizers(organizerIds: query.organizerIds);
 
 @riverpod
 Stream<List<Event>> watchEventsByIds(Ref ref, EventsByIdQuery query) => ref
@@ -463,7 +467,8 @@ class EventsForOrganizersQuery {
 
   @override
   bool operator ==(Object other) =>
-      other is EventsForOrganizersQuery && _equality.equals(other.organizerIds, organizerIds);
+      other is EventsForOrganizersQuery &&
+      _equality.equals(other.organizerIds, organizerIds);
 
   @override
   int get hashCode => _equality.hash(organizerIds);

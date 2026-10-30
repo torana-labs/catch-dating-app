@@ -208,7 +208,9 @@ class _EventFocusListState extends State<EventFocusList> {
           event: widget.pendingReviewEvent!,
           kind: EventFocusKind.afterEvent,
           needsReview: true,
-          organizerName: widget.organizerNameBuilder?.call(widget.pendingReviewEvent!),
+          organizerName: widget.organizerNameBuilder?.call(
+            widget.pendingReviewEvent!,
+          ),
         ),
       );
     }

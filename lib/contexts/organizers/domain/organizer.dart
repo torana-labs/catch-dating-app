@@ -56,7 +56,8 @@ abstract class Organizer with _$Organizer {
     @Default(false) bool archived,
     @NullableTimestampConverter() DateTime? archivedAt,
     String? archiveReason,
-    @Default(OrganizerAppVisibility.hidden) OrganizerAppVisibility appVisibility,
+    @Default(OrganizerAppVisibility.hidden)
+    OrganizerAppVisibility appVisibility,
     OrganizerOwnership? ownership,
     OrganizerClaim? claim,
     OrganizerPublicPage? publicPage,
@@ -71,7 +72,8 @@ abstract class Organizer with _$Organizer {
     @Default(OrganizerHostDefaults()) OrganizerHostDefaults hostDefaults,
   }) = _Organizer;
 
-  factory Organizer.fromJson(Map<String, dynamic> json) => _$OrganizerFromJson(json);
+  factory Organizer.fromJson(Map<String, dynamic> json) =>
+      _$OrganizerFromJson(json);
 
   String? get ownerOrPrimaryHostUserId => ownerUserId ?? hostUserId;
 

@@ -136,7 +136,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         ? filters
         : filters.copyWith(joinedOnly: false);
     final sourceOrganizersAsync = ref.watch(exploreSourceOrganizersProvider);
-    final sourceOrganizersState = catchAsyncStateFromAsyncValue(sourceOrganizersAsync);
+    final sourceOrganizersState = catchAsyncStateFromAsyncValue(
+      sourceOrganizersAsync,
+    );
     final sourceOrganizers = sourceOrganizersState.value ?? const [];
     final hasSourceOrganizers = sourceOrganizers.isNotEmpty;
     final featuredItem = feedState.value?.featuredItem;
@@ -183,7 +185,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           ref.invalidate(exploreFeedViewModelProvider);
         case ExploreScreenRetryTarget.explore:
         case null:
-          ref.invalidate(watchOrganizersByLocationProvider(city.effectiveMarketId));
+          ref.invalidate(
+            watchOrganizersByLocationProvider(city.effectiveMarketId),
+          );
           ref.invalidate(exploreOrganizersViewModelProvider);
           ref.invalidate(exploreSourceOrganizersProvider);
           ref.invalidate(exploreDiscoveryWindowProvider);

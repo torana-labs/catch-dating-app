@@ -16,17 +16,19 @@ import '../../support/page_preview.dart';
 import 'preview.dart';
 import 'shell_fixture.dart';
 
-final _longNameOwnerOrganizer = HostOperationsFixtures.primaryOrganizer.copyWith(
-  id: 'design-host-long-owner-club',
-  name: 'Bandra Sea Face Morning Run Club for New Members',
-  area: 'Bandra West Promenade',
-);
+final _longNameOwnerOrganizer = HostOperationsFixtures.primaryOrganizer
+    .copyWith(
+      id: 'design-host-long-owner-club',
+      name: 'Bandra Sea Face Morning Run Club for New Members',
+      area: 'Bandra West Promenade',
+    );
 
-final _longNameCoHostedOrganizer = HostOperationsFixtures.coHostedOrganizer.copyWith(
-  id: 'design-host-long-cohost-club',
-  name: 'South Mumbai Rooftop Dinner Collective With Guest Hosts',
-  area: 'Fort and Kala Ghoda',
-);
+final _longNameCoHostedOrganizer = HostOperationsFixtures.coHostedOrganizer
+    .copyWith(
+      id: 'design-host-long-cohost-club',
+      name: 'South Mumbai Rooftop Dinner Collective With Guest Hosts',
+      area: 'Fort and Kala Ghoda',
+    );
 
 final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
   id: 'design-host-long-name-event',
@@ -96,9 +98,10 @@ Widget hostHomeRouteStates(BuildContext context) {
         label: 'clubs error',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedOrganizersStream: HostOperationsFixtures.errorStream<List<Organizer>>(
-              'Hosted clubs failed',
-            ),
+            hostedOrganizersStream:
+                HostOperationsFixtures.errorStream<List<Organizer>>(
+                  'Hosted clubs failed',
+                ),
             child: const HostTodayScreen(),
           ),
         ),
@@ -120,10 +123,11 @@ Widget hostHomeRouteStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
             organizerEventStreams: {
-              HostOperationsFixtures.dinnerOrganizer.id: Stream<List<Event>>.error(
-                obviousOfflineException(),
-                StackTrace.empty,
-              ),
+              HostOperationsFixtures.dinnerOrganizer.id:
+                  Stream<List<Event>>.error(
+                    obviousOfflineException(),
+                    StackTrace.empty,
+                  ),
             },
             child: HostTodayScreen(
               initialOrganizerId: HostOperationsFixtures.dinnerOrganizer.id,
@@ -166,15 +170,22 @@ Widget hostHomeRouteStates(BuildContext context) {
         label: 'long club names',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedOrganizers: [_longNameOwnerOrganizer, _longNameCoHostedOrganizer],
+            hostedOrganizers: [
+              _longNameOwnerOrganizer,
+              _longNameCoHostedOrganizer,
+            ],
             ownedOrganizers: [_longNameOwnerOrganizer],
             organizerEventStreams: {
               _longNameOwnerOrganizer.id: Stream<List<Event>>.value([
                 _longNameEvent,
               ]),
-              _longNameCoHostedOrganizer.id: Stream<List<Event>>.value(const []),
+              _longNameCoHostedOrganizer.id: Stream<List<Event>>.value(
+                const [],
+              ),
             },
-            child: HostTodayScreen(initialOrganizerId: _longNameOwnerOrganizer.id),
+            child: HostTodayScreen(
+              initialOrganizerId: _longNameOwnerOrganizer.id,
+            ),
           ),
         ),
       ),

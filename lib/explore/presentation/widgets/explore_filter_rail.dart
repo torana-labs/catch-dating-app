@@ -315,8 +315,9 @@ class ExploreFilterSheet extends StatelessWidget {
                       key: const ValueKey('explore-filter-joined'),
                       contract: CatchContractConstraints
                           .mobileFormStateExploreJoinedOnly,
-                      label:
-                          context.l10n.exploreExploreFilterRailLabelJoinedOrganizers,
+                      label: context
+                          .l10n
+                          .exploreExploreFilterRailLabelJoinedOrganizers,
                       selected: filters.joinedOnly,
                       enabled: onToggleJoinedOnly != null,
                       onChanged: (_) => onToggleJoinedOnly?.call(),
