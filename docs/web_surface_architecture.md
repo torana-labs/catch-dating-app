@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.46.0
+version: 0.47.0
 updated: 2026-10-30
 owner: web_platform
 status: active
@@ -189,8 +189,15 @@ unproven until those steps actually run and are inspected.
 Channel identity comes from the Hosting API after deployment, because the
 pinned Firebase CLI can return an empty `version` despite a successful release.
 The readback requires a finalized version on the exact expected channel, with
-the expected runtime service, region and pinned tag. Preview runs must pass the
-deployed public-route smoke check. Promotion records the production candidate
+the expected runtime service, region and pinned tag. Each preview run deploys
+its revision with its own Cloud Run tag (`fh-r<run id>-<attempt>`), which
+Hosting's `pinTag` reuses, and then proves the channel pins that tag, the tag
+names the revision the run created, and that revision answers with the run's
+`X-Catch-Release`; run 41075702618's channel answered as the previous release.
+Every deployed smoke check first waits, for at most three minutes, until `/`
+answers as the selected release, so an edge still settling on the new release
+is not read as a failed one; a deployment that never does fails naming what it
+served. Preview runs must pass the deployed public-route smoke check. Promotion records the production candidate
 version before smoke checks and rechecks it immediately before cloning that
 exact version; an absent, changed or unrelated release fails closed.
 Both promotion smoke checks, on the `next-release` channel and on live, run the
