@@ -45,8 +45,9 @@ import {
 import {type OrganizerPublishingController} from "../controllers/useOrganizerPublishingController";
 import {type OrganizerClaimReviewController} from "../controllers/useOrganizerClaimReviewController";
 import {organizerDetailPanels} from "./organizerDetailPanels";
+import {brand} from "@catch/brand";
 
-const defaultPublicSiteOrigin = "https://catchdates.com";
+const defaultPublicSiteOrigin = brand.web.origin;
 const publicSiteOrigin = String(
   import.meta.env.VITE_ADMIN_PUBLIC_SITE_ORIGIN ?? defaultPublicSiteOrigin
 ).replace(/\/+$/u, "");

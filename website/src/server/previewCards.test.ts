@@ -5,6 +5,7 @@ import previewCards from "../content/previewCards.json" with {type: "json"};
 import {pageMeta, pageMetaForHostPath} from "../app/pageMeta";
 import {activityMeta} from "../content/marketing";
 import {previewCardFor, previewCardImage, type PreviewCardId} from "./previewCards";
+import {brand} from "@catch/brand";
 
 describe("link-preview cards", () => {
   it("ships every indexed card as a 1200x630 PNG whose version follows its inputs", () => {
@@ -44,7 +45,7 @@ describe("link-preview cards", () => {
   it("points chat apps at an absolute, versioned image URL", () => {
     for (const id of Object.keys(previewCards.cards) as PreviewCardId[]) {
       const image = previewCardImage(id);
-      expect(image.url).toBe(`https://catchdates.com/assets/og/${id}.png?v=${previewCards.cards[id].version}`);
+      expect(image.url).toBe(`${brand.web.origin}/assets/og/${id}.png?v=${previewCards.cards[id].version}`);
       expect(image.alt.length).toBeGreaterThan(0);
     }
   });

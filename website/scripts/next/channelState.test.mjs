@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {channelVersion, readChannel} from "./channelState.mjs";
+import {brand} from "@catch/brand";
+
 const site = "projects/catch-dating-app-64e51/sites/catch-dating-app-64e51";
 const channel = () => ({name: `${site}/channels/next-release`,
   url: "https://catch-dating-app-64e51--next-release-proof.web.app",
@@ -17,7 +19,7 @@ test("channel readback binds the exact finalized version and pinned runtime", ()
     c => c.release.version.config.rewrites[0].run.serviceId = "unrelated",
     c => c.release.version.config.rewrites[0].run.region = "us-central1",
     c => delete c.release.version.config.rewrites[0].run.tag,
-    c => c.url = "https://catchdates.com",
+    c => c.url = brand.web.origin,
     c => c.url = "https://catch-dating-app-64e51--next-release-proofXwebXapp",
   ]) {const c = channel(); mutate(c); assert.throws(() => channelVersion(c, "next-release", "catch-website-next"));}
 });

@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
+import {brand} from "@catch/brand";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const websiteRoot = path.resolve(dirname, "..");
@@ -29,7 +30,7 @@ export function main(argv = process.argv.slice(2)) {
     args.hostListings ??
       path.join(websiteRoot, "src", "generated", "hostListings.json")
   );
-  const baseUrl = String(args.baseUrl ?? "https://catchdates.com")
+  const baseUrl = String(args.baseUrl ?? brand.web.origin)
     .replace(/\/+$/, "");
   const hostListings = readJson(hostListingsPath);
   const result = checkOrganizerBuildOutputs({

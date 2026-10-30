@@ -14,6 +14,7 @@ import {
   generatedPreviewCardVersion,
   pagePathForGeneratedCard,
 } from "./generatedPreviewCards";
+import {brand} from "@catch/brand";
 
 const now = Date.parse("2026-07-24T00:00:00.000Z");
 // Fixture record text; the card must repeat these and nothing private.
@@ -94,7 +95,7 @@ describe("generated link-preview cards", () => {
     for (const changed of [renamed, {...card, lines: ["3 Aug 2026", card.lines[1]]}, {...card, photoUrl: "https://cdn.example/new.jpg"}]) {
       expect(generatedPreviewCardVersion(changed)).not.toBe(version);
     }
-    expect(generatedPreviewCardImage(card)).toEqual({url: `https://catchdates.com/og/events/sunrise/card.png?v=${version}`,
+    expect(generatedPreviewCardImage(card)).toEqual({url: `${brand.web.origin}/og/events/sunrise/card.png?v=${version}`,
       width: 1200, height: 630, alt: card.alt});
   });
 

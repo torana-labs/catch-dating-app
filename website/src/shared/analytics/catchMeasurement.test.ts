@@ -2,6 +2,7 @@ import {describe, expect, it, vi} from "vitest";
 import {createCatchMeasurementController, safeAcquisitionEvent, catchProviderDefaults,
   type CatchAcquisitionEvent, type MeasurementContext} from "../../analytics/catchMeasurement";
 import {createGoogleAcquisitionAdapter, createMetaAcquisitionAdapter} from "./catchProviders";
+import {brand} from "@catch/brand";
 
 const id = (n = 1) => `catch_1790899200000_00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 const context = (marketing = true): MeasurementContext => ({path: "/host/", consent: {
@@ -80,7 +81,7 @@ describe("Catch acquisition boundary", () => {
       page_title: "Private profile", request_id: "private-request"} as CatchAcquisitionEvent,
     {...context(), campaign: {utm_campaign: "launch_2026", utm_source: "private_name", utm_content: "private@example.test",
       utm_term: "singles", gclid: "private-click-id", page_location: "https://private.test?email=secret"}})!;
-    expect(event.parameters).toEqual({contract_version: 1, page_path: "/host/", page_location: "https://catchdates.com/host/",
+    expect(event.parameters).toEqual({contract_version: 1, page_path: "/host/", page_location: `${brand.web.origin}/host/`,
       page_title: "Catch", page_name: "host", audience: "organizer", utm_campaign: "launch_2026",
       event_id: id(), form: "host_application"});
     expect(JSON.stringify(event)).not.toMatch(/private|singles|Person/u);

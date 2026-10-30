@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import test from "node:test";
+import {brand} from "@catch/brand";
 
 installBrowserFixture();
 
@@ -52,7 +53,7 @@ test("analytics URL parameters omit query strings and attribution requires conse
   analytics.setMarketingConsent("analytics");
   const consented = analytics.waitlistAnalyticsPayload("waitlist_event-2", "member");
   assert.equal(consented.attribution?.firstTouch.landingPath, "/host/");
-  assert.equal(consented.attribution?.firstTouch.landingUrl, "https://catchdates.com/host/");
+  assert.equal(consented.attribution?.firstTouch.landingUrl, `${brand.web.origin}/host/`);
   assert.equal(consented.attribution?.firstTouch.referrer, null);
   assert.deepEqual(consented.attribution?.firstTouch.values, {});
 });

@@ -21,6 +21,7 @@ vi.mock("../../firebase", () => ({...formApi,
   getOrganizerFormPayment: vi.fn(), prepareOrganizerFormPayment: vi.fn(),
 }));
 import {PublicFormPage} from "./PublicFormPage";
+import {brand} from "@catch/brand";
 
 afterEach(() => { cleanup(); vi.unstubAllEnvs(); });
 
@@ -348,7 +349,7 @@ describe("profile review after submission", () => {
   it("offers owned review alongside the organizer action and withdrawal", () => {
     complete(true);
     expect(screen.getByRole("link", {name: "Review my profile in Catch"})
-      .getAttribute("href")).toBe("https://app.catchdates.com/#/you/forms/response-id");
+      .getAttribute("href")).toBe(`${brand.web.appOrigin}/#/you/forms/response-id`);
     expect(screen.getByText(/same verified phone number/u)).not.toBeNull();
     expect(screen.getByRole("link", {name: "Organizer next step"})).not.toBeNull();
     expect(screen.getByRole("button", {name: "Withdraw response"})).not.toBeNull();

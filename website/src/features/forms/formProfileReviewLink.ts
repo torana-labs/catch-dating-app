@@ -1,8 +1,10 @@
+import {brand} from "@catch/brand";
+
 /** Build-owned destination, never inferred from a form answer or caller URL. */
 export function formProfileReviewUrl(responseId: string): string | null {
   const configured = import.meta.env.VITE_CONSUMER_APP_URL;
   const origin = configured || (import.meta.env.VITE_FIREBASE_PROJECT_ID ===
-    "catch-dating-app-64e51" ? "https://app.catchdates.com" : null);
+    "catch-dating-app-64e51" ? brand.web.appOrigin : null);
   if (!origin) return null;
   try {
     const url = new URL(origin);

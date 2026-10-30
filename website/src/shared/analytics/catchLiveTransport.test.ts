@@ -3,6 +3,7 @@ import {resolve} from "node:path";
 import {runInNewContext} from "node:vm";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {catchLiveDestinations, catchMeasurementMode, configuredCatchTransport, createCatchLiveGoogleSession} from "../../analytics/catchLiveTransport";
+import {brand} from "@catch/brand";
 
 const channel = "00000000-0000-4000-8000-000000000000";
 const now = 1792572000000;
@@ -37,7 +38,7 @@ describe("Catch isolated Google preview transport", () => {
   it("keeps production and Meta disabled and requires a fresh preview mode", () => {
     const create = vi.spyOn(document, "createElement");
     expect(catchLiveDestinations.enabled).toBe(false);
-    expect(catchMeasurementMode("https://catchdates.com")).toBe("disabled");
+    expect(catchMeasurementMode(brand.web.origin)).toBe("disabled");
     expect(catchMeasurementMode(catchLiveDestinations.previewOrigin)).toBe("google-preview-v2");
     expect(catchMeasurementMode("https://unreviewed-preview.example")).toBe("disabled");
     for (const provider of ["google", "meta"] as const) configuredCatchTransport(provider).send(lead);
@@ -69,10 +70,10 @@ describe("Catch isolated Google preview transport", () => {
     expect(frame.isConnected).toBe(false);
   });
   it("rejects a copied runtime, untrusted parent, production parent and wrong channel", () => {
-    const copied = fixture("https://catchdates.com"); copied.init(); copied.send(); expect(copied.appended).toEqual([]);
+    const copied = fixture(brand.web.origin); copied.init(); copied.send(); expect(copied.appended).toEqual([]);
     const f = fixture();
     const init = {type: "catch:acquisition-init", channel, measurementId: catchLiveDestinations.googleMeasurementId};
-    f.dispatch(init, "https://catchdates.com");
+    f.dispatch(init, brand.web.origin);
     f.dispatch(init, catchLiveDestinations.previewOrigin, {postMessage: vi.fn()});
     f.send(); expect(f.appended).toEqual([]);
     f.init(); f.dispatch({type: "catch:acquisition-event", channel: "wrong", event: lead});
@@ -101,7 +102,7 @@ describe("Catch isolated Google preview transport", () => {
     const rows = f.rows();
     expect(rows.filter((r: unknown[]) => r[0] === "event")).toHaveLength(1);
     expect(rows.find((r: unknown[]) => r[0] === "event")[2]).toMatchObject({debug_mode: true,
-      traffic_type: "internal", campaign_source: "google", page_location: "https://catchdates.com/host/apply/"});
+      traffic_type: "internal", campaign_source: "google", page_location: `${brand.web.origin}/host/apply/`});
     expect(JSON.stringify(rows)).not.toMatch(/private@example|NotForPreview|AW-/u);
     expect(rows.filter((r: unknown[]) => r[0] === "consent").every((r: any[]) => r[2].ad_user_data === "denied")).toBe(true);
     f.send({...lead, name: "page_view", parameters: {...lead.parameters, page_path: "/booking/private/"}});

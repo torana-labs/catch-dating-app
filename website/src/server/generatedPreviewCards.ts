@@ -5,6 +5,7 @@ import {interpolateContent} from "../content/interpolate";
 import {activityForKind, activityForListing} from "../features/organizers/publicDiscovery";
 import type {EventDetailRecord} from "../features/events/eventDetailModel";
 import type {HostListingRoute} from "../features/organizers/types";
+import {brand} from "@catch/brand";
 
 /**
  * Organiser (C7) and event (C8) link-preview cards, drawn per request by
@@ -25,7 +26,7 @@ export interface GeneratedPreviewCard {
   alt: string;
 }
 
-export const siteOrigin = "https://catchdates.com";
+export const siteOrigin = brand.web.origin;
 // Bump when the card layout changes, so chat apps fetch the new design.
 const cardDesign = 1;
 const lineLimit = 44;

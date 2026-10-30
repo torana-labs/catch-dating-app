@@ -1,3 +1,5 @@
+import {brand} from "@catch/brand";
+
 export function isCatchWebsiteHost(hostname: string): boolean {
   const firebaseSite = hostname.match(
     /^([a-z0-9-]+)\.(?:web\.app|firebaseapp\.com)$/u)?.[1];
@@ -6,7 +8,7 @@ export function isCatchWebsiteHost(hostname: string): boolean {
     firebaseSite === "catch-dating-app-64e51" ||
     /^(?:catchdates-dev|catchdates-staging|catch-dating-app-64e51)--[a-z0-9-]+$/u
       .test(firebaseSite ?? "");
-  return hostname === "catchdates.com" || hostname === "www.catchdates.com" ||
+  return hostname === brand.web.domain || hostname === new URL(brand.web.wwwOrigin).hostname ||
     hostname === "localhost" || hostname === "127.0.0.1" ||
     hostname === "[::1]" || knownSite;
 }
@@ -22,7 +24,7 @@ export function requestHostname(authority: string | null): string | null {
 
 /**
  * The production site is also reachable on its Firebase Hosting domains, which
- * bypass the Cloudflare protection in front of catchdates.com. A production
+ * bypass the Cloudflare protection in front of the primary domain. A production
  * runtime answers those hosts with a permanent redirect to the canonical
  * domain. Firebase's reserved `/__/` paths (Auth handlers) and API calls are
  * left alone; preview channels (`site--channel.web.app`) never redirect.
@@ -32,12 +34,12 @@ export function canonicalProductionRedirect(hostname: string | null, pathname: s
   if (!production || !hostname || !["catch-dating-app-64e51.web.app", "catch-dating-app-64e51.firebaseapp.com"]
     .includes(hostname)) return null;
   if (pathname.startsWith("/__/") || pathname.startsWith("/api/")) return null;
-  return `https://catchdates.com${pathname}${search}`;
+  return `${brand.web.origin}${pathname}${search}`;
 }
 
 /** Only canonical production domains may be indexed, even on a production image. */
 export function isCatchIndexingHost(hostname: string | null): boolean {
-  return hostname === "catchdates.com" || hostname === "www.catchdates.com";
+  return hostname === brand.web.domain || hostname === new URL(brand.web.wwwOrigin).hostname;
 }
 
 /**

@@ -6,6 +6,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
+import {brand} from "@catch/brand";
 
 const scriptPath = fileURLToPath(new URL("./postbuild.mjs", import.meta.url));
 const canonicalMetaPath = fileURLToPath(
@@ -231,10 +232,10 @@ function baseHtml() {
     <meta name="description" content="Default description." />
     <meta property="og:title" content="Default title" />
     <meta property="og:description" content="Default OG description" />
-    <meta property="og:url" content="https://catchdates.com/" />
+    <meta property="og:url" content="${brand.web.origin}/" />
     <meta name="twitter:title" content="Default title" />
     <meta name="twitter:description" content="Default Twitter description" />
-    <link rel="canonical" href="https://catchdates.com/" />
+    <link rel="canonical" href="${brand.web.origin}/" />
   </head>
   <body><div id="root"></div></body>
 </html>

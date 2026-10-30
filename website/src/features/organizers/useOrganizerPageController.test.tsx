@@ -17,6 +17,7 @@ vi.mock("./analytics", () => ({trackOrganizerAnalytics, trackOrganizerLinkClick,
 vi.mock("./observeOrganizerProviders", () => ({observeOrganizerProviders: vi.fn(() => () => undefined)}));
 
 import {useOrganizerPageController, type OrganizerPageBackends} from "./useOrganizerPageController";
+import {brand} from "@catch/brand";
 
 // One client per test, cleared after it: no account read, mutation or cache
 // timer may outlive the test and render after jsdom is torn down.
@@ -49,8 +50,8 @@ describe("useOrganizerPageController", () => {
     const {result} = renderController();
     expect(result.current.role).toBe("guest");
     expect(result.current.view.nextUp?.label).toBe("Next up · in 2 days");
-    expect(result.current.share.url).toBe("https://catchdates.com/organizers/lantern-lane-runners/");
-    expect(result.current.share.displayUrl).toBe("catchdates.com/organizers/lantern-lane-runners");
+    expect(result.current.share.url).toBe(`${brand.web.origin}/organizers/lantern-lane-runners/`);
+    expect(result.current.share.displayUrl).toBe(`${brand.web.domain}/organizers/lantern-lane-runners`);
   });
 
   it("follows through the visitor's account until follow by phone lands, and records the save", async () => {
@@ -125,7 +126,7 @@ describe("useOrganizerPageController", () => {
     act(() => result.current.share.toggle());
     expect(result.current.share.open).toBe(true);
     await act(async () => result.current.share.copy());
-    expect(writeText).toHaveBeenCalledWith("https://catchdates.com/organizers/lantern-lane-runners/");
+    expect(writeText).toHaveBeenCalledWith(`${brand.web.origin}/organizers/lantern-lane-runners/`);
     expect(result.current.share.copyState).toBe("copied");
     expect(trackMarketingEvent).toHaveBeenCalledWith("listing_share_completed", {club_id: listing.id, method: "clipboard"});
     writeText.mockRejectedValueOnce(new Error("denied"));
