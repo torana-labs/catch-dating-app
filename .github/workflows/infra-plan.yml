@@ -1,0 +1,100 @@
+name: Infra Plan
+
+# Plans infra/firebase for every pull request that changes it, with the
+# read-only github-actions-platform-plan identity. It can read Firebase app
+# settings and Terraform state; it cannot change either, so plans run with
+# -lock=false. Applying happens only in infra-apply.yml after reviewer
+# approval. Operator guide: docs/infrastructure_as_code.md.
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+      - ".github/workflows/infra-*.yml"
+      - "tool/ci/toolchain.env"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: infra-plan-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  plan:
+    name: Terraform plan
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    # No reviewers: this environment only selects the read-only identity.
+    environment: platform-plan
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+    defaults:
+      run:
+        working-directory: infra/firebase
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        working-directory: .
+        run: echo "terraform-version=$(sed -n 's/^TERRAFORM_VERSION=//p' tool/ci/toolchain.env)" >> "$GITHUB_OUTPUT"
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ steps.toolchain.outputs.terraform-version }}
+          terraform_wrapper: false
+      - name: Check formatting
+        run: terraform fmt -check -recursive -diff ..
+      - name: Validate and run the offline guard tests
+        run: |
+          set -euo pipefail
+          terraform init -backend=false -lockfile=readonly
+          terraform validate
+          terraform test
+      - id: ready
+        name: Check the identity is bootstrapped
+        env:
+          SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+          SAME_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          if [[ -z "$SERVICE_ACCOUNT" ]]; then
+            echo "The platform-plan environment has no identity yet; run infra/bootstrap/bootstrap.sh. Formatting, validation and offline tests passed; no live plan ran." >> "$GITHUB_STEP_SUMMARY"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          elif [[ "$SAME_REPOSITORY" != true ]]; then
+            echo "Pull requests from forks get no cloud identity; no live plan ran." >> "$GITHUB_STEP_SUMMARY"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Authenticate to Google without a stored key
+        if: ${{ steps.ready.outputs.ready == 'true' }}
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+      - name: Plan against live state
+        if: ${{ steps.ready.outputs.ready == 'true' }}
+        run: |
+          set -euo pipefail
+          terraform init -lockfile=readonly
+          status=0
+          terraform plan -lock=false -detailed-exitcode -out=tfplan || status=$?
+          if [[ "$status" == 1 ]]; then exit 1; fi
+          terraform show -json tfplan > plan.json
+          guard=0
+          ../scripts/plan_guard.sh plan.json >> "$GITHUB_STEP_SUMMARY" || guard=$?
+          {
+            echo
+            echo "<details><summary>Full plan</summary>"
+            echo
+            echo '```'
+            terraform show -no-color tfplan | head -c 900000
+            echo '```'
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$guard"

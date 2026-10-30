@@ -1,0 +1,154 @@
+name: Infra Apply
+
+# Applies infra/firebase from main. The plan job saves a plan with the
+# read-only identity and shows it in the run summary. When it has changes,
+# the apply job waits in the reviewer-protected, main-only prod-platform
+# environment; the reviewer approves after reading that summary, and the job
+# applies exactly that saved plan with github-actions-platform-apply.
+# Terraform refuses the saved plan if state changed after it was made.
+# Operator guide: docs/infrastructure_as_code.md.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "infra/firebase/**"
+      - "infra/scripts/plan_guard.sh"
+      - ".github/workflows/infra-apply.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: infra-apply
+  cancel-in-progress: false
+
+env:
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+
+jobs:
+  plan:
+    name: Plan from main
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: platform-plan
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      changes: ${{ steps.plan.outputs.changes }}
+      # Re-running only the apply job keeps this output, so it still finds
+      # the plan its reviewer approved.
+      artifact: infra-firebase-plan-${{ github.run_id }}-${{ github.run_attempt }}
+    defaults:
+      run:
+        working-directory: infra/firebase
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        working-directory: .
+        run: echo "terraform-version=$(sed -n 's/^TERRAFORM_VERSION=//p' tool/ci/toolchain.env)" >> "$GITHUB_OUTPUT"
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ steps.toolchain.outputs.terraform-version }}
+          terraform_wrapper: false
+      - id: ready
+        name: Check the identity is bootstrapped
+        env:
+          SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+        run: |
+          if [[ -z "$SERVICE_ACCOUNT" ]]; then
+            echo "The platform-plan environment has no identity yet; run infra/bootstrap/bootstrap.sh. Nothing was planned or applied." >> "$GITHUB_STEP_SUMMARY"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Authenticate to Google without a stored key
+        if: ${{ steps.ready.outputs.ready == 'true' }}
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+      - id: plan
+        name: Save the plan to apply
+        if: ${{ steps.ready.outputs.ready == 'true' }}
+        run: |
+          set -euo pipefail
+          terraform init -lockfile=readonly
+          status=0
+          terraform plan -lock=false -detailed-exitcode -out=tfplan || status=$?
+          if [[ "$status" == 1 ]]; then exit 1; fi
+          terraform show -json tfplan > plan.json
+          ../scripts/plan_guard.sh plan.json >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo
+            echo "<details><summary>Full plan</summary>"
+            echo
+            echo '```'
+            terraform show -no-color tfplan | head -c 900000
+            echo '```'
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$status" == 2 ]]; then
+            echo "changes=true" >> "$GITHUB_OUTPUT"
+            echo "Approve the prod-platform deployment to apply exactly this plan." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "changes=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Keep the reviewed plan
+        if: ${{ steps.plan.outputs.changes == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: infra-firebase-plan-${{ github.run_id }}-${{ github.run_attempt }}
+          path: infra/firebase/tfplan
+          if-no-files-found: error
+          retention-days: 7
+
+  apply:
+    name: Apply the reviewed plan
+    needs: plan
+    if: ${{ github.ref == 'refs/heads/main' && needs.plan.outputs.changes == 'true' }}
+    runs-on: ubuntu-latest
+    # Required reviewers and a main-only branch policy; the apply identity
+    # trusts only this environment.
+    environment: prod-platform
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: infra/firebase
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        working-directory: .
+        run: echo "terraform-version=$(sed -n 's/^TERRAFORM_VERSION=//p' tool/ci/toolchain.env)" >> "$GITHUB_OUTPUT"
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ steps.toolchain.outputs.terraform-version }}
+          terraform_wrapper: false
+      - uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.plan.outputs.artifact }}
+          path: infra/firebase
+      - name: Authenticate to Google without a stored key
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+      - name: Apply
+        run: |
+          set -euo pipefail
+          terraform init -lockfile=readonly
+          terraform show -json tfplan > plan.json
+          ../scripts/plan_guard.sh plan.json > /dev/null
+          terraform apply -input=false tfplan
+          echo "Applied the reviewed plan from run $GITHUB_RUN_ID." >> "$GITHUB_STEP_SUMMARY"
