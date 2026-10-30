@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.30.1
-updated: 2026-10-24
+version: 1.30.2
+updated: 2026-10-30
 owner: app_architecture
 status: active
 ---
@@ -2227,7 +2227,6 @@ those are owner decisions, not implementation details.
 | In-flight | Relationship |
 |---|---|
 | `widget_consolidation_pipeline_spec.md` | Unchanged owner of dedupe (K/R/D). Phase 4's grammar reduces its future intake. |
-| `catch_field_section_system_spec.md` | Field/section internals move in 3c; its gated phases rebase onto `catch_ui` paths, contracts unchanged. |
 | `catch_ui_lint_rules_plan.md` | Phase 1.5 scanner retirements merge into D8's estate shrink; probe harness gains the package roots. |
 | `ui_capture_pipeline_plan.md` | Shares the golden harness; capture consumers unaffected. |
 | `ds_resync_audit_2026-06.md` | Porting work continues; new ports land directly in `catch_ui` once 3b is closed. |

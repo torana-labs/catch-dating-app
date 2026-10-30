@@ -1,7 +1,7 @@
 ---
 doc_id: demo_data_seeding
-version: 1.4.2
-updated: 2026-08-10
+version: 1.4.3
+updated: 2026-10-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -77,7 +77,9 @@ sales-demo writes must require uploaded assets and full profile photo metadata;
 draft catalogs can be validated for internal consistency before image generation
 and upload are complete.
 
-Sales persona cohort scope lives in `sales_demo_persona_cohorts.md`. The first
+Sales persona cohort scope lives in the
+[sales demo persona cohorts](https://github.com/torana-labs/catch-knowledge/blob/main/strategy/sales-demo-persona-cohorts.md)
+doc in catch-knowledge. The first
 production scope is the 24-person New York cohort plus a planned 36-person India
 core cohort. Do not create a separate full synthetic user set per Indian city
 until there is a product reason to do so; use city overlays and roster subsets
@@ -98,8 +100,9 @@ contains 24 coherent synthetic personas and 96 planned photo slots. Assets are
 still draft-only until images are generated, reviewed, uploaded, and the live
 asset gate passes with `--require-published-assets`.
 
-For image generation, organization, upload, and post-upload validation, follow
-`sales_demo_image_generation_runbook.md`. The first batch uses the subscription
+For image generation, organization, upload, and post-upload validation, follow the
+[sales demo image generation runbook](https://github.com/torana-labs/catch-knowledge/blob/main/runbooks/sales-demo-image-generation.md)
+in catch-knowledge. The first batch uses the subscription
 ChatGPT web UI to avoid additional API spend, one conversation per persona, and
 four-person waves. Manual web downloads are still draft assets until normalized,
 uploaded to UID-owned `users/{uid}/photos/` Storage paths, projected into

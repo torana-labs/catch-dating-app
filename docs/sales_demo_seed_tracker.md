@@ -1,7 +1,7 @@
 ---
 doc_id: sales_demo_seed_tracker
-version: 0.1.16
-updated: 2026-05-25
+version: 0.1.17
+updated: 2026-10-30
 owner: demo_data
 status: active
 ---
@@ -18,8 +18,8 @@ host sales surface.
 
 | Document | Purpose |
 |---|---|
-| `sales_demo_persona_cohorts.md` | Cohort scope, NYC/India library decisions, roster reuse policy, and city overlay boundaries. |
-| `sales_demo_image_generation_runbook.md` | Step-by-step ChatGPT-web image production, review, local artifact organization, UID-owned Storage upload, and validation workflow. |
+| [sales demo persona cohorts](https://github.com/torana-labs/catch-knowledge/blob/main/strategy/sales-demo-persona-cohorts.md) (catch-knowledge) | Cohort scope, NYC/India library decisions, roster reuse policy, and city overlay boundaries. |
+| [sales demo image generation runbook](https://github.com/torana-labs/catch-knowledge/blob/main/runbooks/sales-demo-image-generation.md) (catch-knowledge) | Step-by-step ChatGPT-web image production, review, local artifact organization, UID-owned Storage upload, and validation workflow. |
 | `demo_data_seeding.md` | Existing seed commands, scenario ownership, cleanup/reset behavior, and app-visible validation workflow. |
 
 ## Target Outcome
@@ -90,8 +90,8 @@ and empty-state demos wherever synthetic users are needed.
 | SDS-009 | Event-success live/report coverage | Pending | Write arrival/check-in state, preferences, assignments, wingman requests, feedback, and scorecards for host demos. |
 | SDS-010 | Demo migration | Pending | Point browse, investor, payments, safety, dogfood, and warm-user demos at the canonical high-quality catalog. |
 | SDS-011 | QA checklist | Pending | Add dry-run and app-visible checks for host demo readiness, profile completeness, and asset reachability. |
-| SDS-012 | Image production runbook | Done | `sales_demo_image_generation_runbook.md` now defines ChatGPT-web batching, local manifests, review gates, UID-owned Storage paths, upload algorithm, and stop conditions. |
-| SDS-013 | Persona cohort policy | Done | `sales_demo_persona_cohorts.md` now defines the NYC-first cohort, planned India core cohort, roster reuse rules, and city overlay limits. |
+| SDS-012 | Image production runbook | Done | The [sales demo image generation runbook](https://github.com/torana-labs/catch-knowledge/blob/main/runbooks/sales-demo-image-generation.md) now defines ChatGPT-web batching, local manifests, review gates, UID-owned Storage paths, upload algorithm, and stop conditions. |
+| SDS-013 | Persona cohort policy | Done | The [sales demo persona cohorts](https://github.com/torana-labs/catch-knowledge/blob/main/strategy/sales-demo-persona-cohorts.md) doc now defines the NYC-first cohort, planned India core cohort, roster reuse rules, and city overlay limits. |
 
 ## Open Product Decisions
 
@@ -107,7 +107,7 @@ and empty-state demos wherever synthetic users are needed.
 
 ## Image Generation Plan
 
-Use `sales_demo_image_generation_runbook.md` for the current production workflow.
+Use the [sales demo image generation runbook](https://github.com/torana-labs/catch-knowledge/blob/main/runbooks/sales-demo-image-generation.md) in catch-knowledge for the current production workflow.
 It is written for subscription ChatGPT web generation, one conversation per
 persona, and four-person waves so medium-reasoning sessions can do the repetitive
 download, review, normalization, and manifest work without re-deciding the data
@@ -232,7 +232,7 @@ Current manual fallback output:
 | 2026-05-25 | Used ChatGPT web as a manual fallback for `nyc_maya_shah_001`; saved four local review images under `build/demo-persona-images/maya-shah/` and wrote `build/demo-persona-images/chatgpt-web-maya-shah-pilot.manifest.json`. First two images are strong candidates; gallery and active photos need review because aspect ratio/scale and running-pose control drifted. |
 | 2026-05-25 | Added Gemini/Nano Banana provider support and `image_generation_pilot.gemini.json` for a direct API comparison against the Maya Shah ChatGPT web set. Dry run succeeds; apply is blocked until a Gemini API key is available in the shell. |
 | 2026-05-25 | Used the logged-in Gemini Pro web UI as a no-extra-API-billing fallback for the same `nyc_maya_shah_001` four-photo comparison set. Saved outputs under `build/demo-persona-images-gemini-web/maya-shah/` and wrote `build/demo-persona-images-gemini-web/gemini-web-maya-shah-pilot.manifest.json`. Gemini produced consistent 1536x2752 vertical images and a stronger casual running scene, but every inspected download includes a visible generated-image marker that blocks publishing as-is. |
-| 2026-05-25 | Added `sales_demo_image_generation_runbook.md` and `sales_demo_persona_cohorts.md` so lower-cost medium-reasoning sessions can generate ChatGPT-web images in four-person waves, organize local manifests, upload approved images to UID-owned Storage paths, and reuse a New York cohort plus planned India core cohort across demo surfaces. |
+| 2026-05-25 | Added the sales demo image generation runbook and persona cohorts doc (both now in catch-knowledge) so lower-cost medium-reasoning sessions can generate ChatGPT-web images in four-person waves, organize local manifests, upload approved images to UID-owned Storage paths, and reuse a New York cohort plus planned India core cohort across demo surfaces. |
 | 2026-05-25 | Started ChatGPT-web production wave 1 for `us-nyc-sales-personas-v1`: approved hero portraits for `nyc_maya_shah_001`, `nyc_jordan_ellis_002`, `nyc_sofia_martinez_003`, and `nyc_ethan_brooks_004`; normalized approved JPEGs under ignored `build/demo-persona-images-web/`; no upload attempted. |
 | 2026-05-25 | Continued ChatGPT-web production wave 1: approved and normalized photo position 1 for Maya Shah, Jordan Ellis, Sofia Martinez, and Ethan Brooks. Sofia's pickleball image is usable but review notes flag future prompt tightening toward less polished/body-forward sports framing. |
 | 2026-05-25 | Continued ChatGPT-web production wave 1: approved and normalized photo position 2 for Maya Shah, Jordan Ellis, Sofia Martinez, and Ethan Brooks. Maya's gallery image is the strongest scale/context proof; Sofia's rooftop dinner is polished but acceptable for the sales-demo profile set. |
