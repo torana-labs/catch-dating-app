@@ -22,7 +22,7 @@ import {
 } from "../../admin/listingEventImports";
 import {packagedIntake, runSupplyIntake, type SupplyIntakeRequest} from "./runtime";
 import {publishApprovedListingEvents} from "./eventPublicationTrigger";
-import {publishListingEvents} from "./eventPublication";
+import {packagedEventPublication, publishListingEvents, type EventPublicationPolicy} from "./eventPublication";
 import {adminRefreshOrganizerEventsHandler} from "./organizerEventRefresh";
 import {supplyIntakeCollections} from "./worker";
 
@@ -104,8 +104,12 @@ async function harness({editEvent, approve = true}: {editEvent?: EventEdit; appr
     origin: null} as SupplyIntakeRequest & {origin: null};
   const {result, requestPath} = await completeIntake(db, request, editEvent);
   assert.ok(result.eventWorkItemIds.length > 0, "the saved calendar lists at least one event");
+  // These tests cover the auto-publish mode, whatever mode the shipped policy is in.
+  const runtime = await packagedEventPublication();
+  const autoPublishPolicy = {...await runtime.loadEventPublicationPolicy(), mode: runtime.AUTO_PUBLISH_MODE} as EventPublicationPolicy;
   const deps = {firestore: () => db as unknown as FirebaseFirestore.Firestore,
-    serverTimestamp: () => SERVER_TIME as unknown as FirebaseFirestore.FieldValue, now};
+    serverTimestamp: () => SERVER_TIME as unknown as FirebaseFirestore.FieldValue, now,
+    loadEventPublicationPolicy: async () => autoPublishPolicy};
   const before = db.read(requestPath);
   let organizerId: string | null = null;
   if (approve) {
