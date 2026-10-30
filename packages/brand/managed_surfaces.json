@@ -39,6 +39,7 @@
     {"path": "tool/tools_manifest.json", "kind": "text"},
     {"path": "tool/marketing/export_app_screenshots.mjs", "kind": "text"},
     {"path": "tool/firebase/form_upload_identity.mjs", "kind": "text"},
+    {"path": "tool/platform/verify_ios_release_identity.test.mjs", "kind": "text"},
     {"path": "tool/marketing/lib/web_capture_screen.mjs", "kind": "text"},
     {"path": "packages/web-ui/src/components/CatchGroundCard.stories.tsx", "kind": "text"},
     {"path": "packages/web-ui/src/components/CatchQrCode.stories.tsx", "kind": "text"},

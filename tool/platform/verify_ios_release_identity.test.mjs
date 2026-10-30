@@ -17,7 +17,6 @@ import {
   resolveReleaseTarget,
   verifyCodeSignature,
 } from "./verify_ios_release_identity.mjs";
-import {brand} from "@catch/brand";
 
 test("rejects a changed IPA container after the app was extracted", () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ios-container-"));
@@ -99,7 +98,7 @@ const baseConsumerEntitlements = {
   "aps-environment": "$(APS_ENVIRONMENT)",
   "com.apple.developer.devicecheck.appattest-environment":
     "$(APP_ATTEST_ENVIRONMENT)",
-  "com.apple.developer.associated-domains": [`applinks:${brand.web.domain}`],
+  "com.apple.developer.associated-domains": ["applinks:catchdates.com"],
   "com.apple.developer.healthkit": true,
 };
 
@@ -108,7 +107,7 @@ const baseSignedConsumerEntitlements = {
   "com.apple.developer.team-identifier": "TEAM123",
   "aps-environment": "production",
   "com.apple.developer.devicecheck.appattest-environment": "production",
-  "com.apple.developer.associated-domains": [`applinks:${brand.web.domain}`],
+  "com.apple.developer.associated-domains": ["applinks:catchdates.com"],
   "com.apple.developer.healthkit": true,
   "get-task-allow": false,
 };
