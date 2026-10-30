@@ -113,11 +113,11 @@ These are generic software capabilities. Strategy policies, prospect records and
 | Function | File | Purpose |
 |----------|------|---------|
 | `getOrganizerTrackingSettings` / `setOrganizerTrackingSettings` / `readPublicOrganizerTrackingSettings` | `src/analytics/organizerTrackingSettings.ts` | Manager-scoped, revision-fenced Meta Pixel and GA4 configuration; bounded public policy lookup returns disabled/null-ID projections until reviewed advertising publication is authorized. |
-| `createRazorpayOrder` | `src/payments/` | Create Razorpay order for paid events |
+| `createRazorpayOrder` | `src/payments/` | Retired: refuses every new order so older app builds get an explanation; INR paid seats sell through `managePublicEventCheckout` |
 | `createRazorpayHostPaymentAccount` / `refreshRazorpayHostPaymentAccount` | `src/payments/razorpayHostAccounts.ts` | Create or continue a Razorpay Route linked account and refresh its activation state |
 | `createStripeHostOnboardingLink` / `refreshStripeHostPaymentAccount` | `src/payments/stripeHostAccounts.ts` | Create Stripe Connect hosted onboarding and refresh its account state |
 | `createStripeCheckoutSession` | `src/payments/createStripeCheckoutSession.ts` | Create a non-INR Stripe destination checkout for an enabled host account |
-| `verifyRazorpayPayment` | `src/payments/` | Verify payment signature + sign up |
+| `verifyRazorpayPayment` | `src/payments/` | Verify an existing native order's payment signature + sign up |
 | `previewOrganizerFormAdmission` / `commitOrganizerFormAdmission` | `src/organizerFormAdmission/callable.ts` | Read-only preview and atomic manager-reviewed free/manual-payment admission; validates current response, CRM origin or native application approval, issued offer, and ready seat ledger before roster and receipt writes |
 | `previewEventOffers` / `commitEventOffers` / `mutateEventOffer` / `getEventOffer` / `listEventOffers` / `prepareEventOfferHandoff` / `getEventOfferConfiguration` / `configureEventOfferPreferences` / `previewEventOfferPreferences` | `src/organizerEventOffers/` | Reviewed event-specific offers and manual bank-reference review; private storage, historical payment snapshots, no admission/provider effects |
 | `createPrivateEventSetup` / `updatePrivateEventBasics` / `updatePrivateEventPreferences` / `getPrivateEventSetup` / `listPrivateEventSetups` / `updatePrivateEventDetails` / `listOfferEventTargets` | `src/events/progressiveSetup/` | Manager-only basic event setup, private event-local payment/preferences snapshots and sanitized reopen; mutations remain closed pending privacy migration |
@@ -128,7 +128,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `publishEventLivePosition` | `src/events/eventLivePositions.ts` | Publish or clear a short-lived foreground Host/operator position when the event route policy and exact operator grant allow it |
 | `signUpForFreeEvent` | `src/events/` | Book a free event |
 | `cancelEventSignUp` | `src/events/` | Cancel booking (refunds paid events) |
-| `configureEventRegistration` / `managePublicEventCheckout` | `src/events/publicRegistration/callables.ts` | Explicit manager registration settings and phone-authorized public paid checkout; frozen terms, seat holds, admission, cancellation and recovery |
+| `configureEventRegistration` / `managePublicEventCheckout` | `src/events/publicRegistration/callables.ts` | Explicit manager registration settings and phone-authorized public paid checkout, the only INR paid-seat sale path (organizer's own Razorpay via `razorpayOAuth`; Catch's account only when routing explicitly selects `razorpayRoute`); frozen terms, seat holds, admission, cancellation and recovery |
 | `setEventPublication` / `reconcilePrivateEventSeats` | `src/events/progressiveSetup/callables.ts` | Manager-only revision-fenced publish/unpublish and bounded reviewed seat reconciliation with exact-command retry/discard |
 | `joinEventWaitlist` / `leaveEventWaitlist` | `src/events/` | Join or leave a full event's waitlist |
 | `placeDetails` / `placesAutocomplete` | `src/places/` | Google Places lookup seam for event locations |
