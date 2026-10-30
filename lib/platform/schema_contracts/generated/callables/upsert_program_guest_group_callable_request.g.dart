@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/upsert_program_guest_group_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Create or update an organizer-defined guest group for a program. label and dimension are always supplied; sortOrder preserves the existing value when omitted.
 final class UpsertProgramGuestGroupCallableRequest {

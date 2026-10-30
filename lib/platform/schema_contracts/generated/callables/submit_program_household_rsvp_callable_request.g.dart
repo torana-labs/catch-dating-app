@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/submit_program_household_rsvp_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Token-authenticated household RSVP submit. Responses are limited to guests in the token's household and apply atomically. messagingConsent records the explicit checkbox state; it is never implied by submitting.
 final class SubmitProgramHouseholdRsvpCallableRequest {

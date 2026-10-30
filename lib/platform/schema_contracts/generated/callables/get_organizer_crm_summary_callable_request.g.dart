@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/get_organizer_crm_summary_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Organizer manager request for a privacy-bounded CRM audience summary.
 final class GetOrganizerCrmSummaryCallableRequest {

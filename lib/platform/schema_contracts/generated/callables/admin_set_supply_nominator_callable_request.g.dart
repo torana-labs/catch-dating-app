@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/admin_set_supply_nominator_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Adds or updates someone who may nominate organizers by sending links to Catch's WhatsApp number. Messages from this number become Supply Intake nominations credited to the uid. The uid must hold a sales role (associate) or a current partner membership (partner). Setting active to false stops new messages counting; nothing is deleted.
 final class AdminSetSupplyNominatorCallableRequest {

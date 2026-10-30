@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/refresh_program_travel_leg_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Manual flight-status refresh for a single travel leg; any active program staff member may request it.
 final class RefreshProgramTravelLegCallableRequest {

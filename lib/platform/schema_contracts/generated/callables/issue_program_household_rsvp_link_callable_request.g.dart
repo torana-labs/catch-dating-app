@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/issue_program_household_rsvp_link_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Mint a signed RSVP link token for one household. The token carries only ids and an exclusive expiry; default expiry is the program end.
 final class IssueProgramHouseholdRsvpLinkCallableRequest {

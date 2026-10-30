@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/unarchive_program_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Restore an archived program to its pre-archive status. Only valid while the grace window is still open; expectedRevision fences concurrent edits.
 final class UnarchiveProgramCallableRequest {

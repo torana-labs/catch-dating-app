@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/upsert_program_stay_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Create or update one guest's stay at a hotel. hotelDesk callers may only touch stays at hotels their duty covers; program coordinators and managers are unscoped. Null fields clear the stored value; omitted fields keep it. Room-block capacity is re-counted from live stays server-side, so a stale client never overbooks.
 final class UpsertProgramStayCallableRequest {

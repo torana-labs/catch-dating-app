@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/admin_upsert_sales_pilot_plan_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Strict private Sales commercial request; current role, scope, revision and evidence policy are transactional.
 final class AdminUpsertSalesPilotPlanCallableRequest {

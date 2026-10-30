@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/revoke_participant_organizer_data_grant_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Revokes the authenticated participant's organizer access grant without deleting the platform audit snapshot.
 final class RevokeParticipantOrganizerDataGrantCallableRequest {

@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/upsert_organizer_campaign_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Creates or revision-updates one draft WhatsApp organizer campaign that consumes a Customers-owned saved audience id.
 final class UpsertOrganizerCampaignCallableRequest {

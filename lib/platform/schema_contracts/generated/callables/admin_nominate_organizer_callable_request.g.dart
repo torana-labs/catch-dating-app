@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/admin_nominate_organizer_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// A Catch sales associate nominates an organizer. Supply Intake builds the listing from the name and links; nothing is published until staff review it.
 final class AdminNominateOrganizerCallableRequest {

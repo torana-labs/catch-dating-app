@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/admin_refresh_organizer_events_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Staff read new events for an unclaimed organizer Catch already lists: Supply Intake reads the given links, or the event-calendar links on the organizer's page, and its events go through the event publication policy like an approved listing's.
 final class AdminRefreshOrganizerEventsCallableRequest {

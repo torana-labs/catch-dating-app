@@ -9,7 +9,7 @@ import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 
 
 // Typed callable request DTO emitted from callables/create_event_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Nested private-access payload accepted by createEvent.
 final class CreateEventPrivateAccess {

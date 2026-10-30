@@ -7,7 +7,7 @@
 // the corresponding JSON Schema by test/core/callable_dto_contracts_test.dart.
 // Patch helper classes are emitted for schemas with x-callable-shape: patch.
 // This file is a stable barrel; individual generated classes live under
-// lib/core/schema_contracts/generated/callables/.
+// lib/platform/schema_contracts/generated/callables/.
 //
 // Hand-written callable request/response helpers may still exist for schemas
 // that need custom normalization or response parsing beyond generated request

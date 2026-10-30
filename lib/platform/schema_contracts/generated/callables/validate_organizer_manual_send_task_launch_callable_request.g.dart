@@ -3,7 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 // Typed callable request DTO emitted from callables/validate_organizer_manual_send_task_launch_payload.schema.json.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 /// Revision-bound, read-only authority check immediately before re-opening an external handoff.
 final class ValidateOrganizerManualSendTaskLaunchCallableRequest {
