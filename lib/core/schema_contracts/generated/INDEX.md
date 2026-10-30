@@ -651,6 +651,7 @@ Do not edit it by hand.
 | OrganizerClaimVerificationDocument | `firestore/organizer_claim_verifications.schema.json` | `functions/src/shared/generated/organizerClaimVerificationDocument.ts` |
 | OrganizerClaimInstagramCodeDocument | `firestore/organizer_claim_instagram_codes.schema.json` | `functions/src/shared/generated/organizerClaimInstagramCodeDocument.ts` |
 | OrganizerClaimInstagramMessageDocument | `firestore/organizer_claim_instagram_messages.schema.json` | `functions/src/shared/generated/organizerClaimInstagramMessageDocument.ts` |
+| InstagramAccessTokenDocument | `firestore/instagram_access_tokens.schema.json` | `functions/src/shared/generated/instagramAccessTokenDocument.ts` |
 | OrganizerScheduleLockDocument | `firestore/organizer_schedule_locks.schema.json` | `functions/src/shared/generated/organizerScheduleLockDocument.ts` |
 | ClubPostDocument | `firestore/club_posts.schema.json` | `functions/src/shared/generated/clubPostDocument.ts` |
 | ClubMembershipDocument | `firestore/club_memberships.schema.json` | `functions/src/shared/generated/clubMembershipDocument.ts` |
@@ -1950,6 +1951,7 @@ Do not edit it by hand.
 | `schemaOrganizerClaimVerificationDocumentSchema` | OrganizerClaimVerificationDocument | `firestore/organizer_claim_verifications.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_claim_verification_document.g.dart` |
 | `schemaOrganizerClaimInstagramCodeDocumentSchema` | OrganizerClaimInstagramCodeDocument | `firestore/organizer_claim_instagram_codes.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_claim_instagram_code_document.g.dart` |
 | `schemaOrganizerClaimInstagramMessageDocumentSchema` | OrganizerClaimInstagramMessageDocument | `firestore/organizer_claim_instagram_messages.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_claim_instagram_message_document.g.dart` |
+| `schemaInstagramAccessTokenDocumentSchema` | InstagramAccessTokenDocument | `firestore/instagram_access_tokens.schema.json` | `lib/core/schema_contracts/generated/schemas/instagram_access_token_document.g.dart` |
 | `schemaOrganizerScheduleLockDocumentSchema` | OrganizerScheduleLockDocument | `firestore/organizer_schedule_locks.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_schedule_lock_document.g.dart` |
 | `schemaClubPostDocumentSchema` | ClubPostDocument | `firestore/club_posts.schema.json` | `lib/core/schema_contracts/generated/schemas/club_post_document.g.dart` |
 | `schemaClubMembershipDocumentSchema` | ClubMembershipDocument | `firestore/club_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/club_membership_document.g.dart` |

@@ -642,6 +642,7 @@ import {
   organizerClaimVerificationDocumentSchema,
   organizerClaimInstagramCodeDocumentSchema,
   organizerClaimInstagramMessageDocumentSchema,
+  instagramAccessTokenDocumentSchema,
   organizerScheduleLockDocumentSchema,
   clubPostDocumentSchema,
   clubMembershipDocumentSchema,
@@ -1960,6 +1961,7 @@ export const validateOrganizerClaimRequestDocument = ajv.compile(organizerClaimR
 export const validateOrganizerClaimVerificationDocument = ajv.compile(organizerClaimVerificationDocumentSchema);
 export const validateOrganizerClaimInstagramCodeDocument = ajv.compile(organizerClaimInstagramCodeDocumentSchema);
 export const validateOrganizerClaimInstagramMessageDocument = ajv.compile(organizerClaimInstagramMessageDocumentSchema);
+export const validateInstagramAccessTokenDocument = ajv.compile(instagramAccessTokenDocumentSchema);
 export const validateOrganizerScheduleLockDocument = ajv.compile(organizerScheduleLockDocumentSchema);
 export const validateClubPostDocument = ajv.compile(clubPostDocumentSchema);
 export const validateClubMembershipDocument = ajv.compile(clubMembershipDocumentSchema);

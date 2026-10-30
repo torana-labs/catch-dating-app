@@ -644,6 +644,7 @@ export {organizerClaimRequestDocumentSchema} from "./schemas/organizerClaimReque
 export {organizerClaimVerificationDocumentSchema} from "./schemas/organizerClaimVerificationDocument";
 export {organizerClaimInstagramCodeDocumentSchema} from "./schemas/organizerClaimInstagramCodeDocument";
 export {organizerClaimInstagramMessageDocumentSchema} from "./schemas/organizerClaimInstagramMessageDocument";
+export {instagramAccessTokenDocumentSchema} from "./schemas/instagramAccessTokenDocument";
 export {organizerScheduleLockDocumentSchema} from "./schemas/organizerScheduleLockDocument";
 export {clubPostDocumentSchema} from "./schemas/clubPostDocument";
 export {clubMembershipDocumentSchema} from "./schemas/clubMembershipDocument";

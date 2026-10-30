@@ -644,6 +644,7 @@ export {validateOrganizerClaimRequestDocument} from "./validators/organizerClaim
 export {validateOrganizerClaimVerificationDocument} from "./validators/organizerClaimVerificationDocument";
 export {validateOrganizerClaimInstagramCodeDocument} from "./validators/organizerClaimInstagramCodeDocument";
 export {validateOrganizerClaimInstagramMessageDocument} from "./validators/organizerClaimInstagramMessageDocument";
+export {validateInstagramAccessTokenDocument} from "./validators/instagramAccessTokenDocument";
 export {validateOrganizerScheduleLockDocument} from "./validators/organizerScheduleLockDocument";
 export {validateClubPostDocument} from "./validators/clubPostDocument";
 export {validateClubMembershipDocument} from "./validators/clubMembershipDocument";

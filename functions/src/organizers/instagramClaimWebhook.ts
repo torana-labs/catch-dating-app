@@ -1,6 +1,11 @@
+import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {defineSecret, defineString} from "firebase-functions/params";
 import {onRequest} from "firebase-functions/v2/https";
+import {
+  InstagramAccessTokenSource,
+  InstagramAccessTokenStore,
+} from "./instagramAccessTokenStore";
 import {handleInstagramClaimWebhook} from "./instagramClaimProtocol";
 import {
   FakeInstagramProvider,
@@ -17,12 +22,16 @@ import {
 // Meta signs webhook payloads with the app secret of the app that owns the
 // Instagram Login product.
 const appSecret = defineSecret("CATCH_INSTAGRAM_APP_SECRET");
-const accessToken = defineSecret("CATCH_INSTAGRAM_ACCESS_TOKEN");
+// The version pinned at deploy. refreshInstagramAccessToken renews it, and
+// the webhook switches to the renewed version without a redeploy.
+export const instagramAccessToken =
+  defineSecret("CATCH_INSTAGRAM_ACCESS_TOKEN");
 const verifyToken = defineSecret("CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN");
-const graphVersion = defineString("CATCH_INSTAGRAM_GRAPH_VERSION",
-  {default: "v26.0"});
+export const instagramGraphVersion = defineString(
+  "CATCH_INSTAGRAM_GRAPH_VERSION", {default: "v26.0"});
 
 let emulatorProvider: FakeInstagramProvider | null = null;
+let tokenSource: InstagramAccessTokenSource | null = null;
 
 /**
  * The emulator never calls Meta: it gets the fake provider, whose senders
@@ -35,15 +44,21 @@ export function instagramClaimProvider(): InstagramMessagingProvider {
       fakeSenders(process.env.CATCH_INSTAGRAM_FAKE_SENDERS));
     return emulatorProvider;
   }
+  tokenSource ??= new InstagramAccessTokenSource(
+    new InstagramAccessTokenStore(admin.firestore()),
+    (reason) => logger.warn("Instagram webhook is using the deployed token",
+      {reason}));
+  const source = tokenSource;
+  const accountId = catchInstagramAccountId.value().trim();
   return new InstagramGraphProvider({
-    accountId: catchInstagramAccountId.value().trim(),
-    accessToken: accessToken.value(),
-    graphVersion: graphVersion.value().trim(),
+    accountId,
+    accessToken: () => source.token(accountId, instagramAccessToken.value()),
+    graphVersion: instagramGraphVersion.value().trim(),
   });
 }
 
 export const instagramClaimWebhook = onRequest({
-  secrets: [appSecret, accessToken, verifyToken], maxInstances: 2,
+  secrets: [appSecret, instagramAccessToken, verifyToken], maxInstances: 2,
   concurrency: 10, invoker: "public",
 }, async (request, response) => {
   const enabled = instagramClaimsEnabled.value();

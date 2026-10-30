@@ -3212,6 +3212,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaOrganizerClaimInstagramMessageDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'InstagramAccessTokenDocument',
+    source: 'firestore/instagram_access_tokens.schema.json',
+    schema: schemaInstagramAccessTokenDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'OrganizerScheduleLockDocument',
     source: 'firestore/organizer_schedule_locks.schema.json',
     schema: schemaOrganizerScheduleLockDocumentSchema,
@@ -7128,6 +7133,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'OrganizerClaimVerificationDocument': schemaOrganizerClaimVerificationDocumentSchema,
   'OrganizerClaimInstagramCodeDocument': schemaOrganizerClaimInstagramCodeDocumentSchema,
   'OrganizerClaimInstagramMessageDocument': schemaOrganizerClaimInstagramMessageDocumentSchema,
+  'InstagramAccessTokenDocument': schemaInstagramAccessTokenDocumentSchema,
   'OrganizerScheduleLockDocument': schemaOrganizerScheduleLockDocumentSchema,
   'ClubPostDocument': schemaClubPostDocumentSchema,
   'ClubMembershipDocument': schemaClubMembershipDocumentSchema,
@@ -8425,6 +8431,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/organizer_claim_verifications.schema.json': schemaOrganizerClaimVerificationDocumentSchema,
   'firestore/organizer_claim_instagram_codes.schema.json': schemaOrganizerClaimInstagramCodeDocumentSchema,
   'firestore/organizer_claim_instagram_messages.schema.json': schemaOrganizerClaimInstagramMessageDocumentSchema,
+  'firestore/instagram_access_tokens.schema.json': schemaInstagramAccessTokenDocumentSchema,
   'firestore/organizer_schedule_locks.schema.json': schemaOrganizerScheduleLockDocumentSchema,
   'firestore/club_posts.schema.json': schemaClubPostDocumentSchema,
   'firestore/club_memberships.schema.json': schemaClubMembershipDocumentSchema,
