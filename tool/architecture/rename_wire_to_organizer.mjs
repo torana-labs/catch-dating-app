@@ -82,6 +82,11 @@ const wireTarget = (name) => wireOverrides.get(name) ?? renameWord(name);
 // the prose word "club" or "Clubs".
 const codeWordInComment = /\b[A-Za-z_$][\w$]*\b/gu;
 const isCodeWord = (word) => /[A-Z_]/u.test(word.replace(/^[A-Z]/u, "")) || /[a-z][A-Z]/u.test(word);
+// A camelCase or PascalCase club word in a string (a collection, a schema
+// export, a symbol a test names) is code, so it renames with the code; prose
+// ("club", "Clubs"), snake_case warehouse names and the subtype stay.
+const isCamelClubWord = (word) => /[a-z][A-Z]|^[A-Z][a-z]+[A-Z]|[a-z]Club|Club[A-Z]/u.test(word) &&
+  isClubIdentifier(word) && !keptWireNames.has(word);
 
 // The names a contract declares: property, definition and enum names and
 // titles. Descriptions are prose and keep their words.
@@ -195,7 +200,7 @@ export function wireNameFindings({files, read}) {
 // A string names a wire field when its whole value or one of its path
 // segments (event.clubId, #/definitions/clubHostProfile) is a wire name.
 export function renameWireSegments(value, wire) {
-  return value.replace(/[A-Za-z_][\w]*/gu, (word) => wire.get(word) ?? word);
+  return value.replace(/[A-Za-z_][\w]*/gu, (word) => wire.get(word) ?? (isCamelClubWord(word) ? renameWord(word) : word));
 }
 
 // A path string follows a moved file, or names a generated output, which
@@ -221,7 +226,8 @@ export function renamePathString(value, plan) {
 
 // Registries and docs also name script symbols (ClubCover, clubHosts).
 function renameNamedSymbols(value, plan) {
-  return value.replace(/[A-Za-z_$][\w$]*/gu, (word) => plan.wire.get(word) ?? plan.identifiers.get(word) ?? word);
+  return value.replace(/[A-Za-z_$][\w$]*/gu, (word) => plan.wire.get(word) ?? plan.identifiers.get(word) ??
+    (isCamelClubWord(word) ? renameWord(word) : word));
 }
 
 // A relative module specifier follows its moved file.
@@ -329,6 +335,10 @@ export function renameScript({file, source, plan}) {
     if (ts.isIdentifier(node) || ts.isPrivateIdentifier(node)) {
       const next = renameIdentifier(node.text);
       if (next !== node.text) edits.push({start: node.getStart(), end: node.getEnd(), text: next});
+    } else if (ts.isRegularExpressionLiteral(node)) {
+      const raw = node.getText(sourceFile);
+      const next = renameWireSegments(raw, plan.wire);
+      if (next !== raw) edits.push({start: node.getStart(), end: node.getEnd(), text: next});
     } else if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node) ||
       ts.isTemplateHead(node) || ts.isTemplateMiddle(node) || ts.isTemplateTail(node)) {
       const raw = source.slice(node.getStart(), node.getEnd());

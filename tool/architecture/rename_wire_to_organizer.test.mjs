@@ -103,6 +103,22 @@ test("identifiers, wire strings and comments rename; copy and the subtype stay",
   ].join("\n"));
 });
 
+test("camelCase club words in strings are code; prose, snake_case and the subtype stay", () => {
+  const {plan} = fixture();
+  const source = [
+    "const path = \"clubScheduleLocks/club_lock\";",
+    "const key = \"@hostsExampleVisiblecopyClubid\";",
+    "const copy = [\"Run clubs\", \"Clubs\", \"club\", \"runClub\", \"clubs_raw_latest\"];",
+    "",
+  ].join("\n");
+  assert.equal(renameScript({file: "x.ts", source, plan}), [
+    "const path = \"organizerScheduleLocks/club_lock\";",
+    "const key = \"@hostsExampleVisiblecopyOrganizerid\";",
+    "const copy = [\"Run clubs\", \"Clubs\", \"club\", \"runClub\", \"clubs_raw_latest\"];",
+    "",
+  ].join("\n"));
+});
+
 test("specifiers follow moved files and the generated outputs of renamed sources", () => {
   const moves = new Map([["functions/src/admin/clubDetails.ts", "functions/src/admin/organizerDetails.ts"]]);
   assert.equal(renameSpecifier("./clubDetails", "functions/src/admin/index.ts", moves), "./organizerDetails");
