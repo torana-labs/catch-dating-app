@@ -821,7 +821,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminIntakeSourceList instead of passing the raw admin intake-source-list class from feature code.",
+    guidance: "Use CatchAdminIntakeSourceList from @catch/web-ui instead of passing the raw admin intake-source-list class from feature code.",
   },
   {
     family: "admin-intake-decision-shell",
@@ -841,7 +841,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use DecisionFooter, AdminDecisionFooterShell, AdminIntakeDecisionActions, and AdminIntakeDecisionState instead of passing raw admin intake decision classes from feature code.",
+    guidance: "Use DecisionFooter, AdminDecisionFooterShell, and the @catch/web-ui CatchAdminIntakeDecisionActions and CatchAdminIntakeDecisionState instead of passing raw admin intake decision classes from feature code.",
   },
   {
     family: "admin-intake-workspace-shell",
@@ -1066,7 +1066,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminCommandStack and AdminCommandRow instead of rendering admin command-list shells directly.",
+    guidance: "Use CatchAdminCommandStack and CatchAdminCommandRow from @catch/web-ui instead of rendering admin command-list shells directly.",
   },
   {
     family: "admin-intake-tag-list",
@@ -1125,7 +1125,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminIntakeSection, AdminIntakeSectionTitle, AdminSearchCandidateHeader, and AdminCard with variant=\"searchCandidate\" instead of rendering admin intake/search-candidate shells directly.",
+    guidance: "Use AdminIntakeSection, AdminCard with variant=\"searchCandidate\", and the @catch/web-ui CatchAdminIntakeSectionTitle and CatchAdminSearchCandidateHeader instead of rendering admin intake/search-candidate shells directly.",
   },
   {
     family: "admin-row-tag-shell",

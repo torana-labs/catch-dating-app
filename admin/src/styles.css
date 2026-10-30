@@ -2317,22 +2317,9 @@ select {
   gap: var(--catch-space-s2);
 }
 
-.intake-section-title {
-  color: var(--muted);
-  font-size: var(--catch-typography-web-status-size);
-  font-weight: var(--catch-typography-brand-kicker-weight);
-  text-transform: uppercase;
-}
-
-.guardrail-list,
-.intake-source-list,
-.command-stack {
+.guardrail-list {
   display: grid;
   gap: var(--catch-space-s2);
-}
-
-.intake-source-list {
-  margin-top: var(--catch-space-s3);
 }
 
 .intake-checkbox-row {
@@ -2379,87 +2366,6 @@ select {
   color: var(--muted);
   font-size: var(--catch-typography-web-status-size);
   overflow-wrap: anywhere;
-}
-
-.intake-decision-actions {
-  display: flex;
-  gap: var(--catch-space-s2);
-  flex-wrap: wrap;
-}
-
-.intake-decision-actions button {
-  min-height: 32px;
-  padding: 0 var(--catch-space-s3);
-  border: var(--catch-stroke-hairline) solid var(--line-strong);
-  border-radius: var(--catch-radius-xs);
-  background: var(--surface);
-  color: var(--ink);
-  cursor: pointer;
-  font-size: var(--catch-typography-web-status-size);
-  font-weight: var(--catch-typography-brand-kicker-weight);
-}
-
-.intake-decision-actions button:first-child {
-  border-color: var(--primary);
-  background: var(--primary);
-  color: var(--on-primary);
-}
-
-.intake-decision-actions button:disabled {
-  cursor: not-allowed;
-  opacity: 0.54;
-}
-
-.intake-decision-state {
-  display: flex;
-  gap: var(--catch-space-s2);
-  padding: var(--catch-space-micro10);
-  border: var(--catch-stroke-hairline) solid var(--positive-line);
-  border-radius: var(--catch-radius-sm);
-  background: var(--positive-soft);
-  color: var(--positive);
-}
-
-.intake-decision-state strong,
-.intake-decision-state span {
-  display: block;
-}
-
-.intake-decision-state strong {
-  color: var(--ink);
-  font-size: var(--catch-typography-web-status-size);
-}
-
-.intake-decision-state span {
-  margin-top: var(--catch-space-micro2);
-  color: var(--muted);
-  font-size: var(--catch-typography-web-status-size);
-  overflow-wrap: anywhere;
-}
-
-.command-row {
-  display: grid;
-  gap: var(--catch-space-s1);
-  padding: var(--catch-space-s2);
-  border: var(--catch-stroke-hairline) solid var(--line);
-  border-radius: var(--catch-radius-sm);
-  background: var(--surface-subtle);
-}
-
-.command-row span {
-  color: var(--muted);
-  font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: var(--catch-typography-brand-kicker-weight);
-  text-transform: uppercase;
-}
-
-.command-row code {
-  display: block;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  color: var(--ink);
-  font-size: var(--catch-typography-web-status-size);
-  line-height: 1.4;
 }
 
 .state-row {

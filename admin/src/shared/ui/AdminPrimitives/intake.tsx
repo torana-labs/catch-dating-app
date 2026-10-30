@@ -64,47 +64,8 @@ export function AdminIntakeSection({
   );
 }
 
-export function AdminIntakeSectionTitle({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("intake-section-title", className)}>
-      {children}
-    </div>
-  );
-}
 
-export function AdminIntakeDecisionState({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("intake-decision-state", className)}>
-      {children}
-    </div>
-  );
-}
 
-export function AdminIntakeDecisionActions({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("intake-decision-actions", className)}>
-      {children}
-    </div>
-  );
-}
 
 export function AdminDecisionFooterShell({
   children,
@@ -136,19 +97,6 @@ export function AdminDecisionFooterShell({
   );
 }
 
-export function AdminSearchCandidateHeader({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <header {...props} className={classNames("search-candidate-header", className)}>
-      {children}
-    </header>
-  );
-}
 
 export type AdminIntakeWorkbenchTone =
   | "neutral"

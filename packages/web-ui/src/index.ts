@@ -1,5 +1,19 @@
 export {CatchAccordion} from "./components/CatchAccordion";
 export type {CatchAccordionItem, CatchAccordionProps} from "./components/CatchAccordion";
+// Admin T4 components (D18), registered in design/admin/components.json.
+export {CatchAdminCommandRow, CatchAdminCommandStack} from "./components/CatchAdminCommandStack";
+export type {CatchAdminCommandRowProps, CatchAdminCommandStackProps} from "./components/CatchAdminCommandStack";
+export {CatchAdminIntakeDecisionActions, CatchAdminIntakeDecisionState} from "./components/CatchAdminIntakeDecision";
+export type {
+  CatchAdminIntakeDecisionActionsProps,
+  CatchAdminIntakeDecisionStateProps,
+} from "./components/CatchAdminIntakeDecision";
+export {CatchAdminIntakeSectionTitle} from "./components/CatchAdminIntakeSectionTitle";
+export type {CatchAdminIntakeSectionTitleProps} from "./components/CatchAdminIntakeSectionTitle";
+export {CatchAdminIntakeSourceList} from "./components/CatchAdminIntakeSourceList";
+export type {CatchAdminIntakeSourceListProps} from "./components/CatchAdminIntakeSourceList";
+export {CatchAdminSearchCandidateHeader} from "./components/CatchAdminSearchCandidateHeader";
+export type {CatchAdminSearchCandidateHeaderProps} from "./components/CatchAdminSearchCandidateHeader";
 export {CatchAppCaptureImage} from "./components/CatchAppCaptureImage";
 export type {CatchAppCaptureImageProps} from "./components/CatchAppCaptureImage";
 export {CatchAvatar, catchAvatarInitialsOf} from "./components/CatchAvatar";

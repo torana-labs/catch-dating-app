@@ -1073,10 +1073,10 @@
       "id": "shared_admin_command_row",
       "kind": "feature-component",
       "owner": "features/marketing",
-      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
-      "exportName": "AdminCommandRow",
+      "source": "packages/web-ui/src/components/CatchAdminCommandStack.tsx",
+      "exportName": "CatchAdminCommandRow",
       "css": [
-        "admin/src/styles.css"
+        "packages/web-ui/src/components/CatchAdminCommandStack.module.css"
       ],
       "preview": {
         "status": "ready",
@@ -1086,16 +1086,16 @@
           "with-action"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/marketing renders it. admin/src/features/marketing/ui/marketingLibraryPanels.tsx and marketingComposerPanels.tsx bind each command label and command."
     },
     {
       "id": "shared_admin_command_stack",
       "kind": "feature-component",
       "owner": "features/marketing",
-      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
-      "exportName": "AdminCommandStack",
+      "source": "packages/web-ui/src/components/CatchAdminCommandStack.tsx",
+      "exportName": "CatchAdminCommandStack",
       "css": [
-        "admin/src/styles.css"
+        "packages/web-ui/src/components/CatchAdminCommandStack.module.css"
       ],
       "preview": {
         "status": "ready",
@@ -1105,7 +1105,7 @@
           "commands"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/marketing renders it. admin/src/features/marketing/ui/marketingLibraryPanels.tsx and marketingComposerPanels.tsx bind the generated command list."
     },
     {
       "id": "shared_admin_decision_footer_shell",
@@ -1675,10 +1675,10 @@
       "id": "shared_admin_intake_decision_actions",
       "kind": "feature-component",
       "owner": "features/marketing",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminIntakeDecisionActions",
+      "source": "packages/web-ui/src/components/CatchAdminIntakeDecision.tsx",
+      "exportName": "CatchAdminIntakeDecisionActions",
       "css": [
-        "admin/src/styles.css"
+        "packages/web-ui/src/components/CatchAdminIntakeDecision.module.css"
       ],
       "preview": {
         "status": "ready",
@@ -1688,16 +1688,16 @@
           "actions"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/marketing renders it. Admin's shared DecisionFooter (admin/src/shared/ui/AdminPrimitives/forms.tsx) binds the review decision buttons; features/marketing is its only renderer."
     },
     {
       "id": "shared_admin_intake_decision_state",
       "kind": "feature-component",
       "owner": "features/marketing",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminIntakeDecisionState",
+      "source": "packages/web-ui/src/components/CatchAdminIntakeDecision.tsx",
+      "exportName": "CatchAdminIntakeDecisionState",
       "css": [
-        "admin/src/styles.css"
+        "packages/web-ui/src/components/CatchAdminIntakeDecision.module.css"
       ],
       "preview": {
         "status": "ready",
@@ -1707,7 +1707,7 @@
           "saved"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/marketing renders it. Admin's shared DecisionFooter (admin/src/shared/ui/AdminPrimitives/forms.tsx) binds the saved decision status and path; features/marketing is its only renderer."
     },
     {
       "id": "shared_admin_intake_publication_boundary_panel",
@@ -1815,10 +1815,10 @@
       "id": "shared_admin_intake_section_title",
       "kind": "feature-component",
       "owner": "features/users",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminIntakeSectionTitle",
+      "source": "packages/web-ui/src/components/CatchAdminIntakeSectionTitle.tsx",
+      "exportName": "CatchAdminIntakeSectionTitle",
       "css": [
-        "admin/src/styles.css"
+        "packages/web-ui/src/components/CatchAdminIntakeSectionTitle.module.css"
       ],
       "preview": {
         "status": "ready",
@@ -1828,16 +1828,16 @@
           "title-meta"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/users renders it. admin/src/features/users/ui/UserAnalyticsScreen.tsx binds the section labels."
     },
     {
       "id": "shared_admin_intake_source_list",
       "kind": "feature-component",
       "owner": "features/events",
-      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
-      "exportName": "AdminIntakeSourceList",
+      "source": "packages/web-ui/src/components/CatchAdminIntakeSourceList.tsx",
+      "exportName": "CatchAdminIntakeSourceList",
       "css": [
-        "admin/src/styles.css"
+        "packages/web-ui/src/components/CatchAdminIntakeSourceList.module.css"
       ],
       "preview": {
         "status": "ready",
@@ -1847,7 +1847,7 @@
           "sources"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/events renders it. admin/src/features/events/ui/eventPublishingSupplyPanels.tsx binds the external event's source rows."
     },
     {
       "id": "shared_admin_intake_stage_rail",
@@ -3780,10 +3780,10 @@
       "id": "shared_admin_search_candidate_header",
       "kind": "feature-component",
       "owner": "features/events",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminSearchCandidateHeader",
+      "source": "packages/web-ui/src/components/CatchAdminSearchCandidateHeader.tsx",
+      "exportName": "CatchAdminSearchCandidateHeader",
       "css": [
-        "admin/src/styles.css"
+        "packages/web-ui/src/components/CatchAdminSearchCandidateHeader.module.css"
       ],
       "preview": {
         "status": "ready",
@@ -3793,7 +3793,7 @@
           "title-status"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/events renders it. admin/src/features/events/ui/eventPublishingSupplyPanels.tsx binds the external event's title and review status."
     },
     {
       "id": "shared_admin_sidebar",

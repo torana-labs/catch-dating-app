@@ -209,17 +209,3 @@ export function AdminGuardrailList({
     </div>
   );
 }
-
-export function AdminIntakeSourceList({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={classNames("intake-source-list", className)}>
-      {children}
-    </div>
-  );
-}

@@ -1,4 +1,12 @@
-import {CatchBadge, CatchField} from "@catch/web-ui";
+import {
+  CatchAdminIntakeDecisionActions,
+  CatchAdminIntakeDecisionState,
+  CatchAdminIntakeSectionTitle,
+  CatchAdminIntakeSourceList,
+  CatchAdminSearchCandidateHeader,
+  CatchBadge,
+  CatchField,
+} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
   CheckCircle2,
@@ -11,21 +19,16 @@ import {
   AdminButton,
   AdminCard,
   AdminGuardrailList,
-  AdminIntakeDecisionActions,
-  AdminIntakeDecisionState,
   AdminIntakeBoundaryNotice,
   AdminIntakePublicationBoundaryPanel,
   AdminIntakeReviewWorkbench,
   AdminIntakeSection,
-  AdminIntakeSectionTitle,
-  AdminIntakeSourceList,
   AdminIntakeStageRail,
   AdminIntakeTaskToolbar,
   AdminIntakeWorkspaceFrame,
   AdminIntakeWorkspaceTabs,
   AdminOrganizerIntakeCheckboxField,
   AdminPanel,
-  AdminSearchCandidateHeader,
   AdminTagList,
   AdminWorkspace,
   AlertRow,
@@ -292,10 +295,10 @@ export const AdminIntakeSectionStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminIntakeSection>
-        <AdminIntakeSectionTitle>
+        <CatchAdminIntakeSectionTitle>
           <strong>Review summary</strong>
           <span>Bridge freshness and quality gates</span>
-        </AdminIntakeSectionTitle>
+        </CatchAdminIntakeSectionTitle>
         <QualityList>
           <QualityRow icon={<CheckCircle2 size={16} />} tone="success">
             <strong>Generated bridge loaded</strong>
@@ -317,10 +320,10 @@ export const AdminIntakeSectionTitleStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminIntakeSectionTitle>
+      <CatchAdminIntakeSectionTitle>
         <strong>Policy gates</strong>
         <span>4 warnings</span>
-      </AdminIntakeSectionTitle>
+      </CatchAdminIntakeSectionTitle>
     </AdminWorkspace>
   ),
 };
@@ -335,7 +338,7 @@ export const AdminIntakeSourceListStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminIntakeSourceList>
+      <CatchAdminIntakeSourceList>
         <QualityRow icon={<Link2 size={16} />} tone="success">
           <strong>Instagram</strong>
           <span>Recent public event evidence.</span>
@@ -344,7 +347,7 @@ export const AdminIntakeSourceListStory: Story = {
           <strong>Website</strong>
           <span>Needs canonical URL confirmation.</span>
         </QualityRow>
-      </AdminIntakeSourceList>
+      </CatchAdminIntakeSourceList>
     </AdminWorkspace>
   ),
 };
@@ -397,13 +400,13 @@ export const AdminIntakeDecisionStateStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminIntakeDecisionState>
+      <CatchAdminIntakeDecisionState>
         <CheckCircle2 size={16} />
         <div>
           <strong>approved for public listing</strong>
           <span>reviewDecisions/afterfly</span>
         </div>
-      </AdminIntakeDecisionState>
+      </CatchAdminIntakeDecisionState>
     </AdminWorkspace>
   ),
 };
@@ -418,11 +421,11 @@ export const AdminIntakeDecisionActionsStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminIntakeDecisionActions>
+      <CatchAdminIntakeDecisionActions>
         <AdminButton>Suppress</AdminButton>
         <AdminButton>Hold</AdminButton>
         <AdminButton variant="primary">Approve</AdminButton>
-      </AdminIntakeDecisionActions>
+      </CatchAdminIntakeDecisionActions>
     </AdminWorkspace>
   ),
 };
@@ -454,10 +457,10 @@ export const AdminSearchCandidateHeaderStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminCard variant="searchCandidate">
-        <AdminSearchCandidateHeader>
+        <CatchAdminSearchCandidateHeader>
           <strong>Afterfly Social</strong>
           <CatchBadge recipe="status" tone="success" label="96% match" />
-        </AdminSearchCandidateHeader>
+        </CatchAdminSearchCandidateHeader>
       </AdminCard>
     </AdminWorkspace>
   ),
