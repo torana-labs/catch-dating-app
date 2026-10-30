@@ -40,8 +40,9 @@
     {"path": "lib/hosts/presentation/", "layer": "app"},
     {"path": "lib/routing/", "layer": "app"},
 
-    {"path": "lib/contracts.dart", "layer": "platform"},
+    {"path": "lib/contracts.dart", "layer": "platform", "moveTo": "lib/platform/contracts.dart"},
     {"path": "lib/core/", "layer": "platform"},
+    {"path": "lib/core/schema_contracts/", "layer": "platform", "moveTo": "lib/platform/schema_contracts/"},
     {"path": "lib/firebase_options", "layer": "platform"},
     {"path": "lib/l10n/", "layer": "platform"},
     {"path": "lib/routing/route_contract.dart", "layer": "platform"},
