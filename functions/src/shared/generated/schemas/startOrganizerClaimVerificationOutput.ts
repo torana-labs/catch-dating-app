@@ -14,6 +14,7 @@ export const startOrganizerClaimVerificationCallableResponseSchema: Record<strin
     "organizerId",
     "method",
     "code",
+    "proofText",
     "proofTarget",
     "catchInstagramHandle",
     "expiresAt"
@@ -39,6 +40,11 @@ export const startOrganizerClaimVerificationCallableResponseSchema: Record<strin
     "code": {
       "type": "string",
       "pattern": "^[0-9]{6}$"
+    },
+    "proofText": {
+      "description": "Exactly what the organiser sends or pastes: the code for Instagram, catch-<code> for Luma.",
+      "type": "string",
+      "pattern": "^(catch-)?[0-9]{6}$"
     },
     "proofTarget": {
       "type": "string",

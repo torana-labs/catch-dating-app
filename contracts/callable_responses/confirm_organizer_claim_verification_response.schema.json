@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/confirm_organizer_claim_verification_response.schema.json",
+  "title": "ConfirmOrganizerClaimVerificationCallableResponse",
+  "description": "Callable response returned by confirmOrganizerClaimVerification after it reads the listing's Luma calendar for the attempt's code.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["attemptId", "status", "claimRequestId", "lastRejection"],
+  "properties": {
+    "attemptId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "status": {
+      "description": "claimUnavailable: the page was claimed or closed meanwhile, so staff review is the way forward.",
+      "type": "string",
+      "enum": ["awaitingProof", "verified", "expired", "claimUnavailable"]
+    },
+    "claimRequestId": {
+      "anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]
+    },
+    "lastRejection": {
+      "anyOf": [{"type": "string", "enum": ["codeNotFound", "pageUnavailable"]}, {"type": "null"}]
+    }
+  }
+}

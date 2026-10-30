@@ -16,6 +16,7 @@ const schemaStartOrganizerClaimVerificationCallableResponseSchema = <String, Obj
     'organizerId',
     'method',
     'code',
+    'proofText',
     'proofTarget',
     'catchInstagramHandle',
     'expiresAt',
@@ -41,6 +42,11 @@ const schemaStartOrganizerClaimVerificationCallableResponseSchema = <String, Obj
     'code': <String, Object?>{
       'type': 'string',
       'pattern': '^[0-9]{6}\$',
+    },
+    'proofText': <String, Object?>{
+      'description': 'Exactly what the organiser sends or pastes: the code for Instagram, catch-<code> for Luma.',
+      'type': 'string',
+      'pattern': '^(catch-)?[0-9]{6}\$',
     },
     'proofTarget': <String, Object?>{
       'type': 'string',

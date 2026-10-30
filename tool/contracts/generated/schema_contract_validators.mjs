@@ -878,6 +878,8 @@ import {
   startOrganizerClaimVerificationCallableResponseSchema,
   getOrganizerClaimVerificationOptionsCallablePayloadSchema,
   organizerClaimVerificationOptionsCallableResponseSchema,
+  confirmOrganizerClaimVerificationCallablePayloadSchema,
+  confirmOrganizerClaimVerificationCallableResponseSchema,
   adminDecideOrganizerClaimCallablePayloadSchema,
   createClubCallableResponseSchema,
   createClubPostCallablePayloadSchema,
@@ -2206,6 +2208,8 @@ export const validateStartOrganizerClaimVerificationCallablePayload = ajv.compil
 export const validateStartOrganizerClaimVerificationCallableResponse = ajv.compile(startOrganizerClaimVerificationCallableResponseSchema);
 export const validateGetOrganizerClaimVerificationOptionsCallablePayload = ajv.compile(getOrganizerClaimVerificationOptionsCallablePayloadSchema);
 export const validateOrganizerClaimVerificationOptionsCallableResponse = ajv.compile(organizerClaimVerificationOptionsCallableResponseSchema);
+export const validateConfirmOrganizerClaimVerificationCallablePayload = ajv.compile(confirmOrganizerClaimVerificationCallablePayloadSchema);
+export const validateConfirmOrganizerClaimVerificationCallableResponse = ajv.compile(confirmOrganizerClaimVerificationCallableResponseSchema);
 export const validateAdminDecideOrganizerClaimCallablePayload = ajv.compile(adminDecideOrganizerClaimCallablePayloadSchema);
 export const validateCreateClubCallableResponse = ajv.compile(createClubCallableResponseSchema);
 export const validateCreateClubPostCallablePayload = ajv.compile(createClubPostCallablePayloadSchema);

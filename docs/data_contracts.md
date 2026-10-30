@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.181.0
-updated: 2026-10-30
+version: 1.182.0
+updated: 2026-10-31
 owner: recursive_audit_loop
 status: active
 ---
@@ -1665,7 +1665,17 @@ An organiser proves they run a listing in one of two ways, and staff review of
   shows a six-digit code that lasts 30 minutes. The code is bound to one
   attempt, for one account and one listing. The organiser sends it from the
   listing's Instagram account to Catch's account.
-- Luma. The organiser puts a code in their Luma calendar description.
+- Luma. Luma calendars show no public contact email; "Contact the host" is
+  a signed-in relay. So Catch can't email a code. Instead the organiser puts
+  `catch-<code>` in the listing's Luma calendar description, and
+  `confirmOrganizerClaimVerification` reads the public calendar page for it.
+  - Reading the page is on-demand page fetching, so it follows the CAT-266
+    policy and spends the same monthly allowance. While page fetching is off,
+    the Luma method stays hidden.
+  - Only the exact marker counts, and only on a page that is still on Luma
+    after redirects.
+  - The organiser may leave the marker in the description afterwards. It
+    only ever matches its own attempt.
 
 The attempt is stored at `organizerClaimVerifications/{attemptId}`:
 

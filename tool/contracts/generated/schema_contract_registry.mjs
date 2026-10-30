@@ -265235,6 +265235,7 @@ export const startOrganizerClaimVerificationCallableResponseSchema = {
     "organizerId",
     "method",
     "code",
+    "proofText",
     "proofTarget",
     "catchInstagramHandle",
     "expiresAt"
@@ -265260,6 +265261,11 @@ export const startOrganizerClaimVerificationCallableResponseSchema = {
     "code": {
       "type": "string",
       "pattern": "^[0-9]{6}$"
+    },
+    "proofText": {
+      "description": "Exactly what the organiser sends or pastes: the code for Instagram, catch-<code> for Luma.",
+      "type": "string",
+      "pattern": "^(catch-)?[0-9]{6}$"
     },
     "proofTarget": {
       "type": "string",
@@ -265373,6 +265379,83 @@ export const organizerClaimVerificationOptionsCallableResponseSchema = {
         "null"
       ],
       "maxLength": 30
+    }
+  }
+};
+
+export const confirmOrganizerClaimVerificationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/confirm_organizer_claim_verification_payload.schema.json",
+  "title": "ConfirmOrganizerClaimVerificationCallablePayload",
+  "description": "Callable payload accepted by confirmOrganizerClaimVerification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "attemptId"
+  ],
+  "properties": {
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const confirmOrganizerClaimVerificationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/confirm_organizer_claim_verification_response.schema.json",
+  "title": "ConfirmOrganizerClaimVerificationCallableResponse",
+  "description": "Callable response returned by confirmOrganizerClaimVerification after it reads the listing's Luma calendar for the attempt's code.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "attemptId",
+    "status",
+    "claimRequestId",
+    "lastRejection"
+  ],
+  "properties": {
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "description": "claimUnavailable: the page was claimed or closed meanwhile, so staff review is the way forward.",
+      "type": "string",
+      "enum": [
+        "awaitingProof",
+        "verified",
+        "expired",
+        "claimUnavailable"
+      ]
+    },
+    "claimRequestId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastRejection": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "codeNotFound",
+            "pageUnavailable"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 };

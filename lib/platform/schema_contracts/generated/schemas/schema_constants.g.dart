@@ -268,6 +268,8 @@ export 'configure_event_offer_preferences_callable_response.g.dart';
 export 'configure_event_registration_callable_payload.g.dart';
 export 'configure_event_registration_callable_response.g.dart';
 export 'confirm_event_assistance_departure_callable_payload.g.dart';
+export 'confirm_organizer_claim_verification_callable_payload.g.dart';
+export 'confirm_organizer_claim_verification_callable_response.g.dart';
 export 'connect_organizer_luma_provider_callable_payload.g.dart';
 export 'control_event_rehearsal_callable_payload.g.dart';
 export 'control_event_rehearsal_spatial_callable_payload.g.dart';

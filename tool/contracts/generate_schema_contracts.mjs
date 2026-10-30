@@ -3646,6 +3646,22 @@ const schemaSpecs = [
       "organizerClaimVerificationOptionsCallableResponse.ts",
   },
   {
+    name: "ConfirmOrganizerClaimVerificationCallablePayload",
+    source:
+      "callables/confirm_organizer_claim_verification_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "confirmOrganizerClaimVerificationCallablePayload.ts",
+  },
+  {
+    name: "ConfirmOrganizerClaimVerificationCallableResponse",
+    source:
+      "callable_responses/confirm_organizer_claim_verification_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "confirmOrganizerClaimVerificationCallableResponse.ts",
+  },
+  {
     name: "AdminDecideOrganizerClaimCallablePayload",
     source: "callables/admin_decide_organizer_claim_payload.schema.json",
     typeOutput:

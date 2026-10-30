@@ -880,6 +880,8 @@ export {startOrganizerClaimVerificationCallablePayloadSchema} from "./schemas/st
 export {startOrganizerClaimVerificationCallableResponseSchema} from "./schemas/startOrganizerClaimVerificationOutput";
 export {getOrganizerClaimVerificationOptionsCallablePayloadSchema} from "./schemas/getOrganizerClaimVerificationOptionsInput";
 export {organizerClaimVerificationOptionsCallableResponseSchema} from "./schemas/organizerClaimVerificationOptionsOutput";
+export {confirmOrganizerClaimVerificationCallablePayloadSchema} from "./schemas/confirmOrganizerClaimVerificationInput";
+export {confirmOrganizerClaimVerificationCallableResponseSchema} from "./schemas/confirmOrganizerClaimVerificationOutput";
 export {adminDecideOrganizerClaimCallablePayloadSchema} from "./schemas/adminDecideOrganizerClaimInput";
 export {createClubCallableResponseSchema} from "./schemas/createClubOutput";
 export {createClubPostCallablePayloadSchema} from "./schemas/createClubPostInput";

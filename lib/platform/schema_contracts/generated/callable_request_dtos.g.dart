@@ -129,6 +129,7 @@ export 'callables/complete_organizer_whatsapp_connection_callable_request.g.dart
 export 'callables/configure_event_assignment_features_callable_request.g.dart';
 export 'callables/configure_event_offer_preferences_callable_request.g.dart';
 export 'callables/confirm_event_assistance_departure_callable_request.g.dart';
+export 'callables/confirm_organizer_claim_verification_callable_request.g.dart';
 export 'callables/connect_organizer_luma_provider_callable_request.g.dart';
 export 'callables/control_event_rehearsal_callable_request.g.dart';
 export 'callables/control_event_rehearsal_spatial_callable_request.g.dart';
