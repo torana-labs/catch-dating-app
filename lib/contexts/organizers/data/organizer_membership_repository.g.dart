@@ -10,7 +10,8 @@ part of 'organizer_membership_repository.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(organizerMembershipRepository)
-final organizerMembershipRepositoryProvider = OrganizerMembershipRepositoryProvider._();
+final organizerMembershipRepositoryProvider =
+    OrganizerMembershipRepositoryProvider._();
 
 final class OrganizerMembershipRepositoryProvider
     extends
@@ -25,7 +26,7 @@ final class OrganizerMembershipRepositoryProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'clubMembershipRepositoryProvider',
+        name: r'organizerMembershipRepositoryProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -49,13 +50,15 @@ final class OrganizerMembershipRepositoryProvider
   Override overrideWithValue(OrganizerMembershipRepository value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<OrganizerMembershipRepository>(value),
+      providerOverride: $SyncValueProvider<OrganizerMembershipRepository>(
+        value,
+      ),
     );
   }
 }
 
 String _$organizerMembershipRepositoryHash() =>
-    r'0bdb64b7254031efa7d7aa84b0eabb87f9d5a2a8';
+    r'0b6ae7a2d52cf8233d049f7a0661c57b263f890e';
 
 @ProviderFor(watchActiveOrganizerMembershipsForUser)
 final watchActiveOrganizerMembershipsForUserProvider =
@@ -76,7 +79,7 @@ final class WatchActiveOrganizerMembershipsForUserProvider
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'watchActiveClubMembershipsForUserProvider',
+         name: r'watchActiveOrganizerMembershipsForUserProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -88,7 +91,7 @@ final class WatchActiveOrganizerMembershipsForUserProvider
 
   @override
   String toString() {
-    return r'watchActiveClubMembershipsForUserProvider'
+    return r'watchActiveOrganizerMembershipsForUserProvider'
         ''
         '($argument)';
   }
@@ -118,24 +121,27 @@ final class WatchActiveOrganizerMembershipsForUserProvider
 }
 
 String _$watchActiveOrganizerMembershipsForUserHash() =>
-    r'265f813ea75b6fe6bf29edb857ccf3eedabc4621';
+    r'f77e9db353acfa45ec33b66fcfb2755918d5d39e';
 
 final class WatchActiveOrganizerMembershipsForUserFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<OrganizerMembership>>, String> {
   WatchActiveOrganizerMembershipsForUserFamily._()
     : super(
         retry: null,
-        name: r'watchActiveClubMembershipsForUserProvider',
+        name: r'watchActiveOrganizerMembershipsForUserProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
   WatchActiveOrganizerMembershipsForUserProvider call(String uid) =>
-      WatchActiveOrganizerMembershipsForUserProvider._(argument: uid, from: this);
+      WatchActiveOrganizerMembershipsForUserProvider._(
+        argument: uid,
+        from: this,
+      );
 
   @override
-  String toString() => r'watchActiveClubMembershipsForUserProvider';
+  String toString() => r'watchActiveOrganizerMembershipsForUserProvider';
 }
 
 @ProviderFor(watchActiveOrganizerMembershipsForOrganizer)
@@ -157,7 +163,7 @@ final class WatchActiveOrganizerMembershipsForOrganizerProvider
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'watchActiveClubMembershipsForClubProvider',
+         name: r'watchActiveOrganizerMembershipsForOrganizerProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -169,7 +175,7 @@ final class WatchActiveOrganizerMembershipsForOrganizerProvider
 
   @override
   String toString() {
-    return r'watchActiveClubMembershipsForClubProvider'
+    return r'watchActiveOrganizerMembershipsForOrganizerProvider'
         ''
         '($argument)';
   }
@@ -199,24 +205,27 @@ final class WatchActiveOrganizerMembershipsForOrganizerProvider
 }
 
 String _$watchActiveOrganizerMembershipsForOrganizerHash() =>
-    r'8534f19fddfc838af6c8a7ebc872129abbc5c83a';
+    r'0ab873da7306759a6823856f208716d41adb98f3';
 
 final class WatchActiveOrganizerMembershipsForOrganizerFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<OrganizerMembership>>, String> {
   WatchActiveOrganizerMembershipsForOrganizerFamily._()
     : super(
         retry: null,
-        name: r'watchActiveClubMembershipsForClubProvider',
+        name: r'watchActiveOrganizerMembershipsForOrganizerProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
   WatchActiveOrganizerMembershipsForOrganizerProvider call(String clubId) =>
-      WatchActiveOrganizerMembershipsForOrganizerProvider._(argument: clubId, from: this);
+      WatchActiveOrganizerMembershipsForOrganizerProvider._(
+        argument: clubId,
+        from: this,
+      );
 
   @override
-  String toString() => r'watchActiveClubMembershipsForClubProvider';
+  String toString() => r'watchActiveOrganizerMembershipsForOrganizerProvider';
 }
 
 @ProviderFor(watchOrganizerMembership)
@@ -229,13 +238,15 @@ final class WatchOrganizerMembershipProvider
           OrganizerMembership?,
           Stream<OrganizerMembership?>
         >
-    with $FutureModifier<OrganizerMembership?>, $StreamProvider<OrganizerMembership?> {
+    with
+        $FutureModifier<OrganizerMembership?>,
+        $StreamProvider<OrganizerMembership?> {
   WatchOrganizerMembershipProvider._({
     required WatchOrganizerMembershipFamily super.from,
     required (String, String) super.argument,
   }) : super(
          retry: null,
-         name: r'watchClubMembershipProvider',
+         name: r'watchOrganizerMembershipProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -246,7 +257,7 @@ final class WatchOrganizerMembershipProvider
 
   @override
   String toString() {
-    return r'watchClubMembershipProvider'
+    return r'watchOrganizerMembershipProvider'
         ''
         '$argument';
   }
@@ -265,7 +276,8 @@ final class WatchOrganizerMembershipProvider
 
   @override
   bool operator ==(Object other) {
-    return other is WatchOrganizerMembershipProvider && other.argument == argument;
+    return other is WatchOrganizerMembershipProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -275,14 +287,18 @@ final class WatchOrganizerMembershipProvider
 }
 
 String _$watchOrganizerMembershipHash() =>
-    r'4d727a070d21269f45abdb811b9365f3ad832637';
+    r'664be72036b17291c999ebeb845ae3ea22d77221';
 
 final class WatchOrganizerMembershipFamily extends $Family
-    with $FunctionalFamilyOverride<Stream<OrganizerMembership?>, (String, String)> {
+    with
+        $FunctionalFamilyOverride<
+          Stream<OrganizerMembership?>,
+          (String, String)
+        > {
   WatchOrganizerMembershipFamily._()
     : super(
         retry: null,
-        name: r'watchClubMembershipProvider',
+        name: r'watchOrganizerMembershipProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -292,7 +308,7 @@ final class WatchOrganizerMembershipFamily extends $Family
       WatchOrganizerMembershipProvider._(argument: (clubId, uid), from: this);
 
   @override
-  String toString() => r'watchClubMembershipProvider';
+  String toString() => r'watchOrganizerMembershipProvider';
 }
 
 @ProviderFor(currentUserFollowedOrganizerIds)
@@ -312,7 +328,7 @@ final class CurrentUserFollowedOrganizerIdsProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'currentUserFollowedClubIdsProvider',
+        name: r'currentUserFollowedOrganizerIdsProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -342,4 +358,4 @@ final class CurrentUserFollowedOrganizerIdsProvider
 }
 
 String _$currentUserFollowedOrganizerIdsHash() =>
-    r'e5e4c6a9273db441397b74a35876969498099962';
+    r'9e53aeba3219bd304341a078fd8147670db0f6d8';

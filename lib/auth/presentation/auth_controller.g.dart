@@ -118,7 +118,7 @@ final class AuthControllerProvider
   }
 }
 
-String _$authControllerHash() => r'ef44982c8ea9c98b04504396713852abf4214f96';
+String _$authControllerHash() => r'509a96b50a91cb407b7084733d41f35a972e8229';
 
 /// **Pattern B: Flow controller with freezed state + Mutations**
 ///

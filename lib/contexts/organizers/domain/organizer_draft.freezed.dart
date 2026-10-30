@@ -37,7 +37,7 @@ int get hashCode => Object.hash(runtimeType,savedAt,name,area,description,locati
 
 @override
 String toString() {
-  return 'ClubDraft(savedAt: $savedAt, name: $name, area: $area, description: $description, location: $location, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, organizerType: $organizerType, hostDefaults: $hostDefaults)';
+  return 'OrganizerDraft(savedAt: $savedAt, name: $name, area: $area, description: $description, location: $location, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, organizerType: $organizerType, hostDefaults: $hostDefaults)';
 }
 
 
@@ -263,7 +263,7 @@ int get hashCode => Object.hash(runtimeType,savedAt,name,area,description,locati
 
 @override
 String toString() {
-  return 'ClubDraft(savedAt: $savedAt, name: $name, area: $area, description: $description, location: $location, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, organizerType: $organizerType, hostDefaults: $hostDefaults)';
+  return 'OrganizerDraft(savedAt: $savedAt, name: $name, area: $area, description: $description, location: $location, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, organizerType: $organizerType, hostDefaults: $hostDefaults)';
 }
 
 

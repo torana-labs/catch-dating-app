@@ -40,7 +40,7 @@ int get hashCode => Object.hash(runtimeType,primaryActivityKind,const DeepCollec
 
 @override
 String toString() {
-  return 'ClubHostDefaults(primaryActivityKind: $primaryActivityKind, supportedActivityKinds: $supportedActivityKinds, eventPolicy: $eventPolicy, eventSuccess: $eventSuccess, eventSuccessByActivityKind: $eventSuccessByActivityKind, timezone: $timezone, revision: $revision)';
+  return 'OrganizerHostDefaults(primaryActivityKind: $primaryActivityKind, supportedActivityKinds: $supportedActivityKinds, eventPolicy: $eventPolicy, eventSuccess: $eventSuccess, eventSuccessByActivityKind: $eventSuccessByActivityKind, timezone: $timezone, revision: $revision)';
 }
 
 
@@ -284,7 +284,7 @@ int get hashCode => Object.hash(runtimeType,primaryActivityKind,const DeepCollec
 
 @override
 String toString() {
-  return 'ClubHostDefaults(primaryActivityKind: $primaryActivityKind, supportedActivityKinds: $supportedActivityKinds, eventPolicy: $eventPolicy, eventSuccess: $eventSuccess, eventSuccessByActivityKind: $eventSuccessByActivityKind, timezone: $timezone, revision: $revision)';
+  return 'OrganizerHostDefaults(primaryActivityKind: $primaryActivityKind, supportedActivityKinds: $supportedActivityKinds, eventPolicy: $eventPolicy, eventSuccess: $eventSuccess, eventSuccessByActivityKind: $eventSuccessByActivityKind, timezone: $timezone, revision: $revision)';
 }
 
 

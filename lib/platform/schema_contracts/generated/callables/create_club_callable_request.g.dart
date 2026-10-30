@@ -7,7 +7,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defau
 // Typed callable request DTO emitted from callables/create_club_payload.schema.json.
 // Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Callable payload accepted by createOrganizer.
+/// Callable payload accepted by createClub.
 final class CreateClubCallableRequest {
   const CreateClubCallableRequest({
     this.clubId,

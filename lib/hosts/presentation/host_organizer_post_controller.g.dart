@@ -10,7 +10,8 @@ part of 'host_organizer_post_controller.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(hostOrganizerPostController)
-final hostOrganizerPostControllerProvider = HostOrganizerPostControllerProvider._();
+final hostOrganizerPostControllerProvider =
+    HostOrganizerPostControllerProvider._();
 
 final class HostOrganizerPostControllerProvider
     extends
@@ -25,7 +26,7 @@ final class HostOrganizerPostControllerProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'hostClubPostControllerProvider',
+        name: r'hostOrganizerPostControllerProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -55,4 +56,4 @@ final class HostOrganizerPostControllerProvider
 }
 
 String _$hostOrganizerPostControllerHash() =>
-    r'1e826d5d8522381c49191fdd501687eebd7eda8a';
+    r'8467fe3324dd1c1e1c694cb4cc85aabff5c2d25d';

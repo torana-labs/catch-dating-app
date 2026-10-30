@@ -385,7 +385,7 @@ final class ExploreSourceOrganizersProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'exploreSourceClubsProvider',
+        name: r'exploreSourceOrganizersProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -415,7 +415,7 @@ final class ExploreSourceOrganizersProvider
 }
 
 String _$exploreSourceOrganizersHash() =>
-    r'e6b94ed26a266a55eabd8e5ad4b893e37c4b35c1';
+    r'd30047b8829dcb69f7a4a8db2459c56c99b39dfc';
 
 @ProviderFor(filteredExploreOrganizers)
 final filteredExploreOrganizersProvider = FilteredExploreOrganizersProvider._();
@@ -433,7 +433,7 @@ final class FilteredExploreOrganizersProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'filteredExploreClubsProvider',
+        name: r'filteredExploreOrganizersProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -463,7 +463,7 @@ final class FilteredExploreOrganizersProvider
 }
 
 String _$filteredExploreOrganizersHash() =>
-    r'4666125803063efcbdd84afa114dc8c5ad874f2d';
+    r'211d732c4ca60c6c2a649817de818f0b2c57ce30';
 
 /// **Pattern D: View-model provider**
 ///
@@ -473,7 +473,8 @@ String _$filteredExploreOrganizersHash() =>
 /// lists for the UI.
 
 @ProviderFor(exploreOrganizersViewModel)
-final exploreOrganizersViewModelProvider = ExploreOrganizersViewModelProvider._();
+final exploreOrganizersViewModelProvider =
+    ExploreOrganizersViewModelProvider._();
 
 /// **Pattern D: View-model provider**
 ///
@@ -501,7 +502,7 @@ final class ExploreOrganizersViewModelProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'exploreClubsViewModelProvider',
+        name: r'exploreOrganizersViewModelProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -531,4 +532,4 @@ final class ExploreOrganizersViewModelProvider
 }
 
 String _$exploreOrganizersViewModelHash() =>
-    r'8639ff8d04b339ecc3cf411d5c03f15e377a7949';
+    r'fe28df1691c475781086a584bc679b2d7a99444a';

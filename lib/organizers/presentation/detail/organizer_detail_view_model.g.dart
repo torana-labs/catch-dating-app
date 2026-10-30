@@ -53,7 +53,7 @@ final class OrganizerDetailViewModelProvider
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'clubDetailViewModelProvider',
+         name: r'organizerDetailViewModelProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -64,7 +64,7 @@ final class OrganizerDetailViewModelProvider
 
   @override
   String toString() {
-    return r'clubDetailViewModelProvider'
+    return r'organizerDetailViewModelProvider'
         ''
         '($argument)';
   }
@@ -85,15 +85,15 @@ final class OrganizerDetailViewModelProvider
   Override overrideWithValue(AsyncValue<OrganizerDetailViewModel?> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<AsyncValue<OrganizerDetailViewModel?>>(
-        value,
-      ),
+      providerOverride:
+          $SyncValueProvider<AsyncValue<OrganizerDetailViewModel?>>(value),
     );
   }
 
   @override
   bool operator ==(Object other) {
-    return other is OrganizerDetailViewModelProvider && other.argument == argument;
+    return other is OrganizerDetailViewModelProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -103,7 +103,7 @@ final class OrganizerDetailViewModelProvider
 }
 
 String _$organizerDetailViewModelHash() =>
-    r'a10e2658fb069cb615389bf3050b0d4a9412e142';
+    r'9bb336916efaef748a337aa77564ae317cffdba2';
 
 /// **Pattern D: View-model provider**
 ///
@@ -116,11 +116,15 @@ String _$organizerDetailViewModelHash() =>
 /// events behind the route's placeholder body.
 
 final class OrganizerDetailViewModelFamily extends $Family
-    with $FunctionalFamilyOverride<AsyncValue<OrganizerDetailViewModel?>, String> {
+    with
+        $FunctionalFamilyOverride<
+          AsyncValue<OrganizerDetailViewModel?>,
+          String
+        > {
   OrganizerDetailViewModelFamily._()
     : super(
         retry: null,
-        name: r'clubDetailViewModelProvider',
+        name: r'organizerDetailViewModelProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -140,5 +144,5 @@ final class OrganizerDetailViewModelFamily extends $Family
       OrganizerDetailViewModelProvider._(argument: clubId, from: this);
 
   @override
-  String toString() => r'clubDetailViewModelProvider';
+  String toString() => r'organizerDetailViewModelProvider';
 }

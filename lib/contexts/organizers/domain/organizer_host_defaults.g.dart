@@ -6,40 +6,38 @@ part of 'organizer_host_defaults.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_OrganizerHostDefaults _$OrganizerHostDefaultsFromJson(Map<String, dynamic> json) =>
-    _OrganizerHostDefaults(
-      primaryActivityKind:
-          $enumDecodeNullable(
-            _$ActivityKindEnumMap,
-            json['primaryActivityKind'],
-          ) ??
-          ActivityKind.socialRun,
-      supportedActivityKinds:
-          (json['supportedActivityKinds'] as List<dynamic>?)
-              ?.map((e) => $enumDecode(_$ActivityKindEnumMap, e))
-              .toList() ??
-          const <ActivityKind>[],
-      eventPolicy: json['eventPolicy'] == null
-          ? const EventPolicyDefaults()
-          : EventPolicyDefaults.fromJson(
-              json['eventPolicy'] as Map<String, dynamic>,
-            ),
-      eventSuccess: json['eventSuccess'] == null
-          ? const EventSuccessDefaults()
-          : EventSuccessDefaults.fromJson(
-              json['eventSuccess'] as Map<String, dynamic>,
-            ),
-      eventSuccessByActivityKind:
-          (json['eventSuccessByActivityKind'] as Map<String, dynamic>?)?.map(
-            (k, e) => MapEntry(
-              k,
-              EventSuccessDefaults.fromJson(e as Map<String, dynamic>),
-            ),
-          ) ??
-          const <String, EventSuccessDefaults>{},
-      timezone: json['timezone'] as String?,
-      revision: (json['revision'] as num?)?.toInt(),
-    );
+_OrganizerHostDefaults _$OrganizerHostDefaultsFromJson(
+  Map<String, dynamic> json,
+) => _OrganizerHostDefaults(
+  primaryActivityKind:
+      $enumDecodeNullable(_$ActivityKindEnumMap, json['primaryActivityKind']) ??
+      ActivityKind.socialRun,
+  supportedActivityKinds:
+      (json['supportedActivityKinds'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$ActivityKindEnumMap, e))
+          .toList() ??
+      const <ActivityKind>[],
+  eventPolicy: json['eventPolicy'] == null
+      ? const EventPolicyDefaults()
+      : EventPolicyDefaults.fromJson(
+          json['eventPolicy'] as Map<String, dynamic>,
+        ),
+  eventSuccess: json['eventSuccess'] == null
+      ? const EventSuccessDefaults()
+      : EventSuccessDefaults.fromJson(
+          json['eventSuccess'] as Map<String, dynamic>,
+        ),
+  eventSuccessByActivityKind:
+      (json['eventSuccessByActivityKind'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(
+          k,
+          EventSuccessDefaults.fromJson(e as Map<String, dynamic>),
+        ),
+      ) ??
+      const <String, EventSuccessDefaults>{},
+  timezone: json['timezone'] as String?,
+  revision: (json['revision'] as num?)?.toInt(),
+);
 
 Map<String, dynamic> _$OrganizerHostDefaultsToJson(
   _OrganizerHostDefaults instance,

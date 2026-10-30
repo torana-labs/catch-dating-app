@@ -34,7 +34,7 @@ int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(
 
 @override
 String toString() {
-  return 'ExploreViewModel(joinedClubs: $joinedOrganizers, allClubs: $allOrganizers, joinedClubIds: $joinedOrganizerIds, followedClubIds: $followedOrganizerIds)';
+  return 'ExploreViewModel(joinedOrganizers: $joinedOrganizers, allOrganizers: $allOrganizers, joinedOrganizerIds: $joinedOrganizerIds, followedOrganizerIds: $followedOrganizerIds)';
 }
 
 
@@ -260,7 +260,7 @@ int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(
 
 @override
 String toString() {
-  return 'ExploreViewModel(joinedClubs: $joinedOrganizers, allClubs: $allOrganizers, joinedClubIds: $joinedOrganizerIds, followedClubIds: $followedOrganizerIds)';
+  return 'ExploreViewModel(joinedOrganizers: $joinedOrganizers, allOrganizers: $allOrganizers, joinedOrganizerIds: $joinedOrganizerIds, followedOrganizerIds: $followedOrganizerIds)';
 }
 
 

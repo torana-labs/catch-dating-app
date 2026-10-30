@@ -6,22 +6,25 @@ part of 'organizer_draft.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_OrganizerDraft _$OrganizerDraftFromJson(Map<String, dynamic> json) => _OrganizerDraft(
-  savedAt: DateTime.parse(json['savedAt'] as String),
-  name: json['name'] as String?,
-  area: json['area'] as String?,
-  description: json['description'] as String?,
-  location: json['location'] as String?,
-  instagramHandle: json['instagramHandle'] as String?,
-  phoneNumber: json['phoneNumber'] as String?,
-  email: json['email'] as String?,
-  organizerType:
-      $enumDecodeNullable(_$OrganizerTypeEnumMap, json['organizerType']) ??
-      OrganizerType.club,
-  hostDefaults: json['hostDefaults'] == null
-      ? const OrganizerHostDefaults()
-      : OrganizerHostDefaults.fromJson(json['hostDefaults'] as Map<String, dynamic>),
-);
+_OrganizerDraft _$OrganizerDraftFromJson(Map<String, dynamic> json) =>
+    _OrganizerDraft(
+      savedAt: DateTime.parse(json['savedAt'] as String),
+      name: json['name'] as String?,
+      area: json['area'] as String?,
+      description: json['description'] as String?,
+      location: json['location'] as String?,
+      instagramHandle: json['instagramHandle'] as String?,
+      phoneNumber: json['phoneNumber'] as String?,
+      email: json['email'] as String?,
+      organizerType:
+          $enumDecodeNullable(_$OrganizerTypeEnumMap, json['organizerType']) ??
+          OrganizerType.club,
+      hostDefaults: json['hostDefaults'] == null
+          ? const OrganizerHostDefaults()
+          : OrganizerHostDefaults.fromJson(
+              json['hostDefaults'] as Map<String, dynamic>,
+            ),
+    );
 
 Map<String, dynamic> _$OrganizerDraftToJson(_OrganizerDraft instance) =>
     <String, dynamic>{

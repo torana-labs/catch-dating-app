@@ -59,7 +59,10 @@ _Organizer _$OrganizerFromJson(Map<String, dynamic> json) => _Organizer(
   archivedAt: const NullableTimestampConverter().fromJson(json['archivedAt']),
   archiveReason: json['archiveReason'] as String?,
   appVisibility:
-      $enumDecodeNullable(_$OrganizerAppVisibilityEnumMap, json['appVisibility']) ??
+      $enumDecodeNullable(
+        _$OrganizerAppVisibilityEnumMap,
+        json['appVisibility'],
+      ) ??
       OrganizerAppVisibility.hidden,
   ownership: json['ownership'] == null
       ? null
@@ -90,10 +93,14 @@ _Organizer _$OrganizerFromJson(Map<String, dynamic> json) => _Organizer(
   publicCategoryLabel: json['publicCategoryLabel'] as String?,
   hostDefaults: json['hostDefaults'] == null
       ? const OrganizerHostDefaults()
-      : OrganizerHostDefaults.fromJson(json['hostDefaults'] as Map<String, dynamic>),
+      : OrganizerHostDefaults.fromJson(
+          json['hostDefaults'] as Map<String, dynamic>,
+        ),
 );
 
-Map<String, dynamic> _$OrganizerToJson(_Organizer instance) => <String, dynamic>{
+Map<String, dynamic> _$OrganizerToJson(
+  _Organizer instance,
+) => <String, dynamic>{
   'name': instance.name,
   'description': instance.description,
   'location': instance.location,
@@ -156,23 +163,25 @@ const _$OrganizerTypeEnumMap = {
   OrganizerType.brand: 'brand',
 };
 
-_OrganizerHostProfile _$OrganizerHostProfileFromJson(Map<String, dynamic> json) =>
-    _OrganizerHostProfile(
-      uid: json['uid'] as String,
-      displayName: json['displayName'] as String,
-      avatarUrl: json['avatarUrl'] as String?,
-      role:
-          $enumDecodeNullable(_$OrganizerHostRoleEnumMap, json['role']) ??
-          OrganizerHostRole.host,
-    );
+_OrganizerHostProfile _$OrganizerHostProfileFromJson(
+  Map<String, dynamic> json,
+) => _OrganizerHostProfile(
+  uid: json['uid'] as String,
+  displayName: json['displayName'] as String,
+  avatarUrl: json['avatarUrl'] as String?,
+  role:
+      $enumDecodeNullable(_$OrganizerHostRoleEnumMap, json['role']) ??
+      OrganizerHostRole.host,
+);
 
-Map<String, dynamic> _$OrganizerHostProfileToJson(_OrganizerHostProfile instance) =>
-    <String, dynamic>{
-      'uid': instance.uid,
-      'displayName': instance.displayName,
-      'avatarUrl': instance.avatarUrl,
-      'role': _$OrganizerHostRoleEnumMap[instance.role]!,
-    };
+Map<String, dynamic> _$OrganizerHostProfileToJson(
+  _OrganizerHostProfile instance,
+) => <String, dynamic>{
+  'uid': instance.uid,
+  'displayName': instance.displayName,
+  'avatarUrl': instance.avatarUrl,
+  'role': _$OrganizerHostRoleEnumMap[instance.role]!,
+};
 
 const _$OrganizerHostRoleEnumMap = {
   OrganizerHostRole.owner: 'owner',

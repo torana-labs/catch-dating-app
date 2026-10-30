@@ -43,7 +43,7 @@ final class HostTeamManagementControllerProvider
 }
 
 String _$hostTeamManagementControllerHash() =>
-    r'd4389425f90db65731c82b9f03ae73448c517076';
+    r'5a42a888dcf4e8bb74f061f636e9e0eef6faba76';
 
 abstract class _$HostTeamManagementController extends $Notifier<void> {
   void build();

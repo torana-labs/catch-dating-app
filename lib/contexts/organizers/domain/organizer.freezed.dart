@@ -16,13 +16,13 @@ T _$identity<T>(T value) => value;
 mixin _$Organizer {
 
 @JsonKey(includeToJson: false) String get id;@JsonKey(includeToJson: false) bool get synthetic;@JsonKey(includeToJson: false) String? get seedPrefix; String get name; String get description; String get location; String get locationCityId; String get locationMarketId; String get area; String? get hostUserId; String? get hostName; String? get hostAvatarUrl; String? get ownerUserId; List<String> get hostUserIds; List<OrganizerHostProfile> get hostProfiles;@TimestampConverter() DateTime get createdAt; String? get imageUrl; String? get profileImageUrl;@JsonKey(name: 'organizerPhotos') List<UploadedPhoto> get clubPhotos; UploadedPhoto? get logoPhoto; List<String> get tags;@JsonKey(name: 'followerCount') int get memberCount; double get rating; int get reviewCount;@NullableTimestampConverter() DateTime? get nextEventAt; String? get nextEventLabel; String? get instagramHandle; String? get phoneNumber; String? get email; OrganizerLifecycleStatus get status; bool get archived;@NullableTimestampConverter() DateTime? get archivedAt; String? get archiveReason; OrganizerAppVisibility get appVisibility; OrganizerOwnership? get ownership; OrganizerClaim? get claim; OrganizerPublicPage? get publicPage; OrganizerProvenance? get provenance;@JsonKey(readValue: readOrganizerSupplyCapabilities) OrganizerSupplyCapabilities get supplyCapabilities;@JsonKey(name: 'organizerType') OrganizerType get organizerType; String? get publicCategoryLabel; OrganizerHostDefaults get hostDefaults;
-/// Create a copy of Club
+/// Create a copy of Organizer
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $OrganizerCopyWith<Organizer> get copyWith => _$OrganizerCopyWithImpl<Organizer>(this as Organizer, _$identity);
 
-  /// Serializes this Club to a JSON map.
+  /// Serializes this Organizer to a JSON map.
   Map<String, dynamic> toJson();
 
 
@@ -37,7 +37,7 @@ int get hashCode => Object.hashAll([runtimeType,id,synthetic,seedPrefix,name,des
 
 @override
 String toString() {
-  return 'Club(id: $id, synthetic: $synthetic, seedPrefix: $seedPrefix, name: $name, description: $description, location: $location, locationCityId: $locationCityId, locationMarketId: $locationMarketId, area: $area, hostUserId: $hostUserId, hostName: $hostName, hostAvatarUrl: $hostAvatarUrl, ownerUserId: $ownerUserId, hostUserIds: $hostUserIds, hostProfiles: $hostProfiles, createdAt: $createdAt, imageUrl: $imageUrl, profileImageUrl: $profileImageUrl, clubPhotos: $clubPhotos, logoPhoto: $logoPhoto, tags: $tags, memberCount: $memberCount, rating: $rating, reviewCount: $reviewCount, nextEventAt: $nextEventAt, nextEventLabel: $nextEventLabel, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, status: $status, archived: $archived, archivedAt: $archivedAt, archiveReason: $archiveReason, appVisibility: $appVisibility, ownership: $ownership, claim: $claim, publicPage: $publicPage, provenance: $provenance, supplyCapabilities: $supplyCapabilities, organizerType: $organizerType, publicCategoryLabel: $publicCategoryLabel, hostDefaults: $hostDefaults)';
+  return 'Organizer(id: $id, synthetic: $synthetic, seedPrefix: $seedPrefix, name: $name, description: $description, location: $location, locationCityId: $locationCityId, locationMarketId: $locationMarketId, area: $area, hostUserId: $hostUserId, hostName: $hostName, hostAvatarUrl: $hostAvatarUrl, ownerUserId: $ownerUserId, hostUserIds: $hostUserIds, hostProfiles: $hostProfiles, createdAt: $createdAt, imageUrl: $imageUrl, profileImageUrl: $profileImageUrl, clubPhotos: $clubPhotos, logoPhoto: $logoPhoto, tags: $tags, memberCount: $memberCount, rating: $rating, reviewCount: $reviewCount, nextEventAt: $nextEventAt, nextEventLabel: $nextEventLabel, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, status: $status, archived: $archived, archivedAt: $archivedAt, archiveReason: $archiveReason, appVisibility: $appVisibility, ownership: $ownership, claim: $claim, publicPage: $publicPage, provenance: $provenance, supplyCapabilities: $supplyCapabilities, organizerType: $organizerType, publicCategoryLabel: $publicCategoryLabel, hostDefaults: $hostDefaults)';
 }
 
 
@@ -63,7 +63,7 @@ class _$OrganizerCopyWithImpl<$Res>
   final Organizer _self;
   final $Res Function(Organizer) _then;
 
-/// Create a copy of Club
+/// Create a copy of Organizer
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? synthetic = null,Object? seedPrefix = freezed,Object? name = null,Object? description = null,Object? location = null,Object? locationCityId = null,Object? locationMarketId = null,Object? area = null,Object? hostUserId = freezed,Object? hostName = freezed,Object? hostAvatarUrl = freezed,Object? ownerUserId = freezed,Object? hostUserIds = null,Object? hostProfiles = null,Object? createdAt = null,Object? imageUrl = freezed,Object? profileImageUrl = freezed,Object? clubPhotos = null,Object? logoPhoto = freezed,Object? tags = null,Object? memberCount = null,Object? rating = null,Object? reviewCount = null,Object? nextEventAt = freezed,Object? nextEventLabel = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? status = null,Object? archived = null,Object? archivedAt = freezed,Object? archiveReason = freezed,Object? appVisibility = null,Object? ownership = freezed,Object? claim = freezed,Object? publicPage = freezed,Object? provenance = freezed,Object? supplyCapabilities = null,Object? organizerType = null,Object? publicCategoryLabel = freezed,Object? hostDefaults = null,}) {
   return _then(_self.copyWith(
@@ -112,7 +112,7 @@ as String?,hostDefaults: null == hostDefaults ? _self.hostDefaults : hostDefault
 as OrganizerHostDefaults,
   ));
 }
-/// Create a copy of Club
+/// Create a copy of Organizer
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -329,7 +329,7 @@ class _Organizer extends Organizer {
 @override final  String? publicCategoryLabel;
 @override@JsonKey() final  OrganizerHostDefaults hostDefaults;
 
-/// Create a copy of Club
+/// Create a copy of Organizer
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
@@ -351,7 +351,7 @@ int get hashCode => Object.hashAll([runtimeType,id,synthetic,seedPrefix,name,des
 
 @override
 String toString() {
-  return 'Club(id: $id, synthetic: $synthetic, seedPrefix: $seedPrefix, name: $name, description: $description, location: $location, locationCityId: $locationCityId, locationMarketId: $locationMarketId, area: $area, hostUserId: $hostUserId, hostName: $hostName, hostAvatarUrl: $hostAvatarUrl, ownerUserId: $ownerUserId, hostUserIds: $hostUserIds, hostProfiles: $hostProfiles, createdAt: $createdAt, imageUrl: $imageUrl, profileImageUrl: $profileImageUrl, clubPhotos: $clubPhotos, logoPhoto: $logoPhoto, tags: $tags, memberCount: $memberCount, rating: $rating, reviewCount: $reviewCount, nextEventAt: $nextEventAt, nextEventLabel: $nextEventLabel, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, status: $status, archived: $archived, archivedAt: $archivedAt, archiveReason: $archiveReason, appVisibility: $appVisibility, ownership: $ownership, claim: $claim, publicPage: $publicPage, provenance: $provenance, supplyCapabilities: $supplyCapabilities, organizerType: $organizerType, publicCategoryLabel: $publicCategoryLabel, hostDefaults: $hostDefaults)';
+  return 'Organizer(id: $id, synthetic: $synthetic, seedPrefix: $seedPrefix, name: $name, description: $description, location: $location, locationCityId: $locationCityId, locationMarketId: $locationMarketId, area: $area, hostUserId: $hostUserId, hostName: $hostName, hostAvatarUrl: $hostAvatarUrl, ownerUserId: $ownerUserId, hostUserIds: $hostUserIds, hostProfiles: $hostProfiles, createdAt: $createdAt, imageUrl: $imageUrl, profileImageUrl: $profileImageUrl, clubPhotos: $clubPhotos, logoPhoto: $logoPhoto, tags: $tags, memberCount: $memberCount, rating: $rating, reviewCount: $reviewCount, nextEventAt: $nextEventAt, nextEventLabel: $nextEventLabel, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, status: $status, archived: $archived, archivedAt: $archivedAt, archiveReason: $archiveReason, appVisibility: $appVisibility, ownership: $ownership, claim: $claim, publicPage: $publicPage, provenance: $provenance, supplyCapabilities: $supplyCapabilities, organizerType: $organizerType, publicCategoryLabel: $publicCategoryLabel, hostDefaults: $hostDefaults)';
 }
 
 
@@ -377,7 +377,7 @@ class __$OrganizerCopyWithImpl<$Res>
   final _Organizer _self;
   final $Res Function(_Organizer) _then;
 
-/// Create a copy of Club
+/// Create a copy of Organizer
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? synthetic = null,Object? seedPrefix = freezed,Object? name = null,Object? description = null,Object? location = null,Object? locationCityId = null,Object? locationMarketId = null,Object? area = null,Object? hostUserId = freezed,Object? hostName = freezed,Object? hostAvatarUrl = freezed,Object? ownerUserId = freezed,Object? hostUserIds = null,Object? hostProfiles = null,Object? createdAt = null,Object? imageUrl = freezed,Object? profileImageUrl = freezed,Object? clubPhotos = null,Object? logoPhoto = freezed,Object? tags = null,Object? memberCount = null,Object? rating = null,Object? reviewCount = null,Object? nextEventAt = freezed,Object? nextEventLabel = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? status = null,Object? archived = null,Object? archivedAt = freezed,Object? archiveReason = freezed,Object? appVisibility = null,Object? ownership = freezed,Object? claim = freezed,Object? publicPage = freezed,Object? provenance = freezed,Object? supplyCapabilities = null,Object? organizerType = null,Object? publicCategoryLabel = freezed,Object? hostDefaults = null,}) {
   return _then(_Organizer(
@@ -427,7 +427,7 @@ as OrganizerHostDefaults,
   ));
 }
 
-/// Create a copy of Club
+/// Create a copy of Organizer
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -465,7 +465,7 @@ int get hashCode => Object.hash(runtimeType,uid,displayName,avatarUrl,role);
 
 @override
 String toString() {
-  return 'ClubHostProfile(uid: $uid, displayName: $displayName, avatarUrl: $avatarUrl, role: $role)';
+  return 'OrganizerHostProfile(uid: $uid, displayName: $displayName, avatarUrl: $avatarUrl, role: $role)';
 }
 
 
@@ -670,7 +670,7 @@ int get hashCode => Object.hash(runtimeType,uid,displayName,avatarUrl,role);
 
 @override
 String toString() {
-  return 'ClubHostProfile(uid: $uid, displayName: $displayName, avatarUrl: $avatarUrl, role: $role)';
+  return 'OrganizerHostProfile(uid: $uid, displayName: $displayName, avatarUrl: $avatarUrl, role: $role)';
 }
 
 

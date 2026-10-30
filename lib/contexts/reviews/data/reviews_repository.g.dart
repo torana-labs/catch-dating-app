@@ -72,7 +72,7 @@ final class WatchReviewsForOrganizerProvider
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'watchReviewsForClubProvider',
+         name: r'watchReviewsForOrganizerProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -83,7 +83,7 @@ final class WatchReviewsForOrganizerProvider
 
   @override
   String toString() {
-    return r'watchReviewsForClubProvider'
+    return r'watchReviewsForOrganizerProvider'
         ''
         '($argument)';
   }
@@ -102,7 +102,8 @@ final class WatchReviewsForOrganizerProvider
 
   @override
   bool operator ==(Object other) {
-    return other is WatchReviewsForOrganizerProvider && other.argument == argument;
+    return other is WatchReviewsForOrganizerProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -112,14 +113,14 @@ final class WatchReviewsForOrganizerProvider
 }
 
 String _$watchReviewsForOrganizerHash() =>
-    r'2777391bdfaca2d675d1da30fcb68d2565743582';
+    r'6dbe4402b1c8bc9a07d37706ff821652df0cfb13';
 
 final class WatchReviewsForOrganizerFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Review>>, String> {
   WatchReviewsForOrganizerFamily._()
     : super(
         retry: null,
-        name: r'watchReviewsForClubProvider',
+        name: r'watchReviewsForOrganizerProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -129,7 +130,7 @@ final class WatchReviewsForOrganizerFamily extends $Family
       WatchReviewsForOrganizerProvider._(argument: clubId, from: this);
 
   @override
-  String toString() => r'watchReviewsForClubProvider';
+  String toString() => r'watchReviewsForOrganizerProvider';
 }
 
 @ProviderFor(watchReviewsForEvent)

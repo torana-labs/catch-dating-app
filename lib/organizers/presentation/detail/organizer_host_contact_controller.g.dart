@@ -10,7 +10,8 @@ part of 'organizer_host_contact_controller.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(OrganizerHostContactController)
-final organizerHostContactControllerProvider = OrganizerHostContactControllerProvider._();
+final organizerHostContactControllerProvider =
+    OrganizerHostContactControllerProvider._();
 
 final class OrganizerHostContactControllerProvider
     extends $NotifierProvider<OrganizerHostContactController, void> {
@@ -19,7 +20,7 @@ final class OrganizerHostContactControllerProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'clubHostContactControllerProvider',
+        name: r'organizerHostContactControllerProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -42,7 +43,7 @@ final class OrganizerHostContactControllerProvider
 }
 
 String _$organizerHostContactControllerHash() =>
-    r'959edc995023bd7f0b3b2fbdbc9561402b4d4c10';
+    r'9ee9e2d57c9628fbff0d12e56c51adee68b47f8d';
 
 abstract class _$OrganizerHostContactController extends $Notifier<void> {
   void build();

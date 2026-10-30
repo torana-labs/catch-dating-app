@@ -27,7 +27,7 @@ final class OrganizerNameLookupProvider
     required OrganizerNameLookupQuery super.argument,
   }) : super(
          retry: null,
-         name: r'clubNameLookupProvider',
+         name: r'organizerNameLookupProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -38,7 +38,7 @@ final class OrganizerNameLookupProvider
 
   @override
   String toString() {
-    return r'clubNameLookupProvider'
+    return r'organizerNameLookupProvider'
         ''
         '($argument)';
   }
@@ -66,7 +66,8 @@ final class OrganizerNameLookupProvider
   }
 }
 
-String _$organizerNameLookupHash() => r'2a071c4279fa54bcdff30f25bc2e8e41f97ff24e';
+String _$organizerNameLookupHash() =>
+    r'77d85b03cf646327a92da33504f3d04b441a6b5c';
 
 final class OrganizerNameLookupFamily extends $Family
     with
@@ -77,7 +78,7 @@ final class OrganizerNameLookupFamily extends $Family
   OrganizerNameLookupFamily._()
     : super(
         retry: null,
-        name: r'clubNameLookupProvider',
+        name: r'organizerNameLookupProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -87,5 +88,5 @@ final class OrganizerNameLookupFamily extends $Family
       OrganizerNameLookupProvider._(argument: query, from: this);
 
   @override
-  String toString() => r'clubNameLookupProvider';
+  String toString() => r'organizerNameLookupProvider';
 }

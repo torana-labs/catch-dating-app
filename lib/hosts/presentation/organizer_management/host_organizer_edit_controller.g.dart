@@ -10,7 +10,8 @@ part of 'host_organizer_edit_controller.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(hostOrganizerEditController)
-final hostOrganizerEditControllerProvider = HostOrganizerEditControllerProvider._();
+final hostOrganizerEditControllerProvider =
+    HostOrganizerEditControllerProvider._();
 
 final class HostOrganizerEditControllerProvider
     extends
@@ -25,7 +26,7 @@ final class HostOrganizerEditControllerProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'hostClubEditControllerProvider',
+        name: r'hostOrganizerEditControllerProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -55,4 +56,4 @@ final class HostOrganizerEditControllerProvider
 }
 
 String _$hostOrganizerEditControllerHash() =>
-    r'83e16b57a3a0368a9f97b48a75b656199e45b140';
+    r'cb7ccd144faf1004afc04caa1f56d4ea5a11db9d';

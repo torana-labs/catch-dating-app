@@ -34,7 +34,7 @@ final class CreateOrganizerControllerProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'createClubControllerProvider',
+        name: r'createOrganizerControllerProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -57,7 +57,7 @@ final class CreateOrganizerControllerProvider
 }
 
 String _$createOrganizerControllerHash() =>
-    r'6edcec0f8c6d6590e8cea285c7adeb35dbd5ebac';
+    r'cf27738cb2ace84bd5b0b08029ac2e4de903775c';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

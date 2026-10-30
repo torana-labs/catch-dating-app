@@ -174,4 +174,4 @@ final class HostInboxCatchViewModelProvider
 }
 
 String _$hostInboxCatchViewModelHash() =>
-    r'd9193e5fb494dc657e05c70c236661999dbee244';
+    r'a48176c40b0e5f458a80aa5264de8223f6fc4c28';

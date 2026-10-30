@@ -73,7 +73,7 @@ final class OrganizerEventDraftsProvider
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'clubEventDraftsProvider',
+         name: r'organizerEventDraftsProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -84,7 +84,7 @@ final class OrganizerEventDraftsProvider
 
   @override
   String toString() {
-    return r'clubEventDraftsProvider'
+    return r'organizerEventDraftsProvider'
         ''
         '($argument)';
   }
@@ -112,14 +112,15 @@ final class OrganizerEventDraftsProvider
   }
 }
 
-String _$organizerEventDraftsHash() => r'627777152f72522e3a2bf645a6f0cc562ebe07b8';
+String _$organizerEventDraftsHash() =>
+    r'7ffb64a62a63f8a25f252bd4f18045d3b664d2ae';
 
 final class OrganizerEventDraftsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<EventDraft>>, String> {
   OrganizerEventDraftsFamily._()
     : super(
         retry: null,
-        name: r'clubEventDraftsProvider',
+        name: r'organizerEventDraftsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -129,5 +130,5 @@ final class OrganizerEventDraftsFamily extends $Family
       OrganizerEventDraftsProvider._(argument: clubId, from: this);
 
   @override
-  String toString() => r'clubEventDraftsProvider';
+  String toString() => r'organizerEventDraftsProvider';
 }

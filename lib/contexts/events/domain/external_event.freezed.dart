@@ -34,7 +34,7 @@ int get hashCode => Object.hashAll([runtimeType,id,canonicalHostId,compatibility
 
 @override
 String toString() {
-  return 'ExternalEvent(id: $id, canonicalHostId: $canonicalHostId, compatibilityClubId: $compatibilityOrganizerId, title: $title, description: $description, startTime: $startTime, endTime: $endTime, timezone: $timezone, meetingPoint: $meetingPoint, locationDetails: $locationDetails, photoUrl: $photoUrl, latitude: $latitude, longitude: $longitude, activityKind: $activityKind, interactionModel: $interactionModel, priceDisplayText: $priceDisplayText, parsedPriceInPaise: $parsedPriceInPaise, currency: $currency, status: $status, publicationStatus: $publicationStatus, organizerCapabilities: $organizerCapabilities, citySlug: $citySlug, externalLinks: $externalLinks, sourcePlatform: $sourcePlatform)';
+  return 'ExternalEvent(id: $id, canonicalHostId: $canonicalHostId, compatibilityOrganizerId: $compatibilityOrganizerId, title: $title, description: $description, startTime: $startTime, endTime: $endTime, timezone: $timezone, meetingPoint: $meetingPoint, locationDetails: $locationDetails, photoUrl: $photoUrl, latitude: $latitude, longitude: $longitude, activityKind: $activityKind, interactionModel: $interactionModel, priceDisplayText: $priceDisplayText, parsedPriceInPaise: $parsedPriceInPaise, currency: $currency, status: $status, publicationStatus: $publicationStatus, organizerCapabilities: $organizerCapabilities, citySlug: $citySlug, externalLinks: $externalLinks, sourcePlatform: $sourcePlatform)';
 }
 
 
@@ -282,7 +282,7 @@ int get hashCode => Object.hashAll([runtimeType,id,canonicalHostId,compatibility
 
 @override
 String toString() {
-  return 'ExternalEvent(id: $id, canonicalHostId: $canonicalHostId, compatibilityClubId: $compatibilityOrganizerId, title: $title, description: $description, startTime: $startTime, endTime: $endTime, timezone: $timezone, meetingPoint: $meetingPoint, locationDetails: $locationDetails, photoUrl: $photoUrl, latitude: $latitude, longitude: $longitude, activityKind: $activityKind, interactionModel: $interactionModel, priceDisplayText: $priceDisplayText, parsedPriceInPaise: $parsedPriceInPaise, currency: $currency, status: $status, publicationStatus: $publicationStatus, organizerCapabilities: $organizerCapabilities, citySlug: $citySlug, externalLinks: $externalLinks, sourcePlatform: $sourcePlatform)';
+  return 'ExternalEvent(id: $id, canonicalHostId: $canonicalHostId, compatibilityOrganizerId: $compatibilityOrganizerId, title: $title, description: $description, startTime: $startTime, endTime: $endTime, timezone: $timezone, meetingPoint: $meetingPoint, locationDetails: $locationDetails, photoUrl: $photoUrl, latitude: $latitude, longitude: $longitude, activityKind: $activityKind, interactionModel: $interactionModel, priceDisplayText: $priceDisplayText, parsedPriceInPaise: $parsedPriceInPaise, currency: $currency, status: $status, publicationStatus: $publicationStatus, organizerCapabilities: $organizerCapabilities, citySlug: $citySlug, externalLinks: $externalLinks, sourcePlatform: $sourcePlatform)';
 }
 
 

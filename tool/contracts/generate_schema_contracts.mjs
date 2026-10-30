@@ -9525,7 +9525,7 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
   [
     "CreateClubCallableRequest.hostDefaults",
     {
-      dartType: "ClubHostDefaults",
+      dartType: "OrganizerHostDefaults",
       imports: [
         "import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';",
       ],
@@ -9896,7 +9896,7 @@ function dartPatchClassConfig(specName) {
           "import 'package:catch_dating_app/kernel/sentinels.dart';",
           "import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';",
         ],
-        objectFields: new Map([["hostDefaults", "ClubHostDefaults"]]),
+        objectFields: new Map([["hostDefaults", "OrganizerHostDefaults"]]),
         listObjectFields: new Map(),
       };
     default:

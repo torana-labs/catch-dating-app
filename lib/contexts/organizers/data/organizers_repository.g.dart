@@ -14,14 +14,18 @@ final organizersRepositoryProvider = OrganizersRepositoryProvider._();
 
 final class OrganizersRepositoryProvider
     extends
-        $FunctionalProvider<OrganizersRepository, OrganizersRepository, OrganizersRepository>
+        $FunctionalProvider<
+          OrganizersRepository,
+          OrganizersRepository,
+          OrganizersRepository
+        >
     with $Provider<OrganizersRepository> {
   OrganizersRepositoryProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'clubsRepositoryProvider',
+        name: r'organizersRepositoryProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -32,8 +36,9 @@ final class OrganizersRepositoryProvider
 
   @$internal
   @override
-  $ProviderElement<OrganizersRepository> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<OrganizersRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   OrganizersRepository create(Ref ref) {
@@ -49,20 +54,26 @@ final class OrganizersRepositoryProvider
   }
 }
 
-String _$organizersRepositoryHash() => r'd5c0011e3ab9214aec9e91f81c5ff073ce0f3cca';
+String _$organizersRepositoryHash() =>
+    r'f96d707452768d47fae01c830157891919951428';
 
 @ProviderFor(watchOrganizer)
 final watchOrganizerProvider = WatchOrganizerFamily._();
 
 final class WatchOrganizerProvider
-    extends $FunctionalProvider<AsyncValue<Organizer?>, Organizer?, Stream<Organizer?>>
+    extends
+        $FunctionalProvider<
+          AsyncValue<Organizer?>,
+          Organizer?,
+          Stream<Organizer?>
+        >
     with $FutureModifier<Organizer?>, $StreamProvider<Organizer?> {
   WatchOrganizerProvider._({
     required WatchOrganizerFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'watchClubProvider',
+         name: r'watchOrganizerProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -73,7 +84,7 @@ final class WatchOrganizerProvider
 
   @override
   String toString() {
-    return r'watchClubProvider'
+    return r'watchOrganizerProvider'
         ''
         '($argument)';
   }
@@ -100,14 +111,14 @@ final class WatchOrganizerProvider
   }
 }
 
-String _$watchOrganizerHash() => r'595f1b7e4ea99cb75600b39d84baa61f5d680b0e';
+String _$watchOrganizerHash() => r'd607850a1753cbb1698a7ba33c48b83289346b40';
 
 final class WatchOrganizerFamily extends $Family
     with $FunctionalFamilyOverride<Stream<Organizer?>, String> {
   WatchOrganizerFamily._()
     : super(
         retry: null,
-        name: r'watchClubProvider',
+        name: r'watchOrganizerProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -117,7 +128,7 @@ final class WatchOrganizerFamily extends $Family
       WatchOrganizerProvider._(argument: id, from: this);
 
   @override
-  String toString() => r'watchClubProvider';
+  String toString() => r'watchOrganizerProvider';
 }
 
 @ProviderFor(watchOrganizersByLocation)
@@ -136,7 +147,7 @@ final class WatchOrganizersByLocationProvider
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'watchClubsByLocationProvider',
+         name: r'watchOrganizersByLocationProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -147,15 +158,16 @@ final class WatchOrganizersByLocationProvider
 
   @override
   String toString() {
-    return r'watchClubsByLocationProvider'
+    return r'watchOrganizersByLocationProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  $StreamProviderElement<List<Organizer>> $createElement($ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+  $StreamProviderElement<List<Organizer>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<Organizer>> create(Ref ref) {
@@ -165,7 +177,8 @@ final class WatchOrganizersByLocationProvider
 
   @override
   bool operator ==(Object other) {
-    return other is WatchOrganizersByLocationProvider && other.argument == argument;
+    return other is WatchOrganizersByLocationProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -175,14 +188,14 @@ final class WatchOrganizersByLocationProvider
 }
 
 String _$watchOrganizersByLocationHash() =>
-    r'66d4bf98e32e589a19902448a858f99b5d0cf50e';
+    r'4cdb685c980c4591adf02081be6da52118f21017';
 
 final class WatchOrganizersByLocationFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Organizer>>, String> {
   WatchOrganizersByLocationFamily._()
     : super(
         retry: null,
-        name: r'watchClubsByLocationProvider',
+        name: r'watchOrganizersByLocationProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -192,7 +205,7 @@ final class WatchOrganizersByLocationFamily extends $Family
       WatchOrganizersByLocationProvider._(argument: location, from: this);
 
   @override
-  String toString() => r'watchClubsByLocationProvider';
+  String toString() => r'watchOrganizersByLocationProvider';
 }
 
 @ProviderFor(watchOrganizersByLocationSortedByRating)
@@ -212,7 +225,7 @@ final class WatchOrganizersByLocationSortedByRatingProvider
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'watchClubsByLocationSortedByRatingProvider',
+         name: r'watchOrganizersByLocationSortedByRatingProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -224,15 +237,16 @@ final class WatchOrganizersByLocationSortedByRatingProvider
 
   @override
   String toString() {
-    return r'watchClubsByLocationSortedByRatingProvider'
+    return r'watchOrganizersByLocationSortedByRatingProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  $StreamProviderElement<List<Organizer>> $createElement($ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+  $StreamProviderElement<List<Organizer>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<Organizer>> create(Ref ref) {
@@ -253,14 +267,14 @@ final class WatchOrganizersByLocationSortedByRatingProvider
 }
 
 String _$watchOrganizersByLocationSortedByRatingHash() =>
-    r'be5812eb9d8ab67139d5f0bef9b61069d2ef9077';
+    r'2e0ab2ea935e6bfa9e07ec4e238f2721a41d744f';
 
 final class WatchOrganizersByLocationSortedByRatingFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Organizer>>, String> {
   WatchOrganizersByLocationSortedByRatingFamily._()
     : super(
         retry: null,
-        name: r'watchClubsByLocationSortedByRatingProvider',
+        name: r'watchOrganizersByLocationSortedByRatingProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -273,7 +287,7 @@ final class WatchOrganizersByLocationSortedByRatingFamily extends $Family
       );
 
   @override
-  String toString() => r'watchClubsByLocationSortedByRatingProvider';
+  String toString() => r'watchOrganizersByLocationSortedByRatingProvider';
 }
 
 @ProviderFor(watchOrganizersHostedBy)
@@ -292,7 +306,7 @@ final class WatchOrganizersHostedByProvider
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'watchClubsHostedByProvider',
+         name: r'watchOrganizersHostedByProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -303,15 +317,16 @@ final class WatchOrganizersHostedByProvider
 
   @override
   String toString() {
-    return r'watchClubsHostedByProvider'
+    return r'watchOrganizersHostedByProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  $StreamProviderElement<List<Organizer>> $createElement($ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+  $StreamProviderElement<List<Organizer>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<Organizer>> create(Ref ref) {
@@ -321,7 +336,8 @@ final class WatchOrganizersHostedByProvider
 
   @override
   bool operator ==(Object other) {
-    return other is WatchOrganizersHostedByProvider && other.argument == argument;
+    return other is WatchOrganizersHostedByProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -331,14 +347,14 @@ final class WatchOrganizersHostedByProvider
 }
 
 String _$watchOrganizersHostedByHash() =>
-    r'a99997587b97bc0cbba213b5c4ff883a097becab';
+    r'722f37c6a4ff6663b6eb3ac96fc5069ff05d822e';
 
 final class WatchOrganizersHostedByFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Organizer>>, String> {
   WatchOrganizersHostedByFamily._()
     : super(
         retry: null,
-        name: r'watchClubsHostedByProvider',
+        name: r'watchOrganizersHostedByProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -348,7 +364,7 @@ final class WatchOrganizersHostedByFamily extends $Family
       WatchOrganizersHostedByProvider._(argument: uid, from: this);
 
   @override
-  String toString() => r'watchClubsHostedByProvider';
+  String toString() => r'watchOrganizersHostedByProvider';
 }
 
 @ProviderFor(watchOrganizersOwnedBy)
@@ -367,7 +383,7 @@ final class WatchOrganizersOwnedByProvider
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'watchClubsOwnedByProvider',
+         name: r'watchOrganizersOwnedByProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -378,15 +394,16 @@ final class WatchOrganizersOwnedByProvider
 
   @override
   String toString() {
-    return r'watchClubsOwnedByProvider'
+    return r'watchOrganizersOwnedByProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  $StreamProviderElement<List<Organizer>> $createElement($ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+  $StreamProviderElement<List<Organizer>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<Organizer>> create(Ref ref) {
@@ -396,7 +413,8 @@ final class WatchOrganizersOwnedByProvider
 
   @override
   bool operator ==(Object other) {
-    return other is WatchOrganizersOwnedByProvider && other.argument == argument;
+    return other is WatchOrganizersOwnedByProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -405,14 +423,15 @@ final class WatchOrganizersOwnedByProvider
   }
 }
 
-String _$watchOrganizersOwnedByHash() => r'239582f94aa5105ac9006f727e57a99c109670e2';
+String _$watchOrganizersOwnedByHash() =>
+    r'b8ba11d51246047cd07d0294cf8dfc299312bc12';
 
 final class WatchOrganizersOwnedByFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Organizer>>, String> {
   WatchOrganizersOwnedByFamily._()
     : super(
         retry: null,
-        name: r'watchClubsOwnedByProvider',
+        name: r'watchOrganizersOwnedByProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -422,21 +441,26 @@ final class WatchOrganizersOwnedByFamily extends $Family
       WatchOrganizersOwnedByProvider._(argument: uid, from: this);
 
   @override
-  String toString() => r'watchClubsOwnedByProvider';
+  String toString() => r'watchOrganizersOwnedByProvider';
 }
 
 @ProviderFor(fetchOrganizer)
 final fetchOrganizerProvider = FetchOrganizerFamily._();
 
 final class FetchOrganizerProvider
-    extends $FunctionalProvider<AsyncValue<Organizer?>, Organizer?, FutureOr<Organizer?>>
+    extends
+        $FunctionalProvider<
+          AsyncValue<Organizer?>,
+          Organizer?,
+          FutureOr<Organizer?>
+        >
     with $FutureModifier<Organizer?>, $FutureProvider<Organizer?> {
   FetchOrganizerProvider._({
     required FetchOrganizerFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'fetchClubProvider',
+         name: r'fetchOrganizerProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -447,7 +471,7 @@ final class FetchOrganizerProvider
 
   @override
   String toString() {
-    return r'fetchClubProvider'
+    return r'fetchOrganizerProvider'
         ''
         '($argument)';
   }
@@ -474,14 +498,14 @@ final class FetchOrganizerProvider
   }
 }
 
-String _$fetchOrganizerHash() => r'9df4647c451439dc88aa30593726b22930f65664';
+String _$fetchOrganizerHash() => r'09ac0b1cc51ad718dca8c9fd250477938f2015c9';
 
 final class FetchOrganizerFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Organizer?>, String> {
   FetchOrganizerFamily._()
     : super(
         retry: null,
-        name: r'fetchClubProvider',
+        name: r'fetchOrganizerProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -491,7 +515,7 @@ final class FetchOrganizerFamily extends $Family
       FetchOrganizerProvider._(argument: id, from: this);
 
   @override
-  String toString() => r'fetchClubProvider';
+  String toString() => r'fetchOrganizerProvider';
 }
 
 @ProviderFor(watchOrganizersByIds)
@@ -510,7 +534,7 @@ final class WatchOrganizersByIdsProvider
     required OrganizersByIdQuery super.argument,
   }) : super(
          retry: null,
-         name: r'watchClubsByIdsProvider',
+         name: r'watchOrganizersByIdsProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -521,15 +545,16 @@ final class WatchOrganizersByIdsProvider
 
   @override
   String toString() {
-    return r'watchClubsByIdsProvider'
+    return r'watchOrganizersByIdsProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  $StreamProviderElement<List<Organizer>> $createElement($ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+  $StreamProviderElement<List<Organizer>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<Organizer>> create(Ref ref) {
@@ -548,14 +573,19 @@ final class WatchOrganizersByIdsProvider
   }
 }
 
-String _$watchOrganizersByIdsHash() => r'2799c81fb6924bd06b106e5651b670001d6609e7';
+String _$watchOrganizersByIdsHash() =>
+    r'6c6d4ee98f29ee769aee8f0df917dcded7ee1036';
 
 final class WatchOrganizersByIdsFamily extends $Family
-    with $FunctionalFamilyOverride<Stream<List<Organizer>>, OrganizersByIdQuery> {
+    with
+        $FunctionalFamilyOverride<
+          Stream<List<Organizer>>,
+          OrganizersByIdQuery
+        > {
   WatchOrganizersByIdsFamily._()
     : super(
         retry: null,
-        name: r'watchClubsByIdsProvider',
+        name: r'watchOrganizersByIdsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -565,7 +595,7 @@ final class WatchOrganizersByIdsFamily extends $Family
       WatchOrganizersByIdsProvider._(argument: query, from: this);
 
   @override
-  String toString() => r'watchClubsByIdsProvider';
+  String toString() => r'watchOrganizersByIdsProvider';
 }
 
 @ProviderFor(watchOrganizersForMessagingByIds)
@@ -585,7 +615,7 @@ final class WatchOrganizersForMessagingByIdsProvider
     required OrganizersByIdQuery super.argument,
   }) : super(
          retry: null,
-         name: r'watchClubsForMessagingByIdsProvider',
+         name: r'watchOrganizersForMessagingByIdsProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -596,15 +626,16 @@ final class WatchOrganizersForMessagingByIdsProvider
 
   @override
   String toString() {
-    return r'watchClubsForMessagingByIdsProvider'
+    return r'watchOrganizersForMessagingByIdsProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  $StreamProviderElement<List<Organizer>> $createElement($ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+  $StreamProviderElement<List<Organizer>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<Organizer>> create(Ref ref) {
@@ -625,14 +656,18 @@ final class WatchOrganizersForMessagingByIdsProvider
 }
 
 String _$watchOrganizersForMessagingByIdsHash() =>
-    r'8de1837ae2da1fb25346862394152ba39dc21f76';
+    r'b2d780472fe74a7ae0dc797acaad3771c364d6ad';
 
 final class WatchOrganizersForMessagingByIdsFamily extends $Family
-    with $FunctionalFamilyOverride<Stream<List<Organizer>>, OrganizersByIdQuery> {
+    with
+        $FunctionalFamilyOverride<
+          Stream<List<Organizer>>,
+          OrganizersByIdQuery
+        > {
   WatchOrganizersForMessagingByIdsFamily._()
     : super(
         retry: null,
-        name: r'watchClubsForMessagingByIdsProvider',
+        name: r'watchOrganizersForMessagingByIdsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -642,7 +677,7 @@ final class WatchOrganizersForMessagingByIdsFamily extends $Family
       WatchOrganizersForMessagingByIdsProvider._(argument: query, from: this);
 
   @override
-  String toString() => r'watchClubsForMessagingByIdsProvider';
+  String toString() => r'watchOrganizersForMessagingByIdsProvider';
 }
 
 @ProviderFor(hostOperableOrganizers)
@@ -661,7 +696,7 @@ final class HostOperableOrganizersProvider
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'hostOperableClubsProvider',
+         name: r'hostOperableOrganizersProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -672,7 +707,7 @@ final class HostOperableOrganizersProvider
 
   @override
   String toString() {
-    return r'hostOperableClubsProvider'
+    return r'hostOperableOrganizersProvider'
         ''
         '($argument)';
   }
@@ -699,7 +734,8 @@ final class HostOperableOrganizersProvider
 
   @override
   bool operator ==(Object other) {
-    return other is HostOperableOrganizersProvider && other.argument == argument;
+    return other is HostOperableOrganizersProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -708,14 +744,15 @@ final class HostOperableOrganizersProvider
   }
 }
 
-String _$hostOperableOrganizersHash() => r'e31ea44c4f2b6fdacd1ffc54b1066de13705632e';
+String _$hostOperableOrganizersHash() =>
+    r'a619204f5c273dd1d7d520d813d505bb2d0462e7';
 
 final class HostOperableOrganizersFamily extends $Family
     with $FunctionalFamilyOverride<AsyncValue<List<Organizer>>, String> {
   HostOperableOrganizersFamily._()
     : super(
         retry: null,
-        name: r'hostOperableClubsProvider',
+        name: r'hostOperableOrganizersProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -725,5 +762,5 @@ final class HostOperableOrganizersFamily extends $Family
       HostOperableOrganizersProvider._(argument: uid, from: this);
 
   @override
-  String toString() => r'hostOperableClubsProvider';
+  String toString() => r'hostOperableOrganizersProvider';
 }

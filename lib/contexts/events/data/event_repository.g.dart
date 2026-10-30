@@ -293,7 +293,7 @@ final class WatchEventsForOrganizerProvider
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'watchEventsForClubProvider',
+         name: r'watchEventsForOrganizerProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -304,7 +304,7 @@ final class WatchEventsForOrganizerProvider
 
   @override
   String toString() {
-    return r'watchEventsForClubProvider'
+    return r'watchEventsForOrganizerProvider'
         ''
         '($argument)';
   }
@@ -323,7 +323,8 @@ final class WatchEventsForOrganizerProvider
 
   @override
   bool operator ==(Object other) {
-    return other is WatchEventsForOrganizerProvider && other.argument == argument;
+    return other is WatchEventsForOrganizerProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -333,14 +334,14 @@ final class WatchEventsForOrganizerProvider
 }
 
 String _$watchEventsForOrganizerHash() =>
-    r'fd4d52b8f0ceb8ba17c85c11c216fdb7899cb7b1';
+    r'e16359b6bc8880382311443547de40231fe30bc6';
 
 final class WatchEventsForOrganizerFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Event>>, String> {
   WatchEventsForOrganizerFamily._()
     : super(
         retry: null,
-        name: r'watchEventsForClubProvider',
+        name: r'watchEventsForOrganizerProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -350,7 +351,7 @@ final class WatchEventsForOrganizerFamily extends $Family
       WatchEventsForOrganizerProvider._(argument: clubId, from: this);
 
   @override
-  String toString() => r'watchEventsForClubProvider';
+  String toString() => r'watchEventsForOrganizerProvider';
 }
 
 @ProviderFor(eventVenueSession)
@@ -446,7 +447,7 @@ final class WatchEventsForOrganizersProvider
     required EventsForOrganizersQuery super.argument,
   }) : super(
          retry: null,
-         name: r'watchEventsForClubsProvider',
+         name: r'watchEventsForOrganizersProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -457,7 +458,7 @@ final class WatchEventsForOrganizersProvider
 
   @override
   String toString() {
-    return r'watchEventsForClubsProvider'
+    return r'watchEventsForOrganizersProvider'
         ''
         '($argument)';
   }
@@ -476,7 +477,8 @@ final class WatchEventsForOrganizersProvider
 
   @override
   bool operator ==(Object other) {
-    return other is WatchEventsForOrganizersProvider && other.argument == argument;
+    return other is WatchEventsForOrganizersProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -486,14 +488,18 @@ final class WatchEventsForOrganizersProvider
 }
 
 String _$watchEventsForOrganizersHash() =>
-    r'c739d8f639ebf58ef2c7c89936d18a26a5a104af';
+    r'5e24eb2f65dab395d6bb744a82834352e99da162';
 
 final class WatchEventsForOrganizersFamily extends $Family
-    with $FunctionalFamilyOverride<Stream<List<Event>>, EventsForOrganizersQuery> {
+    with
+        $FunctionalFamilyOverride<
+          Stream<List<Event>>,
+          EventsForOrganizersQuery
+        > {
   WatchEventsForOrganizersFamily._()
     : super(
         retry: null,
-        name: r'watchEventsForClubsProvider',
+        name: r'watchEventsForOrganizersProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -503,7 +509,7 @@ final class WatchEventsForOrganizersFamily extends $Family
       WatchEventsForOrganizersProvider._(argument: query, from: this);
 
   @override
-  String toString() => r'watchEventsForClubsProvider';
+  String toString() => r'watchEventsForOrganizersProvider';
 }
 
 @ProviderFor(watchEventsByIds)
@@ -641,7 +647,7 @@ final class RecommendedEventsProvider
   }
 }
 
-String _$recommendedEventsHash() => r'bc5ff15bfc6186cb5f74823a30b2fb2ec3c7749c';
+String _$recommendedEventsHash() => r'6921697995784cf88ddb76c73d27f04f778ad2b7';
 
 /// Returns upcoming events from clubs the user follows.
 

@@ -25,7 +25,7 @@ final class OrganizerPostsRepositoryProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'clubPostsRepositoryProvider',
+        name: r'organizerPostsRepositoryProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -55,7 +55,7 @@ final class OrganizerPostsRepositoryProvider
 }
 
 String _$organizerPostsRepositoryHash() =>
-    r'b8a1107d4b539075d262290b8ef4277fe69f81a9';
+    r'1cb9c7c18e041fb2bbb46a082d7630c69715839f';
 
 @ProviderFor(watchOrganizerPostRemainingWeeklyQuota)
 final watchOrganizerPostRemainingWeeklyQuotaProvider =
@@ -69,7 +69,7 @@ final class WatchOrganizerPostRemainingWeeklyQuotaProvider
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'watchClubPostRemainingWeeklyQuotaProvider',
+         name: r'watchOrganizerPostRemainingWeeklyQuotaProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -81,7 +81,7 @@ final class WatchOrganizerPostRemainingWeeklyQuotaProvider
 
   @override
   String toString() {
-    return r'watchClubPostRemainingWeeklyQuotaProvider'
+    return r'watchOrganizerPostRemainingWeeklyQuotaProvider'
         ''
         '($argument)';
   }
@@ -110,22 +110,25 @@ final class WatchOrganizerPostRemainingWeeklyQuotaProvider
 }
 
 String _$watchOrganizerPostRemainingWeeklyQuotaHash() =>
-    r'c9d7bcad811fdf5f75605735f506f0e7f9eba734';
+    r'3c466b39b3b0c8844962fcad907b96c9d588b600';
 
 final class WatchOrganizerPostRemainingWeeklyQuotaFamily extends $Family
     with $FunctionalFamilyOverride<Stream<int>, String> {
   WatchOrganizerPostRemainingWeeklyQuotaFamily._()
     : super(
         retry: null,
-        name: r'watchClubPostRemainingWeeklyQuotaProvider',
+        name: r'watchOrganizerPostRemainingWeeklyQuotaProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
   WatchOrganizerPostRemainingWeeklyQuotaProvider call(String clubId) =>
-      WatchOrganizerPostRemainingWeeklyQuotaProvider._(argument: clubId, from: this);
+      WatchOrganizerPostRemainingWeeklyQuotaProvider._(
+        argument: clubId,
+        from: this,
+      );
 
   @override
-  String toString() => r'watchClubPostRemainingWeeklyQuotaProvider';
+  String toString() => r'watchOrganizerPostRemainingWeeklyQuotaProvider';
 }

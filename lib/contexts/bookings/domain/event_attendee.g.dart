@@ -165,7 +165,7 @@ const _$EventAttendeeRevenueAllocationEnumMap = {
 };
 
 const _$ExternalBookingProviderEnumMap = {
-  ExternalBookingProvider.catchPlatform: 'catchPlatform',
+  ExternalBookingProvider.catchPlatform: 'catch',
   ExternalBookingProvider.generic: 'generic',
   ExternalBookingProvider.luma: 'luma',
   ExternalBookingProvider.eventbrite: 'eventbrite',

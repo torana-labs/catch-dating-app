@@ -5,7 +5,7 @@
 // Typed callable request DTO emitted from callables/transfer_club_ownership_payload.schema.json.
 // Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Callable payload accepted by transferOrganizerOwnership.
+/// Callable payload accepted by transferClubOwnership.
 final class TransferClubOwnershipCallableRequest {
   const TransferClubOwnershipCallableRequest({
     required this.clubId,

@@ -25,7 +25,7 @@ final class OrganizerDraftRepositoryProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'clubDraftRepositoryProvider',
+        name: r'organizerDraftRepositoryProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -55,7 +55,7 @@ final class OrganizerDraftRepositoryProvider
 }
 
 String _$organizerDraftRepositoryHash() =>
-    r'9b1d1ade09a292061113ddbf19a418d320d89f6e';
+    r'becbc05537d0b029f41100ab1407fc15b94dcca2';
 
 @ProviderFor(organizerDraft)
 final organizerDraftProvider = OrganizerDraftProvider._();
@@ -73,7 +73,7 @@ final class OrganizerDraftProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'clubDraftProvider',
+        name: r'organizerDraftProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -84,8 +84,9 @@ final class OrganizerDraftProvider
 
   @$internal
   @override
-  $FutureProviderElement<OrganizerDraft?> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  $FutureProviderElement<OrganizerDraft?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<OrganizerDraft?> create(Ref ref) {
@@ -93,4 +94,4 @@ final class OrganizerDraftProvider
   }
 }
 
-String _$organizerDraftHash() => r'6ef67b781af921e210a0cb127bf162b09a09f94c';
+String _$organizerDraftHash() => r'a2126216014f5aa68a9109faa86a50266437f833';

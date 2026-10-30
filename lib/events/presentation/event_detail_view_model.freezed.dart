@@ -34,7 +34,7 @@ int get hashCode => Object.hash(runtimeType,event,userProfile,const DeepCollecti
 
 @override
 String toString() {
-  return 'EventDetailViewModel(event: $event, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated, isHost: $isHost, isSaved: $isSaved, isClubMember: $isOrganizerMember, participation: $participation)';
+  return 'EventDetailViewModel(event: $event, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated, isHost: $isHost, isSaved: $isSaved, isOrganizerMember: $isOrganizerMember, participation: $participation)';
 }
 
 
@@ -283,7 +283,7 @@ int get hashCode => Object.hash(runtimeType,event,userProfile,const DeepCollecti
 
 @override
 String toString() {
-  return 'EventDetailViewModel(event: $event, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated, isHost: $isHost, isSaved: $isSaved, isClubMember: $isOrganizerMember, participation: $participation)';
+  return 'EventDetailViewModel(event: $event, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated, isHost: $isHost, isSaved: $isSaved, isOrganizerMember: $isOrganizerMember, participation: $participation)';
 }
 
 

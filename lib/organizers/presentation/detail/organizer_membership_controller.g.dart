@@ -14,7 +14,8 @@ part of 'organizer_membership_controller.dart';
 /// The UI watches mutation state to show loading spinners and error banners.
 
 @ProviderFor(OrganizerMembershipController)
-final organizerMembershipControllerProvider = OrganizerMembershipControllerProvider._();
+final organizerMembershipControllerProvider =
+    OrganizerMembershipControllerProvider._();
 
 /// **Pattern A: Action controller + static Mutations**
 ///
@@ -31,7 +32,7 @@ final class OrganizerMembershipControllerProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'clubMembershipControllerProvider',
+        name: r'organizerMembershipControllerProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -54,7 +55,7 @@ final class OrganizerMembershipControllerProvider
 }
 
 String _$organizerMembershipControllerHash() =>
-    r'aa0bc92ce05b21f4ff46513cd60f0528b8987390';
+    r'd288ec2dffd6918ec4e96172fa56da416ea653ec';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

@@ -14,7 +14,8 @@ part of 'create_organizer_draft_controller.dart';
 /// controllers and restoration because those are UI mechanics.
 
 @ProviderFor(CreateOrganizerDraftController)
-final createOrganizerDraftControllerProvider = CreateOrganizerDraftControllerProvider._();
+final createOrganizerDraftControllerProvider =
+    CreateOrganizerDraftControllerProvider._();
 
 /// **Pattern A: Action controller + static Mutations**
 ///
@@ -31,7 +32,7 @@ final class CreateOrganizerDraftControllerProvider
         from: null,
         argument: null,
         retry: null,
-        name: r'createClubDraftControllerProvider',
+        name: r'createOrganizerDraftControllerProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -54,7 +55,7 @@ final class CreateOrganizerDraftControllerProvider
 }
 
 String _$createOrganizerDraftControllerHash() =>
-    r'91d7dd6534e7ca877eddefc95eed5c0f51fd3990';
+    r'8c265e567cc25a2c9b4d66b31a0d35cdf0870389';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

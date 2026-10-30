@@ -156,7 +156,7 @@ final class ProgramTimezoneSuggestionProvider
 }
 
 String _$programTimezoneSuggestionHash() =>
-    r'0d2d6da2e61ec8f806686e56a2eb8a4b45c3060a';
+    r'914f5efcb86517d69a83c7e26d3cd7d54c4a9331';
 
 /// Resolves suggestions once per account/organizer scope. A failed private
 /// defaults read remains explicit even when a city/device suggestion is usable.
