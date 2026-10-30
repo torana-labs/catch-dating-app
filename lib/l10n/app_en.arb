@@ -1313,70 +1313,70 @@
     "description": "Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.club_detail_screen"
+    "x-surface": "organizers.presentation.detail.organizer_detail_screen"
   },
   "organizersOrganizerDetailScreenBodyEventid": "eventId",
   "@organizersOrganizerDetailScreenBodyEventid": {
     "description": "Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.club_detail_screen"
+    "x-surface": "organizers.presentation.detail.organizer_detail_screen"
   },
   "organizersOrganizerDetailScreenBodyUid": "uid",
   "@organizersOrganizerDetailScreenBodyUid": {
     "description": "Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.club_detail_screen"
+    "x-surface": "organizers.presentation.detail.organizer_detail_screen"
   },
   "organizersOrganizerDetailScreenTitleOrganizerNotFound": "Organizer not found",
   "@organizersOrganizerDetailScreenTitleOrganizerNotFound": {
     "description": "Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.club_detail_screen"
+    "x-surface": "organizers.presentation.detail.organizer_detail_screen"
   },
   "organizersOrganizerDetailScreenMessageThisOrganizerIsNo": "This organizer is no longer available.",
   "@organizersOrganizerDetailScreenMessageThisOrganizerIsNo": {
     "description": "Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.club_detail_screen"
+    "x-surface": "organizers.presentation.detail.organizer_detail_screen"
   },
   "organizersOrganizerContactSectionTitleContact": "Contact",
   "@organizersOrganizerContactSectionTitleContact": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_contact_section.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_contact_section"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_contact_section"
   },
   "organizersOrganizerDetailBodyTitleAbout": "About",
   "@organizersOrganizerDetailBodyTitleAbout": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyTitleWhatWeDo": "What we do",
   "@organizersOrganizerDetailBodyTitleWhatWeDo": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyTitleFromTheOrganizer": "From the organizer",
   "@organizersOrganizerDetailBodyTitleFromTheOrganizer": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyTitleYourHosts": "Your hosts",
   "@organizersOrganizerDetailBodyTitleYourHosts": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersAuthorityBadgeUnclaimed": "Unclaimed listing",
   "@organizersAuthorityBadgeUnclaimed": {
@@ -1432,98 +1432,98 @@
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyTitleGetInTouch": "Get in touch",
   "@organizersOrganizerDetailBodyTitleGetInTouch": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailDockLabelDisableOrganizerPushNotifications": "Disable organizer push notifications",
   "@organizersOrganizerDetailDockLabelDisableOrganizerPushNotifications": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_dock"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerDetailDockLabelEnableOrganizerPushNotifications": "Enable organizer push notifications",
   "@organizersOrganizerDetailDockLabelEnableOrganizerPushNotifications": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_dock"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerHeroAppBarTooltipBack": "Back",
   "@organizersOrganizerHeroAppBarTooltipBack": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (tooltip).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_hero_app_bar"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_hero_app_bar"
   },
   "organizersOrganizerHeroAppBarTooltipShareOrganizer": "Share organizer",
   "@organizersOrganizerHeroAppBarTooltipShareOrganizer": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (tooltip).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_hero_app_bar"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_hero_app_bar"
   },
   "organizersOrganizerHostSectionMessageMessageHost": "Message host",
   "@organizersOrganizerHostSectionMessageMessageHost": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_host_section.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_host_section"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_host_section"
   },
   "organizersOrganizerPhotoStripTextFromTheOrganizer": "FROM THE ORGANIZER",
   "@organizersOrganizerPhotoStripTextFromTheOrganizer": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/club_photo_strip.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_photo_strip"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_photo_strip"
   },
   "organizersOrganizerScheduleSectionTitleNoEventsScheduled": "No events scheduled",
   "@organizersOrganizerScheduleSectionTitleNoEventsScheduled": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_schedule_section"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_schedule_section"
   },
   "organizersOrganizerScheduleSectionMessageFutureEventsWillAppear": "Future events will appear here once the host publishes one.",
   "@organizersOrganizerScheduleSectionMessageFutureEventsWillAppear": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_schedule_section"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_schedule_section"
   },
   "organizersOrganizerAvatarRailTitleYourOrganizers": "Your organizers",
   "@organizersOrganizerAvatarRailTitleYourOrganizers": {
     "description": "Product copy used by lib/organizers/presentation/discovery/widgets/organizer_avatar_rail.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.discovery.widgets.club_avatar_rail"
+    "x-surface": "organizers.presentation.discovery.widgets.organizer_avatar_rail"
   },
   "organizersOrganizerDiscoverListTitleOrganizerDirectory": "Organizer directory",
   "@organizersOrganizerDiscoverListTitleOrganizerDirectory": {
     "description": "Product copy used by lib/organizers/presentation/discovery/widgets/organizer_discover_list.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.discovery.widgets.club_discover_list"
+    "x-surface": "organizers.presentation.discovery.widgets.organizer_discover_list"
   },
   "organizersOrganizerIdentityAtomsLabelOwner": "Owner",
   "@organizersOrganizerIdentityAtomsLabelOwner": {
     "description": "Product copy used by lib/organizers/shared/club_identity_atoms.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.shared.club_identity_atoms"
+    "x-surface": "organizers.shared.organizer_identity_atoms"
   },
   "organizersOrganizerIdentityAtomsLabelHost": "Host",
   "@organizersOrganizerIdentityAtomsLabelHost": {
     "description": "Product copy used by lib/organizers/shared/club_identity_atoms.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.shared.club_identity_atoms"
+    "x-surface": "organizers.shared.organizer_identity_atoms"
   },
   "coreCatchAdaptivePickerTextCancel": "Cancel",
   "@coreCatchAdaptivePickerTextCancel": {
@@ -1902,14 +1902,14 @@
     "description": "Product copy used by lib/dashboard/presentation/widgets/organizer_posts_home_section.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "dashboard.presentation.widgets.club_posts_home_section"
+    "x-surface": "dashboard.presentation.widgets.organizer_posts_home_section"
   },
   "dashboardOrganizerPostsHomeSectionTextLinkedEvent": "Linked event",
   "@dashboardOrganizerPostsHomeSectionTextLinkedEvent": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/organizer_posts_home_section.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "dashboard.presentation.widgets.club_posts_home_section"
+    "x-surface": "dashboard.presentation.widgets.organizer_posts_home_section"
   },
   "dashboardEmptyHeroCardTextWelcomeToCatch": "WELCOME TO CATCH",
   "@dashboardEmptyHeroCardTextWelcomeToCatch": {
@@ -3269,301 +3269,301 @@
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.create_club_screen"
+    "x-surface": "hosts.presentation.organizer_management.create.create_organizer_screen"
   },
   "hostsCreateOrganizerScreenTitleOrganizerDetails": "Organizer details",
   "@hostsCreateOrganizerScreenTitleOrganizerDetails": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.create_club_screen"
+    "x-surface": "hosts.presentation.organizer_management.create.create_organizer_screen"
   },
   "hostsCreateOrganizerScreenTitleHostDefaults": "Host defaults",
   "@hostsCreateOrganizerScreenTitleHostDefaults": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.create_club_screen"
+    "x-surface": "hosts.presentation.organizer_management.create.create_organizer_screen"
   },
   "hostsCreateOrganizerScreenTitleEventSuccessDefaults": "Event success defaults",
   "@hostsCreateOrganizerScreenTitleEventSuccessDefaults": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.create_club_screen"
+    "x-surface": "hosts.presentation.organizer_management.create.create_organizer_screen"
   },
   "hostsOrganizerBasicsStepTitleOrganizerName": "Organizer name",
   "@hostsOrganizerBasicsStepTitleOrganizerName": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_basics_step.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_basics_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_basics_step"
   },
   "hostsOrganizerTypeLabel": "Organizer type",
   "@hostsOrganizerTypeLabel": {
     "description": "Canonical organizer classification field shown to organizer owners.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management"
+    "x-surface": "hosts.presentation.organizer_management"
   },
   "hostsOrganizerTypeClub": "Club",
   "@hostsOrganizerTypeClub": {
     "description": "Organizer type option for a membership-led club.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management"
+    "x-surface": "hosts.presentation.organizer_management"
   },
   "hostsOrganizerTypeCommunity": "Community",
   "@hostsOrganizerTypeCommunity": {
     "description": "Organizer type option for a community.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management"
+    "x-surface": "hosts.presentation.organizer_management"
   },
   "hostsOrganizerTypeIndividual": "Individual organizer",
   "@hostsOrganizerTypeIndividual": {
     "description": "Organizer type option for an individual host or curator.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management"
+    "x-surface": "hosts.presentation.organizer_management"
   },
   "hostsOrganizerTypeEventProducer": "Event producer",
   "@hostsOrganizerTypeEventProducer": {
     "description": "Organizer type option for an event production organization.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management"
+    "x-surface": "hosts.presentation.organizer_management"
   },
   "hostsOrganizerTypeVenue": "Venue",
   "@hostsOrganizerTypeVenue": {
     "description": "Organizer type option for a venue.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management"
+    "x-surface": "hosts.presentation.organizer_management"
   },
   "hostsOrganizerTypeBrand": "Brand",
   "@hostsOrganizerTypeBrand": {
     "description": "Organizer type option for a brand.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management"
+    "x-surface": "hosts.presentation.organizer_management"
   },
   "hostsOrganizerBasicsStepTitleCity": "City",
   "@hostsOrganizerBasicsStepTitleCity": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_basics_step.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_basics_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_basics_step"
   },
   "hostsOrganizerBasicsStepTitleAreaNeighbourhood": "Area / neighbourhood",
   "@hostsOrganizerBasicsStepTitleAreaNeighbourhood": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_basics_step.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_basics_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_basics_step"
   },
   "hostsOrganizerBasicsStepPlaceholderEGBandraKoramangala": "e.g. Bandra, Koramangala",
   "@hostsOrganizerBasicsStepPlaceholderEGBandraKoramangala": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_basics_step.dart (placeholder).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_basics_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_basics_step"
   },
   "hostsOrganizerDetailsStepTitleDescription": "Description",
   "@hostsOrganizerDetailsStepTitleDescription": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_details_step.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_details_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_details_step"
   },
   "hostsOrganizerEventSuccessDefaultsStepTitleLiveEventGuide": "Live event guide",
   "@hostsOrganizerEventSuccessDefaultsStepTitleLiveEventGuide": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_event_success_defaults_step.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_event_success_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_event_success_defaults_step"
   },
   "hostsOrganizerEventSuccessDefaultsStepSubtitleNewEventsStartWithAReadyToRunPlanForThisActivity": "New events start with a ready-to-run plan for this activity. You can adjust any event''s plan later.",
   "@hostsOrganizerEventSuccessDefaultsStepSubtitleNewEventsStartWithAReadyToRunPlanForThisActivity": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_event_success_defaults_step.dart (subtitle).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_event_success_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_event_success_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepTextDefaultActivity": "Default activity",
   "@hostsOrganizerHostDefaultsStepTextDefaultActivity": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepTextNewEventsStartFrom": "New events start from this activity. Hosts can still change the activity and override the event-specific setup.",
   "@hostsOrganizerHostDefaultsStepTextNewEventsStartFrom": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepTextDefaultEventPolicy": "Default event policy",
   "@hostsOrganizerHostDefaultsStepTextDefaultEventPolicy": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepTextTheseDefaultsPrefillNew": "These defaults prefill new events. Hosts can override them per event before anyone books or joins the waitlist.",
   "@hostsOrganizerHostDefaultsStepTextTheseDefaultsPrefillNew": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepTitleCohortCaps": "Cohort caps",
   "@hostsOrganizerHostDefaultsStepTitleCohortCaps": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepBodyOptionallyPrefillStraightMen": "Optionally prefill straight men and straight women caps for open events.",
   "@hostsOrganizerHostDefaultsStepBodyOptionallyPrefillStraightMen": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepTitleMaxStraightMen": "Max straight men",
   "@hostsOrganizerHostDefaultsStepTitleMaxStraightMen": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepTitleMaxStraightWomen": "Max straight women",
   "@hostsOrganizerHostDefaultsStepTitleMaxStraightWomen": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepTitleDemandPricing": "Demand pricing",
   "@hostsOrganizerHostDefaultsStepTitleDemandPricing": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepBodyPrefillDynamicPricingControls": "Prefill dynamic pricing controls for balanced singles events.",
   "@hostsOrganizerHostDefaultsStepBodyPrefillDynamicPricingControls": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepTitleStep": "Step",
   "@hostsOrganizerHostDefaultsStepTitleStep": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepTitleMax": "Max",
   "@hostsOrganizerHostDefaultsStepTitleMax": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsCreateOrganizerContactFieldsTitleInstagramHandle": "Instagram handle",
   "@hostsCreateOrganizerContactFieldsTitleInstagramHandle": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_club_contact_fields.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_contact_fields"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_contact_fields"
   },
   "hostsCreateOrganizerContactFieldsPlaceholderYourorganizer": "@yourclub",
   "@hostsCreateOrganizerContactFieldsPlaceholderYourorganizer": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_club_contact_fields.dart (placeholder).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_contact_fields"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_contact_fields"
   },
   "hostsCreateOrganizerContactFieldsTitlePhoneNumber": "Phone number",
   "@hostsCreateOrganizerContactFieldsTitlePhoneNumber": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_club_contact_fields.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_contact_fields"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_contact_fields"
   },
   "hostsCreateOrganizerContactFieldsTitleEmail": "Email",
   "@hostsCreateOrganizerContactFieldsTitleEmail": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_club_contact_fields.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_contact_fields"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_contact_fields"
   },
   "hostsCreateOrganizerContactFieldsPlaceholderHelloYourorganizerCom": "hello@yourclub.com",
   "@hostsCreateOrganizerContactFieldsPlaceholderHelloYourorganizerCom": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_club_contact_fields.dart (placeholder).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_contact_fields"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_contact_fields"
   },
   "hostsCreateOrganizerPhotosPickerTextDragToReorderThe": "Add as many as you need. The first photo is the cover.",
   "@hostsCreateOrganizerPhotosPickerTextDragToReorderThe": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
   "hostsCreateOrganizerPhotosPickerTextASquareLogoShown": "A square logo shown on your organizer profile and events. It stays separate from your gallery.",
   "@hostsCreateOrganizerPhotosPickerTextASquareLogoShown": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
   "hostsCreateOrganizerPhotosPickerLabelChangeOrganizerProfileImage": "Change organizer logo",
   "@hostsCreateOrganizerPhotosPickerLabelChangeOrganizerProfileImage": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
   "hostsCreateOrganizerPhotosPickerLabelAddOrganizerProfileImage": "Add organizer logo",
   "@hostsCreateOrganizerPhotosPickerLabelAddOrganizerProfileImage": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
   "hostsCreateOrganizerPhotosPickerTextAddImage": "Add image",
   "@hostsCreateOrganizerPhotosPickerTextAddImage": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
   "hostsCreateOrganizerPhotosPickerActionAddLogo": "Add logo",
   "@hostsCreateOrganizerPhotosPickerActionAddLogo": {
     "description": "Adds the organizer logo, separate from gallery media.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
   "hostsCreateOrganizerPhotosPickerActionReplaceLogo": "Replace",
   "@hostsCreateOrganizerPhotosPickerActionReplaceLogo": {
     "description": "Replaces the organizer logo.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
   "hostsCreateOrganizerPhotosPickerActionRemoveLogo": "Remove",
   "@hostsCreateOrganizerPhotosPickerActionRemoveLogo": {
     "description": "Removes the organizer logo without affecting gallery photos.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
   "hostsEditHostedEventScreenBodyDecreaseDuration": "Decrease duration",
   "@hostsEditHostedEventScreenBodyDecreaseDuration": {
@@ -4876,49 +4876,49 @@
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_club_tools"
+    "x-surface": "hosts.presentation.widgets.host_organizer_tools"
   },
   "hostsHostOrganizerToolsTitlePostToFollowers": "Post to followers",
   "@hostsHostOrganizerToolsTitlePostToFollowers": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_club_tools"
+    "x-surface": "hosts.presentation.widgets.host_organizer_tools"
   },
   "hostsHostOrganizerToolsLabelPosting": "Posting...",
   "@hostsHostOrganizerToolsLabelPosting": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_club_tools"
+    "x-surface": "hosts.presentation.widgets.host_organizer_tools"
   },
   "hostsHostOrganizerToolsCatchbuttonPostedToFollowers": "Posted to followers.",
   "@hostsHostOrganizerToolsCatchbuttonPostedToFollowers": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (CatchButton).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_club_tools"
+    "x-surface": "hosts.presentation.widgets.host_organizer_tools"
   },
   "hostsHostOrganizerToolsTitleUpdate": "Update",
   "@hostsHostOrganizerToolsTitleUpdate": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_club_tools"
+    "x-surface": "hosts.presentation.widgets.host_organizer_tools"
   },
   "hostsHostOrganizerToolsPlaceholderShareARouteNote": "Share a route note, meetup detail, or organizer update.",
   "@hostsHostOrganizerToolsPlaceholderShareARouteNote": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (placeholder).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_club_tools"
+    "x-surface": "hosts.presentation.widgets.host_organizer_tools"
   },
   "hostsHostOrganizerToolsTextCouldNotPostThis": "Could not post this update. Please try again.",
   "@hostsHostOrganizerToolsTextCouldNotPostThis": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_club_tools"
+    "x-surface": "hosts.presentation.widgets.host_organizer_tools"
   },
   "hostsHostEventAttendancePanelTitleEventNotFound": "Event not found",
   "@hostsHostEventAttendancePanelTitleEventNotFound": {
@@ -6813,28 +6813,28 @@
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_hero_app_bar"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_hero_app_bar"
   },
   "organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle": "club-detail-expanded-title",
   "@organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_hero_app_bar"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_hero_app_bar"
   },
   "organizersOrganizerScheduleSectionTitleSchedule": "Schedule",
   "@organizersOrganizerScheduleSectionTitleSchedule": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_schedule_section"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_schedule_section"
   },
   "organizersOrganizerShareCardTextOrganizerOnCatch": "ORGANIZER ON CATCH",
   "@organizersOrganizerShareCardTextOrganizerOnCatch": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_share_card.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_share_card"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_share_card"
   },
   "dashboardDashboardEmptyTitleHowCatchWorks": "How Catch works",
   "@dashboardDashboardEmptyTitleHowCatchWorks": {
@@ -6984,35 +6984,35 @@
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepLabelCancellationPolicy": "Cancellation policy",
   "@hostsOrganizerHostDefaultsStepLabelCancellationPolicy": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsCreateOrganizerContactFieldsLabelContact": "Contact",
   "@hostsCreateOrganizerContactFieldsLabelContact": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_club_contact_fields.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_contact_fields"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_contact_fields"
   },
   "hostsCreateOrganizerPhotosPickerLabelOrganizerPhotos": "Gallery & cover",
   "@hostsCreateOrganizerPhotosPickerLabelOrganizerPhotos": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
   "hostsCreateOrganizerPhotosPickerLabelOrganizerProfileImage": "Organizer logo",
   "@hostsCreateOrganizerPhotosPickerLabelOrganizerProfileImage": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
   "hostsEditHostedEventScreenTitleEditEvent": "Edit event",
   "@hostsEditHostedEventScreenTitleEditEvent": {
@@ -7572,7 +7572,7 @@
     },
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_dock"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerHeroAppBarSemanticlabelNameCoverPhoto": "{name} cover photo",
   "@organizersOrganizerHeroAppBarSemanticlabelNameCoverPhoto": {
@@ -7582,7 +7582,7 @@
     },
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_hero_app_bar"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_hero_app_bar"
   },
   "organizersOrganizerHostSectionLabelViewDisplaynameProfile": "View {displayName} profile",
   "@organizersOrganizerHostSectionLabelViewDisplaynameProfile": {
@@ -7592,7 +7592,7 @@
     },
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_host_section"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_host_section"
   },
   "organizersOrganizerPhotoStripTextLengthPhotos": "{length} PHOTOS",
   "@organizersOrganizerPhotoStripTextLengthPhotos": {
@@ -7602,7 +7602,7 @@
     },
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_photo_strip"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_photo_strip"
   },
   "organizersOrganizerShareCardLabelAreaCitylabel": "{area}, {cityLabel}",
   "@organizersOrganizerShareCardLabelAreaCitylabel": {
@@ -7613,7 +7613,7 @@
     },
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_share_card"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_share_card"
   },
   "organizersOrganizerShareCardSemanticlabelNameCoverPhoto": "{name} cover photo",
   "@organizersOrganizerShareCardSemanticlabelNameCoverPhoto": {
@@ -7623,7 +7623,7 @@
     },
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_share_card"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_share_card"
   },
   "dashboardActivitySectionLabelTitleBody": "{title}. {body}",
   "@dashboardActivitySectionLabelTitleBody": {
@@ -8032,7 +8032,7 @@
     },
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_club_tools"
+    "x-surface": "hosts.presentation.widgets.host_organizer_tools"
   },
   "hostsHostOrganizerToolsHelpertextValue1CharactersLeft": "{value1} characters left",
   "@hostsHostOrganizerToolsHelpertextValue1CharactersLeft": {
@@ -8042,7 +8042,7 @@
     },
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.host_club_tools"
+    "x-surface": "hosts.presentation.widgets.host_organizer_tools"
   },
   "hostsHostEventAttendancePanelLabelOfferNextCount": "Offer next {count}",
   "@hostsHostEventAttendancePanelLabelOfferNextCount": {
@@ -8777,14 +8777,14 @@
     },
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.discovery.widgets.club_list_tile_parts.avatar_chip"
+    "x-surface": "organizers.presentation.discovery.widgets.organizer_list_tile_parts.avatar_chip"
   },
   "organizersAvatarChipTextEventSoon": "Event soon",
   "@organizersAvatarChipTextEventSoon": {
     "description": "Product copy used by lib/organizers/presentation/discovery/widgets/organizer_list_tile_parts/avatar_chip.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.discovery.widgets.club_list_tile_parts.avatar_chip"
+    "x-surface": "organizers.presentation.discovery.widgets.organizer_list_tile_parts.avatar_chip"
   },
   "organizersDirectoryCardLabelOpenNameOrganizer": "Open {name} organizer",
   "@organizersDirectoryCardLabelOpenNameOrganizer": {
@@ -8794,21 +8794,21 @@
     },
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.discovery.widgets.club_list_tile_parts.directory_card"
+    "x-surface": "organizers.presentation.discovery.widgets.organizer_list_tile_parts.directory_card"
   },
   "organizersDirectoryCardLabelJoined": "Following",
   "@organizersDirectoryCardLabelJoined": {
     "description": "Product copy used by lib/organizers/presentation/discovery/widgets/organizer_list_tile_parts/directory_card.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.discovery.widgets.club_list_tile_parts.directory_card"
+    "x-surface": "organizers.presentation.discovery.widgets.organizer_list_tile_parts.directory_card"
   },
   "organizersDirectoryCardLabelJoin": "Follow",
   "@organizersDirectoryCardLabelJoin": {
     "description": "Product copy used by lib/organizers/presentation/discovery/widgets/organizer_list_tile_parts/directory_card.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.discovery.widgets.club_list_tile_parts.directory_card"
+    "x-surface": "organizers.presentation.discovery.widgets.organizer_list_tile_parts.directory_card"
   },
   "dashboardDashboardEmptyHomeScreenLabelHome": "Home",
   "@dashboardDashboardEmptyHomeScreenLabelHome": {
@@ -11004,70 +11004,70 @@
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenLabelEdit": "Edit",
   "@hostsHostOrganizerTeamScreenLabelEdit": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenLabelPreview": "Preview",
   "@hostsHostOrganizerTeamScreenLabelPreview": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenTitleProfile": "Profile",
   "@hostsHostOrganizerTeamScreenTitleProfile": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenTitleDisplayName": "Display name",
   "@hostsHostOrganizerTeamScreenTitleDisplayName": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenTitleRoleTitle": "Role title",
   "@hostsHostOrganizerTeamScreenTitleRoleTitle": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenTitleStatus": "Status",
   "@hostsHostOrganizerTeamScreenTitleStatus": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenTitleAboutYouAsA": "About you as a host",
   "@hostsHostOrganizerTeamScreenTitleAboutYouAsA": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenTitleOrganizersYouHost": "Organizers you host",
   "@hostsHostOrganizerTeamScreenTitleOrganizersYouHost": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenTextNoHostOrganizersYet": "No hosted organizers yet.",
   "@hostsHostOrganizerTeamScreenTextNoHostOrganizersYet": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostAnalyticsLabelAllEvents": "All events",
   "@hostsHostAnalyticsLabelAllEvents": {
@@ -11427,161 +11427,161 @@
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerProfileTitleMedia": "Media",
   "@hostsHostOrganizerProfileTitleMedia": {
     "description": "Section title for club logo and photo editing in the organizer workspace.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerEditTabActionManageImages": "Manage images",
   "@hostsHostOrganizerEditTabActionManageImages": {
     "description": "Opens the full-screen organizer logo and gallery manager.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
   "hostsHostOrganizerEditTabBadgeLogo": "LOGO",
   "@hostsHostOrganizerEditTabBadgeLogo": {
     "description": "Role badge shown on the organizer logo in the compact media summary.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
   "hostsHostOrganizerProfileLabelOrganizerName": "Organizer name",
   "@hostsHostOrganizerProfileLabelOrganizerName": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerProfileLabelCity": "City",
   "@hostsHostOrganizerProfileLabelCity": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerProfileLabelAreaNeighbourhood": "Area / neighbourhood",
   "@hostsHostOrganizerProfileLabelAreaNeighbourhood": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerProfileLabelDescription": "Description",
   "@hostsHostOrganizerProfileLabelDescription": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerProfileTitleContact": "Contact",
   "@hostsHostOrganizerProfileTitleContact": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerProfileLabelInstagram": "Instagram",
   "@hostsHostOrganizerProfileLabelInstagram": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerProfilePlaceholderYourorganizer": "@yourclub",
   "@hostsHostOrganizerProfilePlaceholderYourorganizer": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (placeholder).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerProfileLabelPhone": "Phone",
   "@hostsHostOrganizerProfileLabelPhone": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerProfileLabelEmail": "Email",
   "@hostsHostOrganizerProfileLabelEmail": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerProfilePlaceholderHelloYourorganizerCom": "hello@yourclub.com",
   "@hostsHostOrganizerProfilePlaceholderHelloYourorganizerCom": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (placeholder).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerEditTabTitleOrganizerSettings": "Organizer settings",
   "@hostsHostOrganizerEditTabTitleOrganizerSettings": {
     "description": "Section heading for organizer configuration destinations.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
   "hostsHostOrganizerEditTabActionSaveMedia": "Save media",
   "@hostsHostOrganizerEditTabActionSaveMedia": {
     "description": "Commits staged organizer gallery and logo changes.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
   "hostsHostOrganizerEditTabActionDiscardMedia": "Discard",
   "@hostsHostOrganizerEditTabActionDiscardMedia": {
     "description": "Discards staged organizer gallery and logo changes.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
   "hostsHostOrganizerEditTabLabelEventDefaults": "Event defaults",
   "@hostsHostOrganizerEditTabLabelEventDefaults": {
     "description": "Navigation row to club event defaults.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
   "hostsHostOrganizerEditTabLabelLiveEventGuide": "Live event guide",
   "@hostsHostOrganizerEditTabLabelLiveEventGuide": {
     "description": "Navigation row to club live event guide defaults.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
   "hostsHostOrganizerEditTabLabelPayments": "Payments",
   "@hostsHostOrganizerEditTabLabelPayments": {
     "description": "Navigation row to club payment setup.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
   "hostsHostOrganizerEditTabLabelHostTeam": "Host team",
   "@hostsHostOrganizerEditTabLabelHostTeam": {
     "description": "Navigation row to club host team management.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
   "hostsHostOrganizerEditTabValueOn": "On",
   "@hostsHostOrganizerEditTabValueOn": {
     "description": "Enabled value for organizer configuration rows.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
   "hostsHostOrganizerEditTabValueOff": "Off",
   "@hostsHostOrganizerEditTabValueOff": {
     "description": "Disabled value for organizer configuration rows.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
   "hostsHostOrganizerEditTabValueHostCount": "{count, plural, =1{1 host} other{{count} hosts}}",
   "@hostsHostOrganizerEditTabValueHostCount": {
@@ -11589,91 +11589,91 @@
     "placeholders": {"count": {"type": "int"}},
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"
   },
   "hostsHostOrganizerProfileTitleDefaultActivity": "Default activity",
   "@hostsHostOrganizerProfileTitleDefaultActivity": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerProfileTitleAdmission": "Admission",
   "@hostsHostOrganizerProfileTitleAdmission": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerProfileTitleAgeRange": "Age range",
   "@hostsHostOrganizerProfileTitleAgeRange": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizerProfileTitleCancellationPolicy": "Cancellation policy",
   "@hostsHostOrganizerProfileTitleCancellationPolicy": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostOrganizersScaffoldLabelOrganizerWorkspaceTabs": "Organizer workspace tabs",
   "@hostsHostOrganizersScaffoldLabelOrganizerWorkspaceTabs": {
     "description": "Accessibility label for the Host Clubs tabbed workspace.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
+    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
   "hostsHostOrganizersScaffoldBodyDragLeftOrRight": "Drag left or right to switch between Edit, Insights, and Preview.",
   "@hostsHostOrganizersScaffoldBodyDragLeftOrRight": {
     "description": "Accessibility hint for switching Host Clubs workspace pages.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
+    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
   "hostsHostOrganizersScaffoldLabelEdit": "Edit",
   "@hostsHostOrganizersScaffoldLabelEdit": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizers_scaffold.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
+    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
   "hostsHostOrganizersScaffoldLabelInsights": "Insights",
   "@hostsHostOrganizersScaffoldLabelInsights": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizers_scaffold.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
+    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
   "hostsHostOrganizersScaffoldLabelPreview": "Preview",
   "@hostsHostOrganizersScaffoldLabelPreview": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizers_scaffold.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
+    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
   "hostsHostOrganizersScaffoldTitleNoHostOrganizersYet": "No hosted organizers yet",
   "@hostsHostOrganizersScaffoldTitleNoHostOrganizersYet": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizers_scaffold.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
+    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
   "hostsHostOrganizersScaffoldBodyCreateAOrganizerOr": "Create an organizer or accept a host invite to start managing events.",
   "@hostsHostOrganizersScaffoldBodyCreateAOrganizerOr": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizers_scaffold.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
+    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
   "hostsHostOrganizersScaffoldLabelCreateOrganizer": "Create organizer",
   "@hostsHostOrganizersScaffoldLabelCreateOrganizer": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizers_scaffold.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
+    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
   "hostsHostEventsListTextEvents": "Events",
   "@hostsHostEventsListTextEvents": {
@@ -14080,14 +14080,14 @@
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_dock"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerDetailDockVisiblecopyMemberManageAnytime": "MEMBER · MANAGE ANYTIME",
   "@organizersOrganizerDetailDockVisiblecopyMemberManageAnytime": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_dock"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "dashboardEventFocusRailVisiblecopy1Event": "1 event",
   "@dashboardEventFocusRailVisiblecopy1Event": {
@@ -14681,7 +14681,7 @@
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizers_scaffold.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
+    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
   "eventSuccessEventSuccessQuestionnaireConfigEditorPromptCustomQuestionQuestionnumber": "Custom question {questionNumber}",
   "@eventSuccessEventSuccessQuestionnaireConfigEditorPromptCustomQuestionQuestionnumber": {
@@ -14833,28 +14833,28 @@
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyLabelRating": "Rating",
   "@organizersOrganizerDetailBodyLabelRating": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyLabelReviews": "Reviews",
   "@organizersOrganizerDetailBodyLabelReviews": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyLabelEst": "Established",
   "@organizersOrganizerDetailBodyLabelEst": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "eventsEventDetailOverviewSectionTitleAttendanceMatters": "Attendance matters",
   "@eventsEventDetailOverviewSectionTitleAttendanceMatters": {
@@ -15017,35 +15017,35 @@
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_dock"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerDetailDockLabelJoinOrganizer": "Follow organizer",
   "@organizersOrganizerDetailDockLabelJoinOrganizer": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_dock"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerDetailDockLabelJoined": "Following",
   "@organizersOrganizerDetailDockLabelJoined": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_dock"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerDetailDockLabelManage": "Manage",
   "@organizersOrganizerDetailDockLabelManage": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_dock"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerDetailDockLabelNewEvent": "New event",
   "@organizersOrganizerDetailDockLabelNewEvent": {
     "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_dock"
+    "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "hostsHostEventAttendancePanelLabelAccepted": "Accepted",
   "@hostsHostEventAttendancePanelLabelAccepted": {
@@ -15080,49 +15080,49 @@
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepLabelInvite": "INVITE",
   "@hostsOrganizerHostDefaultsStepLabelInvite": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepLabelBalanced": "BALANCED",
   "@hostsOrganizerHostDefaultsStepLabelBalanced": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepDescriptionAnyoneEligibleCanBook": "Anyone eligible can book until the event reaches capacity.",
   "@hostsOrganizerHostDefaultsStepDescriptionAnyoneEligibleCanBook": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (description).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepDescriptionNewInviteOnlyEvents": "New invite-only events will ask for an event-specific code.",
   "@hostsOrganizerHostDefaultsStepDescriptionNewInviteOnlyEvents": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (description).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepDescriptionStraightMenAndWomen": "Straight men and women are kept within one spot of each other.",
   "@hostsOrganizerHostDefaultsStepDescriptionStraightMenAndWomen": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (description).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsOrganizerHostDefaultsStepDescriptionNewEventsStartOpen": "New events start open with optional straight men and straight women caps.",
   "@hostsOrganizerHostDefaultsStepDescriptionNewEventsStartOpen": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart (description).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_host_defaults_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_host_defaults_step"
   },
   "hostsCreateEventPolicyStateDescriptionAnyoneEligibleCanBook": "Anyone eligible can book until the event reaches capacity.",
   "@hostsCreateEventPolicyStateDescriptionAnyoneEligibleCanBook": {
@@ -17044,77 +17044,77 @@
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.create_club_screen"
+    "x-surface": "hosts.presentation.organizer_management.create.create_organizer_screen"
   },
   "hostsCreateOrganizerScreenVisiblecopyCreateorganizerscreenRestoresaveddraftFailed": "CreateClubScreen._restoreSavedDraft failed",
   "@hostsCreateOrganizerScreenVisiblecopyCreateorganizerscreenRestoresaveddraftFailed": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.create_club_screen"
+    "x-surface": "hosts.presentation.organizer_management.create.create_organizer_screen"
   },
   "hostsCreateOrganizerScreenVisiblecopyDraftUpdated": "Draft updated",
   "@hostsCreateOrganizerScreenVisiblecopyDraftUpdated": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.create_club_screen"
+    "x-surface": "hosts.presentation.organizer_management.create.create_organizer_screen"
   },
   "hostsCreateOrganizerScreenVisiblecopyDraftSaved": "Draft saved",
   "@hostsCreateOrganizerScreenVisiblecopyDraftSaved": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.create_club_screen"
+    "x-surface": "hosts.presentation.organizer_management.create.create_organizer_screen"
   },
   "hostsCreateOrganizerScreenVisiblecopyCreateorganizerscreenSubmitFailed": "CreateClubScreen._submit failed",
   "@hostsCreateOrganizerScreenVisiblecopyCreateorganizerscreenSubmitFailed": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.create_club_screen"
+    "x-surface": "hosts.presentation.organizer_management.create.create_organizer_screen"
   },
   "hostsOrganizerBasicsStepVisiblecopyPleaseEnterAOrganizer": "Please enter an organizer name",
   "@hostsOrganizerBasicsStepVisiblecopyPleaseEnterAOrganizer": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_basics_step.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_basics_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_basics_step"
   },
   "hostsOrganizerBasicsStepVisiblecopyPleaseSelectACity": "Please select a city",
   "@hostsOrganizerBasicsStepVisiblecopyPleaseSelectACity": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_basics_step.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_basics_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_basics_step"
   },
   "hostsOrganizerBasicsStepVisiblecopyPleaseEnterAnArea": "Please enter an area",
   "@hostsOrganizerBasicsStepVisiblecopyPleaseEnterAnArea": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_basics_step.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_basics_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_basics_step"
   },
   "hostsOrganizerDetailsStepVisiblecopyPleaseAddADescription": "Please add a description",
   "@hostsOrganizerDetailsStepVisiblecopyPleaseAddADescription": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/organizer_details_step.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.club_details_step"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.organizer_details_step"
   },
   "hostsCreateOrganizerPhotosPickerVisiblecopyAddPhotos": "Add photos",
   "@hostsCreateOrganizerPhotosPickerVisiblecopyAddPhotos": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
   "hostsCreateOrganizerPhotosPickerVisiblecopyAddOrganizerPhotos": "Add organizer photos",
   "@hostsCreateOrganizerPhotosPickerVisiblecopyAddOrganizerPhotos": {
     "description": "Product copy used by lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+    "x-surface": "hosts.presentation.organizer_management.create.widgets.create_organizer_photos_picker"
   },
   "hostsEditHostedEventScreenVisiblecopyDD": "^\\d*\\.?\\d*",
   "@hostsEditHostedEventScreenVisiblecopyDD": {
@@ -17712,42 +17712,42 @@
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenVisiblecopyHostProfileCreated": "Host profile created.",
   "@hostsHostOrganizerTeamScreenVisiblecopyHostProfileCreated": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenVisiblecopyCreatingProfile": "Creating profile...",
   "@hostsHostOrganizerTeamScreenVisiblecopyCreatingProfile": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenVisiblecopyCreateHostProfile": "Create host profile",
   "@hostsHostOrganizerTeamScreenVisiblecopyCreateHostProfile": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenVisiblecopyAddRoleTitle": "Add role title",
   "@hostsHostOrganizerTeamScreenVisiblecopyAddRoleTitle": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostOrganizerTeamScreenVisiblecopyAddAHostBio": "Add a host bio",
   "@hostsHostOrganizerTeamScreenVisiblecopyAddAHostBio": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer_team_screen.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"
   },
   "hostsHostAuthRequiredScreenVisiblecopySignIn": "Sign in",
   "@hostsHostAuthRequiredScreenVisiblecopySignIn": {
@@ -17765,7 +17765,7 @@
     },
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
+    "x-surface": "hosts.presentation.host_operations.host_organizer_profile"
   },
   "hostsHostTodayVisiblecopySignedupcount": "{signedUpCount}",
   "@hostsHostTodayVisiblecopySignedupcount": {
@@ -20348,21 +20348,21 @@
   "chatsEmptyStateNoUnreadQueriesMessage": "New attendee questions will move here until you open their thread.",
   "@chatsEmptyStateNoUnreadQueriesMessage": {"description": "Host inbox unread-filter empty-state guidance.", "x-audience": "host", "x-owner": "product", "x-surface": "chats.presentation.inbox.widgets.chats_empty_state"},
   "organizersOrganizerShareCardFootnote": "Shares a visual organizer card with the organizer link.",
-  "@organizersOrganizerShareCardFootnote": {"description": "Explanation below the club share-card action.", "x-audience": "consumer", "x-owner": "product", "x-surface": "clubs.presentation.detail.widgets.club_share_card"},
+  "@organizersOrganizerShareCardFootnote": {"description": "Explanation below the club share-card action.", "x-audience": "consumer", "x-owner": "product", "x-surface": "organizers.presentation.detail.widgets.organizer_share_card"},
   "organizersOrganizerShareCardHostedBy": "Hosted by {hostName}",
-  "@organizersOrganizerShareCardHostedBy": {"description": "Host attribution on a club share card.", "placeholders": {"hostName": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "clubs.presentation.detail.widgets.club_share_card"},
+  "@organizersOrganizerShareCardHostedBy": {"description": "Host attribution on a club share card.", "placeholders": {"hostName": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "organizers.presentation.detail.widgets.organizer_share_card"},
   "organizersOrganizerShareTextIntro": "Check out {organizerName} on Catch.",
-  "@organizersOrganizerShareTextIntro": {"description": "Opening line of externally shared club copy.", "placeholders": {"organizerName": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "clubs.presentation.detail.widgets.club_share_card"},
+  "@organizersOrganizerShareTextIntro": {"description": "Opening line of externally shared club copy.", "placeholders": {"organizerName": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "organizers.presentation.detail.widgets.organizer_share_card"},
   "organizersOrganizerHostRoleOwner": "OWNER",
-  "@organizersOrganizerHostRoleOwner": {"description": "Club owner role label in Host attribution.", "x-audience": "shared", "x-owner": "product", "x-surface": "clubs.presentation.detail.widgets.club_host_section"},
+  "@organizersOrganizerHostRoleOwner": {"description": "Club owner role label in Host attribution.", "x-audience": "shared", "x-owner": "product", "x-surface": "organizers.presentation.detail.widgets.organizer_host_section"},
   "organizersOrganizerHostRoleHost": "HOST",
-  "@organizersOrganizerHostRoleHost": {"description": "Club host role label in Host attribution.", "x-audience": "shared", "x-owner": "product", "x-surface": "clubs.presentation.detail.widgets.club_host_section"},
+  "@organizersOrganizerHostRoleHost": {"description": "Club host role label in Host attribution.", "x-audience": "shared", "x-owner": "product", "x-surface": "organizers.presentation.detail.widgets.organizer_host_section"},
   "organizersOrganizerHostEstablishedMeta": "{role} · EST. {established}",
-  "@organizersOrganizerHostEstablishedMeta": {"description": "Club host role and established-date metadata.", "placeholders": {"role": {"type": "String"}, "established": {"type": "String"}}, "x-audience": "shared", "x-owner": "product", "x-surface": "clubs.presentation.detail.widgets.club_host_section"},
+  "@organizersOrganizerHostEstablishedMeta": {"description": "Club host role and established-date metadata.", "placeholders": {"role": {"type": "String"}, "established": {"type": "String"}}, "x-audience": "shared", "x-owner": "product", "x-surface": "organizers.presentation.detail.widgets.organizer_host_section"},
   "organizersOrganizerScheduleHostedBadge": "HOSTED",
-  "@organizersOrganizerScheduleHostedBadge": {"description": "Badge on club schedule events managed by the current Host.", "x-audience": "host", "x-owner": "product", "x-surface": "clubs.presentation.detail.widgets.club_schedule_section"},
+  "@organizersOrganizerScheduleHostedBadge": {"description": "Badge on club schedule events managed by the current Host.", "x-audience": "host", "x-owner": "product", "x-surface": "organizers.presentation.detail.widgets.organizer_schedule_section"},
   "organizersOrganizerScheduleViewBadge": "VIEW",
-  "@organizersOrganizerScheduleViewBadge": {"description": "Read-only club schedule event action badge.", "x-audience": "consumer", "x-owner": "product", "x-surface": "clubs.presentation.detail.widgets.club_schedule_section"},
+  "@organizersOrganizerScheduleViewBadge": {"description": "Read-only club schedule event action badge.", "x-audience": "consumer", "x-owner": "product", "x-surface": "organizers.presentation.detail.widgets.organizer_schedule_section"},
   "eventsInviteShareButton": "Share invite",
   "@eventsInviteShareButton": {"description": "Primary action on the event invite share sheet.", "x-audience": "consumer", "x-owner": "product", "x-surface": "events.shared.event_share_card"},
   "eventsInviteShareFootnote": "Shares a visual invite with the event link.",
@@ -20422,25 +20422,25 @@
   "eventSuccessSocialMissionTitle": "Social mission",
   "@eventSuccessSocialMissionTitle": {"description": "Default title for Event Success prompt cards.", "x-audience": "shared", "x-owner": "product", "x-surface": "event_success.presentation.prompt_cards"},
   "hostsAdmissionOpenCapacityDescription": "Anyone eligible can book until the event reaches capacity.",
-  "@hostsAdmissionOpenCapacityDescription": {"description": "Host admission-default explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_helpers"},
+  "@hostsAdmissionOpenCapacityDescription": {"description": "Host admission-default explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_helpers"},
   "hostsAdmissionInviteOnlyDescription": "New invite-only events ask for an event-specific code.",
-  "@hostsAdmissionInviteOnlyDescription": {"description": "Host admission-default explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_helpers"},
+  "@hostsAdmissionInviteOnlyDescription": {"description": "Host admission-default explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_helpers"},
   "hostsAdmissionBalancedSinglesDescription": "Straight men and women are kept within one spot of each other.",
-  "@hostsAdmissionBalancedSinglesDescription": {"description": "Host admission-default explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_helpers"},
+  "@hostsAdmissionBalancedSinglesDescription": {"description": "Host admission-default explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_helpers"},
   "hostsAdmissionFixedCohortCapsLabel": "Fixed cohort caps",
-  "@hostsAdmissionFixedCohortCapsLabel": {"description": "Host admission-default label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_helpers"},
+  "@hostsAdmissionFixedCohortCapsLabel": {"description": "Host admission-default label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_helpers"},
   "hostsAdmissionFixedCohortCapsDescription": "Open booking with optional straight men and straight women caps.",
-  "@hostsAdmissionFixedCohortCapsDescription": {"description": "Host admission-default explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_helpers"},
+  "@hostsAdmissionFixedCohortCapsDescription": {"description": "Host admission-default explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_helpers"},
   "hostsValidationEnterValidEmail": "Enter a valid email.",
-  "@hostsValidationEnterValidEmail": {"description": "Host form validation for an invalid optional email.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_helpers"},
+  "@hostsValidationEnterValidEmail": {"description": "Host form validation for an invalid optional email.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_helpers"},
   "hostsValidationEnterDisplayName": "Enter a display name.",
-  "@hostsValidationEnterDisplayName": {"description": "Host professional-profile display-name validation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_team_screen"},
+  "@hostsValidationEnterDisplayName": {"description": "Host professional-profile display-name validation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"},
   "hostsProfileStatusActive": "Active professional profile",
-  "@hostsProfileStatusActive": {"description": "Active Host professional-profile status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_team_screen"},
+  "@hostsProfileStatusActive": {"description": "Active Host professional-profile status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"},
   "hostsProfileStatusPending": "Profile pending review",
-  "@hostsProfileStatusPending": {"description": "Pending Host professional-profile status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_team_screen"},
+  "@hostsProfileStatusPending": {"description": "Pending Host professional-profile status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"},
   "hostsProfileStatusSuspended": "Profile suspended",
-  "@hostsProfileStatusSuspended": {"description": "Suspended Host professional-profile status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_team_screen"},
+  "@hostsProfileStatusSuspended": {"description": "Suspended Host professional-profile status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_team_screen"},
   "hostsEventActionCancelling": "Cancelling...",
   "@hostsEventActionCancelling": {"description": "Pending detail for a Host event cancellation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_event_manage_screen_state"},
   "hostsEventActionCancelDetail": "Keeps records · notifies guests",
@@ -20671,7 +20671,7 @@
     "placeholders": {"title": {}, "caption": {}, "supportingLabel": {}, "memberCountLabel": {}, "ratingReviewLabel": {}},
     "x-audience": "consumer",
     "x-owner": "product",
-    "x-surface": "explore.presentation.widgets.explore_club_cards"
+    "x-surface": "explore.presentation.widgets.explore_organizer_cards"
   },
   "exploreExploreScreenStateExternalEventSemantics": "{title}, {sourceLabel}, {statusLabel}, {supportingLabel}, {timePriceLabel}, {readOnlySupplyLabel}",
   "@exploreExploreScreenStateExternalEventSemantics": {
@@ -21054,35 +21054,35 @@
   "hostsHostEventReviewsMessageEmpty": "Reviews for this event will appear here, including reviews submitted on your public Catch page.",
   "@hostsHostEventReviewsMessageEmpty": {"description": "Host event review empty-state guidance.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_event_reviews_panel"},
   "hostsHostOrganizerPublicationTitle": "Public visibility",
-  "@hostsHostOrganizerPublicationTitle": {"description": "Organizer publication control title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationTitle": {"description": "Organizer publication control title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationChannelCatch": "Catch app",
-  "@hostsHostOrganizerPublicationChannelCatch": {"description": "Native Catch discovery channel label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationChannelCatch": {"description": "Native Catch discovery channel label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationChannelWebsite": "Public website",
-  "@hostsHostOrganizerPublicationChannelWebsite": {"description": "Public website channel label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationChannelWebsite": {"description": "Public website channel label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationStatusVisible": "Visible",
-  "@hostsHostOrganizerPublicationStatusVisible": {"description": "Visible Catch app status badge.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationStatusVisible": {"description": "Visible Catch app status badge.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationStatusHidden": "Hidden",
-  "@hostsHostOrganizerPublicationStatusHidden": {"description": "Hidden Catch app status badge.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationStatusHidden": {"description": "Hidden Catch app status badge.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationStatusEnabled": "Enabled",
-  "@hostsHostOrganizerPublicationStatusEnabled": {"description": "Enabled website status badge.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationStatusEnabled": {"description": "Enabled website status badge.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationStatusNotEnabled": "Not enabled",
-  "@hostsHostOrganizerPublicationStatusNotEnabled": {"description": "Disabled website status badge.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationStatusNotEnabled": {"description": "Disabled website status badge.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationBodyPrivate": "Only your Host team can access this organizer. You can still run events, import guests, and check people in.",
-  "@hostsHostOrganizerPublicationBodyPrivate": {"description": "Explains a fully private organizer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationBodyPrivate": {"description": "Explains a fully private organizer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationBodyCatchOnly": "People can find this organizer in Catch. Enable its website page to share it outside the app and support web registration. It will appear after the next website release.",
-  "@hostsHostOrganizerPublicationBodyCatchOnly": {"description": "Explains Catch-only organizer visibility.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationBodyCatchOnly": {"description": "Explains Catch-only organizer visibility.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationBodyWebsiteOnly": "The website page is enabled, but this organizer is hidden in Catch. Restore Catch visibility to keep both public settings in sync.",
-  "@hostsHostOrganizerPublicationBodyWebsiteOnly": {"description": "Explains website-only organizer visibility.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationBodyWebsiteOnly": {"description": "Explains website-only organizer visibility.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationBodyEverywhere": "This organizer is enabled for Catch and the public website. Website changes appear after the next website release.",
-  "@hostsHostOrganizerPublicationBodyEverywhere": {"description": "Explains fully public organizer settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationBodyEverywhere": {"description": "Explains fully public organizer settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationActionMakePublic": "Make organizer public",
-  "@hostsHostOrganizerPublicationActionMakePublic": {"description": "Enable both public channels CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationActionMakePublic": {"description": "Enable both public channels CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationActionEnableWebsite": "Enable website page",
-  "@hostsHostOrganizerPublicationActionEnableWebsite": {"description": "Enable the organizer website page CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationActionEnableWebsite": {"description": "Enable the organizer website page CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationActionRestoreCatch": "Restore Catch visibility",
-  "@hostsHostOrganizerPublicationActionRestoreCatch": {"description": "Restore native Catch discovery CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationActionRestoreCatch": {"description": "Restore native Catch discovery CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostOrganizerPublicationActionMakePrivate": "Make organizer private",
-  "@hostsHostOrganizerPublicationActionMakePrivate": {"description": "Disable both public channels CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_edit_tab"},
+  "@hostsHostOrganizerPublicationActionMakePrivate": {"description": "Disable both public channels CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_edit_tab"},
   "hostsHostPublicRegistrationTitle": "Catch registration",
   "@hostsHostPublicRegistrationTitle": {"description": "Host public event registration control title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_event_manage_screen"},
   "hostsHostPublicRegistrationSubtitleEnabled": "Guests can register on Catch",
@@ -22966,15 +22966,15 @@
   "hostsCreateEventReviewAdmission": "Admission",
   "@hostsCreateEventReviewAdmission": {"description": "Create event review admission label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
   "hostsCreateOrganizerOverviewTitle": "Organizer setup",
-  "@hostsCreateOrganizerOverviewTitle": {"description": "Section overview title in organizer creation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.club_management.create"},
+  "@hostsCreateOrganizerOverviewTitle": {"description": "Section overview title in organizer creation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.organizer_management.create"},
   "hostsWizardReviewBody": "Review every section before publishing. Select a row to make changes.",
   "@hostsWizardReviewBody": {"description": "Guidance on the final review screen for resumable Host creation flows.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.creation_wizards"},
   "hostsCreateEventReviewTitle": "Review event",
   "@hostsCreateEventReviewTitle": {"description": "Final review title and action in event creation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
   "hostsCreateOrganizerReviewTitle": "Review organizer",
-  "@hostsCreateOrganizerReviewTitle": {"description": "Final review title and action in organizer creation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.club_management.create"},
+  "@hostsCreateOrganizerReviewTitle": {"description": "Final review title and action in organizer creation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.organizer_management.create"},
   "hostsCreateOrganizerCreateAction": "Create organizer",
-  "@hostsCreateOrganizerCreateAction": {"description": "Creates an organizer after the final creation review passes.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.club_management.create"},
+  "@hostsCreateOrganizerCreateAction": {"description": "Creates an organizer after the final creation review passes.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.organizer_management.create"},
   "hostsDraftExitTitle": "Save your work?",
   "@hostsDraftExitTitle": {"description": "Title for leaving a dirty resumable Host creation wizard.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_draft_exit_dialog"},
   "hostsDraftExitMessage": "Save this as a draft before you exit?",
@@ -30237,11 +30237,11 @@
   "hostsPrivateEventRosterNote": "Guests from imports and Catch registration can share one roster. Offers do not confirm attendance.",
   "@hostsPrivateEventRosterNote": {"description": "Copy for the progressive private event setup flow.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsEventDefaultsBasics": "Basics",
-  "@hostsEventDefaultsBasics": {"description": "Copy for the progressive private event setup flow.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsBasics": {"description": "Copy for the progressive private event setup flow.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsTimezoneHint": "Suggested for new events. Existing events keep their saved timezone.",
-  "@hostsEventDefaultsTimezoneHint": {"description": "Copy for the progressive private event setup flow.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsTimezoneHint": {"description": "Copy for the progressive private event setup flow.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsChooseEachEvent": "Choose on each event",
-  "@hostsEventDefaultsChooseEachEvent": {"description": "Copy for the progressive private event setup flow.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsChooseEachEvent": {"description": "Copy for the progressive private event setup flow.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsPrivateEventPendingRequest": "This save may already have reached Catch. Retry the same request before changing details so it cannot create another event.",
   "@hostsPrivateEventPendingRequest": {"description": "Explains an unresolved idempotent event save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsPrivateEventPendingUpdate": "This edit may already have reached Catch. Retry the same save before changing the basics.",
@@ -30252,61 +30252,61 @@
   "@hostsPrivateEventPendingRoster": {"description": "Shows a retained import plan after the canonical event is saved.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsPrivateEventPendingRosterBody": "{fileName} can be imported after event roster setup is available.",
   "hostsEventDefaultsUsualDuration": "Usual duration",
-  "@hostsEventDefaultsUsualDuration": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsUsualDuration": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsMinutes": "{minutes} min",
-  "@hostsEventDefaultsMinutes": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens", "placeholders": {"minutes": {"type": "int"}}},
+  "@hostsEventDefaultsMinutes": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens", "placeholders": {"minutes": {"type": "int"}}},
   "hostsEventDefaultsClearDuration": "Choose duration on each event",
-  "@hostsEventDefaultsClearDuration": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsClearDuration": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsPreferredVenue": "Preferred venue",
-  "@hostsEventDefaultsPreferredVenue": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsPreferredVenue": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsVenueUnavailable": "Venue suggestions need an organizer venue picker.",
-  "@hostsEventDefaultsVenueUnavailable": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsVenueUnavailable": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsVenueSaved": "Saved venue suggestion. Review access before using it for an event.",
-  "@hostsEventDefaultsVenueSaved": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsVenueSaved": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsClearVenue": "Clear preferred venue",
-  "@hostsEventDefaultsClearVenue": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsClearVenue": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsOffersHeading": "Offers",
-  "@hostsEventDefaultsOffersHeading": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsOffersHeading": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsOfferValidity": "Usual offer validity",
-  "@hostsEventDefaultsOfferValidity": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsOfferValidity": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsClearValidity": "Choose offer validity on each event",
-  "@hostsEventDefaultsClearValidity": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsClearValidity": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsMessageTemplate": "Offer message template",
-  "@hostsEventDefaultsMessageTemplate": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsMessageTemplate": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsMessageTemplateHint": "Suggested text for an individual handoff",
-  "@hostsEventDefaultsMessageTemplateHint": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsMessageTemplateHint": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsPaymentHeading": "Payment suggestions",
-  "@hostsEventDefaultsPaymentHeading": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsPaymentHeading": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsCollectionPreference": "Preferred collection method",
-  "@hostsEventDefaultsCollectionPreference": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsCollectionPreference": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsManualInstructions": "Manual instructions",
-  "@hostsEventDefaultsManualInstructions": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsManualInstructions": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsReusablePage": "Reusable payment page",
-  "@hostsEventDefaultsReusablePage": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsReusablePage": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsPersonalRequest": "Personal payment request",
-  "@hostsEventDefaultsPersonalRequest": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsPersonalRequest": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsCatchCheckout": "Catch checkout",
-  "@hostsEventDefaultsCatchCheckout": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsCatchCheckout": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsCollectionSuggestionHint": "A preference only. Event payment and provider readiness are reviewed separately.",
-  "@hostsEventDefaultsCollectionSuggestionHint": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsCollectionSuggestionHint": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsClearCollection": "Choose collection method on each event",
-  "@hostsEventDefaultsClearCollection": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsClearCollection": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsCurrency": "Currency",
-  "@hostsEventDefaultsCurrency": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsCurrency": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsInvalidCurrency": "Use a three-letter currency code.",
-  "@hostsEventDefaultsInvalidCurrency": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsInvalidCurrency": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsPaymentInstructions": "Payment instructions",
-  "@hostsEventDefaultsPaymentInstructions": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsPaymentInstructions": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsPaymentInstructionsHint": "Suggested instructions for future events",
-  "@hostsEventDefaultsPaymentInstructionsHint": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsPaymentInstructionsHint": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsReusablePaymentPage": "Reusable organizer payment page",
-  "@hostsEventDefaultsReusablePaymentPage": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsReusablePaymentPage": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsReusablePageHint": "https://example.com/pay",
-  "@hostsEventDefaultsReusablePageHint": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsReusablePageHint": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsReusablePagePrivacyNote": "Only a reusable public organizer page belongs here. Personal links stay with one offer.",
-  "@hostsEventDefaultsReusablePagePrivacyNote": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsReusablePagePrivacyNote": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsInvalidReusablePage": "Use a secure https payment-page URL.",
-  "@hostsEventDefaultsInvalidReusablePage": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsInvalidReusablePage": {"description": "Manager-only organizer event setup preference; requires authorized revision-fenced read and save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsTextTooLong": "Keep this to 1,000 characters or fewer.",
   "@hostsEventDefaultsTextTooLong": {"description": "Manager-only organizer event setup text length validation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_manager_event_setup_preferences_section"},
   "hostsEventDefaultsReusableConfirmTitle": "Confirm reusable payment page",
@@ -30318,19 +30318,19 @@
   "hostsEventDefaultsReusableConfirmAccept": "Confirm reusable page",
   "@hostsEventDefaultsReusableConfirmAccept": {"description": "Explicitly attest that a payment page is reusable.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_manager_event_setup_preferences_section"},
   "hostsEventDefaultsManagerUnavailable": "Private organizer preferences unavailable",
-  "@hostsEventDefaultsManagerUnavailable": {"description": "Explains why private organizer preferences are not shown without an authorized read.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsManagerUnavailable": {"description": "Explains why private organizer preferences are not shown without an authorized read.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsManagerUnavailableBody": "A manager-authorized preferences read is required before these suggestions can be shown or edited.",
-  "@hostsEventDefaultsManagerUnavailableBody": {"description": "Explains why private organizer preferences are not shown without an authorized read.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsManagerUnavailableBody": {"description": "Explains why private organizer preferences are not shown without an authorized read.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsCitySource": "Future events use the organizer city. Change that city in the organizer profile.",
-  "@hostsEventDefaultsCitySource": {"description": "Explains the source of inherited event city.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsCitySource": {"description": "Explains the source of inherited event city.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsTimezoneSource": "Future events can use this private timezone suggestion, or choose a timezone for each event.",
-  "@hostsEventDefaultsTimezoneSource": {"description": "Explains the private timezone suggestion.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsTimezoneSource": {"description": "Explains the private timezone suggestion.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsPendingUpdate": "Previous defaults save unresolved",
-  "@hostsEventDefaultsPendingUpdate": {"description": "Pending manager defaults update label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsPendingUpdate": {"description": "Pending manager defaults update label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsPendingUpdateBody": "The previous save may have reached Catch. Retry the same request before changing suggestions.",
-  "@hostsEventDefaultsPendingUpdateBody": {"description": "Explains frozen manager defaults update after uncertain response.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsPendingUpdateBody": {"description": "Explains frozen manager defaults update after uncertain response.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsEventDefaultsRetryUpdate": "Retry previous defaults save",
-  "@hostsEventDefaultsRetryUpdate": {"description": "Replays the same manager defaults update.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "@hostsEventDefaultsRetryUpdate": {"description": "Replays the same manager defaults update.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_organizer_spoke_screens"},
   "hostsPrivateEventRetryDefaultsRead": "Retry organizer defaults read",
   "@hostsPrivateEventRetryDefaultsRead": {"description": "Retries the manager-authorized defaults read before private event inheritance.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsPrivateEventRetrySavedRead": "Retry event read",
@@ -32007,7 +32007,7 @@
     "description": "Confirmation before a Host deletes their Catch account; explains shared business records and ownership.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
+    "x-surface": "hosts.presentation.host_operations.host_organizers_scaffold"
   },
   "hostInboxProgramPurposeUnresolvedTitle": "Program conversations unavailable",
   "@hostInboxProgramPurposeUnresolvedTitle": {"description": "Safe state when historical message purpose cannot be verified for the requested program.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
