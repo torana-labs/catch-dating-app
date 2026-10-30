@@ -81,7 +81,10 @@ jobs:
   inventory:
     name: Print terraform.tfvars
     needs: play
-    if: ${{ github.ref == 'refs/heads/main' }}
+    # Runs even when reading Play fails: the live Firebase inventory alone is
+    # a valid terraform.tfvars, and fingerprints registered by hand are
+    # already in it. The run still fails, and the summary says which part.
+    if: ${{ !cancelled() && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     environment: platform-plan
     timeout-minutes: 10
@@ -110,17 +113,24 @@ jobs:
         env:
           FIREBASE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
           FINGERPRINTS: ${{ needs.play.outputs.fingerprints }}
+          PLAY_RESULT: ${{ needs.play.result }}
         run: |
           set -euo pipefail
           mkdir -p build/infra
-          jq -c '.[]' <<<"$FINGERPRINTS" > build/infra/play.jsonl
+          if [[ "$PLAY_RESULT" == success && -n "$FINGERPRINTS" ]]; then
+            jq -c '.[]' <<<"$FINGERPRINTS" > build/infra/play.jsonl
+            play_note="The Play app-signing fingerprints read above are appended where missing."
+          else
+            : > build/infra/play.jsonl
+            play_note="Reading the Play app-signing certificates failed, so this is the live Firebase inventory only, with nothing appended. Check that the Play fingerprints are already registered before relying on it."
+          fi
           infra/scripts/firebase_android_inventory.sh --play build/infra/play.jsonl \
             prod=catch-dating-app-64e51 staging=catchdates-staging dev=catchdates-dev |
             terraform fmt - > build/infra/terraform.tfvars
           {
             echo "### infra/firebase/terraform.tfvars"
             echo
-            echo "Replace infra/firebase/terraform.tfvars with this file in a PR. Each list keeps the live order; the Play app-signing fingerprints are appended."
+            echo "Replace infra/firebase/terraform.tfvars with this file in a PR. Each list keeps the live order. $play_note"
             echo
             echo '```hcl'
             cat build/infra/terraform.tfvars
