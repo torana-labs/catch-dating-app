@@ -5187,6 +5187,24 @@
       ]
     },
     {
+      "collectionGroup": "organizerPaymentConnections",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "mode",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "tokenExpiresAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "organizerEventOfferPayments",
       "queryScope": "COLLECTION",
       "fields": [

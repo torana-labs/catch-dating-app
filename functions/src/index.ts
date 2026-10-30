@@ -36,6 +36,8 @@ export {prepareOrganizerFormPayment, getOrganizerFormPayment,
 export {organizerFormPaymentOauthCallback, organizerFormPaymentWebhook,
   onOrganizerFormPaymentWebhook, reconcileOrganizerFormPayments} from
   "./payments/formPayments/formPaymentTriggers";
+export {refreshOrganizerFormPaymentTokens} from
+  "./payments/formPayments/formPaymentTokenRefresh";
 export {prepareEventOfferInvitation, manageEventOfferCheckout} from
   "./organizerEventOfferRecipients/recipientCallables";
 export {reconcileOrganizerEventOfferPayments} from
