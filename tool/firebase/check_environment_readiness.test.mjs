@@ -1255,3 +1255,21 @@ test("flight credentials remain inactive when the separately controlled policy i
   assert.equal(result.reason, "consumer-disabled");
   assert.equal(result.reference, fn.serviceConfig.environmentVariables.FLIGHT_PROVIDER_CONFIG_VERSION);
 });
+
+test("a new optional consumer may be deployed before it exists; a required one, or the post-deploy check, may not", () => {
+  const run = (targets, candidate = undefined) => runEnvironmentReadiness({aliases, environments: ["dev"], manifest,
+    sourceSha: "a".repeat(40), candidate, phase: "deployed", targets,
+    runCommand: (spec) => spec.args[0] === "functions" ? metadata([]) : readyMetadataRunner(spec)});
+  const fresh = run(["functions:onMessageNominationListingReady"]);
+  const result = fresh.environments[0].results.find((entry) => entry.id ===
+    "functions.reference.catch-auto-reply:onMessageNominationListingReady");
+  assert.deepEqual([fresh.exitCode, result.status, result.reason], [0, "inactive", "optional-consumer-not-deployed"]);
+  assert.equal(run(["functions:exploreSearch"]).exitCode, 1, "a required secret consumer must exist");
+  const candidate = {version: 1, sourceSha: "a".repeat(40), environment: "dev", projectId: "catchdates-dev",
+    paramsSha256: "c".repeat(64), functions: [{consumer: "onMessageNominationListingReady",
+      serviceAccount: "123-compute@developer.gserviceaccount.com"}],
+    bindings: [{requirementId: "functions.reference.catch-auto-reply", consumer: "onMessageNominationListingReady",
+      serviceAccount: "123-compute@developer.gserviceaccount.com", reference: null, active: false}]};
+  assert.equal(run(["functions:onMessageNominationListingReady"], candidate).exitCode, 1,
+    "after the deploy the Function must exist");
+});

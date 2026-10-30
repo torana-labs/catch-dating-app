@@ -14,13 +14,13 @@
   },
   "src/styles/consumer-home.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 191
+      "count": 43
     },
     "declaration-property-value-allowed-list": {
-      "count": 19
+      "count": 4
     },
     "media-feature-name-value-allowed-list": {
-      "count": 3
+      "count": 2
     }
   },
   "src/styles/event-runtime.css": {
@@ -32,17 +32,6 @@
     },
     "media-feature-name-value-allowed-list": {
       "count": 1
-    }
-  },
-  "src/styles/explore.css": {
-    "declaration-property-unit-allowed-list": {
-      "count": 43
-    },
-    "declaration-property-value-allowed-list": {
-      "count": 3
-    },
-    "media-feature-name-value-allowed-list": {
-      "count": 3
     }
   },
   "src/styles/flows.css": {
@@ -58,13 +47,13 @@
   },
   "src/styles/home.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 44
+      "count": 37
     },
     "declaration-property-value-allowed-list": {
-      "count": 13
+      "count": 12
     },
     "declaration-property-value-disallowed-list": {
-      "count": 5
+      "count": 4
     },
     "media-feature-name-value-allowed-list": {
       "count": 5
@@ -109,17 +98,6 @@
     },
     "media-feature-name-value-allowed-list": {
       "count": 1
-    }
-  },
-  "src/styles/organiser-directory.css": {
-    "declaration-property-unit-allowed-list": {
-      "count": 34
-    },
-    "declaration-property-value-allowed-list": {
-      "count": 4
-    },
-    "media-feature-name-value-allowed-list": {
-      "count": 2
     }
   },
   "src/styles/organizers.css": {

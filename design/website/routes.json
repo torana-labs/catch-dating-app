@@ -31,7 +31,7 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Consumer homepage: city-scoped upcoming events, optional participation explanation, organiser profiles, FAQ and Host handoff. No inventory and catalog failure remain distinct.",
+      "notes": "Website v2 homepage (CAT-260, WebHomeV2 board): one city's plans from its cityPlans read model, or its launching-soon state, with formats, the guest story, organisers, the host band, the app band and the FAQ. A city that cannot be read stays live and says so.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -40,22 +40,23 @@
           "mobile"
         ],
         "states": [
-          "default",
-          "empty-city",
+          "mumbai-live",
+          "launching-soon",
+          "thin-city",
           "catalog-unavailable",
-          "city-and-format",
-          "mobile-menu"
+          "format-filter",
+          "city-picker"
         ],
         "stateCoverage": {
           "storybook": [
-            "default",
-            "empty-city",
-            "catalog-unavailable"
+            "mumbai-live",
+            "launching-soon",
+            "thin-city",
+            "catalog-unavailable",
+            "format-filter",
+            "city-picker"
           ],
-          "manual": [
-            "city-and-format",
-            "mobile-menu"
-          ]
+          "manual": []
         }
       }
     },
@@ -64,12 +65,12 @@
       "kind": "static",
       "path": "/explore/",
       "pageKey": "visitor_discovery",
-      "source": "website/src/features/home/HomePage.tsx",
+      "source": "website/src/features/home/ExplorePage.tsx",
       "metaKey": "visitor_discovery",
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Event discovery with city, format, search, date and explicit participation-based Catch Experience filters. Booking and logistics alone never qualify for the badge. Shared consumer navigation; empty and unavailable states retain context.",
+      "notes": "Website v2 Explore (CAT-261): a city's plans and organisers from its cityPlans read model, with search, format and date filters in the URL. City pages such as /mumbai/ are its linkable city state (canonical to themselves; cities not yet open are noindex until CAT-181). The organisers view is where /organizers/ redirects.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -78,26 +79,25 @@
           "mobile"
         ],
         "states": [
-          "default",
-          "empty-city",
+          "city-plans",
+          "phone",
+          "search-and-filters",
+          "organisers",
+          "launching-soon",
           "no-results",
-          "experience-filter",
-          "catalog-unavailable",
-          "search-and-date",
-          "mobile-menu"
+          "catalog-unavailable"
         ],
         "stateCoverage": {
           "storybook": [
-            "default",
-            "empty-city",
+            "city-plans",
+            "phone",
+            "search-and-filters",
+            "organisers",
+            "launching-soon",
+            "no-results",
             "catalog-unavailable"
           ],
-          "manual": [
-            "no-results",
-            "experience-filter",
-            "search-and-date",
-            "mobile-menu"
-          ]
+          "manual": []
         }
       }
     },
@@ -399,35 +399,26 @@
       "kind": "static",
       "path": "/organizers/",
       "pageKey": "organizers",
-      "source": "website/src/features/organizers/OrganizerSearchPage.tsx",
+      "source": "website/src/app/retiredMarketingRoutes.ts",
       "metaKey": "organizers",
       "staticOutput": "postbuild",
       "indexing": "noindex-follow",
       "sitemap": "excluded",
-      "notes": "Consumer directory for clubs, communities and independent hosts; shares consumer navigation and visual treatment with Home, Host and Explore. Preserves public profile authority, reviews, event evidence, advanced filters and claiming links. Deliberately noindex until inventory quality is stronger.",
+      "notes": "Redirects to Explore's organisers view (CAT-261): the Next route answers 308 to /explore/?show=organisers with the original query, and the static build redirects in the browser. Organiser pages under /organizers/<slug>/ are unchanged. Stays noindex until CAT-181 decides when the directory becomes indexable.",
       "review": {
         "priority": "p0",
-        "status": "ready",
+        "status": "manual",
         "viewports": [
           "desktop",
           "mobile"
         ],
         "states": [
-          "default",
-          "filtered",
-          "empty-results",
-          "catalog-unavailable",
-          "mobile-menu"
+          "redirect"
         ],
         "stateCoverage": {
-          "storybook": [
-            "default",
-            "empty-results",
-            "catalog-unavailable"
-          ],
+          "storybook": [],
           "manual": [
-            "filtered",
-            "mobile-menu"
+            "redirect"
           ]
         }
       }

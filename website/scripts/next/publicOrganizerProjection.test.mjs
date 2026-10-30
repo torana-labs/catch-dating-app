@@ -81,7 +81,7 @@ test("runtime validator adapter agrees with repository generated validators", ()
 });
 test("webpack's runtime validator replacement retains external-event validation", () => {
   assert.deepEqual(Object.keys(narrow).sort(), [
-    "validateEventPublicPageDocument", "validateExternalEventDocument", "validateOrganizerDocument",
+    "validateCityPlansDocument", "validateEventPublicPageDocument", "validateExternalEventDocument", "validateOrganizerDocument",
     "validateOrganizerPublicPageDocument", "validateWebsiteHostListingProjection",
   ]);
   const valid = JSON.parse(readFileSync(new URL("../../../contracts/fixtures/valid/external_event_doc.json", import.meta.url), "utf8"));
@@ -94,7 +94,8 @@ test("webpack's runtime validator replacement retains external-event validation"
 test("webpack's runtime validator replacement validates the public page read models", () => {
   const fixture = (name) => JSON.parse(readFileSync(new URL(`../../../contracts/fixtures/${name}`, import.meta.url), "utf8"));
   for (const [name, key] of [["organizer_public_page_doc", "validateOrganizerPublicPageDocument"],
-    ["event_public_page_doc", "validateEventPublicPageDocument"]]) {
+    ["event_public_page_doc", "validateEventPublicPageDocument"],
+    ["city_plans_doc", "validateCityPlansDocument"]]) {
     const valid = fixture(`valid/${name}.json`);
     assert.equal(narrow[key](valid), true);
     for (const value of [valid, {...valid, schemaVersion: 2}, {...valid, privateToken: "no"}, null]) {
@@ -103,4 +104,15 @@ test("webpack's runtime validator replacement validates the public page read mod
   }
   assert.equal(narrow.validateEventPublicPageDocument(fixture("invalid/event_public_page_doc_balanced_label.json")), false);
   assert.equal(narrow.validateOrganizerPublicPageDocument(fixture("invalid/organizer_public_page_doc_contact_field.json")), false);
+  assert.equal(narrow.validateCityPlansDocument(fixture("invalid/city_plans_doc_contact_field.json")), false);
+});
+test("webpack's runtime validator replacement exports every validator the server imports", () => {
+  for (const file of ["publicExternalEvent.ts", "publicOrganizerProjection.ts", "repositories/publicPageRepository.ts"]) {
+    const source = readFileSync(new URL(`../../src/server/${file}`, import.meta.url), "utf8");
+    const imports = source.match(/import\s*\{([^}]*)\}\s*from\s*"[^"]*schema_contract_validators\.mjs"/u);
+    assert(imports, `${file} imports the generated validators`);
+    for (const name of imports[1].split(",").map((part) => part.trim()).filter(Boolean)) {
+      assert.equal(typeof narrow[name], "function", `${file} imports ${name}, which publicValidators.mjs must export`);
+    }
+  }
 });

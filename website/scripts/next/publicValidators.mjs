@@ -1,6 +1,7 @@
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import {
+  cityPlansDocumentSchema,
   eventPublicPageDocumentSchema,
   externalEventDocumentSchema,
   organizerDocumentSchema,
@@ -16,3 +17,4 @@ export const validateWebsiteHostListingProjection = ajv.compile(websiteHostListi
 export const validateExternalEventDocument = ajv.compile(externalEventDocumentSchema);
 export const validateOrganizerPublicPageDocument = ajv.compile(organizerPublicPageDocumentSchema);
 export const validateEventPublicPageDocument = ajv.compile(eventPublicPageDocumentSchema);
+export const validateCityPlansDocument = ajv.compile(cityPlansDocumentSchema);

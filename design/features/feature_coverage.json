@@ -425,10 +425,10 @@
     {
       "authority": "marketing_routes",
       "authorityId": "organizer_search",
-      "status": "contracted",
+      "status": "grouped",
       "priority": "P1",
-      "reason": "Public-web organizer discovery projection is compiled into the shared Explore feature contract with route-state, action-owner, preview, and test evidence.",
-      "featureContract": "feature.explore"
+      "reason": "/organizers/ is a manually reviewed redirect (CAT-261) to Explore's organisers view, /explore/?show=organisers, whose states and actions the visitor discovery contract owns.",
+      "primaryAuthorityId": "visitor_discovery"
     },
     {
       "authority": "marketing_routes",

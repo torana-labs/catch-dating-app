@@ -1,10 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {expectedRelease, sharedCacheSeconds, sharedCachePage, verifyDeployedWebsite} from "./deployedSmoke.mjs";
-import {consumerHomeCopy} from "../../src/content/consumerHome.ts";
+import {homePageCopy} from "../../src/content/homePage.ts";
 import {hostLandingCopy} from "../../src/content/hostLanding.ts";
-import {exploreCopy} from "../../src/content/explore.ts";
-import {organiserDirectoryCopy} from "../../src/content/organiserDirectory.ts";
+import {explorePageCopy} from "../../src/content/explorePage.ts";
 const sourceSha = "a".repeat(40), preview = "https://catch-dating-app-64e51--next-release-proof.web.app";
 function responder(base, change = () => {}) {
   return async url => {
@@ -12,8 +11,9 @@ function responder(base, change = () => {}) {
     const path = url.slice(base.length), live = base === "https://catchdates.com";
     const headers = {"x-catch-release": sourceSha, "cache-control": "private, no-store", ...(!live || path.startsWith("/f/") ? {"x-robots-tag": "noindex"} : {})};
     let body = "<h1>Content</h1>", status = path.includes("not-a-real") ? 404 : 200;
-    const titles = {"/": consumerHomeCopy.hero.title, "/host/": hostLandingCopy.hero.title, "/explore/": exploreCopy.title, "/organizers/": organiserDirectoryCopy.title};
+    const titles = {"/": homePageCopy.hero.title, "/host/": hostLandingCopy.hero.title, "/explore/": explorePageCopy.lead, "/mumbai/": explorePageCopy.lead};
     if (titles[path]) body = `<h1>${titles[path]}</h1>`;
+    if (path === "/organizers/?q=run") {status = 308; headers.location = "/explore/?q=run&show=organisers";}
     if (path === "/api/public-catalog") body = JSON.stringify({listings: [{path: "/organizers/mumbai/club/", catchEvents: [{id: "event"}]}]});
     if (path === "/robots.txt") body = live ? "User-agent: *\nAllow: /" : "User-agent: *\nDisallow: /";
     if (path === "/sitemap.xml") body = "<url><loc>https://catchdates.com/</loc></url>";
@@ -38,9 +38,9 @@ test("deployed acceptance accepts the one-minute catalog cache on either release
     (path, result) => {if (path === "/host/") result.headers["cache-control"] = "public, s-maxage=60";},
     (path, result) => {if (path.startsWith("/f/")) result.headers["cache-control"] = "public, s-maxage=60";},
     (path, result) => {if (path === "/events/not-a-real-next-release-event/") result.headers["cache-control"] = "public, s-maxage=60";},
-    (path, result) => {if (path === "/organizers/") result.headers["cache-control"] = "public, s-maxage=3600";},
+    (path, result) => {if (path === "/mumbai/") result.headers["cache-control"] = "public, s-maxage=3600";},
   ]) await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, (path, result) => {cached(path, result); change(path, result);})}));
-  assert.deepEqual(["/", "/explore/", "/organizers/", "/organizers/indore/club/", "/events/e/"].map(sharedCachePage), [true, true, true, true, true]);
+  assert.deepEqual(["/", "/explore/", "/mumbai/", "/organizers/indore/club/", "/events/e/"].map(sharedCachePage), [true, true, true, true, true]);
   assert.deepEqual(["/host/", "/claim/", "/privacy/", "/f/x/", "/booking/x/", "/api/public-catalog", "/eventsx/"].map(sharedCachePage), [false, false, false, false, false, false, false]);
 });
 test("deployed acceptance rejects stale builds, bad status, indexing leaks and bearer echoes", async () => {

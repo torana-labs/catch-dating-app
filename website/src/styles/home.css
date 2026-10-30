@@ -9,10 +9,7 @@
 
 .organizer-search-hero,
 .organizer-results,
-.listing-section,
-.claim-band,
 .format-band,
-.proof-section,
 .site-footer {
   width: min(calc(100% - (var(--website-gutter) * 2)), var(--website-content));
   margin: 0 auto;
@@ -33,56 +30,8 @@ h3 {
 }
 
 /* Section rhythm: generous whitespace, hairline separators. */
-.format-band,
-.proof-section,
-.listing-section {
+.format-band {
   padding: clamp(72px, 10vw, 112px) 0;
-}
-
-/* ------------------------------------------------------- section header */
-
-.section-heading {
-  width: 100%;
-  max-width: 780px;
-}
-
-.section-heading--wide {
-  max-width: 920px;
-}
-
-.section-heading .ui-label,
-.proof-section__copy .ui-label {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--catch-space-s3);
-}
-
-.section-heading .ui-label::before,
-.proof-section__copy .ui-label::before {
-  width: var(--catch-space-s7);
-  height: var(--catch-stroke-hairline);
-  background: var(--website-text-faint);
-  content: "";
-}
-
-.section-heading h2,
-.proof-section__copy h2,
-.listing-section--split h2,
-.claim-band h2 {
-  margin-top: var(--catch-space-micro18);
-  font-size: clamp(32px, 5vw, 52px);
-  line-height: 1;
-  text-wrap: balance;
-}
-
-.section-heading p,
-.proof-section__copy p,
-.listing-section--split p {
-  max-width: 62ch;
-  margin-top: var(--catch-space-micro18);
-  color: var(--website-copy-muted);
-  font-size: 17px;
-  line-height: 1.65;
 }
 
 /* ------------------------------------------------------------------ hero */
@@ -243,9 +192,7 @@ h3 {
 .format-card p,
 .loop-list p,
 .surface-grid p,
-.trust-grid p,
-.listing-card p,
-.listing-event-card p {
+.trust-grid p {
   margin-top: var(--catch-space-micro10);
   color: var(--website-copy-faint);
   font-size: 14px;
@@ -253,12 +200,6 @@ h3 {
 }
 
 /* --------------------------------------------------- featured organizers */
-
-.featured-organizers__grid {
-  display: grid;
-  gap: var(--catch-space-s4);
-  margin-top: var(--catch-space-s10);
-}
 
 /* Polaroid material: white frame, pigment mark, mono caption. */
 .organizer-mini-card {
@@ -367,21 +308,6 @@ h3 {
 
 /* ------------------------------------------------- proof + real captures */
 
-.proof-section {
-  display: grid;
-  gap: var(--catch-space-s11);
-}
-
-.proof-section__copy {
-  width: 100%;
-  max-width: 640px;
-  min-width: 0;
-}
-
-.proof-section__copy .button {
-  margin-top: var(--catch-space-s7);
-}
-
 /* -------------------------------------------------------------- download */
 
 /* ----------------------------------------------------------------- trust */
@@ -422,17 +348,12 @@ h3 {
 }
 
 @media (min-width: 720px) {
-  .listing-grid,
   .surface-grid,
   .trust-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .loop-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .featured-organizers__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -449,10 +370,6 @@ h3 {
 
   .loop-list {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .featured-organizers__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .trust-grid {

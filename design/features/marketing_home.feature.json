@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-10-20",
+  "updated": "2026-10-29",
   "id": "feature.marketing_home",
   "name": "Marketing Home",
   "owner": "marketing_website",
   "status": "pilot",
-  "description": "Consumer homepage and full event discovery with public city/format filters, catalogue failure and empty states, and explicit Catch Experience participation eligibility.",
+  "description": "Website v2 homepage and Explore: a city's plans and organisers from its cityPlans read model or its launching-soon state, the homepage's format filters and city picker, Explore's URL-kept search, format, date and organiser filters, and catalogue failure.",
   "surfaces": [
     {
       "id": "marketing_web",
@@ -16,59 +16,73 @@
         "id": "visitor_discovery"
       },
       "actionScope": {
-        "included": "Public discovery filter selection and recovery; source availability, empty results and Catch Experience eligibility remain explicit.",
+        "included": "Explore and city-page search, format, date and plans/organisers choices kept in the URL, clearing them, and moving to another city's page with the filters kept; launching-soon, no-result and unavailable states remain distinct.",
         "excluded": [
-          "Event/profile/Host link navigation, native disclosure controls, catalogue retry and mobile-menu focus/navigation retain their existing link, presentation and shared-chrome owners."
+          "Plan, organiser, claim and live-city link navigation and the shared v2 header and footer retain their existing link and chrome owners. The /organizers/ redirect is owned by the route contract."
         ]
       },
       "bindings": {
         "previewSources": [
-          "website/src/stories/MarketingRoutes.stories.tsx"
+          "website/src/stories/ExplorePage.stories.tsx"
         ],
         "actionOwners": [
           {
-            "id": "discovery_controller",
+            "id": "explore_controller",
             "language": "typescript",
-            "file": "website/src/features/home/useExploreController.ts",
-            "symbol": "useExploreController"
+            "file": "website/src/features/home/useExplorePageController.ts",
+            "symbol": "useExplorePageController"
           }
         ],
         "componentContracts": [
-          "route_visitor_discovery"
+          "route_visitor_discovery",
+          "explore_page_sections",
+          "city_site_chrome"
         ],
         "dataContracts": [
-          "contracts/public/website_host_listing_projection.schema.json"
+          "contracts/firestore/city_plans.schema.json"
         ],
         "testEvidence": {
-          "default": [
-            "website/src/features/home/useExploreController.test.tsx"
+          "city-plans": [
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
           ],
-          "empty-city": [
-            "website/src/features/home/useExploreController.test.tsx"
+          "phone": [
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
+          ],
+          "search-and-filters": [
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
+          ],
+          "organisers": [
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
+          ],
+          "launching-soon": [
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
           ],
           "no-results": [
-            "website/src/features/home/useExploreController.test.tsx"
-          ],
-          "experience-filter": [
-            "website/src/features/home/useExploreController.test.tsx"
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
           ],
           "catalog-unavailable": [
-            "website/src/features/home/useExploreController.test.tsx"
-          ],
-          "search-and-date": [
-            "website/src/features/home/useExploreController.test.tsx"
-          ],
-          "mobile-menu": [
-            "website/src/shared/site/PublicSiteChrome.test.tsx"
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
+          ]
+        },
+        "previewEvidence": {
+          "organisers": [
+            "city_site_chrome/Organisers"
           ]
         }
       },
       "dimensions": {
         "content": {
-          "default": "populated",
+          "default": "live",
           "values": [
-            "populated",
-            "empty_city",
+            "live",
+            "launching_soon",
             "no_results"
           ]
         },
@@ -79,26 +93,32 @@
             "unavailable"
           ]
         },
-        "navigation": {
-          "default": "closed",
+        "view": {
+          "default": "plans",
           "values": [
-            "closed",
-            "mobile_menu"
+            "plans",
+            "organisers"
           ]
         },
         "filters": {
           "default": "default",
           "values": [
             "default",
-            "experience",
-            "search_date"
+            "active"
+          ]
+        },
+        "viewport": {
+          "default": "wide",
+          "values": [
+            "wide",
+            "phone"
           ]
         }
       },
       "actions": [
         {
-          "id": "update_discovery_filters",
-          "owner": "discovery_controller",
+          "id": "update_filters",
+          "owner": "explore_controller",
           "codeValue": "update",
           "cardinality": "unbounded",
           "scopeKeys": [
@@ -109,20 +129,18 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "default",
-                "empty-city",
-                "no-results",
-                "experience-filter",
-                "catalog-unavailable",
-                "search-and-date"
+                "city-plans",
+                "search-and-filters",
+                "organisers",
+                "no-results"
               ]
             }
           ],
-          "description": "Updates bounded city, format, search, date and Catch Experience filters through the URL-aware controller."
+          "description": "Writes the search, format, date and plans/organisers choices to the URL in place, keeping other parameters such as attribution."
         },
         {
-          "id": "clear_discovery_filters",
-          "owner": "discovery_controller",
+          "id": "clear_filters",
+          "owner": "explore_controller",
           "codeValue": "clear",
           "cardinality": "unbounded",
           "scopeKeys": [
@@ -133,42 +151,115 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "default",
-                "empty-city",
+                "city-plans",
+                "organisers"
+              ]
+            }
+          ],
+          "description": "Clears search, format and date together, keeping the city and the plans/organisers view."
+        },
+        {
+          "id": "select_city",
+          "owner": "explore_controller",
+          "codeValue": "chooseCity",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "selectionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "city-plans",
+                "launching-soon",
                 "catalog-unavailable"
               ]
             }
           ],
-          "description": "Clears active filters while preserving the selected city."
+          "description": "Loads the chosen city's page with the current filters kept."
         }
       ],
       "scenarios": [
         {
-          "id": "default",
-          "stateId": "default",
+          "id": "city_plans",
+          "stateId": "city-plans",
           "dimensions": {},
           "actionCases": [
             {
               "id": "default",
               "enabledActions": [
-                "update_discovery_filters",
-                "clear_discovery_filters"
+                "update_filters",
+                "clear_filters",
+                "select_city"
               ]
             }
           ]
         },
         {
-          "id": "empty_city",
-          "stateId": "empty-city",
+          "id": "phone",
+          "stateId": "phone",
           "dimensions": {
-            "content": "empty_city"
+            "viewport": "phone"
           },
           "actionCases": [
             {
               "id": "default",
               "enabledActions": [
-                "update_discovery_filters",
-                "clear_discovery_filters"
+                "update_filters",
+                "clear_filters",
+                "select_city"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "search_and_filters",
+          "stateId": "search-and-filters",
+          "dimensions": {
+            "filters": "active"
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "update_filters",
+                "clear_filters",
+                "select_city"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "organisers",
+          "stateId": "organisers",
+          "dimensions": {
+            "view": "organisers"
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "update_filters",
+                "clear_filters",
+                "select_city"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "launching_soon",
+          "stateId": "launching-soon",
+          "dimensions": {
+            "content": "launching_soon"
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "update_filters",
+                "clear_filters",
+                "select_city"
               ]
             }
           ]
@@ -177,30 +268,16 @@
           "id": "no_results",
           "stateId": "no-results",
           "dimensions": {
-            "content": "no_results"
+            "content": "no_results",
+            "filters": "active"
           },
           "actionCases": [
             {
               "id": "default",
               "enabledActions": [
-                "update_discovery_filters",
-                "clear_discovery_filters"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "experience_filter",
-          "stateId": "experience-filter",
-          "dimensions": {
-            "filters": "experience"
-          },
-          "actionCases": [
-            {
-              "id": "default",
-              "enabledActions": [
-                "update_discovery_filters",
-                "clear_discovery_filters"
+                "update_filters",
+                "clear_filters",
+                "select_city"
               ]
             }
           ]
@@ -215,38 +292,10 @@
             {
               "id": "default",
               "enabledActions": [
-                "update_discovery_filters",
-                "clear_discovery_filters"
+                "update_filters",
+                "clear_filters",
+                "select_city"
               ]
-            }
-          ]
-        },
-        {
-          "id": "search_and_date",
-          "stateId": "search-and-date",
-          "dimensions": {
-            "filters": "search_date"
-          },
-          "actionCases": [
-            {
-              "id": "default",
-              "enabledActions": [
-                "update_discovery_filters",
-                "clear_discovery_filters"
-              ]
-            }
-          ]
-        },
-        {
-          "id": "mobile_menu",
-          "stateId": "mobile-menu",
-          "dimensions": {
-            "navigation": "mobile_menu"
-          },
-          "actionCases": [
-            {
-              "id": "default",
-              "enabledActions": []
             }
           ]
         }
@@ -265,58 +314,64 @@
         "id": "home"
       },
       "actionScope": {
-        "included": "Public discovery filter selection and recovery; source availability, empty results and Catch Experience eligibility remain explicit.",
+        "included": "Homepage format filtering and city selection; a live city, a launching-soon city, a city too thin to fill a page and an unreadable catalogue remain distinct.",
         "excluded": [
-          "Event/profile/Host link navigation, native disclosure controls, catalogue retry and mobile-menu focus/navigation retain their existing link, presentation and shared-chrome owners."
+          "Plan, organiser, Explore and Host link navigation, store buttons, FAQ disclosure and the launching-soon WhatsApp signup (useLaunchNoticeController) retain their existing link, presentation and form owners."
         ]
       },
       "bindings": {
         "previewSources": [
-          "website/src/stories/MarketingRoutes.stories.tsx"
+          "website/src/stories/HomePage.stories.tsx"
         ],
         "actionOwners": [
           {
-            "id": "discovery_controller",
+            "id": "home_controller",
             "language": "typescript",
-            "file": "website/src/features/home/useConsumerHomeController.ts",
-            "symbol": "useConsumerHomeController"
+            "file": "website/src/features/home/useHomePageController.ts",
+            "symbol": "useHomePageController"
           }
         ],
         "componentContracts": [
           "route_home"
         ],
         "dataContracts": [
+          "contracts/firestore/city_plans.schema.json",
           "contracts/public/website_host_listing_projection.schema.json"
         ],
         "testEvidence": {
-          "default": [
+          "mumbai-live": [
             "website/src/features/home/HomePage.test.tsx",
-            "website/src/features/home/useConsumerHomeController.test.tsx"
+            "website/src/features/home/useHomePageController.test.tsx"
           ],
-          "empty-city": [
+          "launching-soon": [
             "website/src/features/home/HomePage.test.tsx",
-            "website/src/features/home/useConsumerHomeController.test.tsx"
+            "website/src/features/home/useHomePageController.test.tsx"
+          ],
+          "thin-city": [
+            "website/src/features/home/HomePage.test.tsx",
+            "website/src/features/home/useHomePageController.test.tsx"
           ],
           "catalog-unavailable": [
             "website/src/features/home/HomePage.test.tsx",
-            "website/src/features/home/useConsumerHomeController.test.tsx"
+            "website/src/features/home/useHomePageController.test.tsx"
           ],
-          "city-and-format": [
+          "format-filter": [
             "website/src/features/home/HomePage.test.tsx",
-            "website/src/features/home/useConsumerHomeController.test.tsx"
+            "website/src/features/home/useHomePageController.test.tsx"
           ],
-          "mobile-menu": [
-            "website/src/shared/site/PublicSiteChrome.test.tsx"
+          "city-picker": [
+            "website/src/features/home/HomePage.test.tsx",
+            "website/src/features/home/useHomePageController.test.tsx"
           ]
         }
       },
       "dimensions": {
         "content": {
-          "default": "populated",
+          "default": "live",
           "values": [
-            "populated",
-            "empty_city",
-            "no_results"
+            "live",
+            "launching_soon",
+            "thin_city"
           ]
         },
         "load": {
@@ -326,26 +381,26 @@
             "unavailable"
           ]
         },
-        "navigation": {
-          "default": "closed",
-          "values": [
-            "closed",
-            "mobile_menu"
-          ]
-        },
         "filters": {
           "default": "default",
           "values": [
             "default",
-            "active"
+            "format"
+          ]
+        },
+        "navigation": {
+          "default": "closed",
+          "values": [
+            "closed",
+            "city_picker"
           ]
         }
       },
       "actions": [
         {
           "id": "select_city",
-          "owner": "discovery_controller",
-          "codeValue": "selectCity",
+          "owner": "home_controller",
+          "codeValue": "chooseCity",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -355,19 +410,19 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "default",
-                "empty-city",
-                "catalog-unavailable",
-                "city-and-format"
+                "mumbai-live",
+                "launching-soon",
+                "thin-city",
+                "catalog-unavailable"
               ]
             }
           ],
-          "description": "Changes the discovery city and clears the format choice for the new city."
+          "description": "Loads the chosen city's server-rendered homepage (/?city=<slug>), which shows that city live, launching soon or unavailable."
         },
         {
           "id": "select_format",
-          "owner": "discovery_controller",
-          "codeValue": "setCategory",
+          "owner": "home_controller",
+          "codeValue": "setFilter",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -377,20 +432,18 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "default",
-                "empty-city",
-                "catalog-unavailable",
-                "city-and-format"
+                "mumbai-live",
+                "format-filter"
               ]
             }
           ],
-          "description": "Filters the event preview and retains the selected format in the Explore destination."
+          "description": "Filters this week's plans by format from the tiles or chips; choosing the active format again clears it."
         }
       ],
       "scenarios": [
         {
-          "id": "default",
-          "stateId": "default",
+          "id": "mumbai_live",
+          "stateId": "mumbai-live",
           "dimensions": {},
           "actionCases": [
             {
@@ -403,10 +456,26 @@
           ]
         },
         {
-          "id": "empty_city",
-          "stateId": "empty-city",
+          "id": "launching_soon",
+          "stateId": "launching-soon",
           "dimensions": {
-            "content": "empty_city"
+            "content": "launching_soon"
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "select_city",
+                "select_format"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "thin_city",
+          "stateId": "thin-city",
+          "dimensions": {
+            "content": "thin_city"
           },
           "actionCases": [
             {
@@ -435,10 +504,10 @@
           ]
         },
         {
-          "id": "city_and_format",
-          "stateId": "city-and-format",
+          "id": "format_filter",
+          "stateId": "format-filter",
           "dimensions": {
-            "filters": "active"
+            "filters": "format"
           },
           "actionCases": [
             {
@@ -451,15 +520,18 @@
           ]
         },
         {
-          "id": "mobile_menu",
-          "stateId": "mobile-menu",
+          "id": "city_picker",
+          "stateId": "city-picker",
           "dimensions": {
-            "navigation": "mobile_menu"
+            "navigation": "city_picker"
           },
           "actionCases": [
             {
               "id": "default",
-              "enabledActions": []
+              "enabledActions": [
+                "select_city",
+                "select_format"
+              ]
             }
           ]
         }

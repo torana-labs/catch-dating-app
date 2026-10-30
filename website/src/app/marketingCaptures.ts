@@ -1,5 +1,5 @@
 import manifest from "../../public/assets/app-screenshots/manifest.json" with {type: "json"};
-import type {CaptureSlots} from "../shared/media/MediaSlot";
+import type {CaptureSlots} from "../shared/media/captureSlot";
 
 /**
  * App captures by slot id, bundled at build time so server-rendered pages

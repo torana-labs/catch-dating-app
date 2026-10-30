@@ -220,6 +220,7 @@ const schemaSalesActivityDocumentSchema = <String, Object?>{
               'enum': <Object?>[
                 'admin_nomination',
                 'sales_inbound_intent',
+                'message_nomination',
                 'discovery_run',
                 'none',
               ],

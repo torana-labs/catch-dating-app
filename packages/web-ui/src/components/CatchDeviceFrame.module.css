@@ -36,7 +36,7 @@
   background: var(--catch-palette-ink);
 }
 
-.screen > img {
+.screen img {
   display: block;
   width: 100%;
   height: auto;

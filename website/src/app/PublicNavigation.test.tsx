@@ -1,8 +1,11 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {cleanup, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
-import {HomePage, VisitorDiscoveryPage} from "../features/home/HomePage";
+import {HomePage} from "../features/home/HomePage";
+import {ExplorePage} from "../features/home/ExplorePage";
+import {MemoryRouter} from "react-router";
 import {ClaimPage} from "../features/claims/ClaimPage";
+import {mumbaiLiveCatalog} from "../stories/fixtures/homeCatalogs";
 import {emptyClaimRouteState} from "../features/claims/claimRouting";
 
 vi.mock("../analytics", () => ({trackMarketingEvent: vi.fn()}));
@@ -21,20 +24,19 @@ function renderPage(page: React.ReactNode) {
 
 describe("public route navigation targets", () => {
   it("shares canonical audience destinations without a duplicate root menu", () => {
-    renderPage(<HomePage captures={{}} />);
-    const nav = screen.getByRole("navigation", {name: "Primary"});
+    renderPage(<HomePage catalog={mumbaiLiveCatalog} />);
+    const nav = screen.getByRole("navigation", {name: "Main"});
     expect(within(nav).getAllByRole("link").map((link) => link.getAttribute("href")))
-      .toEqual(["/explore/", "/organizers/", "/host/"]);
+      .toEqual(["/mumbai/", "/explore/?show=organisers", "/host/", "#app"]);
     expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
   });
 
-  it("uses the same primary navigation for event discovery", () => {
-    renderPage(<VisitorDiscoveryPage captures={{}} />);
-    const nav = screen.getByRole("navigation", {name: "Primary"});
-    expect(within(nav).getAllByRole("link").map(link => link.getAttribute("href"))).toEqual(["/explore/", "/organizers/", "/host/"]);
-    expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
-    expect(screen.getByRole("heading", {name: "Find your next plan."})).toBeTruthy();
-    expect(screen.getByRole("search")).toBeTruthy();
+  it("uses the same city navigation for Explore", () => {
+    renderPage(<MemoryRouter initialEntries={["/mumbai/"]}><ExplorePage catalog={mumbaiLiveCatalog} /></MemoryRouter>);
+    const nav = screen.getByRole("navigation", {name: "Main"});
+    expect(within(nav).getAllByRole("link").map(link => link.getAttribute("href")))
+      .toEqual(["/mumbai/", "/explore/?show=organisers", "/host/", "/#app"]);
+    expect(screen.getByRole("heading", {level: 1, name: "What’s on in Mumbai"})).toBeTruthy();
   });
 
   it("gives the claim page the same header and footer as every public route", () => {

@@ -23,7 +23,6 @@
       "terms",
       "help",
       "not_found",
-      "organizer_search",
       "organizer_listing_canonical",
       "organizer_listing_legacy",
       "event_detail_canonical"
@@ -162,24 +161,62 @@
       "source": "website/src/features/home/HomePage.tsx",
       "exportName": "HomePage",
       "css": [
-        "website/src/styles/site-shell.css",
-        "website/src/styles/home.css",
-        "website/src/styles/responsive.css",
-        "website/src/styles/consumer-home.css"
+        "website/src/styles/site-shell.css"
       ],
       "storybook": {
         "status": "ready",
-        "story": "website/src/stories/MarketingRoutes.stories.tsx",
-        "exportName": "Home",
+        "story": "website/src/stories/HomePage.stories.tsx",
+        "exportName": "MumbaiLive1280",
         "states": [
-          "default",
-          "empty-city",
+          "mumbai-live",
+          "launching-soon",
+          "thin-city",
           "catalog-unavailable",
-          "city-and-format",
-          "mobile-menu"
+          "format-filter",
+          "city-picker"
         ]
       },
-      "notes": "Consumer discovery homepage with explicit inventory states; authored copy and catalog data remain separate."
+      "notes": "Website v2 homepage composed only of @catch/web-ui parts (D18): the page arranges the parts and binds the city's cityPlans read model to them; copy lives in content/homePage.ts."
+    },
+    {
+      "id": "home_page_sections",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home"
+      ],
+      "owner": "features/home",
+      "source": "website/src/features/home/sections/homeSections.tsx",
+      "exportName": "HomePageSections",
+      "css": [
+        "packages/web-ui/src/components/CatchSiteHeader.module.css",
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchGap.module.css",
+        "packages/web-ui/src/components/CatchHeroShowcase.module.css",
+        "packages/web-ui/src/components/CatchDeviceFrame.module.css",
+        "packages/web-ui/src/components/CatchFormatTile.module.css",
+        "packages/web-ui/src/components/CatchScroller.module.css",
+        "packages/web-ui/src/components/CatchPlanCard.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchScrollStory.module.css",
+        "packages/web-ui/src/components/CatchOrganizerCard.module.css",
+        "packages/web-ui/src/components/CatchStoreButton.module.css",
+        "packages/web-ui/src/components/CatchQrCode.module.css",
+        "packages/web-ui/src/components/CatchAccordion.module.css",
+        "packages/web-ui/src/components/CatchMenu.module.css",
+        "packages/web-ui/src/components/CatchSiteFooter.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HomePage.stories.tsx",
+        "exportName": "MumbaiLive390",
+        "states": [
+          "phone-live",
+          "phone-launching-soon"
+        ]
+      },
+      "notes": "The homepage's sections in the WebHomeV2 board's order, private to one assembly: header with the city picker, hero, format tiles, this week or launching soon, how a night works, organisers, the host band, the app band, the FAQ and the footer. Each section arranges library parts and binds the controller's view of the city (D18)."
     },
     {
       "id": "shared_identity_display_shell",
@@ -357,34 +394,6 @@
         ]
       },
       "notes": "Host landing page balances business workflows and guest participation, with five interactive before/during/after format examples, audience insights, flexible adoption and selected pilot access. Existing retired-route anchors remain. Application lives at /host/apply/. Includes selectable adoption circles and participation/privacy guidance."
-    },
-    {
-      "id": "route_organizer_search",
-      "kind": "route",
-      "routeIds": [
-        "organizer_search"
-      ],
-      "owner": "features/organizers",
-      "source": "website/src/features/organizers/OrganizerSearchPage.tsx",
-      "exportName": "OrganizerSearchPage",
-      "css": [
-        "website/src/styles/site-shell.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/organiser-directory.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/MarketingRoutes.stories.tsx",
-        "exportName": "OrganizerSearch",
-        "states": [
-          "default",
-          "filtered",
-          "empty-results",
-          "catalog-unavailable",
-          "mobile-menu"
-        ]
-      },
-      "notes": "Consumer organiser directory with shared chrome, progressive search filters, profile provenance and a separate host/claim invitation."
     },
     {
       "id": "route_organizer_listing",
@@ -845,7 +854,7 @@
           "generated"
         ]
       },
-      "notes": "\"Made with Catch \u00b7 Make a page like this\" on a claimed page; where a generated page came from and how to report a mistake."
+      "notes": "\"Made with Catch · Make a page like this\" on a claimed page; where a generated page came from and how to report a mistake."
     },
     {
       "id": "host_application_flow",
@@ -1758,10 +1767,6 @@
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/feedback.tsx",
       "exportName": "BadgeRow",
-      "comparedWith": [
-        "catch.badge"
-      ],
-      "comparisonReason": "Wrapping row that lays out listing badges; each badge is the library CatchBadge.",
       "css": [
         "website/src/styles/organizers.css"
       ],
@@ -1797,37 +1802,6 @@
         ]
       },
       "notes": "Shared website search-form shell for the organizer directory search; raw organizer-search-form shells are blocked by web:react-component-governance. The public search bar it once also wrapped was retired in CAT-218 (see CAT-224)."
-    },
-    {
-      "id": "shared_section_header",
-      "kind": "supporting-component",
-      "routeIds": [
-        "event_detail_canonical",
-        "home",
-        "host",
-        "organizer_search",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy",
-        "visitor_discovery"
-      ],
-      "owner": "shared/site",
-      "source": "website/src/shared/site/SectionHeader.tsx",
-      "exportName": "SectionHeader",
-      "css": [
-        "website/src/styles/home.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/LayoutPrimitives.stories.tsx",
-        "exportName": "SectionHeaderStory",
-        "states": [
-          "default",
-          "wide",
-          "h1"
-        ]
-      },
-      "notes": "Shared website section-heading primitive for route and section headings; raw section-heading shells are blocked by web:react-component-governance."
     },
     {
       "id": "shared_action_group",
@@ -1980,56 +1954,6 @@
         ]
       },
       "notes": "Host route section band, heading and FAQ list. The claim page renders them; the rest of the legacy host preview shell was removed with its dead sections (CAT-218)."
-    },
-    {
-      "id": "organizer_search_hero",
-      "kind": "section",
-      "routeIds": [
-        "organizer_search"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
-      "exportName": "OrganizerSearchHeroSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerSearchSections.stories.tsx",
-        "exportName": "OrganizerSearchHero",
-        "states": [
-          "default",
-          "filtered"
-        ]
-      },
-      "notes": "Search/filter hero section backed by the organizer directory URL-state controller; configures shared scanner-enforced organizer search section shell primitives instead of rendering raw section shells."
-    },
-    {
-      "id": "organizer_results_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_search"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
-      "exportName": "OrganizerResultsSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerSearchSections.stories.tsx",
-        "exportName": "OrganizerResults",
-        "states": [
-          "default",
-          "event-backed",
-          "unclaimed",
-          "empty-results"
-        ]
-      },
-      "notes": "Organizer result-list section including empty state coverage; configures shared scanner-enforced organizer search section shell primitives instead of rendering raw section shells."
     },
     {
       "id": "marketing_consent_banner_adapter",
@@ -2826,28 +2750,82 @@
         "visitor_discovery"
       ],
       "owner": "features/home",
-      "source": "website/src/features/home/HomePage.tsx",
-      "exportName": "VisitorDiscoveryPage",
+      "source": "website/src/features/home/ExplorePage.tsx",
+      "exportName": "ExplorePage",
       "css": [
-        "website/src/styles/site-shell.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/explore.css"
+        "website/src/styles/site-shell.css"
       ],
       "storybook": {
         "status": "ready",
-        "story": "website/src/stories/MarketingRoutes.stories.tsx",
-        "exportName": "VisitorDiscovery",
+        "story": "website/src/stories/ExplorePage.stories.tsx",
+        "exportName": "CityPlans",
         "states": [
-          "default",
-          "empty-city",
+          "city-plans",
+          "search-and-filters",
+          "launching-soon",
           "no-results",
-          "experience-filter",
-          "catalog-unavailable",
-          "search-and-date",
-          "mobile-menu"
+          "catalog-unavailable"
         ]
       },
-      "notes": "Event discovery and explicit Catch Experience participation distinction; consumer chrome shared with Home and Host."
+      "notes": "Website v2 Explore (CAT-261) at /explore/ and each city page (/mumbai/): a city's plans and organisers from its cityPlans read model, searched and filtered by format and date, with the state in the URL. The organiser directory redirects here with show=organisers."
+    },
+    {
+      "id": "explore_page_sections",
+      "kind": "supporting-component",
+      "routeIds": [
+        "visitor_discovery"
+      ],
+      "owner": "features/home",
+      "source": "website/src/features/home/sections/explorePageSections.tsx",
+      "exportName": "ExplorePageSections",
+      "css": [
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchGap.module.css",
+        "packages/web-ui/src/components/CatchSearchField.module.css",
+        "packages/web-ui/src/components/CatchChoiceInput.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchPlanCard.module.css",
+        "packages/web-ui/src/components/CatchOrganizerCard.module.css",
+        "packages/web-ui/src/components/CatchEmptyState.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/ExplorePage.stories.tsx",
+        "exportName": "CityPlans390",
+        "states": [
+          "phone"
+        ]
+      },
+      "notes": "Explore's sections, private to one assembly: the heading (or launching soon with the live city), search, the plans or organisers view, format and date choices, and the results or an empty state. Each arranges library parts and binds the controller's view of the city (D18)."
+    },
+    {
+      "id": "city_site_chrome",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery"
+      ],
+      "owner": "features/home",
+      "source": "website/src/features/home/sections/cityChrome.tsx",
+      "exportName": "CitySiteChrome",
+      "css": [
+        "packages/web-ui/src/components/CatchSiteHeader.module.css",
+        "packages/web-ui/src/components/CatchMenu.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchSiteFooter.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/ExplorePage.stories.tsx",
+        "exportName": "Organisers",
+        "states": [
+          "organisers-link"
+        ]
+      },
+      "notes": "The Website v2 header and footer around a city's page (the homepage and Explore): the city picker with each city's status, and the footer's city list with the ones not open marked soon. Other routes keep the legacy PublicSiteChrome until they are rebuilt."
     },
     {
       "id": "sales_demo_continuation",
@@ -2979,12 +2957,9 @@
           "image-only"
         ]
       },
-      "notes": "Website T4 under D18: @catch/web-ui draws a device-framed app capture with its caption; website/src/shared/media/MediaSlot.tsx binds a tool/marketing/capture_manifest.json slot id to it. Search aliases: AppScreenshot, AppCapture, DeviceFrame, PhoneFrame, PhoneMockup, ScreenshotFrame.",
+      "notes": "Website T4 under D18: @catch/web-ui draws a device-framed app capture with its caption; website/src/shared/media/captureSlot.ts resolves a tool/marketing/capture_manifest.json slot id to its props. Search aliases: AppScreenshot, AppCapture, DeviceFrame, PhoneFrame, PhoneMockup, ScreenshotFrame.",
       "comparedWith": [
-        "catch.text",
-        "catch.detail_media",
-        "catch.graded_image",
-        "catch.network_image"
+        "catch.text"
       ],
       "comparisonReason": "Shows a pre-rendered app capture whose PNG carries its own device frame, at its intrinsic size with a caption. catch.detail_media is an edge-to-edge hero photo with grading and a scrim; catch.graded_image and catch.network_image load and grade remote photos; catch.text only sets the caption's type roles."
     },
@@ -3795,7 +3770,11 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). The Website v2 site header: the wordmark, the main links and the page's own controls (a city picker, Get the app) on one 84px row at the content width. Links not marked compact and the wide actions leave the bar below 840px; the footer carries every link. Nearest concept: shared_public_site_header (PublicSiteChrome), the legacy chrome it replaces. Search aliases: SiteHeader, TopBar, NavBar, Masthead, PageHeader."
+      "notes": "Website T4 under D18 (CAT-260). The Website v2 site header: the wordmark, the main links and the page's own controls (a city picker, Get the app) on one 84px row at the content width. Links not marked compact and the wide actions leave the bar below 840px; the footer carries every link. Nearest concept: shared_public_site_header (PublicSiteChrome), the legacy chrome it replaces. Search aliases: SiteHeader, TopBar, NavBar, Masthead, PageHeader.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
     },
     {
       "id": "shared_catch_site_footer",
@@ -3821,7 +3800,11 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). The Website v2 site footer on the ink ground: four titled link columns (two below 840px), each link with an optional quiet note such as 'soon', then the wordmark and tagline over a hairline. Nearest concept: shared_public_site_footer (PublicSiteChrome), the legacy chrome it replaces. Search aliases: SiteFooter, Footer, FooterLinks, Colophon."
+      "notes": "Website T4 under D18 (CAT-260). The Website v2 site footer on the ink ground: four titled link columns (two below 840px), each link with an optional quiet note such as 'soon', then the wordmark and tagline over a hairline. Nearest concept: shared_public_site_footer (PublicSiteChrome), the legacy chrome it replaces. Search aliases: SiteFooter, Footer, FooterLinks, Colophon.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
     },
     {
       "id": "shared_device_frame",
@@ -3874,7 +3857,11 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). The homepage hero art: a rounded panel on one ground with the app in a device frame and up to three decorative plan stickers, which are hidden from assistive technology and leave pages narrower than 840px. Nearest concept: CatchHeroImage, a photo hero without a device. Search aliases: HeroArt, PhoneShowcase, HeroPanel, FloatingChips."
+      "notes": "Website T4 under D18 (CAT-260). The homepage hero art: a rounded panel on one ground with the app in a device frame and up to three decorative plan stickers, which are hidden from assistive technology and leave pages narrower than 840px. Nearest concept: CatchHeroImage, a photo hero without a device. Search aliases: HeroArt, PhoneShowcase, HeroPanel, FloatingChips.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
     },
     {
       "id": "shared_format_tile",
@@ -3907,7 +3894,11 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). One activity format on its accent: a count line, the format's name and line, and a plan photo at its foot when there is one. It is a pressed toggle when it filters and a link when it navigates. Nearest concept: catch.chip.field (CatchChip choice), the compact filter it pairs with. Search aliases: FormatCard, CategoryTile, ActivityTile, FilterTile."
+      "notes": "Website T4 under D18 (CAT-260). One activity format on its accent: a count line, the format's name and line, and a plan photo at its foot when there is one. It is a pressed toggle when it filters and a link when it navigates. Nearest concept: catch.chip.field (CatchChip choice), the compact filter it pairs with. Search aliases: FormatCard, CategoryTile, ActivityTile, FilterTile.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
     },
     {
       "id": "shared_plan_card",
@@ -3937,7 +3928,11 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). One plan as a single link: the photo or a poster on its format accent, a label coloured by its format, the title, host and place, then the price and places left. Below 840px it becomes a row with the media at its start. Nearest concept: shared_preview_card (CatchPreviewCard), which has no media. Search aliases: EventCard, PlanTile, ListingCard, EventPreview."
+      "notes": "Website T4 under D18 (CAT-260). One plan as a single link: the photo or a poster on its format accent, a label coloured by its format, the title, host and place, then the price and places left. Below 840px it becomes a row with the media at its start. Nearest concept: shared_preview_card (CatchPreviewCard), which has no media. Search aliases: EventCard, PlanTile, ListingCard, EventPreview.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
     },
     {
       "id": "shared_organizer_card",
@@ -3965,7 +3960,152 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). An organiser on paper: monogram, name (linked when the organiser has a page), what they run, the next plan, and a footnote across from the page's action (Follow, a claim link). Nearest concept: catch.organizer_poster, the photo-led organiser card. Search aliases: HostCard, OrganiserCard, ClubCard, FollowCard."
+      "notes": "Website T4 under D18 (CAT-260). An organiser on paper: monogram, name (linked when the organiser has a page), what they run, the next plan, and a footnote across from the page's action (Follow, a claim link). Nearest concept: catch.organizer_poster, the photo-led organiser card. Search aliases: HostCard, OrganiserCard, ClubCard, FollowCard.",
+      "comparedWith": [
+        "catch.text",
+        "catch.person_avatar"
+      ],
+      "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it. It shows the organiser's monogram through CatchAvatar rather than implementing an avatar."
+    },
+    {
+      "id": "web_ui_catch_accordion",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchAccordion.tsx",
+      "exportName": "CatchAccordion",
+      "css": [
+        "packages/web-ui/src/components/CatchAccordion.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "The library's disclosure list (#948): the homepage FAQ, one question open at a time. Search aliases: FAQ, Disclosure, Collapsible, Expander.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Renders CatchText for its questions and answers; it is a disclosure list with its own open state and layout, not a text style, so it uses catch.text rather than implementing it."
+    },
+    {
+      "id": "web_ui_catch_chip",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchChip.tsx",
+      "exportName": "CatchChip",
+      "css": [
+        "packages/web-ui/src/components/CatchChip.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "The library's catch.chip twin, rendered on the website through CatchChoiceInput's filter chips.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Renders CatchText for its label; it is the website's styled chip, not a text style, so it uses catch.text rather than implementing it."
+    },
+    {
+      "id": "web_ui_catch_choice_input",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchChoiceInput.tsx",
+      "exportName": "CatchChoiceInput",
+      "css": [
+        "packages/web-ui/src/components/CatchChoiceInput.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "The library's catch.chip.field twin: the homepage's format filter and Explore's view, format and date choices.",
+      "comparedWith": [
+        "catch.option_card",
+        "catch.text"
+      ],
+      "comparisonReason": "Renders CatchChoiceTile for its described choices and CatchText for its legend; it is a choice group that arranges those parts, not an option card or a text style."
+    },
+    {
+      "id": "web_ui_catch_empty_state",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchEmptyState.tsx",
+      "exportName": "CatchEmptyState",
+      "css": [
+        "packages/web-ui/src/components/CatchEmptyState.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "The website's empty state: Explore's no-results and unavailable states, an icon tile over a title, a line and an optional action.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Renders CatchText for its title and line; it is an empty-state layout with an icon tile and an action, not a text style, so it uses catch.text rather than implementing it."
+    },
+    {
+      "id": "web_ui_catch_icon_tile",
+      "kind": "supporting-component",
+      "routeIds": [
+        "visitor_discovery"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchIconTile.tsx",
+      "exportName": "CatchIconTile",
+      "css": [
+        "packages/web-ui/src/components/CatchIconTile.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "The icon on a tinted tile that heads Explore's empty states."
+    },
+    {
+      "id": "web_ui_catch_search_field",
+      "kind": "supporting-component",
+      "routeIds": [
+        "visitor_discovery"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchSearchField.tsx",
+      "exportName": "CatchSearchField",
+      "css": [
+        "packages/web-ui/src/components/CatchSearchField.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Explore's search box for plans and organisers, with its clear button."
     }
   ]
 }

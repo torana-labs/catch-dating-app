@@ -320,13 +320,18 @@
       "status": "required"
     },
     {
-      "source": "website/src/features/home/useConsumerHomeController.ts",
-      "test": "website/src/features/home/useConsumerHomeController.test.tsx",
+      "source": "website/src/features/home/useHomePageController.ts",
+      "test": "website/src/features/home/useHomePageController.test.tsx",
       "status": "required"
     },
     {
-      "source": "website/src/features/home/useExploreController.ts",
-      "test": "website/src/features/home/useExploreController.test.tsx",
+      "source": "website/src/features/home/useExplorePageController.ts",
+      "test": "website/src/features/home/useExplorePageController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/home/useLaunchNoticeController.ts",
+      "test": "website/src/features/home/useLaunchNoticeController.test.tsx",
       "status": "required"
     }
   ]

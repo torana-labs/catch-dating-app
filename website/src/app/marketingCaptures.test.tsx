@@ -21,7 +21,7 @@ function featureSources() {
 
 function slotUses() {
   return featureSources().flatMap(({file, source}) =>
-    [...source.matchAll(/<MediaSlot\b[^>]*\bid="([^"]+)"/gu)].map(match => ({file, id: match[1]})));
+    [...source.matchAll(/\bcaptureSlot\(captures, "([^"]+)"/gu)].map(match => ({file, id: match[1]})));
 }
 
 describe("marketing capture slots", () => {
@@ -49,7 +49,7 @@ describe("marketing capture slots", () => {
 
   it("keep image paths out of feature code", () => {
     for (const {file, source} of featureSources()) {
-      expect(source.includes("/assets/app-screenshots/"), `${file} names a capture image path; render a MediaSlot instead`).toBe(false);
+      expect(source.includes("/assets/app-screenshots/"), `${file} names a capture image path; name a captureSlot instead`).toBe(false);
     }
   });
 
