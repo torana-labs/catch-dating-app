@@ -47,6 +47,7 @@ import {
   organizerItemStatus,
   organizerMarketLabel as marketLabel,
 } from "./organizerIntakeQueueItems";
+import {brand} from "@catch/brand";
 
 export {organizerEntityEntryId, organizerEntityQueueItem} from
   "./organizerIntakeQueueItems";
@@ -343,7 +344,7 @@ function OrganizerTaskWorkbench({
         detail={item ? {
           action: packet?.publicPresence.canonicalPath ? (
             <AdminLinkButton
-              href={`https://catchdates.com${packet.publicPresence.canonicalPath}`}
+              href={`${brand.web.origin}${packet.publicPresence.canonicalPath}`}
               icon={<ExternalLink size={14} strokeWidth={1.9} />}
               label={`Open public preview for ${item.displayName}`}
               rel="noreferrer"

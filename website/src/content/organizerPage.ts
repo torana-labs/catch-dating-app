@@ -1,3 +1,5 @@
+import {brand} from "./brand.ts";
+
 /** Copy for the organiser page (/organizers/<slug>/), a link-in-bio page. */
 export const organizerPageCopy = {
   generatedTag: "Built from public pages · not claimed yet",
@@ -39,12 +41,12 @@ export const organizerPageCopy = {
   pinnedUntil: (date: string) => `Pinned until ${date}`,
   eventsTitle: "Coming up",
   eventsNote: {
-    claimed: (names: readonly string[]) => `From ${["Catch", ...names].join(" and ")}, in one list`,
+    claimed: (names: readonly string[]) => `From ${[brand.name, ...names].join(" and ")}, in one list`,
     generated: (names: readonly string[]) => `Found on their public ${names.length ? `${names.join(" and ")} pages` : "pages"}`,
   },
   eventsEmptyTitle: "Nothing on the calendar yet",
   eventsEmptyBody: (name: string) => `${name} hasn’t published the next plan. Follow to hear when they do.`,
-  onCatch: "On Catch",
+  onCatch: `On ${brand.name}`,
   book: "Book",
   details: "Details",
   tickets: "Tickets",
@@ -76,10 +78,10 @@ export const organizerPageCopy = {
   starsRow: (stars: number, count: number) => `${stars} ${stars === 1 ? "star" : "stars"}: ${count} ${count === 1 ? "review" : "reviews"}`,
   ratingLabel: (stars: number) => `${stars} out of 5`,
   reviewPolicy: {
-    claimed: "Reviews from people who booked on Catch are marked verified. Anyone can review; the rest are labelled unverified.",
-    generated: "Anyone can review this page. Reviews stay unverified until guests book through Catch.",
+    claimed: `Reviews from people who booked on ${brand.name} are marked verified. Anyone can review; the rest are labelled unverified.`,
+    generated: `Anyone can review this page. Reviews stay unverified until guests book through ${brand.name}.`,
   },
-  verifiedReview: "Booked on Catch",
+  verifiedReview: `Booked on ${brand.name}`,
   unverifiedReview: "Unverified",
   replied: "replied:",
   anonymous: "A guest",
@@ -96,7 +98,7 @@ export const organizerPageCopy = {
     tooShort: "Write at least 20 characters",
     noName: "Add your first name",
     failed: "Your review didn’t post. Try again in a moment.",
-    done: (name: string) => `Thanks, ${name}. Your review is up, marked unverified because you didn’t book this event on Catch.`,
+    done: (name: string) => `Thanks, ${name}. Your review is up, marked unverified because you didn’t book this event on ${brand.name}.`,
   },
   aboutTitle: "About",
   claim: {
@@ -111,7 +113,7 @@ export const organizerPageCopy = {
       `We built this page from your public ${names.length ? `${names.join(" and ")} pages` : "pages"}. Claim it free and make it yours.`,
     points: [
       {title: "Your Instagram link.", body: "Put it on your own domain, so it stays yours."},
-      {title: "Every event in one place.", body: "Luma, Catch or anywhere else, updated for you."},
+      {title: "Every event in one place.", body: `Luma, ${brand.name} or anywhere else, updated for you.`},
       {title: "Your links.", body: "WhatsApp group, shop, partners, pinned or timed."},
       {title: "Who clicks.", body: "Visits, link clicks and bookings, with Meta Pixel and Google Analytics."},
     ],
@@ -119,9 +121,9 @@ export const organizerPageCopy = {
     pending: "A claim for this page is being reviewed.",
   },
   footer: {
-    claimed: "Made with Catch",
+    claimed: `Made with ${brand.name}`,
     claimedLink: "Make a page like this",
-    generated: (names: readonly string[]) => `Built by Catch from public ${names.length ? `${names.join(" and ")} pages` : "pages"}.`,
+    generated: (names: readonly string[]) => `Built by ${brand.name} from public ${names.length ? `${names.join(" and ")} pages` : "pages"}.`,
     generatedLink: "Something wrong? Tell us",
   },
 } as const;

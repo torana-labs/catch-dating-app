@@ -1,3 +1,4 @@
+import {BRAND} from "../shared/generated/brand";
 /**
  * Domain activation policy for the hosting adapter. Records are inert until a
  * trusted DNS probe and certificate observer supply current evidence.
@@ -37,7 +38,7 @@ export function normalizeCustomFormHost(raw: string): string | null {
   if (labels.some((label) => label.length < 1 || label.length > 63 ||
       !/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/u.test(label))) return null;
   if (labels.length < 3 || /^\d+$/u.test(labels[labels.length - 1]) ||
-      host === "catchdates.com" || host.endsWith(".catchdates.com") ||
+      host === BRAND.web.domain || host.endsWith(`.${BRAND.web.domain}`) ||
       host.endsWith(".firebaseapp.com") || host.endsWith(".web.app") ||
       host.endsWith(".localhost")) return null;
   return host;

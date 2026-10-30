@@ -4,6 +4,8 @@ import {browserAttribution, catchAttributionKey} from "./analytics/catchMeasurem
 import {catchMeasurementMode, type CatchMeasurementMode, configuredCatchTransport} from "./analytics/catchLiveTransport.ts";
 import {createHostServerConsent, postHostServerConsent} from "./analytics/hostServerConsent.ts";
 import type {JoinWaitlistHTTPRequest} from "./shared/contracts/generated/joinWaitlistHttpRequest";
+import {brand} from "@catch/brand";
+
 export type {CatchProviderSession, SafeAcquisitionEvent} from "./analytics/catchMeasurement.ts";
 
 type ConsentChoice = "accepted" | "analytics" | "essential";
@@ -405,7 +407,7 @@ function readAttribution(): StoredAttribution | null {
 }
 
 function attributionTouch(capturedAt: string, landingPath: string, values: Record<string, string>): AttributionTouch {
-  return {capturedAt, landingPath, landingUrl: `https://catchdates.com${landingPath}`, referrer: null, values};
+  return {capturedAt, landingPath, landingUrl: `${brand.web.origin}${landingPath}`, referrer: null, values};
 }
 
 function safeStoredTouch(touch?: AttributionTouch): AttributionTouch | null {

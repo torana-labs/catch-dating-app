@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import fs from "node:fs";
 import {probePage, productionProbeContracts} from "./probeProduction.mjs";
+import {brand} from "@catch/brand";
 
 const contract = {
   path: "/privacy/",
@@ -24,11 +25,11 @@ test("production probes include the dynamic public Forms runtime", () => {
 
 test("production probe accepts the expected route contract", async () => {
   const result = await probePage({
-    baseUrl: "https://catchdates.com",
+    baseUrl: brand.web.origin,
     contract,
     timeoutMs: 100,
     fetchImpl: async () => new Response(
-      '<title>Privacy policy | Catch</title><link rel="canonical" href="https://catchdates.com/privacy/" /><h1>Privacy policy</h1>',
+      `<title>Privacy policy | Catch</title><link rel="canonical" href="${brand.web.origin}/privacy/" /><h1>Privacy policy</h1>`,
       {status: 200}
     ),
   });
@@ -38,7 +39,7 @@ test("production probe accepts the expected route contract", async () => {
 });
 test("production probe reports status, metadata, and content drift", async () => {
   const result = await probePage({
-    baseUrl: "https://catchdates.com",
+    baseUrl: brand.web.origin,
     contract,
     timeoutMs: 100,
     fetchImpl: async () => new Response("not found", {status: 404}),
@@ -48,7 +49,7 @@ test("production probe reports status, metadata, and content drift", async () =>
   assert.deepEqual(result.findings, [
     "expected HTTP 200, received 404",
     "missing title: Privacy policy | Catch",
-    "missing canonical: https://catchdates.com/privacy/",
+    `missing canonical: ${brand.web.origin}/privacy/`,
     "missing marker: Privacy policy",
   ]);
 });
@@ -58,15 +59,15 @@ test("production probes check the retired directory's redirect to Explore", asyn
   const directory = productionProbeContracts.find((entry) => entry.path === "/organizers/");
   assert.deepEqual(directory, {path: "/organizers/", status: 301, location: "/explore/?show=organisers"});
   const redirect = (location, status = 301) => async () => new Response(null, {status, headers: location ? {location} : {}});
-  for (const location of ["https://catchdates.com/explore/?show=organisers", "/explore/?show=organisers"]) {
-    const result = await probePage({baseUrl: "https://catchdates.com", contract: directory, timeoutMs: 100, fetchImpl: redirect(location)});
+  for (const location of [`${brand.web.origin}/explore/?show=organisers`, "/explore/?show=organisers"]) {
+    const result = await probePage({baseUrl: brand.web.origin, contract: directory, timeoutMs: 100, fetchImpl: redirect(location)});
     assert.deepEqual(result.findings, []);
   }
-  const stale = await probePage({baseUrl: "https://catchdates.com", contract: directory, timeoutMs: 100,
+  const stale = await probePage({baseUrl: brand.web.origin, contract: directory, timeoutMs: 100,
     fetchImpl: async () => new Response("<title>Organisers, clubs and communities | Catch</title>", {status: 200})});
   assert.deepEqual(stale.findings, ["expected HTTP 301, received 200",
-    "expected redirect to https://catchdates.com/explore/?show=organisers, received none"]);
-  const elsewhere = await probePage({baseUrl: "https://catchdates.com", contract: directory, timeoutMs: 100,
+    `expected redirect to ${brand.web.origin}/explore/?show=organisers, received none`]);
+  const elsewhere = await probePage({baseUrl: brand.web.origin, contract: directory, timeoutMs: 100,
     fetchImpl: redirect("https://unrelated.example/explore/?show=organisers")});
   assert.equal(elsewhere.ok, false);
 });

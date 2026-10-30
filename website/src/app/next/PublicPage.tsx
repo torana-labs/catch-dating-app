@@ -17,6 +17,8 @@ import {publishedLegalContent} from "../../content/legal";
 import type {PublicContact} from "../../content/publicContact";
 import {MarketingConsentBanner} from "../../features/marketing/MarketingConsentBanner";
 import {claimRouteStateForLocation, claimUrlStateForListing} from "../../features/claims/claimRouting";
+import {brand} from "@catch/brand";
+
 const Home = dynamic(() => import("../../features/home/HomePage").then(m => m.HomePage));
 const Explore = dynamic(() => import("../../features/home/ExplorePage").then(m => m.ExplorePage));
 const Host = dynamic(() => import("../../features/host/HostPage").then(m => m.HostPage));
@@ -48,15 +50,15 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
   else if (page === "listing") {
     const listing = getHostListingRouteForPath(location.pathname, listings)?.listing;
     if (listing) structured = {"@context": "https://schema.org", "@type": "Organization",
-      name: listing.name, description: listing.description, url: `https://catchdates.com${listing.path}`};
+      name: listing.name, description: listing.description, url: `${brand.web.origin}${listing.path}`};
     content = listing ? <Listing listing={listing} page={organizerPage} readAt={currentReadAt ?? readAt} /> : <Missing />;
   } else if (page === "event_detail") {
     const event = getEventDetailForPath(location.pathname, buildPublicEventDetailRecords(listings, currentReadAt ?? readAt));
     if (event) structured = {"@context": "https://schema.org", "@type": "Event", name: event.title,
       startDate: event.startTime, ...(event.endTime ? {endDate: event.endTime} : {}),
-      description: event.summary, url: `https://catchdates.com${event.path}`,
+      description: event.summary, url: `${brand.web.origin}${event.path}`,
       location: {"@type": "Place", name: event.location},
-      organizer: {"@type": "Organization", name: event.listing.name, url: `https://catchdates.com${event.listing.path}`}};
+      organizer: {"@type": "Organization", name: event.listing.name, url: `${brand.web.origin}${event.listing.path}`}};
     content = event && eventRoute?.page.eventId === event.eventId ?
       <Event listing={event.listing} mapImageUrl={eventRoute.mapImageUrl} page={eventRoute.page} /> : <Missing />;
   } else if (page === "claim") {

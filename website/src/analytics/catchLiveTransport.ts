@@ -1,4 +1,5 @@
 import type {CatchProviderSession, SafeAcquisitionEvent} from "../analytics.ts";
+import {brand} from "@catch/brand";
 
 /** Public destination identifiers, never credentials. Activation follows network
  * acceptance and refreshed consent copy; merely configuring an account is not activation. */
@@ -14,7 +15,7 @@ export const catchLiveDestinations = Object.freeze({
 export type CatchMeasurementMode = "disabled" | "google-preview-v2" | "google-live-v1" | "host-server-live-v1";
 export function catchMeasurementMode(origin = typeof window === "undefined" ? "" : window.location.origin): CatchMeasurementMode {
   if (origin === catchLiveDestinations.previewOrigin) return "google-preview-v2";
-  return catchLiveDestinations.enabled && origin === "https://catchdates.com" ?
+  return catchLiveDestinations.enabled && origin === brand.web.origin ?
     catchLiveDestinations.serverConsentEnabled ? "host-server-live-v1" : "google-live-v1" : "disabled";
 }
 

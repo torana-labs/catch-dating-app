@@ -3,6 +3,8 @@ import type {ApplicationVerifier, Auth, User} from "firebase/auth";
 import {beginClaimPhoneLink, signInOrLinkClaimGoogle} from "../../firebase";
 import {signInOrLinkEmailLink, verifyEmailOnCurrentAccount} from "../../firebaseClaimAccountLinking";
 import {claimAccountLinkingErrorMessage} from "./claimAccountLinking";
+import {brand} from "@catch/brand";
+
 function fixture(providers: string[] = [], phoneNumber: string | null = null) {
   const user = {uid: "same-owner", phoneNumber, getIdToken: vi.fn().mockResolvedValue("fresh-token"),
     providerData: providers.map((providerId) => ({providerId}))} as unknown as User;
@@ -147,26 +149,26 @@ describe("guest email credential continuity", () => {
 describe("optional guest email verification", () => {
   it("verifies a new email on the current phone account without changing sign-in", async () => {
     const f = fixture(["phone"], "+15555550100");
-    await verifyEmailOnCurrentAccount(f.auth, f.user.uid, "guest@example.test", "https://catchdates.com/events/event1/", f.sdk);
-    expect(f.api.verifyBeforeUpdateEmail).toHaveBeenCalledWith(f.user, "guest@example.test", {url: "https://catchdates.com/events/event1/"});
+    await verifyEmailOnCurrentAccount(f.auth, f.user.uid, "guest@example.test", `${brand.web.origin}/events/event1/`, f.sdk);
+    expect(f.api.verifyBeforeUpdateEmail).toHaveBeenCalledWith(f.user, "guest@example.test", {url: `${brand.web.origin}/events/event1/`});
     expect(f.api.signInWithEmailLink).not.toHaveBeenCalled();
   });
   it("verifies the existing email rather than replacing it", async () => {
     const f = fixture(["phone"], "+15555550100"); Object.assign(f.user, {email: "guest@example.test"});
-    await verifyEmailOnCurrentAccount(f.auth, f.user.uid, "guest@example.test", "https://catchdates.com/events/event1/", f.sdk);
+    await verifyEmailOnCurrentAccount(f.auth, f.user.uid, "guest@example.test", `${brand.web.origin}/events/event1/`, f.sdk);
     expect(f.api.sendEmailVerification).toHaveBeenCalledOnce();
     expect(f.api.verifyBeforeUpdateEmail).not.toHaveBeenCalled();
-    await expect(verifyEmailOnCurrentAccount(f.auth, f.user.uid, "another@example.test", "https://catchdates.com/", f.sdk)).rejects.toThrow("email already linked");
+    await expect(verifyEmailOnCurrentAccount(f.auth, f.user.uid, "another@example.test", `${brand.web.origin}/`, f.sdk)).rejects.toThrow("email already linked");
   });
   it("rejects an account change before verification", async () => {
     const f = fixture(["phone"], "+15555550100");
-    await expect(verifyEmailOnCurrentAccount(f.auth, "other", "guest@example.test", "https://catchdates.com/", f.sdk)).rejects.toThrow("account changed");
+    await expect(verifyEmailOnCurrentAccount(f.auth, "other", "guest@example.test", `${brand.web.origin}/`, f.sdk)).rejects.toThrow("account changed");
     expect(f.api.verifyBeforeUpdateEmail).not.toHaveBeenCalled();
   });
   it("credential conflicts offer recovery without merging or signing in", async () => {
     const f = fixture(["phone"], "+15555550100");
     f.api.verifyBeforeUpdateEmail.mockRejectedValue({code: "auth/email-already-in-use"});
-    await expect(verifyEmailOnCurrentAccount(f.auth, f.user.uid, "guest@example.test", "https://catchdates.com/", f.sdk)).rejects.toThrow("Accounts were not combined");
+    await expect(verifyEmailOnCurrentAccount(f.auth, f.user.uid, "guest@example.test", `${brand.web.origin}/`, f.sdk)).rejects.toThrow("Accounts were not combined");
     expect(f.api.signInWithEmailLink).not.toHaveBeenCalled();
   });
 });

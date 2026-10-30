@@ -147,13 +147,14 @@ import {practiceAllocationReview, preparePracticeAllocation,
   type PracticeAllocationCommand} from "./allocation";
 import {buildPracticeRosterSource, practiceRosterReview,
   preparePracticeRosterReconciliation} from "./rosterReconciliation";
+import {BRAND} from "../shared/generated/brand";
 
 const sessions = "eventRehearsals";
 const actors = "eventRehearsalActors";
 const actions = "eventRehearsalActions";
 const guestViews = "eventRehearsalGuestViews";
 const websiteBaseUrl = (process.env.WEBSITE_BASE_URL ??
-  "https://catchdates.com").replace(/\/$/u, "");
+  BRAND.web.origin).replace(/\/$/u, "");
 
 type RehearsalSetup = EventRehearsalDocument["setup"];
 type Firestore = FirebaseFirestore.Firestore;

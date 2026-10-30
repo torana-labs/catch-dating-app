@@ -16,6 +16,7 @@ import {
 } from "../shared/generated/validators/createRazorpayOrderInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
+import {BRAND} from "../shared/generated/brand";
 
 /**
  * Retired: guest money is never collected into Catch's merchant account.
@@ -41,7 +42,7 @@ export async function createRazorpayOrderHandler(
   throw new HttpsError(
     "failed-precondition",
     "Paid bookings now go to the organiser's own checkout. " +
-      "Update Catch, or book this event on catchdates.com."
+      `Update ${BRAND.name}, or book this event on ${BRAND.web.domain}.`
   );
 }
 

@@ -1,3 +1,5 @@
+import {brand} from "./brand.ts";
+
 export const accountCopy = {
   "restartVerification": "Change number or request a new code",
   "loading": "Loading your account…",
@@ -11,7 +13,7 @@ export const accountCopy = {
   "verify": "Verify and continue",
   "continue": "Continue",
   "sendCode": "Send verification code",
-  "privacy": "Your name and verified phone create your Catch account. Following does not subscribe you to marketing messages.",
+  "privacy": `Your name and verified phone create your ${brand.name} account. Following does not subscribe you to marketing messages.`,
   "invalidDetails": "Enter your name and phone number with country code.",
   "invalidCode": "Enter the six-digit verification code.",
   "codeSent": "Code sent. Enter it to continue.",

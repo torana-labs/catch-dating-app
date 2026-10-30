@@ -21,6 +21,7 @@ import {applyPracticeHostCommand, applyPracticeGuestReply} from
   "./assistanceTransactions";
 import {rehearsalMessages, PracticeMessage, practiceContext} from
   "./assistanceRuntime";
+import {BRAND} from "../shared/generated/brand";
 
 function organizer(): OrganizerDocument {
   const fixture = JSON.parse(readFileSync(
@@ -263,7 +264,7 @@ test("native practice help fixture names and managers come from source",
         virtualNowMillis: h.session.virtualNow.toMillis(),
         expiresAtMillis: h.session.expiresAt.toMillis()},
       actors: h.actors(), actions: [], canUseInternalFaults: false,
-      guestUrl: "https://catchdates.com/rehearse/practicepublic1234567890",
+      guestUrl: `${BRAND.web.origin}/rehearse/practicepublic1234567890`,
       helpRequests: await h.view()}));
     };
     await sample("initial");

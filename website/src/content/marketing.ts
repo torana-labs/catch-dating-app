@@ -1,3 +1,5 @@
+import {brand} from "./brand.ts";
+
 export interface ActivityMeta {
   label: string;
   token: string;
@@ -17,7 +19,7 @@ export const memberLoop = [
   },
   {
     step: "03",
-    title: "Catch privately",
+    title: `${brand.name} privately`,
     body: "After the event, express interest without exposing rejection.",
   },
   {
@@ -64,7 +66,7 @@ export const hostModules = [
   },
   {
     label: "After",
-    title: "Catch window",
+    title: `${brand.name} window`,
     body: "Private interest opens after attendance. Mutual catches become chats with shared context.",
   },
 ];

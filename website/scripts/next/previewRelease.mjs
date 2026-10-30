@@ -5,6 +5,7 @@ import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {isMainCiSource, waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
 import {canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
+import {brand} from "@catch/brand";
 
 export const preview = Object.freeze({
   project: "catch-dating-app-64e51", region: "asia-south1",
@@ -75,7 +76,7 @@ export async function liveReleaseSha(repository, {request = github, fetchLive = 
     assert.equal(tagged[0].object?.type, "commit", "The live release tag must point at a commit");
     return tagged[0].object.sha;
   }
-  const response = await fetchLive(`https://catchdates.com/?release-probe=${Date.now()}`,
+  const response = await fetchLive(`${brand.web.origin}/?release-probe=${Date.now()}`,
     {method: "HEAD", redirect: "manual", headers: {"cache-control": "no-cache"}});
   const header = response.headers.get("x-catch-release");
   sha(header);

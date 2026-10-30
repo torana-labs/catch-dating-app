@@ -1,5 +1,8 @@
 import {expect, it} from "vitest";
 import {isPrivateShellPath, privateShellFamily, privateShellHead, privateShellSurface} from "./privateShellMetadata";
+import {brand} from "@catch/brand";
+
+const origin = brand.web.origin.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 
 it("treats only the shell route itself as the terminal rewrite target", () => {
   expect(isPrivateShellPath("/private-shell")).toBe(true);
@@ -19,16 +22,16 @@ it("maps credential routes to a public family enum only", () => {
 
 it("writes family metadata and falls back to the bare title for unknown families", () => {
   const form = privateShellHead("f");
-  expect(form.startsWith('<title>Organizer form | Catch</title><meta name="description" content="Complete a secure organizer form in your browser without downloading an app."><link rel="canonical" href="https://catchdates.com/f/">')).toBe(true);
-  expect(form).toMatch(/<meta property="og:image" content="https:\/\/catchdates\.com\/assets\/og\/form\.png\?v=[0-9a-f]{12}">/);
+  expect(form.startsWith(`<title>Organizer form | Catch</title><meta name="description" content="Complete a secure organizer form in your browser without downloading an app."><link rel="canonical" href="${brand.web.origin}/f/">`)).toBe(true);
+  expect(form).toMatch(new RegExp(`<meta property="og:image" content="${origin}/assets/og/form\\.png\\?v=[0-9a-f]{12}">`));
   expect(form).toContain('<meta name="twitter:card" content="summary_large_image">');
-  expect(privateShellHead("rsvp")).toMatch(/og:image" content="https:\/\/catchdates\.com\/assets\/og\/default\.png/);
+  expect(privateShellHead("rsvp")).toMatch(new RegExp(`og:image" content="${origin}/assets/og/default\\.png`));
   expect(privateShellHead(null)).toBe("<title>Catch</title>");
   expect(privateShellHead("constructor")).toBe("<title>Catch</title>");
 });
 
 it("finds the family whether Next proxies the shell rewrite or performs it internally", () => {
-  const surface = (url: string) => privateShellSurface(new URL(url, "https://catchdates.com"));
+  const surface = (url: string) => privateShellSurface(new URL(url, brand.web.origin));
   // Self-proxied rewrite: the shell URL carries the family enum.
   expect(surface("/private-shell/?surface=f")).toBe("f");
   expect(surface("/private-shell?surface=offer")).toBe("offer");

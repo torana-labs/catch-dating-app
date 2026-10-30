@@ -13,6 +13,7 @@ import {
   prepareEventOfferHandoff, getEventOfferConfiguration,
 } from "./eventOfferService";
 import {parseStoredEventOffer} from "./eventOfferFirestoreRepository";
+import {BRAND} from "../shared/generated/brand";
 
 const now = 1_800_000_000_000;
 const actor = {uid: "manager-one"};
@@ -840,7 +841,7 @@ for (const free of [false, true]) {
         expectedGeneration: offer.generation,
         issueInvitation: async (scope) => {
           calls.push(scope);
-          return `https://catchdates.com/offer#${"a".repeat(43)}`;
+          return `${BRAND.web.origin}/offer#${"a".repeat(43)}`;
         }});
       store.handoffPermission = "optedOut";
       assert.equal((await prepare()).kind, "blocked");
@@ -854,7 +855,7 @@ for (const free of [false, true]) {
         expectedOfferGeneration: offer.generation,
         expectedOfferRevision: offer.revision}]);
       if (prepared.kind === "prepared") {
-        assert.match(prepared.copyText, /https:\/\/catchdates.com\/offer#/u);
+        assert.ok(prepared.copyText.includes(`${BRAND.web.origin}/offer#`));
       }
     });
 }

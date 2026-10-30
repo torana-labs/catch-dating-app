@@ -1,3 +1,5 @@
+import {brand} from "@catch/brand";
+
 export type SalesDemoSetupPlan = {mode: "manual"; requirements: string[]} |
   {mode: "template"; requirements: string[]; templateId: string;
     templateVersion: number; templateHash: string;
@@ -29,7 +31,7 @@ export function salesDemoFormEditorUrl(editorPath: string | null): string | null
     .test(editorPath)) return null;
   const configured = import.meta.env.VITE_CONSUMER_APP_URL;
   const origin = configured || (import.meta.env.VITE_FIREBASE_PROJECT_ID ===
-    "catch-dating-app-64e51" ? "https://app.catchdates.com" : null);
+    "catch-dating-app-64e51" ? brand.web.appOrigin : null);
   if (!origin) return null;
   try {
     const url = new URL(origin);

@@ -8,6 +8,8 @@ import {previewCardFor, previewCardImage} from "./previewCards";
 import {generatedPreviewCardFor, generatedPreviewCardImage} from "./generatedPreviewCards";
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../features/events/eventDetailModel";
 import type {Metadata} from "next";
+import {brand} from "@catch/brand";
+
 export const resolvePublicRoute = cache(async (pathname: string) => {
   const key = pathname.replace(/\/+$/, "") || "/";
   // The homepage reads its cityPlans documents in the page itself.
@@ -31,9 +33,9 @@ export const resolvePublicRoute = cache(async (pathname: string) => {
   const generated = generatedPreviewCardFor({listingRoute, event});
   const image = generated ? generatedPreviewCardImage(generated) : previewCardImage(previewCardFor(meta.canonicalPath));
   const metadata: Metadata = {title: meta.title, description: meta.description,
-    alternates: {canonical: `https://catchdates.com${meta.canonicalPath}`},
+    alternates: {canonical: `${brand.web.origin}${meta.canonicalPath}`},
     robots: productionIndexing() ? meta.robots ?? "index, follow" : "noindex, follow", openGraph: {title: meta.title, description: meta.description,
-      url: `https://catchdates.com${meta.canonicalPath}`, type: "website", images: [image]},
+      url: `${brand.web.origin}${meta.canonicalPath}`, type: "website", images: [image]},
     twitter: {card: "summary_large_image", title: meta.title, description: meta.twitterDescription, images: [image]}};
   return {page, catalog, metadata, listingRoute, event, live, contact, citySlug: city?.slug};
 });

@@ -1,3 +1,5 @@
+import {brand} from "./brand.ts";
+
 /** Deterministic browser/test fixture; never selects a live event or credential. */
 export const guestUpdateFixture = {
   status: "ready" as const, serverTime: 1_000_000, eventTitle: "Friday neighbourhood crawl",
@@ -13,7 +15,7 @@ export const guestUpdateFixture = {
 };
 
 export const eventAssistanceCopy = {
-  brand: "Catch home", brandWord: "catch", kicker: "Your event",
+  brand: `${brand.name} home`, brandWord: "catch", kicker: "Your event",
   loadingTitle: "Getting your update", loading: "Checking the latest instructions…",
   unavailableTitle: "This update is unavailable",
   unavailableBody: "Open the latest link in your event message. It may have expired or no longer apply to you.",

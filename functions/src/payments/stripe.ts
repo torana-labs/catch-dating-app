@@ -1,16 +1,17 @@
 import * as crypto from "crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import {defineSecret} from "firebase-functions/params";
+import {brandWebUrl} from "../shared/generated/brand";
 
 export const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
 export const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
 
-const defaultStripeConnectUrl = "https://catchdates.com/you";
+const defaultStripeConnectUrl = brandWebUrl("/you");
 const defaultStripeCheckoutSuccessUrl =
-  "https://catchdates.com/payment-confirmation" +
+  brandWebUrl("/payment-confirmation") +
   "?session_id={CHECKOUT_SESSION_ID}";
 const defaultStripeCheckoutCancelUrl =
-  "https://catchdates.com/payment-history";
+  brandWebUrl("/payment-history");
 
 const stripeApiVersion = "2026-02-25.clover";
 const stripeApiBaseUrl = "https://api.stripe.com";

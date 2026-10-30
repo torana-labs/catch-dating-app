@@ -10,7 +10,7 @@ import type {OrganizerClaimInstagramMessageDocument} from "../shared/generated/o
 import {classifyCatchInbound} from "./inboundIntent";
 import {isLinkInBio, nominationLabel, replyCopy} from "./inboundRouter";
 
-// Direct messages to @catch_dates that carry no claim code come here. A
+// Direct messages to Catch's Instagram account that carry no claim code come here. A
 // registered Instagram nominator's links become Supply Intake nominations,
 // as they do on WhatsApp (inboundRouter.ts), and Catch answers in the
 // thread. Instagram allows a reply only within 24 hours of the person's

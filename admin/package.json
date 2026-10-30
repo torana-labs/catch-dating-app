@@ -23,13 +23,15 @@
     "test:coverage": "vitest run --project=unit --coverage",
     "test:storybook:a11y": "STORYBOOK_DISABLE_TELEMETRY=1 vitest run --project=storybook",
     "test:watch": "vitest --project=unit",
-    "pretypecheck": "npm run check:callable-validators",
+    "check:brand": "npm --workspace @catch/brand run check && npm --workspace @catch/brand test",
+    "pretypecheck": "npm run check:brand && npm run check:callable-validators",
     "typecheck": "npm run check:css-tokens && npm run check:ui && npm run check:ui-components && npm run check:feature-exports && npm run check:component-registry && npm run check:feature-ui-size && npm run check:query-state && tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false",
     "check:feature-exports": "node ../tool/web/check_admin_feature_exports.mjs --check",
     "check:css-tokens": "stylelint \"src/**/*.css\" && node ../packages/web-config/lint/check-stylelint-suppressions.mjs \"src/**/*.css\" && node --test ../packages/web-config/lint/stylelint.test.mjs",
     "check:ui": "node ../tool/web/check_react_ui.mjs --surface admin"
   },
   "dependencies": {
+    "@catch/brand": "0.1.0",
     "@catch/web-config": "0.1.0",
     "@catch/web-ui": "0.1.0",
     "@tanstack/react-query": "^5.104.5",

@@ -9,6 +9,7 @@ import type {CatchAutoReplyKind, CatchAutoReplyOutcome, CatchAutoReplyRequest} f
 import {classifyCatchInbound, type CatchInboundIntent} from "./inboundIntent";
 import {CATCH_RECEIPTS, isCatchStopReceipt, readCatchReceipt, type CatchReceipt} from "./whatsappEndpointStops";
 import {catchEndpointHash} from "./whatsappReply";
+import {BRAND} from "../shared/generated/brand";
 
 // Every inbound message to Catch's WhatsApp number comes through here after
 // the receipt dispatcher has handled STOP. The router works out what the
@@ -155,7 +156,7 @@ export const replyCopy = Object.freeze({
     const shown = labels.slice(0, MAX_LABELS).join(", ");
     const more = labels.length > MAX_LABELS ? ` and ${labels.length - MAX_LABELS} more` : "";
     const noun = labels.length === 1 ? "organizer" : "organizers";
-    const base = `Got it. Queued ${labels.length} ${noun} for a Catch listing: ${shown}${more}. It shows on catchdates.com once it's built and checked.`;
+    const base = `Got it. Queued ${labels.length} ${noun} for a Catch listing: ${shown}${more}. It shows on ${BRAND.web.domain} once it's built and checked.`;
     return onlyLinkInBio ?
       `${base} I can't read Linktree or Beacons pages, so if you have their Luma, Instagram or website link, send that too.` :
       base;
@@ -170,7 +171,7 @@ export const replyCopy = Object.freeze({
     `${label} is ready: the listing is built with ${eventCount} upcoming ${eventCount === 1 ? "event" : "events"}. It goes live after a quick check.` :
     `${label} is ready: the listing is built. No upcoming events were found on the pages I could read. It goes live after a quick check.`,
   listingLive: (label: string, eventCount: number, canonicalPath: string) =>
-    `${label} is live at catchdates.com${canonicalPath}${eventCount > 0 ?
+    `${label} is live at ${BRAND.web.domain}${canonicalPath}${eventCount > 0 ?
       ` with ${eventCount} upcoming ${eventCount === 1 ? "event" : "events"}` : ""}. ` +
     "Search engines won't list it until the organizer claims and verifies it.",
 });

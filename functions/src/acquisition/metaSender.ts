@@ -1,4 +1,5 @@
 import type {HostMetaLeadPayload} from "./metaPayload";
+import {brandWebUrl} from "../shared/generated/brand";
 
 export const HOST_META_EVENTS_URL =
   "https://graph.facebook.com/v26.0/1844810253539672/events";
@@ -26,7 +27,7 @@ export function createHostMetaSender(input: {
     const event = {
       event_name: "Lead", event_id: payload.event_id,
       event_time: payload.event_time, action_source: "website",
-      event_source_url: "https://catchdates.com/host/apply/",
+      event_source_url: brandWebUrl("/host/apply/"),
       user_data: {
         external_id: payload.user_data.external_id,
         client_user_agent: payload.user_data.client_user_agent,

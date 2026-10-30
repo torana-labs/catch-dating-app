@@ -7,6 +7,7 @@ import {
   OrganizerTokenStore,
   MetaTemplateSnapshot,
 } from "./organizerWhatsappProvider";
+import {BRAND} from "../shared/generated/brand";
 
 const config = {
   appId: "app-id",
@@ -106,7 +107,7 @@ test("templates preserve named parameter bindings for sending", async () => {
     template: templates[0],
     variables: {
       first_name: "Maya",
-      invite_url: "https://catchdates.com/events/e1?il=token",
+      invite_url: `${BRAND.web.origin}/events/e1?il=token`,
     },
   });
   assert.equal(sent.providerMessageId, "wamid.1");
@@ -114,7 +115,7 @@ test("templates preserve named parameter bindings for sending", async () => {
   assert.equal(payload.to, "919999999999");
   assert.deepEqual(payload.template.components[0].parameters, [
     {type: "text", text: "Maya", parameter_name: "first_name"},
-    {type: "text", text: "https://catchdates.com/events/e1?il=token",
+    {type: "text", text: `${BRAND.web.origin}/events/e1?il=token`,
       parameter_name: "invite_url"},
   ]);
 });
@@ -139,7 +140,7 @@ test("dynamic URL buttons bind only the provider URL suffix", async () => {
                 buttons: [
                   {
                     type: "URL",
-                    url: "https://catchdates.com/invite/{{1}}",
+                    url: `${BRAND.web.origin}/invite/{{1}}`,
                     example: ["example-token"],
                   },
                 ],
@@ -347,7 +348,7 @@ test("native replies keep approved labels and provider slots", async () => {
             header_text_named_params: [{param_name: "event_name"}],
           }},
           {type: "BUTTONS", buttons: [
-            {type: "URL", text: "View update", url: "https://catchdates.com"},
+            {type: "URL", text: "View update", url: BRAND.web.origin},
             {type: "QUICK_REPLY", text: "Joining later"},
             {type: "QUICK_REPLY", text: "Need help"},
           ]},

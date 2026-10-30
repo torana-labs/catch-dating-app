@@ -1,7 +1,9 @@
+import {brand} from "./brand.ts";
+
 export const eventDetailCopy = {
   menu: {
     dialogLabel: "Event navigation", openLabel: "Menu", closeLabel: "Close",
-    kicker: "Catch", hint: "Find your people. Make a plan.", navLabel: "Event links",
+    kicker: brand.name, hint: "Find your people. Make a plan.", navLabel: "Event links",
   },
   invitation: {
     about: "About this event", itinerary: "The plan", coverAlt: "Event artwork for {title}",
@@ -14,9 +16,9 @@ export const eventDetailCopy = {
     organizerAction: "View organizer",
   },
   hero: {
-    catchEyebrow: "Catch event",
+    catchEyebrow: `${brand.name} event`,
     externalEyebrow: "Source-backed event · {source}",
-    catchSupply: "Created and managed in Catch",
+    catchSupply: `Created and managed in ${brand.name}`,
     externalSupply: "Published by {source}",
     byOrganizer: "Hosted by {organizer}",
     catchActionHeading: "Your event access",
@@ -34,7 +36,7 @@ export const eventDetailCopy = {
       "The confirmed roster is full. Verify your number to join the event-scoped waitlist without an app or Consumer profile.",
     externalActionHeading: "Registration stays with {source}",
     externalActionBody:
-      "Catch does not sell, reserve, or waitlist places for this event. Confirm the latest details before you go.",
+      `${brand.name} does not sell, reserve, or waitlist places for this event. Confirm the latest details before you go.`,
     officialSourceAction: "Open official source",
     webRegistration: {
       nameLabel: "Your name",
@@ -53,7 +55,7 @@ export const eventDetailCopy = {
       alreadyRegistered: "You were already registered. Your roster place is confirmed.",
       waitlisted: "The event is full, so you are now on the organizer's waitlist.",
       privacy:
-        "Your name and verified number are used for this booking and can prefill Catch if you later continue in the app. A dating profile is not created, and this operational data is not permission for advertising.",
+        `Your name and verified number are used for this booking and can prefill ${brand.name} if you later continue in the app. A dating profile is not created, and this operational data is not permission for advertising.`,
       whatsappConsent:
         "Send me future event announcements from this organizer on WhatsApp",
       smsConsent:
@@ -100,14 +102,14 @@ export const eventDetailCopy = {
     freshness: "Source freshness",
     timezoneMissing: "Not provided by the organizer",
     locationCatchFallback:
-      "Additional meeting instructions may be shown in the Catch app after booking.",
+      `Additional meeting instructions may be shown in the ${brand.name} app after booking.`,
     locationExternalFallback:
       "Confirm the final meeting point on the official source before attending.",
     requirementsMissing: "No requirements were provided in this listing.",
     accessibilityMissing: "Accessibility information was not provided in this listing.",
     freshnessTemplate: "Listing sources last reviewed {date}",
-    catchRegistrationOpen: "{count} spots shown; booking is available in the Catch app.",
-    catchRegistrationFull: "Shown as full; check the Catch app for waitlist updates.",
+    catchRegistrationOpen: `{count} spots shown; booking is available in the ${brand.name} app.`,
+    catchRegistrationFull: `Shown as full; check the ${brand.name} app for waitlist updates.`,
     webRegistrationOpen: "{count} spots shown; phone OTP registration is available here.",
     webRegistrationWaitlist: "The confirmed roster is full; phone OTP waitlist registration is available here.",
     registrationClosed: "Registration is closed for this event.",
@@ -117,9 +119,9 @@ export const eventDetailCopy = {
     eyebrow: "Listing provenance",
     title: "Know who supplied the event",
     catchBody:
-      "This event was created in Catch. Organizer verification is shown separately so an app-created event is not mistaken for an owner-verified organizer.",
+      `This event was created in ${brand.name}. Organizer verification is shown separately so an app-created event is not mistaken for an owner-verified organizer.`,
     externalBody:
-      "This event was collected from an approved public source. Catch keeps it read-only and sends registration back to that source.",
+      `This event was collected from an approved public source. ${brand.name} keeps it read-only and sends registration back to that source.`,
     sourceLabel: "Event source",
     organizerLabel: "Organizer status",
     reviewedLabel: "Last reviewed",
@@ -133,10 +135,10 @@ export const eventDetailCopy = {
     laneTitle: "Verified attendee reviews",
     emptyTitle: "No event-specific reviews yet",
     emptyBody:
-      "The organizer may still have reviews on its profile, but Catch does not attribute them to this event without an event ID.",
+      `The organizer may still have reviews on its profile, but ${brand.name} does not attribute them to this event without an event ID.`,
     unavailableTitle: "Event reviews are not available yet",
     unavailableBody:
-      "Catch will show event-specific reviews here after the organizer review target is verified. No organizer-level review is attributed to this event.",
+      `${brand.name} will show event-specific reviews here after the organizer review target is verified. No organizer-level review is attributed to this event.`,
   },
   footerBody:
     "Find your people. Make a plan.",
@@ -149,7 +151,7 @@ export const publicCheckoutCopy = {
   bookingLink: "Open your booking page",
   bookingTitle: "Your event booking",
   bookingBody: "Check your place, payment or refund using your verified phone number.",
-  bookingBrand: "Catch",
+  bookingBrand: brand.name,
   closedRecovery: "New registration is closed. Verify your phone to manage an existing paid booking.",
   noBookingTitle: "No paid booking found",
   startAgain: "Review a new booking",
@@ -157,7 +159,7 @@ export const publicCheckoutCopy = {
   noBooking: "No paid booking was found for this phone number. Contact the organizer if you need help.",
   loading: "Checking registration",
   reviewTitle: "Review your booking",
-  reviewBody: "Check the price and cancellation policy before reserving your seat. Your place is confirmed after Catch verifies payment.",
+  reviewBody: `Check the price and cancellation policy before reserving your seat. Your place is confirmed after ${brand.name} verifies payment.`,
   unavailable: "Registration is unavailable right now. Try again or contact the organizer.",
   nameError: "Enter the name you want on the guest list.",
   alreadyRegistered: "You’re already on the guest list. No new payment is needed.",
@@ -292,14 +294,14 @@ export const eventPageCopy = {
   reviews: {
     title: "What people say",
     note: (organizer: string) => `About ${organizer}, from their page`,
-    verified: "Booked on Catch",
+    verified: `Booked on ${brand.name}`,
     unverified: "Unverified",
     stars: (rating: number) => `${rating} out of 5`,
     replied: "replied:",
   },
   more: {
     title: (organizer: string) => `More from ${organizer}`,
-    onCatch: "On Catch",
+    onCatch: `On ${brand.name}`,
   },
   booking: {
     label: "Booking",

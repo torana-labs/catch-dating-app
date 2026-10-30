@@ -15,6 +15,7 @@ import type {
   ListingEventImportsController,
   ListingEventPublishRequest,
 } from "../controllers/useListingEventImportsController";
+import {brand} from "@catch/brand";
 
 type Checklist = ListingEventPublishRequest["checklist"];
 
@@ -261,7 +262,7 @@ function ListingEvents({row, controller, onClose}: {
       </AdminToolbar>
     </AdminForm> : null}
     <AdminToolbar>
-      {row.organizer.canonicalPath ? <AdminLinkButton href={`https://catchdates.com${row.organizer.canonicalPath}`}
+      {row.organizer.canonicalPath ? <AdminLinkButton href={`${brand.web.origin}${row.organizer.canonicalPath}`}
         rel="noreferrer" target="_blank">Open the organizer's page</AdminLinkButton> : null}
       <AdminButton disabled={controller.isRefreshing || !row.organizer.pagePublished}
         onClick={() => void controller.refresh(row.organizer.organizerId)}>Check for new events</AdminButton>

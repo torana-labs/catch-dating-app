@@ -12,6 +12,7 @@ import {practiceMembershipProjection, practiceMembershipView,
 import {practiceAccountabilityProjection, practiceAccountabilityView,
   resolvePracticeAccountability} from "./accountability";
 import type {PracticeCaseAuthority} from "./assistanceCases";
+import {BRAND} from "../shared/generated/brand";
 
 test("native staff fixtures bind real Host, practice role, and group actions",
   async () => {
@@ -25,7 +26,7 @@ test("native staff fixtures bind real Host, practice role, and group actions",
           virtualNowMillis: h.session.virtualNow.toMillis(),
           expiresAtMillis: h.session.expiresAt.toMillis()},
         actors: h.actors, actions: [], guestUrl:
-          "https://catchdates.com/rehearse/practicepublic1234567890",
+          `${BRAND.web.origin}/rehearse/practicepublic1234567890`,
         canUseInternalFaults: false,
         staffReview: practiceStaffProjection(h.id, h.session, authority),
         membershipReviews: practiceMembershipProjection(h.id, h.session,

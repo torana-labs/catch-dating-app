@@ -1,6 +1,6 @@
 name: Website Release
 
-# The release train from main to catchdates.com. After main CI succeeds (and
+# The release train from main to the production website. After main CI succeeds (and
 # hourly, in case an event was missed), it previews main's head with the
 # existing Next Website Preview workflow, passes the prod environment's gate
 # (no required reviewer since 30 Oct 2026; add one to approve releases by
@@ -116,7 +116,7 @@ jobs:
         run: node website/scripts/next/releaseTrain.mjs preview
 
   approve:
-    name: Approve the preview for catchdates.com
+    name: Approve the preview for production
     needs: [plan, preview]
     # Without its own condition a job inherits success() over every ancestor,
     # so the skipped validate job (the usual case) skipped the gate and the

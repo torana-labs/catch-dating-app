@@ -2,6 +2,7 @@ import {createHash} from "node:crypto";
 import {
   hostMetaDispatchDecision, type HostMetaDispatchState,
 } from "./consentPolicy";
+import {brandWebUrl} from "../shared/generated/brand";
 
 export interface HostMetaBrowserContext {
   clientId: string;
@@ -15,7 +16,7 @@ export interface HostMetaLeadPayload {
   event_id: string;
   event_time: number;
   action_source: "website";
-  event_source_url: "https://catchdates.com/host/apply/";
+  event_source_url: string;
   user_data: {
     external_id: string[];
     client_user_agent: string;
@@ -63,7 +64,7 @@ export function hostMetaLeadPayload(input: {
     event_id: input.state.eventId,
     event_time: Math.floor(input.state.acceptedAt / 1000),
     action_source: "website",
-    event_source_url: "https://catchdates.com/host/apply/",
+    event_source_url: brandWebUrl("/host/apply/"),
     user_data: userData,
   };
 }

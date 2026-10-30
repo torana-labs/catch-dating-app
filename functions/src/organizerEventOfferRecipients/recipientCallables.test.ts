@@ -21,6 +21,7 @@ import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {finalizeCapturedOfferPayment} from
   "../payments/offerPayments/offerPaymentAdmission";
 import {Timestamp} from "firebase-admin/firestore";
+import {BRAND} from "../shared/generated/brand";
 
 const request = (data: unknown, user = uid, verifiedPhone: unknown = phone) =>
   ({data, auth: {uid: user, token: {phone_number: verifiedPhone}}}) as
@@ -152,7 +153,7 @@ test("invitation links are manager-only and keep secrets in the fragment",
     const result = await prepareEventOfferInvitationHandler(
       request(payload, actorUid), h.deps);
     const url = new URL(result.url);
-    assert.equal(url.origin, "https://catchdates.com");
+    assert.equal(url.origin, BRAND.web.origin);
     assert.equal(url.pathname, "/offer");
     assert.equal(url.search, "");
     assert.match(url.hash, /^#[A-Za-z0-9_-]{43}$/u);

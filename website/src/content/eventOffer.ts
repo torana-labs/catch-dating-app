@@ -1,3 +1,5 @@
+import {brand} from "./brand.ts";
+
 // Private event invitation copy, shared by the page and payment controller.
 export const eventOfferCopy = {
   acceptFree: "Accept invitation",
@@ -5,7 +7,7 @@ export const eventOfferCopy = {
   freeInvitationBody: "You’ve been offered a free place. Accept your invitation to confirm it, subject to current availability.",
   eventAccess: "View your booking and event access",
   "brandLabel": "Your invitation",
-  "brandWord": "Catch",
+  "brandWord": brand.name,
   "invitationTitle": "Your event invitation",
   "invitationBody": "You’ve been offered a place. Start checkout when you’re ready; an invitation alone doesn’t reserve a seat.",
   "loading": "Opening your invitation",
@@ -87,7 +89,7 @@ export function offerPaymentCopy(status: string, hasCheckout: boolean, cancellat
   if (status === "reviewRequired") return {title: "We’re reviewing your payment",
     body: "Please contact the host for help. Don’t start another payment while this is being checked."};
   if (hasCheckout) return {title: "Complete your booking",
-    body: "Your seat is held for 15 minutes from checkout start. Admission is confirmed once Catch verifies payment."};
+    body: `Your seat is held for 15 minutes from checkout start. Admission is confirmed once ${brand.name} verifies payment.`};
   return {title: "Checking your payment",
     body: "We’re checking with the payment provider. You can refresh this status; please don’t start another payment."};
 }

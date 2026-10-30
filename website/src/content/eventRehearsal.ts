@@ -1,5 +1,7 @@
+import {brand} from "./brand.ts";
+
 export const eventRehearsalCopy = {
-  brand: "Catch",
+  brand: brand.name,
   brandWord: "catch",
   practiceBanner: "Practice mode · This phone controls a synthetic guest only",
   loading: "Opening the practice room…",

@@ -15,6 +15,7 @@ import {fileURLToPath} from "node:url";
 import path from "node:path";
 import {PNG} from "pngjs";
 import {consumerHomeCopy} from "../src/content/consumerHome.ts";
+import {brand} from "@catch/brand";
 
 const repoRoot = fileURLToPath(new URL("../../", import.meta.url));
 const fromRepo = (file) => path.join(repoRoot, file);
@@ -95,7 +96,7 @@ export function readTokens(css = readText(tokensPath)) {
 // capture pipeline, and a re-render of the card picks up the newest image.
 export function cardInputHash(card, {meta = readJson(metaPath), tokens = readTokens()} = {}) {
   const hash = crypto.createHash("sha256");
-  hash.update(JSON.stringify({card, content: cardContent(card, meta), tokens, size: [cardWidth, cardHeight]}));
+  hash.update(JSON.stringify({card, content: cardContent(card, meta), tokens, size: [cardWidth, cardHeight], domain: brand.web.domain}));
   hash.update(fs.readFileSync(fileURLToPath(import.meta.url)));
   hash.update(fs.readFileSync(fromRepo(fontPath)));
   hash.update(fs.readFileSync(fromRepo(marks[card.mark])));
@@ -223,7 +224,7 @@ p { margin: 20px 0 0; font-size: 23px; line-height: 1.4; color: ${tokens.ink2}; 
 <div class="copy"><img class="mark" alt="" src="${mark}"><h1>${escape(content.headline)}</h1><p>${escape(content.body)}</p>
 ${content.chips.length ? `<ul class="chips">${content.chips.map((chip) => `<li>${escape(chip)}</li>`).join("")}</ul>` : ""}</div>
 ${capture ? `<img class="capture" alt="" src="${capture}">` : ""}
-</div><div class="url">catchdates.com</div></main></body></html>`;
+</div><div class="url">${brand.web.domain}</div></main></body></html>`;
 }
 
 function trimmedMark(file) {

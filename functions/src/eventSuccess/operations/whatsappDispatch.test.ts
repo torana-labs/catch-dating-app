@@ -36,6 +36,7 @@ import {whatsappTemplateSnapshot} from
 
 import {start, keys, appSecret, harness, Harness, worker, queuedStatus} from
   "./whatsappTestHarness";
+import {BRAND} from "../../shared/generated/brand";
 
 function withdrawal(h: Harness) {
   const store = new WhatsappWithdrawalStore(h.db, () => h.clock.now);
@@ -808,7 +809,7 @@ test("templates with webpage choices need no empty native binding",
       attempt.attemptId), undefined);
     if (result.kind === "claimed") {
       assert.ok(result.resource.rendered.variables.response_url
-        .startsWith("https://catchdates.com/event-update/"));
+        .startsWith(`${BRAND.web.origin}/event-update/`));
     }
   });
 

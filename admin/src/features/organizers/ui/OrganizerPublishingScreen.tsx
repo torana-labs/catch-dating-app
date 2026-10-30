@@ -85,10 +85,12 @@ import type {
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
 import {organizerDirectoryPanels} from "./organizerDirectoryPanels";
 import {organizerDetailPanels} from "./organizerDetailPanels";
+import {brand} from "@catch/brand";
+
 // Panels from sibling modules stay feature-private.
 
 
-const defaultPublicSiteOrigin = "https://catchdates.com";
+const defaultPublicSiteOrigin = brand.web.origin;
 const publicSiteOrigin = String(
   import.meta.env.VITE_ADMIN_PUBLIC_SITE_ORIGIN ?? defaultPublicSiteOrigin
 ).replace(/\/+$/u, "");

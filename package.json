@@ -6,7 +6,8 @@
     "admin",
     "website",
     "packages/web-ui",
-    "packages/web-config"
+    "packages/web-config",
+    "packages/brand"
   ],
   "scripts": {
     "agent:context": "node tool/agent/context_pack.mjs",

@@ -36,6 +36,7 @@ import {offerCancellationPolicy} from
   "../payments/offerPayments/offerCancellationPolicy";
 import {cancelPaidOfferForCancelledEvent} from
   "../payments/offerPayments/offerPaymentCancellation";
+import {BRAND} from "../shared/generated/brand";
 
 export const recipientCallableDefaults = {
   db: () => admin.firestore(), rateLimit: checkRateLimit,
@@ -65,7 +66,7 @@ export async function prepareEventOfferInvitationHandler(
     expectedOfferGeneration: data.expectedOfferGeneration,
     expectedOfferRevision: data.expectedOfferRevision, nowMillis: deps.now});
   // Link preparation is not delivery. The token never enters a URL query/path.
-  return {url: `https://catchdates.com/offer#${invitation.token}`,
+  return {url: `${BRAND.web.origin}/offer#${invitation.token}`,
     expiresAtMillis: invitation.expiresAtMillis};
 }
 

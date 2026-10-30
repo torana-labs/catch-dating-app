@@ -13,6 +13,7 @@ import {
   EventOfferPaymentSnapshot, eventOfferId,
   OfferAction, OfferActionReceipt, OfferDomainError, OfferTransition,
 } from "./eventOfferDomain";
+import {BRAND} from "../shared/generated/brand";
 
 /**
  * Application service, not a callable. The server-only Firestore adapter uses
@@ -530,7 +531,7 @@ export async function prepareEventOfferHandoff(params: {
   // syntactic placeholder is never returned or stored. Issuance then rereads
   // current manager, offer revision, source and phone in its own transaction.
   const candidate = prepareOfferHandoff({...reviewed,
-    recipientCheckoutUrl: `https://catchdates.com/offer#${"A".repeat(43)}`});
+    recipientCheckoutUrl: `${BRAND.web.origin}/offer#${"A".repeat(43)}`});
   if (candidate.kind === "blocked") return candidate;
   const recipientCheckoutUrl = await params.issueInvitation({organizerId,
     eventId, offerId: reviewed.offer.offerId, responseId: sourceResponseId,
