@@ -236,6 +236,7 @@ function bootstrap(t, {gh = true, protectedEnvironment = true} = {}) {
     `echo "gcloud $*" >> "${log}"`,
     'case "$*" in',
     '  "config get-value account") echo owner@example.com;;',
+    `  "storage cp --if-generation-match=0 - "*) cat > "${path.join(root, "seeded-state.json")}";;`,
     '  *" describe "*) exit 1;;',
     "esac",
   ].join("\n"));
@@ -258,7 +259,9 @@ function bootstrap(t, {gh = true, protectedEnvironment = true} = {}) {
   }
   const result = run("bootstrap/bootstrap.sh", [], {root,
     env: {PROTECTED: String(protectedEnvironment)}});
-  return {result, calls: fs.existsSync(log) ? fs.readFileSync(log, "utf8") : ""};
+  const seeded = path.join(root, "seeded-state.json");
+  return {result, calls: fs.existsSync(log) ? fs.readFileSync(log, "utf8") : "",
+    seededState: fs.existsSync(seeded) ? JSON.parse(fs.readFileSync(seeded, "utf8")) : null};
 }
 
 const applyTrust = /add-iam-policy-binding github-actions-platform-apply@\S+ .*workloadIdentityUser.*1170579691:prod-platform/u;
@@ -420,4 +423,14 @@ test("bootstrap scopes platform secret access to FORM_RAZORPAY_ secrets and neve
   for (const line of calls.split("\n").filter((entry) => /secretmanager\.versions\./u.test(entry))) {
     assert.match(line, /roles (create|update) catchFormCredentialVault /u);
   }
+});
+
+test("bootstrap seeds an empty state once so read-only plans never create it", (t) => {
+  const {result, calls, seededState} = bootstrap(t);
+  assert.equal(result.status, 0, result.stderr + result.stdout);
+  assert.match(calls, /storage cp --if-generation-match=0 - gs:\/\/catch-dating-app-64e51-terraform-state\/firebase\/default\.tfstate/u);
+  assert.equal(seededState.version, 4);
+  assert.equal(seededState.serial, 0);
+  assert.deepEqual(seededState.resources, []);
+  assert.match(seededState.lineage, /^[0-9a-f-]{36}$/u);
 });

@@ -137,7 +137,10 @@ Both environments hold `GCP_WORKLOAD_IDENTITY_PROVIDER` and
 
 State lives in `gs://catch-dating-app-64e51-terraform-state` (asia-south1,
 object versioning, uniform bucket-level access, public access prevention
-enforced) under the prefix `firebase`.
+enforced) under the prefix `firebase`. The bootstrap seeds an empty state
+there, because with no state object the GCS backend writes a lock and an
+initial state even under `-lock=false`, which the read-only plan identity
+cannot do.
 
 ## One-time bootstrap
 

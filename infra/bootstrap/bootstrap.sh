@@ -16,7 +16,8 @@
 #
 # What it creates (each role is explained in docs/infrastructure_as_code.md):
 #   - gs://catch-dating-app-64e51-terraform-state: versioned, uniform access,
-#     public access prevention, in asia-south1.
+#     public access prevention, in asia-south1, seeded with an empty state so
+#     the read-only plan identity never has to create one.
 #   - github-actions-platform-plan@: custom role catchPlatformPlanReader in each
 #     project (read Firebase Android apps and Play Integrity configs) and
 #     storage.objectViewer on the state bucket. Trusted only by the
@@ -125,6 +126,16 @@ if ! quiet gcloud storage buckets describe "$BUCKET" --project="$PROD_PROJECT"; 
     --uniform-bucket-level-access --public-access-prevention
 fi
 gcloud storage buckets update "$BUCKET" --versioning --uniform-bucket-level-access --public-access-prevention
+
+# Read-only plans cannot create the state: with no state object, the GCS
+# backend writes a lock and an initial state even under -lock=false. Seed an
+# empty Terraform 1.16 state once; --if-generation-match=0 never overwrites.
+if ! quiet gcloud storage objects describe "$BUCKET/firebase/default.tfstate"; then
+  lineage="$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid)"
+  printf '{"version":4,"terraform_version":"1.16.6","serial":0,"lineage":"%s","outputs":{},"resources":[],"check_results":null}\n' \
+    "$(tr '[:upper:]' '[:lower:]' <<<"$lineage")" |
+    gcloud storage cp --if-generation-match=0 - "$BUCKET/firebase/default.tfstate"
+fi
 
 step "Service accounts"
 ensure_account() {
