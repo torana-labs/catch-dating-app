@@ -80,6 +80,7 @@ import type {
   FunctionGuestRowLike,
   FunctionLike,
 } from "../programRsvp/functionInvitation";
+import {BRAND} from "../shared/generated/brand";
 
 
 type CampaignBlocker = OrganizerCampaignCallableResponse["blockers"][number];
@@ -1476,7 +1477,7 @@ export function campaignVariables(
 }
 
 function campaignInviteUrl(token: string): string {
-  return `https://catchdates.com/invite/${encodeURIComponent(token)}`;
+  return `${BRAND.web.origin}/invite/${encodeURIComponent(token)}`;
 }
 
 function campaignInviteLinkId(campaignId: string, contactId: string): string {

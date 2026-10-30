@@ -15,13 +15,14 @@ import {validateEventApprovalNotificationAttempt as validAttempt} from
   "../../shared/generated/validators/eventApprovalNotificationAttempt";
 import {validateEventApprovalNotificationMessageDocument as validMessage} from
   "../../shared/generated/validators/eventApprovalNotificationMessageDocument";
+import {brandWebUrl} from "../../shared/generated/brand";
 export type {Intent, Attempt, Message};
 export type Binding = Attempt["binding"];
 export const messages = "eventApprovalNotificationMessages";
 export const preferenceId = (eventId: string, uid: string) =>
   "eap_" + hash([eventId, uid]);
 export const eventUrl = (eventId: string) =>
-  "https://catchdates.com/events/" + encodeURIComponent(eventId) + "/";
+  brandWebUrl("/events/") + encodeURIComponent(eventId) + "/";
 export const terms = {
   version: "event-approval-v1" as const,
   phone:

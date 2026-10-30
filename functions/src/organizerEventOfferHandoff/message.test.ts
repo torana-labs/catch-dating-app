@@ -8,6 +8,7 @@ import {
 
 import {validateEventOfferHandoffCallableResponse} from
   "../shared/generated/validators/eventOfferHandoffOutput";
+import {BRAND} from "../shared/generated/brand";
 
 const now = Date.parse("2026-10-01T00:00:00Z");
 
@@ -233,7 +234,7 @@ test("automatic checkout uses only a server-issued Catch fragment link", () => {
   input.payment.collectionMode = "catchCheckout";
   input.payment.reusablePaymentPageUrl = null;
   input.offer.organizerPaymentLink = null;
-  input.recipientCheckoutUrl = `https://catchdates.com/offer#${"a".repeat(43)}`;
+  input.recipientCheckoutUrl = `${BRAND.web.origin}/offer#${"a".repeat(43)}`;
   const result = prepareOfferHandoff(input);
   assert.equal(result.kind, "prepared");
   assert.equal(validateEventOfferHandoffCallableResponse(result), true);
@@ -243,7 +244,7 @@ test("automatic checkout uses only a server-issued Catch fragment link", () => {
   assert.equal(new URL(result.whatsappUrl).searchParams.get("text"),
     result.copyText);
   for (const url of ["https://evil.test/offer#token",
-    `https://catchdates.com/offer?token=${"a".repeat(43)}`]) {
+    `${BRAND.web.origin}/offer?token=${"a".repeat(43)}`]) {
     assert.ok(blockers({...input, recipientCheckoutUrl: url})
       .includes("paymentLinkInvalid"));
   }

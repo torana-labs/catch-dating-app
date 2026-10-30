@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import {requireReadyFormPaymentConnection} from "./formPaymentConnectionPolicy";
+import {BRAND} from "../../shared/generated/brand";
 
 const now = Timestamp.fromMillis(1000);
 const connection: NonNullable<Parameters<
@@ -11,7 +12,7 @@ const connection: NonNullable<Parameters<
     accountId: "acc_merchant", publicToken: "rzp_test_oauth_public",
     secretVersionResource: "projects/catch-test/secrets/FORM_TOKENS/versions/1",
     tokenExpiresAt: Timestamp.fromMillis(10000), webhookId: "webhook1",
-    webhookUrl: "https://catchdates.com/form-payments/webhook/connection",
+    webhookUrl: `${BRAND.web.origin}/form-payments/webhook/connection`,
     webhookVerifiedAt: now, connectedByUid: "host", revision: 1,
     refreshLeaseUntil: null, createdAt: now, updatedAt: now,
     disconnectedAt: null, lastErrorCode: null,

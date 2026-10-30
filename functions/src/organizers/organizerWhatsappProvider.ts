@@ -5,6 +5,10 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {operationContentHash} from "../operations/durableActions";
 import type {OrganizerMessageTemplateDocument} from
   "../shared/generated/firestoreAdminTypes";
+import {BRAND_ORIGIN_PATTERN} from "../shared/generated/brand";
+
+const inviteButtonUrlPattern =
+  new RegExp(`^${BRAND_ORIGIN_PATTERN}/invite/\\{\\{1\\}\\}/?$`, "u");
 
 export interface MetaWhatsappConfig {
   appId: string;
@@ -599,7 +603,7 @@ function urlButtonParameters(
   buttonIndex: number,
 ): string[] {
   const url = stringValue(button.url) ?? "";
-  if (/^https:\/\/catchdates\.com\/invite\/\{\{1\}\}\/?$/u.test(url)) {
+  if (inviteButtonUrlPattern.test(url)) {
     return ["invite_token"];
   }
   const named = namedParameters(button.example);

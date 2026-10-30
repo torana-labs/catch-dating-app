@@ -39,6 +39,8 @@ test("the guard derives its patterns from the record", () => {
     "const a = 'https://lumen.example/x';\nconst b = 'Lumen is here';\nconst c = 'LumenButton';\n@lumen_app", rules(renamed));
   assert.deepEqual(counts, {"domain": 1, "instagram-handle": 1, "name-in-copy": 1});
   assert.deepEqual(scanText("functions/src/x.ts", "Lumen is here", rules(renamed)), {});
+  assert.deepEqual(scanText("functions/src/x.ts",
+    "to: 'help@lumen.example', // brand-literal-ok: owner inbox", rules(renamed)), {});
 });
 
 test("ARB metadata does not count as copy", () => {

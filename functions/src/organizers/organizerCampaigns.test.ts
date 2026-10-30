@@ -14,6 +14,7 @@ import {
   hasReachableCampaignRecipient,
 } from "./organizerCampaigns";
 import * as admin from "firebase-admin";
+import {BRAND} from "../shared/generated/brand";
 
 test("campaign preview rejects empty and fully excluded audiences", () => {
   assert.equal(hasReachableCampaignRecipient([]), false);
@@ -47,7 +48,7 @@ test(
       campaignVariables(campaign, token, event, ["first_name", "invite_url"]),
       {
         first_name: "Maya",
-        invite_url: `https://catchdates.com/invite/${token}`,
+        invite_url: `${BRAND.web.origin}/invite/${token}`,
       },
     );
     assert.deepEqual(

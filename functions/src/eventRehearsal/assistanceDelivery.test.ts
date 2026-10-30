@@ -24,6 +24,7 @@ import {practiceDeliveryReview, practiceDeliveryReviews} from
 import {practiceMessageDocumentId, practiceMessageView, practiceDeliveryView,
   readPracticeMessage,
   rehearsalMessages, PracticeMessage} from "./assistanceRuntime";
+import {BRAND} from "../shared/generated/brand";
 
 function organizer(): OrganizerDocument {
   const fixture = JSON.parse(readFileSync(
@@ -441,7 +442,7 @@ test("native practice delivery fixture comes from message evidence",
           assistanceMessage: practiceMessageView(h.session, a,
             h.message(), h.departures())} : {})})),
       actions: [], canUseInternalFaults: false,
-      guestUrl: "https://catchdates.com/rehearse/practicepublic1234567890",
+      guestUrl: `${BRAND.web.origin}/rehearse/practicepublic1234567890`,
       deliveryReviews: deliveries}));
     };
     sample("uncertain");

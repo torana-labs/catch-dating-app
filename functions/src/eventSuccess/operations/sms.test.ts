@@ -35,6 +35,7 @@ import {smsProviderCorrelation, smsReportTokenMatches} from
 import {SmsPreferenceStore} from "./smsPreferenceStore";
 import {SmsDeliveryReportStore} from "./smsDeliveryReports";
 import {eventAssistanceSmsDeliveryWebhookHandler} from "./smsDeliveryWebhook";
+import {BRAND} from "../../shared/generated/brand";
 
 const keys: GuestLinkSigningKeys = {currentKeyId: "sms-key-1",
   keyFor: () => Buffer.alloc(32, 7)};
@@ -184,7 +185,7 @@ test("SMS renders exact approved parts with a scoped response link",
       eventTitle: "Friday social", now: h.clock.now};
     const rendered = renderEventSms(input);
     assert.equal(rendered.text, "Catch: Join us at stop one. Reply: " +
-    "https://catchdates.com/event-update/" + h.link.linkId + "#" + h.link.secret);
+    `${BRAND.web.origin}/event-update/` + h.link.linkId + "#" + h.link.secret);
     assert.equal(rendered.maxCostMicros, rendered.segments * 500_000);
     assert.throws(() => renderEventSms({...input,
       grant: {...grant, episodeId: "wrong-episode"}}), /unavailable/);

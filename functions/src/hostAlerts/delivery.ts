@@ -4,6 +4,7 @@ import type {EmailSubmission, TransactionalEmailProvider} from
   "../email/emailProvider";
 import {validateHostOperatorAlertDocument} from
   "../shared/generated/validators/hostOperatorAlertDocument";
+import {BRAND} from "../shared/generated/brand";
 
 export const ALERTS = "hostOperatorAlerts";
 export const LIFETIME = 24 * 60 * 60 * 1000;
@@ -102,10 +103,12 @@ export async function deliverHostAlert(input: {
   if (lead?.eventId === reserved.eventId) {
     try {
       result = await input.provider.submit({
-        from: "host@notify.catchdates.com", to: "suvrat.garg@gmail.com",
-        subject: "New Catch Host application",
-        text: "A new Catch Host application is ready for review.\n\n" +
-          "Open Catch Admin: https://admin.catchdates.com/\n\n" +
+        from: `host@${BRAND.senders.emailDomain}`,
+        to: "suvrat.garg@gmail.com", // brand-literal-ok: owner's review inbox
+        subject: `New ${BRAND.stores.hostAppName} application`,
+        text: `A new ${BRAND.stores.hostAppName} application is ready ` +
+          "for review.\n\n" +
+          `Open ${BRAND.adminName}: ${BRAND.web.adminOrigin}/\n\n` +
           "Please review and respond within one business day.",
         idempotencyKey: `host_alert_${reserved.eventId}`,
         deadlineMillis: Math.min(now() + 10_000,

@@ -17,6 +17,8 @@ const repoRoot = path.resolve(packageDir, "../..");
 const allowlistPath = path.join(packageDir, "literal_allowlist.json");
 
 const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+// Also matches the value as written inside a regular expression (catchdates\.com).
+const literal = (text) => escape(text).replaceAll("\\.", "\\\\?\\.").replaceAll("_", "\\\\?_");
 
 // Never scanned: the record and its generated copies, prose, vendored design
 // handoffs that are not shipped, and the owner's design-tool account config.
@@ -37,17 +39,22 @@ const copyFiles = [
 
 export function rules(record = brand) {
   return [
-    {id: "domain", pattern: new RegExp(escape(record.web.domain), "iu"), applies: () => true},
-    {id: "instagram-handle", pattern: new RegExp(`\\b${escape(record.social.instagramHandle)}\\b`, "iu"), applies: () => true},
-    {id: "support-email", pattern: new RegExp(escape(record.support.email), "iu"), applies: () => true},
+    {id: "domain", pattern: new RegExp(literal(record.web.domain), "iu"), applies: () => true},
+    {id: "instagram-handle", pattern: new RegExp(`\\b${literal(record.social.instagramHandle)}\\b`, "iu"), applies: () => true},
+    {id: "support-email", pattern: new RegExp(literal(record.support.email), "iu"), applies: () => true},
     {id: "name-in-copy", pattern: new RegExp(`\\b${escape(record.name)}\\b`, "u"),
       applies: (file) => copyFiles.some((copy) => copy.test(file))},
   ];
 }
 
+// A line that uses a brand-equal value for another reason says so inline:
+// `brand-literal-ok: <reason>`.
+const waiver = /brand-literal-ok: \S/u;
+
 export function scanText(file, text, ruleList = rules()) {
   const counts = {};
-  const lines = file.endsWith(".arb") ? arbValueLines(text) : text.split("\n");
+  const lines = (file.endsWith(".arb") ? arbValueLines(text) : text.split("\n"))
+    .filter((line) => !waiver.test(line));
   for (const rule of ruleList) {
     if (!rule.applies(file)) continue;
     const count = lines.filter((line) => rule.pattern.test(line)).length;

@@ -14,6 +14,7 @@ import {
   whatsappReplyPayloads, whatsappTemplateSnapshot,
 } from "./whatsappTemplate";
 import {whatsappAttemptFromReplyId} from "./whatsappReplyProtocol";
+import {BRAND} from "../../shared/generated/brand";
 
 const now = Date.parse("2026-09-07T14:00:00Z");
 const keys: GuestLinkSigningKeys = {currentKeyId: "test-wa-key",
@@ -61,7 +62,7 @@ async function fixture() {
       {type: "BUTTONS", buttons: [
         {type: "QUICK_REPLY", text: "I'm on my way"},
         {type: "URL", text: "View update",
-          url: "https://catchdates.com/event-update/{{1}}", example: ["token"]},
+          url: `${BRAND.web.origin}/event-update/{{1}}`, example: ["token"]},
         {type: "QUICK_REPLY", text: "I need help"},
       ]},
     ],
@@ -314,7 +315,7 @@ test("templates without native buttons retain the complete webpage response",
     const rendered = renderEventWhatsapp({...f, policy, template});
     assert.deepEqual(rendered.replies, []);
     assert.ok(rendered.variables.response_url.startsWith(
-      "https://catchdates.com/event-update/"));
+      `${BRAND.web.origin}/event-update/`));
   });
 
 test("review cannot route a guest link to another host or wrong URL slot",

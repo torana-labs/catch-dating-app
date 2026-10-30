@@ -15,6 +15,8 @@ const header = [
   "// DO NOT EDIT DIRECTLY.",
 ].join("\n");
 
+const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\/]/gu, "\\$&");
+
 export function renderFunctionsModule(record = brand) {
   return `${header}
 /* eslint-disable max-len */
@@ -25,6 +27,9 @@ export const BRAND = ${JSON.stringify(record, null, 2)} as const;
 export function brandWebUrl(path: \`/\${string}\` = "/"): string {
   return BRAND.web.origin + path;
 }
+
+/** The website origin escaped for use inside a RegExp source. */
+export const BRAND_ORIGIN_PATTERN = ${JSON.stringify(escapeRegExp(record.web.origin))};
 `;
 }
 

@@ -7,6 +7,7 @@ import type {CatchAutoReplyRequest} from "./autoReply";
 import {replyWhenListingReady} from "./listingReadyReply";
 import {TestDocStore} from "./testDocStore";
 import {CATCH_RECEIPTS} from "./whatsappEndpointStops";
+import {BRAND} from "../shared/generated/brand";
 
 const EVENT_ID = `cwhe_${"c".repeat(64)}`;
 const NOW = Date.parse("2026-10-30T08:00:00.000Z");
@@ -45,7 +46,7 @@ test("a finished WhatsApp nomination tells its nominator, once per organizer", a
 test("an auto-published listing is reported live, with its link", async () => {
   const t = setup({outcome: "published", organizerId: "org-1", canonicalPath: "/organizers/afterfly/"});
   assert.equal(await replyWhenListingReady(t.deps, "msg-1", state("running"), state("completed")), "sent");
-  assert.equal(t.replies[0].body, "@afterfly.in is live at catchdates.com/organizers/afterfly/ with 3 upcoming events. " +
+  assert.equal(t.replies[0].body, `@afterfly.in is live at ${BRAND.web.domain}/organizers/afterfly/ with 3 upcoming events. ` +
     "Search engines won't list it until the organizer claims and verifies it.");
 });
 

@@ -12,6 +12,7 @@ import {parseRcsConfig, prepareEventRcs, rcsEndpointId, rcsMessageId,
   renderEventRcs, RcsConfig} from "./rcsProtocol";
 import {rcsTestAttemptId, rcsTestConfig, rcsTestInput, rcsTestIntent,
   rcsTestNow} from "./rcsTestFixtures";
+import {BRAND} from "../../shared/generated/brand";
 
 test("Google binding is canonical only on the RCS route", () => {
   const input = rcsTestInput();
@@ -135,7 +136,7 @@ test("native shortcuts keep indices and the page retains all choices",
     const link = rendered.contentMessage.suggestions.at(-1)!;
     assert.ok("action" in link);
     assert.equal(link.action.openUrlAction.url,
-      "https://catchdates.com/event-update/" + input.grant.linkId + "#" +
+      `${BRAND.web.origin}/event-update/` + input.grant.linkId + "#" +
       grantSecret(input.grant, input.keys));
     const token = "fixture-only-rcs-token-12345678901234567890";
     const payload = Buffer.from(JSON.stringify({agentId: input.config.agentId,

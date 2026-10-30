@@ -43,3 +43,6 @@ export const BRAND = {
 export function brandWebUrl(path: `/${string}` = "/"): string {
   return BRAND.web.origin + path;
 }
+
+/** The website origin escaped for use inside a RegExp source. */
+export const BRAND_ORIGIN_PATTERN = "https:\\/\\/catchdates\\.com";

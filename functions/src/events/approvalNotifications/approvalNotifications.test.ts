@@ -26,6 +26,7 @@ import type {Submission} from "./transports";
 import {prepareBudget} from "./budget";
 import type {EventApprovalNotificationSettingsDocument as Settings} from
   "../../shared/generated/eventApprovalNotificationSettingsDocument";
+import {BRAND} from "../../shared/generated/brand";
 
 async function fixture() {
   const db = new FakeFirestore();
@@ -88,7 +89,7 @@ async function fixture() {
       provider: "resend",
       accountId: "email1",
       credentialVersion: "projects/p/secrets/email/versions/1",
-      from: "events@catchdates.com",
+      from: `events@${BRAND.web.domain}`,
     },
     dailyPhoneLimit: 100,
     monthlyPhoneLimit: 3000,

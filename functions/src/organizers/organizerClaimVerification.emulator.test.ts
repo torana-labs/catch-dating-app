@@ -14,6 +14,7 @@ import {
   startOrganizerClaimVerificationHandler,
 } from "./organizerClaimVerification";
 import type {InstagramClaimMessageDeps} from "./organizerClaimVerification";
+import {BRAND} from "../shared/generated/brand";
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 const webhook = {accountId: "17841400000000001", appSecret: "emulator-secret",
@@ -46,7 +47,7 @@ test("a signed Instagram message claims the listing end to end",
       serverTimestamp: () => FieldValue.serverTimestamp(),
       now: () => Date.now(),
       config: () => ({instagramEnabled: true,
-        catchInstagramHandle: "catch_dates"}),
+        catchInstagramHandle: BRAND.social.instagramHandle}),
       randomCode: () => String(Math.floor(Math.random() * 1_000_000))
         .padStart(6, "0"),
       checkRateLimit,

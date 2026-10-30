@@ -14,6 +14,7 @@ import {
   startOrganizerClaimVerificationHandler,
 } from "./organizerClaimVerification";
 import type {InstagramClaimMessageDeps} from "./organizerClaimVerification";
+import {BRAND} from "../shared/generated/brand";
 
 type Data = Record<string, unknown>;
 
@@ -107,7 +108,7 @@ function fixture(options: {enabled?: boolean} = {}) {
       FirebaseFirestore.FieldValue,
     now: () => clock.now,
     config: () => ({instagramEnabled: options.enabled ?? true,
-      catchInstagramHandle: "catch_dates"}),
+      catchInstagramHandle: BRAND.social.instagramHandle}),
     randomCode: () => codes[codeIndex++ % codes.length],
     checkRateLimit: async (_db, key) => {
       if (limited.has(key)) {
@@ -152,7 +153,7 @@ test("options offer Instagram with the listing's handle once switched on",
       callable({organizerId}), on.deps);
     assert.deepEqual(options.methods[0], {method: "instagramMessage",
       available: true, proofTarget: handle, unavailableReason: null});
-    assert.equal(options.catchInstagramHandle, "catch_dates");
+    assert.equal(options.catchInstagramHandle, BRAND.social.instagramHandle);
     const off = fixture({enabled: false});
     const hidden = await getOrganizerClaimVerificationOptionsHandler(
       callable({organizerId}), off.deps);
@@ -168,7 +169,7 @@ test("starting shows a 30-minute code bound to this account and listing",
     const started = await startCode(deps);
     assert.equal(started.code, "482173");
     assert.equal(started.proofTarget, handle);
-    assert.equal(started.catchInstagramHandle, "catch_dates");
+    assert.equal(started.catchInstagramHandle, BRAND.social.instagramHandle);
     assert.equal(Date.parse(started.expiresAt),
       startMillis + CLAIM_CODE_LIFETIME_MILLIS);
     const attempt = docs.get(attemptPath)!;

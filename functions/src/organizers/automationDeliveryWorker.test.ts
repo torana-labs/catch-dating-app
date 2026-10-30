@@ -37,6 +37,7 @@ import type {AutomationWhatsappDispatchDocument}
 import type {
   OrganizerFormAutomationRuleDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {BRAND} from "../shared/generated/brand";
 
 const NOW_MS = 1_800_000_000_000;
 const NOW = admin.firestore.Timestamp.fromMillis(NOW_MS);
@@ -294,8 +295,8 @@ test("a recipe with an event destination mints a per-occurrence invite " +
   assert.equal(typeof secret.token, "string");
   const record = recordOf(db);
   assert.equal(record.intent.whatsapp.inviteLinkId, linkId);
-  assert.match(record.intent.whatsapp.variables.invite_url,
-    /^https:\/\/catchdates\.com\/invite\//);
+  assert.ok(record.intent.whatsapp.variables.invite_url
+    .startsWith(`${BRAND.web.origin}/invite/`));
   // Retry reuses the minted secret — the rendered variable is stable.
   const again = await handoff(db);
   assert.equal(again.deliveryMessageId, result.deliveryMessageId);

@@ -4,6 +4,7 @@ import {FieldValue, type Firestore} from "firebase-admin/firestore";
 import type {EmailSubmission, TransactionalEmail} from "../email/emailProvider";
 import {ALERTS, LEASE, LIFETIME, deliverHostAlert, dispatchHostAlerts,
   eligibleHostAlert, enqueueHostAlert} from "./delivery";
+import {BRAND} from "../shared/generated/brand";
 
 const clock = 1792512000000;
 const eventId = `host_lead_${clock}_00000000-0000-4000-8000-000000000001`;
@@ -115,9 +116,9 @@ test("concurrent workers send one notice without applicant data",
     await Promise.all([f.deliver(), f.deliver()]);
     assert.equal(f.sent.length, 1);
     const mail = f.sent[0];
-    assert.equal(mail.to, "suvrat.garg@gmail.com");
-    assert.equal(mail.from, "host@notify.catchdates.com");
-    assert.ok(mail.text.includes("https://admin.catchdates.com/"));
+    assert.equal(mail.to, "suvrat.garg@gmail.com"); // brand-literal-ok: owner inbox
+    assert.equal(mail.from, `host@${BRAND.senders.emailDomain}`);
+    assert.ok(mail.text.includes(`${BRAND.web.adminOrigin}/`));
     assert.equal(mail.html, undefined);
     for (const value of ["Private Applicant", "Private Company",
       "private@organizer.in", intentId]) {
