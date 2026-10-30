@@ -512,9 +512,13 @@ tree equivalence, or abandoned code with no pull request. An age-only stale
 branch action was rejected because it could delete the very undeployed work the
 gate is meant to expose. The zero-dependency Git classifier therefore reports
 ancestry, exact main-history trees, exact merged-PR tips, final changed-path
-identity, open PRs, and review age. The daily workflow has read-only contents
-permission; it reports safe candidates for supervised pruning and fails on
-abandoned code.
+identity, open PRs, and review age. The daily Branch Hygiene workflow has
+read-only contents permission; it reports safe candidates and fails on
+abandoned code. The weekly Branch Prune workflow runs the same classifier with
+`--prune`, which deletes each safe candidate only while the remote still points
+at the audited tip. Heads and bases of open PRs and GitHub's
+`gh-readonly-queue/` refs are never candidates. Abandoned branches are never
+pruned; they stay on the daily report until someone salvages or discards them.
 
 ```sh
 node tool/git/branch_hygiene.mjs --base origin/main --remote origin --json

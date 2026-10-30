@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 3.9.0
-updated: 2026-10-29
+version: 3.10.0
+updated: 2026-10-31
 owner: agent_operating_model
 status: active
 ---
@@ -191,8 +191,9 @@ unique intended work only in a working tree, stash, or reflog.
 Before a rebase, reset, amend, history rewrite, or conflict-heavy merge:
 
 1. fetch and record the current branch, HEAD, upstream, and status;
-2. create a dated recoverable `backup/` ref when the branch has unique or
-   shared work;
+2. create a dated local `backup/` branch when the branch has unique or shared
+   work. Do not push it: GitHub rejects new `backup/` branches, and the
+   pushed task branch or its PR is the remote preservation;
 3. keep `rerere.enabled=true` for stable repeated conflict resolution; and
 4. never rewrite a shared upstream branch; create a fresh branch and import
    reviewed commits instead.
@@ -216,7 +217,11 @@ node tool/docs/check_doc_metadata.mjs --base origin/main
 
 After a squash or merge is proven on `origin/main`, follow the manual completion
 and retirement checks below before removing its disposable worktree or pruning
-its single-use branch. Do not reuse it for another slice.
+its single-use branch. Do not reuse it for another slice, and do not push to
+it after its PR merges; follow-up work starts a fresh branch from `origin/main`.
+GitHub deletes a merged PR's branch, and the weekly Branch Prune workflow
+deletes any other remote branch the Branch Hygiene classifier proves is already
+in main.
 
 ## Repo-Managed Pre-Commit Hook
 
