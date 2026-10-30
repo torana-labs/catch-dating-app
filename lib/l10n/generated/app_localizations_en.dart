@@ -25779,7 +25779,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostMembershipsUnavailableNotOffered =>
-      'Catch hasn’t turned on memberships for your club yet.';
+      'Catch hasn’t turned on memberships for your organizer yet.';
 
   @override
   String get hostMembershipsUnavailableConnectRazorpay =>
