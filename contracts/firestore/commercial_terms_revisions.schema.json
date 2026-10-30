@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/commercial_terms_revisions.schema.json",
+  "title": "CommercialTermsRevisionDocument",
+  "description": "Immutable history of every commercial terms revision, keyed <termsId>_r<revision>. Created in the same transaction as the commercialTerms write it records and never updated.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "termsId", "scope", "organizerId", "revision", "terms", "reason", "actorUid", "createdAtMillis"],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "callable-owned"},
+    "termsId": {"type": "string", "pattern": "^(platform|org_[a-f0-9]{64})$", "x-catch-ownership": "callable-owned"},
+    "scope": {"enum": ["platform", "organizer"], "x-catch-ownership": "callable-owned"},
+    "organizerId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}], "x-catch-ownership": "callable-owned"},
+    "revision": {"type": "integer", "minimum": 1, "x-catch-ownership": "callable-owned"},
+    "terms": {"anyOf": [{"$ref": "../shared/commercial_terms.schema.json#/definitions/terms"}, {"$ref": "../shared/commercial_terms.schema.json#/definitions/termsOverride"}], "x-catch-ownership": "callable-owned"},
+    "reason": {"type": "string", "minLength": 3, "maxLength": 500, "x-catch-ownership": "callable-owned"},
+    "actorUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "createdAtMillis": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "callable-owned"}
+  },
+  "x-firestore-collection": "commercialTermsRevisions",
+  "x-firestore-path": "commercialTermsRevisions/{revisionId}",
+  "x-document-id-field": "revisionId",
+  "x-owner": "manageCommercialTerms admin callable"
+}

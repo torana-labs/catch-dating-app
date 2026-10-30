@@ -14,6 +14,37 @@ enum HostMembershipBillingPauseState {
       this == HostMembershipBillingPauseState.pausing;
 }
 
+/// Who collects membership money for the organizer: their own connected
+/// Razorpay account, or Catch's account with a Route split.
+enum HostMembershipPaymentMode {
+  hostCollected,
+  platformSplit;
+
+  static HostMembershipPaymentMode? fromWire(String? value) =>
+      value == null ? null : membershipEnum(values, value, (mode) => mode.name);
+}
+
+/// The server's first reason memberships cannot run for the organizer.
+/// [other] keeps older builds working when the server adds a reason.
+enum HostMembershipUnavailableReason {
+  notOffered,
+  termsNotConfigured,
+  razorpayNotConnected,
+  razorpayNeedsAttention,
+  subscriptionsNotEnabled,
+  payoutAccountNotReady,
+  providerUnavailable,
+  other;
+
+  static HostMembershipUnavailableReason? fromWire(String? value) {
+    if (value == null) return null;
+    for (final reason in values) {
+      if (reason.name == value) return reason;
+    }
+    return other;
+  }
+}
+
 /// Manager projection of an organizer's paid membership program.
 class HostMembershipProgramView {
   const HostMembershipProgramView({
@@ -24,6 +55,8 @@ class HostMembershipProgramView {
     required this.routeAccountReady,
     required this.feeConfigured,
     required this.exists,
+    this.paymentMode,
+    this.unavailableReason,
   });
 
   factory HostMembershipProgramView.fromResponse(Object? data) {
@@ -44,6 +77,13 @@ class HostMembershipProgramView {
       memberCount: program == null ? 0 : membershipInt(program, 'memberCount'),
       routeAccountReady: membershipBool(map, 'routeAccountReady'),
       feeConfigured: membershipBool(map, 'feeConfigured'),
+      // Absent from servers that predate payment modes.
+      paymentMode: HostMembershipPaymentMode.fromWire(
+        membershipNullableString(map, 'paymentMode'),
+      ),
+      unavailableReason: HostMembershipUnavailableReason.fromWire(
+        membershipNullableString(map, 'unavailableReason'),
+      ),
     );
   }
 
@@ -52,10 +92,23 @@ class HostMembershipProgramView {
   final bool testMode;
   final HostMembershipBillingPauseState billingPause;
   final int memberCount;
-  final bool routeAccountReady;
-  final bool feeConfigured;
 
-  bool get canEnable => routeAccountReady && feeConfigured && !enabled;
+  /// The payment account the effective mode needs is ready.
+  final bool routeAccountReady;
+
+  /// Catch's commercial terms resolve for this organizer.
+  final bool feeConfigured;
+  final HostMembershipPaymentMode? paymentMode;
+  final HostMembershipUnavailableReason? unavailableReason;
+
+  bool get collectsOnOwnAccount =>
+      paymentMode == HostMembershipPaymentMode.hostCollected;
+
+  bool get canEnable =>
+      routeAccountReady &&
+      feeConfigured &&
+      !enabled &&
+      unavailableReason == null;
 }
 
 /// Editable plan fields sent to `manageHostMembershipPlans` `save`.

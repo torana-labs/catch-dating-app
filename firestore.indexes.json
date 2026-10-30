@@ -6575,6 +6575,20 @@
       ]
     },
     {
+      "collectionGroup": "hostMembershipCharges",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAtMillis",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "hostMembershipCheckouts",
       "queryScope": "COLLECTION",
       "fields": [

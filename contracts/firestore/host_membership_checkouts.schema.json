@@ -20,6 +20,7 @@
     "state": {"enum": ["creating", "open", "authorized", "expired", "failed"], "x-catch-ownership": "server-only"},
     "provider": {"$ref": "../shared/host_membership_common.schema.json#/definitions/provider", "x-catch-ownership": "server-only"},
     "providerSubscriptionId": {"type": ["string", "null"], "pattern": "^sub_[A-Za-z0-9]{6,40}$", "x-catch-ownership": "server-only"},
+    "payment": {"description": "The program binding the subscription was created on. Absent on checkouts created under the original platform-account model.", "$ref": "../shared/host_membership_common.schema.json#/definitions/paymentBinding", "x-catch-ownership": "server-only"},
     "authorizationUrl": {"type": ["string", "null"], "maxLength": 500, "pattern": "^https://", "x-catch-ownership": "server-only"},
     "expiresAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis", "x-catch-ownership": "server-only"},
     "createdAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis", "x-catch-ownership": "server-only"},

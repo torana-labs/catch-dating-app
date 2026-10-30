@@ -25737,6 +25737,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostMembershipsPayoutNotReady => 'Set up required';
 
   @override
+  String get hostMembershipsRazorpayTitle => 'Razorpay account';
+
+  @override
+  String get hostMembershipsUnavailableNotOffered =>
+      'Catch hasn’t turned on memberships for your club yet.';
+
+  @override
+  String get hostMembershipsUnavailableConnectRazorpay =>
+      'Connect your Razorpay account to sell memberships. Members pay you directly.';
+
+  @override
+  String get hostMembershipsUnavailableReconnectRazorpay =>
+      'Your Razorpay connection needs attention. Reconnect it to keep selling memberships.';
+
+  @override
+  String get hostMembershipsUnavailableSubscriptions =>
+      'Turn on Subscriptions in your Razorpay account, then turn on memberships again.';
+
+  @override
+  String get hostMembershipsUnavailablePayout =>
+      'Finish payout setup before selling memberships.';
+
+  @override
+  String get hostMembershipsUnavailableProvider =>
+      'Razorpay couldn’t be reached. Try again in a few minutes.';
+
+  @override
   String get hostMembershipsUnavailableTitle => 'Not available yet';
 
   @override

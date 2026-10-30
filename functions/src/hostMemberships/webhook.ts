@@ -3,30 +3,62 @@ import {onRequest, type Request} from "firebase-functions/v2/https";
 import type {Response} from "express";
 import type {HostMembershipWebhookReceiptDocument} from
   "../shared/generated/firestoreAdminTypes";
+import {validateOrganizerPaymentConnectionDocument} from
+  "../shared/generated/validators/organizerPaymentConnectionDocument";
+import type {HostMembershipBillingProvider} from "./billingProvider";
 import {recordMembershipCharge, settleMembershipCharge} from "./charges";
 import {hostMembershipWebhookReceiptId} from "./ids";
 import {applySubscriptionSnapshot, collections} from "./membershipStore";
+import {hostMembershipWebhookEvents as subscribedEvents} from
+  "./razorpaySubscriptionProvider";
 import {
   defaultHostMembershipRuntime,
-  hostMembershipFeeBasisPoints,
   type HostMembershipRuntime,
+  type MembershipPaymentBinding,
 } from "./runtime";
 
-export const hostMembershipWebhookEvents = new Set([
-  "subscription.authenticated",
-  "subscription.activated",
-  "subscription.charged",
-  "subscription.pending",
-  "subscription.halted",
-  "subscription.paused",
-  "subscription.resumed",
-  "subscription.cancelled",
-  "subscription.completed",
-  "subscription.updated",
-]);
+export const hostMembershipWebhookEvents: ReadonlySet<string> =
+  new Set(subscribedEvents);
 
 export type HostMembershipWebhookResult =
   | "invalid" | "foreign" | "duplicate" | "ignored" | "applied" | "stale";
+
+interface DeliveringAccount {
+  provider: HostMembershipBillingProvider;
+  accountId: string;
+  deliveredBy: Pick<MembershipPaymentBinding, "moneyFlow" | "bindingId">;
+  receiptKey: string;
+}
+
+/**
+ * A delivery names its account by URL: the organizer merchant webhook Catch
+ * registered carries its connection id; Catch's platform webhook carries
+ * none. Either way the signature is checked with that account's secret.
+ */
+async function deliveringAccount(connectionId: string | undefined,
+  runtime: HostMembershipRuntime): Promise<DeliveringAccount | null> {
+  if (connectionId === undefined) {
+    const config = await runtime.platformConfig();
+    return {provider: await runtime.platformProvider(),
+      accountId: config.platformAccountId,
+      deliveredBy: {moneyFlow: "platformSplit", bindingId: ""},
+      receiptKey: ""};
+  }
+  if (!/^rpc_[a-f0-9]{32}$/u.test(connectionId)) return null;
+  const snap = await runtime.db().collection("organizerPaymentConnections")
+    .doc(connectionId).get();
+  const connection = snap.data();
+  if (!snap.exists ||
+      !validateOrganizerPaymentConnectionDocument(connection) ||
+      !connection.accountId || !connection.secretVersionResource) return null;
+  // A disconnected merchant still reports renewals of existing members.
+  return {provider: await runtime.merchantProvider({
+    organizerId: connection.organizerId, connectionId,
+    accountId: connection.accountId, mode: connection.mode}),
+  accountId: connection.accountId,
+  deliveredBy: {moneyFlow: "hostCollected", bindingId: connectionId},
+  receiptKey: `${connectionId}\0`};
+}
 
 /**
  * Verified provider evidence is the only source of membership status. A
@@ -37,10 +69,12 @@ export async function processHostMembershipWebhook(input: {
   rawBody: Buffer;
   signature: string | undefined;
   providerEventId: string | undefined;
+  connectionId?: string;
 }, runtime: HostMembershipRuntime = defaultHostMembershipRuntime):
   Promise<HostMembershipWebhookResult> {
-  const config = await runtime.config();
-  const provider = runtime.provider(config);
+  const account = await deliveringAccount(input.connectionId, runtime);
+  if (!account) return "invalid";
+  const {provider} = account;
   if (typeof input.signature !== "string" ||
       !provider.verifyWebhook(input.rawBody, input.signature)) {
     return "invalid";
@@ -50,7 +84,7 @@ export async function processHostMembershipWebhook(input: {
     input.providerEventId : null;
   const event = provider.parseWebhook(input.rawBody, eventId);
   const catchProject = runtime.catchProject();
-  if (!event || event.accountId !== config.platformAccountId ||
+  if (!event || event.accountId !== account.accountId ||
       !hostMembershipWebhookEvents.has(event.type) || !event.subscription ||
       event.subscription.notes.catchProject !== catchProject) {
     return "foreign";
@@ -58,20 +92,18 @@ export async function processHostMembershipWebhook(input: {
   const db = runtime.db();
   const nowMillis = runtime.nowMillis();
   const receiptRef = db.collection(collections.receipts).doc(
-    hostMembershipWebhookReceiptId(eventId ??
-      input.rawBody.toString("base64")));
+    hostMembershipWebhookReceiptId(account.receiptKey + (eventId ??
+      input.rawBody.toString("base64"))));
   if ((await receiptRef.get()).exists) return "duplicate";
 
   const applied = await applySubscriptionSnapshot({db,
     snapshot: event.subscription, observedAtMillis: event.createdAtMillis,
-    nowMillis, catchProject});
+    nowMillis, catchProject, deliveredBy: account.deliveredBy});
   let chargeId: string | null = null;
   if (event.type === "subscription.charged" && event.payment &&
-      applied.membershipId) {
+      applied.membershipId && applied.outcome !== "ignored") {
     chargeId = await recordMembershipCharge({db, payment: event.payment,
-      snapshot: event.subscription,
-      feeBasisPoints: hostMembershipFeeBasisPoints(config), mode: config.mode,
-      nowMillis});
+      snapshot: event.subscription, nowMillis});
   }
   const receipt: HostMembershipWebhookReceiptDocument = {
     schemaVersion: 1, provider: "razorpay", providerEventId: eventId,
@@ -85,7 +117,7 @@ export async function processHostMembershipWebhook(input: {
     // A concurrent delivery recorded first; both applied the same snapshot.
     return "duplicate";
   }
-  if (chargeId) {
+  if (chargeId && account.deliveredBy.moneyFlow === "platformSplit") {
     // Best effort; the reconcile schedule retries any pending transfer.
     await settleMembershipCharge({db, provider, runtime, chargeId,
       nowMillis}).catch(() => undefined);
@@ -101,8 +133,10 @@ export async function hostMembershipRazorpayWebhookHandler(
   if (request.method !== "POST") {
     response.status(405).send("Method not allowed."); return;
   }
+  const connectionId = request.query.connectionId;
   if (!Buffer.isBuffer(request.rawBody) ||
-      request.rawBody.length > 64 * 1024) {
+      request.rawBody.length > 64 * 1024 ||
+      connectionId !== undefined && typeof connectionId !== "string") {
     response.status(400).send("Invalid webhook."); return;
   }
   try {
@@ -110,6 +144,7 @@ export async function hostMembershipRazorpayWebhookHandler(
       rawBody: request.rawBody,
       signature: request.get("x-razorpay-signature"),
       providerEventId: request.get("x-razorpay-event-id"),
+      ...(typeof connectionId === "string" ? {connectionId} : {}),
     }, runtime);
     if (result === "invalid") {
       response.status(400).send("Invalid webhook."); return;

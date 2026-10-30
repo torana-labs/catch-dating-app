@@ -1,7 +1,7 @@
 ---
 doc_id: host_forms_product_spec
-version: 1.3.1
-updated: 2026-10-04
+version: 1.4.0
+updated: 2026-10-30
 owner: host_tooling
 status: active
 ---
@@ -336,9 +336,12 @@ The platform adapter uses the separate
 `RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION` deployment variable. Its value must
 pin a numeric Secret Manager version in the deployment project, never `latest`.
 The secret is an object with `schema: "catch.razorpay-platform-payments/v1"`,
-`mode`, `platformAccountId`, `keyId`, `keySecret`, `webhookSecret`, and explicit
-`feeBasisPoints: {formFee, eventAdmission}`. No commission is inferred from a
-missing field. Keys must match the configured test/live mode. Keep this variable
+`mode`, `platformAccountId`, `keyId`, `keySecret` and `webhookSecret`. It holds
+credentials only. The Route fee is the purpose's at-source fee in Catch's
+commercial terms ([data contracts](data_contracts.md#commercial-terms)), frozen
+on each attempt; without platform terms a Route attempt fails closed. Older
+versions that still carry `feeBasisPoints` load, and the key is ignored. Keys
+must match the configured test/live mode. Keep this variable
 empty until the profile and selected linked accounts are ready. Configure the
 reference in the matching GitHub deployment environment; the promotion workflow
 materializes it without copying secret values into dotenv output. Retain pinned
