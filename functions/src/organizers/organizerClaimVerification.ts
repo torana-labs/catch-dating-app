@@ -42,7 +42,11 @@ import type {InstagramInboundMessage} from "./instagramClaimProtocol";
 import type {InstagramMessagingProvider} from "./instagramMessagingProvider";
 
 type ClaimMethod = StartOrganizerClaimVerificationCallablePayload["method"];
-type MessageOutcome = OrganizerClaimInstagramMessageDocument["outcome"];
+// The receipt also records nomination replies (instagramInboundRouter.ts);
+// claim verification writes only these.
+type MessageOutcome = Exclude<OrganizerClaimInstagramMessageDocument["outcome"],
+  "nominationQueued" | "nominationWithoutLinks" | "nominationRateLimited" |
+  "nominationUnclear" | "shareWithoutProfile">;
 
 const minuteMillis = 60 * 1000;
 export const CLAIM_CODE_LIFETIME_MILLIS = 30 * minuteMillis;
@@ -499,6 +503,7 @@ function stageReceipt(
     messageKey: message.messageKey,
     outcome,
     attemptId,
+    nominatorId: null,
     receivedAt: deps.serverTimestamp(),
     expiresAt: admin.firestore.Timestamp.fromMillis(
       deps.now() + MESSAGE_RECEIPT_LIFETIME_MILLIS),

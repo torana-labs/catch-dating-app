@@ -24,6 +24,7 @@ const schemaAdminListSupplyNominatorsCallableResponseSchema = <String, Object?>{
           'nominatorId',
           'channel',
           'phoneLast4',
+          'instagramHandle',
           'role',
           'uid',
           'displayName',
@@ -34,17 +35,28 @@ const schemaAdminListSupplyNominatorsCallableResponseSchema = <String, Object?>{
         'properties': <String, Object?>{
           'nominatorId': <String, Object?>{
             'type': 'string',
-            'pattern': '^whatsapp-[a-f0-9]{64}\$',
+            'pattern': '^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})\$',
           },
           'channel': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
               'whatsapp',
+              'instagram',
             ],
           },
           'phoneLast4': <String, Object?>{
-            'type': 'string',
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
             'pattern': '^[0-9]{4}\$',
+          },
+          'instagramHandle': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'pattern': '^[a-z0-9._]{1,30}\$',
           },
           'role': <String, Object?>{
             'type': 'string',

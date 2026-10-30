@@ -132,7 +132,8 @@ const senderUsernames = Object.fromEntries(
 
 function message(mid: string, username: string, text: string) {
   return {messageKey: createHash("sha256").update(mid).digest("hex"),
-    senderId: senderIds[username] ?? "9999", text};
+    senderId: senderIds[username] ?? "9999", text,
+    attachments: [], unsupported: false};
 }
 
 async function startCode(deps: InstagramClaimMessageDeps) {

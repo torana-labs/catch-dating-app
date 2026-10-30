@@ -12,20 +12,31 @@ export const adminSetSupplyNominatorCallableResponseSchema: Record<string, unkno
     "nominatorId",
     "created",
     "phoneLast4",
+    "instagramHandle",
     "defaultMarket",
     "active"
   ],
   "properties": {
     "nominatorId": {
       "type": "string",
-      "pattern": "^whatsapp-[a-f0-9]{64}$"
+      "pattern": "^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})$"
     },
     "created": {
       "type": "boolean"
     },
     "phoneLast4": {
-      "type": "string",
+      "type": [
+        "string",
+        "null"
+      ],
       "pattern": "^[0-9]{4}$"
+    },
+    "instagramHandle": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z0-9._]{1,30}$"
     },
     "defaultMarket": {
       "type": [

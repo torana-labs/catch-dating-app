@@ -6,7 +6,7 @@ export const supplyNominatorDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/supply_nominators.schema.json",
   "title": "SupplyNominatorDocument",
-  "description": "A person staff have allowed to nominate organizers by messaging Catch. A WhatsApp nominator is keyed by the hash of their number, which is the same endpoint hash the WhatsApp receipts use, so the number itself is never stored; only its last four digits are kept so staff can tell entries apart. Each message from an active nominator becomes Supply Intake nominations credited to their Catch account. Their authority (a sales role, or a current partner membership) is checked again on every message.",
+  "description": "A person staff have allowed to nominate organizers by messaging Catch. A WhatsApp nominator is keyed by the hash of their number, which is the same endpoint hash the WhatsApp receipts use, so the number itself is never stored; only its last four digits are kept so staff can tell entries apart. An Instagram nominator is keyed by their public Instagram username, which the webhook reads for each sender. Each message from an active nominator becomes Supply Intake nominations credited to their Catch account. Their authority (a sales role, or a current partner membership) is checked again on every message.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "supplyNominators",
@@ -26,7 +26,60 @@ export const supplyNominatorDocumentSchema: Record<string, unknown> = {
     "active",
     "createdAt",
     "updatedAt",
-    "updatedByUid"
+    "updatedByUid",
+    "instagramHandle"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "channel": {
+            "const": "whatsapp"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "nominatorId": {
+            "pattern": "^whatsapp-"
+          },
+          "endpointHash": {
+            "type": "string"
+          },
+          "phoneLast4": {
+            "type": "string"
+          },
+          "instagramHandle": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "channel": {
+            "const": "instagram"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "nominatorId": {
+            "pattern": "^instagram-"
+          },
+          "endpointHash": {
+            "type": "null"
+          },
+          "phoneLast4": {
+            "type": "null"
+          },
+          "instagramHandle": {
+            "type": "string"
+          }
+        }
+      }
+    }
   ],
   "properties": {
     "schemaVersion": {
@@ -34,21 +87,35 @@ export const supplyNominatorDocumentSchema: Record<string, unknown> = {
     },
     "nominatorId": {
       "type": "string",
-      "pattern": "^whatsapp-[a-f0-9]{64}$"
+      "pattern": "^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})$"
     },
     "channel": {
       "type": "string",
       "enum": [
-        "whatsapp"
+        "whatsapp",
+        "instagram"
       ]
     },
     "endpointHash": {
-      "type": "string",
+      "type": [
+        "string",
+        "null"
+      ],
       "pattern": "^[a-f0-9]{64}$"
     },
     "phoneLast4": {
-      "type": "string",
+      "type": [
+        "string",
+        "null"
+      ],
       "pattern": "^[0-9]{4}$"
+    },
+    "instagramHandle": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z0-9._]{1,30}$"
     },
     "role": {
       "type": "string",

@@ -6,7 +6,7 @@ import {renderSupplyNominators} from "./supplyNominatorPanels";
 afterEach(cleanup);
 
 const nominator = (overrides: Record<string, unknown> = {}) => ({nominatorId: `whatsapp-${"a".repeat(64)}`,
-  channel: "whatsapp", phoneLast4: "2345", role: "associate", uid: "owner-1", displayName: "Suvrat",
+  channel: "whatsapp", phoneLast4: "2345", instagramHandle: null, role: "associate", uid: "owner-1", displayName: "Suvrat",
   defaultMarket: "mumbai", active: true, updatedAt: "2026-10-30T08:00:00.000Z", ...overrides});
 
 function controller(overrides: Partial<SupplyNominatorController> = {}) {

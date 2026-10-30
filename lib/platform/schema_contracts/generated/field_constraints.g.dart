@@ -10359,7 +10359,7 @@ abstract final class CatchContractConstraints {
     path: 'adminListSupplyNominatorsCallableResponse.nominators.items.channel',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['whatsapp'],
+    enumValues: <String>['whatsapp', 'instagram'],
   );
 
   static const adminListSupplyNominatorsCallableResponseNominatorsItemsDefaultMarket = CatchContractFieldConstraints(
@@ -10376,16 +10376,21 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminListSupplyNominatorsCallableResponseNominatorsItemsInstagramHandle = CatchContractFieldConstraints(
+    path: 'adminListSupplyNominatorsCallableResponse.nominators.items.instagramHandle',
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9._]{1,30}\$',
+  );
+
   static const adminListSupplyNominatorsCallableResponseNominatorsItemsNominatorId = CatchContractFieldConstraints(
     path: 'adminListSupplyNominatorsCallableResponse.nominators.items.nominatorId',
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^whatsapp-[a-f0-9]{64}\$',
+    pattern: '^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})\$',
   );
 
   static const adminListSupplyNominatorsCallableResponseNominatorsItemsPhoneLast4 = CatchContractFieldConstraints(
     path: 'adminListSupplyNominatorsCallableResponse.nominators.items.phoneLast4',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^[0-9]{4}\$',
   );
@@ -15195,9 +15200,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminSetSupplyNominatorCallablePayloadInstagramHandle = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallablePayload.instagramHandle',
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9._]{1,30}\$',
+  );
+
   static const adminSetSupplyNominatorCallablePayloadPhoneE164 = CatchContractFieldConstraints(
     path: 'adminSetSupplyNominatorCallablePayload.phoneE164',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^\\+[1-9][0-9]{6,14}\$',
   );
@@ -15234,16 +15244,21 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-z][a-z0-9-]{1,49}\$',
   );
 
+  static const adminSetSupplyNominatorCallableResponseInstagramHandle = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallableResponse.instagramHandle',
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9._]{1,30}\$',
+  );
+
   static const adminSetSupplyNominatorCallableResponseNominatorId = CatchContractFieldConstraints(
     path: 'adminSetSupplyNominatorCallableResponse.nominatorId',
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^whatsapp-[a-f0-9]{64}\$',
+    pattern: '^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})\$',
   );
 
   static const adminSetSupplyNominatorCallableResponsePhoneLast4 = CatchContractFieldConstraints(
     path: 'adminSetSupplyNominatorCallableResponse.phoneLast4',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^[0-9]{4}\$',
   );
@@ -112663,11 +112678,17 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const organizerClaimInstagramMessageDocumentNominatorId = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.nominatorId',
+    valueTypes: <String>['string'],
+    pattern: '^instagram-[a-z0-9._]{1,30}\$',
+  );
+
   static const organizerClaimInstagramMessageDocumentOutcome = CatchContractFieldConstraints(
     path: 'organizerClaimInstagramMessageDocument.outcome',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['verified', 'wrongSender', 'expiredCode', 'codeAlreadyUsed', 'unknownCode', 'claimUnavailable', 'senderUnknown', 'rateLimited'],
+    enumValues: <String>['verified', 'wrongSender', 'expiredCode', 'codeAlreadyUsed', 'unknownCode', 'claimUnavailable', 'senderUnknown', 'rateLimited', 'nominationQueued', 'nominationWithoutLinks', 'nominationRateLimited', 'nominationUnclear', 'shareWithoutProfile'],
   );
 
   static const organizerClaimInstagramMessageDocumentReceivedAtNanoseconds = CatchContractFieldConstraints(
@@ -166307,7 +166328,7 @@ abstract final class CatchContractConstraints {
     path: 'supplyNominatorDocument.channel',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['whatsapp'],
+    enumValues: <String>['whatsapp', 'instagram'],
   );
 
   static const supplyNominatorDocumentCreatedAt = CatchContractFieldConstraints(
@@ -166333,21 +166354,25 @@ abstract final class CatchContractConstraints {
 
   static const supplyNominatorDocumentEndpointHash = CatchContractFieldConstraints(
     path: 'supplyNominatorDocument.endpointHash',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const supplyNominatorDocumentInstagramHandle = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.instagramHandle',
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9._]{1,30}\$',
   );
 
   static const supplyNominatorDocumentNominatorId = CatchContractFieldConstraints(
     path: 'supplyNominatorDocument.nominatorId',
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^whatsapp-[a-f0-9]{64}\$',
+    pattern: '^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})\$',
   );
 
   static const supplyNominatorDocumentPhoneLast4 = CatchContractFieldConstraints(
     path: 'supplyNominatorDocument.phoneLast4',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^[0-9]{4}\$',
   );
@@ -180669,6 +180694,7 @@ abstract final class CatchContractConstraints {
     'adminListSupplyNominatorsCallableResponse.nominators.items.channel': adminListSupplyNominatorsCallableResponseNominatorsItemsChannel,
     'adminListSupplyNominatorsCallableResponse.nominators.items.defaultMarket': adminListSupplyNominatorsCallableResponseNominatorsItemsDefaultMarket,
     'adminListSupplyNominatorsCallableResponse.nominators.items.displayName': adminListSupplyNominatorsCallableResponseNominatorsItemsDisplayName,
+    'adminListSupplyNominatorsCallableResponse.nominators.items.instagramHandle': adminListSupplyNominatorsCallableResponseNominatorsItemsInstagramHandle,
     'adminListSupplyNominatorsCallableResponse.nominators.items.nominatorId': adminListSupplyNominatorsCallableResponseNominatorsItemsNominatorId,
     'adminListSupplyNominatorsCallableResponse.nominators.items.phoneLast4': adminListSupplyNominatorsCallableResponseNominatorsItemsPhoneLast4,
     'adminListSupplyNominatorsCallableResponse.nominators.items.role': adminListSupplyNominatorsCallableResponseNominatorsItemsRole,
@@ -181323,12 +181349,14 @@ abstract final class CatchContractConstraints {
     'adminSetSupplyNominatorCallablePayload.active': adminSetSupplyNominatorCallablePayloadActive,
     'adminSetSupplyNominatorCallablePayload.defaultMarket': adminSetSupplyNominatorCallablePayloadDefaultMarket,
     'adminSetSupplyNominatorCallablePayload.displayName': adminSetSupplyNominatorCallablePayloadDisplayName,
+    'adminSetSupplyNominatorCallablePayload.instagramHandle': adminSetSupplyNominatorCallablePayloadInstagramHandle,
     'adminSetSupplyNominatorCallablePayload.phoneE164': adminSetSupplyNominatorCallablePayloadPhoneE164,
     'adminSetSupplyNominatorCallablePayload.role': adminSetSupplyNominatorCallablePayloadRole,
     'adminSetSupplyNominatorCallablePayload.uid': adminSetSupplyNominatorCallablePayloadUid,
     'adminSetSupplyNominatorCallableResponse.active': adminSetSupplyNominatorCallableResponseActive,
     'adminSetSupplyNominatorCallableResponse.created': adminSetSupplyNominatorCallableResponseCreated,
     'adminSetSupplyNominatorCallableResponse.defaultMarket': adminSetSupplyNominatorCallableResponseDefaultMarket,
+    'adminSetSupplyNominatorCallableResponse.instagramHandle': adminSetSupplyNominatorCallableResponseInstagramHandle,
     'adminSetSupplyNominatorCallableResponse.nominatorId': adminSetSupplyNominatorCallableResponseNominatorId,
     'adminSetSupplyNominatorCallableResponse.phoneLast4': adminSetSupplyNominatorCallableResponsePhoneLast4,
     'adminShareSalesDemoPartnerReviewCallablePayload.blueprintId': adminShareSalesDemoPartnerReviewCallablePayloadBlueprintId,
@@ -194546,6 +194574,7 @@ abstract final class CatchContractConstraints {
     'organizerClaimInstagramMessageDocument.expiresAt._nanoseconds': organizerClaimInstagramMessageDocumentExpiresAtNanoseconds,
     'organizerClaimInstagramMessageDocument.expiresAt._seconds': organizerClaimInstagramMessageDocumentExpiresAtSeconds,
     'organizerClaimInstagramMessageDocument.messageKey': organizerClaimInstagramMessageDocumentMessageKey,
+    'organizerClaimInstagramMessageDocument.nominatorId': organizerClaimInstagramMessageDocumentNominatorId,
     'organizerClaimInstagramMessageDocument.outcome': organizerClaimInstagramMessageDocumentOutcome,
     'organizerClaimInstagramMessageDocument.receivedAt._nanoseconds': organizerClaimInstagramMessageDocumentReceivedAtNanoseconds,
     'organizerClaimInstagramMessageDocument.receivedAt._seconds': organizerClaimInstagramMessageDocumentReceivedAtSeconds,
@@ -201971,6 +202000,7 @@ abstract final class CatchContractConstraints {
     'supplyNominatorDocument.defaultMarket': supplyNominatorDocumentDefaultMarket,
     'supplyNominatorDocument.displayName': supplyNominatorDocumentDisplayName,
     'supplyNominatorDocument.endpointHash': supplyNominatorDocumentEndpointHash,
+    'supplyNominatorDocument.instagramHandle': supplyNominatorDocumentInstagramHandle,
     'supplyNominatorDocument.nominatorId': supplyNominatorDocumentNominatorId,
     'supplyNominatorDocument.phoneLast4': supplyNominatorDocumentPhoneLast4,
     'supplyNominatorDocument.role': supplyNominatorDocumentRole,

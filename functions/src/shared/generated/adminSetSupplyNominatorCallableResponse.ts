@@ -5,7 +5,8 @@
 export interface AdminSetSupplyNominatorCallableResponse {
   nominatorId: string;
   created: boolean;
-  phoneLast4: string;
+  phoneLast4: string | null;
+  instagramHandle: string | null;
   defaultMarket: string | null;
   active: boolean;
 }

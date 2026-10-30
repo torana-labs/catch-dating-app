@@ -32585,7 +32585,7 @@ export const supplyNominatorDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/supply_nominators.schema.json",
   "title": "SupplyNominatorDocument",
-  "description": "A person staff have allowed to nominate organizers by messaging Catch. A WhatsApp nominator is keyed by the hash of their number, which is the same endpoint hash the WhatsApp receipts use, so the number itself is never stored; only its last four digits are kept so staff can tell entries apart. Each message from an active nominator becomes Supply Intake nominations credited to their Catch account. Their authority (a sales role, or a current partner membership) is checked again on every message.",
+  "description": "A person staff have allowed to nominate organizers by messaging Catch. A WhatsApp nominator is keyed by the hash of their number, which is the same endpoint hash the WhatsApp receipts use, so the number itself is never stored; only its last four digits are kept so staff can tell entries apart. An Instagram nominator is keyed by their public Instagram username, which the webhook reads for each sender. Each message from an active nominator becomes Supply Intake nominations credited to their Catch account. Their authority (a sales role, or a current partner membership) is checked again on every message.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "supplyNominators",
@@ -32605,7 +32605,60 @@ export const supplyNominatorDocumentSchema = {
     "active",
     "createdAt",
     "updatedAt",
-    "updatedByUid"
+    "updatedByUid",
+    "instagramHandle"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "channel": {
+            "const": "whatsapp"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "nominatorId": {
+            "pattern": "^whatsapp-"
+          },
+          "endpointHash": {
+            "type": "string"
+          },
+          "phoneLast4": {
+            "type": "string"
+          },
+          "instagramHandle": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "channel": {
+            "const": "instagram"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "nominatorId": {
+            "pattern": "^instagram-"
+          },
+          "endpointHash": {
+            "type": "null"
+          },
+          "phoneLast4": {
+            "type": "null"
+          },
+          "instagramHandle": {
+            "type": "string"
+          }
+        }
+      }
+    }
   ],
   "properties": {
     "schemaVersion": {
@@ -32613,21 +32666,35 @@ export const supplyNominatorDocumentSchema = {
     },
     "nominatorId": {
       "type": "string",
-      "pattern": "^whatsapp-[a-f0-9]{64}$"
+      "pattern": "^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})$"
     },
     "channel": {
       "type": "string",
       "enum": [
-        "whatsapp"
+        "whatsapp",
+        "instagram"
       ]
     },
     "endpointHash": {
-      "type": "string",
+      "type": [
+        "string",
+        "null"
+      ],
       "pattern": "^[a-f0-9]{64}$"
     },
     "phoneLast4": {
-      "type": "string",
+      "type": [
+        "string",
+        "null"
+      ],
       "pattern": "^[0-9]{4}$"
+    },
+    "instagramHandle": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z0-9._]{1,30}$"
     },
     "role": {
       "type": "string",
@@ -194047,7 +194114,7 @@ export const organizerClaimInstagramMessageDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_claim_instagram_messages.schema.json",
   "title": "OrganizerClaimInstagramMessageDocument",
-  "description": "Server-only receipt for one Instagram direct message the claim webhook handled, stored at organizerClaimInstagramMessages/{messageKey}. Meta retries deliveries, so the receipt makes each message count once. It keeps no message text or sender id. Firestore TTL deletes it after expiresAt.",
+  "description": "Server-only receipt for one Instagram direct message the webhook handled, stored at organizerClaimInstagramMessages/{messageKey}: a claim code, or a nominator's message that Catch answered. Meta retries deliveries, so the receipt makes each message count once and each reply go once. It keeps no message text or sender id; a nomination keeps the nominator's registry id. Firestore TTL deletes it after expiresAt.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerClaimInstagramMessages",
@@ -194058,6 +194125,7 @@ export const organizerClaimInstagramMessageDocumentSchema = {
     "messageKey",
     "outcome",
     "attemptId",
+    "nominatorId",
     "receivedAt",
     "expiresAt"
   ],
@@ -194078,7 +194146,12 @@ export const organizerClaimInstagramMessageDocumentSchema = {
         "unknownCode",
         "claimUnavailable",
         "senderUnknown",
-        "rateLimited"
+        "rateLimited",
+        "nominationQueued",
+        "nominationWithoutLinks",
+        "nominationRateLimited",
+        "nominationUnclear",
+        "shareWithoutProfile"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -194088,6 +194161,19 @@ export const organizerClaimInstagramMessageDocumentSchema = {
           "type": "string",
           "minLength": 1,
           "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "nominatorId": {
+      "description": "The registered nominator who sent a nomination, so auto-publish can check they still are one. Null for claim messages.",
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^instagram-[a-z0-9._]{1,30}$"
         },
         {
           "type": "null"
@@ -270259,11 +270345,10 @@ export const adminSetSupplyNominatorCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_set_supply_nominator_payload.schema.json",
   "title": "AdminSetSupplyNominatorCallablePayload",
-  "description": "Adds or updates someone who may nominate organizers by sending links to Catch's WhatsApp number. Messages from this number become Supply Intake nominations credited to the uid. The uid must hold a sales role (associate) or a current partner membership (partner). Setting active to false stops new messages counting; nothing is deleted.",
+  "description": "Adds or updates someone who may nominate organizers by sending links to Catch's WhatsApp number or Instagram account. Exactly one of phoneE164 and instagramHandle names them. Their messages become Supply Intake nominations credited to the uid. The uid must hold a sales role (associate) or a current partner membership (partner). Setting active to false stops new messages counting; nothing is deleted.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "phoneE164",
     "uid",
     "role",
     "displayName",
@@ -270274,6 +270359,10 @@ export const adminSetSupplyNominatorCallablePayloadSchema = {
     "phoneE164": {
       "type": "string",
       "pattern": "^\\+[1-9][0-9]{6,14}$"
+    },
+    "instagramHandle": {
+      "type": "string",
+      "pattern": "^[a-z0-9._]{1,30}$"
     },
     "uid": {
       "type": "string",
@@ -270318,20 +270407,31 @@ export const adminSetSupplyNominatorCallableResponseSchema = {
     "nominatorId",
     "created",
     "phoneLast4",
+    "instagramHandle",
     "defaultMarket",
     "active"
   ],
   "properties": {
     "nominatorId": {
       "type": "string",
-      "pattern": "^whatsapp-[a-f0-9]{64}$"
+      "pattern": "^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})$"
     },
     "created": {
       "type": "boolean"
     },
     "phoneLast4": {
-      "type": "string",
+      "type": [
+        "string",
+        "null"
+      ],
       "pattern": "^[0-9]{4}$"
+    },
+    "instagramHandle": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z0-9._]{1,30}$"
     },
     "defaultMarket": {
       "type": [
@@ -270379,6 +270479,7 @@ export const adminListSupplyNominatorsCallableResponseSchema = {
           "nominatorId",
           "channel",
           "phoneLast4",
+          "instagramHandle",
           "role",
           "uid",
           "displayName",
@@ -270389,17 +270490,28 @@ export const adminListSupplyNominatorsCallableResponseSchema = {
         "properties": {
           "nominatorId": {
             "type": "string",
-            "pattern": "^whatsapp-[a-f0-9]{64}$"
+            "pattern": "^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})$"
           },
           "channel": {
             "type": "string",
             "enum": [
-              "whatsapp"
+              "whatsapp",
+              "instagram"
             ]
           },
           "phoneLast4": {
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "pattern": "^[0-9]{4}$"
+          },
+          "instagramHandle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[a-z0-9._]{1,30}$"
           },
           "role": {
             "type": "string",

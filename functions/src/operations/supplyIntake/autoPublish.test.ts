@@ -19,7 +19,8 @@ import {
 } from "../../shared/generated/schemaValidators";
 import {listingApprovalId} from "../../admin/organizerListingApproval";
 import {AUTO_PUBLISH_ACTOR, autoPublishNominatedListing} from "./autoPublish";
-import {SUPPLY_NOMINATORS, whatsappNominatorId} from "./nominators";
+import {INSTAGRAM_MESSAGE_RECEIPTS} from "../../catchMessaging/instagramInboundRouter";
+import {SUPPLY_NOMINATORS, instagramNominatorId, whatsappNominatorId} from "./nominators";
 import {acceptPageFetch, notFoundTransport} from "./testPageFetch";
 import {processSupplyIntakeRequest, supplyIntakeCollections} from "./worker";
 
@@ -56,7 +57,8 @@ const valid = (validate: ((value: unknown) => boolean) & {errors?: unknown}, val
  * The real worker builds a WhatsApp nomination's listing; the test then fills
  * what page fetching would have found, so the listing is complete.
  */
-async function harness({role = "associate", nominatorActive = true, claims = {salesStaff: true} as Record<string, unknown>} = {}) {
+async function harness({role = "associate", nominatorActive = true, claims = {salesStaff: true} as Record<string, unknown>,
+  channel = "whatsapp" as "whatsapp" | "instagram"} = {}) {
   const db = new FakeFirestore();
   const requestId = "msg-afterfly-1";
   const submittedBy = {role, uid: "associate-1", partnerId: role === "partner" ? "associate-1" : null};
@@ -66,13 +68,23 @@ async function harness({role = "associate", nominatorActive = true, claims = {sa
       submittedBy, submittedAt: NOW, origin: {kind: "message_nomination", id: EVENT_ID}},
     status: "queued", attempts: 0, leaseUntil: null, result: null, failure: null, approval: null,
     createdAt: NOW, updatedAt: NOW});
-  db.write(`${CATCH_RECEIPTS}/${EVENT_ID}`, {schema: "catch.whatsapp-webhook-event/v1", eventId: EVENT_ID,
-    wabaId: "1", phoneNumberId: "2", payloadHash: "b".repeat(64), eventKind: "inbound", messageId: "wamid.1",
-    providerTimestampSeconds: String(Date.parse(NOW) / 1000), participantId: SENDER, messageType: "text",
-    text: "https://lu.ma/afterfly", textTruncated: false, deliveryStatus: null, errorCodes: [],
-    receivedAtMillis: Date.parse(NOW), expiresAt: Timestamp.fromMillis(Date.parse(NOW) + 1000)});
+  if (channel === "instagram") {
+    // An Instagram receipt names the nominator rather than the sender.
+    db.write(`${INSTAGRAM_MESSAGE_RECEIPTS}/${EVENT_ID}`, {messageKey: EVENT_ID, outcome: "nominationQueued", attemptId: null,
+      nominatorId: instagramNominatorId("asha.runs"), receivedAt: SERVER_TIME, expiresAt: Timestamp.fromMillis(Date.parse(NOW) + 1000)});
+    db.write(`${SUPPLY_NOMINATORS}/${instagramNominatorId("asha.runs")}`, {schemaVersion: 1,
+      nominatorId: instagramNominatorId("asha.runs"), channel: "instagram", endpointHash: null, phoneLast4: null,
+      instagramHandle: "asha.runs", role, uid: "associate-1", displayName: "Asha", defaultMarket: "mumbai",
+      active: nominatorActive, createdAt: NOW, updatedAt: NOW, updatedByUid: "admin-1"});
+  } else {
+    db.write(`${CATCH_RECEIPTS}/${EVENT_ID}`, {schema: "catch.whatsapp-webhook-event/v1", eventId: EVENT_ID,
+      wabaId: "1", phoneNumberId: "2", payloadHash: "b".repeat(64), eventKind: "inbound", messageId: "wamid.1",
+      providerTimestampSeconds: String(Date.parse(NOW) / 1000), participantId: SENDER, messageType: "text",
+      text: "https://lu.ma/afterfly", textTruncated: false, deliveryStatus: null, errorCodes: [],
+      receivedAtMillis: Date.parse(NOW), expiresAt: Timestamp.fromMillis(Date.parse(NOW) + 1000)});
+  }
   db.write(`${SUPPLY_NOMINATORS}/${whatsappNominatorId(ENDPOINT)}`, {schemaVersion: 1,
-    nominatorId: whatsappNominatorId(ENDPOINT), channel: "whatsapp", endpointHash: ENDPOINT, phoneLast4: "2345",
+    nominatorId: whatsappNominatorId(ENDPOINT), channel: "whatsapp", endpointHash: ENDPOINT, phoneLast4: "2345", instagramHandle: null,
     role, uid: "associate-1", displayName: "Asha", defaultMarket: "mumbai", active: nominatorActive,
     createdAt: NOW, updatedAt: NOW, updatedByUid: "admin-1"});
   const writer = new MemoryWriter();
@@ -134,7 +146,7 @@ test("a registered associate's complete WhatsApp nomination publishes without st
   const checklist = decision.checklist as Record<string, boolean>;
   assert.deepEqual([decision.reviewedByUid, checklist.identityReviewed, checklist.impersonationReviewed, checklist.crawlDisabledReviewed],
     [AUTO_PUBLISH_ACTOR, false, false, true]);
-  assert.match(String(decision.note), /registered associate whatsapp-[a-f0-9]+ nominated it by WhatsApp/u);
+  assert.match(String(decision.note), /registered associate whatsapp-[a-f0-9]+ nominated it by message/u);
 
   const request = h.db.read(`${supplyIntakeCollections.requests}/${h.requestId}`)!;
   valid(validateSupplyIntakeRequestsDocument, request, "SupplyIntakeRequestsDocument");
@@ -177,6 +189,14 @@ test("anything short of a complete listing from a current associate waits for st
     assert.ok(outcome.outcome === "needs_review" && outcome.reasons.includes(reason), `${label}: ${JSON.stringify(outcome)}`);
     assert.equal(h.db.entries().filter(([key]) => key.startsWith("organizers/")).length, 0, label);
   }
+});
+
+test("an Instagram nomination publishes the same way, checking the nominator through its receipt", async () => {
+  const h = await harness({channel: "instagram"});
+  const outcome = await h.publish();
+  assert.equal(outcome.outcome, "published", JSON.stringify(outcome));
+  const switchedOff = await harness({channel: "instagram", nominatorActive: false});
+  assert.deepEqual(await switchedOff.publish(), {outcome: "needs_review", reasons: ["nominator_not_current"]});
 });
 
 test("a slug another organizer holds leaves the listing for staff", async () => {

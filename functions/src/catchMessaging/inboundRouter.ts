@@ -131,7 +131,7 @@ export function nominationLabel(urls: string[]): string {
   }
 }
 
-function isLinkInBio(url: string): boolean {
+export function isLinkInBio(url: string): boolean {
   try {
     return LINK_IN_BIO_HOSTS.includes(new URL(url).hostname.replace(/^www\./u, ""));
   } catch {
@@ -149,6 +149,19 @@ export const replyCopy = Object.freeze({
       `${base} I can't read Linktree or Beacons pages, so if you have their Luma, Instagram or website link, send that too.` :
       base;
   },
+  // Instagram replies are allowed only within 24 hours of the person's last
+  // message, so these never promise a later message.
+  instagramNominationQueued: (labels: string[], onlyLinkInBio: boolean) => {
+    const shown = labels.slice(0, MAX_LABELS).join(", ");
+    const more = labels.length > MAX_LABELS ? ` and ${labels.length - MAX_LABELS} more` : "";
+    const noun = labels.length === 1 ? "organizer" : "organizers";
+    const base = `Got it. Queued ${labels.length} ${noun} for a Catch listing: ${shown}${more}. It shows on catchdates.com once it's built and checked.`;
+    return onlyLinkInBio ?
+      `${base} I can't read Linktree or Beacons pages, so if you have their Luma, Instagram or website link, send that too.` :
+      base;
+  },
+  instagramUnclear: "Is this a nomination? Send it again starting with \"nominate\" and I'll queue it. If it's a question, the Catch team will reply here.",
+  instagramShareWithoutProfile: "I can't tell whose account a shared post comes from. Send their Instagram @handle or profile link to nominate them.",
   nominationWithoutLinks: "I couldn't find a link in that. Send an Instagram profile, Luma page or website to nominate an organizer.",
   rateLimited: "You've sent a lot of nominations in the last hour. Please send that one again in a little while.",
   clarificationQuestion: "Is this a nomination? Reply 1 to nominate the organizer in your message, or 2 if it's a question for the Catch team.",

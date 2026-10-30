@@ -8,8 +8,9 @@ export interface AdminListSupplyNominatorsCallableResponse {
    */
   nominators: {
     nominatorId: string;
-    channel: "whatsapp";
-    phoneLast4: string;
+    channel: "whatsapp" | "instagram";
+    phoneLast4: string | null;
+    instagramHandle: string | null;
     role: "associate" | "partner";
     uid: string;
     displayName: string;

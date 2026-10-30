@@ -14,20 +14,31 @@ const schemaAdminSetSupplyNominatorCallableResponseSchema = <String, Object?>{
     'nominatorId',
     'created',
     'phoneLast4',
+    'instagramHandle',
     'defaultMarket',
     'active',
   ],
   'properties': <String, Object?>{
     'nominatorId': <String, Object?>{
       'type': 'string',
-      'pattern': '^whatsapp-[a-f0-9]{64}\$',
+      'pattern': '^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})\$',
     },
     'created': <String, Object?>{
       'type': 'boolean',
     },
     'phoneLast4': <String, Object?>{
-      'type': 'string',
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'pattern': '^[0-9]{4}\$',
+    },
+    'instagramHandle': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[a-z0-9._]{1,30}\$',
     },
     'defaultMarket': <String, Object?>{
       'type': <Object?>[
