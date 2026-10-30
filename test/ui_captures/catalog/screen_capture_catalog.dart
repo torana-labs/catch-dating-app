@@ -221,6 +221,7 @@ import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_contro
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/kernel/city_data.dart';
 import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -9143,7 +9144,7 @@ EventRehearsalBootstrap _eventRehearsalRuntimeCaptureBootstrap() {
         virtualNow: virtualNow,
       ),
     ],
-    guestUrl: 'https://catchdates.com/rehearse/capture-companion',
+    guestUrl: '${Brand.webOrigin}/rehearse/capture-companion',
     canUseInternalFaults: true,
   );
 }

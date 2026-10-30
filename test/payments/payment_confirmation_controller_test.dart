@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -68,7 +69,7 @@ void main() {
     );
     expect(
       PaymentConfirmationController.inviteText(event, _l10n),
-      contains('https://catchdates.com'),
+      contains(Brand.webOrigin),
     );
     expect(
       PaymentConfirmationController.referralText(event, _l10n),

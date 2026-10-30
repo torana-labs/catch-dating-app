@@ -8,6 +8,7 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/platform/analytics/host_analytics_choice.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
@@ -426,7 +427,7 @@ void main() {
     await tester.tap(find.byKey(SettingsKeys.hostAppRow));
     await pumpFeatureUi(tester);
 
-    expect(launchedUri, Uri.parse('https://catchdates.com/host'));
+    expect(launchedUri, Uri.parse('${Brand.webOrigin}/host'));
     expect(launchMode, LaunchMode.externalApplication);
   });
 

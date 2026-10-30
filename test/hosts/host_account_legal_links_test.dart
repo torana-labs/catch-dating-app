@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/device/external_links.dart';
@@ -61,9 +62,9 @@ CatchIconAction _signOutAction(WidgetTester tester) =>
 
 void main() {
   for (final (label, expected) in [
-    ('Privacy policy', 'https://catchdates.com/privacy/'),
-    ('Terms', 'https://catchdates.com/terms/'),
-    ('Help & support', 'https://catchdates.com/help/'),
+    ('Privacy policy', '${Brand.webOrigin}/privacy/'),
+    ('Terms', '${Brand.webOrigin}/terms/'),
+    ('Help & support', '${Brand.webOrigin}/help/'),
   ]) {
     testWidgets('Host account menu opens $label externally', (tester) async {
       _useProdLegalUrlDefines();

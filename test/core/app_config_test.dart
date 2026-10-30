@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -10,17 +11,17 @@ void main() {
   group('owner-approved external destinations', () {
     test('accepts only absolute HTTPS URLs', () {
       expect(
-        AppConfig.configuredExternalUriFor(' https://catchdates.com/privacy '),
-        Uri.parse('https://catchdates.com/privacy'),
+        AppConfig.configuredExternalUriFor(' ${Brand.webOrigin}/privacy '),
+        Uri.parse('${Brand.webOrigin}/privacy'),
       );
       expect(AppConfig.configuredExternalUriFor(''), isNull);
       expect(AppConfig.configuredExternalUriFor('/privacy'), isNull);
       expect(
-        AppConfig.configuredExternalUriFor('http://catchdates.com/privacy'),
+        AppConfig.configuredExternalUriFor('http://${Brand.webDomain}/privacy'),
         isNull,
       );
       expect(
-        AppConfig.configuredExternalUriFor('ftp://catchdates.com/privacy'),
+        AppConfig.configuredExternalUriFor('ftp://${Brand.webDomain}/privacy'),
         isNull,
       );
     });

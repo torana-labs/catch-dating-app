@@ -9,6 +9,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operations
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -86,7 +87,7 @@ void main() {
           },
         ],
         'actions': <Map<String, Object?>>[],
-        'guestUrl': 'https://catchdates.com/rehearse/public-runtime',
+        'guestUrl': '${Brand.webOrigin}/rehearse/public-runtime',
         'canUseInternalFaults': true,
       });
 
@@ -206,7 +207,7 @@ void main() {
           'virtualNowMillis': 1,
         },
       ],
-      'guestUrl': 'https://catchdates.com/rehearse/public-1',
+      'guestUrl': '${Brand.webOrigin}/rehearse/public-1',
       'canUseInternalFaults': true,
     });
 
@@ -337,7 +338,7 @@ void main() {
         'countdownSeconds': 15,
       },
       'actions': <Map<String, Object?>>[],
-      'guestUrl': 'https://catchdates.com/rehearse/public-runtime',
+      'guestUrl': '${Brand.webOrigin}/rehearse/public-runtime',
       'canUseInternalFaults': true,
     });
 

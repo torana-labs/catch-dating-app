@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/platform/device/external_links.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -16,11 +17,11 @@ void main() {
     });
 
     final opened = await controller.openExternal(
-      Uri.parse('https://catchdates.com/help'),
+      Uri.parse('${Brand.webOrigin}/help'),
     );
 
     expect(opened, isTrue);
-    expect(launchedUri, Uri.parse('https://catchdates.com/help'));
+    expect(launchedUri, Uri.parse('${Brand.webOrigin}/help'));
     expect(launchMode, LaunchMode.externalApplication);
   });
 
@@ -55,7 +56,7 @@ void main() {
     final opened = await controller.openHostApp();
 
     expect(opened, isTrue);
-    expect(launchedUri, Uri.parse('https://catchdates.com/host'));
+    expect(launchedUri, Uri.parse('${Brand.webOrigin}/host'));
     expect(launchMode, LaunchMode.externalApplication);
   });
 

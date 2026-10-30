@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -248,7 +249,7 @@ void main() {
       expect(decoded.hasWebRuntime, isTrue);
       expect(
         decoded.runtimeJoinUri()?.toString(),
-        'https://catchdates.com/join/runtime_abcdefghijklmnopqrstu',
+        '${Brand.webOrigin}/join/runtime_abcdefghijklmnopqrstu',
       );
     });
 

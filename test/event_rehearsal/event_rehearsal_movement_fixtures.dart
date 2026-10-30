@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_observati
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 
 // Produced and checked by the actual Functions movement projector, including
 // departure visit hashes, group source identities and subsequent observations.
@@ -23,7 +24,7 @@ Map<String, Object?> movementBootstrap(String name) {
     'session': raw['session'],
     'actors': raw['actors'],
     'actions': <Object?>[],
-    'guestUrl': 'https://catchdates.com/rehearse/practicepublic1234567890',
+    'guestUrl': '${Brand.webOrigin}/rehearse/practicepublic1234567890',
     'canUseInternalFaults': false,
     'movementReview': raw['review'],
     'staffReview': (raw['review'] as Map<String, Object?>)['staffReview'],

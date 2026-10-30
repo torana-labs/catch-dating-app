@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -175,6 +176,6 @@ EventRehearsalBootstrap _rehearsal(List<EventRehearsalActor> actors) =>
       ),
       actors: actors,
       actions: const [],
-      guestUrl: 'https://catchdates.com/rehearse/practice',
+      guestUrl: '${Brand.webOrigin}/rehearse/practice',
       canUseInternalFaults: false,
     );

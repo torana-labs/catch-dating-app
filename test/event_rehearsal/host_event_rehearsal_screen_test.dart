@@ -17,6 +17,7 @@ import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehe
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator_body.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
 import 'package:catch_dating_app/event_success/event_success.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -486,7 +487,7 @@ EventRehearsalBootstrap _bootstrap({
       virtualNow: DateTime.utc(2026, 8, 19, 18),
     ),
   ],
-  guestUrl: 'https://catchdates.com/rehearse/practice-1',
+  guestUrl: '${Brand.webOrigin}/rehearse/practice-1',
   canUseInternalFaults: true,
 );
 

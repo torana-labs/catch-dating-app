@@ -7,6 +7,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_c
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_plan.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:crypto/crypto.dart';
 
 final practiceMessageId = 'outbox:${'a' * 64}';
@@ -141,7 +142,7 @@ Map<String, Object?> practiceBootstrap({
         {...practiceActor(), 'actorId': 'actor-02'},
       ],
   'actions': actions ?? <Map<String, Object?>>[],
-  'guestUrl': 'https://catchdates.com/rehearse/public-1',
+  'guestUrl': '${Brand.webOrigin}/rehearse/public-1',
   'canUseInternalFaults': false,
   'helpRequests': ?helpRequests,
 };

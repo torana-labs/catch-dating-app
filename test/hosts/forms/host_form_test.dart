@@ -9,6 +9,7 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_section.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_share.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -194,7 +195,7 @@ void main() {
               setResponseLimit: true,
               completionAction: HostFormCompletionAction.externalUrl,
               completionActionLabel: 'See schedule',
-              completionActionUrl: 'https://catchdates.com/events/',
+              completionActionUrl: '${Brand.webOrigin}/events/',
             )
             .addLogicRule(
               HostFormLogicRule.create(
@@ -321,8 +322,8 @@ void main() {
 
   test('form share projections retain canonical and attributed URLs', () {
     final assets = HostFormShareAssets.fromCallableData(const {
-      'canonicalUrl': 'https://catchdates.com/f/public_form_1234567890/',
-      'embedUrl': 'https://catchdates.com/f/public_form_1234567890/?embed=1',
+      'canonicalUrl': '${Brand.webOrigin}/f/public_form_1234567890/',
+      'embedUrl': '${Brand.webOrigin}/f/public_form_1234567890/?embed=1',
       'embedSnippet': '<iframe></iframe>',
     });
     final link = HostFormShareLink.fromCallableData(const {
@@ -330,7 +331,7 @@ void main() {
       'label': 'Instagram story',
       'source': 'instagram_story',
       'sourceToken': 'formlink_12345678901234567890',
-      'url': 'https://catchdates.com/f/public_form_1234567890/?source=x',
+      'url': '${Brand.webOrigin}/f/public_form_1234567890/?source=x',
     });
 
     expect(assets.embedUrl, contains('embed=1'));

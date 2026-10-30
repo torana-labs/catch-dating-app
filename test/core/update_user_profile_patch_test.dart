@@ -3,6 +3,7 @@
 // `contracts/patches/update_user_profile.schema.json`.
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
@@ -143,8 +144,8 @@ void main() {
         profilePhotos: [
           ProfilePhoto(
             id: 'photo-1',
-            url: 'https://catchdates.com/photo.jpg',
-            thumbnailUrl: 'https://catchdates.com/photo-thumb.jpg',
+            url: '${Brand.webOrigin}/photo.jpg',
+            thumbnailUrl: '${Brand.webOrigin}/photo-thumb.jpg',
             storagePath: 'users/runner-1/photos/photo.jpg',
             thumbnailStoragePath: 'users/runner-1/photoThumbnails/photo.jpg',
             position: 0,
