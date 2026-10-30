@@ -19,8 +19,8 @@ import {
   EventRuntimeAssignments,
   EventRuntimeConsent,
   EventRuntimeFieldset,
-  EventRuntimeForm,
   EventRuntimeFrame,
+  Form,
   EventRuntimeKicker,
   EventRuntimeLive,
   EventRuntimeLiveHeader,
@@ -117,7 +117,8 @@ export function EventRuntimePage() {
           title={eventRuntimeCopy.phoneTitle}
           body={eventRuntimeCopy.phoneBody}
         >
-          <EventRuntimeForm onSubmit={controller.handlePhoneSubmit} pending={controller.pending}>
+          <Form onSubmit={controller.handlePhoneSubmit} pending={controller.pending}>
+            <CatchGap size="formField">
             <CatchField
               recipe="input"
               autoComplete="tel"
@@ -133,7 +134,8 @@ export function EventRuntimePage() {
               {eventRuntimeCopy.sendCode}
             </Button>
             <FormStatus status={controller.status} />
-          </EventRuntimeForm>
+            </CatchGap>
+          </Form>
         </EventRuntimePanel>
       ) : null}
 
@@ -143,7 +145,8 @@ export function EventRuntimePage() {
           title={eventRuntimeCopy.otpTitle}
           body={eventRuntimeCopy.otpBody}
         >
-          <EventRuntimeForm onSubmit={controller.handleCodeSubmit} pending={controller.pending}>
+          <Form onSubmit={controller.handleCodeSubmit} pending={controller.pending}>
+            <CatchGap size="formField">
             <CatchField
               recipe="input"
               autoComplete="one-time-code"
@@ -158,7 +161,8 @@ export function EventRuntimePage() {
               {eventRuntimeCopy.confirmCode}
             </Button>
             <FormStatus status={controller.status} />
-          </EventRuntimeForm>
+            </CatchGap>
+          </Form>
         </EventRuntimePanel>
       ) : null}
 
@@ -168,7 +172,8 @@ export function EventRuntimePage() {
           title={eventRuntimeCopy.profileTitle}
           body={eventRuntimeCopy.profileBody}
         >
-          <EventRuntimeForm onSubmit={controller.handleProfileSubmit} pending={controller.pending}>
+          <Form onSubmit={controller.handleProfileSubmit} pending={controller.pending}>
+            <CatchGap size="formField">
             <CatchField
               recipe="input"
               autoComplete="name"
@@ -216,7 +221,8 @@ export function EventRuntimePage() {
               {eventRuntimeCopy.continueAction}
             </Button>
             <FormStatus status={controller.status} />
-          </EventRuntimeForm>
+            </CatchGap>
+          </Form>
         </EventRuntimePanel>
       ) : null}
 
@@ -692,10 +698,11 @@ function LiveEventRuntime({
       {modules.has("decomposed_feedback") && controller.eventEnded ? (
         <EventRuntimeModule title={eventRuntimeCopy.feedbackTitle}>
           <p>{eventRuntimeCopy.feedbackBody}</p>
-          <EventRuntimeForm onSubmit={(submitEvent) => {
+          <Form onSubmit={(submitEvent) => {
             submitEvent.preventDefault();
             void controller.submitFeedback();
           }} pending={controller.pending}>
+            <CatchGap size="formField">
             <RuntimeRating
               label={eventRuntimeCopy.welcomeRating}
               onChange={controller.setWelcomeRating}
@@ -735,7 +742,8 @@ function LiveEventRuntime({
               value={controller.privateNote}
             />
             <Button type="submit">{eventRuntimeCopy.feedbackSave}</Button>
-          </EventRuntimeForm>
+            </CatchGap>
+          </Form>
         </EventRuntimeModule>
       ) : null}
 

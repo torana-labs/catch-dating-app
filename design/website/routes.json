@@ -294,7 +294,7 @@
       "staticOutput": "spa-rewrite",
       "indexing": "noindex-follow",
       "sitemap": "excluded",
-      "notes": "Opaque invitation resolver for private or public operational events. It records a deduplicated open and returns a bounded handoff without adding the event to public discovery.",
+      "notes": "Opaque invitation resolver for private or public operational events. It records a deduplicated open, then sends a Catch event's invitation to its event page with the token as il, and an external or event-mode invitation to its issued destination, without adding the event to public discovery. Booking happens on the event page (CAT-252).",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -303,18 +303,18 @@
           "mobile"
         ],
         "states": [
-          "loading",
-          "resolved-external",
-          "resolved-runtime",
+          "opening",
+          "redirect-event",
+          "redirect-external",
           "unavailable"
         ],
         "stateCoverage": {
           "storybook": [
-            "resolved-external"
+            "opening"
           ],
           "manual": [
-            "loading",
-            "resolved-runtime",
+            "redirect-event",
+            "redirect-external",
             "unavailable"
           ]
         }

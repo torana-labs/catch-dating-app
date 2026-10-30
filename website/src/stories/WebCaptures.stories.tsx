@@ -1,9 +1,10 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {CatchField} from "@catch/web-ui";
+import {CatchField, CatchGap} from "@catch/web-ui";
 import {eventRuntimeCopy} from "../content/eventRuntime";
 import {PageShell} from "../shared/site/PageShell";
 import {Button} from "../shared/ui/primitives/actions";
-import {EventRuntimeForm, EventRuntimeFrame, EventRuntimePanel} from "../shared/ui/primitives/eventRuntime";
+import {EventRuntimeFrame, EventRuntimePanel} from "../shared/ui/primitives/eventRuntime";
+import {Form} from "../shared/ui/primitives/forms";
 import {demoEventName} from "./fixtures/demoWorld";
 
 // Guest pages as the marketing site shows them, in iPhone Safari
@@ -23,11 +24,11 @@ export const JoinPhoneCheckIn: Story = {
     <PageShell pageClassName="event-runtime-page">
       <EventRuntimeFrame brandLabel={eventRuntimeCopy.brand} brandWord={eventRuntimeCopy.brandWord} eventTitle={demoEventName}>
         <EventRuntimePanel body={eventRuntimeCopy.phoneBody} kicker={eventRuntimeCopy.phoneKicker} title={eventRuntimeCopy.phoneTitle}>
-          <EventRuntimeForm onSubmit={(event) => event.preventDefault()}>
+          <Form onSubmit={(event) => event.preventDefault()}><CatchGap size="formField">
             <CatchField recipe="input" id="web-capture-join-phone" title={eventRuntimeCopy.phoneLabel}
               inputHint={eventRuntimeCopy.phonePlaceholder} keyboardType="phone" />
             <Button type="submit">{eventRuntimeCopy.sendCode}</Button>
-          </EventRuntimeForm>
+          </CatchGap></Form>
         </EventRuntimePanel>
       </EventRuntimeFrame>
     </PageShell>

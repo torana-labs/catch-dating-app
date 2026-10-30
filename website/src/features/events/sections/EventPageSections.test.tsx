@@ -18,6 +18,8 @@ const trackOrganizerProviderOutboundClick = vi.hoisted(() => vi.fn());
 vi.mock("../../organizers/observeOrganizerProviders", () => ({observeOrganizerProviders, trackOrganizerProviderOutboundClick}));
 vi.mock("../../organizers/analytics", () => ({trackOrganizerAnalytics, observeOrganizerPageView}));
 vi.mock("../GuestEventEntry", () => ({GuestEventEntry: ({eventId}: {eventId: string}) => <p>{`Guest entry for ${eventId}`}</p>}));
+const recordEventInviteLinkOpen = vi.hoisted(() => vi.fn(() => Promise.resolve()));
+vi.mock("../../../firebase", () => ({recordEventInviteLinkOpen}));
 afterEach(() => {cleanup(); vi.clearAllMocks();});
 // jsdom runs no container queries, so the sticky aside's probe never measures a phone.
 beforeAll(() => {
@@ -154,6 +156,26 @@ describe("EventDetailPage", () => {
     } as EventPageData} />);
     const booking = screen.getByRole("complementary", {name: "Booking"});
     expect(within(booking).getByText("Guest entry for salt-air-15k-training")).toBeTruthy();
+  });
+
+  it("renders the same page for an invitation, whose token only the browser reads", () => {
+    // The CDN keys on the full address, so a page's HTML must hold nothing
+    // from `il`: one guest's invitation is never cached for the next.
+    // Each render is its own React root, so useId values differ between them.
+    const html = (page: HTMLElement) => page.innerHTML.replace(/_r_[0-9a-z]+_/gu, "_r_id_");
+    const plain = html(render(<EventDetailPage listing={listing} page={fullEventPage} />).container);
+    expect(recordEventInviteLinkOpen).not.toHaveBeenCalled();
+    cleanup();
+    window.history.replaceState(null, "", "/events/salt-air-15k-training/?il=private-invite-proof");
+    try {
+      const invited = html(render(<EventDetailPage listing={listing} page={fullEventPage} />).container);
+      expect(invited).toBe(plain);
+      expect(invited).not.toContain("private-invite-proof");
+      expect(recordEventInviteLinkOpen).toHaveBeenCalledWith(expect.objectContaining({
+        eventId: fullEventPage.eventId, inviteLinkId: "private-invite-proof"}));
+    } finally {
+      window.history.replaceState(null, "", "/");
+    }
   });
 
   it("draws the server's map of the meeting point when maps are on", () => {

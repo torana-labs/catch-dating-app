@@ -41,7 +41,7 @@
   },
   "src/features/eventOffers/EventOfferPage.tsx": {
     "react/forbid-elements": {
-      "count": 7
+      "count": 2
     }
   },
   "src/features/eventRehearsal/EventRehearsalPage.tsx": {
@@ -54,17 +54,7 @@
       "count": 49
     }
   },
-  "src/features/events/EventInvitePage.tsx": {
-    "react/forbid-elements": {
-      "count": 4
-    }
-  },
   "src/features/events/GuestEventEntry.tsx": {
-    "react/forbid-elements": {
-      "count": 1
-    }
-  },
-  "src/features/events/PublicBookingPage.tsx": {
     "react/forbid-elements": {
       "count": 1
     }
@@ -181,7 +171,7 @@
   },
   "src/shared/ui/primitives/eventRuntime.tsx": {
     "react/forbid-component-props": {
-      "count": 5
+      "count": 4
     },
     "react/forbid-dom-props": {
       "count": 34
