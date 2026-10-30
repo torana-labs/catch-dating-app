@@ -5,7 +5,7 @@ import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {isMainCiSource, waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
 import {canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
-import {brand} from "@catch/brand";
+import {brand} from "../../../packages/brand/index.mjs";
 
 export const preview = Object.freeze({
   project: "catch-dating-app-64e51", region: "asia-south1",
