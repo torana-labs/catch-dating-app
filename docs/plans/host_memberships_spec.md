@@ -883,9 +883,9 @@ Manual QA, in Razorpay **test mode** only:
    Route is chosen only by an explicit routing policy and also needs
    `RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION`. Until the terms are saved,
    Route payments and memberships fail closed, and host-collected payments
-   carry no terms snapshot. The Admin Hosting build verifies these callables
-   in prod before it ships, so the screens cannot reach prod ahead of the
-   backend.
+   carry no terms snapshot. If Admin ships first, both screens say they are
+   unavailable until the backend deploy reaches prod; they never write
+   anything partially.
 3. **Razorpay, per host (test first).** The host connects their Razorpay test
    account in Payments and turns on Subscriptions there. Turning memberships on
    then registers the membership webhook on that account automatically.
