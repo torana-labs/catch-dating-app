@@ -22,13 +22,15 @@ export class FormPaymentTestStore {
     return {...this.query(name),
       doc: (id: string) => this.ref(`${name}/${id}`)};
   }
-  private query(name: string, filters: Array<[string, unknown]> = [],
-    limit = 100, order: "createdAt" | "documentId" | null = null,
+  private query(name: string,
+    filters: Array<[string, "==" | "<=", unknown]> = [], limit = 100,
+    order: "createdAt" | "documentId" | "tokenExpiresAt" | null = null,
     cursor: string | null = null) {
     return {
       where: (field: string, operator: string, value: unknown) => {
-        assert.equal(operator, "==");
-        return this.query(name, [...filters, [field, value]],
+        assert.ok(operator === "==" ||
+          (operator === "<=" && value instanceof Timestamp));
+        return this.query(name, [...filters, [field, operator, value]],
           limit, order, cursor);
       },
       orderBy: (field: string | FieldPath, direction?: string) => {
@@ -36,6 +38,10 @@ export class FormPaymentTestStore {
           assert.ok(field.isEqual(FieldPath.documentId()));
           assert.equal(direction, undefined);
           return this.query(name, filters, limit, "documentId", cursor);
+        }
+        if (field === "tokenExpiresAt") {
+          assert.equal(direction, undefined);
+          return this.query(name, filters, limit, field, cursor);
         }
         assert.equal(field, "createdAt");
         assert.equal(direction, "desc");
@@ -49,12 +55,17 @@ export class FormPaymentTestStore {
       get: async () => ({docs: [...this.records.entries()]
         .filter(([path, data]) => path.startsWith(`${name}/`) &&
           path.split("/").length === name.split("/").length + 1 &&
-          filters.every(([field, value]) => data[field] === value) &&
+          filters.every(([field, operator, value]) => operator === "==" ?
+            data[field] === value : data[field] instanceof Timestamp &&
+              data[field].toMillis() <= (value as Timestamp).toMillis()) &&
           (!cursor || path.split("/").at(-1)! > cursor))
         .sort(([left, a], [right, b]) => order === "documentId" ?
           (left < right ? -1 : left > right ? 1 : 0) : order === "createdAt" ?
             (b.createdAt as Timestamp).toMillis() -
-              (a.createdAt as Timestamp).toMillis() : 0)
+              (a.createdAt as Timestamp).toMillis() :
+            order === "tokenExpiresAt" ?
+              (a.tokenExpiresAt as Timestamp).toMillis() -
+                (b.tokenExpiresAt as Timestamp).toMillis() : 0)
         .slice(0, limit).map(([path]) => this.snapshot(path))}),
     };
   }
