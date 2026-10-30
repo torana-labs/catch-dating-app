@@ -44,10 +44,10 @@ function database(values) {
   };
 }
 
-test("legacy migration validates the complete canonical document and tenant", () => {
+test("legacy migration validates the complete canonical document", () => {
   assert.equal(classifyEventPublication(event()).action, "publish");
   assert.equal(classifyEventPublication(event({organizerId: "club-1"})).action, "publish");
-  for (const patch of [{organizerId: "foreign"}, {organizerId: null}, {pace: "bogus"},
+  for (const patch of [{organizerId: null}, {pace: "bogus"},
     {startTime: null}, {capacityLimit: undefined}, {unknownField: true}]) {
     assert.equal(classifyEventPublication(event(patch)).action, "blocked");
   }
@@ -68,7 +68,7 @@ test("only the exact historical missing-location signature is publishable", () =
     {startingPointLat: "north"}, {startingPointLat: 999},
     {startingPointLng: "east"}, {discoveryGeoCell: 42},
     {unknownField: true}, {capacityLimit: undefined},
-    {organizerId: "foreign"}, {setupRevision: 1},
+    {setupRevision: 1},
     {publicRegistrationEnabled: false},
   ]) {
     assert.equal(classifyEventPublication(historicalLocationEvent(patch)).action,

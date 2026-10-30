@@ -82,7 +82,7 @@ test("applyOrganizerAdminSearchRepairPlan writes planned adminSearch patches",
     await applyOrganizerAdminSearchRepairPlan(firestore, {
       repairs: [
         {
-          path: "clubs/club-1",
+          path: "organizers/club-1",
           patch: {
             adminSearch: {
               tokens: ["after", "fly"],

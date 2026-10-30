@@ -9,7 +9,7 @@ const repoRoot = path.resolve(path.dirname(toolPath), "../..");
 const requireFromFunctions = createRequire(
   path.join(repoRoot, "functions/package.json")
 );
-const supplyCollections = ["organizers", "clubs"];
+const supplyCollections = ["organizers"];
 
 if (process.argv[1] && path.resolve(process.argv[1]) === toolPath) {
   await main();

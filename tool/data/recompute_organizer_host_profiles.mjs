@@ -43,7 +43,7 @@ export async function main(argv = process.argv.slice(2)) {
 
 export async function buildOrganizerHostProfileRepairPlan(firestore) {
   const [organizersSnap, hostProfilesSnap] = await Promise.all([
-    firestore.collection("clubs").get(),
+    firestore.collection("organizers").get(),
     firestore.collection("hostProfiles").get(),
   ]);
 

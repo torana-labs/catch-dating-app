@@ -160,7 +160,6 @@ export async function loadCollections(firestore, maxDocs, {includeScheduleLocks 
     "users",
     "hostProfiles",
     "publicProfiles",
-    "clubs",
     "organizers",
     "organizerMemberships",
     "events",
@@ -454,7 +453,7 @@ function validateOrganizerMembership(doc, users, organizers, currentReport) {
   }
   if (data.organizerId && !organizers.has(data.organizerId)) {
     issue(currentReport, "warning", doc.path, "missing-membership-club",
-      `organizerId references missing clubs/${data.organizerId}.`);
+      `organizerId references missing organizers/${data.organizerId}.`);
   }
   if (data.uid && !users.has(data.uid)) {
     issue(currentReport, "warning", doc.path, "missing-membership-user",
@@ -477,7 +476,7 @@ function validateRun(doc, organizers, currentReport) {
 
   if (data.organizerId && !organizers.has(data.organizerId)) {
     issue(currentReport, "error", doc.path, "missing-club",
-      `organizerId references missing clubs/${data.organizerId}.`);
+      `organizerId references missing organizers/${data.organizerId}.`);
   }
   if (isTimestamp(data.startTime) && isTimestamp(data.endTime) &&
       data.endTime.toMillis() <= data.startTime.toMillis()) {
@@ -664,7 +663,7 @@ function validateReview(doc, users, organizers, events, currentReport) {
   }
   if (data.organizerId && !organizers.has(data.organizerId)) {
     issue(currentReport, "error", doc.path, "missing-review-club",
-      `organizerId references missing clubs/${data.organizerId}.`);
+      `organizerId references missing organizers/${data.organizerId}.`);
   }
   if (!data.eventId) {
     issue(currentReport, "warning", doc.path, "legacy-review-id",
@@ -1067,7 +1066,7 @@ function documentState(doc) {
       state[field] = values.includes(data[field]) ? data[field] : "unrecognized";
     }
   }
-  if (["clubs", "organizers"].includes(state.collection)) {
+  if (state.collection === "organizers") {
     state.hasHostUserId = typeof data.hostUserId === "string" && data.hostUserId.length > 0;
   }
   if (state.collection === "events") {

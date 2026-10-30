@@ -26,20 +26,20 @@ test("buildMemberCountRepairPlan counts active membership edges", async () => {
 
   assert.deepEqual(plan.summary.repairs, [
     {
-      path: "clubs/club-1",
+      path: "organizers/club-1",
       organizerId: "club-1",
       currentMemberCount: 1,
       expectedMemberCount: 2,
     },
     {
-      path: "clubs/club-2",
+      path: "organizers/club-2",
       organizerId: "club-2",
       currentMemberCount: 7,
       expectedMemberCount: 0,
     },
   ]);
   assert.deepEqual(plan.summary.warnings, [
-    "organizerMemberships/missing_runner-1 references missing clubs/missing.",
+    "organizerMemberships/missing_runner-1 references missing organizers/missing.",
   ]);
 });
 
@@ -55,7 +55,7 @@ test("applyMemberCountRepairPlan writes only planned repairs", async () => {
   await applyMemberCountRepairPlan(firestore, {
     repairs: [
       {
-        path: "clubs/club-1",
+        path: "organizers/club-1",
         expectedMemberCount: 2,
       },
     ],

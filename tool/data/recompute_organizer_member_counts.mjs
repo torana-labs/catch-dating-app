@@ -44,7 +44,7 @@ export async function main(argv = process.argv.slice(2)) {
 
 export async function buildMemberCountRepairPlan(firestore) {
   const [organizersSnap, membershipsSnap] = await Promise.all([
-    firestore.collection("clubs").get(),
+    firestore.collection("organizers").get(),
     firestore.collection("organizerMemberships").get(),
   ]);
 
@@ -61,7 +61,7 @@ export async function buildMemberCountRepairPlan(firestore) {
     }
     if (!organizerIds.has(data.organizerId)) {
       warnings.push(
-        `${doc.ref.path} references missing clubs/${data.organizerId}.`
+        `${doc.ref.path} references missing organizers/${data.organizerId}.`
       );
       continue;
     }

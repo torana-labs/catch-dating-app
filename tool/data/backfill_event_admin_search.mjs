@@ -74,7 +74,7 @@ export async function buildEventAdminSearchRepairPlan(
   const serverTimestamp = options.serverTimestamp ?? "SERVER_TIMESTAMP";
   const [eventsSnap, organizersSnap] = await Promise.all([
     firestore.collection("events").get(),
-    firestore.collection("clubs").get(),
+    firestore.collection("organizers").get(),
   ]);
   const organizers = new Map(
     organizersSnap.docs.map((doc) => [doc.id, doc.data()])

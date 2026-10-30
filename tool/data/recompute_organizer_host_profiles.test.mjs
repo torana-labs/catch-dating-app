@@ -50,7 +50,7 @@ test("buildOrganizerHostProfileRepairPlan finds stale host projections",
 
     assert.deepEqual(plan.summary.repairs, [
       {
-        path: "clubs/club-1",
+        path: "organizers/club-1",
         organizerId: "club-1",
         hostUserId: "host-1",
         current: {
@@ -76,7 +76,7 @@ test("buildOrganizerHostProfileRepairPlan finds stale host projections",
         },
       },
       {
-        path: "clubs/club-3",
+        path: "organizers/club-3",
         organizerId: "club-3",
         hostUserId: "missing",
         current: {
@@ -103,7 +103,7 @@ test("buildOrganizerHostProfileRepairPlan finds stale host projections",
       },
     ]);
     assert.deepEqual(plan.summary.warnings, [
-      "clubs/club-3 has no hostProfiles/missing; using the existing club host snapshot fallback.",
+      "organizers/club-3 has no hostProfiles/missing; using the existing club host snapshot fallback.",
     ]);
   }
 );
@@ -143,7 +143,7 @@ test("buildOrganizerHostProfileRepairPlan refreshes multi-host projections",
 
     assert.deepEqual(plan.summary.repairs, [
       {
-        path: "clubs/club-1",
+        path: "organizers/club-1",
         organizerId: "club-1",
         hostUserId: "owner-1",
         current: {
@@ -198,7 +198,7 @@ test("applyOrganizerHostProfileRepairPlan writes only planned host fields",
     await applyOrganizerHostProfileRepairPlan(firestore, {
       repairs: [
         {
-          path: "clubs/club-1",
+          path: "organizers/club-1",
           expected: {
             hostName: "New",
             hostAvatarUrl: "https://example.com/new.jpg",

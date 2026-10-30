@@ -72,7 +72,7 @@ export async function buildOrganizerAdminSearchRepairPlan(
   options = {}
 ) {
   const serverTimestamp = options.serverTimestamp ?? "SERVER_TIMESTAMP";
-  const organizersSnap = await firestore.collection("clubs").get();
+  const organizersSnap = await firestore.collection("organizers").get();
   const repairs = [];
 
   for (const organizerDoc of organizersSnap.docs) {

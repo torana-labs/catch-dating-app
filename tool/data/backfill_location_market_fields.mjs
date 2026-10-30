@@ -72,7 +72,7 @@ export async function buildLocationMarketBackfillPlan(
   const [configDoc, organizersSnap, usersSnap, publicProfilesSnap] =
     await Promise.all([
       includeConfig ? firestore.collection("config").doc("cities").get() : null,
-      firestore.collection("clubs").get(),
+      firestore.collection("organizers").get(),
       includeProfiles ? firestore.collection("users").get() : emptySnapshot(),
       includeProfiles ?
         firestore.collection("publicProfiles").get() :

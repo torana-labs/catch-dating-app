@@ -82,10 +82,10 @@ test("generated membership contract accepts owner and rejects unknown roles and 
 });
 
 test("nullable unclaimed hosts follow generated contracts without hiding invalid host types", () => {
-  for (const collection of ["clubs", "organizers"]) {
+  for (const collection of ["organizers"]) {
     const data = {...fixture("organizer_doc.json"), hostUserId: null, hostName: null,
       hostAvatarUrl: null, ownerUserId: null, hostUserIds: [], hostProfiles: [], memberCount: 0,
-      ...(collection === "organizers" ? {organizerPhotos: [], followerCount: 0, organizerType: "club"} : {})};
+      organizerPhotos: [], followerCount: 0, organizerType: "club"};
     const docPath = `${collection}/club-1`;
     assert.deepEqual(findings(reportFor({[collection]: [doc(docPath, data)]}), docPath), []);
     assert.ok(findings(reportFor({[collection]: [doc(docPath, {...data, hostUserId: 123})]}), docPath)
@@ -256,7 +256,7 @@ test("serialized timestamp maps cannot impersonate native Firestore Timestamp va
   const membership = doc("organizerMemberships/club-1_runner-1", fixture("organizer_membership_doc.json"));
   const event = doc("events/e1", privateEvent());
   const decision = doc("profileDecisions/a/outgoing/b", {...fixture("swipe_doc.json"), swiperId: "a", targetId: "b"});
-  const cases = [["organizerMemberships", membership, "joinedAt"], ["clubs", organizer(), "createdAt"],
+  const cases = [["organizerMemberships", membership, "joinedAt"], ["organizers", organizer(), "createdAt"],
     ["events", event, "startTime"], ["outgoing", decision, "createdAt"]];
   for (const [collection, record, field] of cases) {
     record.data[field] = new Timestamp(1792328400, 123456789);
