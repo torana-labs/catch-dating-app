@@ -6,9 +6,11 @@ import {
   requireToken,
 } from "./instagramAccessTokenStore";
 import type {InstagramTokenErrorCode} from "./instagramAccessTokenStore";
-import {instagramAccessToken, instagramGraphVersion} from
-  "./instagramClaimWebhook";
-import {catchInstagramAccountId} from "./organizerClaimVerification";
+import {instagramAccessToken} from "./instagramClaimWebhook";
+import {
+  catchInstagramAccountId,
+  catchInstagramGraphVersion,
+} from "./organizerClaimVerification";
 
 const dayMillis = 24 * 60 * 60_000;
 // Instagram Login tokens last 60 days. Renewing at 30 days left leaves a
@@ -203,7 +205,7 @@ export const refreshInstagramAccessToken = onSchedule({
     pinnedToken: () => instagramAccessToken.value(),
     store: new InstagramAccessTokenStore(admin.firestore()),
     client: new InstagramGraphTokenClient(
-      instagramGraphVersion.value().trim()),
+      catchInstagramGraphVersion.value().trim()),
   });
   if (result.outcome === "refreshed") {
     logger.info("Instagram access token renewed", {source: result.source,

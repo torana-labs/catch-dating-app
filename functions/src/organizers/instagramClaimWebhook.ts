@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {defineSecret, defineString} from "firebase-functions/params";
+import {defineSecret} from "firebase-functions/params";
 import {onRequest} from "firebase-functions/v2/https";
 import {routeInstagramInbound} from
   "../catchMessaging/instagramInboundRouter";
@@ -22,6 +22,7 @@ import {
 import type {InstagramMessagingProvider} from "./instagramMessagingProvider";
 import {
   catchInstagramAccountId,
+  catchInstagramGraphVersion,
   defaultClaimVerificationDeps,
   instagramClaimsEnabled,
   processInstagramClaimMessages,
@@ -35,8 +36,6 @@ const appSecret = defineSecret("CATCH_INSTAGRAM_APP_SECRET");
 export const instagramAccessToken =
   defineSecret("CATCH_INSTAGRAM_ACCESS_TOKEN");
 const verifyToken = defineSecret("CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN");
-export const instagramGraphVersion = defineString(
-  "CATCH_INSTAGRAM_GRAPH_VERSION", {default: "v26.0"});
 
 let emulatorProvider: FakeInstagramProvider | null = null;
 let tokenSource: InstagramAccessTokenSource | null = null;
@@ -61,7 +60,7 @@ export function instagramClaimProvider(): InstagramMessagingProvider {
   return new InstagramGraphProvider({
     accountId,
     accessToken: () => source.token(accountId, instagramAccessToken.value()),
-    graphVersion: instagramGraphVersion.value().trim(),
+    graphVersion: catchInstagramGraphVersion.value().trim(),
   });
 }
 

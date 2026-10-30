@@ -1434,8 +1434,8 @@ keep their existing versions so readiness passes; those values are unused.
 
 - `CATCH_INSTAGRAM_ACCESS_TOKEN`: in the Meta app, Instagram, API setup with
   Instagram login, Generate access tokens, Generate token on the @catch_dates
-  row. It is long-lived and lasts 60 days; a deploy is needed to pick up a new
-  version.
+  row. It is long-lived and lasts 60 days; `refreshInstagramAccessToken` renews
+  it without a deploy (Instagram access token renewal, below).
 - `CATCH_INSTAGRAM_APP_SECRET`: on the same page, Set up Instagram business
   login, Business login settings, Instagram app secret.
 - `CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: `openssl rand -hex 32`.
