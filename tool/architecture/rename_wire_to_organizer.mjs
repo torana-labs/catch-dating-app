@@ -120,12 +120,13 @@ export function planMoves(files) {
 // Script identifiers, so registries and docs that name a TypeScript symbol
 // (ClubCover) follow it.
 export function scriptIdentifiers(source, file) {
-  const scanner = ts.createScanner(ts.ScriptTarget.Latest, true,
-    /\.[jt]sx$/u.test(file) ? ts.LanguageVariant.JSX : ts.LanguageVariant.Standard, source);
   const names = new Set();
-  for (let kind = scanner.scan(); kind !== ts.SyntaxKind.EndOfFileToken; kind = scanner.scan()) {
-    if (kind === ts.SyntaxKind.Identifier) names.add(scanner.getTokenValue());
-  }
+  if (!/club/iu.test(source)) return names;
+  const visit = (node) => {
+    if (ts.isIdentifier(node) || ts.isPrivateIdentifier(node)) names.add(node.text);
+    ts.forEachChild(node, visit);
+  };
+  visit(parse(file, source));
   return names;
 }
 
