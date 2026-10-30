@@ -118,6 +118,8 @@ test("path strings follow moves, including paths relative to a moved file's root
     "firestore/organizer_memberships.schema.json");
   assert.equal(renamePathString("functions/src/shared/generated/clubMembershipDocument.ts", plan),
     "functions/src/shared/generated/organizerMembershipDocument.ts");
+  assert.equal(renamePathString("../contracts/firestore/club_memberships.schema.json", plan),
+    "../contracts/firestore/organizer_memberships.schema.json");
   assert.equal(renamePathString("docs/migrations/clubs_to_organizers.md", plan),
     "docs/migrations/clubs_to_organizers.md");
 });

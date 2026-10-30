@@ -183,7 +183,7 @@ export function renameWireSegments(value, wire) {
 // follows the source its generator renames.
 export function renamePathString(value, plan) {
   if (!/\/[^/]*\.[a-z]+$/u.test(value) && !/^[^/]+\.[a-z]+$/u.test(value)) return value;
-  const bare = value.replace(/^\.\//u, "");
+  const bare = value.replace(/^(?:\.\.?\/)+/u, "");
   if (plan.moves.has(bare)) return value.slice(0, value.length - bare.length) + plan.moves.get(bare);
   for (const [from, to] of plan.moves) {
     if (from.endsWith(`/${bare}`)) {
