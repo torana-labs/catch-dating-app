@@ -233,7 +233,7 @@ return $default(_that.busy,_that.stage,_that.recoveringPending,_that.refreshTarg
 
 class _HostEventOfferWorkspaceState extends HostEventOfferWorkspaceState {
   const _HostEventOfferWorkspaceState({this.busy = false, this.stage = HostOfferWorkspaceStage.idle, this.recoveringPending = false, this.refreshTargetOnRetry = false, this.error, this.selectionStale = false, final  List<String> ids = const [], this.resultHash, final  List<HostOfferEventTarget> events = const [], this.nextEventCursor, this.event, this.configuration, final  List<HostFormResponseDetail> details = const [], final  List<HostFormResponseDetail> missingContacts = const [], final  Map<String, String> personalLinks = const {}, this.draft, this.commitRequestId, final  List<Map<String, Object?>> offers = const [], this.nextOfferCursor, this.refreshedReceiptId, this.selectedOffer, this.handoff, this.referenceRequestId, this.reviewRequestId, this.messageCopied = false, this.handoffOpenFailed = false, this.offerFlow = const HostOfferFlowView(status: HostOfferFlowStatus.idle), this.actorAvailable = true}): _ids = ids,_events = events,_details = details,_missingContacts = missingContacts,_personalLinks = personalLinks,_offers = offers,super._();
-
+  
 
 @override@JsonKey() final  bool busy;
 @override@JsonKey() final  HostOfferWorkspaceStage stage;

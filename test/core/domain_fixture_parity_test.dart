@@ -16,8 +16,8 @@ import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
@@ -119,29 +119,32 @@ void main() {
 
     test('Club decodes club_doc.json', () {
       final json = _loadFixture('club_doc.json', injectIdField: 'id');
-      final club = Club.fromJson(json);
-      expect(club.id, isNotEmpty);
-      expect(club.name, isNotEmpty);
+      final organizer = Organizer.fromJson(json);
+      expect(organizer.id, isNotEmpty);
+      expect(organizer.name, isNotEmpty);
       // hostUserId is required by both schema and Dart class.
-      expect(club.hostUserId, isNotEmpty);
-      expect(club.organizerType, OrganizerType.club);
+      expect(organizer.hostUserId, isNotEmpty);
+      expect(organizer.organizerType, OrganizerType.club);
     });
 
-    test('ClubHostProfile decodes event_common fixture shape directly', () {
-      final host = ClubHostProfile.fromJson(
-        _fixtureListItemMap('club_doc.json', 'hostProfiles', 0),
-      );
-      expect(host.uid, 'host-1');
-      expect(host.displayName, 'Subrath');
-      expect(host.role, ClubHostRole.owner);
-    });
+    test(
+      'OrganizerHostProfile decodes event_common fixture shape directly',
+      () {
+        final host = OrganizerHostProfile.fromJson(
+          _fixtureListItemMap('club_doc.json', 'hostProfiles', 0),
+        );
+        expect(host.uid, 'host-1');
+        expect(host.displayName, 'Subrath');
+        expect(host.role, OrganizerHostRole.owner);
+      },
+    );
 
-    test('ClubMembership decodes club_membership_doc.json', () {
+    test('OrganizerMembership decodes club_membership_doc.json', () {
       final json = _loadFixture(
         'club_membership_doc.json',
         injectIdField: 'id',
       );
-      final membership = ClubMembership.fromJson(json);
+      final membership = OrganizerMembership.fromJson(json);
       expect(membership.clubId, isNotEmpty);
       expect(membership.uid, isNotEmpty);
     });

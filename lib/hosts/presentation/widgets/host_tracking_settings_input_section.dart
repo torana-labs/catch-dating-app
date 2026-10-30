@@ -140,7 +140,7 @@ class _HostTrackingSettingsInputSectionState
                   gapH12,
                   CatchLocalizedErrorBanner(
                     widget.error!,
-                    context: AppErrorContext.club,
+                    context: AppErrorContext.organizer,
                   ),
                   gapH6,
                   CatchText(

@@ -36,75 +36,75 @@ void main() {
   ];
 
   test('HostCreateEventRouteState prefers route extra club', () {
-    final club = buildClub(id: 'club-extra');
+    final organizer = buildOrganizer(id: 'club-extra');
 
-    final state = HostCreateEventRouteState.initial(club);
+    final state = HostCreateEventRouteState.initial(organizer);
 
     expect(state.status, HostCreateEventRouteStatus.ready);
-    expect(state.club, club);
-    expect(state.usedInitialClub, isTrue);
+    expect(state.organizer, organizer);
+    expect(state.usedInitialOrganizer, isTrue);
     expect(state.retryIntent, isNull);
   });
 
   test('HostCreateEventRouteState maps fetch states', () {
-    final club = buildClub(id: 'club-fetched');
+    final organizer = buildOrganizer(id: 'club-fetched');
 
-    final loading = HostCreateEventRouteState.fromClubState(
+    final loading = HostCreateEventRouteState.fromOrganizerState(
       const CatchAsyncState.loading(),
     );
     expect(loading.status, HostCreateEventRouteStatus.loading);
 
-    final error = HostCreateEventRouteState.fromClubState(
+    final error = HostCreateEventRouteState.fromOrganizerState(
       CatchAsyncState.error(StateError('fetch failed')),
     );
     expect(error.status, HostCreateEventRouteStatus.error);
-    expect(error.retryIntent, HostCreateEventRouteRetryIntent.reloadClub);
+    expect(error.retryIntent, HostCreateEventRouteRetryIntent.reloadOrganizer);
 
-    final notFound = HostCreateEventRouteState.fromClubState(
+    final notFound = HostCreateEventRouteState.fromOrganizerState(
       const CatchAsyncState.data(null),
     );
     expect(notFound.status, HostCreateEventRouteStatus.notFound);
 
-    final ready = HostCreateEventRouteState.fromClubState(
-      CatchAsyncState.data(club),
+    final ready = HostCreateEventRouteState.fromOrganizerState(
+      CatchAsyncState.data(organizer),
     );
     expect(ready.status, HostCreateEventRouteStatus.ready);
-    expect(ready.club, club);
-    expect(ready.usedInitialClub, isFalse);
+    expect(ready.organizer, organizer);
+    expect(ready.usedInitialOrganizer, isFalse);
   });
 
   test('HostCreateEventRouteState blocks non-host identities', () {
-    final club = buildClub();
+    final organizer = buildOrganizer();
 
     final loadingIdentity = HostCreateEventRouteState.resolve(
-      initialClub: club,
-      fetchedClub: null,
+      initialOrganizer: organizer,
+      fetchedOrganizer: null,
       uid: const CatchAsyncState.loading(),
     );
     expect(loadingIdentity.status, HostCreateEventRouteStatus.loading);
 
     final forbidden = HostCreateEventRouteState.resolve(
-      initialClub: club,
-      fetchedClub: null,
+      initialOrganizer: organizer,
+      fetchedOrganizer: null,
       uid: const CatchAsyncState.data('runner-1'),
     );
     expect(forbidden.status, HostCreateEventRouteStatus.forbidden);
-    expect(forbidden.club, club);
+    expect(forbidden.organizer, organizer);
 
     final ready = HostCreateEventRouteState.resolve(
-      initialClub: club,
-      fetchedClub: null,
+      initialOrganizer: organizer,
+      fetchedOrganizer: null,
       uid: const CatchAsyncState.data('host-1'),
     );
     expect(ready.status, HostCreateEventRouteStatus.ready);
-    expect(ready.club, club);
+    expect(ready.organizer, organizer);
   });
 
   test(
     'CreateEventWizardState maps step, footer, and mutation display state',
     () {
       final state = CreateEventWizardState.resolve(
-        club: buildClub(),
+        organizer: buildOrganizer(),
         activeSteps: steps,
         currentStep: 1,
         submitPending: false,
@@ -134,7 +134,7 @@ void main() {
     final event = buildEvent(id: 'event-created');
 
     final state = CreateEventWizardState.resolve(
-      club: buildClub(),
+      organizer: buildOrganizer(),
       activeSteps: steps,
       currentStep: 99,
       submitPending: false,
@@ -153,7 +153,7 @@ void main() {
     expect(state.primaryIntent, CreateEventWizardPrimaryIntent.review);
     expect(state.createdEvent, event);
     expect(state.inviteCode, 'CATCH-DELHI');
-    expect(state.successNavigation?.club.id, 'club-1');
+    expect(state.successNavigation?.organizer.id, 'club-1');
     expect(state.successNavigation?.event, event);
     expect(state.successNavigation?.inviteCode, 'CATCH-DELHI');
 
@@ -162,7 +162,7 @@ void main() {
       state: state.successNavigation!,
     );
     final backEffect = CreateEventSuccessNavigationEffect.resolve(
-      intent: CreateEventSuccessNavigationIntent.backToClub,
+      intent: CreateEventSuccessNavigationIntent.backToOrganizer,
       state: state.successNavigation!,
     );
 
@@ -250,7 +250,7 @@ void main() {
 
   test('CreateEventWizardState maps global close intents', () {
     final clean = CreateEventWizardState.resolve(
-      club: buildClub(),
+      organizer: buildOrganizer(),
       activeSteps: steps,
       currentStep: 0,
       submitPending: false,
@@ -260,7 +260,7 @@ void main() {
       inviteCode: null,
     );
     final dirty = CreateEventWizardState.resolve(
-      club: buildClub(),
+      organizer: buildOrganizer(),
       activeSteps: steps,
       currentStep: 0,
       submitPending: false,

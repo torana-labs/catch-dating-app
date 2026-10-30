@@ -25,7 +25,7 @@ abstract final class CatchPaceColors {
 }
 
 /// Static club artwork colors.
-abstract final class CatchClubColors {
+abstract final class CatchOrganizerColors {
   static const Color compactMemberSealInk = Color(0xFF244646);
 }
 

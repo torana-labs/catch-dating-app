@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
+import type {LinkSearchPort, WebSearchPolicy} from "./linkSearch";
 
 // The packaged Operations runtime that the build copies into lib (see
 // functions/scripts/copy-operations-runtime.cjs). Functions never
@@ -46,6 +47,7 @@ interface PackagedIntake {
   organizerReferenceFromDocument: (organizerId: string, document: unknown) => OrganizerReference;
   intakeInputSnapshot: (input: {listing: IntakeListing}) => Record<string, unknown>;
   pageFetchBudgetLedgers: (input: Record<string, unknown>) => PageFetchLedgers;
+  assertAcceptedAcquisitionDecision: (decision: unknown, expected: {decisionId: string; gapId: string}) => void;
   GuardedPageFetchPort: new (options: Record<string, unknown>) => IntakePageSource;
   StaticPageSource: new (options: Record<string, unknown>) => IntakePageSource;
   InstagramDiscoveryPageSource: new (options: Record<string, unknown>) => IntakePageSource;
@@ -80,6 +82,7 @@ export interface AcquisitionPolicy {
     maxRequestsPerIntake: number;
     maxRequestsPerMonth: number;
   };
+  webSearch: WebSearchPolicy;
 }
 
 export interface SupplyIntakeRequest {
@@ -204,11 +207,13 @@ export interface IntakeRunResult {
  * Given the organizers Catch already lists, the listing carries an advisory
  * duplicate check; null skips the check.
  */
-export async function runSupplyIntake({request, pageSource, now, existingOrganizers = null}: {
+export async function runSupplyIntake({request, pageSource, now, existingOrganizers = null, linkSearch = null}: {
   request: SupplyIntakeRequest;
   pageSource: IntakePageSource;
   now: () => Date;
   existingOrganizers?: OrganizerReference[] | null;
+  /** Searches a handle when the nominated pages can't be read; null keeps search off. */
+  linkSearch?: LinkSearchPort | null;
 }): Promise<IntakeRunResult> {
   const runtime = await packagedIntake();
   const intake = runtime.assertSupplyIntakeRequest(request);
@@ -221,7 +226,8 @@ export async function runSupplyIntake({request, pageSource, now, existingOrganiz
     },
   };
   const startedAt = now().toISOString();
-  const gathered = await runtime.gatherIntakeEvidence({request: intake, pageSource: recordingSource, now: startedAt});
+  const gathered = await runtime.gatherIntakeEvidence({request: intake, pageSource: recordingSource, now: startedAt,
+    linkSearch});
   const listing = runtime.buildIntakeListing({request: intake, gathered, now: startedAt, existingOrganizers});
   const inputSnapshot = runtime.intakeInputSnapshot({listing});
   const scratch = await fs.mkdtemp(path.join(os.tmpdir(), "catch-supply-intake-"));

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -9,7 +9,7 @@ import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 
 HostTodayRouteState buildHostTodayRouteState({
   required CatchAsyncState<String?> uid,
-  CatchAsyncState<List<Club>>? organizers,
+  CatchAsyncState<List<Organizer>>? organizers,
 }) {
   if (uid.hasError) {
     return HostTodayRouteState(
@@ -43,8 +43,8 @@ HostTodayRouteState buildHostTodayRouteState({
     );
   }
 
-  final resolved = List<Club>.unmodifiable(
-    organizerValue.value ?? const <Club>[],
+  final resolved = List<Organizer>.unmodifiable(
+    organizerValue.value ?? const <Organizer>[],
   );
   return HostTodayRouteState(
     status: resolved.isEmpty

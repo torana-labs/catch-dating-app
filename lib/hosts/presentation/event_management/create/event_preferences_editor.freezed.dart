@@ -220,7 +220,7 @@ return $default(_that.event,_that.configuration,_that.defaults,_that.privatePend
 
 class _EventPreferencesEditorState extends EventPreferencesEditorState {
   const _EventPreferencesEditorState({this.event, this.configuration, this.defaults, this.privatePending, this.offerPending, this.displayName, this.error, this.loading = false, this.saving = false, this.previewing = false, this.previewAvailable = false, this.draftIntents, this.review, this.published = false, this.actorAvailable = true}): super._();
-
+  
 
 @override final  PrivateEventBasicSummary? event;
 @override final  EventOfferConfiguration? configuration;

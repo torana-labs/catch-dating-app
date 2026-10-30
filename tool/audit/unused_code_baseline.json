@@ -80,7 +80,7 @@
     "type functions/src/payments/offerPayments/offerPaymentProcessor.ts OfferPaymentAuthority",
     "type functions/src/shared/bigQuery.ts BigQueryScalar",
     "type functions/src/shared/organizerHosts.ts OrganizerTeamRole",
-    "type functions/src/shared/relationshipDocuments.ts ClubMembershipStatus",
+    "type functions/src/shared/relationshipDocuments.ts OrganizerMembershipStatus",
     "unlisted functions/src/eventSuccess/operations/rcsCallbackStore.test.ts express",
     "unlisted functions/src/eventSuccess/operations/rcsDeliveryWebhook.ts express",
     "unlisted functions/src/eventSuccess/operations/rcsDispatchTestHarness.ts express",

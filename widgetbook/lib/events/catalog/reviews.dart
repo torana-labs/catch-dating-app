@@ -35,7 +35,7 @@ Widget eventDetailReviewsSectionStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'member before event',
         child: EventReviewsSection(
-          clubId: widgetbookEventsClubId,
+          clubId: widgetbookEventsOrganizerId,
           eventId: widgetbookEvent.id,
           reviews: const [],
           currentUid: widgetbookEventsViewerUid,
@@ -45,7 +45,7 @@ Widget eventDetailReviewsSectionStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'attended can review',
         child: EventReviewsSection(
-          clubId: widgetbookEventsClubId,
+          clubId: widgetbookEventsOrganizerId,
           eventId: widgetbookEventsPastEvent.id,
           reviews: widgetbookEventsReviews,
           currentUid: widgetbookEventsViewerUid,
@@ -56,7 +56,7 @@ Widget eventDetailReviewsSectionStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'host response actions',
         child: EventReviewsSection(
-          clubId: widgetbookEventsClubId,
+          clubId: widgetbookEventsOrganizerId,
           eventId: widgetbookEventsPastEvent.id,
           reviews: widgetbookEventsReviews,
           currentUid: 'host-mira',

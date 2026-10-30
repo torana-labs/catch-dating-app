@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/host_whatsapp_embedded_signup.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_posts_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_posts_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_event_announcement_field.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_back_button.dart';
@@ -19,7 +19,7 @@ import 'package:go_router/go_router.dart';
 class HostSendIntentMenu extends ConsumerWidget {
   const HostSendIntentMenu({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.onBack,
     required this.onOpenInbox,
     required this.onStartCampaign,
@@ -31,7 +31,7 @@ class HostSendIntentMenu extends ConsumerWidget {
     required this.now,
   });
 
-  final Club club;
+  final Organizer organizer;
   final VoidCallback onBack;
   final VoidCallback onOpenInbox;
   final VoidCallback onStartCampaign;
@@ -45,7 +45,7 @@ class HostSendIntentMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final setup = ref.watch(hostMessagingSetupProvider(club.id));
+    final setup = ref.watch(hostMessagingSetupProvider(organizer.id));
     // Saved-audience campaigns need a WhatsApp sender, so both the intent and
     // its settings entry stay hidden where this client cannot manage one.
     final showWhatsappSetup =
@@ -54,7 +54,7 @@ class HostSendIntentMenu extends ConsumerWidget {
         ) !=
         false;
     final followerQuota = ref.watch(
-      watchClubPostRemainingWeeklyQuotaProvider(club.id),
+      watchOrganizerPostRemainingWeeklyQuotaProvider(organizer.id),
     );
     final campaignField = setup.when<Widget>(
       loading: () => CatchFieldLanes.single(
@@ -147,7 +147,7 @@ class HostSendIntentMenu extends ConsumerWidget {
             ),
             if (showWhatsappSetup) campaignField,
             HostEventAnnouncementField(
-              organizerId: club.id,
+              organizerId: organizer.id,
               preferredEventId: preferredEventId,
               initialSegment: initialSegment,
               sendingEnabled: broadcastEnabled,
@@ -164,7 +164,7 @@ class HostSendIntentMenu extends ConsumerWidget {
             variant: CatchButtonVariant.secondary,
             onPressed: () => context.pushNamed(
               Routes.hostOrganizerMessagingScreen.name,
-              pathParameters: {'clubId': club.id},
+              pathParameters: {'clubId': organizer.id},
             ),
           ),
         ],

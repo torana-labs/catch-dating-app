@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/hosts/presentation/organizer_management/host_team_management_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/errors/error_logger.dart';
@@ -17,18 +17,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class HostTeamManagementSection extends ConsumerWidget {
   const HostTeamManagementSection({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.currentUid,
     required this.canManage,
   });
 
-  final Club club;
+  final Organizer organizer;
   final String currentUid;
   final bool canManage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hosts = club.displayHostProfiles;
+    final hosts = organizer.displayHostProfiles;
     final addMutation = ref.watch(HostTeamManagementController.addHostMutation);
     final removeMutation = ref.watch(
       HostTeamManagementController.removeHostMutation,
@@ -53,14 +53,14 @@ class HostTeamManagementSection extends ConsumerWidget {
       final added = await showCatchBottomSheet<bool>(
         context: context,
         builder: (_) => HostTeamAddHostSheet(
-          clubId: club.id,
+          clubId: organizer.id,
           actionState: HostTeamAddHostActionState(
             isSaving: addMutation.isPending,
             errorMessage: addMutation.hasError
                 ? mutationErrorMessage(
                     addMutation,
                     l10n: context.l10n,
-                    context: AppErrorContext.club,
+                    context: AppErrorContext.organizer,
                   )
                 : null,
           ),
@@ -70,7 +70,7 @@ class HostTeamManagementSection extends ConsumerWidget {
                 ref,
                 (tx) => tx
                     .get(hostTeamManagementControllerProvider.notifier)
-                    .addHostByPhone(clubId: club.id, phoneNumber: phone),
+                    .addHostByPhone(clubId: organizer.id, phoneNumber: phone),
               );
             } catch (error, stackTrace) {
               ref
@@ -91,7 +91,7 @@ class HostTeamManagementSection extends ConsumerWidget {
 
     Future<void> confirmHostAction(
       HostTeamHostAction action,
-      ClubHostProfile host,
+      OrganizerHostProfile host,
     ) async {
       final actionFailureReason = context
           .l10n
@@ -113,14 +113,14 @@ class HostTeamManagementSection extends ConsumerWidget {
               ref,
               (tx) => tx
                   .get(hostTeamManagementControllerProvider.notifier)
-                  .removeHost(clubId: club.id, uid: host.uid),
+                  .removeHost(clubId: organizer.id, uid: host.uid),
             );
           case HostTeamHostAction.transferOwnership:
             await HostTeamManagementController.transferOwnershipMutation.run(
               ref,
               (tx) => tx
                   .get(hostTeamManagementControllerProvider.notifier)
-                  .transferOwnership(clubId: club.id, uid: host.uid),
+                  .transferOwnership(clubId: organizer.id, uid: host.uid),
             );
         }
       } catch (error, stackTrace) {
@@ -143,7 +143,7 @@ class HostTeamManagementSection extends ConsumerWidget {
             body: mutationErrorMessage(
               actionError,
               l10n: context.l10n,
-              context: AppErrorContext.club,
+              context: AppErrorContext.organizer,
             ),
             icon: CatchIcons.error,
             tone: CatchFieldTone.danger,
@@ -188,7 +188,7 @@ class HostTeamHostActionConfirmation {
   });
 
   final HostTeamHostAction action;
-  final ClubHostProfile host;
+  final OrganizerHostProfile host;
 
   String title(AppLocalizations l10n) {
     return switch (action) {
@@ -268,7 +268,7 @@ class HostTeamOwnerHostRow extends StatelessWidget {
     required this.onRemove,
   });
 
-  final ClubHostProfile host;
+  final OrganizerHostProfile host;
   final bool canManage;
   final VoidCallback onTransfer;
   final VoidCallback onRemove;
@@ -279,9 +279,9 @@ class HostTeamOwnerHostRow extends StatelessWidget {
       child: CatchField.content(
         copy: catchFieldCopy(context.l10n),
         title: host.displayName,
-        body: host.role == ClubHostRole.owner
-            ? context.l10n.clubsClubIdentityAtomsLabelOwner
-            : context.l10n.clubsClubIdentityAtomsLabelHost,
+        body: host.role == OrganizerHostRole.owner
+            ? context.l10n.organizersOrganizerIdentityAtomsLabelOwner
+            : context.l10n.organizersOrganizerIdentityAtomsLabelHost,
         leading: CatchAvatar(
           name: host.displayName,
           imageUrl: host.avatarUrl,
@@ -391,7 +391,7 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
           _errorMessage = appErrorMessage(
             error,
             l10n: context.l10n,
-            context: AppErrorContext.club,
+            context: AppErrorContext.organizer,
           );
         });
       }

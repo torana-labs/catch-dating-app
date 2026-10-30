@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/suvbot_identity.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
@@ -81,7 +81,7 @@ class HostChatScreenState {
     required CatchAsyncState<List<ChatMessage>> messagesAsync,
     required CatchAsyncState<List<SuvbotActionItem>> suvbotActionsAsync,
     required PublicProfile? profile,
-    required ClubHostProfile? hostProfile,
+    required OrganizerHostProfile? hostProfile,
     bool reportUserPending = false,
     bool blockUserPending = false,
     DateTime? now,
@@ -91,7 +91,7 @@ class HostChatScreenState {
         : null;
     final otherUid = uid == null ? null : match?.otherId(uid);
     final isSuvbot = isSuvbotConversation(matchId: matchId, otherUid: otherUid);
-    final isHostInquiry = match?.isClubHostInquiry == true;
+    final isHostInquiry = match?.isOrganizerHostInquiry == true;
     final isCrossPathsEventPlan = match?.isCrossPathsEventPlan == true;
     final name = isSuvbot
         ? StructuredDomainCopy.chatSuvbotTitle

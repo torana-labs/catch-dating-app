@@ -286,12 +286,13 @@ abstract final class CatchInsets {
   );
 
   /// Bottom action skeleton inset used while the Host club editor is loading.
-  static const EdgeInsets hostClubEditorLoadingAction = EdgeInsets.fromLTRB(
-    CatchSpacing.s3,
-    CatchSpacing.s2,
-    CatchSpacing.s3,
-    CatchSpacing.s3,
-  );
+  static const EdgeInsets hostOrganizerEditorLoadingAction =
+      EdgeInsets.fromLTRB(
+        CatchSpacing.s3,
+        CatchSpacing.s2,
+        CatchSpacing.s3,
+        CatchSpacing.s3,
+      );
 
   /// Loading body rhythm for the Host create-event route.
   static const EdgeInsets hostCreateEventLoadingBody = EdgeInsets.fromLTRB(
@@ -533,7 +534,7 @@ abstract final class CatchInsets {
   );
 
   /// Bottom action dock content for Club Detail.
-  static const EdgeInsets clubDetailDock = EdgeInsets.fromLTRB(
+  static const EdgeInsets organizerDetailDock = EdgeInsets.fromLTRB(
     CatchSpacing.micro18,
     CatchSpacing.micro14,
     CatchSpacing.micro18,

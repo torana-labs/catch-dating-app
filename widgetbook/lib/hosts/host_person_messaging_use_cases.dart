@@ -131,7 +131,7 @@ class _MessageFixtureState extends State<_MessageFixture> {
     return ProviderScope(
       overrides: [
         uidProvider.overrideWithValue(const AsyncData('host')),
-        watchEventsForClubProvider(
+        watchEventsForOrganizerProvider(
           'org',
         ).overrideWithValue(const AsyncData([])),
         chatsListViewModelProvider.overrideWithValue(

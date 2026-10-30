@@ -48,13 +48,14 @@ abstract class Match with _$Match {
   bool get isBlocked => status == MatchStatus.blocked;
   bool get isClosed => status == MatchStatus.closed;
 
-  bool get isClubHostInquiry =>
+  bool get isOrganizerHostInquiry =>
       conversationType == MatchConversationType.clubHostInquiry;
 
   bool get isCrossPathsEventPlan =>
       conversationType == MatchConversationType.crossPathsEventPlan;
 
-  bool get isScopedConversation => isClubHostInquiry || isCrossPathsEventPlan;
+  bool get isScopedConversation =>
+      isOrganizerHostInquiry || isCrossPathsEventPlan;
 
   bool hasUnreadIncomingFor(String uid) =>
       !isBlocked &&

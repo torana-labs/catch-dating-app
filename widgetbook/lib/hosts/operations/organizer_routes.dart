@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -12,10 +12,10 @@ import 'shell_fixture.dart';
 
 @widgetbook.UseCase(
   name: 'Route states',
-  type: HostClubsScreen,
+  type: HostOrganizersScreen,
   path: '[P1 product surfaces]/Host operations',
 )
-Widget hostClubsRouteStates(BuildContext context) {
+Widget hostOrganizersRouteStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
     title: 'HostClubsScreen',
     contractId: 'screen.host.clubs',
@@ -23,18 +23,21 @@ Widget hostClubsRouteStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'auth required',
         child: const WidgetbookHostDeviceFrame(
-          child: WidgetbookHostShellScope(uid: null, child: HostClubsScreen()),
+          child: WidgetbookHostShellScope(
+            uid: null,
+            child: HostOrganizersScreen(),
+          ),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'clubs loading',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedClubsStream:
-                HostOperationsFixtures.loadingStream<List<Club>>(),
-            ownedClubsStream:
-                HostOperationsFixtures.loadingStream<List<Club>>(),
-            child: const HostClubsScreen(),
+            hostedOrganizersStream:
+                HostOperationsFixtures.loadingStream<List<Organizer>>(),
+            ownedOrganizersStream:
+                HostOperationsFixtures.loadingStream<List<Organizer>>(),
+            child: const HostOrganizersScreen(),
           ),
         ),
       ),
@@ -42,10 +45,11 @@ Widget hostClubsRouteStates(BuildContext context) {
         label: 'clubs error',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedClubsStream: HostOperationsFixtures.errorStream<List<Club>>(
-              'Hosted clubs failed',
-            ),
-            child: const HostClubsScreen(),
+            hostedOrganizersStream:
+                HostOperationsFixtures.errorStream<List<Organizer>>(
+                  'Hosted clubs failed',
+                ),
+            child: const HostOrganizersScreen(),
           ),
         ),
       ),
@@ -53,16 +57,16 @@ Widget hostClubsRouteStates(BuildContext context) {
         label: 'empty organizer account',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedClubs: [],
-            ownedClubs: [],
-            child: HostClubsScreen(),
+            hostedOrganizers: [],
+            ownedOrganizers: [],
+            child: HostOrganizersScreen(),
           ),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'consolidated edit workspace',
         child: const WidgetbookHostDeviceFrame(
-          child: WidgetbookHostShellScope(child: HostClubsScreen()),
+          child: WidgetbookHostShellScope(child: HostOrganizersScreen()),
         ),
       ),
       WidgetbookPageStateCard(
@@ -70,7 +74,7 @@ Widget hostClubsRouteStates(BuildContext context) {
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
             paymentAccountValue: AsyncLoading<HostPaymentAccount?>(),
-            child: HostClubsScreen(),
+            child: HostOrganizersScreen(),
           ),
         ),
       ),
@@ -78,10 +82,10 @@ Widget hostClubsRouteStates(BuildContext context) {
         label: 'co-host read-only team workspace',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedClubs: [HostOperationsFixtures.coHostedClub],
-            ownedClubs: const [],
-            child: const HostClubsScreen(
-              initialClubId: 'design-host-cohost-club',
+            hostedOrganizers: [HostOperationsFixtures.coHostedOrganizer],
+            ownedOrganizers: const [],
+            child: const HostOrganizersScreen(
+              initialOrganizerId: 'design-host-cohost-club',
             ),
           ),
         ),
@@ -90,9 +94,9 @@ Widget hostClubsRouteStates(BuildContext context) {
         label: 'insights report',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            child: HostClubsScreen(
-              initialClubId: HostOperationsFixtures.primaryClub.id,
-              initialTab: HostClubTab.insights,
+            child: HostOrganizersScreen(
+              initialOrganizerId: HostOperationsFixtures.primaryOrganizer.id,
+              initialTab: HostOrganizerTab.insights,
             ),
           ),
         ),
@@ -101,7 +105,7 @@ Widget hostClubsRouteStates(BuildContext context) {
         label: 'consumer club preview',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            child: HostClubsScreen(initialTab: HostClubTab.preview),
+            child: HostOrganizersScreen(initialTab: HostOrganizerTab.preview),
           ),
         ),
       ),
@@ -110,7 +114,7 @@ Widget hostClubsRouteStates(BuildContext context) {
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
             themeMode: ThemeMode.dark,
-            child: HostClubsScreen(),
+            child: HostOrganizersScreen(),
           ),
         ),
       ),
@@ -118,11 +122,11 @@ Widget hostClubsRouteStates(BuildContext context) {
         label: 'co-host read-only team workspace / dark',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedClubs: [HostOperationsFixtures.coHostedClub],
-            ownedClubs: const [],
+            hostedOrganizers: [HostOperationsFixtures.coHostedOrganizer],
+            ownedOrganizers: const [],
             themeMode: ThemeMode.dark,
-            child: const HostClubsScreen(
-              initialClubId: 'design-host-cohost-club',
+            child: const HostOrganizersScreen(
+              initialOrganizerId: 'design-host-cohost-club',
             ),
           ),
         ),
@@ -137,13 +141,13 @@ Widget hostClubsRouteStates(BuildContext context) {
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 Widget hostOrganizerStateScaffoldStates(BuildContext context) {
-  return hostClubsRouteStates(context);
+  return hostOrganizersRouteStates(context);
 }
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostClubsScreen,
+  type: HostOrganizersScreen,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostClubsScreenCatalogStates(BuildContext context) =>
-    hostClubsRouteStates(context);
+Widget hostStrictHostOrganizersScreenCatalogStates(BuildContext context) =>
+    hostOrganizersRouteStates(context);

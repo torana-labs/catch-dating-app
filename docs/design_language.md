@@ -349,7 +349,7 @@ tiers within one list.
   Detail identity. Its bounded recipe exposes four layouts (`editorial`,
   `photo`, `split`, `minimal`) and three treatments (`paper`, `ink`, `signal`).
   Consumer surfaces use `editorial` + `paper` until a persisted host recipe is
-  approved. Real cover photography or deterministic `ClubPlaceholderCover`
+  approved. Real cover photography or deterministic `OrganizerPlaceholderCover`
   fills the media lane, while provenance/authority remains explicit overlay
   state rather than being implied by visual polish.
 - **Polaroid → people: canonical.** `CatchPolaroid` reserves the instant

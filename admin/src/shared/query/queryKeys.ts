@@ -45,6 +45,16 @@ export const adminQueryKeys = {
       [...adminQueryKeys.all, "finance", "messaging-budget-decision"] as const,
     messagingBudgetStage: () =>
       [...adminQueryKeys.all, "finance", "messaging-budget-stage"] as const,
+    commercialTerms: (scope: string) =>
+      [...adminQueryKeys.all, "finance", "commercial-terms", scope] as const,
+    commercialTermsSearch: (query: string) =>
+      [...adminQueryKeys.all, "finance", "commercial-terms-search", query] as const,
+    commercialTermsReplace: () =>
+      [...adminQueryKeys.all, "finance", "commercial-terms-replace"] as const,
+    paymentRouting: () =>
+      [...adminQueryKeys.all, "finance", "payment-routing"] as const,
+    paymentRoutingReplace: () =>
+      [...adminQueryKeys.all, "finance", "payment-routing-replace"] as const,
   },
   growth: {
     overview: () => [...adminQueryKeys.all, "growth", "overview"] as const,

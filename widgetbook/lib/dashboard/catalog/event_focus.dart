@@ -37,7 +37,7 @@ Widget dashboardEventFocusListReviewStates(BuildContext context) {
             upcomingEvents: [widgetbookDashboardNextEvent],
             windowedEvents: const [],
             actions: _eventFocusActions,
-            clubNameBuilder: (_) => widgetbookDashboardClub.name,
+            organizerNameBuilder: (_) => widgetbookDashboardOrganizer.name,
           ),
         ),
       ),
@@ -53,7 +53,7 @@ Widget dashboardEventFocusListReviewStates(BuildContext context) {
             ),
             checkInState: const EventFocusCheckInState(isPending: true),
             actions: _eventFocusActions,
-            clubNameBuilder: (_) => widgetbookDashboardClub.name,
+            organizerNameBuilder: (_) => widgetbookDashboardOrganizer.name,
           ),
         ),
       ),
@@ -100,7 +100,7 @@ Widget dashboardEventFocusCardReviewStates(BuildContext context) {
             item: EventFocusItem(
               event: widgetbookDashboardNextEvent,
               kind: EventFocusKind.upcoming,
-              clubName: widgetbookDashboardClub.name,
+              organizerName: widgetbookDashboardOrganizer.name,
             ),
             cardIndex: 0,
             cardCount: 3,
@@ -116,7 +116,7 @@ Widget dashboardEventFocusCardReviewStates(BuildContext context) {
             item: EventFocusItem(
               event: widgetbookDashboardNextEvent,
               kind: EventFocusKind.checkIn,
-              clubName: widgetbookDashboardClub.name,
+              organizerName: widgetbookDashboardOrganizer.name,
             ),
             cardIndex: 1,
             cardCount: 3,
@@ -132,7 +132,7 @@ Widget dashboardEventFocusCardReviewStates(BuildContext context) {
             item: EventFocusItem(
               event: DashboardSurfaceFixtures.attendedEvent,
               kind: EventFocusKind.afterEvent,
-              clubName: widgetbookDashboardClub.name,
+              organizerName: widgetbookDashboardOrganizer.name,
               canSwipe: true,
               needsReview: true,
               windowClosesAt: DashboardSurfaceFixtures.now.add(

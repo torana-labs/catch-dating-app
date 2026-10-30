@@ -7,7 +7,7 @@ import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dar
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
@@ -51,7 +51,7 @@ part 'private_event_create_drafts.dart';
 class PrivateEventCreateScreen extends ConsumerStatefulWidget {
   const PrivateEventCreateScreen({
     super.key,
-    required this.club,
+    required this.organizer,
     this.initialDraft,
     this.initialPrefill,
     this.initialRosterImportPlan,
@@ -70,7 +70,7 @@ class PrivateEventCreateScreen extends ConsumerStatefulWidget {
          'A saved private event cannot also start from a draft or repeat.',
        );
 
-  final Club club;
+  final Organizer organizer;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
   final HostRosterImportPlan? initialRosterImportPlan;
@@ -173,8 +173,8 @@ class _PrivateEventCreateScreenState
     }
     for (final option in defaultCityOptions) {
       if (_city == null &&
-          option.effectiveCityId == widget.club.locationCityId &&
-          option.effectiveMarketId == widget.club.locationMarketId) {
+          option.effectiveCityId == widget.organizer.locationCityId &&
+          option.effectiveMarketId == widget.organizer.locationMarketId) {
         _city = option;
         if (_timezoneController.text.isEmpty) {
           _timezoneController.text = option.timeZone;
@@ -185,11 +185,11 @@ class _PrivateEventCreateScreenState
     if (startingValues == null) {
       _cityInherited =
           _trustedOrganizerDefaultsReadAvailable() &&
-          widget.club.locationCityId.isNotEmpty &&
-          widget.club.locationMarketId.isNotEmpty;
+          widget.organizer.locationCityId.isNotEmpty &&
+          widget.organizer.locationMarketId.isNotEmpty;
       _timezoneInherited =
           _trustedOrganizerDefaultsReadAvailable() &&
-          (widget.club.hostDefaults.timezone?.trim().isNotEmpty ?? false);
+          (widget.organizer.hostDefaults.timezone?.trim().isNotEmpty ?? false);
     } else {
       _cityInherited =
           _trustedOrganizerDefaultsReadAvailable() &&
@@ -556,12 +556,12 @@ class _PrivateEventCreateScreenState
       return PrivateEventSetupScreen(
         readOnly: !_savedEventActive,
         publicationState: _savedPublicationState,
-        club: widget.club,
+        organizer: widget.organizer,
         receipt: receipt,
         name: _nameController.text.trim(),
         date: _date!,
         start: _start!,
-        cityLabel: _city?.label ?? _savedCityLabel ?? widget.club.location,
+        cityLabel: _city?.label ?? _savedCityLabel ?? widget.organizer.location,
         pendingRosterFileName: widget.initialRosterImportPlan?.fileName,
         onEditBasics: _canEditSavedBasics || _pendingUpdate != null
             ? () => setState(() => _editingSavedBasics = true)
@@ -598,7 +598,7 @@ class _PrivateEventCreateScreenState
               title: receipt == null
                   ? context.l10n.hostsHostEventsListLabelNewEvent
                   : context.l10n.hostsPrivateEventEditBasics,
-              subtitle: widget.club.name,
+              subtitle: widget.organizer.name,
               stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
               compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
                 context.l10n,
@@ -654,7 +654,7 @@ class _PrivateEventCreateScreenState
                           city: _city,
                           date: _date,
                           start: _start,
-                          organizerLocation: widget.club.location,
+                          organizerLocation: widget.organizer.location,
                           savedCityLabel: _savedCityLabel,
                           suggestedTimezone: _managerDefaults?.timezone,
                           cityAccordion: _cityAccordion,

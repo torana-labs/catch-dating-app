@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "1.8.0",
-  "updated": "2026-10-25",
+  "catalogVersion": "1.9.0",
+  "updated": "2026-10-30",
   "owner": "operations_platform",
   "program": "catch-admin",
   "actions": [
@@ -3200,6 +3200,110 @@
       }
     },
     {
+      "actionId": "finance.list-commercial-terms",
+      "callable": "adminListCommercialTerms",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance/commercial-terms",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "requestSchema": "contracts/callables/admin_list_commercial_terms_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_list_commercial_terms_response.schema.json",
+      "summary": "Review Catch's platform commercial terms, one scope's recent revisions, every organizer override, and find an organizer to add an override for.",
+      "example": {
+        "organizerId": null,
+        "organizerQuery": null
+      }
+    },
+    {
+      "actionId": "finance.manage-commercial-terms",
+      "callable": "manageCommercialTerms",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance/commercial-terms",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "confirmation": "action",
+      "requestSchema": "contracts/callables/manage_commercial_terms_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/manage_commercial_terms_response.schema.json",
+      "summary": "Read or replace the platform commercial terms or one organizer's sparse override against the reviewed revision, with a reason; only new payments freeze the change.",
+      "example": {
+        "action": "replace",
+        "organizerId": null,
+        "expectedRevision": 0,
+        "terms": {
+          "currency": "INR",
+          "commission": {
+            "rateBasisPoints": 500,
+            "capMinor": 1000000,
+            "cycleDays": 30,
+            "cycleAnchor": "trialEnd",
+            "base": "netOfRefunds",
+            "taxTreatment": "exclusive"
+          },
+          "trial": {
+            "days": 30,
+            "anchor": "firstEvent"
+          },
+          "toolsOnly": {
+            "feeMinor": 500000
+          },
+          "gatewayFeeBearer": "host",
+          "purposes": {
+            "eventAdmission": {
+              "countsTowardCommission": true,
+              "atSourceFeeBasisPoints": 0
+            },
+            "formFee": {
+              "countsTowardCommission": true,
+              "atSourceFeeBasisPoints": 0
+            },
+            "hostMembership": {
+              "countsTowardCommission": true,
+              "atSourceFeeBasisPoints": 0
+            }
+          }
+        },
+        "reason": "Owner decision 2026-10-30: membership money flow and commercial terms"
+      }
+    },
+    {
+      "actionId": "finance.manage-payment-routing",
+      "callable": "managePaymentRoutingPolicy",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance/payment-routing",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "confirmation": "action",
+      "requestSchema": "contracts/callables/manage_payment_routing_policy_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/manage_payment_routing_policy_response.schema.json",
+      "summary": "Read or replace the app payment routing defaults or one organizer override for event tickets, form fees and host memberships against the reviewed revision; selection never proves provider readiness.",
+      "example": {
+        "action": "read",
+        "organizerId": null,
+        "expectedRevision": null,
+        "formFee": null,
+        "eventAdmission": null,
+        "hostMembership": null
+      }
+    },
+    {
       "actionId": "sales.demo.GetSalesDemoPartnerReview",
       "callable": "adminGetSalesDemoPartnerReview",
       "workflowIds": [
@@ -3431,7 +3535,10 @@
         "finance.decide-event-messaging-budget",
         "finance.stage-event-messaging-budget",
         "finance.grant-organizer-entitlement",
-        "finance.revoke-organizer-entitlement-grant"
+        "finance.revoke-organizer-entitlement-grant",
+        "finance.list-commercial-terms",
+        "finance.manage-commercial-terms",
+        "finance.manage-payment-routing"
       ],
       "blockedCapabilities": [
         "retry_payment",

@@ -23,14 +23,14 @@ void main() {
     required EventAttendeeProfile attendee,
     EventRosterSnapshot roster = const EventRosterSnapshot(),
     bool hasValidInvite = false,
-    bool isClubMember = false,
+    bool isOrganizerMember = false,
   }) {
     return engine.decideAdmission(
       policy: policy,
       request: EventAdmissionRequest(
         attendee: attendee,
         hasValidInvite: hasValidInvite,
-        isClubMember: isClubMember,
+        isOrganizerMember: isOrganizerMember,
       ),
       roster: roster,
     );
@@ -48,14 +48,14 @@ void main() {
       EventAdmissionDecisionType.manualReviewRequired,
     );
     expect(
-      decide(policy: policy, attendee: attendee, isClubMember: true).type,
+      decide(policy: policy, attendee: attendee, isOrganizerMember: true).type,
       EventAdmissionDecisionType.admitted,
     );
     expect(
       decide(
         policy: policy,
         attendee: attendee,
-        isClubMember: true,
+        isOrganizerMember: true,
         roster: const EventRosterSnapshot(
           bookedCountsByCohort: {EventCohortIds.menInterestedInWomen: 1},
         ),
@@ -69,7 +69,11 @@ void main() {
       basePriceInPaise: 0,
     );
     expect(
-      decide(policy: ordinary, attendee: attendee, isClubMember: true).type,
+      decide(
+        policy: ordinary,
+        attendee: attendee,
+        isOrganizerMember: true,
+      ).type,
       EventAdmissionDecisionType.manualReviewRequired,
     );
   });

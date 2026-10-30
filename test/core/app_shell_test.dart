@@ -55,7 +55,7 @@ void main() {
               viewPadding: EdgeInsets.only(bottom: 34),
             ),
             child: AdaptiveTabScaffold(
-              activeIndex: appShellClubsTabIndex,
+              activeIndex: appShellOrganizersTabIndex,
               body: SizedBox.expand(),
               navigationBar: SizedBox(key: navigationKey, height: 56),
             ),
@@ -190,7 +190,7 @@ void main() {
               viewPadding: EdgeInsets.only(bottom: 34),
             ),
             child: AdaptiveTabScaffold(
-              activeIndex: appShellClubsTabIndex,
+              activeIndex: appShellOrganizersTabIndex,
               body: SizedBox.expand(),
               navigationBar: SizedBox(key: navigationKey, height: 56),
             ),

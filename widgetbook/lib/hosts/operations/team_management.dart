@@ -14,7 +14,7 @@ import 'shell_fixture.dart';
 
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
-  type: HostClubsScaffold,
+  type: HostOrganizersScaffold,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -159,7 +159,7 @@ class _HostTeamSectionPreview extends StatelessWidget {
     return SingleChildScrollView(
       padding: CatchInsets.pageBody,
       child: HostTeamManagementSection(
-        club: HostOperationsFixtures.primaryClub,
+        organizer: HostOperationsFixtures.primaryOrganizer,
         currentUid: HostOperationsFixtures.hostUid,
         canManage: canManage,
       ),
@@ -187,14 +187,14 @@ class _HostTeamAddHostSheetPreview extends StatelessWidget {
         errorMessage: appErrorMessage(
           StateError('Widgetbook add host failed'),
           l10n: context.l10n,
-          context: AppErrorContext.club,
+          context: AppErrorContext.organizer,
         ),
       ),
       _HostTeamAddHostSheetPreviewMode.offline => HostTeamAddHostActionState(
         errorMessage: appErrorMessage(
           obviousOfflineException(),
           l10n: context.l10n,
-          context: AppErrorContext.club,
+          context: AppErrorContext.organizer,
         ),
       ),
     };
@@ -217,7 +217,7 @@ class _HostTeamHostActionDialogPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final host = HostOperationsFixtures.primaryClub.hostProfiles[1];
+    final host = HostOperationsFixtures.primaryOrganizer.hostProfiles[1];
     final confirmation = HostTeamHostActionConfirmation(
       action: action,
       host: host,

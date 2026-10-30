@@ -8,9 +8,9 @@ import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -27,8 +27,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart' as organizer_test;
 import '../test_pump_helpers.dart';
 
 void main() {
@@ -85,7 +85,7 @@ void main() {
     testWidgets('keeps calendar chrome visible while club names load', (
       tester,
     ) async {
-      final clubNames = Completer<Map<String, String>>();
+      final organizerNames = Completer<Map<String, String>>();
       final event = buildEvent(
         id: 'club-name-loading-event',
         startTime: DateTime.now().add(const Duration(days: 1, hours: 7)),
@@ -98,9 +98,9 @@ void main() {
           watchSignedUpEventsProvider(
             'runner-1',
           ).overrideWithValue(AsyncData<List<Event>>([event])),
-          clubNameLookupProvider(
-            ClubNameLookupQuery([event.clubId]),
-          ).overrideWith((ref) => clubNames.future),
+          organizerNameLookupProvider(
+            OrganizerNameLookupQuery([event.clubId]),
+          ).overrideWith((ref) => organizerNames.future),
         ],
       );
 
@@ -141,8 +141,8 @@ void main() {
             watchSavedEventDetailsForUserProvider(
               'runner-1',
             ).overrideWithValue(const AsyncData<List<Event>>([])),
-            clubNameLookupProvider(
-              ClubNameLookupQuery([event.clubId]),
+            organizerNameLookupProvider(
+              OrganizerNameLookupQuery([event.clubId]),
             ).overrideWithValue(
               const AsyncData<Map<String, String>>({'club-1': 'Stride Social'}),
             ),
@@ -694,7 +694,7 @@ void main() {
           bookedCount: 1,
         );
         final user = buildUser();
-        final club = buildClub();
+        final organizer = buildOrganizer();
         final router = GoRouter(
           initialLocation: app_router.Routes.calendarScreen.path,
           routes: [
@@ -747,15 +747,18 @@ void main() {
                   ),
                 ),
               ),
-              watchClubMembershipProvider(
+              watchOrganizerMembershipProvider(
                 event.clubId,
                 user.uid,
               ).overrideWithValue(const AsyncData(null)),
-              clubsRepositoryProvider.overrideWith(
+              organizersRepositoryProvider.overrideWith(
                 (ref) =>
-                    club_test.FakeClubsRepository()..clubsById[club.id] = club,
+                    organizer_test.FakeOrganizersRepository()
+                      ..organizersById[organizer.id] = organizer,
               ),
-              fetchClubProvider(club.id).overrideWithValue(AsyncData(club)),
+              fetchOrganizerProvider(
+                organizer.id,
+              ).overrideWithValue(AsyncData(organizer)),
               watchReviewsForEventProvider(
                 event.id,
               ).overrideWithValue(const AsyncData([])),
@@ -804,10 +807,10 @@ Future<void> _pumpCalendar(
     ProviderScope(
       overrides: [
         uidProvider.overrideWithValue(uid),
-        clubsRepositoryProvider.overrideWith(
+        organizersRepositoryProvider.overrideWith(
           (ref) =>
-              club_test.FakeClubsRepository()
-                ..clubsById['club-1'] = buildClub(),
+              organizer_test.FakeOrganizersRepository()
+                ..organizersById['club-1'] = buildOrganizer(),
         ),
         watchSavedEventDetailsForUserProvider(
           'runner-1',

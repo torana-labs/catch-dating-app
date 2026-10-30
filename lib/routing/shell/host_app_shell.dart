@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/hosts.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/notifications.dart';
@@ -57,10 +57,10 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
         : 0;
     final errorLogger = ref.read(errorLoggerProvider);
     final analytics = ref.read(appAnalyticsProvider);
-    final clubsAsync = isAuthenticated
-        ? ref.watch(hostOperableClubsProvider(uid))
+    final organizersAsync = isAuthenticated
+        ? ref.watch(hostOperableOrganizersProvider(uid))
         : null;
-    final clubs = clubsAsync?.asData?.value ?? const <Club>[];
+    final organizers = organizersAsync?.asData?.value ?? const <Organizer>[];
     final selectedOrganizerId = isAuthenticated
         ? ref.watch(hostOrganizerSelectionProvider(uid))
         : null;
@@ -70,11 +70,11 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
         requestedOrganizerId.isNotEmpty &&
         requestedOrganizerId != _consumedRequestedOrganizerId;
     final selectedOrganizer = resolveSelectedHostOrganizer(
-      clubs,
+      organizers,
       selectedOrganizerId: selectedOrganizerId,
       preferredOrganizerId: hasUnconsumedRequest ? requestedOrganizerId : null,
     );
-    if (hasUnconsumedRequest && clubsAsync?.hasValue == true) {
+    if (hasUnconsumedRequest && organizersAsync?.hasValue == true) {
       _consumedRequestedOrganizerId = requestedOrganizerId;
     }
     if (isAuthenticated && selectedOrganizer != null) {
@@ -128,17 +128,17 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
 
     final navigationItems = _hostNavigationItems(
       selectedOrganizer: selectedOrganizer,
-      onOrganizerLongPress: clubs.length > 1 && selectedOrganizer != null
+      onOrganizerLongPress: organizers.length > 1 && selectedOrganizer != null
           ? () => unawaited(
               _openOrganizerSwitcher(
                 uid: uid,
-                clubs: clubs,
+                organizers: organizers,
                 selectedOrganizer: selectedOrganizer,
               ),
             )
           : null,
-      organizerSemanticHint: clubs.length > 1
-          ? context.l10n.hostsHostTodayTooltipSwitchClub
+      organizerSemanticHint: organizers.length > 1
+          ? context.l10n.hostsHostTodayTooltipSwitchOrganizer
           : null,
     );
 
@@ -204,13 +204,13 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
 
   Future<void> _openOrganizerSwitcher({
     required String uid,
-    required List<Club> clubs,
-    required Club selectedOrganizer,
+    required List<Organizer> organizers,
+    required Organizer selectedOrganizer,
   }) async {
     catchTransitionHaptic();
     final organizerId = await showHostOrganizerSwitcherSheet(
       context: context,
-      clubs: clubs,
+      organizers: organizers,
       selectedOrganizerId: selectedOrganizer.id,
     );
     if (!mounted ||
@@ -223,7 +223,7 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
 }
 
 List<AppShellNavigationItem> _hostNavigationItems({
-  required Club? selectedOrganizer,
+  required Organizer? selectedOrganizer,
   required VoidCallback? onOrganizerLongPress,
   required String? organizerSemanticHint,
 }) => [
@@ -266,7 +266,7 @@ List<AppShellNavigationItem> _hostNavigationItems({
         ? null
         : (context) => HostOrganizerAvatar(
             key: const ValueKey<String>('host-organizer-navigation-avatar'),
-            club: selectedOrganizer,
+            organizer: selectedOrganizer,
             size: CatchLayout.appShellNavigationIdentityExtent,
           ),
     selectedIconBuilder: selectedOrganizer == null
@@ -275,7 +275,7 @@ List<AppShellNavigationItem> _hostNavigationItems({
             key: const ValueKey<String>(
               'host-organizer-navigation-avatar-selected',
             ),
-            club: selectedOrganizer,
+            organizer: selectedOrganizer,
             size: CatchLayout.appShellNavigationIdentityExtent,
             selected: true,
           ),

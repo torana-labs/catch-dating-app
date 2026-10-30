@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
@@ -33,13 +33,13 @@ void main() {
       tester,
     ) async {
       final event = buildEvent(priceInPaise: 29900);
-      final club = buildClub(name: 'Bandra Breakers');
+      final organizer = buildOrganizer(name: 'Bandra Breakers');
 
       await _pumpPaymentConfirmation(
         tester,
         data: confirmationData,
         event: event,
-        club: club,
+        organizer: organizer,
       );
 
       expect(find.text("You're in."), findsOneWidget);
@@ -55,13 +55,13 @@ void main() {
         priceInPaise: 29900,
         meetingPoint: 'Carter Road Promenade',
       );
-      final club = buildClub(name: 'Bandra Breakers');
+      final organizer = buildOrganizer(name: 'Bandra Breakers');
 
       await _pumpPaymentConfirmation(
         tester,
         data: confirmationData,
         event: event,
-        club: club,
+        organizer: organizer,
       );
 
       expect(find.textContaining('Bandra Breakers'), findsOneWidget);
@@ -76,13 +76,13 @@ void main() {
       tester,
     ) async {
       final event = buildEvent();
-      final club = buildClub();
+      final organizer = buildOrganizer();
 
       await _pumpPaymentConfirmation(
         tester,
         data: confirmationData,
         event: event,
-        club: club,
+        organizer: organizer,
       );
 
       expect(find.byKey(PaymentConfirmationKeys.addToCalendar), findsOneWidget);
@@ -106,7 +106,7 @@ void main() {
       tester,
     ) async {
       final event = buildEvent(priceInPaise: 60000);
-      final club = buildClub();
+      final organizer = buildOrganizer();
       final pendingData = PaymentConfirmationData(
         paymentId: 'pay_PENDING',
         orderId: 'order_PENDING',
@@ -122,7 +122,7 @@ void main() {
         tester,
         data: pendingData,
         event: event,
-        club: club,
+        organizer: organizer,
       );
 
       expect(find.byType(CatchScaffold), findsOneWidget);
@@ -169,7 +169,7 @@ void main() {
         tester,
         data: data,
         event: event,
-        club: buildClub(),
+        organizer: buildOrganizer(),
         payment: payment,
       );
       expect(find.text('Booking cancelled'), findsWidgets);
@@ -183,13 +183,13 @@ void main() {
       tester,
     ) async {
       final event = buildEvent();
-      final club = buildClub();
+      final organizer = buildOrganizer();
 
       await _pumpPaymentConfirmation(
         tester,
         data: confirmationData,
         event: event,
-        club: club,
+        organizer: organizer,
       );
 
       await tester.ensureVisible(find.text('Invite friend'));
@@ -215,13 +215,13 @@ void main() {
 
     testWidgets('Back to home button pops to root', (tester) async {
       final event = buildEvent();
-      final club = buildClub();
+      final organizer = buildOrganizer();
 
       await _pumpPaymentConfirmation(
         tester,
         data: confirmationData,
         event: event,
-        club: club,
+        organizer: organizer,
       );
 
       expect(find.byKey(PaymentConfirmationKeys.backHome), findsOneWidget);
@@ -276,7 +276,7 @@ Future<void> _pumpPaymentConfirmation(
   WidgetTester tester, {
   required PaymentConfirmationData data,
   required Event event,
-  required Club club,
+  required Organizer organizer,
   Payment? payment,
 }) async {
   await tester.pumpWidget(
@@ -285,9 +285,9 @@ Future<void> _pumpPaymentConfirmation(
         watchEventProvider(
           data.eventId,
         ).overrideWith((ref) => Stream.value(event)),
-        watchClubProvider(
+        watchOrganizerProvider(
           event.clubId,
-        ).overrideWith((ref) => Stream.value(club)),
+        ).overrideWith((ref) => Stream.value(organizer)),
         attendeeEventShareActionsProvider.overrideWithValue(
           const _TestAttendeeEventShareActions(),
         ),

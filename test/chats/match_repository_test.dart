@@ -285,11 +285,11 @@ void main() {
         'club-a-event-2-newest',
         'club-b',
       });
-      final clubAEvent2 = collapsed.singleWhere(
+      final organizerAEvent2 = collapsed.singleWhere(
         (match) => match.id == 'club-a-event-2-newest',
       );
-      expect(clubAEvent2.eventIds, const ['event-a-2']);
-      expect(clubAEvent2.unreadCounts['runner-1'], 1);
+      expect(organizerAEvent2.eventIds, const ['event-a-2']);
+      expect(organizerAEvent2.unreadCounts['runner-1'], 1);
     },
   );
 

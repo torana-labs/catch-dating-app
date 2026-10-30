@@ -7,7 +7,7 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
@@ -20,7 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../clubs/clubs_test_helpers.dart';
+import '../../organizers/organizers_test_helpers.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
@@ -378,8 +378,8 @@ class _Harness {
           yield* actors.stream;
         }),
         for (final uid in ['A', 'B'])
-          hostOperableClubsProvider(uid).overrideWithValue(
-            AsyncData([buildClub(id: 'org', ownerUserId: uid)]),
+          hostOperableOrganizersProvider(uid).overrideWithValue(
+            AsyncData([buildOrganizer(id: 'org', ownerUserId: uid)]),
           ),
         hostFormsRepositoryProvider.overrideWithValue(repo),
       ],

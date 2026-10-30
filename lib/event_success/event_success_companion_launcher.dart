@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_runtime.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -128,11 +128,11 @@ launchEventSuccessCompanionIfAvailable({
       EventSuccessCompanionLaunchMoment.checkedIn,
 }) async {
   try {
-    final clubsRepository = ref.read(clubsRepositoryProvider);
+    final organizersRepository = ref.read(organizersRepositoryProvider);
     final eventSuccessRepository = ref.read(eventSuccessRepositoryProvider);
     final registry = ref.read(eventSuccessCompanionLaunchRegistryProvider);
-    final club = await clubsRepository.fetchClub(event.clubId);
-    if (club == null || club.isHostedBy(uid)) {
+    final organizer = await organizersRepository.fetchOrganizer(event.clubId);
+    if (organizer == null || organizer.isHostedBy(uid)) {
       return EventSuccessCompanionLaunchResult.unavailable;
     }
 

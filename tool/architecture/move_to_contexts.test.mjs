@@ -315,6 +315,19 @@ test("rewritePathMentions moves folder mentions and quoted leading-slash fragmen
   ].join("\n"));
 });
 
+test("rewritePathMentions gives only lib/ folders a package URI form", () => {
+  const folders = [["test/clubs/", "test/organizers/"], ["widgetbook/lib/clubs/", "widgetbook/lib/organizers/"]];
+  const {source, count} = rewritePathMentions([
+    "test/clubs/club_test.dart widgetbook/lib/clubs/catalog",
+    "'package:catch_dating_app/clubs/clubs.dart'",
+  ].join("\n"), new Map(), folders);
+  assert.equal(count, 2);
+  assert.equal(source, [
+    "test/organizers/club_test.dart widgetbook/lib/organizers/catalog",
+    "'package:catch_dating_app/clubs/clubs.dart'",
+  ].join("\n"));
+});
+
 test("pruneLegacyEntries drops moveTo entries once their files have moved", () => {
   const {source, removed} = pruneLegacyEntries([
     "  \"legacy\": [",

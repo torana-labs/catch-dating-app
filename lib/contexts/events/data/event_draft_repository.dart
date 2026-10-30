@@ -144,7 +144,7 @@ EventDraftRepository eventDraftRepository(Ref ref) =>
     EventDraftRepository(ref.watch(errorLoggerProvider));
 
 @riverpod
-Future<List<EventDraft>> clubEventDrafts(
+Future<List<EventDraft>> organizerEventDrafts(
   Ref ref, {
   required String clubId,
 }) async {

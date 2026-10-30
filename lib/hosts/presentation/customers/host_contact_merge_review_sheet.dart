@@ -78,7 +78,7 @@ class _HostContactMergeReviewSheetState
         if (snapshot.hasError && _active.isEmpty && _dismissed.isEmpty) {
           return CatchLocalizedErrorState(
             snapshot.error!,
-            context: AppErrorContext.club,
+            context: AppErrorContext.organizer,
             mode: CatchErrorStateMode.compact,
             onRetry: _reload,
           );
@@ -141,7 +141,7 @@ class _HostContactMergeReviewSheetState
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {
@@ -306,7 +306,7 @@ class _HostContactMergeCandidateCardState
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
       return false;
@@ -386,7 +386,7 @@ class _HostDismissedMergeCandidateCardState
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {

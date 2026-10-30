@@ -210,6 +210,11 @@ jobs:
       - name: Check cross-stack component lexicon
         run: node tool/design/check_component_lexicon.mjs
 
+      # Flutter names say organizer: club stays only as the subtype and in
+      # names the generated schema contracts declare.
+      - name: Organizer nomenclature
+        run: node tool/check_organizer_nomenclature.mjs
+
       # Every Flutter change runs both: CatchIcons must match the role catalog,
       # and icon-family references outside the icon layer may only fall.
       - name: Icon roles and icon-family references

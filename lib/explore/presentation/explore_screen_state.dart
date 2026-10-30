@@ -5,7 +5,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 enum ExploreDiscoveryEmptyKind {
-  noSourceClubs,
+  noSourceOrganizers,
   noSearchResults,
   noFilterResults,
   noFilteredSearchResults,
@@ -22,7 +22,7 @@ enum ExploreScreenBodyKind {
   loading,
   error,
   content,
-  contentWithoutClubs,
+  contentWithoutOrganizers,
   empty,
 }
 
@@ -40,7 +40,7 @@ class ExploreDiscoveryScreenState {
     required String cityLabel,
     required String query,
     required ExploreFilterSelection filters,
-    required bool hasSourceClubs,
+    required bool hasSourceOrganizers,
     required int? mappableEventCount,
     required bool viewModelLoading,
     Object? viewModelError,
@@ -51,7 +51,7 @@ class ExploreDiscoveryScreenState {
   }) {
     final emptyState = ExploreDiscoveryEmptyState.from(
       cityLabel: cityLabel,
-      hasSourceClubs: hasSourceClubs,
+      hasSourceOrganizers: hasSourceOrganizers,
       hasSearch: query.trim().isNotEmpty,
       filters: filters,
     );
@@ -99,7 +99,7 @@ class ExploreScreenBodyState {
     if (viewModelError != null) {
       if (eventFeedHasContent) {
         return ExploreScreenBodyState._(
-          kind: ExploreScreenBodyKind.contentWithoutClubs,
+          kind: ExploreScreenBodyKind.contentWithoutOrganizers,
           error: viewModelError,
           retryTarget: ExploreScreenRetryTarget.explore,
         );
@@ -162,14 +162,14 @@ class ExploreDiscoveryEmptyState {
 
   factory ExploreDiscoveryEmptyState.from({
     required String cityLabel,
-    required bool hasSourceClubs,
+    required bool hasSourceOrganizers,
     required bool hasSearch,
     required ExploreFilterSelection filters,
   }) {
     final hasFilters = filters.hasActiveFilters;
-    if (!hasSourceClubs) {
+    if (!hasSourceOrganizers) {
       return ExploreDiscoveryEmptyState(
-        kind: ExploreDiscoveryEmptyKind.noSourceClubs,
+        kind: ExploreDiscoveryEmptyKind.noSourceOrganizers,
         cityLabel: cityLabel,
         action: ExploreDiscoveryEmptyAction.none,
       );
@@ -196,7 +196,7 @@ class ExploreDiscoveryEmptyState {
       );
     }
     return ExploreDiscoveryEmptyState(
-      kind: ExploreDiscoveryEmptyKind.noSourceClubs,
+      kind: ExploreDiscoveryEmptyKind.noSourceOrganizers,
       cityLabel: cityLabel,
       action: ExploreDiscoveryEmptyAction.none,
     );

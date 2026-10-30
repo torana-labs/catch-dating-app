@@ -31,38 +31,10 @@ import 'package:widgetbook_workspace/catches/catalog/recap_route.dart'
     as _widgetbook_workspace_catches_catalog_recap_route;
 import 'package:widgetbook_workspace/catches/catalog/skeletons.dart'
     as _widgetbook_workspace_catches_catalog_skeletons;
-import 'package:widgetbook_workspace/clubs/catalog/activity.dart'
-    as _widgetbook_workspace_clubs_catalog_activity;
-import 'package:widgetbook_workspace/clubs/catalog/body.dart'
-    as _widgetbook_workspace_clubs_catalog_body;
-import 'package:widgetbook_workspace/clubs/catalog/discovery.dart'
-    as _widgetbook_workspace_clubs_catalog_discovery;
-import 'package:widgetbook_workspace/clubs/catalog/dock.dart'
-    as _widgetbook_workspace_clubs_catalog_dock;
-import 'package:widgetbook_workspace/clubs/catalog/hero.dart'
-    as _widgetbook_workspace_clubs_catalog_hero;
-import 'package:widgetbook_workspace/clubs/catalog/hosts.dart'
-    as _widgetbook_workspace_clubs_catalog_hosts;
-import 'package:widgetbook_workspace/clubs/catalog/identity.dart'
-    as _widgetbook_workspace_clubs_catalog_identity;
-import 'package:widgetbook_workspace/clubs/catalog/membership.dart'
-    as _widgetbook_workspace_clubs_catalog_membership;
-import 'package:widgetbook_workspace/clubs/catalog/poster.dart'
-    as _widgetbook_workspace_clubs_catalog_poster;
-import 'package:widgetbook_workspace/clubs/catalog/reviews.dart'
-    as _widgetbook_workspace_clubs_catalog_reviews;
-import 'package:widgetbook_workspace/clubs/catalog/schedule.dart'
-    as _widgetbook_workspace_clubs_catalog_schedule;
-import 'package:widgetbook_workspace/clubs/catalog/screen.dart'
-    as _widgetbook_workspace_clubs_catalog_screen;
-import 'package:widgetbook_workspace/clubs/catalog/share.dart'
-    as _widgetbook_workspace_clubs_catalog_share;
 import 'package:widgetbook_workspace/consumer/p2_consumer_use_cases.dart'
     as _widgetbook_workspace_consumer_p2_consumer_use_cases;
 import 'package:widgetbook_workspace/dashboard/catalog/activity.dart'
     as _widgetbook_workspace_dashboard_catalog_activity;
-import 'package:widgetbook_workspace/dashboard/catalog/club_posts.dart'
-    as _widgetbook_workspace_dashboard_catalog_club_posts;
 import 'package:widgetbook_workspace/dashboard/catalog/empty_hero.dart'
     as _widgetbook_workspace_dashboard_catalog_empty_hero;
 import 'package:widgetbook_workspace/dashboard/catalog/event_focus.dart'
@@ -71,6 +43,8 @@ import 'package:widgetbook_workspace/dashboard/catalog/header.dart'
     as _widgetbook_workspace_dashboard_catalog_header;
 import 'package:widgetbook_workspace/dashboard/catalog/home.dart'
     as _widgetbook_workspace_dashboard_catalog_home;
+import 'package:widgetbook_workspace/dashboard/catalog/organizer_posts.dart'
+    as _widgetbook_workspace_dashboard_catalog_organizer_posts;
 import 'package:widgetbook_workspace/dashboard/catalog/recommendations.dart'
     as _widgetbook_workspace_dashboard_catalog_recommendations;
 import 'package:widgetbook_workspace/dashboard/catalog/screen.dart'
@@ -279,20 +253,18 @@ import 'package:widgetbook_workspace/hosts/operations/analytics.dart'
     as _widgetbook_workspace_hosts_operations_analytics;
 import 'package:widgetbook_workspace/hosts/operations/audiences.dart'
     as _widgetbook_workspace_hosts_operations_audiences;
-import 'package:widgetbook_workspace/hosts/operations/club_preview.dart'
-    as _widgetbook_workspace_hosts_operations_club_preview;
-import 'package:widgetbook_workspace/hosts/operations/create_club_defaults.dart'
-    as _widgetbook_workspace_hosts_operations_create_club_defaults;
-import 'package:widgetbook_workspace/hosts/operations/create_club_profile.dart'
-    as _widgetbook_workspace_hosts_operations_create_club_profile;
-import 'package:widgetbook_workspace/hosts/operations/create_club_routes.dart'
-    as _widgetbook_workspace_hosts_operations_create_club_routes;
 import 'package:widgetbook_workspace/hosts/operations/create_event_details.dart'
     as _widgetbook_workspace_hosts_operations_create_event_details;
 import 'package:widgetbook_workspace/hosts/operations/create_event_policy.dart'
     as _widgetbook_workspace_hosts_operations_create_event_policy;
 import 'package:widgetbook_workspace/hosts/operations/create_event_routes.dart'
     as _widgetbook_workspace_hosts_operations_create_event_routes;
+import 'package:widgetbook_workspace/hosts/operations/create_organizer_defaults.dart'
+    as _widgetbook_workspace_hosts_operations_create_organizer_defaults;
+import 'package:widgetbook_workspace/hosts/operations/create_organizer_profile.dart'
+    as _widgetbook_workspace_hosts_operations_create_organizer_profile;
+import 'package:widgetbook_workspace/hosts/operations/create_organizer_routes.dart'
+    as _widgetbook_workspace_hosts_operations_create_organizer_routes;
 import 'package:widgetbook_workspace/hosts/operations/customer_components.dart'
     as _widgetbook_workspace_hosts_operations_customer_components;
 import 'package:widgetbook_workspace/hosts/operations/customer_merge_components.dart'
@@ -315,6 +287,8 @@ import 'package:widgetbook_workspace/hosts/operations/manage_routes.dart'
     as _widgetbook_workspace_hosts_operations_manage_routes;
 import 'package:widgetbook_workspace/hosts/operations/organizer_components.dart'
     as _widgetbook_workspace_hosts_operations_organizer_components;
+import 'package:widgetbook_workspace/hosts/operations/organizer_preview.dart'
+    as _widgetbook_workspace_hosts_operations_organizer_preview;
 import 'package:widgetbook_workspace/hosts/operations/organizer_routes.dart'
     as _widgetbook_workspace_hosts_operations_organizer_routes;
 import 'package:widgetbook_workspace/hosts/operations/payouts.dart'
@@ -379,6 +353,32 @@ import 'package:widgetbook_workspace/onboarding/catalog/steps.dart'
     as _widgetbook_workspace_onboarding_catalog_steps;
 import 'package:widgetbook_workspace/onboarding/catalog/welcome.dart'
     as _widgetbook_workspace_onboarding_catalog_welcome;
+import 'package:widgetbook_workspace/organizers/catalog/activity.dart'
+    as _widgetbook_workspace_organizers_catalog_activity;
+import 'package:widgetbook_workspace/organizers/catalog/body.dart'
+    as _widgetbook_workspace_organizers_catalog_body;
+import 'package:widgetbook_workspace/organizers/catalog/discovery.dart'
+    as _widgetbook_workspace_organizers_catalog_discovery;
+import 'package:widgetbook_workspace/organizers/catalog/dock.dart'
+    as _widgetbook_workspace_organizers_catalog_dock;
+import 'package:widgetbook_workspace/organizers/catalog/hero.dart'
+    as _widgetbook_workspace_organizers_catalog_hero;
+import 'package:widgetbook_workspace/organizers/catalog/hosts.dart'
+    as _widgetbook_workspace_organizers_catalog_hosts;
+import 'package:widgetbook_workspace/organizers/catalog/identity.dart'
+    as _widgetbook_workspace_organizers_catalog_identity;
+import 'package:widgetbook_workspace/organizers/catalog/membership.dart'
+    as _widgetbook_workspace_organizers_catalog_membership;
+import 'package:widgetbook_workspace/organizers/catalog/poster.dart'
+    as _widgetbook_workspace_organizers_catalog_poster;
+import 'package:widgetbook_workspace/organizers/catalog/reviews.dart'
+    as _widgetbook_workspace_organizers_catalog_reviews;
+import 'package:widgetbook_workspace/organizers/catalog/schedule.dart'
+    as _widgetbook_workspace_organizers_catalog_schedule;
+import 'package:widgetbook_workspace/organizers/catalog/screen.dart'
+    as _widgetbook_workspace_organizers_catalog_screen;
+import 'package:widgetbook_workspace/organizers/catalog/share.dart'
+    as _widgetbook_workspace_organizers_catalog_share;
 import 'package:widgetbook_workspace/primitives/analytics_kit_use_cases.dart'
     as _widgetbook_workspace_primitives_analytics_kit_use_cases;
 import 'package:widgetbook_workspace/primitives/avatar_use_cases.dart'
@@ -727,28 +727,28 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Share meta row states',
-                builder: _widgetbook_workspace_clubs_catalog_share
-                    .clubShareMetaRowStates,
+                builder: _widgetbook_workspace_organizers_catalog_share
+                    .organizerShareMetaRowStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubShareCard',
+            name: 'OrganizerShareCard',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Share card states',
-                builder: _widgetbook_workspace_clubs_catalog_share
-                    .clubShareCardStates,
+                builder: _widgetbook_workspace_organizers_catalog_share
+                    .organizerShareCardStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubShareCover',
+            name: 'OrganizerShareCover',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Share artwork states',
-                builder: _widgetbook_workspace_clubs_catalog_share
-                    .clubShareArtworkStates,
+                builder: _widgetbook_workspace_organizers_catalog_share
+                    .organizerShareArtworkStates,
               ),
             ],
           ),
@@ -758,32 +758,32 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Dock',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'ClubBellButton',
+            name: 'OrganizerBellButton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Dock bell states',
-                builder:
-                    _widgetbook_workspace_clubs_catalog_dock.dockBellStates,
+                builder: _widgetbook_workspace_organizers_catalog_dock
+                    .dockBellStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubDetailDock',
+            name: 'OrganizerDetailDock',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Dock states',
-                builder: _widgetbook_workspace_clubs_catalog_dock
-                    .clubDetailDockStates,
+                builder: _widgetbook_workspace_organizers_catalog_dock
+                    .organizerDetailDockStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubMemberCountText',
+            name: 'OrganizerMemberCountText',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Dock count states',
-                builder:
-                    _widgetbook_workspace_clubs_catalog_dock.dockCountStates,
+                builder: _widgetbook_workspace_organizers_catalog_dock
+                    .dockCountStates,
               ),
             ],
           ),
@@ -793,12 +793,12 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Screen',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'ClubDetailScreen',
+            name: 'OrganizerDetailScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_clubs_catalog_screen
-                    .clubDetailScreenStates,
+                builder: _widgetbook_workspace_organizers_catalog_screen
+                    .organizerDetailScreenStates,
               ),
             ],
           ),
@@ -808,142 +808,142 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Sections',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'ClubActivitySection',
+            name: 'OrganizerActivitySection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Activity section states',
-                builder: _widgetbook_workspace_clubs_catalog_activity
-                    .clubActivitySectionStates,
+                builder: _widgetbook_workspace_organizers_catalog_activity
+                    .organizerActivitySectionStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubContactSection',
+            name: 'OrganizerContactSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contact section states',
-                builder: _widgetbook_workspace_clubs_catalog_hosts
-                    .clubContactSectionStates,
+                builder: _widgetbook_workspace_organizers_catalog_hosts
+                    .organizerContactSectionStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubDetailBody',
+            name: 'OrganizerDetailBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Body composition',
-                builder: _widgetbook_workspace_clubs_catalog_body
-                    .clubDetailBodyComposition,
+                builder: _widgetbook_workspace_organizers_catalog_body
+                    .organizerDetailBodyComposition,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubDetailReadOnlyPreview',
+            name: 'OrganizerDetailReadOnlyPreview',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Embedded read-only preview',
-                builder: _widgetbook_workspace_clubs_catalog_body
-                    .clubDetailReadOnlyPreviewComposition,
+                builder: _widgetbook_workspace_organizers_catalog_body
+                    .organizerDetailReadOnlyPreviewComposition,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubDetailSliverBody',
+            name: 'OrganizerDetailSliverBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Shared sliver composition',
-                builder: _widgetbook_workspace_clubs_catalog_body
-                    .clubDetailSliverBodyComposition,
+                builder: _widgetbook_workspace_organizers_catalog_body
+                    .organizerDetailSliverBodyComposition,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubHeroHeader',
+            name: 'OrganizerHeroHeader',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Hero module states',
-                builder: _widgetbook_workspace_clubs_catalog_hero
-                    .clubHeroModuleStates,
+                builder: _widgetbook_workspace_organizers_catalog_hero
+                    .organizerHeroModuleStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubHeroTopBar',
+            name: 'OrganizerHeroTopBar',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Hero states',
-                builder: _widgetbook_workspace_clubs_catalog_hero
-                    .clubHeroAppBarStates,
+                builder: _widgetbook_workspace_organizers_catalog_hero
+                    .organizerHeroAppBarStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubHostRow',
+            name: 'OrganizerHostRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Host row states',
-                builder:
-                    _widgetbook_workspace_clubs_catalog_hosts.clubHostRowStates,
+                builder: _widgetbook_workspace_organizers_catalog_hosts
+                    .organizerHostRowStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubHostSection',
+            name: 'OrganizerHostSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Host section states',
-                builder: _widgetbook_workspace_clubs_catalog_hosts
-                    .clubHostSectionStates,
+                builder: _widgetbook_workspace_organizers_catalog_hosts
+                    .organizerHostSectionStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubMembershipDock',
+            name: 'OrganizerMembershipDock',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Provider dock states',
-                builder: _widgetbook_workspace_clubs_catalog_dock
-                    .clubMembershipDockStates,
+                builder: _widgetbook_workspace_organizers_catalog_dock
+                    .organizerMembershipDockStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubNextRunBanner',
+            name: 'OrganizerNextRunBanner',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Next run banner states',
-                builder: _widgetbook_workspace_clubs_catalog_activity
-                    .clubNextRunBannerStates,
+                builder: _widgetbook_workspace_organizers_catalog_activity
+                    .organizerNextRunBannerStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubPhotoRail',
+            name: 'OrganizerPhotoRail',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Photo strip states',
-                builder: _widgetbook_workspace_clubs_catalog_hero
-                    .clubPhotoStripStates,
+                builder: _widgetbook_workspace_organizers_catalog_hero
+                    .organizerPhotoStripStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubReviewsSection',
+            name: 'OrganizerReviewsSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Review states',
-                builder: _widgetbook_workspace_clubs_catalog_reviews
-                    .clubReviewsSectionStates,
+                builder: _widgetbook_workspace_organizers_catalog_reviews
+                    .organizerReviewsSectionStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubScheduleSection',
+            name: 'OrganizerScheduleSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Schedule states',
-                builder: _widgetbook_workspace_clubs_catalog_schedule
-                    .clubScheduleSectionStates,
+                builder: _widgetbook_workspace_organizers_catalog_schedule
+                    .organizerScheduleSectionStates,
               ),
             ],
           ),
@@ -962,58 +962,58 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Avatar chip states',
-                builder: _widgetbook_workspace_clubs_catalog_discovery
+                builder: _widgetbook_workspace_organizers_catalog_discovery
                     .avatarChipStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubHostIdentityRow',
+            name: 'OrganizerHostIdentityRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Host identity states',
-                builder: _widgetbook_workspace_clubs_catalog_identity
-                    .clubHostIdentityLineStates,
+                builder: _widgetbook_workspace_organizers_catalog_identity
+                    .organizerHostIdentityLineStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubImage',
+            name: 'OrganizerImage',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Club image states',
-                builder: _widgetbook_workspace_clubs_catalog_discovery
-                    .clubImageStates,
+                builder: _widgetbook_workspace_organizers_catalog_discovery
+                    .organizerImageStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubJoinAction',
+            name: 'OrganizerJoinAction',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Membership trailing controller states',
-                builder: _widgetbook_workspace_clubs_catalog_membership
+                builder: _widgetbook_workspace_organizers_catalog_membership
                     .membershipTrailingControllerStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubJoinButton',
+            name: 'OrganizerJoinButton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Membership trailing states',
-                builder: _widgetbook_workspace_clubs_catalog_membership
+                builder: _widgetbook_workspace_organizers_catalog_membership
                     .membershipTrailingStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubTagList',
+            name: 'OrganizerTagList',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Tag wrap states',
-                builder: _widgetbook_workspace_clubs_catalog_identity
-                    .clubTagWrapStates,
+                builder: _widgetbook_workspace_organizers_catalog_identity
+                    .organizerTagWrapStates,
               ),
             ],
           ),
@@ -1027,7 +1027,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Poster states',
-                builder: _widgetbook_workspace_clubs_catalog_poster
+                builder: _widgetbook_workspace_organizers_catalog_poster
                     .catchOrganizerPosterStates,
               ),
             ],
@@ -1037,7 +1037,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Header states',
-                builder: _widgetbook_workspace_clubs_catalog_poster
+                builder: _widgetbook_workspace_organizers_catalog_poster
                     .catchPosterHeaderStates,
               ),
             ],
@@ -1047,28 +1047,28 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Image states',
-                builder: _widgetbook_workspace_clubs_catalog_poster
+                builder: _widgetbook_workspace_organizers_catalog_poster
                     .catchPosterImageStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubIndexRow',
+            name: 'OrganizerIndexRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Index row states',
-                builder: _widgetbook_workspace_clubs_catalog_discovery
-                    .clubIndexRowStates,
+                builder: _widgetbook_workspace_organizers_catalog_discovery
+                    .organizerIndexRowStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubPlaceholderCover',
+            name: 'OrganizerPlaceholderCover',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Poster artwork states',
-                builder: _widgetbook_workspace_clubs_catalog_poster
-                    .clubPlaceholderCoverStates,
+                builder: _widgetbook_workspace_organizers_catalog_poster
+                    .organizerPlaceholderCoverStates,
               ),
             ],
           ),
@@ -1078,12 +1078,12 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Sections',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'ClubAvatarRail',
+            name: 'OrganizerAvatarRail',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Avatar rail states',
-                builder: _widgetbook_workspace_clubs_catalog_discovery
-                    .clubAvatarRailStates,
+                builder: _widgetbook_workspace_organizers_catalog_discovery
+                    .organizerAvatarRailStates,
               ),
             ],
           ),
@@ -3545,17 +3545,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubCover',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_contracts_activity_media
-                        .catchClubCoverContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'EventFallbackThumbnail',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3563,6 +3552,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_contracts_activity_media
                         .catchEventThumbnailActivityFallbackContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrganizerCover',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_activity_media
+                        .catchOrganizerCoverContractStates,
               ),
             ],
           ),
@@ -3928,16 +3928,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubDetailDock',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder: _widgetbook_workspace_primitives_contracts_sheets
-                    .clubDetailDockContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'EventActivityBadge',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3987,6 +3977,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_messages
                     .notificationRowContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrganizerDetailDock',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_sheets
+                    .organizerDetailDockContractStates,
               ),
             ],
           ),
@@ -5037,12 +5037,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'SavedEventsClubNamesErrorState',
+            name: 'SavedEventsOrganizerNamesErrorState',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Club names error sliver',
                 builder: _widgetbook_workspace_events_catalog_saved_events
-                    .savedEventsClubNamesErrorSliverState,
+                    .savedEventsOrganizerNamesErrorSliverState,
               ),
             ],
           ),
@@ -5162,7 +5162,17 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Cards',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'ClubCard',
+            name: 'ExploreOrganizerTagList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Club tags states',
+                builder: _widgetbook_workspace_explore_catalog_organizers
+                    .exploreOrganizerTagsStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrganizerCard',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Organizer poster states',
@@ -5172,22 +5182,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubCover',
+            name: 'OrganizerCover',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Club cover states',
                 builder: _widgetbook_workspace_explore_catalog_organizers
-                    .exploreClubCoverStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ExploreClubTagList',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Club tags states',
-                builder: _widgetbook_workspace_explore_catalog_organizers
-                    .exploreClubTagsStates,
+                    .exploreOrganizerCoverStates,
               ),
             ],
           ),
@@ -5302,22 +5302,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ExploreFeedClubRow',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Club row states',
-                builder: _widgetbook_workspace_explore_catalog_organizers
-                    .exploreFeedClubRowStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'ExploreFeedEventRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Event row states',
                 builder: _widgetbook_workspace_explore_catalog_feed
                     .exploreFeedEventRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ExploreFeedOrganizerRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Club row states',
+                builder: _widgetbook_workspace_explore_catalog_organizers
+                    .exploreFeedOrganizerRowStates,
               ),
             ],
           ),
@@ -6421,26 +6421,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubPostHomeCard',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Card states',
-                builder: _widgetbook_workspace_dashboard_catalog_club_posts
-                    .dashboardClubPostHomeCardReviewStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubPostsHomeSection',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Club post states',
-                builder: _widgetbook_workspace_dashboard_catalog_club_posts
-                    .dashboardClubPostsHomeSectionReviewStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'DashboardEmptySliverBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -6527,6 +6507,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Idle explainer',
                 builder: _widgetbook_workspace_dashboard_catalog_home
                     .dashboardHowCatchWorksSectionReview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrganizerPostHomeCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Card states',
+                builder: _widgetbook_workspace_dashboard_catalog_organizer_posts
+                    .dashboardOrganizerPostHomeCardReviewStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrganizerPostsHomeSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Club post states',
+                builder: _widgetbook_workspace_dashboard_catalog_organizer_posts
+                    .dashboardOrganizerPostsHomeSectionReviewStates,
               ),
             ],
           ),
@@ -9686,112 +9686,46 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Host create club',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'ClubBasicsStep',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Form states',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_club_profile
-                        .clubBasicsStepCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubDetailsStep',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Form states',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_club_profile
-                        .clubDetailsStepCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubEventSuccessDefaultsStep',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Event success defaults states',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_club_defaults
-                        .clubEventSuccessDefaultsStepCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubHostDefaultsStep',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Defaults states',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_club_defaults
-                        .clubHostDefaultsStepCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubPolicyDefaultsCard',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Policy defaults states',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_club_defaults
-                        .clubPolicyDefaultsCardCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubProfileImageTile',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Profile image tile states',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_club_profile
-                        .clubProfileImageTileCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CreateClubContactSection',
+            name: 'CreateOrganizerContactSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contact states',
                 builder:
-                    _widgetbook_workspace_hosts_operations_create_club_profile
-                        .createClubContactFieldsCatalogStates,
+                    _widgetbook_workspace_hosts_operations_create_organizer_profile
+                        .createOrganizerContactFieldsCatalogStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CreateClubPhotosPicker',
+            name: 'CreateOrganizerPhotosPicker',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Media states',
                 builder:
-                    _widgetbook_workspace_hosts_operations_create_club_profile
-                        .createClubPhotosPickerCatalogStates,
+                    _widgetbook_workspace_hosts_operations_create_organizer_profile
+                        .createOrganizerPhotosPickerCatalogStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CreateClubProfileImagePicker',
+            name: 'CreateOrganizerProfileImagePicker',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Image states',
                 builder:
-                    _widgetbook_workspace_hosts_operations_create_club_profile
-                        .createClubProfileImagePickerCatalogStates,
+                    _widgetbook_workspace_hosts_operations_create_organizer_profile
+                        .createOrganizerProfileImagePickerCatalogStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CreateClubScreen',
+            name: 'CreateOrganizerScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Direct form states',
                 builder:
-                    _widgetbook_workspace_hosts_operations_create_club_routes
-                        .createClubScreenCatalogStates,
+                    _widgetbook_workspace_hosts_operations_create_organizer_routes
+                        .createOrganizerScreenCatalogStates,
               ),
             ],
           ),
@@ -9801,8 +9735,8 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Header states',
                 builder:
-                    _widgetbook_workspace_hosts_operations_create_club_defaults
-                        .createClubStepHeaderCatalogStates,
+                    _widgetbook_workspace_hosts_operations_create_organizer_defaults
+                        .createOrganizerStepHeaderCatalogStates,
               ),
             ],
           ),
@@ -9812,8 +9746,74 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Scalable gallery manager',
                 builder:
-                    _widgetbook_workspace_hosts_operations_create_club_profile
+                    _widgetbook_workspace_hosts_operations_create_organizer_profile
                         .orderedPhotoManagerCatalogState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrganizerBasicsStep',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Form states',
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_organizer_profile
+                        .organizerBasicsStepCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrganizerDetailsStep',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Form states',
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_organizer_profile
+                        .organizerDetailsStepCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrganizerEventSuccessDefaultsStep',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Event success defaults states',
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_organizer_defaults
+                        .organizerEventSuccessDefaultsStepCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrganizerHostDefaultsStep',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Defaults states',
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_organizer_defaults
+                        .organizerHostDefaultsStepCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrganizerPolicyDefaultsCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Policy defaults states',
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_organizer_defaults
+                        .organizerPolicyDefaultsCardCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrganizerProfileImageTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Profile image tile states',
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_organizer_profile
+                        .organizerProfileImageTileCatalogStates,
               ),
             ],
           ),
@@ -10133,102 +10133,92 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Club settings spokes',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'HostClubDefaultsEditor',
+                name: 'HostOrganizerDefaultsEditor',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Optimistic editor',
                     builder:
                         _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostClubDefaultsEditorStates,
+                            .hostOrganizerDefaultsEditorStates,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostClubEventDefaultsScreen',
+                name: 'HostOrganizerEventDefaultsScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Owner loaded',
                     builder:
                         _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostClubEventDefaultsScreenLoaded,
+                            .hostOrganizerEventDefaultsScreenLoaded,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostClubLiveGuideScreen',
+                name: 'HostOrganizerLiveGuideScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Owner loaded',
                     builder:
                         _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostClubLiveGuideScreenLoaded,
+                            .hostOrganizerLiveGuideScreenLoaded,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostClubPaymentsScreen',
+                name: 'HostOrganizerPaymentsScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Owner loaded',
                     builder:
                         _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostClubPaymentsScreenLoaded,
+                            .hostOrganizerPaymentsScreenLoaded,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostClubReadOnlyDefaultsSection',
+                name: 'HostOrganizerReadOnlyDefaultsSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Co-host read only',
                     builder:
                         _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostClubReadOnlyEventDefaultsStates,
+                            .hostOrganizerReadOnlyEventDefaultsStates,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostClubSpokeAsyncBoundary',
+                name: 'HostOrganizerSpokeAsyncBoundary',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Resolver states',
                     builder:
                         _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostClubSpokeResolverStates,
+                            .hostOrganizerSpokeResolverStates,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostClubSpokeScaffold',
+                name: 'HostOrganizerSpokeScaffold',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Canonical scaffold',
                     builder:
                         _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostClubSpokeScaffoldStates,
+                            .hostOrganizerSpokeScaffoldStates,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostClubTeamScreen',
+                name: 'HostOrganizerTeamScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Owner loaded',
                     builder:
                         _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostClubTeamScreenLoaded,
+                            .hostOrganizerTeamScreenLoaded,
                   ),
                 ],
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubDetailScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Public preview states',
-                builder: _widgetbook_workspace_hosts_operations_club_preview
-                    .hostClubDetailPublicPreviewStates,
               ),
             ],
           ),
@@ -10295,17 +10285,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostClubsScaffold',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by host clubs route states',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_team_management
-                            .hostTeamManagementSectionStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerHistorySection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10328,7 +10307,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostEventsClubSection',
+                name: 'HostEventsOrganizerSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by host event section states',
@@ -10376,6 +10355,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Long-press switcher states',
                     builder: _widgetbook_workspace_hosts_operations_home_routes
                         .hostOrganizerSwitcherSheetStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizersScaffold',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Covered by host clubs route states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_team_management
+                            .hostTeamManagementSectionStates,
                   ),
                 ],
               ),
@@ -11374,37 +11364,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostClubInsightsSection',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Insights scorecard states',
-                builder: _widgetbook_workspace_hosts_operations_analytics
-                    .hostInsightsScorecardStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostClubsScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Route states',
-                builder: _widgetbook_workspace_hosts_operations_organizer_routes
-                    .hostClubsRouteStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostCreateClubScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Route and wizard states',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_club_routes
-                        .hostCreateClubRouteAndWizardStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'HostCreateEventRouteScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -11412,6 +11371,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_hosts_operations_create_event_routes
                         .hostCreateEventRouteAndWizardStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostCreateOrganizerScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route and wizard states',
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_organizer_routes
+                        .hostCreateOrganizerRouteAndWizardStates,
               ),
             ],
           ),
@@ -11510,6 +11480,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_hosts_host_offer_payment_use_cases
                         .hostOfferPaymentSetupPageBodyPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostOrganizerInsightsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Insights scorecard states',
+                builder: _widgetbook_workspace_hosts_operations_analytics
+                    .hostInsightsScorecardStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostOrganizersScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route states',
+                builder: _widgetbook_workspace_hosts_operations_organizer_routes
+                    .hostOrganizersRouteStates,
               ),
             ],
           ),
@@ -11622,6 +11612,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                         .hostWhatsappSetupSectionStates,
                   ),
                 ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrganizerDetailScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Public preview states',
+                builder:
+                    _widgetbook_workspace_hosts_operations_organizer_preview
+                        .hostOrganizerDetailPublicPreviewStates,
               ),
             ],
           ),
@@ -12146,72 +12147,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostClubEditBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostStrictHostClubEditBodyCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostClubInsightsSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostStrictHostClubInsightsSectionCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostClubOrganizerSectionList',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostStrictHostClubOrganizerSectionListCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostClubPublicationChannelRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Publication status',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostClubPublicationChannelRowStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostClubTeamScreen',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_team_identity
-                            .hostStrictHostClubTeamScreenCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostClubsScreen',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_organizer_routes
-                            .hostStrictHostClubsScreenCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostCrmAudienceCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -12372,13 +12307,13 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostEventsClubCard',
+                name: 'HostEventsOrganizerCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
                         _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostStrictHostEventsClubCardCatalogStates,
+                            .hostStrictHostEventsOrganizerCardCatalogStates,
                   ),
                 ],
               ),
@@ -12448,6 +12383,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerEditBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_organizer_components
+                            .hostStrictHostOrganizerEditBodyCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerInsightsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_organizer_components
+                            .hostStrictHostOrganizerInsightsSectionCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostOrganizerMetricGrid',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -12466,6 +12423,50 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_organizer_components
                             .hostStrictHostOrganizerMetricRowCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerPublicationChannelRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Publication status',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_organizer_components
+                            .hostOrganizerPublicationChannelRowStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerSectionList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_organizer_components
+                            .hostStrictHostOrganizerSectionListCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerTeamScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_team_identity
+                            .hostStrictHostOrganizerTeamScreenCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizersScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_organizer_routes
+                            .hostStrictHostOrganizersScreenCatalogStates,
                   ),
                 ],
               ),
@@ -12702,35 +12703,35 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Host organizer',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'HostClubLogoManagerHeader',
+            name: 'HostOrganizerLogoManagerHeader',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Logo states',
                 builder:
-                    _widgetbook_workspace_hosts_operations_create_club_profile
-                        .hostClubLogoManagerHeaderStates,
+                    _widgetbook_workspace_hosts_operations_create_organizer_profile
+                        .hostOrganizerLogoManagerHeaderStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostClubMediaManagerDock',
+            name: 'HostOrganizerMediaManagerDock',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Save dock',
                 builder:
-                    _widgetbook_workspace_hosts_operations_create_club_profile
-                        .hostClubMediaManagerDockStates,
+                    _widgetbook_workspace_hosts_operations_create_organizer_profile
+                        .hostOrganizerMediaManagerDockStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostClubMediaRail',
+            name: 'HostOrganizerMediaRail',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Role-sized summary states',
                 builder:
-                    _widgetbook_workspace_hosts_operations_create_club_profile
-                        .hostClubMediaRailCatalogStates,
+                    _widgetbook_workspace_hosts_operations_create_organizer_profile
+                        .hostOrganizerMediaRailCatalogStates,
               ),
             ],
           ),
@@ -14764,12 +14765,22 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Host team',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'HostTeamHostedClubsSection',
+            name: 'HostTeamHostedOrganizersSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Clubs states',
                 builder: _widgetbook_workspace_hosts_operations_team_identity
-                    .hostTeamHostedClubsStates,
+                    .hostTeamHostedOrganizersStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostTeamProfessionalProfilePreview',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Professional profile preview states',
+                builder: _widgetbook_workspace_hosts_operations_team_identity
+                    .hostTeamProfessionalProfilePreviewStates,
               ),
             ],
           ),
@@ -14788,17 +14799,6 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Memberships',
         children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'HostClubMembershipsScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Owner loaded',
-                builder:
-                    _widgetbook_workspace_hosts_host_membership_admin_use_cases
-                        .hostClubMembershipsScreenLoaded,
-              ),
-            ],
-          ),
           _widgetbook.WidgetbookComponent(
             name: 'HostMembershipPlanEditorSheet',
             useCases: [
@@ -14829,6 +14829,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_hosts_host_membership_admin_use_cases
                         .hostMembershipsSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostOrganizerMembershipsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Owner loaded',
+                builder:
+                    _widgetbook_workspace_hosts_host_membership_admin_use_cases
+                        .hostOrganizerMembershipsScreenLoaded,
               ),
             ],
           ),

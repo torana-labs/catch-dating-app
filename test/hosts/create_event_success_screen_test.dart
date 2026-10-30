@@ -13,7 +13,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       CreateEventSuccessScreen(
-        club: buildClub(),
+        organizer: buildOrganizer(),
         event: buildEvent(id: 'event-created'),
         onManageEvent: () {},
         onDone: () {},

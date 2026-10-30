@@ -371,7 +371,7 @@ CandidateDisposition _dispositionFor({
     );
   }
 
-  if (path == 'lib/contexts/organizers/data/clubs_repository.dart' &&
+  if (path == 'lib/contexts/organizers/data/organizers_repository.dart' &&
       rule.id == 'raw_firebase_exception_type') {
     return const CandidateDisposition(
       status: CandidateStatus.intentional,

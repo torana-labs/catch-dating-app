@@ -66,7 +66,7 @@ final class ChatRouteStateProvider
   }
 }
 
-String _$chatRouteStateHash() => r'b28841e86fe40c5033e6ac34feeb77f6bcffd2e1';
+String _$chatRouteStateHash() => r'86cadacaadf7bfdb1c143f10f3db4ae06e1e1755';
 
 final class ChatRouteStateFamily extends $Family
     with $FunctionalFamilyOverride<ChatRouteState, ChatRouteStateArgs> {

@@ -25,6 +25,23 @@ import type {AdminGrantOrganizerEntitlementCallablePayload} from
   "../../generated/contracts/adminGrantOrganizerEntitlementCallablePayload";
 import type {AdminRevokeOrganizerEntitlementGrantCallablePayload} from
   "../../generated/contracts/adminRevokeOrganizerEntitlementGrantCallablePayload";
+import type {AdminListCommercialTermsCallablePayload} from
+  "../../generated/contracts/adminListCommercialTermsCallablePayload";
+import type {AdminListCommercialTermsCallableResponse} from
+  "../../generated/contracts/adminListCommercialTermsCallableResponse";
+import type {ManageCommercialTermsCallablePayload} from
+  "../../generated/contracts/manageCommercialTermsCallablePayload";
+import type {ManageCommercialTermsCallableResponse} from
+  "../../generated/contracts/manageCommercialTermsCallableResponse";
+import type {ManagePaymentRoutingPolicyCallablePayload} from
+  "../../generated/contracts/managePaymentRoutingPolicyCallablePayload";
+import type {ManagePaymentRoutingPolicyCallableResponse} from
+  "../../generated/contracts/managePaymentRoutingPolicyCallableResponse";
+import {
+  sampleListCommercialTerms,
+  sampleManageCommercialTerms,
+  sampleManagePaymentRoutingPolicy,
+} from "./sampleCommercialTerms";
 import type {GetOrganizerEntitlementCallablePayload} from
   "../../generated/contracts/getOrganizerEntitlementCallablePayload";
 import type {OrganizerEntitlementCallableResponse} from
@@ -2517,4 +2534,56 @@ function sampleMessagingBudgetScopeKey(payload: {
     payload.senderId,
     payload.purpose,
   ].join("|");
+}
+
+/**
+ * Some Finance callables predate the admin name prefix. They still cross the
+ * same validated boundary, and the catalog parity check discovers them
+ * through this wrapper.
+ */
+function invokeAdminCallable<RequestData, ResponseData>(
+  name: string,
+  payload: RequestData
+) {
+  return httpsCallable<RequestData, ResponseData>(functions, name)(payload);
+}
+
+export async function listCommercialTerms(
+  payload: AdminListCommercialTermsCallablePayload
+): Promise<AdminListCommercialTermsCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return sampleListCommercialTerms(payload);
+  }
+  const callable = httpsCallable<
+    AdminListCommercialTermsCallablePayload,
+    AdminListCommercialTermsCallableResponse
+  >(functions, "adminListCommercialTerms");
+  return (await callable(payload)).data;
+}
+
+export async function manageCommercialTerms(
+  payload: ManageCommercialTermsCallablePayload
+): Promise<ManageCommercialTermsCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return sampleManageCommercialTerms(payload);
+  }
+  return (await invokeAdminCallable<
+    ManageCommercialTermsCallablePayload,
+    ManageCommercialTermsCallableResponse
+  >("manageCommercialTerms", payload)).data;
+}
+
+export async function managePaymentRoutingPolicy(
+  payload: ManagePaymentRoutingPolicyCallablePayload
+): Promise<ManagePaymentRoutingPolicyCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return sampleManagePaymentRoutingPolicy(payload);
+  }
+  return (await invokeAdminCallable<
+    ManagePaymentRoutingPolicyCallablePayload,
+    ManagePaymentRoutingPolicyCallableResponse
+  >("managePaymentRoutingPolicy", payload)).data;
 }

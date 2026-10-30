@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
@@ -14,7 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../clubs/clubs_test_helpers.dart' as club_test;
+import '../organizers/organizers_test_helpers.dart' as organizer_test;
 import 'events_test_helpers.dart';
 
 void main() {
@@ -52,7 +52,7 @@ void main() {
         'older-past',
       ]);
       expect(state.today, DateUtils.dateOnly(now));
-      expect(state.clubIds, [
+      expect(state.organizerIds, [
         nextUpcoming.clubId,
         laterUpcoming.clubId,
         recentPast.clubId,
@@ -198,16 +198,16 @@ Future<void> _pumpSavedEvents(
     ProviderScope(
       overrides: [
         uidProvider.overrideWithValue(uid),
-        clubsRepositoryProvider.overrideWith(
+        organizersRepositoryProvider.overrideWith(
           (ref) =>
-              club_test.FakeClubsRepository()
-                ..clubsById['club-1'] = buildClub(),
+              organizer_test.FakeOrganizersRepository()
+                ..organizersById['club-1'] = buildOrganizer(),
         ),
         watchSavedEventDetailsForUserProvider(
           'runner-1',
         ).overrideWithValue(AsyncData<List<Event>>(savedEvents)),
-        clubNameLookupProvider(
-          ClubNameLookupQuery(savedEvents.map((event) => event.clubId)),
+        organizerNameLookupProvider(
+          OrganizerNameLookupQuery(savedEvents.map((event) => event.clubId)),
         ).overrideWithValue(
           AsyncData({
             for (final event in savedEvents) event.clubId: 'Stride Social',

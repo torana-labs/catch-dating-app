@@ -43,19 +43,19 @@ class _HostPaymentSectionStates extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final club = HostOperationsFixtures.primaryClub;
+    final organizer = HostOperationsFixtures.primaryOrganizer;
     return SingleChildScrollView(
       padding: CatchInsets.pageBody,
       child: Column(
         children: [
-          HostPaymentAccountCard(club: club, loading: true),
+          HostPaymentAccountCard(organizer: organizer, loading: true),
           HostPaymentAccountCard(
-            club: club,
+            organizer: organizer,
             error: StateError('Widgetbook payout status failed'),
           ),
-          HostPaymentAccountCard(club: club),
+          HostPaymentAccountCard(organizer: organizer),
           HostPaymentAccountCard(
-            club: club,
+            organizer: organizer,
             account: HostOperationsFixtures.readyPaymentAccount,
           ),
         ],

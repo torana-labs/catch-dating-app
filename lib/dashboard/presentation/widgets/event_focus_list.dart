@@ -13,7 +13,7 @@ import 'package:catch_dating_app/platform/theme/activity_palette.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-typedef EventFocusClubNameBuilder = String? Function(Event event);
+typedef EventFocusOrganizerNameBuilder = String? Function(Event event);
 typedef EventFocusEventCallback = void Function(Event event);
 
 class EventFocusActions {
@@ -54,7 +54,7 @@ class EventFocusList extends StatefulWidget {
     this.checkInState = EventFocusCheckInState.idle,
     this.arrivalAction,
     this.pendingReviewEvent,
-    this.clubNameBuilder,
+    this.organizerNameBuilder,
     this.onWindowImpression,
     this.now,
   });
@@ -69,7 +69,7 @@ class EventFocusList extends StatefulWidget {
   final EventFocusCheckInState checkInState;
   final EventArrivalAction? arrivalAction;
   final Event? pendingReviewEvent;
-  final EventFocusClubNameBuilder? clubNameBuilder;
+  final EventFocusOrganizerNameBuilder? organizerNameBuilder;
   final ValueChanged<Event>? onWindowImpression;
   final DateTime? now;
 
@@ -184,7 +184,7 @@ class _EventFocusListState extends State<EventFocusList> {
           attendedCount: window.attendedCount,
           canSwipe: true,
           needsReview: widget.pendingReviewEvent?.id == window.event.id,
-          clubName: widget.clubNameBuilder?.call(window.event),
+          organizerName: widget.organizerNameBuilder?.call(window.event),
         ),
       for (final event in widget.upcomingEvents)
         EventFocusItem(
@@ -196,7 +196,7 @@ class _EventFocusListState extends State<EventFocusList> {
               event.startTime.year == now.year &&
               event.startTime.month == now.month &&
               event.startTime.day == now.day,
-          clubName: widget.clubNameBuilder?.call(event),
+          organizerName: widget.organizerNameBuilder?.call(event),
         ),
     ];
     if (widget.pendingReviewEvent != null &&
@@ -208,7 +208,9 @@ class _EventFocusListState extends State<EventFocusList> {
           event: widget.pendingReviewEvent!,
           kind: EventFocusKind.afterEvent,
           needsReview: true,
-          clubName: widget.clubNameBuilder?.call(widget.pendingReviewEvent!),
+          organizerName: widget.organizerNameBuilder?.call(
+            widget.pendingReviewEvent!,
+          ),
         ),
       );
     }
@@ -279,7 +281,7 @@ class EventFocusCard extends StatelessWidget {
           ? () => onActionPressed(EventFocusAction.swipe)
           : null,
       topAccentColors: [activity.accent, activity.deep],
-      subtitle: item.clubName,
+      subtitle: item.organizerName,
       urgent: item.isUrgent,
       indexLabel: cardCount > 1
           ? context.l10n.dashboardEventFocusRailVisiblecopyValue1Cardcount(
@@ -434,7 +436,7 @@ class EventFocusItem {
   const EventFocusItem({
     required this.event,
     required this.kind,
-    this.clubName,
+    this.organizerName,
     this.canSwipe = false,
     this.needsReview = false,
     this.isToday = false,
@@ -444,7 +446,7 @@ class EventFocusItem {
 
   final Event event;
   final EventFocusKind kind;
-  final String? clubName;
+  final String? organizerName;
   final bool canSwipe;
   final bool needsReview;
   final bool isToday;

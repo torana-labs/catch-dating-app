@@ -275,7 +275,7 @@ Future<void> _pumpReport(
         body: SingleChildScrollView(
           child: HostAnalyticsReportBody(
             report: report,
-            rangePreset: HostClubInsightsRangePreset.thirtyDays,
+            rangePreset: HostOrganizerInsightsRangePreset.thirtyDays,
             currencyCode: 'INR',
             onOpenEventReport: onOpenEventReport,
             onOpenAllEvents: onOpenAllEvents,

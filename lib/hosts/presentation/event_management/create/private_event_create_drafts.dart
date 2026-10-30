@@ -5,14 +5,14 @@ extension _PrivateEventCreateDrafts on _PrivateEventCreateScreenState {
     try {
       final drafts = await ref
           .read(createEventDraftControllerProvider.notifier)
-          .loadDrafts(clubId: widget.club.id);
+          .loadDrafts(clubId: widget.organizer.id);
       if (!mounted || drafts.isEmpty) {
         return;
       }
       final picked = await showHostEventEntrySheet(
         context: context,
         state: HostEventEntryState.resolve(
-          organizerId: widget.club.id,
+          organizerId: widget.organizer.id,
           drafts: drafts,
         ),
       );
@@ -20,13 +20,13 @@ extension _PrivateEventCreateDrafts on _PrivateEventCreateScreenState {
       if (picked.intent == HostEventEntryIntent.createProgram) {
         await context.pushNamed(
           Routes.hostCreateProgramScreen.name,
-          pathParameters: {'clubId': widget.club.id},
+          pathParameters: {'clubId': widget.organizer.id},
         );
         return;
       }
       if (picked.draft == null) return;
       final draft = picked.draft!;
-      if (draft.clubId != widget.club.id) {
+      if (draft.clubId != widget.organizer.id) {
         return;
       }
       _mutateScreenState(() => _restorePickedDraft(draft));
@@ -43,8 +43,8 @@ extension _PrivateEventCreateDrafts on _PrivateEventCreateScreenState {
     _submittedPayloadJson = draft.eventCreatePayloadJson;
     final restored = PrivateEventDraftRestore(
       draft,
-      organizerCityId: widget.club.locationCityId,
-      organizerMarketId: widget.club.locationMarketId,
+      organizerCityId: widget.organizer.locationCityId,
+      organizerMarketId: widget.organizer.locationMarketId,
       organizerTimezone: _managerDefaults?.timezone,
       trustedDefaults: _trustedOrganizerDefaultsReadAvailable(),
       organizerDefaultsHash: _organizerDefaultsHash,

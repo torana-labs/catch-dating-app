@@ -157,11 +157,11 @@ class ExploreChromeState {
   }) : title = l10n.exploreExploreScreenStateVisiblecopyExplore,
        searchValue = query,
        searchPlaceholder =
-           l10n.exploreExploreScreenStateVisiblecopySearchEventsOrClubs,
+           l10n.exploreExploreScreenStateVisiblecopySearchEventsOrOrganizers,
        searchTooltip =
-           l10n.exploreExploreScreenStateVisiblecopySearchEventsOrClubs,
+           l10n.exploreExploreScreenStateVisiblecopySearchEventsOrOrganizers,
        searchSemanticLabel =
-           l10n.exploreExploreScreenStateVisiblecopySearchEventsOrClubs;
+           l10n.exploreExploreScreenStateVisiblecopySearchEventsOrOrganizers;
 
   final String title;
   final String searchValue;

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_configuration.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_entry_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
@@ -158,10 +158,10 @@ Widget _app(GoRouter router, _Controller controller) => ProviderScope(
     // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
     eventRehearsalEntryProvider('club-1', null).overrideWith(
       (ref) async => EventRehearsalEntryData(
-        organizerDefaults: const ClubHostDefaults(),
+        organizerDefaults: const OrganizerHostDefaults(),
         events: [rehearsalSourceEvent()],
         initialConfiguration: EventRehearsalConfiguration.defaults(
-          organizerDefaults: const ClubHostDefaults(),
+          organizerDefaults: const OrganizerHostDefaults(),
           event: rehearsalSourceEvent(),
           sourceGuestCount: 18,
         ),

@@ -290,7 +290,7 @@
       "reason": "Explore map route captures now cover pins-ready, selected-pin, distance-ring, loading, and feed-error states with network tiles disabled."
     },
     {
-      "routeId": "clubDetailScreen",
+      "routeId": "organizerDetailScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": [
@@ -1102,7 +1102,7 @@
       "reason": "The dedicated organizer WhatsApp setup route reuses the production setup pane moved from Messaging. Its deterministic sender states remain planned rather than refreshing unrelated historical Inbox captures during the route migration."
     },
     {
-      "routeId": "hostClubsScreen",
+      "routeId": "hostOrganizersScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": [
@@ -1141,19 +1141,19 @@
       "reason": "The legacy Host Clubs utility surface remains captured for signed-out, loading, generic/offline load errors, empty, co-host edit, inline editor pending/error/offline, preview, payout provider and mutation states, host-team mutation states, text scale 2.0, reduced motion, and paired light/dark output. Primary Organizer and Insights ownership now lives on their dedicated routes."
     },
     {
-      "routeId": "hostClubEventDefaultsScreen",
+      "routeId": "hostOrganizerEventDefaultsScreen",
       "status": "planned",
       "priority": "P2",
       "reason": "The Event defaults spoke has loaded Widgetbook coverage; add routed narrow owner and co-host captures in the next Host Clubs capture refresh."
     },
     {
-      "routeId": "hostClubLiveGuideScreen",
+      "routeId": "hostOrganizerLiveGuideScreen",
       "status": "planned",
       "priority": "P2",
       "reason": "The Live event guide spoke has loaded Widgetbook coverage; add routed narrow owner and co-host captures in the next Host Clubs capture refresh."
     },
     {
-      "routeId": "hostClubTeamScreen",
+      "routeId": "hostOrganizerTeamScreen",
       "status": "captured",
       "priority": "P1",
       "reason": "The unified Host team workspace captures professional profile, selected-club team management, hosted-club navigation, profile create/save mutations, bottom sign-out failures, accessibility scale, and reduced motion on the canonical route.",
@@ -1174,19 +1174,19 @@
       ]
     },
     {
-      "routeId": "hostClubPaymentsScreen",
+      "routeId": "hostOrganizerPaymentsScreen",
       "status": "planned",
       "priority": "P2",
       "reason": "The owner-only Payments spoke has loaded Widgetbook coverage; add routed payout-ready and restricted captures in the next Host Clubs capture refresh."
     },
     {
-      "routeId": "hostClubMembershipsScreen",
+      "routeId": "hostOrganizerMembershipsScreen",
       "status": "planned",
       "priority": "P2",
       "reason": "The Memberships spoke is new with host memberships MVP; widget tests cover the provider-free section. Add routed payout-blocked, plan-list and billing-paused captures in the next Host Clubs capture refresh."
     },
     {
-      "routeId": "hostClubDetailScreen",
+      "routeId": "hostOrganizerDetailScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": [
@@ -1206,7 +1206,7 @@
       "reason": "Host-mode club detail now has deterministic captures for public preview, initial fallback loading, full loading, generic error, offline error, not-found, signed-out preview, non-host public preview, empty schedule, text scale 2.0, reduced motion, and paired light/dark output. Remaining work is policy for embedded host controls, deeper schedule/share/contact/review variants, additional Claude references, and pixel comparison."
     },
     {
-      "routeId": "hostCreateClubScreen",
+      "routeId": "hostCreateOrganizerScreen",
       "status": "captured",
       "priority": "P2",
       "captureIds": [

@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_row.dart';
@@ -36,9 +36,9 @@ class WidgetbookEventScope extends StatelessWidget {
     final avatars = avatarItems;
     return WidgetbookFixtureScope(
       overrides: [
-        fetchClubProvider(
-          widgetbookEventsClubId,
-        ).overrideWith((ref) => widgetbookEventsClub),
+        fetchOrganizerProvider(
+          widgetbookEventsOrganizerId,
+        ).overrideWith((ref) => widgetbookEventsOrganizer),
         watchEventParticipationRosterProvider(event.id).overrideWith(
           (ref) => Stream.value(roster ?? widgetbookEventsRoster(event: event)),
         ),

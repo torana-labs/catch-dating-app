@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:flutter/foundation.dart';
 
 enum HostEventEntryIntent {
@@ -35,7 +35,7 @@ class HostEventEntrySelection {
 
 typedef HostEventEntryCallback =
     void Function(
-      Club club,
+      Organizer organizer,
       HostEventEntryState state,
       HostEventEntrySelection selection,
     );

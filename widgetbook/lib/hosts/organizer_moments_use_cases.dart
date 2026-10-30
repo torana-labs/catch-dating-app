@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-import '../clubs/catalog/fixtures.dart';
+import '../organizers/catalog/fixtures.dart';
 import '../support/page_preview.dart';
 import '../utility/preview.dart';
 
@@ -94,8 +94,8 @@ Widget organizerMomentsEntryField(BuildContext context) {
         label: 'manage entry',
         child: WidgetbookUtilityDeviceFrame(
           child: OrganizerMomentsEntryField(
-            clubId: widgetbookClubClub.id,
-            event: widgetbookClubEvent(
+            clubId: widgetbookOrganizerOrganizer.id,
+            event: widgetbookOrganizerEvent(
               id: 'preview_event',
               startTime: DateTime(2026, 10, 3, 18),
               meetingPoint: 'Marine Drive',

@@ -15,7 +15,7 @@ final _recommendationEvent = DashboardSurfaceFixtures.recommendationEvent;
 
 final _dashboardRecommendation = ExploreEventRecommendation(
   event: _recommendationEvent,
-  clubName: widgetbookDashboardClub.name,
+  organizerName: widgetbookDashboardOrganizer.name,
   reasonLabel: 'Matches your 10K pace',
   score: 0.92,
 );
@@ -65,7 +65,7 @@ Widget dashboardRecommendCardReviewStates(BuildContext context) {
             child: RecommendCard.fromRecommendation(
               recommendation: ExploreEventRecommendation(
                 event: _recommendationEvent,
-                clubName: widgetbookDashboardClub.name,
+                organizerName: widgetbookDashboardOrganizer.name,
                 reasonLabel: 'Matches your 10K pace',
                 score: 0.92,
               ),
@@ -80,7 +80,7 @@ Widget dashboardRecommendCardReviewStates(BuildContext context) {
           child: IgnorePointer(
             child: RecommendCard(
               event: soonEvent,
-              clubName: widgetbookDashboardClub.name,
+              organizerName: widgetbookDashboardOrganizer.name,
               reasonLabel: 'Almost full near you',
               width: WidgetbookDashboardPreviewLayout.recommendationCardWidth,
             ),
@@ -93,7 +93,7 @@ Widget dashboardRecommendCardReviewStates(BuildContext context) {
           child: IgnorePointer(
             child: RecommendCard(
               event: dinnerEvent,
-              clubName: 'Colaba Dinner Club',
+              organizerName: 'Colaba Dinner Club',
               reasonLabel: 'Popular with your clubs',
               width: WidgetbookDashboardPreviewLayout.recommendationCardWidth,
             ),
@@ -117,7 +117,7 @@ Widget dashboardRecommendCardReviewStates(BuildContext context) {
           child: IgnorePointer(
             child: RecommendCard(
               event: longCopyEvent,
-              clubName: 'Mumbai Long Run Collective and Coffee Society',
+              organizerName: 'Mumbai Long Run Collective and Coffee Society',
               reasonLabel: 'Because you saved paced social runs this week',
               width: WidgetbookDashboardPreviewLayout.recommendationCardWidth,
             ),
@@ -150,7 +150,7 @@ Widget dashboardRecommendationsReview(BuildContext context) {
                   startsIn: const Duration(days: 2),
                   priceInPaise: 15000,
                 ),
-                clubName: widgetbookDashboardClub.name,
+                organizerName: widgetbookDashboardOrganizer.name,
                 reasonLabel: 'Popular with your clubs',
                 score: 0.84,
               ),

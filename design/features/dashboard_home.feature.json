@@ -207,7 +207,7 @@
         {
           "id": "open_club_post",
           "owner": "full_body",
-          "codeValue": "_openClubPost",
+          "codeValue": "_openOrganizerPost",
           "cardinality": "domain_bounded",
           "scopeKeys": [
             "viewerUid",

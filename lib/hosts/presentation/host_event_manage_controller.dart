@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_report_export.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/events/shared/event_invite_share_copy.dart';
@@ -43,7 +43,7 @@ abstract interface class HostEventManageActions {
   });
 
   Future<void> sharePrivateLink({
-    required Club club,
+    required Organizer organizer,
     required Event event,
     required String inviteLink,
     required AppLocalizations l10n,
@@ -134,7 +134,7 @@ class HostEventManageController implements HostEventManageActions {
 
   @override
   Future<void> sharePrivateLink({
-    required Club club,
+    required Organizer organizer,
     required Event event,
     required String inviteLink,
     required AppLocalizations l10n,
@@ -146,7 +146,7 @@ class HostEventManageController implements HostEventManageActions {
           text: EventInviteShareCopy.hostPrivateInviteText(
             event: event,
             l10n: l10n,
-            clubName: club.name,
+            organizerName: organizer.name,
             inviteLink: inviteLink,
           ),
           subject: EventInviteShareCopy.subject(event, l10n),

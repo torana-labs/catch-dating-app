@@ -37,10 +37,10 @@ Future<void> _pump(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         builder: (_, child) => CatchNoticeOverlay(child: child!),
-        home: const HostClubsScaffold(
-          clubs: [],
+        home: const HostOrganizersScaffold(
+          organizers: [],
           currentUid: 'host-legal-links-test',
-          initialTab: HostClubTab.edit,
+          initialTab: HostOrganizerTab.edit,
         ),
       ),
     ),

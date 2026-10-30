@@ -12,8 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart' as event_test;
+import '../organizers/organizers_test_helpers.dart' as organizer_test;
 
 void main() {
   testWidgets('person and event remain distinct accessible actions', (
@@ -197,7 +197,7 @@ Future<void> _pumpCard(
   bool pairHoldAvailable = false,
 }) {
   final start = DateTime(2026, 8, 8, 18);
-  final club = club_test.buildClub();
+  final organizer = organizer_test.buildOrganizer();
   final event = event_test.buildEvent(startTime: start);
   final suggestion = CrossPathsSuggestion.fromCallableData({
     'person': {
@@ -248,6 +248,6 @@ Future<void> _pumpCard(
   );
   return (
     suggestion: displaySuggestion,
-    eventItem: ExploreEventItem(event: event, club: club),
+    eventItem: ExploreEventItem(event: event, organizer: organizer),
   );
 }

@@ -66,7 +66,7 @@ class ExploreEventRowState {
     required AppLocalizations l10n,
   }) {
     return ExploreEventRowState(
-      kicker: item.club.name,
+      kicker: item.organizer.name,
       title: item.event.eventFormat.customActivityLabel == null
           ? item.event.eventFormat.label
           : item.event.eventFormat.eventTitleLabel,
@@ -90,7 +90,7 @@ class ExploreEventRowState {
 }
 
 String exploreEventMapKicker(ExploreEventItem item) {
-  return item.club.name;
+  return item.organizer.name;
 }
 
 class ExploreExternalEventRowState {
@@ -307,7 +307,7 @@ String _coverKicker(
           l10n: l10n,
           now: now,
         ),
-        name: item.club.name,
+        name: item.organizer.name,
         locationName: item.event.locationName,
       );
 }

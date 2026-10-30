@@ -19,7 +19,7 @@ enum SettingsPreference {
   messages('prefsMessages'),
   eventReminders('prefsEventReminders'),
   eventStatusUpdates('prefsRunStatusUpdates'),
-  clubUpdates('prefsClubUpdates'),
+  organizerUpdates('prefsClubUpdates'),
   weeklyDigest('prefsWeeklyDigest');
 
   const SettingsPreference(this.fieldName);
@@ -52,7 +52,7 @@ enum SettingsPreference {
       SettingsPreference.eventStatusUpdates => UpdateUserProfilePatch(
         prefsRunStatusUpdates: value,
       ),
-      SettingsPreference.clubUpdates => UpdateUserProfilePatch(
+      SettingsPreference.organizerUpdates => UpdateUserProfilePatch(
         prefsClubUpdates: value,
       ),
       SettingsPreference.weeklyDigest => UpdateUserProfilePatch(

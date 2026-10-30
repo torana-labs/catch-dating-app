@@ -13,7 +13,7 @@ test("organizer nomenclature gate rejects legacy authority and generic copy", ()
     httpsCallable(functions, "createPublicClubReview");
   `);
   write(root, "lib/example.dart", "httpsCallable('joinClub')");
-  write(root, "lib/contexts/organizers/data/clubs_repository.dart", `
+  write(root, "lib/contexts/organizers/data/organizers_repository.dart", `
     const _legacyCollectionPath = "clubs";
     watchWithLegacyProjection();
     import "organizer_projection_fallback.dart";
@@ -51,12 +51,12 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
     currentPhase: "retire_legacy",
   }));
   for (const [file, markers] of new Map([
-    ["lib/contexts/organizers/data/clubs_repository.dart", [
+    ["lib/contexts/organizers/data/organizers_repository.dart", [
       "_collectionPath = 'organizers'", "createOrganizer",
       "startOrganizerConversation",
     ]],
-    ["lib/contexts/organizers/data/club_membership_repository.dart", ["organizerFollows"]],
-    ["lib/contexts/organizers/data/club_posts_repository.dart", ["createOrganizerPost"]],
+    ["lib/contexts/organizers/data/organizer_membership_repository.dart", ["organizerFollows"]],
+    ["lib/contexts/organizers/data/organizer_posts_repository.dart", ["createOrganizerPost"]],
     ["lib/contexts/profiles/data/image_upload_repository.dart", ["organizers/"]],
     ["lib/routing/route_contract.dart", ["/host/organizer"]],
     ["website/src/firebase.ts", [
@@ -82,6 +82,35 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
   const result = checkOrganizerNomenclature({root});
 
   assert.deepEqual(result, {ok: true, findings: []});
+});
+
+test("organizer nomenclature gate rejects club in Flutter names but keeps the subtype and contract names", () => {
+  const root = fixtureRoot();
+  write(root, "lib/clubs/club_card.dart", "class ClubCard {}");
+  write(root, "lib/organizers/organizer_tile.dart", [
+    "class OrganizerTile {",
+    "  final clubLabel = 'club';",
+    "  bool get isClub => type == OrganizerType.club;",
+    "  final runClub = true;",
+    "  String get id => request.clubId;",
+    "}",
+  ].join("\n"));
+  write(root, "lib/platform/schema_contracts/generated/schemas/request.g.dart",
+    "final class CreateClubRequest { final String clubId = ''; }");
+  write(root, "lib/l10n/app_en.arb", JSON.stringify({clubsTitle: "Organizers", hostsOrganizerTypeClub: "Club"}));
+
+  const findings = checkOrganizerNomenclature({root}).findings
+    .filter((item) => item.rule === "clubInFlutterNames");
+
+  assert.deepEqual(findings.map((item) => item.path).sort(), [
+    "lib/clubs/club_card.dart",
+    "lib/clubs/club_card.dart",
+    "lib/l10n/app_en.arb",
+    "lib/organizers/organizer_tile.dart",
+  ]);
+  const tile = findings.find((item) => item.path === "lib/organizers/organizer_tile.dart");
+  assert.match(tile.detail, /clubLabel, isClub$/u);
+  assert.match(findings.find((item) => item.path === "lib/l10n/app_en.arb").detail, /clubsTitle$/u);
 });
 
 function fixtureRoot() {

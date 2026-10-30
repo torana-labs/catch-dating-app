@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_posts_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_posts_repository.dart';
 import 'package:catch_dating_app/design_fixtures/host_inbox_surface_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_event_announcement_field.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
@@ -29,7 +29,7 @@ Widget hostSendIntentMenuStates(BuildContext context) =>
             child: _HostSendIntentFixture(
               available: available,
               child: HostSendIntentMenu(
-                club: HostInboxSurfaceFixtures.club,
+                organizer: HostInboxSurfaceFixtures.organizer,
                 onBack: _noop,
                 onOpenInbox: _noop,
                 onStartCampaign: _noop,
@@ -142,10 +142,10 @@ class _HostSendIntentFixture extends StatelessWidget {
           ],
         ),
       ),
-      watchClubPostRemainingWeeklyQuotaProvider(
+      watchOrganizerPostRemainingWeeklyQuotaProvider(
         HostInboxSurfaceFixtures.clubId,
       ).overrideWith((ref) => Stream.value(available ? 3 : 0)),
-      watchEventsForClubProvider(
+      watchEventsForOrganizerProvider(
         HostInboxSurfaceFixtures.clubId,
       ).overrideWith((ref) => Stream.value([HostInboxSurfaceFixtures.event])),
       watchEventParticipationsForEventProvider(

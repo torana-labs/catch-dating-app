@@ -4354,7 +4354,7 @@ wizard with a compact shared form. Durable outcomes:
   where normalization and validation run once.
 - **Immediate switches.** In Organizer defaults, Event Success enablement and
   live-tool switches persist as soon as they change through functional updates
-  and the serialized `HostClubDefaultsSaver` queue. Text, numeric, and choice
+  and the serialized `HostOrganizerDefaultsSaver` queue. Text, numeric, and choice
   fields keep field-local explicit actions so partial input is never saved
   accidentally.
 - **Spoke ownership.** Club-level Event Success defaults live on the dedicated

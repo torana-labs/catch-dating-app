@@ -10,7 +10,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_preference.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_wingman_request.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
@@ -75,7 +75,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
         label: 'route loading',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
-            clubValue: const AsyncLoading<Club?>(),
+            organizerValue: const AsyncLoading<Organizer?>(),
           ),
         ),
       ),
@@ -83,7 +83,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
         label: 'route error',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
-            clubValue: AsyncError<Club?>(
+            organizerValue: AsyncError<Organizer?>(
               StateError('Club fetch failed'),
               StackTrace.empty,
             ),
@@ -94,7 +94,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
         label: 'route offline',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
-            clubValue: AsyncError<Club?>(
+            organizerValue: AsyncError<Organizer?>(
               obviousOfflineException(),
               StackTrace.empty,
             ),
@@ -663,7 +663,7 @@ class _HostManageLiveOperationsRoutePreview extends StatelessWidget {
     );
 
     return WidgetbookHostManageRouteScope(
-      club: widgetbookClub,
+      organizer: widgetbookOrganizer,
       event: event,
       planValue: AsyncData<EventSuccessPlan?>(
         _hostManageLivePlanForModule(

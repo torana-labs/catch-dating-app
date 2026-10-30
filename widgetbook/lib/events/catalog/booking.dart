@@ -194,7 +194,7 @@ Widget eventDetailDockStates(BuildContext context) {
             child: EventDetailDock(
               event: widgetbookEvent,
               userProfile: widgetbookEventsViewer,
-              clubId: widgetbookEventsClubId,
+              clubId: widgetbookEventsOrganizerId,
               participation: null,
               now: widgetbookEventsNow,
               darkSurface: darkSurface,
@@ -224,7 +224,7 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
             child: EventDetailBody(
               event: widgetbookEvent,
               userProfile: widgetbookEventsViewer,
-              clubId: widgetbookEventsClubId,
+              clubId: widgetbookEventsOrganizerId,
               reviews: const [],
               isAuthenticated: true,
               sectionVisibility: eventDetailSectionVisibilityStateFrom(
@@ -260,7 +260,7 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
               onLocationTap: null,
               onOpenCompanion: widgetbookNoop,
               onRetryCompanion: widgetbookNoop,
-              onViewClub: widgetbookIgnoreString,
+              onViewOrganizer: widgetbookIgnoreString,
               onMessageHost: widgetbookEventsNoopMessageHost,
               onRetryHosts: widgetbookNoop,
               now: widgetbookEventsNow,
@@ -281,7 +281,7 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
             child: EventDetailBody(
               event: widgetbookEvent,
               userProfile: widgetbookEventsViewer,
-              clubId: widgetbookEventsClubId,
+              clubId: widgetbookEventsOrganizerId,
               reviews: widgetbookEventsReviews,
               isAuthenticated: true,
               sectionVisibility: eventDetailSectionVisibilityStateFrom(
@@ -317,7 +317,7 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
               onLocationTap: null,
               onOpenCompanion: widgetbookNoop,
               onRetryCompanion: widgetbookNoop,
-              onViewClub: widgetbookIgnoreString,
+              onViewOrganizer: widgetbookIgnoreString,
               onMessageHost: widgetbookEventsNoopMessageHost,
               onRetryHosts: widgetbookNoop,
               now: widgetbookEventsNow,
@@ -335,7 +335,7 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
             child: EventDetailBody(
               event: widgetbookEvent,
               userProfile: widgetbookEventsViewer,
-              clubId: widgetbookEventsClubId,
+              clubId: widgetbookEventsOrganizerId,
               reviews: widgetbookEventsReviews,
               isAuthenticated: true,
               sectionVisibility: eventDetailSectionVisibilityStateFrom(
@@ -371,7 +371,7 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
               onLocationTap: null,
               onOpenCompanion: widgetbookNoop,
               onRetryCompanion: widgetbookNoop,
-              onViewClub: widgetbookIgnoreString,
+              onViewOrganizer: widgetbookIgnoreString,
               onMessageHost: widgetbookEventsNoopMessageHost,
               onRetryHosts: widgetbookNoop,
               now: widgetbookEventsNow,

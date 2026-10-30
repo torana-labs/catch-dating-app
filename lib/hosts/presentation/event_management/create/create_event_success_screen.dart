@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_photo_recovery.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_photo_recovery_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/pages/celebration/celebration_effects_controller.dart';
@@ -18,7 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class CreateEventSuccessScreen extends ConsumerStatefulWidget {
   const CreateEventSuccessScreen({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.event,
     this.inviteCode,
     this.eventDisplayName,
@@ -31,7 +31,7 @@ class CreateEventSuccessScreen extends ConsumerStatefulWidget {
     this.onReselectPhotos,
   });
 
-  final Club club;
+  final Organizer organizer;
   final Event event;
   final String? inviteCode;
   final String? eventDisplayName;
@@ -67,7 +67,7 @@ class _CreateEventSuccessScreenState
 
   @override
   Widget build(BuildContext context) {
-    final club = widget.club;
+    final organizer = widget.organizer;
     final event = widget.event;
     final inviteCode = widget.inviteCode;
     final eventDisplayName = widget.eventDisplayName;
@@ -80,7 +80,7 @@ class _CreateEventSuccessScreenState
         normalizedInviteCode == null || normalizedInviteCode.isEmpty
         ? null
         : AppDeepLinks.event(
-            clubId: club.id,
+            clubId: organizer.id,
             eventId: event.id,
             inviteCode: normalizedInviteCode,
           ).toString();
@@ -91,12 +91,12 @@ class _CreateEventSuccessScreenState
         ? context.l10n
               .hostsCreateEventSuccessScreenMessageDisplaynameIsNowListed(
                 displayName: displayName,
-                name: club.name,
+                name: organizer.name,
               )
         : context.l10n
               .hostsCreateEventSuccessScreenMessageDisplaynameIsNowListed244c65(
                 displayName: displayName,
-                name: club.name,
+                name: organizer.name,
               );
     final rosterErrors = rosterImportResult?.errors.length ?? 0;
     final rosterNote = rosterImportFailed
@@ -244,7 +244,7 @@ class _CreateEventSuccessScreenState
         onPressed: onManageEvent,
       ),
       secondaryAction: CelebrationAction(
-        label: context.l10n.hostsCreateEventSuccessScreenLabelBackToClub,
+        label: context.l10n.hostsCreateEventSuccessScreenLabelBackToOrganizer,
         onPressed: onDone,
       ),
       onClose: onDone,

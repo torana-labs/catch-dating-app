@@ -99,7 +99,7 @@
     "decision": "separate concepts",
     "note": "these are the custom app bars for two different things",
     "recommended": "catch.hero_chrome",
-    "left": "ClubHeroTopBar",
+    "left": "OrganizerHeroTopBar",
     "right": "EventDetailHeroTopBar"
   },
   {
@@ -595,12 +595,12 @@
   {
     "ts": "2026-06-26T14:37:50.134Z",
     "id": "topbar-vs-club-hero-appbar",
-    "title": "TopBar vs ClubHeroTopBar",
+    "title": "TopBar vs OrganizerHeroTopBar",
     "decision": "separate concepts",
     "note": "clubheroapp bar and top bar are different concepts. eventheroapp bar and the featured event explore section are also all different concepts. but you can bring some kind of streamlining to their naming conventions\n",
     "recommended": "catch.top_bar + catch.club_hero",
     "left": "CatchTopBar",
-    "right": "ClubHeroTopBar"
+    "right": "OrganizerHeroTopBar"
   },
   {
     "ts": "2026-06-26T13:45:46.529Z",

@@ -3,9 +3,9 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list
 import 'package:catch_dating_app/events/shared/event_check_in_qr_scanner.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../test/events/event_viewer_state_fixtures.dart';
 import '../test/events/events_test_helpers.dart' as event_helpers;
+import '../test/organizers/organizers_test_helpers.dart' as organizer_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
 import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
@@ -15,10 +15,10 @@ void main() {
 
   testWidgets('dashboard next-event card opens event detail', (tester) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
-    final club = club_helpers.buildClub();
+    final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'run-1',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime.now().add(const Duration(hours: 3)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 1,
@@ -29,8 +29,8 @@ void main() {
       overrides: appShellTestOverrides(
         uid: user.uid,
         user: user,
-        clubs: [club],
-        joinedClubIds: {club.id},
+        organizers: [organizer],
+        joinedOrganizerIds: {organizer.id},
         signedUpEvents: [run],
         eventViewerStates: [
           viewerFixture(
@@ -51,10 +51,10 @@ void main() {
 
   testWidgets('dashboard self check-in records attendance', (tester) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
-    final club = club_helpers.buildClub();
+    final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'check-in-run-1',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime.now().add(const Duration(minutes: 5)),
       endTime: DateTime.now().add(const Duration(hours: 1)),
       meetingPoint: 'Carter Road Amphitheatre',
@@ -67,8 +67,8 @@ void main() {
       overrides: appShellTestOverrides(
         uid: user.uid,
         user: user,
-        clubs: [club],
-        joinedClubIds: {club.id},
+        organizers: [organizer],
+        joinedOrganizerIds: {organizer.id},
         signedUpEvents: [run],
         eventRepository: eventRepository,
       ),

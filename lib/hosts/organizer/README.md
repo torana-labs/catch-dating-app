@@ -14,7 +14,7 @@ Own the organizer as an operating entity: profile and media, publication readine
 Current implementation roots:
 
 - `lib/hosts/presentation/host_operations`
-- `lib/hosts/presentation/club_management`
+- `lib/hosts/presentation/organizer_management`
 - `lib/hosts/presentation/payments`
 
 ## This feature owns
@@ -36,42 +36,42 @@ Current implementation roots:
 Owned routes:
 
 - `hostOrganizerScreen` — `/host/organizer`
-- `hostClubsScreen` — `/host/organizers`
-- `hostClubEventDefaultsScreen` — `/host/organizers/event-defaults`
-- `hostClubLiveGuideScreen` — `/host/organizers/live-guide`
-- `hostClubTeamScreen` — `/host/organizers/team`
-- `hostClubPaymentsScreen` — `/host/organizers/payments`
+- `hostOrganizersScreen` — `/host/organizers`
+- `hostOrganizerEventDefaultsScreen` — `/host/organizers/event-defaults`
+- `hostOrganizerLiveGuideScreen` — `/host/organizers/live-guide`
+- `hostOrganizerTeamScreen` — `/host/organizers/team`
+- `hostOrganizerPaymentsScreen` — `/host/organizers/payments`
 
 Typed handoffs:
 
-- `hostCreateClubScreen` — `/host/organizers/create-organizer`
+- `hostCreateOrganizerScreen` — `/host/organizers/create-organizer`
 - `hostEventsScreen` — `/host/events`
 - `hostAppEventManageScreen` — `/host/organizers/:clubId/events/:eventId/manage`
-- `hostClubDetailScreen` — `/host/organizers/:clubId`
+- `hostOrganizerDetailScreen` — `/host/organizers/:clubId`
 
 ## Key code owners
 
 | Owner | Source | Responsibility |
 |---|---|---|
-| `HostClubsScreen` | `lib/hosts/presentation/host_operations/host_clubs_screen.dart` | Feature-contract actions: sign_in, retry_organizer_workspace. |
-| `HostClubsScaffold` | `lib/hosts/presentation/host_operations/host_clubs_scaffold.dart` | Feature-contract actions: create_organizer, select_workspace_tab. |
-| `HostClubEditBody` | `lib/hosts/presentation/host_operations/host_club_edit_body.dart` | Feature-contract actions: open_organizer_setting. |
-| `HostClubEditController` | `lib/hosts/presentation/club_management/host_club_edit_controller.dart` | Feature-contract actions: update_organizer, update_organizer_media. |
-| `HostClubSpokeAsyncBoundary` | `lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart` | Feature-contract actions: retry_organizer_setting. |
-| `HostClubDefaultsSaver` | `lib/hosts/presentation/club_management/host_club_defaults_saver.dart` | Feature-contract actions: save_event_defaults. |
-| `HostClubInsightsSection` | `lib/hosts/presentation/host_operations/host_club_insights_section.dart` | Feature-contract actions: retry_insights, refresh_insights, select_insights_range, open_insights_event_report, open_all_host_events. |
+| `HostOrganizersScreen` | `lib/hosts/presentation/host_operations/host_organizers_screen.dart` | Feature-contract actions: sign_in, retry_organizer_workspace. |
+| `HostOrganizersScaffold` | `lib/hosts/presentation/host_operations/host_organizers_scaffold.dart` | Feature-contract actions: create_organizer, select_workspace_tab. |
+| `HostOrganizerEditBody` | `lib/hosts/presentation/host_operations/host_organizer_edit_body.dart` | Feature-contract actions: open_organizer_setting. |
+| `HostOrganizerEditController` | `lib/hosts/presentation/organizer_management/host_organizer_edit_controller.dart` | Feature-contract actions: update_organizer, update_organizer_media. |
+| `HostOrganizerSpokeAsyncBoundary` | `lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart` | Feature-contract actions: retry_organizer_setting. |
+| `HostOrganizerDefaultsSaver` | `lib/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart` | Feature-contract actions: save_event_defaults. |
+| `HostOrganizerInsightsSection` | `lib/hosts/presentation/host_operations/host_organizer_insights_section.dart` | Feature-contract actions: retry_insights, refresh_insights, select_insights_range, open_insights_event_report, open_all_host_events. |
 | `HostPaymentAccountControllerCard` | `lib/hosts/presentation/payments/host_payment_account_controller_card.dart` | Feature-contract actions: retry_payout_account. |
 | `HostPaymentAccountController` | `lib/hosts/presentation/payments/host_payment_account_controller.dart` | Feature-contract actions: start_payout_onboarding, refresh_payout_status. |
-| `HostClubTeamScreen` | `lib/hosts/presentation/host_operations/host_club_team_screen.dart` | Feature-contract actions: retry_host_profile, retry_hosted_organizers, open_hosted_organizer, select_team_tab, leave_team_workspace. |
+| `HostOrganizerTeamScreen` | `lib/hosts/presentation/host_operations/host_organizer_team_screen.dart` | Feature-contract actions: retry_host_profile, retry_hosted_organizers, open_hosted_organizer, select_team_tab, leave_team_workspace. |
 | `HostTeamManagementSection` | `lib/hosts/presentation/widgets/host_team_management_section.dart` | Structural owner from feature.host_organizers. |
-| `HostTeamManagementController` | `lib/hosts/presentation/club_management/host_team_management_controller.dart` | Feature-contract actions: add_host, remove_host, transfer_organizer_ownership. |
+| `HostTeamManagementController` | `lib/hosts/presentation/organizer_management/host_team_management_controller.dart` | Feature-contract actions: add_host, remove_host, transfer_organizer_ownership. |
 | `HostProfileController` | `lib/hosts/presentation/host_profile_controller.dart` | Feature-contract actions: create_host_profile, save_host_profile. |
 | `AuthSessionController` | `lib/auth/presentation/auth_session_controller.dart` | Feature-contract actions: sign_out. |
 | `HostAppShell` | `lib/routing/shell/host_app_shell.dart` | Feature-contract actions: switch_organizer. |
 
 ## Shared dependencies
 
-- `lib/contexts/organizers/data/clubs_repository.dart` — Transitional Organizer repository alias remains the canonical Flutter read/write seam during the domain cutover.
+- `lib/contexts/organizers/data/organizers_repository.dart` — Transitional Organizer repository alias remains the canonical Flutter read/write seam during the domain cutover.
 - `lib/contexts/payments/data/host_payment_account_repository.dart` — Provider-neutral payout account persistence and callable orchestration.
 - `lib/routing/shell/host_app_shell.dart` — The shell owns global destination navigation and organizer scope.
 
@@ -101,7 +101,7 @@ Typed handoffs:
 
 ## Focused tests
 
-- `test/hosts/host_club_defaults_saver_test.dart`
+- `test/hosts/host_organizer_defaults_saver_test.dart`
 - `test/hosts/host_organizer_identity_switcher_test.dart`
 - `test/hosts/host_team_management_controller_test.dart`
 - `test/hosts/host_team_management_section_test.dart`

@@ -28,15 +28,15 @@ Lab/manual-QA screens (`event_policy_lab`, `event_success_lab`,
 
 - **R1 collection objects:** CatchPolaroid, EventDateRailCard,
   EventActionCard, AttendedEventTile, CatchCrossPathsCard (+
-  CrossPathsPolaroidRail), ExploreFeedClubRow, ExploreExternalEventRow,
+  CrossPathsPolaroidRail), ExploreFeedOrganizerRow, ExploreExternalEventRow,
   ActivityTypeRow/MoreActivityTypesRow (browse grid), VibeTile, PhotoSlotTile,
-  ClubProfileImageTile, DraftCard, PlaceSuggestionRow, HostAnalyticsEventTile,
+  OrganizerProfileImageTile, DraftCard, PlaceSuggestionRow, HostAnalyticsEventTile,
   HostCapacityTile, CatchRosterTileCell (+ roster table grammar),
   ChatShareCard/EventShareCard/ClubShareCard (+ pills as share-material),
-  MessageBubble/ShareCardBubble (chat material), RecapHeader, ClubHeroHeader,
+  MessageBubble/ShareCardBubble (chat material), RecapHeader, OrganizerHeroHeader,
   analytics metric-tile grids (kit v1).
 - **R2 actionable modules:** EventDetailHostCard (actions earn the box),
-  EventDetailCalloutCard, EventDetailMapCard (whole-tap), ClubNextRunBanner,
+  EventDetailCalloutCard, EventDetailMapCard (whole-tap), OrganizerNextRunBanner,
   EmptyHeroCard, StrideCard, DashboardQuickActionTile, CatchesIntroCard,
   HostTodayEventHero, HostTodayTaskCard, HostEmptyActionCard,
   HostInviteLinkRow, HostWaitlistBulkOfferAction, SuvbotResetActionRow,
@@ -56,7 +56,7 @@ Lab/manual-QA screens (`event_policy_lab`, `event_success_lab`,
   CompatibilitySignalHostCard, StageCard/PresetReviewCard (primarySoft
   setup signals), EventSuccessPrompt/ConversationCue/Recommendation cards,
   PlaybookSummaryCard.
-- **R5 list frames:** ClubHostSection, ClubContactSection,
+- **R5 list frames:** OrganizerHostSection, OrganizerContactSection,
   HostTeamManagementSection, HostOrganizerTeamCard, contained
   create/edit-club scaffolds' section frames.
 - **Exempt classes:** every `*Pill`/`*Chip`/`*Badge`/`*Seal`/`*Dot`/marker
@@ -142,7 +142,7 @@ them, record the rule the box earns. Same check covers
 ### N8. Form-step surface batch — box only the modules `[codex]`
 
 `HostProfileForm`, `EventPolicyStep` (six surfaces), `EventSuccessStep`,
-`ClubHostDefaultsStep`/`_PolicyDefaultsCard`, `EventSuccessDefaultsSection`,
+`OrganizerHostDefaultsStep`/`_PolicyDefaultsCard`, `EventSuccessDefaultsSection`,
 `IntegrationNotesCard`, `ChatEventContextHeader`: per surface, apply the
 test — input/editor modules and pickers keep their box (R2); pure grouping
 or explainer text flattens to `CatchSection`/fieldRows grammar. Record the

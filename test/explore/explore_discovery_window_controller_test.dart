@@ -206,7 +206,7 @@ class _PagedExternalEventRepository extends Fake
 ExternalEvent _externalEvent(DateTime now) => ExternalEvent(
   id: 'external-1',
   canonicalHostId: 'host-1',
-  compatibilityClubId: 'club-1',
+  compatibilityOrganizerId: 'club-1',
   title: 'External event',
   description: 'A reviewed external event.',
   startTime: now.add(const Duration(days: 1)),

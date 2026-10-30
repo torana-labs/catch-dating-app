@@ -57,10 +57,10 @@ final class EventDraftRepositoryProvider
 String _$eventDraftRepositoryHash() =>
     r'da8ec131054175bd2e0ee02967754cff84e94e0d';
 
-@ProviderFor(clubEventDrafts)
-final clubEventDraftsProvider = ClubEventDraftsFamily._();
+@ProviderFor(organizerEventDrafts)
+final organizerEventDraftsProvider = OrganizerEventDraftsFamily._();
 
-final class ClubEventDraftsProvider
+final class OrganizerEventDraftsProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<EventDraft>>,
@@ -68,23 +68,23 @@ final class ClubEventDraftsProvider
           FutureOr<List<EventDraft>>
         >
     with $FutureModifier<List<EventDraft>>, $FutureProvider<List<EventDraft>> {
-  ClubEventDraftsProvider._({
-    required ClubEventDraftsFamily super.from,
+  OrganizerEventDraftsProvider._({
+    required OrganizerEventDraftsFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'clubEventDraftsProvider',
+         name: r'organizerEventDraftsProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$clubEventDraftsHash();
+  String debugGetCreateSourceHash() => _$organizerEventDraftsHash();
 
   @override
   String toString() {
-    return r'clubEventDraftsProvider'
+    return r'organizerEventDraftsProvider'
         ''
         '($argument)';
   }
@@ -98,12 +98,12 @@ final class ClubEventDraftsProvider
   @override
   FutureOr<List<EventDraft>> create(Ref ref) {
     final argument = this.argument as String;
-    return clubEventDrafts(ref, clubId: argument);
+    return organizerEventDrafts(ref, clubId: argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is ClubEventDraftsProvider && other.argument == argument;
+    return other is OrganizerEventDraftsProvider && other.argument == argument;
   }
 
   @override
@@ -112,22 +112,23 @@ final class ClubEventDraftsProvider
   }
 }
 
-String _$clubEventDraftsHash() => r'627777152f72522e3a2bf645a6f0cc562ebe07b8';
+String _$organizerEventDraftsHash() =>
+    r'7ffb64a62a63f8a25f252bd4f18045d3b664d2ae';
 
-final class ClubEventDraftsFamily extends $Family
+final class OrganizerEventDraftsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<EventDraft>>, String> {
-  ClubEventDraftsFamily._()
+  OrganizerEventDraftsFamily._()
     : super(
         retry: null,
-        name: r'clubEventDraftsProvider',
+        name: r'organizerEventDraftsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  ClubEventDraftsProvider call({required String clubId}) =>
-      ClubEventDraftsProvider._(argument: clubId, from: this);
+  OrganizerEventDraftsProvider call({required String clubId}) =>
+      OrganizerEventDraftsProvider._(argument: clubId, from: this);
 
   @override
-  String toString() => r'clubEventDraftsProvider';
+  String toString() => r'organizerEventDraftsProvider';
 }

@@ -112,7 +112,7 @@ test("scanFile allows sanctioned cross-feature controller seams from screens and
   const screenFindings = scanFile({
     relativePath: "lib/events/presentation/event_detail_screen.dart",
     source:
-      "import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';\n",
+      "import 'package:catch_dating_app/organizers/presentation/detail/organizer_host_contact_controller.dart';\n",
   });
   const controllerFindings = scanFile({
     relativePath: "lib/auth/presentation/auth_session_controller.dart",
@@ -396,18 +396,18 @@ test("scanFile flags display state classes misplaced outside state files", () =>
   const findings = scanFile({
     relativePath: "lib/hosts/presentation/host_operations_screen.dart",
     source: [
-      "class HostClubsScreenState {",
-      "  const HostClubsScreenState();",
-      "  factory HostClubsScreenState.from(Object source) => const HostClubsScreenState();",
+      "class HostOrganizersScreenState {",
+      "  const HostOrganizersScreenState();",
+      "  factory HostOrganizersScreenState.from(Object source) => const HostOrganizersScreenState();",
       "}",
     ].join("\n"),
   });
   const stateFileFindings = scanFile({
     relativePath: "lib/hosts/presentation/host_clubs_screen_state.dart",
     source: [
-      "class HostClubsScreenState {",
-      "  const HostClubsScreenState();",
-      "  factory HostClubsScreenState.from(Object source) => const HostClubsScreenState();",
+      "class HostOrganizersScreenState {",
+      "  const HostOrganizersScreenState();",
+      "  factory HostOrganizersScreenState.from(Object source) => const HostOrganizersScreenState();",
       "}",
     ].join("\n"),
   });
@@ -423,12 +423,12 @@ test("scanFile flags presentation files with multiple route screens", () => {
     relativePath: "lib/hosts/presentation/host_operations_screen.dart",
     source: [
       "class HostOperationsHomeScreen extends StatelessWidget {}",
-      "class HostClubsScreen extends ConsumerWidget {}",
+      "class HostOrganizersScreen extends ConsumerWidget {}",
     ].join("\n"),
   });
   const singleFindings = scanFile({
     relativePath: "lib/hosts/presentation/host_clubs_screen.dart",
-    source: "class HostClubsScreen extends StatelessWidget {}\n",
+    source: "class HostOrganizersScreen extends StatelessWidget {}\n",
   });
 
   assert.deepEqual(findings.map((finding) => finding.rule), [

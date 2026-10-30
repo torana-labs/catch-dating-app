@@ -95,37 +95,37 @@ abstract final class CatchLayout {
   static const double agendaListBottomPadding = detailScreenBottomPadding;
 
   /// Shared inset for club interaction media on list tiles and detail headers.
-  static const double clubInteractionMediaInset = CatchSpacing.s3;
-  static const EdgeInsets clubInteractionMediaPadding = EdgeInsets.all(
-    clubInteractionMediaInset,
+  static const double organizerInteractionMediaInset = CatchSpacing.s3;
+  static const EdgeInsets organizerInteractionMediaPadding = EdgeInsets.all(
+    organizerInteractionMediaInset,
   );
 
   /// Club detail hero media and caption sizing.
-  static const double clubDetailHeroCoverHeightRatio = 0.61;
-  static const double clubDetailHeroNoCoverPhoneHeight = 220.0;
-  static const double clubDetailHeroNoCoverWideHeight = 164.0;
-  static const double clubDetailHeroCoverWideMinHeight = 164.0;
-  static const double clubDetailHeroCoverWideMaxHeight = 260.0;
-  static const double clubDetailHeroTitleTopPadding = CatchSpacing.s3;
-  static const double clubDetailHeroTitleBottomPadding = CatchSpacing.s3;
-  static const double clubDetailHeroTitleLocationGap = CatchSpacing.s2;
+  static const double organizerDetailHeroCoverHeightRatio = 0.61;
+  static const double organizerDetailHeroNoCoverPhoneHeight = 220.0;
+  static const double organizerDetailHeroNoCoverWideHeight = 164.0;
+  static const double organizerDetailHeroCoverWideMinHeight = 164.0;
+  static const double organizerDetailHeroCoverWideMaxHeight = 260.0;
+  static const double organizerDetailHeroTitleTopPadding = CatchSpacing.s3;
+  static const double organizerDetailHeroTitleBottomPadding = CatchSpacing.s3;
+  static const double organizerDetailHeroTitleLocationGap = CatchSpacing.s2;
   // The expanded club title is set in the S display step (D19): 30px at 1.05.
-  static const double clubDetailHeroExpandedTitleSize = 30.0;
-  static const double clubDetailHeroExpandedTitleLineHeight = 1.05;
-  static const double clubDetailHeroLocationLineExtent = 24.0;
-  static const double clubDetailHeroCaptionSlack = CatchSpacing.s1;
-  static const double clubDetailHeroCaptionExtent =
-      clubDetailHeroTitleTopPadding +
-      (clubDetailHeroExpandedTitleSize *
-          clubDetailHeroExpandedTitleLineHeight *
+  static const double organizerDetailHeroExpandedTitleSize = 30.0;
+  static const double organizerDetailHeroExpandedTitleLineHeight = 1.05;
+  static const double organizerDetailHeroLocationLineExtent = 24.0;
+  static const double organizerDetailHeroCaptionSlack = CatchSpacing.s1;
+  static const double organizerDetailHeroCaptionExtent =
+      organizerDetailHeroTitleTopPadding +
+      (organizerDetailHeroExpandedTitleSize *
+          organizerDetailHeroExpandedTitleLineHeight *
           2) +
-      clubDetailHeroTitleLocationGap +
-      clubDetailHeroLocationLineExtent +
-      clubDetailHeroTitleBottomPadding +
-      clubDetailHeroCaptionSlack;
-  static const double clubDetailHeroLoadingExtent =
-      clubDetailHeroNoCoverPhoneHeight + clubDetailHeroCaptionExtent;
-  static double clubDetailHeroLocationTextWidthFor(double captionWidth) =>
+      organizerDetailHeroTitleLocationGap +
+      organizerDetailHeroLocationLineExtent +
+      organizerDetailHeroTitleBottomPadding +
+      organizerDetailHeroCaptionSlack;
+  static const double organizerDetailHeroLoadingExtent =
+      organizerDetailHeroNoCoverPhoneHeight + organizerDetailHeroCaptionExtent;
+  static double organizerDetailHeroLocationTextWidthFor(double captionWidth) =>
       (captionWidth - CatchIconSize.md - CatchSpacing.micro6)
           .clamp(0.0, double.infinity)
           .toDouble();
@@ -263,14 +263,14 @@ abstract final class CatchLayout {
       CatchSpacing.s3 + CatchStroke.hairline;
   static const double settingsRowDividerIconInset = fieldRowTextLaneInset;
   static const double settingsRowChevronIconSize = CatchIconSize.xs;
-  static const double clubProfileImagePickerExtent = 120.0;
-  static const double clubCoverThumbnailExtent = 64.0;
+  static const double organizerProfileImagePickerExtent = 120.0;
+  static const double organizerCoverThumbnailExtent = 64.0;
   static const double posterRadius = CatchSpacing.micro6;
   static const double posterMediaRadius = CatchSpacing.micro3;
   static const double posterMinimalMediaHeight = 104.0;
   static const double personPolaroidRadius = CatchSpacing.micro6;
   static const double personPolaroidMediaRadius = CatchSpacing.micro3;
-  static const double clubCoverCompactMediaRadius = CatchRadius.md;
+  static const double organizerCoverCompactMediaRadius = CatchRadius.md;
   static const double eventTypeTileMaxWidth = 340.0;
   static const double eventTypeTileSingleColumnHeight = 88.0;
   static const double eventTypeTileTwoColumnHeight = 72.0;
@@ -298,8 +298,8 @@ abstract final class CatchLayout {
   static const double profileCardOverlayTrailingInset = 92.0;
   static const double profileInlineMinimumUnderlineWidth = 28.0;
   static const double passButtonExtent = CatchSpacing.s16;
-  static const double clubMemberSealCompactExtent = CatchSpacing.s16;
-  static const double clubMemberSealExtent = 70.0;
+  static const double organizerMemberSealCompactExtent = CatchSpacing.s16;
+  static const double organizerMemberSealExtent = 70.0;
   static const double countryCodeSelectorWidth = 136.0;
   static const double activityLoadingIndicatorExtent = CatchIconSize.md;
   static const double analyticsMetricPreviewWidth = 220.0;
@@ -671,14 +671,14 @@ abstract final class CatchLayout {
   static const double eventDateRailWidth = 66.0;
   static const double eventDateRailGlyphSize = 50.0;
   static const double eventTicketDecisionInlineMinWidth = 220.0;
-  static const double clubAvatarRailColumnWidth = 76.0;
-  static const double clubDirectorySkeletonTitleWidth = 180.0;
-  static const double clubDirectorySkeletonSubtitleWidth = 132.0;
-  static const double clubDirectorySkeletonShortChipWidth = 72.0;
-  static const double clubDirectorySkeletonLongChipWidth = 96.0;
-  static const double clubDirectorySkeletonFooterWidth = 140.0;
-  static const double clubDirectorySkeletonActionWidth = 70.0;
-  static const double clubEditorPhotoSkeletonHeight = 132.0;
+  static const double organizerAvatarRailColumnWidth = 76.0;
+  static const double organizerDirectorySkeletonTitleWidth = 180.0;
+  static const double organizerDirectorySkeletonSubtitleWidth = 132.0;
+  static const double organizerDirectorySkeletonShortChipWidth = 72.0;
+  static const double organizerDirectorySkeletonLongChipWidth = 96.0;
+  static const double organizerDirectorySkeletonFooterWidth = 140.0;
+  static const double organizerDirectorySkeletonActionWidth = 70.0;
+  static const double organizerEditorPhotoSkeletonHeight = 132.0;
   static const double recommendationRailGap = 10.0;
   static const double recommendationRailItemWidthFraction = 0.78;
   static const double recommendationRailItemMinWidth = 280.0;
@@ -729,8 +729,8 @@ abstract final class CatchLayout {
   static const double profileSignalChipHorizontalPadding = 10.0;
   static const double profileSignalChipVerticalPadding = 7.0;
   static const double manualQaEditorHeight = 780.0;
-  static const double clubAvatarRailHeight = 108.0;
-  static const double clubCreateButtonExtent = 64.0;
+  static const double organizerAvatarRailHeight = 108.0;
+  static const double organizerCreateButtonExtent = 64.0;
   static const double attendedEventTileArtExtent = 58.0;
   static const double chatBubbleMaxWidthFraction = 0.78;
   static const double chatBubbleMaxWidth = 520.0;
@@ -763,7 +763,7 @@ abstract final class CatchLayout {
   static const double skeletonTextTitleWidth = 132.0;
   static const double chatNewMatchTileWidth = 64.0;
   static const double chatNewMatchAvatarExtent = 64.0;
-  static const double clubFilterDividerHeight = 22.0;
+  static const double organizerFilterDividerHeight = 22.0;
   static const double profileTagPillHorizontalPadding = 11.0;
   static const double profileTagPillVerticalPadding = 7.0;
   static const double profileRunStatHorizontalPadding = 12.0;

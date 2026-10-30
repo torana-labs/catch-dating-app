@@ -257,7 +257,7 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {

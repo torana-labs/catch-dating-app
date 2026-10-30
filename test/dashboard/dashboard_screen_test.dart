@@ -13,8 +13,8 @@ import 'package:catch_dating_app/contexts/live/data/event_success_repository.dar
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
@@ -26,10 +26,10 @@ import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/club_posts_home_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/organizer_posts_home_section.dart';
 import 'package:catch_dating_app/events/shared/event_check_in_qr_scanner.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
@@ -46,8 +46,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart' as organizer_test;
 import '../support/analytics_test_helpers.dart';
 import '../support/dashboard_test_helpers.dart';
 import '../test_pump_helpers.dart';
@@ -440,9 +440,9 @@ void main() {
     testWidgets('shows the full dashboard when booked events exist', (
       tester,
     ) async {
-      final joinedClubIds = ['club-1'];
+      final joinedOrganizerIds = ['club-1'];
       final user = buildUser(name: 'Manan Sethi', displayName: 'Subrath');
-      final joinedClub = buildClub(name: 'Home Run Club');
+      final joinedOrganizer = buildOrganizer(name: 'Home Run Club');
       final nextEvent = buildEvent(
         bookedCount: 1,
         startTime: DateTime.now().add(const Duration(hours: 3)),
@@ -459,12 +459,12 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
             exploreRecommendedEventsProvider(
-              recommendationsQueryFor(user.uid, joinedClubIds),
+              recommendationsQueryFor(user.uid, joinedOrganizerIds),
             ).overrideWithValue(noRecommendationCandidates),
-            watchClubsByIdsProvider(
-              ClubsByIdQuery(joinedClubIds),
-            ).overrideWith((ref) => Stream.value([joinedClub])),
-            membershipsOverride(user, joinedClubIds),
+            watchOrganizersByIdsProvider(
+              OrganizersByIdQuery(joinedOrganizerIds),
+            ).overrideWith((ref) => Stream.value([joinedOrganizer])),
+            membershipsOverride(user, joinedOrganizerIds),
             activityNotificationsOverride(user),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
@@ -500,7 +500,7 @@ void main() {
     testWidgets('dashboard body omits the legacy followed clubs rail', (
       tester,
     ) async {
-      final joinedClub = buildClub(name: 'Home Run Club');
+      final joinedOrganizer = buildOrganizer(name: 'Home Run Club');
       final user = buildUser();
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
@@ -512,9 +512,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchClubsByIdsProvider(
-              ClubsByIdQuery([joinedClub.id]),
-            ).overrideWith((ref) => Stream.value([joinedClub])),
+            watchOrganizersByIdsProvider(
+              OrganizersByIdQuery([joinedOrganizer.id]),
+            ).overrideWith((ref) => Stream.value([joinedOrganizer])),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -541,7 +541,9 @@ void main() {
     testWidgets('club posts home section renders unread post cards', (
       tester,
     ) async {
-      final joinedClub = club_test.buildClub(name: 'Race Course Road Runners');
+      final joinedOrganizer = organizer_test.buildOrganizer(
+        name: 'Race Course Road Runners',
+      );
       final user = buildUser();
       final notifications = [
         _activityNotification(
@@ -550,7 +552,7 @@ void main() {
           type: ActivityNotificationType.clubUpdate,
           title: 'New update from Race Course Road Runners',
           body: 'Meet ten minutes early at the main gate.',
-          clubId: joinedClub.id,
+          clubId: joinedOrganizer.id,
           postId: 'post-1',
           eventId: 'event-1',
         ),
@@ -560,7 +562,7 @@ void main() {
           type: ActivityNotificationType.organizerUpdate,
           title: 'New organizer update',
           body: 'The organizer-only update is visible at home.',
-          organizerId: joinedClub.id,
+          organizerId: joinedOrganizer.id,
           postId: 'post-2',
         ),
       ];
@@ -569,14 +571,14 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchClubsByIdsProvider(
-              ClubsByIdQuery([joinedClub.id]),
-            ).overrideWith((ref) => Stream.value([joinedClub])),
+            watchOrganizersByIdsProvider(
+              OrganizersByIdQuery([joinedOrganizer.id]),
+            ).overrideWith((ref) => Stream.value([joinedOrganizer])),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
             home: Scaffold(
-              body: ClubPostsHomeSection(
+              body: OrganizerPostsHomeSection(
                 notifications: notifications,
                 onOpenPost: (_) => opened = true,
               ),
@@ -919,12 +921,12 @@ class _DashboardFullTestShell extends ConsumerWidget {
   const _DashboardFullTestShell({
     required this.user,
     required this.signedUpEvents,
-    required this.followedClubIds,
+    required this.followedOrganizerIds,
   });
 
   final UserProfile user;
   final List<Event> signedUpEvents;
-  final List<String> followedClubIds;
+  final List<String> followedOrganizerIds;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -934,7 +936,7 @@ class _DashboardFullTestShell extends ConsumerWidget {
         signedUpEvents: signedUpEvents,
         user: user,
         uid: user.uid,
-        followedClubIds: followedClubIds,
+        followedOrganizerIds: followedOrganizerIds,
       ),
     );
 
@@ -1027,37 +1029,37 @@ Finder _runFocusCardSurface(String title) {
 
 List _dashboardHostOverrides(
   UserProfile user, {
-  String hostedClubId = 'club-host',
+  String hostedOrganizerId = 'club-host',
   List<Event> hostedEvents = const [],
   bool includeWeeklyActivity = true,
   AsyncValue<WeeklyActivitySnapshot>? weeklyActivity,
 }) {
-  final hostedClubs = hostedEvents.isEmpty
-      ? const <Club>[]
-      : [buildClub(id: hostedClubId, hostUserId: user.uid)];
+  final hostedOrganizers = hostedEvents.isEmpty
+      ? const <Organizer>[]
+      : [buildOrganizer(id: hostedOrganizerId, hostUserId: user.uid)];
 
   return [
-    clubsRepositoryProvider.overrideWith(
-      (ref) => club_test.FakeClubsRepository()
-        ..clubsById['club-1'] = buildClub()
-        ..clubsById[hostedClubId] = buildClub(
-          id: hostedClubId,
+    organizersRepositoryProvider.overrideWith(
+      (ref) => organizer_test.FakeOrganizersRepository()
+        ..organizersById['club-1'] = buildOrganizer()
+        ..organizersById[hostedOrganizerId] = buildOrganizer(
+          id: hostedOrganizerId,
           hostUserId: user.uid,
         ),
     ),
-    watchClubsHostedByProvider(
+    watchOrganizersHostedByProvider(
       user.uid,
-    ).overrideWithValue(AsyncData(hostedClubs)),
-    watchClubsOwnedByProvider(
+    ).overrideWithValue(AsyncData(hostedOrganizers)),
+    watchOrganizersOwnedByProvider(
       user.uid,
-    ).overrideWithValue(const AsyncData<List<Club>>([])),
+    ).overrideWithValue(const AsyncData<List<Organizer>>([])),
     if (includeWeeklyActivity)
       weeklyActivityProvider.overrideWithValue(
         weeklyActivity ?? emptyWeeklyActivitySnapshot(),
       ),
     if (hostedEvents.isNotEmpty)
-      watchEventsForClubProvider(
-        hostedClubId,
+      watchEventsForOrganizerProvider(
+        hostedOrganizerId,
       ).overrideWithValue(AsyncData<List<Event>>(hostedEvents)),
   ];
 }

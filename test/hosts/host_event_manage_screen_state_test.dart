@@ -179,19 +179,19 @@ void main() {
   });
 
   test('HostPrivateLinkActionState maps share link display state', () {
-    final club = buildClub();
+    final organizer = buildOrganizer();
     final event = buildEvent(id: 'event-private');
     final access = EventPrivateAccess(
       id: 'access-1',
       eventId: event.id,
-      clubId: club.id,
+      clubId: organizer.id,
       inviteCode: ' CATCH-DELHI ',
       createdAt: DateTime(2026, 7),
     );
     final inviteLink = EventInviteLink(
       id: 'link-1',
       eventId: event.id,
-      clubId: club.id,
+      clubId: organizer.id,
       hostUid: 'host-1',
       label: 'Instagram',
       createdAt: DateTime(2026, 7),
@@ -203,7 +203,7 @@ void main() {
       accessState: CatchAsyncState.data(access),
       inviteLinksState: CatchAsyncState.data([inviteLink]),
       inviteLink:
-          'https://catchdates.com/organizers/${club.id}/events/${event.id}?invite=CATCH-DELHI',
+          'https://catchdates.com/organizers/${organizer.id}/events/${event.id}?invite=CATCH-DELHI',
       sharePending: false,
     );
     final loading = HostPrivateLinkActionState.resolve(
@@ -225,14 +225,14 @@ void main() {
       accessState: CatchAsyncState.data(access),
       inviteLinksState: CatchAsyncState.data([inviteLink]),
       inviteLink:
-          'https://catchdates.com/organizers/${club.id}/events/${event.id}?invite=CATCH-DELHI',
+          'https://catchdates.com/organizers/${organizer.id}/events/${event.id}?invite=CATCH-DELHI',
       sharePending: true,
     );
 
     expect(ready.inviteCode, 'CATCH-DELHI');
     expect(
       ready.inviteLink,
-      'https://catchdates.com/organizers/${club.id}/events/${event.id}?invite=CATCH-DELHI',
+      'https://catchdates.com/organizers/${organizer.id}/events/${event.id}?invite=CATCH-DELHI',
     );
     expect(ready.shareDetail, '1 invite link');
     expect(ready.canShare, isTrue);
@@ -245,12 +245,12 @@ void main() {
   });
 
   test('HostPrivateAccessDisplayState maps card copy and rows', () {
-    final club = buildClub();
+    final organizer = buildOrganizer();
     final event = buildEvent(id: 'event-private');
     final access = EventPrivateAccess(
       id: 'access-1',
       eventId: event.id,
-      clubId: club.id,
+      clubId: organizer.id,
       inviteCode: 'CATCH-DELHI',
       createdAt: DateTime(2026, 7),
     );

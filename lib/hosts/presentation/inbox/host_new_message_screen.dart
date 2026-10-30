@@ -122,7 +122,7 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
                 SliverToBoxAdapter(
                   child: CatchLocalizedErrorState(
                     directory.error!,
-                    context: AppErrorContext.club,
+                    context: AppErrorContext.organizer,
                     onRetry: () => ref.invalidate(
                       hostCustomersDirectoryControllerProvider(request),
                     ),
@@ -203,7 +203,7 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
       if (match == null ||
           uid == null ||
           uid != accountId ||
-          !match.isClubHostInquiry ||
+          !match.isOrganizerHostInquiry ||
           match.clubId != widget.organizerId ||
           (match.user1Id != uid && match.user2Id != uid)) {
         throw StateError('Conversation is not available in this workspace.');

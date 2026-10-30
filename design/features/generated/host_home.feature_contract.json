@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
-  "sourceDigest": "sha256:e5d5ea1491091c40e9b1eb2d3238871e1d284b4d96a1bb436deaea908531a5c3",
+  "sourceDigest": "sha256:ce3058cef6e12cb8982d25727faad6f618e2c27e7ac43961b5d7732c4a285ff3",
   "resolvedDigest": "sha256:b8400979ed1a555bbc64d083ce718445e4aed28e2e1e990bc9d53c27ce7499ec",
   "feature": {
     "id": "feature.host_home",
@@ -94,7 +94,7 @@
             "id": "events_list",
             "language": "dart",
             "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
-            "symbol": "HostEventsClubCard"
+            "symbol": "HostEventsOrganizerCard"
           },
           {
             "id": "events_timeline",
@@ -264,7 +264,7 @@
         {
           "id": "create_organizer",
           "owner": "workspace",
-          "codeValue": "hostCreateClubScreen",
+          "codeValue": "hostCreateOrganizerScreen",
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",

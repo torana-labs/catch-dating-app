@@ -23,34 +23,34 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/clubs/catalog/dock.dart",
-          "widgetbook/lib/clubs/catalog/schedule.dart",
-          "widgetbook/lib/clubs/catalog/screen.dart"
+          "widgetbook/lib/organizers/catalog/dock.dart",
+          "widgetbook/lib/organizers/catalog/schedule.dart",
+          "widgetbook/lib/organizers/catalog/screen.dart"
         ],
         "actionOwners": [
           {
             "id": "route_screen",
             "language": "dart",
-            "file": "lib/clubs/presentation/detail/club_detail_screen.dart",
-            "symbol": "ClubDetailScreen"
+            "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+            "symbol": "OrganizerDetailScreen"
           },
           {
             "id": "membership",
             "language": "dart",
-            "file": "lib/clubs/presentation/detail/club_membership_controller.dart",
-            "symbol": "ClubMembershipController"
+            "file": "lib/organizers/presentation/detail/organizer_membership_controller.dart",
+            "symbol": "OrganizerMembershipController"
           },
           {
             "id": "membership_dock",
             "language": "dart",
-            "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-            "symbol": "ClubMembershipDock"
+            "file": "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart",
+            "symbol": "OrganizerMembershipDock"
           },
           {
             "id": "host_contact",
             "language": "dart",
-            "file": "lib/clubs/presentation/detail/club_host_contact_controller.dart",
-            "symbol": "ClubHostContactController"
+            "file": "lib/organizers/presentation/detail/organizer_host_contact_controller.dart",
+            "symbol": "OrganizerHostContactController"
           }
         ],
         "componentContracts": [
@@ -234,7 +234,7 @@
         {
           "id": "share_organizer",
           "owner": "route_screen",
-          "codeValue": "showClubShareCardSheet",
+          "codeValue": "showOrganizerShareCardSheet",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -319,7 +319,7 @@
         {
           "id": "open_contact",
           "owner": "route_screen",
-          "codeValue": "openClubContact",
+          "codeValue": "openOrganizerContact",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -607,14 +607,14 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/operations/club_preview.dart"
+          "widgetbook/lib/hosts/operations/organizer_preview.dart"
         ],
         "actionOwners": [
           {
             "id": "route_screen",
             "language": "dart",
-            "file": "lib/clubs/presentation/detail/club_detail_screen.dart",
-            "symbol": "ClubDetailScreen"
+            "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+            "symbol": "OrganizerDetailScreen"
           }
         ],
         "componentContracts": [
@@ -708,7 +708,7 @@
         {
           "id": "share_organizer",
           "owner": "route_screen",
-          "codeValue": "showClubShareCardSheet",
+          "codeValue": "showOrganizerShareCardSheet",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -768,7 +768,7 @@
         {
           "id": "open_contact",
           "owner": "route_screen",
-          "codeValue": "openClubContact",
+          "codeValue": "openOrganizerContact",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",

@@ -5,7 +5,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 typedef EventBadgeLabelBuilder = String? Function(Event event);
-typedef ClubNameBuilder = String? Function(Event event);
+typedef OrganizerNameBuilder = String? Function(Event event);
 typedef EventTileStatusBuilder = EventTileStatus Function(Event event);
 typedef EventAgendaDayKeyBuilder = Key? Function(DateTime date);
 
@@ -17,9 +17,9 @@ class EventAgendaSliverList extends StatelessWidget {
     this.onEventSelected,
     this.badgeLabel,
     this.badgeLabelBuilder,
-    this.clubNameBuilder,
+    this.organizerNameBuilder,
     this.statusBuilder,
-    this.showClubName = false,
+    this.showOrganizerName = false,
     this.today,
     this.preserveInputOrder = false,
     this.dayKeyBuilder,
@@ -38,9 +38,9 @@ class EventAgendaSliverList extends StatelessWidget {
   final ValueChanged<Event>? onEventSelected;
   final String? badgeLabel;
   final EventBadgeLabelBuilder? badgeLabelBuilder;
-  final ClubNameBuilder? clubNameBuilder;
+  final OrganizerNameBuilder? organizerNameBuilder;
   final EventTileStatusBuilder? statusBuilder;
-  final bool showClubName;
+  final bool showOrganizerName;
   final DateTime? today;
   final bool preserveInputOrder;
   final EventAgendaDayKeyBuilder? dayKeyBuilder;
@@ -67,7 +67,7 @@ class EventAgendaSliverList extends StatelessWidget {
             rows: entries[groupIndex].value,
             today: effectiveToday,
             onEventSelected: onEventSelected,
-            showClubName: showClubName,
+            showOrganizerName: showOrganizerName,
             dayLabelBottomGap: dayLabelBottomGap,
           ),
         ),
@@ -97,7 +97,7 @@ class EventAgendaSliverList extends StatelessWidget {
     return EventAgendaRow(
       event: event,
       badgeLabel: effectiveBadgeLabel,
-      clubName: clubNameBuilder?.call(event),
+      organizerName: organizerNameBuilder?.call(event),
       status:
           statusBuilder?.call(event) ??
           eventTileStatusForBadge(effectiveBadgeLabel),
@@ -109,13 +109,13 @@ class EventAgendaRow {
   const EventAgendaRow({
     required this.event,
     this.badgeLabel,
-    this.clubName,
+    this.organizerName,
     this.status,
   });
 
   final Event event;
   final String? badgeLabel;
-  final String? clubName;
+  final String? organizerName;
   final EventTileStatus? status;
 }
 
@@ -257,7 +257,7 @@ class AgendaDaySection extends StatelessWidget {
     required this.rows,
     required this.today,
     required this.onEventSelected,
-    required this.showClubName,
+    required this.showOrganizerName,
     required this.dayLabelBottomGap,
   });
 
@@ -265,7 +265,7 @@ class AgendaDaySection extends StatelessWidget {
   final List<EventAgendaRow> rows;
   final DateTime today;
   final ValueChanged<Event>? onEventSelected;
-  final bool showClubName;
+  final bool showOrganizerName;
   final double dayLabelBottomGap;
 
   @override
@@ -292,9 +292,9 @@ class AgendaDaySection extends StatelessWidget {
                 data: EventTileData.fromEvent(
                   event: event,
                   status: status,
-                  clubName: row.clubName,
+                  organizerName: row.organizerName,
                 ),
-                showClubName: showClubName,
+                showOrganizerName: showOrganizerName,
                 badgeLabel: row.badgeLabel,
                 stripPosition: eventDateRailCardStripPositionFor(
                   eventIndex,

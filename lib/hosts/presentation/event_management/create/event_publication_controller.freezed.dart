@@ -212,7 +212,7 @@ return $default(_that.event,_that.pending,_that.receipt,_that.error,_that.loadin
 
 class _EventPublicationState extends EventPublicationState {
   const _EventPublicationState({this.event, this.pending, this.receipt, this.error, this.loading = false, this.saving = false, this.actorAvailable = true}): super._();
-
+  
 
 @override final  PrivateEventBasicSummary? event;
 @override final  EventPublicationRequest? pending;

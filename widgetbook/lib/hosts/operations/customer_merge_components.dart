@@ -62,7 +62,7 @@ final _dismissedCandidate = _candidate(
   path: _path,
 )
 Widget hostContactMergeReviewSheetStates(BuildContext context) {
-  final organizerId = HostOperationsFixtures.primaryClub.id;
+  final organizerId = HostOperationsFixtures.primaryOrganizer.id;
   return widgetbookHostComponentStates('HostContactMergeReviewSheet', [
     (
       'active and dismissed duplicates',
@@ -96,7 +96,7 @@ Widget hostContactMergeCandidateCardStates(BuildContext context) =>
       (
         'shared imported phone',
         HostContactMergeCandidateCard(
-          organizerId: HostOperationsFixtures.primaryClub.id,
+          organizerId: HostOperationsFixtures.primaryOrganizer.id,
           candidate: _activeCandidate,
           onChanged: () {},
           onMerged: () {},
@@ -114,7 +114,7 @@ Widget hostDismissedMergeCandidateCardStates(BuildContext context) =>
       (
         'owner can reopen',
         HostDismissedMergeCandidateCard(
-          organizerId: HostOperationsFixtures.primaryClub.id,
+          organizerId: HostOperationsFixtures.primaryOrganizer.id,
           candidate: _dismissedCandidate,
           onChanged: () {},
         ),
@@ -122,7 +122,7 @@ Widget hostDismissedMergeCandidateCardStates(BuildContext context) =>
       (
         'co-host read only',
         HostDismissedMergeCandidateCard(
-          organizerId: HostOperationsFixtures.primaryClub.id,
+          organizerId: HostOperationsFixtures.primaryOrganizer.id,
           candidate: _candidate(
             id: 'design-merge-locked',
             decisionState: HostContactMergeDecisionState.differentPeople,

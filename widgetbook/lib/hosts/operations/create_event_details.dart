@@ -89,7 +89,7 @@ Widget draftPickerSheetCatalogStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: HostEventEntrySheet(
             state: HostEventEntryState.resolve(
-              organizerId: HostOperationsFixtures.primaryClub.id,
+              organizerId: HostOperationsFixtures.primaryOrganizer.id,
               drafts: [HostOperationsFixtures.eventDraft],
             ),
             onDeleteDraft: (_) async {},
@@ -101,7 +101,7 @@ Widget draftPickerSheetCatalogStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: HostEventEntrySheet(
             state: HostEventEntryState.resolve(
-              organizerId: HostOperationsFixtures.primaryClub.id,
+              organizerId: HostOperationsFixtures.primaryOrganizer.id,
             ),
             onDeleteDraft: (_) async {},
           ),

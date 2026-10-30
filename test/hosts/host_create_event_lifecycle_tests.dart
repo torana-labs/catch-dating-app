@@ -17,7 +17,7 @@ void runHostCreateEventLifecycleTests() {
       tester,
       StatefulBuilder(
         builder: (context, setState) => HostEventManageScreen(
-          club: buildClub(),
+          organizer: buildOrganizer(),
           event: event,
           onBackToSuccess: () {},
           referenceNow: now,
@@ -117,7 +117,7 @@ void runHostCreateEventLifecycleTests() {
       tester,
       StatefulBuilder(
         builder: (context, setState) => HostEventManageScreen(
-          club: buildClub(),
+          organizer: buildOrganizer(),
           event: event,
           onBackToSuccess: () {},
           referenceNow: now,
@@ -221,7 +221,7 @@ void runEventPhotoRecoveryUITests() {
     await pumpEventsTestApp(
       tester,
       CreateEventScreen(
-        club: buildClub(),
+        organizer: buildOrganizer(),
         loadMapTiles: false,
         promptForDraftsOnStart: false,
       ),

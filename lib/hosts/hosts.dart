@@ -17,12 +17,6 @@ export 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
 
 export 'events/presentation/host_events_screen.dart'; // public-api: route entry point exposed to app routing
 export 'events/presentation/host_events_state.dart'; // public-api: provider-free display state reused by tests and routes
-export 'presentation/club_management/create/create_club_controller.dart'; // public-api: command seam for route-owned actions
-export 'presentation/club_management/create/create_club_draft_controller.dart'; // public-api: command seam for route-owned actions
-export 'presentation/club_management/create/create_club_screen.dart'; // public-api: route entry point exposed to app routing
-export 'presentation/club_management/host_club_edit_controller.dart'; // public-api: command seam for route-owned actions
-export 'presentation/club_management/host_create_club_screen.dart'; // public-api: route entry point exposed to app routing
-export 'presentation/club_management/host_team_management_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/edit_hosted_event_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/event_management/create/create_event_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/event_management/create/create_event_draft_controller.dart'; // public-api: command seam for route-owned actions
@@ -49,6 +43,12 @@ export 'presentation/host_profile_controller.dart'; // public-api: command seam 
 export 'presentation/host_roster_display_state.dart'; // public-api: provider-free Host display state reused by tests and catalog
 export 'presentation/host_roster_row_state.dart'; // public-api: provider-free Host display state reused by tests and catalog
 export 'presentation/host_team_workspace_state.dart'; // public-api: provider-free display state reused by tests and routes
+export 'presentation/organizer_management/create/create_organizer_controller.dart'; // public-api: command seam for route-owned actions
+export 'presentation/organizer_management/create/create_organizer_draft_controller.dart'; // public-api: command seam for route-owned actions
+export 'presentation/organizer_management/create/create_organizer_screen.dart'; // public-api: route entry point exposed to app routing
+export 'presentation/organizer_management/host_create_organizer_screen.dart'; // public-api: route entry point exposed to app routing
+export 'presentation/organizer_management/host_organizer_edit_controller.dart'; // public-api: command seam for route-owned actions
+export 'presentation/organizer_management/host_team_management_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/payments/host_payment_account_card.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/payments/host_payment_account_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/validators.dart'; // public-api: presentation value/helper API used across feature boundaries

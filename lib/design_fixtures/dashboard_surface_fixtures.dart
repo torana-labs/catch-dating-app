@@ -3,8 +3,8 @@ import 'package:catch_dating_app/contexts/bookings/domain/runner_activity.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
@@ -35,7 +35,7 @@ final class DashboardSurfaceFixtures {
     ),
   );
 
-  static final club = Club(
+  static final organizer = Organizer(
     id: 'design-dashboard-club',
     name: 'Sea Face Social',
     description: 'Coastal social runs and low-pressure post-event hangs.',
@@ -50,13 +50,13 @@ final class DashboardSurfaceFixtures {
     reviewCount: 36,
   );
 
-  static final memberships = <ClubMembership>[
-    ClubMembership(
+  static final memberships = <OrganizerMembership>[
+    OrganizerMembership(
       id: 'design-dashboard-club-$viewerUid',
-      clubId: club.id,
+      clubId: organizer.id,
       uid: viewerUid,
-      role: ClubMembershipRole.member,
-      status: ClubMembershipStatus.active,
+      role: OrganizerMembershipRole.member,
+      status: OrganizerMembershipStatus.active,
       joinedAt: now.subtract(const Duration(days: 45)),
     ),
   ];
@@ -69,7 +69,7 @@ final class DashboardSurfaceFixtures {
         latitude: 19.0676,
         longitude: 72.8227,
       ).copyWith(
-        clubId: club.id,
+        clubId: organizer.id,
         startTime: DateTime(2030, 6, 24, 18, 30),
         endTime: DateTime(2030, 6, 24, 20),
         bookedCount: 7,
@@ -84,7 +84,7 @@ final class DashboardSurfaceFixtures {
         latitude: 18.993,
         longitude: 72.824,
       ).copyWith(
-        clubId: club.id,
+        clubId: organizer.id,
         startTime: DateTime(2030, 6, 26, 7),
         endTime: DateTime(2030, 6, 26, 8, 20),
         distanceKm: 10,
@@ -102,7 +102,7 @@ final class DashboardSurfaceFixtures {
         latitude: 19.059,
         longitude: 72.822,
       ).copyWith(
-        clubId: club.id,
+        clubId: organizer.id,
         startTime: now.subtract(const Duration(days: 2, hours: 2)),
         endTime: now.subtract(const Duration(days: 2, hours: 1)),
         checkedInCount: 6,
@@ -111,7 +111,7 @@ final class DashboardSurfaceFixtures {
   static final reviews = <Review>[
     Review(
       id: 'design-dashboard-review',
-      organizerId: club.id,
+      organizerId: organizer.id,
       eventId: attendedEvent.id,
       reviewerUserId: viewerUid,
       reviewerName: 'Subrath',

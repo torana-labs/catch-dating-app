@@ -11,7 +11,7 @@ class HostProfile {
     this.roleTitle,
     this.bio,
     this.verified = false,
-    this.linkedClubIds = const [],
+    this.linkedOrganizerIds = const [],
   });
 
   final String uid;
@@ -21,7 +21,7 @@ class HostProfile {
   final String? bio;
   final HostProfileStatus status;
   final bool verified;
-  final List<String> linkedClubIds;
+  final List<String> linkedOrganizerIds;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 

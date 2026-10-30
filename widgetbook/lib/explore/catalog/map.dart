@@ -144,7 +144,7 @@ Widget exploreMapRouteStates(BuildContext context) {
                     event: widgetbookExploreFeedItems.first.event.copyWith(
                       meetingLocation: null,
                     ),
-                    club: widgetbookExploreFeedItems.first.club,
+                    organizer: widgetbookExploreFeedItems.first.organizer,
                     availability: widgetbookExploreFeedItems.first.availability,
                     distanceFromUserKm:
                         widgetbookExploreFeedItems.first.distanceFromUserKm,

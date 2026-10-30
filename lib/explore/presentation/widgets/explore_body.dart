@@ -1,7 +1,5 @@
-import 'package:catch_dating_app/clubs/clubs.dart'
-    show ClubAvatarRail, buildClubDirectorySlivers;
 import 'package:catch_dating_app/contexts/discovery/domain/explore_event_recommendation.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
@@ -10,6 +8,8 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_events_sec
 import 'package:catch_dating_app/explore/presentation/widgets/explore_recommendations_section.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/organizers/organizers.dart'
+    show OrganizerAvatarRail, buildOrganizerDirectorySlivers;
 import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
@@ -29,7 +29,7 @@ List<Widget> buildExploreBodySlivers({
   required ExploreFilterSelection filters,
   required String searchQuery,
   VoidCallback? onRetryFeed,
-  VoidCallback? onRetryClubs,
+  VoidCallback? onRetryOrganizers,
   VoidCallback? onClearSearch,
   VoidCallback? onClearFilters,
   VoidCallback? onLoadMore,
@@ -40,16 +40,16 @@ List<Widget> buildExploreBodySlivers({
   List<CrossPathsSuggestion> crossPathsSuggestions = const [],
   CrossPathsProfileSelected? onCrossPathsProfileSelected,
   CrossPathsImpression? onCrossPathsImpression,
-  ValueChanged<Club>? onClubSelected,
-  ExploreViewModel? clubsViewModel,
-  Object? clubSectionError,
-  bool includeJoinedClubsRail = true,
-  bool includeClubDirectory = true,
+  ValueChanged<Organizer>? onOrganizerSelected,
+  ExploreViewModel? organizersViewModel,
+  Object? organizerSectionError,
+  bool includeJoinedOrganizersRail = true,
+  bool includeOrganizerDirectory = true,
   bool pinnedExploreDayHeaders = true,
   bool promoteFeaturedItem = false,
   DateTime? now,
 }) {
-  final viewModel = clubsViewModel;
+  final viewModel = organizersViewModel;
   final feedValue = switch (feedState) {
     CatchAsyncState(
       phase: CatchAsyncPhase.data || CatchAsyncPhase.refreshing,
@@ -72,19 +72,22 @@ List<Widget> buildExploreBodySlivers({
     crossPathsSuggestions: crossPathsSuggestions,
     onCrossPathsProfileSelected: onCrossPathsProfileSelected,
     onCrossPathsImpression: onCrossPathsImpression,
-    onClubSelected: onClubSelected,
-    candidateClubs: viewModel?.allClubs ?? const [],
-    joinedClubIds: viewModel?.joinedClubIds ?? const {},
+    onOrganizerSelected: onOrganizerSelected,
+    candidateOrganizers: viewModel?.allOrganizers ?? const [],
+    joinedOrganizerIds: viewModel?.joinedOrganizerIds ?? const {},
     pinnedDayHeaders: pinnedExploreDayHeaders,
     promoteFeaturedItem: promoteFeaturedItem,
     now: now,
   );
   return [
-    if (includeJoinedClubsRail &&
+    if (includeJoinedOrganizersRail &&
         viewModel != null &&
-        viewModel.joinedClubs.isNotEmpty)
+        viewModel.joinedOrganizers.isNotEmpty)
       SliverToBoxAdapter(
-        child: ClubAvatarRail(clubs: viewModel.joinedClubs, fullBleed: true),
+        child: OrganizerAvatarRail(
+          organizers: viewModel.joinedOrganizers,
+          fullBleed: true,
+        ),
       ),
     if (pinnedExploreDayHeaders)
       SliverMainAxisGroup(slivers: eventSlivers)
@@ -150,25 +153,25 @@ List<Widget> buildExploreBodySlivers({
                   ),
                 ),
       },
-    if (clubSectionError != null)
+    if (organizerSectionError != null)
       SliverToBoxAdapter(
         child: Padding(
           padding: CatchInsets.pageBody,
           child: CatchLocalizedErrorState(
-            clubSectionError,
+            organizerSectionError,
             context: AppErrorContext.explore,
-            onRetry: onRetryClubs,
+            onRetry: onRetryOrganizers,
             mode: CatchErrorStateMode.compact,
           ),
         ),
       ),
-    if (includeClubDirectory &&
+    if (includeOrganizerDirectory &&
         viewModel != null &&
-        viewModel.allClubs.isNotEmpty)
-      ...buildClubDirectorySlivers(
+        viewModel.allOrganizers.isNotEmpty)
+      ...buildOrganizerDirectorySlivers(
         context: context,
-        clubs: viewModel.allClubs,
-        joinedClubIds: viewModel.joinedClubIds,
+        organizers: viewModel.allOrganizers,
+        joinedOrganizerIds: viewModel.joinedOrganizerIds,
       ),
     if (feedValue != null)
       SliverToBoxAdapter(

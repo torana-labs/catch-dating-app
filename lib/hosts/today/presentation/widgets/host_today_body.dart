@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_overview.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -25,7 +25,7 @@ class HostTodayBody extends StatelessWidget {
     this.onStartEventRehearsal,
   });
 
-  final Club organizer;
+  final Organizer organizer;
   final HostTodayState state;
   final DateTime now;
   final VoidCallback onRetry;
