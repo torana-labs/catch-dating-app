@@ -1022,7 +1022,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/hosts",
+      "guiPath": "/intake/organizers",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -1038,7 +1038,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/hosts",
+      "guiPath": "/intake/organizers",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
