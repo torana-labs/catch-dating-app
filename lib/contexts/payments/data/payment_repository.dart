@@ -71,150 +71,30 @@ class PaymentRepository {
 
   // ── Paid event booking ──────────────────────────────────────────────────────
 
-  /// Initiates the full Razorpay payment + sign-up flow for a paid event.
+  /// Starts a paid booking outside the organizer's checkout.
   ///
-  /// On success the Cloud Function [verifyRazorpayPayment] atomically verifies
-  /// the payment and writes the user's event participation edge.
-  ///
-  /// Returns [PaymentConfirmationData] with the payment details for the
-  /// confirmation screen.
+  /// INR seats are sold only through the organizer's own Razorpay account
+  /// (see [OrganizerPaymentCheckout.prepareOrganizerCheckout]). Catch never
+  /// creates an order on its own merchant account, so INR is refused here
+  /// before any backend call. Other currencies open Stripe Checkout.
   Future<PaymentConfirmationData> processPayment({
     required String eventId,
     required String currencyCode,
-    required String description,
-    required String userName,
-    required String userEmail,
-    required String userContact,
     String? inviteCode,
     String? inviteLinkId,
     String? crossPathsPairHoldId,
   }) async {
-    if (currencyCode.trim().toUpperCase() != defaultCurrencyCode) {
-      return _processStripeCheckout(
-        eventId: eventId,
-        inviteCode: inviteCode,
-        inviteLinkId: inviteLinkId,
-        crossPathsPairHoldId: crossPathsPairHoldId,
+    if (currencyCode.trim().toUpperCase() == defaultCurrencyCode) {
+      throw const PaidBookingUnavailableException(
+        PaidBookingUnavailableReason.notOfferedInApp,
       );
     }
-    return _processRazorpayPayment(
+    return _processStripeCheckout(
       eventId: eventId,
-      description: description,
-      userName: userName,
-      userEmail: userEmail,
-      userContact: userContact,
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
       crossPathsPairHoldId: crossPathsPairHoldId,
     );
-  }
-
-  Future<PaymentConfirmationData> _processRazorpayPayment({
-    required String eventId,
-    required String description,
-    required String userName,
-    required String userEmail,
-    required String userContact,
-    String? inviteCode,
-    String? inviteLinkId,
-    String? crossPathsPairHoldId,
-  }) async {
-    if (!supportsPaidBookings) {
-      throw const PaidBookingUnsupportedException();
-    }
-    _requireCurrentSession();
-    if (_activeAttempt != null) {
-      throw const PaymentFailedException(
-        'Another payment is already in progress.',
-      );
-    }
-
-    // Reserve the shared repository before creating the order. Events and
-    // Cross Paths can call it independently, including during verification.
-    final attempt = _PaymentAttempt(eventId);
-    _activeAttempt = attempt;
-    unawaited(
-      _openRazorpay(
-        attempt,
-        description: description,
-        userName: userName,
-        userEmail: userEmail,
-        userContact: userContact,
-        inviteCode: inviteCode,
-        inviteLinkId: inviteLinkId,
-        crossPathsPairHoldId: crossPathsPairHoldId,
-      ),
-    );
-    return attempt.result.future;
-  }
-
-  Future<void> _openRazorpay(
-    _PaymentAttempt attempt, {
-    required String description,
-    required String userName,
-    required String userEmail,
-    required String userContact,
-    String? inviteCode,
-    String? inviteLinkId,
-    String? crossPathsPairHoldId,
-  }) async {
-    try {
-      // The production factory reserves the app-wide native checkout lease
-      // synchronously, before any account-bound order request.
-      final checkout = _razorpayFactory!();
-      attempt.checkout = checkout;
-      final orderResult = await _createOrder(
-        eventId: attempt.eventId,
-        inviteCode: inviteCode,
-        inviteLinkId: inviteLinkId,
-        crossPathsPairHoldId: crossPathsPairHoldId,
-      );
-      if (!_ownsAttempt(attempt)) return;
-      final order = _parseOrderResponse(orderResult.data);
-      checkout.configure(
-        onSuccess: (response) => _onSuccess(attempt, order, response),
-        onFailure: (response) => _onError(attempt, response),
-      );
-      if (!_ownsAttempt(attempt)) return;
-
-      // This is the caller deadline, not proof of a cancelled provider charge.
-      // The native adapter must retain native-open exclusion until its own
-      // operation settles, even after clear() detaches these callbacks.
-      attempt.deadline = Timer(const Duration(minutes: 10), () {
-        _failAttempt(
-          attempt,
-          const PaymentFailedException(
-            'The payment took too long. Please check its status before retrying.',
-          ),
-        );
-      });
-      checkout.open({
-        'key': order.keyId,
-        'order_id': order.orderId,
-        'amount': order.amountInPaise,
-        'currency': order.currency,
-        'name': 'Catch',
-        'description': description,
-        'prefill': {
-          'name': userName,
-          'email': userEmail,
-          'contact': userContact,
-        },
-        'theme': {'color': '#16140F'},
-      });
-    } catch (error, stackTrace) {
-      // Forward the normalized failure and stack to the caller's attempt result.
-      // Rethrowing here would escape the unawaited checkout task.
-      _failAttempt(
-        attempt,
-        _normalizePaymentError(
-          error,
-          stackTrace: stackTrace,
-          fallbackMessage: 'Unable to launch the payment checkout.',
-        ),
-        stackTrace,
-      );
-    }
   }
 
   Future<PaymentConfirmationData> _processStripeCheckout({
@@ -294,69 +174,6 @@ class PaymentRepository {
 
   // ── Razorpay callbacks ────────────────────────────────────────────────────
 
-  Future<void> _onSuccess(
-    _PaymentAttempt attempt,
-    RazorpayOrderCallableResponse order,
-    RazorpaySuccessResponse response,
-  ) async {
-    if (!_ownsAttempt(attempt) || attempt.verifying) return;
-    // A response for another order (including a late native replay) cannot
-    // consume this attempt. A matching malformed response remains a failure.
-    if (response.orderId != null && response.orderId != order.orderId) return;
-    final paymentId = response.paymentId;
-    final orderId = response.orderId;
-    final signature = response.signature;
-    if (paymentId == null || orderId == null || signature == null) {
-      _failAttempt(attempt, const PaymentVerificationFailedException());
-      return;
-    }
-    attempt.verifying = true;
-    try {
-      await withBackendErrorContext(
-        () => _functions
-            .httpsCallable('verifyRazorpayPayment')
-            .call(
-              VerifyRazorpayPaymentCallableRequest(
-                paymentId: paymentId,
-                orderId: orderId,
-                signature: signature,
-              ).toJson(),
-            ),
-        context: const BackendErrorContext(
-          service: BackendService.functions,
-          action: 'verify payment',
-          resource: 'payments',
-        ),
-        mapper: _paymentErrorMapper(
-          fallbackMessage: 'Unable to complete the payment verification.',
-        ),
-      );
-      if (!_ownsAttempt(attempt)) return;
-      _releaseAttempt(attempt);
-      attempt.result.complete(
-        PaymentConfirmationData(
-          paymentId: paymentId,
-          orderId: orderId,
-          amountInPaise: order.amountInPaise,
-          currency: order.currency,
-          eventId: attempt.eventId,
-        ),
-      );
-    } catch (error, stackTrace) {
-      // The caller awaits the attempt result, not this SDK callback.
-      // _failAttempt forwards the normalized error and stack to that result.
-      _failAttempt(
-        attempt,
-        _normalizePaymentError(
-          error,
-          stackTrace: stackTrace,
-          fallbackMessage: 'Unable to complete the payment verification.',
-        ),
-        stackTrace,
-      );
-    }
-  }
-
   void _onError(_PaymentAttempt attempt, RazorpayFailureResponse response) {
     if (!_ownsAttempt(attempt) || attempt.verifying) return;
     _failAttempt(attempt, _mapCheckoutFailure(response));
@@ -420,32 +237,6 @@ class PaymentRepository {
     }
   }
 
-  Future<HttpsCallableResult<Object?>> _createOrder({
-    required String eventId,
-    String? inviteCode,
-    String? inviteLinkId,
-    String? crossPathsPairHoldId,
-  }) => withBackendErrorContext(
-    () => _functions
-        .httpsCallable('createRazorpayOrder')
-        .call<Object?>(
-          CreateRazorpayOrderCallableRequest(
-            eventId: eventId,
-            inviteCode: inviteCode,
-            inviteLinkId: inviteLinkId,
-            crossPathsPairHoldId: crossPathsPairHoldId,
-          ).toJson(),
-        ),
-    context: const BackendErrorContext(
-      service: BackendService.functions,
-      action: 'create payment order',
-      resource: 'payments',
-    ),
-    mapper: _paymentErrorMapper(
-      fallbackMessage: 'Unable to start the payment.',
-    ),
-  );
-
   Future<HttpsCallableResult<Object?>> _createStripeCheckoutSession({
     required String eventId,
     String? inviteCode,
@@ -471,14 +262,6 @@ class PaymentRepository {
       fallbackMessage: 'Unable to start Stripe checkout.',
     ),
   );
-
-  RazorpayOrderCallableResponse _parseOrderResponse(Object? data) {
-    try {
-      return RazorpayOrderCallableResponse.fromCallableData(data);
-    } on RazorpayOrderCallableResponseFormatException {
-      throw const PaymentVerificationFailedException();
-    }
-  }
 
   StripeCheckoutSessionCallableResponse _parseStripeCheckoutResponse(
     Object? data,
@@ -544,6 +327,19 @@ final class _PaymentAttempt {
 BackendErrorMapper _paymentErrorMapper({required String fallbackMessage}) {
   return (error, stackTrace, context) {
     if (error is FirebaseFunctionsException) {
+      final details = error.details;
+      // The server names this refusal; it never falls back to Catch's account.
+      if (error.code == 'failed-precondition' &&
+          details is Map &&
+          details['reason'] == 'organizerPaymentsNotReady') {
+        return PaidBookingUnavailableException(
+          PaidBookingUnavailableReason.organizerPaymentsNotReady,
+          debugMessage: '${error.plugin}/${error.code}: ${error.message}',
+          cause: error,
+          stackTrace: stackTrace,
+          context: context,
+        );
+      }
       return PaymentFailedException(
         error.message == null || error.message!.isEmpty
             ? fallbackMessage

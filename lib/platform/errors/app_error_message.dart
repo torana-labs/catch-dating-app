@@ -130,6 +130,14 @@ String _localizedExceptionMessage(
   if (exception is PaidBookingUnsupportedException) {
     return l10n.coreAppErrorMessageVisiblecopyPaidBookingsAreOnly;
   }
+  if (exception is PaidBookingUnavailableException) {
+    return switch (exception.reason) {
+      PaidBookingUnavailableReason.organizerPaymentsNotReady =>
+        l10n.coreAppErrorMessageVisiblecopyOrganizerPaymentsNotReady,
+      PaidBookingUnavailableReason.notOfferedInApp =>
+        l10n.coreAppErrorMessageVisiblecopyPaidBookingNotInApp,
+    };
+  }
   if (exception is DocumentNotFoundException) {
     return l10n.coreAppErrorMessageVisiblecopyWeCouldNotFind;
   }
@@ -235,7 +243,8 @@ String _titleFor(
   if (appException is PaymentFailedException) {
     return l10n.coreAppErrorMessageVisiblecopyPaymentFailed;
   }
-  if (appException is PaidBookingUnsupportedException) {
+  if (appException is PaidBookingUnsupportedException ||
+      appException is PaidBookingUnavailableException) {
     return l10n.coreAppErrorMessageVisiblecopyPaymentUnavailable;
   }
   if (appException is EventBookingFailedException) {
@@ -304,7 +313,8 @@ IconData _iconFor(Object error, AppException? appException) {
   if (appException is PaymentCancelledException ||
       appException is PaymentFailedException ||
       appException is PaymentVerificationFailedException ||
-      appException is PaidBookingUnsupportedException) {
+      appException is PaidBookingUnsupportedException ||
+      appException is PaidBookingUnavailableException) {
     return CatchIcons.paymentUnavailable;
   }
   if (appException is EventBookingFailedException) {

@@ -133,9 +133,6 @@ void main() {
         final payload = harness.payments.lastProcessPaymentCall!;
         expect(payload.eventId, 'event-1');
         expect(payload.currencyCode, 'INR');
-        expect(payload.userName, 'Runner');
-        expect(payload.userEmail, 'runner@example.com');
-        expect(payload.userContact, '+910000000000');
         expect(payload.inviteCode, 'INVITE');
         expect(payload.inviteLinkId, 'invite-link');
       },
@@ -346,10 +343,6 @@ class _DeferredPaymentRepository extends FakePaymentRepository {
   Future<PaymentConfirmationData> processPayment({
     required String eventId,
     required String currencyCode,
-    required String description,
-    required String userName,
-    required String userEmail,
-    required String userContact,
     String? inviteCode,
     String? inviteLinkId,
     String? crossPathsPairHoldId,
@@ -358,10 +351,6 @@ class _DeferredPaymentRepository extends FakePaymentRepository {
     final receipt = await super.processPayment(
       eventId: eventId,
       currencyCode: currencyCode,
-      description: description,
-      userName: userName,
-      userEmail: userEmail,
-      userContact: userContact,
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
       crossPathsPairHoldId: crossPathsPairHoldId,

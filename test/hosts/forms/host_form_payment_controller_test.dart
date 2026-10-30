@@ -123,4 +123,53 @@ void main() {
       expect(repository.connectionIds.last, 'selected');
     },
   );
+
+  test(
+    'reconnect disconnects accounts that cannot take payments, then starts OAuth',
+    () async {
+      HostFormPaymentConnection connection(
+        String id,
+        HostFormPaymentConnectionStatus status, {
+        String? lastErrorCode,
+      }) => HostFormPaymentConnection(
+        connectionId: id,
+        status: status,
+        mode: HostFormPaymentMode.test,
+        accountId: 'acc_$id',
+        webhookVerified: true,
+        lastErrorCode: lastErrorCode,
+      );
+      final repository = _Repository()
+        ..connections = [
+          connection(
+            'refresh_failed',
+            HostFormPaymentConnectionStatus.ready,
+            lastErrorCode: 'refreshRejected',
+          ),
+          connection('stuck', HostFormPaymentConnectionStatus.needsAttention),
+          connection('old', HostFormPaymentConnectionStatus.disconnected),
+        ];
+      final opened = <Uri>[];
+      final container = setup(repository, opened);
+      final initial = await container.read(provider.future);
+      expect(
+        initial.setup.razorpayConnectionState,
+        HostRazorpayConnectionState.needsReconnect,
+      );
+      await container.read(provider.notifier).reconnect();
+      expect(repository.actions, [
+        HostFormPaymentConnectionAction.list,
+        HostFormPaymentConnectionAction.disconnect,
+        HostFormPaymentConnectionAction.disconnect,
+        HostFormPaymentConnectionAction.begin,
+        HostFormPaymentConnectionAction.list,
+      ]);
+      expect(repository.connectionIds.sublist(1, 4), [
+        'refresh_failed',
+        'stuck',
+        null,
+      ]);
+      expect(opened.single.host, 'auth.razorpay.com');
+    },
+  );
 }

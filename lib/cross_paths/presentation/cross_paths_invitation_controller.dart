@@ -72,13 +72,11 @@ class CrossPathsInvitationController extends _$CrossPathsInvitationController {
       );
       return;
     }
+    // An INR hold is refused here: paid Cross Paths seats are not yet sold
+    // through the organizer's checkout, and Catch never collects them itself.
     await payments.processPayment(
       eventId: event.id,
       currencyCode: hold.currency,
-      description: event.title,
-      userName: user.name,
-      userEmail: user.email,
-      userContact: user.phoneNumber,
       crossPathsPairHoldId: hold.id,
     );
   }

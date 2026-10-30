@@ -12792,6 +12792,13 @@
     "x-owner": "product",
     "x-surface": "events.presentation.event_detail_screen_state"
   },
+  "eventsEventDetailScreenStateNotePaidBookingNotInApp": "The organiser hasn’t opened paid booking in the app for this event.",
+  "@eventsEventDetailScreenStateNotePaidBookingNotInApp": {
+    "description": "Product copy used by lib/events/presentation/event_detail_screen_state.dart (note): explains why paid booking is unavailable for an event that is not sold through the organiser's checkout.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.presentation.event_detail_screen_state"
+  },
   "eventsEventDetailScreenStateLabelAcceptSpot": "Accept spot",
   "@eventsEventDetailScreenStateLabelAcceptSpot": {
     "description": "Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).",
@@ -19816,6 +19823,20 @@
   "coreAppErrorMessageVisiblecopyPaidBookingsAreOnly": "Paid bookings are only available on Android and iOS.",
   "@coreAppErrorMessageVisiblecopyPaidBookingsAreOnly": {
     "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.app_error_message"
+  },
+  "coreAppErrorMessageVisiblecopyOrganizerPaymentsNotReady": "Paid booking is unavailable until the organiser finishes connecting their Razorpay account. You have not been charged.",
+  "@coreAppErrorMessageVisiblecopyOrganizerPaymentsNotReady": {
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy): paid booking refused because the organiser's own payment account is not ready.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.app_error_message"
+  },
+  "coreAppErrorMessageVisiblecopyPaidBookingNotInApp": "This event isn’t taking paid bookings in the Catch app yet. You have not been charged.",
+  "@coreAppErrorMessageVisiblecopyPaidBookingNotInApp": {
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy): the event's paid seats are not sold through the organiser's checkout in the app.",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
@@ -32039,7 +32060,7 @@
   "@paymentMethodSheetSecureNote": {"description": "Payment page footer: Razorpay processes payments; card details never touch Catch.", "x-audience": "consumer", "x-owner": "product", "x-surface": "events.presentation.widgets.organizer_payment_method_sheet"},
   "hostPayoutsRazorpayIntroTitle": "Guests pay you directly",
   "@hostPayoutsRazorpayIntroTitle": {"description": "Payouts screen: title explaining that guest payments go to the organiser's own Razorpay account.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
-  "hostPayoutsRazorpayIntroBody": "Ticket and form payments go straight to your own Razorpay account, and refunds come out of it. Catch never holds your money. Catch’s fees are billed to you separately.",
+  "hostPayoutsRazorpayIntroBody": "Ticket, membership and form payments go straight to your own Razorpay account, and refunds come out of it. Catch never holds your money. Catch’s fees are billed to you separately.",
   "@hostPayoutsRazorpayIntroBody": {"description": "Payouts screen: how money flows when the organiser connects Razorpay; mirrors the website organiser terms.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
   "hostPayoutsRazorpayUnavailable": "Connecting Razorpay isn’t available yet. Catch is finishing its Razorpay partner setup. Free events and forms work as usual.",
   "@hostPayoutsRazorpayUnavailable": {"description": "Payouts screen: shown while Catch's Razorpay OAuth partner configuration is not set up.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
@@ -32053,6 +32074,14 @@
   "@hostPayoutsRazorpayDisconnectHelp": {"description": "Payouts screen: confirmation body when disconnecting the organiser's Razorpay account.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
   "hostPayoutsRazorpayPermissionsTitle": "What connecting allows",
   "@hostPayoutsRazorpayPermissionsTitle": {"description": "Payouts screen: heading above the disclosure of what connecting Razorpay authorises Catch to do.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
+  "hostPayoutsRazorpayNeedsReconnect": "Needs reconnect",
+  "@hostPayoutsRazorpayNeedsReconnect": {"description": "Payouts screen badge: the connected Razorpay account can no longer take payments.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
+  "hostPayoutsRazorpayReconnectTitle": "Reconnect Razorpay",
+  "@hostPayoutsRazorpayReconnectTitle": {"description": "Payouts and form fee settings: action that replaces a Razorpay connection that cannot take payments.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
+  "hostPayoutsRazorpayReconnectBody": "Razorpay is no longer accepting Catch’s access to this account, so new paid bookings, memberships and form fees are paused. Reconnect your account to take payments again.",
+  "@hostPayoutsRazorpayReconnectBody": {"description": "Payouts screen: why reconnecting is needed and what is paused until then.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
+  "hostPayoutsRazorpayConnectingBody": "Didn’t finish approving Catch in Razorpay? Start again here. Catch replaces the unfinished connection, so you keep one account.",
+  "@hostPayoutsRazorpayConnectingBody": {"description": "Payouts screen: help for a Razorpay connection whose sign-in was not finished.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
   "membershipsPricePerMonth": "{price}/mo",
   "@membershipsPricePerMonth": {"description": "Membership price billed monthly.", "x-audience": "shared", "x-owner": "product", "x-surface": "host_memberships.presentation", "placeholders": {"price": {"type": "String"}}},
   "membershipsPricePerYear": "{price}/yr",
@@ -32219,7 +32248,7 @@
   "@hostMembershipsPayoutNotReady": {"description": "Payout account not ready.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
   "hostMembershipsRazorpayTitle": "Razorpay account",
   "@hostMembershipsRazorpayTitle": {"description": "Readiness row for the organizer's own connected Razorpay account, which collects membership payments.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
-  "hostMembershipsUnavailableNotOffered": "Catch hasn’t turned on memberships for your club yet.",
+  "hostMembershipsUnavailableNotOffered": "Catch hasn’t turned on memberships for you yet.",
   "@hostMembershipsUnavailableNotOffered": {"description": "Memberships are not offered to this organizer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
   "hostMembershipsUnavailableConnectRazorpay": "Connect your Razorpay account to sell memberships. Members pay you directly.",
   "@hostMembershipsUnavailableConnectRazorpay": {"description": "The organizer must connect their own Razorpay account.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},

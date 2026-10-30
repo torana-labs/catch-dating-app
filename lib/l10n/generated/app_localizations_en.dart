@@ -7031,6 +7031,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Paid booking unavailable';
 
   @override
+  String get eventsEventDetailScreenStateNotePaidBookingNotInApp =>
+      'The organiser hasn’t opened paid booking in the app for this event.';
+
+  @override
   String get eventsEventDetailScreenStateLabelAcceptSpot => 'Accept spot';
 
   @override
@@ -10994,6 +10998,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get coreAppErrorMessageVisiblecopyPaidBookingsAreOnly =>
       'Paid bookings are only available on Android and iOS.';
+
+  @override
+  String get coreAppErrorMessageVisiblecopyOrganizerPaymentsNotReady =>
+      'Paid booking is unavailable until the organiser finishes connecting their Razorpay account. You have not been charged.';
+
+  @override
+  String get coreAppErrorMessageVisiblecopyPaidBookingNotInApp =>
+      'This event isn’t taking paid bookings in the Catch app yet. You have not been charged.';
 
   @override
   String get coreAppErrorMessageVisiblecopyWeCouldNotFind =>
@@ -25390,7 +25402,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostPayoutsRazorpayIntroBody =>
-      'Ticket and form payments go straight to your own Razorpay account, and refunds come out of it. Catch never holds your money. Catch’s fees are billed to you separately.';
+      'Ticket, membership and form payments go straight to your own Razorpay account, and refunds come out of it. Catch never holds your money. Catch’s fees are billed to you separately.';
 
   @override
   String get hostPayoutsRazorpayUnavailable =>
@@ -25413,6 +25425,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostPayoutsRazorpayPermissionsTitle => 'What connecting allows';
+
+  @override
+  String get hostPayoutsRazorpayNeedsReconnect => 'Needs reconnect';
+
+  @override
+  String get hostPayoutsRazorpayReconnectTitle => 'Reconnect Razorpay';
+
+  @override
+  String get hostPayoutsRazorpayReconnectBody =>
+      'Razorpay is no longer accepting Catch’s access to this account, so new paid bookings, memberships and form fees are paused. Reconnect your account to take payments again.';
+
+  @override
+  String get hostPayoutsRazorpayConnectingBody =>
+      'Didn’t finish approving Catch in Razorpay? Start again here. Catch replaces the unfinished connection, so you keep one account.';
 
   @override
   String membershipsPricePerMonth({required String price}) {
@@ -25741,7 +25767,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostMembershipsUnavailableNotOffered =>
-      'Catch hasn’t turned on memberships for your club yet.';
+      'Catch hasn’t turned on memberships for you yet.';
 
   @override
   String get hostMembershipsUnavailableConnectRazorpay =>

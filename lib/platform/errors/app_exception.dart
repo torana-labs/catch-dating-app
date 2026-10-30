@@ -197,6 +197,33 @@ class PaidBookingUnsupportedException extends AppException {
   }) : super('paid-booking-unsupported', message);
 }
 
+/// Why a paid booking cannot start. Catch never collects the payment itself
+/// instead, so these are terminal until the organizer side changes.
+enum PaidBookingUnavailableReason {
+  /// The organizer's own Razorpay account is not connected and ready.
+  organizerPaymentsNotReady,
+
+  /// The event's paid seats are not sold through the organizer's checkout.
+  notOfferedInApp,
+}
+
+class PaidBookingUnavailableException extends AppException {
+  const PaidBookingUnavailableException(
+    this.reason, {
+    super.debugMessage,
+    super.cause,
+    super.stackTrace,
+    super.context,
+  }) : super(
+         'paid-booking-unavailable',
+         reason == PaidBookingUnavailableReason.organizerPaymentsNotReady
+             ? 'The organiser has not finished connecting their payment account.'
+             : 'This event is not taking paid bookings in the app.',
+       );
+
+  final PaidBookingUnavailableReason reason;
+}
+
 class EventBookingFailedException extends AppException {
   const EventBookingFailedException(
     String message, {
