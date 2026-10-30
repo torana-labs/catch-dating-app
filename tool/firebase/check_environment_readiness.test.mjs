@@ -1258,9 +1258,12 @@ test("flight credentials remain inactive when the separately controlled policy i
 
 test("a new consumer may be deployed before it exists; the post-deploy check still requires it", () => {
   let latestState = "ENABLED";
+  let runtimeAccount = "123-compute@developer.gserviceaccount.com";
   const commands = [];
+  const identities = [];
   const run = (targets, candidate = undefined) => runEnvironmentReadiness({aliases, environments: ["dev"], manifest,
     sourceSha: "a".repeat(40), candidate, phase: "deployed", targets,
+    firstDeployIdentity: (context) => { identities.push(context); return runtimeAccount; },
     runCommand: (spec) => {
       commands.push(spec.args);
       if (spec.args[0] === "functions") return metadata([]);
@@ -1279,6 +1282,21 @@ test("a new consumer may be deployed before it exists; the post-deploy check sti
     "functions.secret.algolia-search-api-key:exploreSearch");
   assert.deepEqual([required.exitCode, secret.status, secret.reason, secret.metadata.reference],
     [0, "ready", "first-deploy-latest-version-enabled", "projects/catchdates-dev/secrets/ALGOLIA_SEARCH_API_KEY/versions/4"]);
+  const access = required.environments[0].results.find((entry) => entry.id ===
+    "functions.secret.algolia-search-api-key:exploreSearch.runtime-access");
+  assert.deepEqual([access.status, access.resource],
+    ["ready", "ALGOLIA_SEARCH_API_KEY:123-compute@developer.gserviceaccount.com"]);
+  assert.deepEqual(identities.at(-1), {environment: "dev", projectId: "catchdates-dev",
+    projectNumber: "123", consumer: "exploreSearch"});
+  // The deployer cannot grant the runtime account access, so a missing grant
+  // stops the deploy before it starts instead of failing midway.
+  runtimeAccount = "456-compute@developer.gserviceaccount.com";
+  const ungranted = run(["functions:exploreSearch"]);
+  assert.deepEqual([ungranted.exitCode, ungranted.environments[0].results.find((entry) => entry.id ===
+    "functions.secret.algolia-search-api-key:exploreSearch.runtime-access").reason], [1, "runtime-secret-access-unproven"]);
+  runtimeAccount = null;
+  assert.equal(run(["functions:exploreSearch"]).exitCode, 2, "an unknown runtime identity is not ready");
+  runtimeAccount = "123-compute@developer.gserviceaccount.com";
   assert.equal(JSON.stringify(required).includes("never-persist-me"), false);
   assert.equal(commands.some((args) => args.includes("access")), false, "no payload is read");
   latestState = "DISABLED";
