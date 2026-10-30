@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 5.11.0
+version: 5.12.0
 updated: 2026-10-30
 owner: agent_operating_model
 status: active
@@ -90,6 +90,7 @@ impact graph; do not create a parallel dependency graph or tracked run history.
 | UI migration prompts | `sizing_migration_prompt.md`, `design_token_migration_prompt.md` | Reusable agent prompts for the mechanical sizing and design-token sweeps; each pairs with its `tool/check_*.sh` scanner as the deterministic definition of done. |
 | Action cardinality | `action_cardinality_policy.md` | Product and engineering rule for whether each action is disallowed, singleton, unbounded, or domain-bounded, plus initial action-surface audit. |
 | Release operations | `release_operations.md` | CI/release gates, Firebase deploy ordering, environment prerequisites, smoke tests, and human release evidence. |
+| Infrastructure as code | `infrastructure_as_code.md` | Terraform in `infra/` for Firebase Android app fingerprints, App Check Play Integrity configs and the Forms payment secret containers: what is managed, the PR, plan and approval flow, the owner bootstrap, and the Razorpay partner secret entry. |
 | Durable business operations | `operations_platform.md` | Canonical boundary for resumable human/worker/agent workflows plus the schema-backed admin action CLI, guarded callable invocation, hash-only receipts, persisted runs and work items, per-kind acquisition freshness, authority lanes, Supply Intake stages, source learning, and publication plans. |
 | Web surface architecture | `web_surface_architecture.md` | Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, the agent-activity employee monitor, marketing CI/CD, public website route contracts, and future host-portal placement. |
 | Public viewer and listing authority behavior | `web_surface_architecture.md#public-viewer-and-listing-authority-matrix`, `../design/public_surface_behavior.json` | Executable app/website matrix for auth resolution, profile readiness, app role, listing lifecycle/authority/publication, event capability, claim/review target and runtime capability, action disposition, exact consumer-route ownership, and proof harnesses. |

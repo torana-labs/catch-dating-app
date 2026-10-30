@@ -35,25 +35,47 @@ normalise() {
   printf '%s' "$hex"
 }
 
+# Diagnostics for a failed read go to stderr. Everything printed is public
+# certificate metadata or tool output, never a credential.
 read_with_keytool() {
   local output
-  output="$(keytool -printcert -jarfile "$1" 2>/dev/null || true)"
+  output="$(keytool -printcert -jarfile "$1" 2>&1 || true)"
   sha1="$(sed -n 's/^[[:space:]]*SHA1:[[:space:]]*//p' <<<"$output" | head -1)"
   sha256="$(sed -n 's/^[[:space:]]*SHA256:[[:space:]]*//p' <<<"$output" | head -1)"
-  [[ -n "$sha1" && -n "$sha256" ]]
+  if [[ -z "$sha1" || -z "$sha256" ]]; then
+    echo "keytool found no v1 (JAR) signature: $(head -c 300 <<<"$output" | tr '\n' ' ')" >&2
+    return 1
+  fi
+}
+
+find_apksigner() {
+  local candidate root
+  candidate="$(command -v apksigner || true)"
+  if [[ -n "$candidate" ]]; then echo "$candidate"; return 0; fi
+  for root in "${ANDROID_HOME:-}" "${ANDROID_SDK_ROOT:-}" /usr/local/lib/android/sdk; do
+    [[ -n "$root" && -d "$root/build-tools" ]] || continue
+    # build-tools may ship apksigner as a symlink, so match links too.
+    candidate="$(find "$root/build-tools" -maxdepth 2 -name apksigner \( -type f -o -type l \) 2>/dev/null | sort -V | tail -1)"
+    if [[ -n "$candidate" ]]; then echo "$candidate"; return 0; fi
+  done
+  return 1
 }
 
 read_with_apksigner() {
-  local apksigner output
-  apksigner="$(command -v apksigner || true)"
-  if [[ -z "$apksigner" && -n "${ANDROID_HOME:-}" ]]; then
-    apksigner="$(find "$ANDROID_HOME/build-tools" -maxdepth 2 -name apksigner -type f 2>/dev/null | sort -V | tail -1)"
+  local apksigner output status=0
+  if ! apksigner="$(find_apksigner)"; then
+    echo "apksigner not found (ANDROID_HOME=${ANDROID_HOME:-unset}, ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT:-unset})." >&2
+    return 1
   fi
-  [[ -n "$apksigner" ]] || return 1
-  output="$("$apksigner" verify --print-certs "$1")"
-  sha1="$(sed -n 's/^Signer #1 certificate SHA-1 digest: //p' <<<"$output" | head -1)"
-  sha256="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' <<<"$output" | head -1)"
-  [[ -n "$sha1" && -n "$sha256" ]]
+  output="$("$apksigner" verify --print-certs "$1" 2>&1)" || status=$?
+  # "Signer #1 certificate ..." normally; "Signer (minSdkVersion=..., ...)
+  # certificate ..." after key rotation. Take the first signer either way.
+  sha1="$(sed -n 's/^Signer[^:]* certificate SHA-1 digest: //p' <<<"$output" | head -1)"
+  sha256="$(sed -n 's/^Signer[^:]* certificate SHA-256 digest: //p' <<<"$output" | head -1)"
+  if [[ -z "$sha1" || -z "$sha256" ]]; then
+    echo "$apksigner verify --print-certs exited $status: $(head -c 600 <<<"$output" | tr '\n' ' ')" >&2
+    return 1
+  fi
 }
 
 curl --fail --silent --show-error --retry 3 \
@@ -77,6 +99,7 @@ for index in $(seq 0 $((count - 1))); do
     --output "$apk" "$api/downloads/$(jq -rn --arg id "$download_id" '$id | @uri'):download?alt=media"
 
   sha1="" sha256=""
+  echo "$package version $version_code: downloaded $(wc -c < "$apk") bytes, starting with $(head -c 4 "$apk" | od -An -tx1 | tr -d ' \n')." >&2
   if read_with_keytool "$apk"; then
     reader=keytool
   elif read_with_apksigner "$apk"; then
