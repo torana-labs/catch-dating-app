@@ -354,7 +354,7 @@ enter previews.
 | `syncOrganizerFollowerStats` | `src/clubs/` | `organizerFollowers/{followerId}` onWrite — recomputes canonical follower totals |
 | `programTravelLegMoments` | `src/moments/momentSchedule.ts` | Travel-leg writes emit Moment facts on leg changes |
 | `onSalesInboundIntentForIntake` | `src/operations/supplyIntake/nominations.ts` | `salesInboundIntents/{intentId}` onCreate — a website host application or partner nomination that names an organizer or a link also becomes a Supply Intake request (deterministic id, idempotent) |
-| `onSupplyIntakeRequestCreated` | `src/operations/supplyIntake/triggers.ts` | `supplyIntakeRequests/{requestId}` onCreate — leases the request, gathers its pages, runs Supply Intake and imports the reviewable listing; retries until the third failure |
+| `onSupplyIntakeRequestCreated` | `src/operations/supplyIntake/triggers.ts` | `supplyIntakeRequests/{requestId}` onCreate — leases the request, gathers its pages, runs Supply Intake and imports the reviewable listing; searches an unreadable nomination's handle once through SerpApi when `SERPAPI_KEY_VERSION` and the web search decision allow it (`linkSearch.ts`); retries until the third failure |
 | `onSupplyIntakeListingApproved` | `src/operations/supplyIntake/eventPublicationTrigger.ts` | `supplyIntakeRequests/{requestId}` onUpdate — when a request is first both completed and approved, publishes the imported events the event publication policy allows; receipts keyed on the request make redelivery replay |
 | `syncOrganizerNextEvent` | `src/clubs/` | `events/{eventId}` onWrite — recomputes organizer next-event projection |
 | `syncAlgoliaOrganizerIndex` | `src/search/` | `organizers/{organizerId}` onWrite — synchronizes organizer discovery search records |

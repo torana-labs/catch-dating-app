@@ -53,15 +53,16 @@ test("acquisition policy keeps provider fetches and Firestore payloads off",
       [true, "page_fetch", "policy-on-demand-page-fetch-policy",
         "on_demand_page_fetch_policy", 12, 600]
     );
-    // Batch web search is kept but off until the owner accepts it.
+    // Web search runs on SerpApi's free tier (owner, 30 Oct): one query per
+    // intake, 240 a month, and only once the owner's decision is accepted.
     assert.deepEqual(policy.webSearch, {
-      enabled: false,
-      adapterId: null,
+      enabled: true,
+      adapterId: "serp_api",
       policyGapId: "batch_web_search_policy",
-      decisionId: null,
+      decisionId: "policy-batch-web-search-policy",
       maxResultsPerQuery: 10,
-      maxQueriesPerRun: 0,
-      maxQueriesPerMonth: 0,
+      maxQueriesPerRun: 1,
+      maxQueriesPerMonth: 240,
     });
     assert.deepEqual(policy.rawPayload, {
       firestorePersistenceAllowed: false,
@@ -458,7 +459,8 @@ test("web search can be enabled only with its adapter, decision and positive cap
       await assert.rejects(load({...enabled, ...override}),
         {code: "INVALID_ACQUISITION_POLICY"}, JSON.stringify(override));
     }
-    await assert.rejects(load({maxQueriesPerMonth: 5}),
+    await assert.rejects(load({enabled: false, adapterId: null, decisionId: null,
+      maxQueriesPerRun: 0, maxQueriesPerMonth: 5}),
       {code: "INVALID_ACQUISITION_POLICY"},
       "a disabled channel carries no allowance");
     const {webSearch: _webSearch, ...withoutChannel} = base;

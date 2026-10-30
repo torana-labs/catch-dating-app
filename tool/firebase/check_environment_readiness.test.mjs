@@ -196,7 +196,7 @@ test("target and capability filtering selects only relevant prerequisites", () =
     ).length,
     21,
   );
-  assert.equal(selected("dev", ["functions"]).length, 34);
+  assert.equal(selected("dev", ["functions"]).length, 35);
   for (const environment of ["dev", "staging", "prod"]) {
     for (const [target, secrets] of [
       ["refreshProgramTravelLeg", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
