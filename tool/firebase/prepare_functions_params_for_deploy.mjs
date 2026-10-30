@@ -40,6 +40,7 @@ export const materializedNonSecretParams = [
   "CATCH_INSTAGRAM_ACCOUNT_ID",
   "CATCH_INSTAGRAM_HANDLE",
   "CATCH_INSTAGRAM_GRAPH_VERSION",
+  "CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION",
   "SUPPLY_MESSAGE_NOMINATIONS_ENABLED",
   "CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION",
   "EVENT_ASSISTANCE_RCS_ENABLED",
@@ -225,6 +226,15 @@ function normalizedProviderParams(environment = process.env, projectId) {
   assert(instagramClaimsEnabled === "false" ||
     (instagramAccountId && instagramHandle),
   "CATCH_INSTAGRAM_CLAIMS_ENABLED requires the Instagram account id and handle");
+  // Supply Intake reads Instagram profiles through Business Discovery with a
+  // pinned system-user token. Blank keeps it off.
+  const discoveryCredential = environment.CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION?.trim() || "";
+  const discoveryPrefix = `projects/${projectId}/secrets/CATCH_INSTAGRAM_DISCOVERY_TOKEN/versions/`;
+  assert(!discoveryCredential || discoveryCredential.startsWith(discoveryPrefix) &&
+    /^[1-9][0-9]*$/.test(discoveryCredential.slice(discoveryPrefix.length)),
+  "CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION must pin CATCH_INSTAGRAM_DISCOVERY_TOKEN in this project");
+  assert(!discoveryCredential || instagramAccountId,
+    "CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION requires CATCH_INSTAGRAM_ACCOUNT_ID");
 
   // Message nominations read stored WhatsApp receipts, so they need the
   // receipt consumers on as well.
@@ -291,6 +301,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
     CATCH_INSTAGRAM_ACCOUNT_ID: instagramAccountId || " ",
     CATCH_INSTAGRAM_HANDLE: instagramHandle || " ",
     CATCH_INSTAGRAM_GRAPH_VERSION: instagramGraphVersion,
+    CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION: discoveryCredential || " ",
     SUPPLY_MESSAGE_NOMINATIONS_ENABLED: messageNominationsEnabled,
     CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION: autoReplyCredential || " ",
     ...eventAssistance,

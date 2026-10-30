@@ -8,7 +8,7 @@ const schemaManageHostMembershipProgramCallableResponseSchema = <String, Object?
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callable_responses/manage_host_membership_program_response.schema.json',
   'title': 'ManageHostMembershipProgramCallableResponse',
-  'description': 'Bounded program projection plus readiness facts the host settings screen needs before enabling memberships.',
+  'description': 'Bounded program projection plus readiness facts the host settings screen needs before enabling memberships. routeAccountReady means the payment account the effective money flow needs is ready (a connected Razorpay account for hostCollected, the Route linked account for platformSplit); feeConfigured means Catch\'s commercial terms resolve. unavailableReason names the first blocker.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -84,6 +84,39 @@ const schemaManageHostMembershipProgramCallableResponseSchema = <String, Object?
     },
     'feeConfigured': <String, Object?>{
       'type': 'boolean',
+    },
+    'paymentMode': <String, Object?>{
+      'description': 'The organizer\'s effective membership money flow, or null when Catch has not offered memberships to this organizer.',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'description': 'hostCollected: the guest pays the organizer\'s own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch\'s platform account collects and transfers the organizer\'s share (Razorpay Route), deducting any at-source fee.',
+          'enum': <Object?>[
+            'hostCollected',
+            'platformSplit',
+          ],
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'unavailableReason': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'enum': <Object?>[
+            'notOffered',
+            'termsNotConfigured',
+            'razorpayNotConnected',
+            'razorpayNeedsAttention',
+            'subscriptionsNotEnabled',
+            'payoutAccountNotReady',
+            'providerUnavailable',
+          ],
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
     },
   },
 };

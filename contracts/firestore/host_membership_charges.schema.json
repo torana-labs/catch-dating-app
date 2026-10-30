@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/host_membership_charges.schema.json",
   "title": "HostMembershipChargeDocument",
-  "description": "Server-only ledger of one captured membership charge and its Route transfer to the host linked account minus the platform fee. Keyed by the provider payment id.",
+  "description": "Server-only ledger of every captured membership charge, keyed by the provider payment id, and the commission statement's membership source. hostCollected charges were paid to the organizer's own account: no fee is deducted and no transfer is made (transfer.state notRequired). platformSplit charges are split to the organizer's Route account minus the at-source fee. Each new charge freezes the effective commercial terms.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "hostMembershipCharges",
@@ -24,6 +24,8 @@
     "periodEndMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/nullableMillis", "x-catch-ownership": "server-only"},
     "providerAccountId": {"type": "string", "pattern": "^acc_[A-Za-z0-9]{4,40}$", "x-catch-ownership": "server-only"},
     "mode": {"$ref": "../shared/host_membership_common.schema.json#/definitions/providerMode", "x-catch-ownership": "server-only"},
+    "moneyFlow": {"description": "Absent on charges recorded under the original platform-account model, which is platformSplit.", "$ref": "../shared/host_membership_common.schema.json#/definitions/moneyFlow", "x-catch-ownership": "server-only"},
+    "commercialTerms": {"description": "Effective terms frozen when the charge was recorded. Absent on charges recorded before commercial terms existed.", "$ref": "../shared/commercial_terms.schema.json#/definitions/snapshot", "x-catch-ownership": "server-only"},
     "transfer": {
       "type": "object",
       "additionalProperties": false,

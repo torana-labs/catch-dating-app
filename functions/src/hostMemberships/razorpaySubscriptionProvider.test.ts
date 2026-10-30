@@ -124,3 +124,81 @@ test("verifies webhook signatures over the raw body", () => {
   assert.equal(parsed?.createdAtMillis, Math.floor(now / 1000) * 1000);
   assert.equal(rzp.parseWebhook(Buffer.from("not json"), null), null);
 });
+
+function merchant(responses: unknown[], calls: Call[] = []) {
+  const fetchImpl = (async (url: string, init: RequestInit) => {
+    calls.push({url, method: String(init.method),
+      body: init.body ? JSON.parse(String(init.body)) : undefined,
+      authorization: new Headers(init.headers).get("Authorization")});
+    const next = responses.shift();
+    if (next instanceof Response) return next;
+    return new Response(JSON.stringify(next), {status: 200});
+  }) as unknown as typeof fetch;
+  return new RazorpaySubscriptionProvider({accessToken: "merchant-token",
+    accountId: "acc_HostMerchant1", webhookSecret, mode: "test"}, fetchImpl);
+}
+
+const merchantWebhookUrl =
+  "https://example.test/hostMembershipRazorpayWebhook?connectionId=rpc_1";
+
+test("hostCollected calls the merchant account with its OAuth token",
+  async () => {
+    const calls: Call[] = [];
+    await merchant([{id: "plan_Created1", entity: "plan",
+      item: {amount: 49900, currency: "INR"}}], calls).createPrice({
+      catchPlanId: "hmp_AbCdEfGhIjKlMnOpQrSt", organizerId: "organizer-1",
+      name: "Sunday Runners", interval: "monthly", amountPaise: 49900,
+      revision: 1, catchProject: "catch-test"});
+    assert.equal(calls[0].url, "https://api.razorpay.com/v1/plans");
+    assert.equal(calls[0].authorization, "Bearer merchant-token");
+  });
+
+test("a Subscriptions probe tells a disabled product from an outage",
+  async () => {
+    assert.equal(await merchant([{entity: "collection", count: 0,
+      items: []}]).probeSubscriptions(), "enabled");
+    assert.equal(await merchant([new Response("{}", {status: 400})])
+      .probeSubscriptions(), "notEnabled");
+    // An expired token and a provider outage are not "not enabled".
+    await assert.rejects(merchant([new Response("{}", {status: 401})])
+      .probeSubscriptions(), (error: HostMembershipProviderError) =>
+      error.httpStatus === 401);
+    await assert.rejects(merchant([new Response("{}", {status: 503})])
+      .probeSubscriptions(), (error: HostMembershipProviderError) =>
+      error.disposition === "outcomeUnknown");
+  });
+
+test("the merchant webhook is reused when present, created otherwise",
+  async () => {
+    const webhook = {id: "HK890egfiItP3H", entity: "webhook", active: true,
+      secret_exists: true, owner_id: "HostMerchant1", owner_type: "merchant",
+      url: merchantWebhookUrl, events: [
+        "subscription.authenticated", "subscription.activated",
+        "subscription.charged", "subscription.pending",
+        "subscription.halted", "subscription.paused",
+        "subscription.resumed", "subscription.cancelled",
+        "subscription.completed", "subscription.updated"]};
+    const reuseCalls: Call[] = [];
+    assert.deepEqual(await merchant([{entity: "collection", count: 1,
+      items: [webhook]}], reuseCalls).ensureMerchantWebhook({
+      url: merchantWebhookUrl}), {webhookId: "HK890egfiItP3H"});
+    assert.deepEqual(reuseCalls.map((call) => call.method), ["GET"]);
+
+    const calls: Call[] = [];
+    assert.deepEqual(await merchant([{entity: "collection", count: 1,
+      items: [{...webhook, url: "https://example.test/other"}]},
+    {...webhook, id: "JebiXkKGYwua5L"}], calls).ensureMerchantWebhook({
+      url: merchantWebhookUrl}), {webhookId: "JebiXkKGYwua5L"});
+    assert.equal(calls[1].url,
+      "https://api.razorpay.com/v2/accounts/acc_HostMerchant1/webhooks");
+    assert.deepEqual(calls[1].body, {url: merchantWebhookUrl,
+      secret: webhookSecret, events: webhook.events});
+    // A created webhook missing subscription events is not accepted.
+    await assert.rejects(merchant([{entity: "collection", count: 0,
+      items: []}, {...webhook, events: ["payment.captured"]}])
+      .ensureMerchantWebhook({url: merchantWebhookUrl}),
+    HostMembershipProviderError);
+    // The platform account never registers merchant webhooks.
+    await assert.rejects(provider([]).ensureMerchantWebhook({
+      url: merchantWebhookUrl}), HostMembershipProviderError);
+  });

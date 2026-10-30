@@ -11,6 +11,7 @@
     "revision": {"type": "integer", "minimum": 1},
     "formFee": {"anyOf": [{"$ref": "../shared/payment_routing.schema.json#/definitions/selection"}, {"type": "null"}]},
     "eventAdmission": {"anyOf": [{"$ref": "../shared/payment_routing.schema.json#/definitions/selection"}, {"type": "null"}]},
+    "hostMembership": {"description": "Membership money flow: razorpayOAuth is hostCollected (subscriptions on the organizer's own connected account), razorpayRoute is platformSplit. Absent on policies written before memberships had a route, and treated as null.", "anyOf": [{"$ref": "../shared/payment_routing.schema.json#/definitions/selection"}, {"type": "null"}]},
     "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "lastMutationHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
   },

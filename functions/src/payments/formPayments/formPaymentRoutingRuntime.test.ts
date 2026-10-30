@@ -14,13 +14,14 @@ import type {RazorpayPlatformPaymentConfig} from
   "../razorpayPlatformPaymentConfig";
 import {prepareRazorpayCollectionRouting} from "../razorpayCollectionRouting";
 import {organizerPaymentPolicyId} from "../paymentRouting";
+import {commercialTermsRecords, platformTermsDocument, testCommercialTerms} from
+  "../../commercialTerms/testFixture";
 
 const now = Timestamp.fromMillis(1000);
 const profile: RazorpayPlatformPaymentConfig = {
   schema: "catch.razorpay-platform-payments/v1", mode: "test",
   platformAccountId: "acc_platform", keyId: "rzp_test_platform",
   keySecret: "test-secret", webhookSecret: "webhook-secret",
-  feeBasisPoints: {formFee: 250, eventAdmission: 500},
 };
 const version = "projects/catch-test/secrets/PLATFORM/versions/1";
 function fixture() {
@@ -29,6 +30,9 @@ function fixture() {
   h.version.definition.payment!.connectionId = null;
   h.store.records.delete("organizerPaymentConnections/connection");
   h.store.records.set("organizers/org", {ownerUserId: "host"});
+  for (const [path, value] of Object.entries(commercialTermsRecords({
+    platform: platformTermsDocument(testCommercialTerms({formFee: 250,
+      eventAdmission: 500}))}))) h.store.records.set(path, value);
   h.store.records.set("hostPaymentAccounts/host_razorpay", {
     userId: "host", provider: "razorpay", country: "IN",
     defaultCurrency: "INR", providerAccountId: "acc_host",
@@ -80,6 +84,13 @@ test("Route reserves, projects and submits without an OAuth connection",
     assert.equal(payment.accountId, "acc_platform");
     assert.equal(payment.routing?.transferAmountMinor, 9750);
     assert.equal(payment.routing?.settlementHold, false);
+    // The fee came from commercial terms, frozen on the attempt.
+    assert.equal(payment.routing?.commercialTerms?.moneyFlow, "platformSplit");
+    assert.equal(payment.routing?.commercialTerms?.merchantOfRecord,
+      "platform");
+    assert.equal(payment.routing?.commercialTerms?.purposeTerms
+      .atSourceFeeBasisPoints, 250);
+    assert.equal(payment.routing?.commercialTerms?.platformRevision, 1);
     assert.equal((await prepared.runtime.processor.read(paymentId))
       .routing?.configurationVersion, version);
     const output = await projectFormPayment({db: h.db, paymentId,
@@ -253,6 +264,65 @@ test("event OAuth selects one ready organizer merchant and rejects ambiguity",
       } else {
         await assert.rejects(prepare());
         assert.equal(accesses, 0);
+      }
+    }
+  });
+
+test("Route fails closed until commercial terms are configured", async () => {
+  const h = fixture();
+  h.store.records.delete("commercialTerms/platform");
+  await assert.rejects(h.prepare(), /commercial terms are not configured/);
+});
+
+test("a terms change applies to new attempts and keeps old ones",
+  async () => {
+    const h = fixture();
+    const before = await h.prepare();
+    h.store.records.set("commercialTerms/platform", platformTermsDocument(
+      testCommercialTerms({formFee: 900}), 2) as unknown as
+      Record<string, unknown>);
+    const after = await h.prepare();
+    assert.deepEqual([before.snapshot.transferAmountMinor,
+      before.snapshot.commercialTerms?.platformRevision],
+    [9750, 1]);
+    assert.deepEqual([after.snapshot.transferAmountMinor,
+      after.snapshot.commercialTerms?.platformRevision], [9100, 2]);
+  });
+
+test("hostCollected tickets freeze terms when configured, never block",
+  async () => {
+    for (const configured of [true, false]) {
+      const h = createFormPaymentFixture();
+      const connection = h.store.records.get(
+        "organizerPaymentConnections/connection")!;
+      connection.tokenExpiresAt = Timestamp.fromMillis(Date.now() + 3600_000);
+      h.store.records.set("paymentRoutingPolicies/app", {
+        scope: "app", organizerId: null, revision: 1, updatedAt: now,
+        formFee: null, eventAdmission: {route: "razorpayOAuth", mode: "test",
+          currency: "INR", merchantCountry: "IN"}});
+      if (configured) {
+        for (const [path, value] of Object.entries(commercialTermsRecords())) {
+          h.store.records.set(path, value);
+        }
+      }
+      const deps = {...fixture().deps, now: () => 4242,
+        oauth: async () => ({mode: "test", configurationVersion: version,
+          credentials: {access: async () => undefined}})} as unknown as
+        NonNullable<Parameters<typeof prepareRazorpayCollectionRouting>[1]>;
+      const snapshot = await prepareRazorpayCollectionRouting({db: h.db,
+        organizerId: "org", purpose: "eventAdmission", connectionId: null,
+        amountMinor: 10000}, deps);
+      // Guest money goes to the organizer's own account either way.
+      assert.equal(snapshot.transferAmountMinor, null);
+      if (configured) {
+        assert.deepEqual([snapshot.commercialTerms?.moneyFlow,
+          snapshot.commercialTerms?.merchantOfRecord,
+          snapshot.commercialTerms?.purpose,
+          snapshot.commercialTerms?.commission.rateBasisPoints,
+          snapshot.commercialTerms?.resolvedAtMillis],
+        ["hostCollected", "host", "eventAdmission", 500, 4242]);
+      } else {
+        assert.equal(snapshot.commercialTerms, undefined);
       }
     }
   });

@@ -168,3 +168,35 @@ test("page fetch fails closed without the accepted decision, and never touches t
     assert.deepEqual(requested, []);
   }
 });
+
+test("an Instagram profile is read through Business Discovery when the environment has a token", async () => {
+  const instagram = request({seed: {name: null, urls: ["https://www.instagram.com/afterfly.in"], notes: null, categories: []}});
+  const {db, requested, deps} = setup({request: instagram});
+  const discoveryCalls: string[] = [];
+  const outcome = await processSupplyIntakeRequest({...deps,
+    instagramDiscovery: async () => ({accountId: "17841476918450741", accessToken: "test-token", graphVersion: "v26.0"}),
+    discoveryTransport: async (url: URL) => {
+      discoveryCalls.push(url.href);
+      return {status: 200, text: async () => JSON.stringify({business_discovery: {username: "afterfly.in", name: "Afterfly",
+        biography: "Social nights in Mumbai", website: "https://afterfly.in", media: {data: []}}})};
+    }}, "nom-afterfly-1");
+  const stored = db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+  assert.equal(outcome, "completed", JSON.stringify(stored.failure));
+  assert.equal(validateSupplyIntakeRequestsDocument(stored), true);
+  assert.deepEqual(stored.result.captureReceipts.map((receipt) => [receipt.adapterId, receipt.outcome]),
+    [["instagram_business_discovery", "fetched"]]);
+  assert.equal(discoveryCalls.length, 1);
+  // instagram.com itself is never fetched.
+  assert.deepEqual(requested.filter((url) => url.includes("instagram.com")), []);
+});
+
+test("an unreadable discovery token leaves Instagram unread instead of failing the request", async () => {
+  const instagram = request({seed: {name: "Afterfly", urls: ["https://www.instagram.com/afterfly.in"], notes: null, categories: []}});
+  const {db, deps} = setup({request: instagram});
+  const outcome = await processSupplyIntakeRequest({...deps, instagramDiscovery: async () => {
+    throw Object.assign(new Error("denied"), {code: "PERMISSION_DENIED"});
+  }}, "nom-afterfly-1");
+  const stored = db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+  assert.equal(outcome, "completed", JSON.stringify(stored.failure));
+  assert.notEqual(stored.result.captureReceipts[0]?.adapterId, "instagram_business_discovery");
+});

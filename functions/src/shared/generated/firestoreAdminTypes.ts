@@ -2470,7 +2470,7 @@ export interface SupplyIntakeRequestsDocument {
     captureReceipts: {
       schemaVersion: 1;
       runKey: string;
-      adapterId: "page_fetch" | "static_page";
+      adapterId: "page_fetch" | "static_page" | "instagram_business_discovery";
       policyVersion: string;
       policyDecisionId: string | null;
       requestedUrl: string;
@@ -4307,6 +4307,55 @@ export interface PublicEventPaymentDocument {
     destinationAccountId: string | null;
     configurationVersion: string;
     checkoutKey: string | null;
+    /**
+     * Effective commercial terms frozen when the attempt was prepared. Absent on payments prepared before commercial terms existed, or while platform defaults were unconfigured for a hostCollected route; a commission statement reviews those explicitly.
+     */
+    commercialTerms?: {
+      version: 1;
+      purpose: "eventAdmission" | "formFee" | "hostMembership";
+      organizerId: string;
+      platformRevision: number;
+      organizerRevision: number;
+      /**
+       * hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.
+       */
+      moneyFlow: "hostCollected" | "platformSplit";
+      merchantOfRecord: "host" | "platform";
+      currency: "INR";
+      commission: {
+        rateBasisPoints: number;
+        /**
+         * Cap per cycle in minor units; null means uncapped.
+         */
+        capMinor: number | null;
+        cycleDays: number;
+        cycleAnchor: "trialEnd";
+        base: "netOfRefunds" | "gross";
+        /**
+         * exclusive: amounts are before GST, which is added on top.
+         */
+        taxTreatment: "exclusive" | "inclusive";
+      };
+      trial: {
+        days: number;
+        anchor: "firstEvent";
+      };
+      toolsOnly: {
+        /**
+         * Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission.
+         */
+        feeMinor: number;
+      };
+      gatewayFeeBearer: "host" | "platform";
+      purposeTerms: {
+        countsTowardCommission: boolean;
+        /**
+         * Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit.
+         */
+        atSourceFeeBasisPoints: number;
+      };
+      resolvedAtMillis: number;
+    };
   };
   amountPaise: number;
   currency: "INR";
@@ -4414,6 +4463,55 @@ export interface PublicEventAdmissionReceiptDocument {
     destinationAccountId: string | null;
     configurationVersion: string;
     checkoutKey: string | null;
+    /**
+     * Effective commercial terms frozen when the attempt was prepared. Absent on payments prepared before commercial terms existed, or while platform defaults were unconfigured for a hostCollected route; a commission statement reviews those explicitly.
+     */
+    commercialTerms?: {
+      version: 1;
+      purpose: "eventAdmission" | "formFee" | "hostMembership";
+      organizerId: string;
+      platformRevision: number;
+      organizerRevision: number;
+      /**
+       * hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.
+       */
+      moneyFlow: "hostCollected" | "platformSplit";
+      merchantOfRecord: "host" | "platform";
+      currency: "INR";
+      commission: {
+        rateBasisPoints: number;
+        /**
+         * Cap per cycle in minor units; null means uncapped.
+         */
+        capMinor: number | null;
+        cycleDays: number;
+        cycleAnchor: "trialEnd";
+        base: "netOfRefunds" | "gross";
+        /**
+         * exclusive: amounts are before GST, which is added on top.
+         */
+        taxTreatment: "exclusive" | "inclusive";
+      };
+      trial: {
+        days: number;
+        anchor: "firstEvent";
+      };
+      toolsOnly: {
+        /**
+         * Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission.
+         */
+        feeMinor: number;
+      };
+      gatewayFeeBearer: "host" | "platform";
+      purposeTerms: {
+        countsTowardCommission: boolean;
+        /**
+         * Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit.
+         */
+        atSourceFeeBasisPoints: number;
+      };
+      resolvedAtMillis: number;
+    };
   };
   paymentId: string;
   providerOrderId: string;
@@ -4475,6 +4573,55 @@ export interface OrganizerEventOfferPaymentDocument {
     destinationAccountId: string | null;
     configurationVersion: string;
     checkoutKey: string | null;
+    /**
+     * Effective commercial terms frozen when the attempt was prepared. Absent on payments prepared before commercial terms existed, or while platform defaults were unconfigured for a hostCollected route; a commission statement reviews those explicitly.
+     */
+    commercialTerms?: {
+      version: 1;
+      purpose: "eventAdmission" | "formFee" | "hostMembership";
+      organizerId: string;
+      platformRevision: number;
+      organizerRevision: number;
+      /**
+       * hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.
+       */
+      moneyFlow: "hostCollected" | "platformSplit";
+      merchantOfRecord: "host" | "platform";
+      currency: "INR";
+      commission: {
+        rateBasisPoints: number;
+        /**
+         * Cap per cycle in minor units; null means uncapped.
+         */
+        capMinor: number | null;
+        cycleDays: number;
+        cycleAnchor: "trialEnd";
+        base: "netOfRefunds" | "gross";
+        /**
+         * exclusive: amounts are before GST, which is added on top.
+         */
+        taxTreatment: "exclusive" | "inclusive";
+      };
+      trial: {
+        days: number;
+        anchor: "firstEvent";
+      };
+      toolsOnly: {
+        /**
+         * Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission.
+         */
+        feeMinor: number;
+      };
+      gatewayFeeBearer: "host" | "platform";
+      purposeTerms: {
+        countsTowardCommission: boolean;
+        /**
+         * Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit.
+         */
+        atSourceFeeBasisPoints: number;
+      };
+      resolvedAtMillis: number;
+    };
   };
   paymentSnapshot: EventOfferPaymentSnapshot;
   amountPaise: number;
@@ -4640,6 +4787,55 @@ export interface OrganizerFormAdmissionReceiptDocument {
       destinationAccountId: string | null;
       configurationVersion: string;
       checkoutKey: string | null;
+      /**
+       * Effective commercial terms frozen when the attempt was prepared. Absent on payments prepared before commercial terms existed, or while platform defaults were unconfigured for a hostCollected route; a commission statement reviews those explicitly.
+       */
+      commercialTerms?: {
+        version: 1;
+        purpose: "eventAdmission" | "formFee" | "hostMembership";
+        organizerId: string;
+        platformRevision: number;
+        organizerRevision: number;
+        /**
+         * hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.
+         */
+        moneyFlow: "hostCollected" | "platformSplit";
+        merchantOfRecord: "host" | "platform";
+        currency: "INR";
+        commission: {
+          rateBasisPoints: number;
+          /**
+           * Cap per cycle in minor units; null means uncapped.
+           */
+          capMinor: number | null;
+          cycleDays: number;
+          cycleAnchor: "trialEnd";
+          base: "netOfRefunds" | "gross";
+          /**
+           * exclusive: amounts are before GST, which is added on top.
+           */
+          taxTreatment: "exclusive" | "inclusive";
+        };
+        trial: {
+          days: number;
+          anchor: "firstEvent";
+        };
+        toolsOnly: {
+          /**
+           * Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission.
+           */
+          feeMinor: number;
+        };
+        gatewayFeeBearer: "host" | "platform";
+        purposeTerms: {
+          countsTowardCommission: boolean;
+          /**
+           * Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit.
+           */
+          atSourceFeeBasisPoints: number;
+        };
+        resolvedAtMillis: number;
+      };
     };
   };
 }
@@ -10326,7 +10522,7 @@ export interface OrganizerEntitlementReceiptDocument {
 }
 
 /**
- * Server-owned per-organizer paid membership program: the payment provider binding snapshot taken when the program was enabled, the host-wide billing pause and member counts.
+ * Server-owned per-organizer paid membership program: the payment binding snapshot taken when the program was enabled (its money flow, account and connection), the host-wide billing pause and member counts.
  */
 export interface HostMembershipProgramDocument {
   schemaVersion: 1;
@@ -10337,6 +10533,14 @@ export interface HostMembershipProgramDocument {
     providerAccountId: string;
     bindingId: string;
     mode: "test" | "live";
+    /**
+     * Absent on programs enabled under the original platform-account model, which is platformSplit.
+     */
+    moneyFlow?: "hostCollected" | "platformSplit";
+    /**
+     * hostCollected only: the membership webhook Catch registered on the organizer's merchant account.
+     */
+    webhookId?: string;
   };
   billingPause: {
     state: "active" | "pausing" | "paused" | "resuming";
@@ -10370,6 +10574,10 @@ export interface HostMembershipPlanDocument {
         razorpay?: string;
       };
       revision: number;
+      /**
+       * Account the provider plan was created on. Absent on prices created under the original platform-account model.
+       */
+      providerAccountId?: string;
     };
     annual?: {
       /**
@@ -10380,6 +10588,10 @@ export interface HostMembershipPlanDocument {
         razorpay?: string;
       };
       revision: number;
+      /**
+       * Account the provider plan was created on. Absent on prices created under the original platform-account model.
+       */
+      providerAccountId?: string;
     };
   };
   memberCap: number | null;
@@ -10461,6 +10673,19 @@ export interface HostMembershipDocument {
   provider: "razorpay";
   providerSubscriptionId: string;
   providerPlanId: string;
+  /**
+   * The account that owns this subscription, copied from the checkout that created it. Absent on memberships created under the original platform-account model.
+   */
+  payment?: {
+    provider: "razorpay";
+    /**
+     * hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.
+     */
+    moneyFlow: "hostCollected" | "platformSplit";
+    providerAccountId: string;
+    bindingId: string;
+    mode: "test" | "live";
+  };
   providerEventAtMillis: number;
   lastCheckoutId: string;
   revision: number;
@@ -10484,6 +10709,19 @@ export interface HostMembershipCheckoutDocument {
   state: "creating" | "open" | "authorized" | "expired" | "failed";
   provider: "razorpay";
   providerSubscriptionId: string | null;
+  /**
+   * The program binding the subscription was created on. Absent on checkouts created under the original platform-account model.
+   */
+  payment?: {
+    provider: "razorpay";
+    /**
+     * hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.
+     */
+    moneyFlow: "hostCollected" | "platformSplit";
+    providerAccountId: string;
+    bindingId: string;
+    mode: "test" | "live";
+  };
   authorizationUrl: string | null;
   expiresAtMillis: number;
   createdAtMillis: number;
@@ -10491,7 +10729,7 @@ export interface HostMembershipCheckoutDocument {
 }
 
 /**
- * Server-only ledger of one captured membership charge and its Route transfer to the host linked account minus the platform fee. Keyed by the provider payment id.
+ * Server-only ledger of every captured membership charge, keyed by the provider payment id, and the commission statement's membership source. hostCollected charges were paid to the organizer's own account: no fee is deducted and no transfer is made (transfer.state notRequired). platformSplit charges are split to the organizer's Route account minus the at-source fee. Each new charge freezes the effective commercial terms.
  */
 export interface HostMembershipChargeDocument {
   schemaVersion: 1;
@@ -10507,6 +10745,59 @@ export interface HostMembershipChargeDocument {
   periodEndMillis: number | null;
   providerAccountId: string;
   mode: "test" | "live";
+  /**
+   * Absent on charges recorded under the original platform-account model, which is platformSplit.
+   */
+  moneyFlow?: "hostCollected" | "platformSplit";
+  /**
+   * Effective terms frozen when the charge was recorded. Absent on charges recorded before commercial terms existed.
+   */
+  commercialTerms?: {
+    version: 1;
+    purpose: "eventAdmission" | "formFee" | "hostMembership";
+    organizerId: string;
+    platformRevision: number;
+    organizerRevision: number;
+    /**
+     * hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.
+     */
+    moneyFlow: "hostCollected" | "platformSplit";
+    merchantOfRecord: "host" | "platform";
+    currency: "INR";
+    commission: {
+      rateBasisPoints: number;
+      /**
+       * Cap per cycle in minor units; null means uncapped.
+       */
+      capMinor: number | null;
+      cycleDays: number;
+      cycleAnchor: "trialEnd";
+      base: "netOfRefunds" | "gross";
+      /**
+       * exclusive: amounts are before GST, which is added on top.
+       */
+      taxTreatment: "exclusive" | "inclusive";
+    };
+    trial: {
+      days: number;
+      anchor: "firstEvent";
+    };
+    toolsOnly: {
+      /**
+       * Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission.
+       */
+      feeMinor: number;
+    };
+    gatewayFeeBearer: "host" | "platform";
+    purposeTerms: {
+      countsTowardCommission: boolean;
+      /**
+       * Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit.
+       */
+      atSourceFeeBasisPoints: number;
+    };
+    resolvedAtMillis: number;
+  };
   transfer: {
     state: "pending" | "requesting" | "created" | "failed" | "notRequired";
     transferId: string | null;
@@ -11263,8 +11554,224 @@ export interface PaymentRoutingPolicyDocument {
           }
       )
     | null;
+  /**
+   * Membership money flow: razorpayOAuth is hostCollected (subscriptions on the organizer's own connected account), razorpayRoute is platformSplit. Absent on policies written before memberships had a route, and treated as null.
+   */
+  hostMembership?:
+    | (
+        | {
+            route: "disabled";
+          }
+        | {
+            route:
+              | "razorpayRoute"
+              | "razorpayOAuth"
+              | "stripeConnectDirect"
+              | "stripeConnectDestination";
+            mode: "test" | "live";
+            currency: string;
+            merchantCountry: string;
+          }
+      )
+    | null;
   updatedAt: FirebaseFirestore.Timestamp;
   lastMutationHash?: string;
+}
+
+/**
+ * Operator-owned commercial terms. The platform document holds complete defaults; an organizer document (id org_<sha256(organizerId)>) holds a sparse override. Every write bumps revision and appends an immutable commercialTermsRevisions record and an admin audit log in the same transaction. Direct client access is denied.
+ */
+export interface CommercialTermsDocument {
+  schemaVersion: 1;
+  scope: "platform" | "organizer";
+  organizerId: string | null;
+  revision: number;
+  terms:
+    | {
+        currency: "INR";
+        commission: {
+          rateBasisPoints: number;
+          /**
+           * Cap per cycle in minor units; null means uncapped.
+           */
+          capMinor: number | null;
+          cycleDays: number;
+          cycleAnchor: "trialEnd";
+          base: "netOfRefunds" | "gross";
+          /**
+           * exclusive: amounts are before GST, which is added on top.
+           */
+          taxTreatment: "exclusive" | "inclusive";
+        };
+        trial: {
+          days: number;
+          anchor: "firstEvent";
+        };
+        toolsOnly: {
+          /**
+           * Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission.
+           */
+          feeMinor: number;
+        };
+        gatewayFeeBearer: "host" | "platform";
+        purposes: {
+          eventAdmission: {
+            countsTowardCommission: boolean;
+            /**
+             * Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit.
+             */
+            atSourceFeeBasisPoints: number;
+          };
+          formFee: {
+            countsTowardCommission: boolean;
+            /**
+             * Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit.
+             */
+            atSourceFeeBasisPoints: number;
+          };
+          hostMembership: {
+            countsTowardCommission: boolean;
+            /**
+             * Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit.
+             */
+            atSourceFeeBasisPoints: number;
+          };
+        };
+      }
+    | {
+        commission?: {
+          rateBasisPoints?: number;
+          capMinor?: number | null;
+          cycleDays?: number;
+          cycleAnchor?: "trialEnd";
+          base?: "netOfRefunds" | "gross";
+          taxTreatment?: "exclusive" | "inclusive";
+        };
+        trial?: {
+          days?: number;
+          anchor?: "firstEvent";
+        };
+        toolsOnly?: {
+          feeMinor?: number;
+        };
+        gatewayFeeBearer?: "host" | "platform";
+        purposes?: {
+          eventAdmission?: {
+            countsTowardCommission?: boolean;
+            atSourceFeeBasisPoints?: number;
+          };
+          formFee?: {
+            countsTowardCommission?: boolean;
+            atSourceFeeBasisPoints?: number;
+          };
+          hostMembership?: {
+            countsTowardCommission?: boolean;
+            atSourceFeeBasisPoints?: number;
+          };
+        };
+      };
+  reason: string;
+  updatedByUid: string;
+  updatedAtMillis: number;
+  lastMutationHash: string;
+}
+
+/**
+ * Immutable history of every commercial terms revision, keyed <termsId>_r<revision>. Created in the same transaction as the commercialTerms write it records and never updated.
+ */
+export interface CommercialTermsRevisionDocument {
+  schemaVersion: 1;
+  termsId: string;
+  scope: "platform" | "organizer";
+  organizerId: string | null;
+  revision: number;
+  terms:
+    | {
+        currency: "INR";
+        commission: {
+          rateBasisPoints: number;
+          /**
+           * Cap per cycle in minor units; null means uncapped.
+           */
+          capMinor: number | null;
+          cycleDays: number;
+          cycleAnchor: "trialEnd";
+          base: "netOfRefunds" | "gross";
+          /**
+           * exclusive: amounts are before GST, which is added on top.
+           */
+          taxTreatment: "exclusive" | "inclusive";
+        };
+        trial: {
+          days: number;
+          anchor: "firstEvent";
+        };
+        toolsOnly: {
+          /**
+           * Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission.
+           */
+          feeMinor: number;
+        };
+        gatewayFeeBearer: "host" | "platform";
+        purposes: {
+          eventAdmission: {
+            countsTowardCommission: boolean;
+            /**
+             * Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit.
+             */
+            atSourceFeeBasisPoints: number;
+          };
+          formFee: {
+            countsTowardCommission: boolean;
+            /**
+             * Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit.
+             */
+            atSourceFeeBasisPoints: number;
+          };
+          hostMembership: {
+            countsTowardCommission: boolean;
+            /**
+             * Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit.
+             */
+            atSourceFeeBasisPoints: number;
+          };
+        };
+      }
+    | {
+        commission?: {
+          rateBasisPoints?: number;
+          capMinor?: number | null;
+          cycleDays?: number;
+          cycleAnchor?: "trialEnd";
+          base?: "netOfRefunds" | "gross";
+          taxTreatment?: "exclusive" | "inclusive";
+        };
+        trial?: {
+          days?: number;
+          anchor?: "firstEvent";
+        };
+        toolsOnly?: {
+          feeMinor?: number;
+        };
+        gatewayFeeBearer?: "host" | "platform";
+        purposes?: {
+          eventAdmission?: {
+            countsTowardCommission?: boolean;
+            atSourceFeeBasisPoints?: number;
+          };
+          formFee?: {
+            countsTowardCommission?: boolean;
+            atSourceFeeBasisPoints?: number;
+          };
+          hostMembership?: {
+            countsTowardCommission?: boolean;
+            atSourceFeeBasisPoints?: number;
+          };
+        };
+      };
+  reason: string;
+  actorUid: string;
+  createdAtMillis: number;
 }
 
 /**
@@ -11296,6 +11803,55 @@ export interface OrganizerFormPaymentDocument {
     destinationAccountId: string | null;
     configurationVersion: string;
     checkoutKey: string | null;
+    /**
+     * Effective commercial terms frozen when the attempt was prepared. Absent on payments prepared before commercial terms existed, or while platform defaults were unconfigured for a hostCollected route; a commission statement reviews those explicitly.
+     */
+    commercialTerms?: {
+      version: 1;
+      purpose: "eventAdmission" | "formFee" | "hostMembership";
+      organizerId: string;
+      platformRevision: number;
+      organizerRevision: number;
+      /**
+       * hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.
+       */
+      moneyFlow: "hostCollected" | "platformSplit";
+      merchantOfRecord: "host" | "platform";
+      currency: "INR";
+      commission: {
+        rateBasisPoints: number;
+        /**
+         * Cap per cycle in minor units; null means uncapped.
+         */
+        capMinor: number | null;
+        cycleDays: number;
+        cycleAnchor: "trialEnd";
+        base: "netOfRefunds" | "gross";
+        /**
+         * exclusive: amounts are before GST, which is added on top.
+         */
+        taxTreatment: "exclusive" | "inclusive";
+      };
+      trial: {
+        days: number;
+        anchor: "firstEvent";
+      };
+      toolsOnly: {
+        /**
+         * Flat tools-only fee per commission cycle, in minor units, on the same tax treatment as the commission.
+         */
+        feeMinor: number;
+      };
+      gatewayFeeBearer: "host" | "platform";
+      purposeTerms: {
+        countsTowardCommission: boolean;
+        /**
+         * Fee deducted from each payment before the organizer's transfer. Applies only when the purpose's money flow is platformSplit.
+         */
+        atSourceFeeBasisPoints: number;
+      };
+      resolvedAtMillis: number;
+    };
   };
   organizerId: string;
   formId: string;

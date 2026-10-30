@@ -17,6 +17,7 @@ import {
 } from "./callableDeps";
 import {applySubscriptionSnapshot, readMembership, readProgram} from
   "./membershipStore";
+import {bindingOf, membershipsUnavailable, providerFor} from "./runtime";
 import type {MembershipIntent} from "./stateMachine";
 
 const allowed: Record<Payload["action"], readonly string[]> = {
@@ -57,8 +58,9 @@ export async function manageMyHostMembershipHandler(
   if (data.action === "cancelAtPeriodEnd" && membership.cancelAtPeriodEnd) {
     return respond(data.membershipId, membership);
   }
-  const config = await deps.config();
-  const provider = deps.provider(config);
+  if (!program) membershipsUnavailable();
+  const binding = bindingOf(membership.payment ?? program.payment);
+  const provider = await providerFor(deps, membership.organizerId, binding);
   const id = membership.providerSubscriptionId;
   const snapshot = data.action === "pause" ? await provider.pause(id) :
     data.action === "resume" ? await provider.resume(id) :
@@ -69,7 +71,7 @@ export async function manageMyHostMembershipHandler(
   const applied = await applySubscriptionSnapshot({db, snapshot,
     observedAtMillis: nowMillis, nowMillis, intent,
     catchProject: deps.catchProject(),
-    expectedMembershipId: data.membershipId});
+    expectedMembershipId: data.membershipId, deliveredBy: binding});
   if (!applied.membership) {
     throw new HttpsError("internal", "Membership could not be updated.");
   }

@@ -1716,6 +1716,27 @@ describe("firestore.rules", () => {
       }
     });
 
+    it("keeps commercial terms and their history server-only", async () => {
+      for (const collectionName of ["commercialTerms",
+        "commercialTermsRevisions"]) {
+        await seed([collectionName, "platform"], {
+          scope: "platform", organizerId: null, revision: 1,
+        });
+        for (const uid of ["owner-1", "owner-2"]) {
+          const db = authedDb(uid);
+          const ref = doc(db, collectionName, "platform");
+          await assertFails(getDoc(ref));
+          await assertFails(updateDoc(ref, {revision: 2}));
+          await assertFails(deleteDoc(ref));
+          await assertFails(setDoc(doc(db, collectionName, "forged"), {
+            scope: "organizer", organizerId: "organizer-1", revision: 1,
+          }));
+          await assertFails(getDocs(query(collection(db, collectionName),
+            where("organizerId", "==", "organizer-1"))));
+        }
+      }
+    });
+
     it("keeps contact merge review decisions callable-only", async () => {
       const reviewedAt = Timestamp.fromDate(
         new Date("2026-08-16T10:00:00.000Z"),

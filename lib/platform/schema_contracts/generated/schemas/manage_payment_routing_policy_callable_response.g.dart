@@ -16,6 +16,7 @@ const schemaManagePaymentRoutingPolicyCallableResponseSchema = <String, Object?>
     'revision',
     'formFee',
     'eventAdmission',
+    'hostMembership',
     'updatedAtMillis',
   ],
   'properties': <String, Object?>{
@@ -97,6 +98,63 @@ const schemaManagePaymentRoutingPolicyCallableResponseSchema = <String, Object?>
       ],
     },
     'eventAdmission': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'route',
+              ],
+              'properties': <String, Object?>{
+                'route': <String, Object?>{
+                  'const': 'disabled',
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'route',
+                'mode',
+                'currency',
+                'merchantCountry',
+              ],
+              'properties': <String, Object?>{
+                'route': <String, Object?>{
+                  'enum': <Object?>[
+                    'razorpayRoute',
+                    'razorpayOAuth',
+                    'stripeConnectDirect',
+                    'stripeConnectDestination',
+                  ],
+                },
+                'mode': <String, Object?>{
+                  'enum': <Object?>[
+                    'test',
+                    'live',
+                  ],
+                },
+                'currency': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[A-Z]{3}\$',
+                },
+                'merchantCountry': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[A-Z]{2}\$',
+                },
+              },
+            },
+          ],
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'hostMembership': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{
           'anyOf': <Object?>[

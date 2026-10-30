@@ -96,6 +96,11 @@
         },
         "revision": {
           "$ref": "#/definitions/revision"
+        },
+        "providerAccountId": {
+          "description": "Account the provider plan was created on. Absent on prices created under the original platform-account model.",
+          "type": "string",
+          "pattern": "^acc_[A-Za-z0-9]{4,40}$"
         }
       }
     },
@@ -304,6 +309,39 @@
         },
         "entitled": {
           "type": "boolean"
+        }
+      }
+    },
+    "moneyFlow": {
+      "$ref": "commercial_terms.schema.json#/definitions/moneyFlow"
+    },
+    "paymentBinding": {
+      "description": "The Razorpay account that owns a membership's provider plan and subscription. hostCollected: providerAccountId is the organizer's own merchant account and bindingId its organizerPaymentConnections id. platformSplit: the subscription lives on Catch's platform account, providerAccountId is the organizer's Route linked account and bindingId its hostPaymentAccounts id. Snapshotted on each checkout and membership so a later mode switch never moves an existing subscription.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "moneyFlow",
+        "providerAccountId",
+        "bindingId",
+        "mode"
+      ],
+      "properties": {
+        "provider": {
+          "$ref": "#/definitions/provider"
+        },
+        "moneyFlow": {
+          "$ref": "#/definitions/moneyFlow"
+        },
+        "providerAccountId": {
+          "type": "string",
+          "pattern": "^acc_[A-Za-z0-9]{4,40}$"
+        },
+        "bindingId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "mode": {
+          "$ref": "#/definitions/providerMode"
         }
       }
     }

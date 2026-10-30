@@ -35,7 +35,8 @@ export async function managePaymentRoutingPolicyHandler(
   const data = validateCallableWithAjv<Payload>(request,
     validateManagePaymentRoutingPolicyCallablePayload);
   if (data.action === "read" ? data.expectedRevision !== null ||
-      data.formFee !== null || data.eventAdmission !== null :
+      data.formFee !== null || data.eventAdmission !== null ||
+      (data.hostMembership ?? null) !== null :
     data.expectedRevision === null) {
     throw new HttpsError("invalid-argument", "Invalid payment policy action.");
   }
@@ -61,9 +62,14 @@ export async function managePaymentRoutingPolicyHandler(
       db.collection("organizers").doc(data.organizerId))).exists) {
       throw new HttpsError("not-found", "Organizer not found.");
     }
+    // An operator client that predates memberships omits the field; that
+    // keeps the stored membership route instead of clearing it.
+    const hostMembership = data.hostMembership === undefined ?
+      before?.hostMembership ?? null : data.hostMembership;
     const mutationHash = createHash("sha256").update(JSON.stringify([
       actor.uid, data.organizerId, data.expectedRevision,
       selectionKey(data.formFee), selectionKey(data.eventAdmission),
+      ...(hostMembership === null ? [] : [selectionKey(hostMembership)]),
     ])).digest("hex");
     // Only the most recent exact command replays. An intervening change must
     // cause a fresh review, even when it eventually restores the same values.
@@ -78,6 +84,7 @@ export async function managePaymentRoutingPolicyHandler(
       scope: data.organizerId === null ? "app" : "organizer",
       organizerId: data.organizerId, revision: (before?.revision ?? 0) + 1,
       formFee: data.formFee, eventAdmission: data.eventAdmission,
+      ...(hostMembership === null ? {} : {hostMembership}),
       updatedAt: Timestamp.fromMillis(deps.now()),
       lastMutationHash: mutationHash};
     parsePaymentRoutingPolicy(next);
@@ -86,9 +93,11 @@ export async function managePaymentRoutingPolicyHandler(
       action: "managePaymentRoutingPolicy", targetPath: ref.path,
       before: {revision: before?.revision ?? 0,
         formFee: before?.formFee ?? null,
-        eventAdmission: before?.eventAdmission ?? null},
+        eventAdmission: before?.eventAdmission ?? null,
+        hostMembership: before?.hostMembership ?? null},
       after: {revision: next.revision, formFee: next.formFee,
-        eventAdmission: next.eventAdmission},
+        eventAdmission: next.eventAdmission,
+        hostMembership: next.hostMembership ?? null},
       serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
     });
     return project(policyId, data.organizerId, next);
@@ -100,6 +109,7 @@ function project(policyId: string, organizerId: string | null,
   return {policyId, organizerId, revision: policy?.revision ?? 0,
     formFee: policy?.formFee ?? null,
     eventAdmission: policy?.eventAdmission ?? null,
+    hostMembership: policy?.hostMembership ?? null,
     updatedAtMillis: policy?.updatedAt.toMillis() ?? null};
 }
 

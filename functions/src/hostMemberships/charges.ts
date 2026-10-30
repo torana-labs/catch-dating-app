@@ -10,30 +10,37 @@ import {
   type ProviderSubscriptionSnapshot,
 } from "./billingProvider";
 import {hostMembershipId} from "./ids";
-import {collections, readMembership, readProgram, readValid} from
-  "./membershipStore";
 import {
+  resolveCommercialTerms,
+  resolveCommercialTermsIfConfigured,
+} from "../commercialTerms/resolver";
+import {atSourceFeeMinor} from "../commercialTerms/terms";
+import {
+  HostMembershipIntegrityError,
+  collections,
+  readMembership,
+  readProgram,
+  readValid,
+} from "./membershipStore";
+import {
+  bindingOf,
   defaultHostMembershipRuntime,
-  hostMembershipFeeBasisPoints,
   type HostMembershipRuntime,
 } from "./runtime";
 
 const maxTransferAttempts = 5;
 const requestingLeaseMillis = 5 * 60 * 1000;
 
-export function membershipChargeSplit(amountPaise: number,
-  feeBasisPoints: number): {feePaise: number; transferAmountPaise: number} {
-  const feePaise = Math.floor(amountPaise * feeBasisPoints / 10000);
-  return {feePaise, transferAmountPaise: amountPaise - feePaise};
-}
-
-/** Records one captured subscription charge; transfer happens after commit. */
+/**
+ * Records one captured subscription charge with the commercial terms in
+ * force when it was captured. hostCollected money is already the
+ * organizer's: nothing is deducted or transferred, and the charge feeds the
+ * commission statement. platformSplit charges are split after commit.
+ */
 export async function recordMembershipCharge(params: {
   db: FirebaseFirestore.Firestore;
   payment: ProviderCharge;
   snapshot: ProviderSubscriptionSnapshot;
-  feeBasisPoints: number;
-  mode: "test" | "live";
   nowMillis: number;
 }): Promise<string | null> {
   const {db, payment, snapshot, nowMillis} = params;
@@ -51,22 +58,59 @@ export async function recordMembershipCharge(params: {
     if (existing.exists) return payment.id;
     if (!membership || membership.providerSubscriptionId !== snapshot.id ||
         !program) return null;
-    const split = membershipChargeSplit(payment.amount,
-      params.feeBasisPoints);
+    const binding = bindingOf(membership.payment ?? program.payment);
+    const termsInput = {db, tx, organizerId, purpose: "hostMembership" as const,
+      moneyFlow: binding.moneyFlow, nowMillis};
+    // A platformSplit fee needs terms, so a missing record retries; a
+    // hostCollected charge is never lost and is reviewed by the statement.
+    const commercialTerms = binding.moneyFlow === "platformSplit" ?
+      await resolveCommercialTerms(termsInput) :
+      await resolveCommercialTermsIfConfigured(termsInput);
+    const feePaise = commercialTerms ?
+      atSourceFeeMinor(commercialTerms, payment.amount) : 0;
+    const transferAmountPaise = binding.moneyFlow === "platformSplit" ?
+      payment.amount - feePaise : 0;
     const charge: HostMembershipChargeDocument = {
       schemaVersion: 1, membershipId, organizerId, uid, provider: "razorpay",
       providerSubscriptionId: snapshot.id, amountPaise: payment.amount,
-      feePaise: split.feePaise, transferAmountPaise: split.transferAmountPaise,
+      feePaise, transferAmountPaise,
       periodStartMillis: snapshot.currentStartMillis,
       periodEndMillis: snapshot.currentEndMillis,
-      providerAccountId: program.payment.providerAccountId, mode: params.mode,
-      transfer: {state: split.transferAmountPaise >= 100 ? "pending" :
+      providerAccountId: binding.providerAccountId, mode: binding.mode,
+      moneyFlow: binding.moneyFlow,
+      ...(commercialTerms ? {commercialTerms} : {}),
+      transfer: {state: transferAmountPaise >= 100 ? "pending" :
         "notRequired", transferId: null, attempts: 0, lastError: null},
       createdAtMillis: nowMillis, updatedAtMillis: nowMillis,
     };
     if (!validateHostMembershipChargeDocument(charge)) return null;
     tx.create(chargeRef, charge);
     return payment.id;
+  });
+}
+
+/**
+ * The commission statement's membership source: one organizer's captured
+ * charges recorded after `afterMillis` and up to `throughMillis`, oldest
+ * first, each with its frozen terms. Bounded; the caller pages by passing
+ * the last createdAtMillis it saw as the next `afterMillis`.
+ */
+export async function listHostMembershipChargesForStatement(params: {
+  db: FirebaseFirestore.Firestore; organizerId: string;
+  afterMillis: number; throughMillis: number; limit?: number;
+}): Promise<Array<{chargeId: string; charge: HostMembershipChargeDocument}>> {
+  const limit = Math.min(Math.max(params.limit ?? 200, 1), 500);
+  const snap = await params.db.collection(collections.charges)
+    .where("organizerId", "==", params.organizerId)
+    .where("createdAtMillis", ">", params.afterMillis)
+    .where("createdAtMillis", "<=", params.throughMillis)
+    .orderBy("createdAtMillis", "asc").limit(limit).get();
+  return snap.docs.map((doc) => {
+    const charge = doc.data();
+    if (!validateHostMembershipChargeDocument(charge)) {
+      throw new HostMembershipIntegrityError(`Invalid ${doc.ref.path}`);
+    }
+    return {chargeId: doc.id, charge};
   });
 }
 
@@ -141,9 +185,9 @@ export async function reconcileHostMembershipChargesOnce(
     .where("transfer.state", "in", ["pending", "failed", "requesting"])
     .limit(batchSize).get();
   if (snap.empty) return 0;
-  const config = await runtime.config();
-  hostMembershipFeeBasisPoints(config);
-  const provider = runtime.provider(config);
+  // Only platformSplit charges are ever pending: they live on Catch's
+  // platform account and are split to the organizer's Route account.
+  const provider = await runtime.platformProvider();
   let settled = 0;
   for (const doc of snap.docs) {
     const state = await settleMembershipCharge({db, provider, runtime,

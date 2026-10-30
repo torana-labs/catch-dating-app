@@ -30,8 +30,7 @@ async function fixture() {
   const deps = {db: h.db, configurationVersion: version, now: () => 1000,
     profile: {schema: "catch.razorpay-platform-payments/v1", mode: "test",
       platformAccountId: "acc_platform", keyId: "rzp_test_platform",
-      keySecret: "key-secret", webhookSecret: "webhook-secret",
-      feeBasisPoints: {formFee: 250, eventAdmission: 500}},
+      keySecret: "key-secret", webhookSecret: "webhook-secret"},
     provider: {
       fetchPayment: async () => ({id: "pay_one", orderId: "order_one",
         amount: 10000, currency: "INR", status: "captured", captured: true,
