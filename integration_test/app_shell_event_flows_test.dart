@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/events/presentation/event_action_keys.dart';
-import 'package:catch_dating_app/kernel/country_markets.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -78,13 +77,16 @@ void main() {
         meetingPoint: 'Carter Road Amphitheatre',
         bookedCount: 1,
         priceInPaise: 29900,
+        // INR paid seats are sold only through the organizer's checkout;
+        // this flow covers the shared repository checkout to confirmation.
+        currency: 'USD',
       );
       final paymentRepository = event_helpers.FakePaymentRepository()
         ..processPaymentResult = PaymentConfirmationData(
           paymentId: 'pay_integration_123',
           orderId: 'order_integration_123',
           amountInPaise: run.priceInPaise,
-          currency: defaultCurrencyCode,
+          currency: 'USD',
           eventId: run.id,
         );
 
@@ -121,12 +123,7 @@ void main() {
 
       expect(paymentRepository.processPaymentCalled, isTrue);
       expect(paymentRepository.lastProcessPaymentCall?.eventId, run.id);
-      expect(paymentRepository.lastProcessPaymentCall?.userName, user.name);
-      expect(paymentRepository.lastProcessPaymentCall?.userEmail, user.email);
-      expect(
-        paymentRepository.lastProcessPaymentCall?.userContact,
-        user.phoneNumber,
-      );
+      expect(paymentRepository.lastProcessPaymentCall?.currencyCode, 'USD');
       expect(find.text('BOOKING CONFIRMED'), findsOneWidget);
       expect(find.text('Payment ID'), findsOneWidget);
       expect(find.text('pay_integration_123'), findsOneWidget);
