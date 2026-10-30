@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
+import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
     as schema_contracts;
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';

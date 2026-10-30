@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_validation.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:catch_dating_app/kernel/country_markets.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'onboarding_profile_draft.freezed.dart';

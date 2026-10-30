@@ -12,7 +12,6 @@ import 'package:catch_dating_app/contexts/events/domain/event_public_details.dar
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_scope_notice.dart';
@@ -41,6 +40,7 @@ import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/platform/theme/activity_palette.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

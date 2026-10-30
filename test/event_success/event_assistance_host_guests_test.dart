@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_host_guests.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_assistance_host_guests_callable_response.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/event_assistance_host_guests_callable_response.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

@@ -1,13 +1,13 @@
 import 'package:catch_dating_app/contexts/live/domain/event_sender_preference.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_assistance_sms_preference_callable_response.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_rcs_preference_callable_response.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_whatsapp_preference_callable_response.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schemas/list_event_rcs_preferences_callable_response.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schemas/list_event_sms_preferences_callable_response.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schemas/list_event_whatsapp_preferences_callable_response.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schemas/set_event_assistance_sms_preference_callable_payload.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schemas/set_event_rcs_preference_callable_payload.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schemas/set_event_whatsapp_preference_callable_payload.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/event_assistance_sms_preference_callable_response.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/event_rcs_preference_callable_response.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/event_whatsapp_preference_callable_response.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/list_event_rcs_preferences_callable_response.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/list_event_sms_preferences_callable_response.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/list_event_whatsapp_preferences_callable_response.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/set_event_assistance_sms_preference_callable_payload.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/set_event_rcs_preference_callable_payload.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/set_event_whatsapp_preference_callable_payload.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

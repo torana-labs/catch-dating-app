@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/profile_schema_contracts.g.dart'
-    as schema_contracts;
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/profile_schema_contracts.g.dart'
+    as schema_contracts;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
