@@ -18248,10 +18248,10 @@
       "contract": {
         "props": [
           {
-            "name": "club",
+            "name": "organizer",
             "type": "object",
             "required": true,
-            "dartType": "Club"
+            "dartType": "Organizer"
           },
           {
             "name": "compact",

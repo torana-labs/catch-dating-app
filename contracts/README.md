@@ -206,12 +206,12 @@ node tool/contracts/check_storage_contract.mjs
 
 ## Dart Patch Classes
 
-`UpdateUserProfilePatch` and `UpdateClubPatch` are generated patch helper
-classes emitted into
+`UpdateUserProfilePatch` is a generated patch helper class emitted into
 `lib/platform/schema_contracts/generated/callable_request_dtos.g.dart`.
-The old domain paths remain compatibility exports so existing repository and
-controller imports do not need to move in the same pass. Their `toJson()` output
-is validated against
+`UpdateOrganizerPatch` stays handwritten in
+`lib/contexts/organizers/domain/update_organizer_patch.dart`, because the
+generator cannot emit patch helpers for arrays of embedded objects. Their
+`toJson()` output is validated against
 `contracts/patches/update_user_profile.schema.json` and
 `contracts/callables/update_club_payload.schema.json` by
 `test/core/update_user_profile_patch_test.dart` and
@@ -230,7 +230,7 @@ re-exported from feature-local `*_callable_dtos.dart` files. The generator
 emits typed nested/domain fields for create payloads that already have stable
 Dart domain objects, including `EventMeetingLocation`, `EventPolicyBundle`,
 `EventFormatSnapshot`, `EventSuccessDefaults`, `EventConstraints`, and
-`ClubHostDefaults`; `toJson()` on the generated request owns the final wire
+`OrganizerHostDefaults`; `toJson()` on the generated request owns the final wire
 shape. Feature-local adapters are responsible only for translating domain
 models into those generated request constructors.
 

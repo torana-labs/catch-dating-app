@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.93.0
+version: 1.94.0
 updated: 2026-10-30
 owner: app_architecture
 status: active
@@ -189,11 +189,16 @@ and authority for passed external events is a named app-team dependency. Until
 that dedicated flow exists, the app may expose eligibility in domain state but
 must not route the user into a generic or fabricated review workflow.
 
-`lib/organizers/` is the canonical import surface. Existing `Club` Dart model,
-repository, provider, and `lib/organizers/` filenames are transitional aliases for
-binary/source compatibility and may not justify new club-specific persistence,
-routes, or copy. Their removal follows the remote parity and released-client
-window in `docs/migrations/clubs_to_organizers.md`.
+`lib/organizers/` is the canonical import surface. Flutter code names say
+organizer: Dart types, providers, files, folders, route names and localization
+keys (`Organizer`, `OrganizersRepository`, `lib/organizers/`,
+`Routes.hostOrganizersScreen`). Club stays in Dart only as the `club` subtype
+(`OrganizerType.club`, run clubs, stored enum values) and in the names the
+generated schema contracts still declare (`clubId`, `clubPhotos`, the legacy
+club callable requests), which rename with those contracts.
+`contracts:organizer-nomenclature` fails on any other club name in Flutter
+code; `tool/architecture/rename_to_organizer.mjs` is the codemod that renames
+one.
 
 1. Inside a bounded context the folders are `domain`, `data`, `actions` and
    `parts` (see [Bounded Context Contract](#bounded-context-contract)). Legacy
@@ -444,7 +449,9 @@ PRs:
    path lines; conflicts are resolved by rerunning the script on the latest
    main, and its imports-only mode updates other open branches.
 3. **Finish.** Sort `lib/core/` into platform, kernel, pages and context parts,
-   and complete the Club to Organizer rename in code.
+   and rename Club to Organizer in Flutter code with a committed codemod whose
+   `--verify` mode proves the rename commit is its exact output. Wire names
+   (contracts, Functions, rules, route parameters) follow end to end.
 
 The baseline is empty when this phase ends.
 
@@ -553,7 +560,7 @@ applied after this spec uses these owners:
 - Shared activity/event visuals (cards, thumbnails, activity badges and map
   pins) live in `lib/contexts/events/parts`, not under
   `events/presentation/widgets`.
-- Club display-name lookup is a data/provider seam in
+- Organizer display-name lookup is a data/provider seam in
   `lib/contexts/organizers/data`.
 
 ### Explore discovery scope and filter boundary
@@ -562,7 +569,7 @@ Explore display models are split by responsibility: `explore_screen_state.dart`
 owns route branches and empty recovery; `explore_chrome_state.dart` owns search,
 city and map-launcher display; `explore_filter_state.dart` owns filter choices
 and live counts; `explore_event_display_state.dart` and
-`explore_club_display_state.dart` own event and organizer labels;
+`explore_organizer_display_state.dart` own event and organizer labels;
 `explore_mixed_feed_state.dart` owns feed ordering and grouping. These libraries
 accept plain values and keep provider reads in the route boundary.
 The screen mounts `ExploreScreenEmptyState`, `ExploreClearButton`, and
@@ -2674,18 +2681,20 @@ and the adjacent generated output stays checked in.
 
 ```dart
 @riverpod
-Future<Map<String, String>> clubNameLookup(
+Future<Map<String, String>> organizerNameLookup(
   Ref ref,
   OrganizerNameLookupQuery query,
 ) async {
-  if (query.clubIds.isEmpty) return const <String, String>{};
+  if (query.organizerIds.isEmpty) return const <String, String>{};
 
   final repository = ref.watch(organizersRepositoryProvider);
-  final clubs = await Future.wait(query.clubIds.map(repository.fetchClub));
+  final organizers = await Future.wait(
+    query.organizerIds.map(repository.fetchOrganizer),
+  );
 
   return {
-    for (final club in clubs)
-      if (club != null) club.id: club.name,
+    for (final organizer in organizers)
+      if (organizer != null) organizer.id: organizer.name,
   };
 }
 ```
