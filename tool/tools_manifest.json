@@ -5,6 +5,7 @@
     "mandatoryCheckIds": [
       "docs:metadata",
       "meta:enforcement-integrity",
+      "meta:brand-literals",
       "meta:repository-root-hygiene",
       "operations:boundaries"
     ],
@@ -7133,6 +7134,47 @@
       "rules": [
         "REPO-ROOT-HYGIENE-001"
       ]
+    },
+    {
+      "id": "meta:brand-literals",
+      "category": "meta",
+      "path": "packages/brand/check_brand_literals.mjs",
+      "command": "node packages/brand/check_brand_literals.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "packages/brand/brand.json",
+        "packages/brand/applied.json",
+        "packages/brand/managed_surfaces.json",
+        "packages/brand/literal_allowlist.json",
+        "packages/brand/index.mjs",
+        "packages/brand/managed.mjs",
+        "packages/brand/generate.mjs",
+        "packages/brand/brand.test.mjs"
+      ],
+      "role": "gate",
+      "description": "Keeps the brand in packages/brand/brand.json: fails when its domain, Instagram handle, support email or phone is hard-coded outside the record, its generated copies and managed surfaces, or the display name appears in website copy; the allowlist of unmigrated files may only shrink. Also fails when a generated copy or managed surface is stale.",
+      "checks": [
+        "node --check packages/brand/check_brand_literals.mjs",
+        "node packages/brand/generate.mjs --check",
+        "node --test packages/brand/brand.test.mjs",
+        "node packages/brand/check_brand_literals.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "packages/brand/brand.test.mjs",
+        "contains": [
+          "the guard derives its patterns from the record",
+          "the allowlist may only shrink",
+          "a rebrand rewrites every managed surface and leaves the noun exceptions alone"
+        ]
+      }
     },
     {
       "id": "meta:repository-hygiene-cleaner",

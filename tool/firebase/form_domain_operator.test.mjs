@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import fs from "node:fs";
 import {configuredDomainTarget, parseDomainOperatorArgs, verifyDomainProviderTarget, runDomainOperator} from "./form_domain_operator.mjs";
+import {brand} from "@catch/brand";
 
 const base = ["--env", "prod", "--hostname", "forms.client.example"];
 const owner = ["--organizer-id", "organizer-1", "--form-id", "form-1", "--requested-by-manager", "manager-1"];
@@ -106,7 +107,7 @@ function operatorFixture({action = "activate", apply = false} = {}) {
     },
   };
   const policy = {
-    normalizeCustomFormHost: (host) => host.endsWith(".catchdates.com") ? null : host,
+    normalizeCustomFormHost: (host) => host.endsWith(`.${brand.web.domain}`) ? null : host,
     parseOrganizerFormDomain: (value) => value,
     hasCurrentDomainOwnership: (current, proof) => proof?.txtValues.includes(current.ownershipChallenge) &&
       proof.cnameTarget === current.expectedCname,
@@ -150,7 +151,7 @@ test("activation refuses unready hosting, origin grants, wrong bindings and chan
     if (change === "generation") h.setRecord({generation: 2});
     if (change === "form") h.setRecord({formId: "other"});
     if (change === "authority") h.setGuard(async () => {throw new Error("manager revoked");});
-    if (change === "reserved-host") h.target.hostname = "forms.catchdates.com";
+    if (change === "reserved-host") h.target.hostname = `forms.${brand.web.domain}`;
     await assert.rejects(h.run);
     assert.deepEqual(h.writes, [], change);
     assert.ok(h.calls.every((call) => call.method === "GET"));

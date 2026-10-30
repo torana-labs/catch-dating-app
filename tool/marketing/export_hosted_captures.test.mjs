@@ -11,6 +11,7 @@ import {extractSteps} from "../harness/lib/workflow_steps.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {canonicalInventory, exportHostedCaptures, MAX_CAPTURES, resolveCaptureRequest} from "./export_hosted_captures.mjs";
 import {planHostedCaptures} from "./lib/capture_seeds.mjs";
+import {brand} from "@catch/brand";
 
 const repository = "owner/repo";
 const flutterVersion = fs.readFileSync(fromRepo("tool/ci/toolchain.env"), "utf8")
@@ -64,7 +65,7 @@ function fixture(t, {web = false} = {}) {
   const png = fs.readFileSync(fromRepo(manifest.captures[0].sourcePath));
   if (web) {
     manifest.captures.push({...manifest.captures[0], id: "guest-join-phone", kind: "web-capture", audience: "guest",
-      fixtureKey: undefined, routeId: "event_runtime", address: "catchdates.com",
+      fixtureKey: undefined, routeId: "event_runtime", address: brand.web.domain,
       story: {file: "website/src/stories/WebCaptures.stories.tsx", id: "marketing-website-web-captures--join-phone-check-in"},
       sourcePath: "artifacts/marketing/app-screenshots/guest-join-phone.png",
       websitePath: "website/public/assets/app-screenshots/guest-join-phone.png"});

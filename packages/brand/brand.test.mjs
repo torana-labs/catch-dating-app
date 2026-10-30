@@ -3,7 +3,6 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
-import Ajv2020 from "ajv/dist/2020.js";
 import record from "./brand.json" with {type: "json"};
 import {applyBrand, applyBrandText, brand, brandConsistencyErrors, webUrl} from "./index.mjs";
 import {compare, rules, scanText} from "./check_brand_literals.mjs";
@@ -13,11 +12,34 @@ import {rewriteSurface, surfacePaths} from "./managed.mjs";
 const packageDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(packageDir, "../..");
 
+// The schema uses only object, string, null, required, pattern, length and
+// local $ref, so a small walker validates it without a dependency.
+function schemaErrors(root, node, value, at) {
+  const rule = node.$ref ? root.$defs[node.$ref.replace("#/$defs/", "")] : node;
+  const types = [rule.type].flat();
+  if (value === null) return types.includes("null") ? [] : [`${at} must not be null`];
+  if (types.includes("object")) {
+    if (typeof value !== "object") return [`${at} must be an object`];
+    const errors = (rule.required ?? []).filter((key) => !(key in value)).map((key) => `${at}.${key} is required`);
+    for (const [key, child] of Object.entries(value)) {
+      if (!rule.properties?.[key]) errors.push(`${at}.${key} is not allowed`);
+      else errors.push(...schemaErrors(root, rule.properties[key], child, `${at}.${key}`));
+    }
+    return errors;
+  }
+  if (typeof value !== "string") return [`${at} must be a string`];
+  const errors = [];
+  if (rule.pattern && !new RegExp(rule.pattern, "u").test(value)) errors.push(`${at} does not match ${rule.pattern}`);
+  if (rule.minLength && value.length < rule.minLength) errors.push(`${at} is too short`);
+  if (rule.maxLength && value.length > rule.maxLength) errors.push(`${at} is too long`);
+  return errors;
+}
+
 test("the record matches its schema and keeps every origin on the primary domain", () => {
   const schema = JSON.parse(fs.readFileSync(path.join(packageDir, "brand.schema.json"), "utf8"));
-  const validate = new Ajv2020({allErrors: true}).compile(schema);
-  assert.ok(validate(record), JSON.stringify(validate.errors));
+  assert.deepEqual(schemaErrors(schema, schema, record, "brand"), []);
   assert.deepEqual(brandConsistencyErrors(), []);
+  assert.match(schemaErrors(schema, schema, {...record, web: {...record.web, origin: "http://x"}}, "brand").join(), /web\.origin/u);
   const moved = {...brand, web: {...brand.web, adminOrigin: "https://admin.example.org"}};
   assert.match(brandConsistencyErrors(moved).join("\n"), /web\.adminOrigin/u);
 });

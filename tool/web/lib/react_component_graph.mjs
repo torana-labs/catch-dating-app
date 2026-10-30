@@ -6,7 +6,7 @@ import ts from "typescript";
 // resolved by the TypeScript checker through barrels, re-exports and dynamic
 // imports. A surface's consumer roots are production code that renders its
 // components without exporting any of its own: the Next App Router routes in
-// website/app serve catchdates.com from website/src components.
+// website/app serve the public site from website/src components.
 export const reactComponentSurfaces = Object.freeze([
   {id: "website", root: "website/src", tsconfig: "website/tsconfig.json", consumerRoots: ["website/app"]},
   {id: "admin", root: "admin/src", tsconfig: "admin/tsconfig.json"},

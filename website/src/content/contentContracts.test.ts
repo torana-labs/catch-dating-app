@@ -6,9 +6,9 @@ import {validateWebsiteMeta, validatedWebsiteMeta} from "./metaContract";
 
 describe("website content contracts", () => {
   it("interpolates exact token sets and rejects missing or extra values", () => {
-    expect(interpolateContent("Catch in {city}", {city: "Delhi"})).toBe("Catch in Delhi");
-    expect(() => interpolateContent("Catch in {city}", {} as never)).toThrow(/missing: city/u);
-    expect(() => interpolateContent("Catch", {city: "Delhi"} as never)).toThrow(/extra: city/u);
+    expect(interpolateContent("Events in {city}", {city: "Delhi"})).toBe("Events in Delhi");
+    expect(() => interpolateContent("Events in {city}", {} as never)).toThrow(/missing: city/u);
+    expect(() => interpolateContent("Events", {city: "Delhi"} as never)).toThrow(/extra: city/u);
   });
 
   it("accepts the committed metadata source and rejects unsupported route keys", () => {

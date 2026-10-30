@@ -36,7 +36,12 @@
     {"path": "tool/marketing/capture_manifest.json", "kind": "text"},
     {"path": "tool/firebase/environment_difference_policy.json", "kind": "text"},
     {"path": "tool/remote_ops_manifest.json", "kind": "text"},
-    {"path": "tool/tools_manifest.json", "kind": "text"}
+    {"path": "tool/tools_manifest.json", "kind": "text"},
+    {"path": "tool/marketing/export_app_screenshots.mjs", "kind": "text"},
+    {"path": "tool/marketing/lib/web_capture_screen.mjs", "kind": "text"},
+    {"path": "packages/web-ui/src/components/CatchGroundCard.stories.tsx", "kind": "text"},
+    {"path": "packages/web-ui/src/components/CatchQrCode.stories.tsx", "kind": "text"},
+    {"path": "packages/web-ui/src/components/CatchQrCode.test.tsx", "kind": "text"}
   ],
   "regenerated": [
     "lib/l10n/generated/app_localizations_en.dart",

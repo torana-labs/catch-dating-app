@@ -429,11 +429,11 @@ jobs:
 
       - name: Verify marketing production unknown paths return HTTP 404
         if: ${{ inputs.surface == 'marketing' && steps.legacy-runtime.outputs.retired != 'true' && steps.authorize.outputs.superseded != 'true' && steps.freshness.outputs.superseded != 'true' }}
-        run: node website/scripts/verifyHosting404.mjs https://catchdates.com
+        run: node website/scripts/verifyHosting404.mjs "$(node -p 'require("./packages/brand/brand.json").web.origin')"
 
       - name: Verify launch-critical marketing production routes
         if: ${{ inputs.surface == 'marketing' && steps.legacy-runtime.outputs.retired != 'true' && steps.authorize.outputs.superseded != 'true' && steps.freshness.outputs.superseded != 'true' }}
-        run: node website/scripts/probeProduction.mjs --base-url https://catchdates.com --json
+        run: node website/scripts/probeProduction.mjs --base-url "$(node -p 'require("./packages/brand/brand.json").web.origin')" --json
 
       - name: Verify the standalone Host web shell
         if: ${{ inputs.surface == 'host' && steps.authorize.outputs.superseded != 'true' && steps.freshness.outputs.superseded != 'true' }}

@@ -32,10 +32,18 @@ export function replacements(applied, current, fields = "all") {
     .sort((a, b) => b.from.length - a.from.length);
 }
 
+// A value written inside a regular expression literal (catchdates\.com) is
+// rewritten to the escaped new value.
+const regexEscaped = (text) => text.replace(/[.\/]/gu, "\\$&");
+
 export function rewriteText(text, changes) {
   if (changes.length === 0) return text;
-  const byValue = new Map(changes.map((change) => [change.from, change.to]));
-  const pattern = new RegExp(`(?<![\\w-])(?:${changes.map((change) => escape(change.from)).join("|")})(?![\\w-])`, "gu");
+  const variants = changes.flatMap((change) => [[change.from, change.to],
+    [regexEscaped(change.from), regexEscaped(change.to)]])
+    .filter(([from], index, all) => all.findIndex(([other]) => other === from) === index)
+    .sort(([a], [b]) => b.length - a.length);
+  const byValue = new Map(variants);
+  const pattern = new RegExp(`(?<![\\w-])(?:${variants.map(([from]) => escape(from)).join("|")})(?![\\w-])`, "gu");
   return text.replace(pattern, (match) => byValue.get(match));
 }
 

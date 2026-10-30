@@ -1,44 +1,24 @@
 {
   "domain": {
-    ".github/workflows/_web-hosting-promote.yml": 2,
     "functions/src/operations/supplyIntake/autoPublish.ts": 1,
     "functions/src/waitlist/joinWaitlist.test.ts": 8,
     "functions/src/waitlist/joinWaitlist.ts": 7,
     "operations/src/workflows/supply-intake/config/event_publication_policy.json": 1,
     "operations/test/supply-intake-event-publication.test.mjs": 1,
-    "packages/web-ui/src/components/CatchGroundCard.stories.tsx": 2,
     "packages/web-ui/src/components/CatchMenu.stories.tsx": 1,
-    "packages/web-ui/src/components/CatchQrCode.stories.tsx": 4,
-    "packages/web-ui/src/components/CatchQrCode.test.tsx": 3,
-    "tool/ci/web_hosting_workflow.test.mjs": 2,
     "tool/cloudflare/apply_edge_policy.mjs": 1,
     "tool/cloudflare/apply_edge_policy.test.mjs": 6,
     "tool/cloudflare/edge_policy.json": 3,
-    "tool/firebase/form_domain_operator.test.mjs": 2,
-    "tool/firebase/form_upload_identity.mjs": 1,
-    "tool/firebase/prepare_functions_params_for_deploy.test.mjs": 2,
-    "tool/marketing/export_app_screenshots.mjs": 2,
-    "tool/marketing/export_hosted_captures.test.mjs": 1,
-    "tool/marketing/lib/web_capture_screen.mjs": 1,
-    "tool/marketing/sync_website_media.test.mjs": 1,
-    "tool/marketing/web_captures.test.mjs": 1,
-    "tool/marketing/website_meta_contract.test.mjs": 2,
-    "tool/platform/verify_ios_release_identity.test.mjs": 2,
     "tool/web/check_shared_web_ui_adoption.mjs": 1,
-    "tool/web/lib/react_component_graph.mjs": 1,
     "website/scripts/next/deployedSmoke.mjs": 4,
     "website/scripts/next/deployedSmoke.test.mjs": 7,
     "website/src/server/robotsPolicy.test.ts": 1,
     "website/src/server/robotsPolicy.ts": 2
   },
-  "instagram-handle": {
-    "tool/firebase/prepare_functions_params_for_deploy.test.mjs": 2
-  },
+  "instagram-handle": {},
   "name-in-copy": {
-    "website/src/content/contentContracts.test.ts": 3,
     "website/src/content/homePage.ts": 13,
-    "website/src/content/markets/in.ts": 1,
-    "website/src/content/meta.schema.json": 1
+    "website/src/content/markets/in.ts": 1
   },
   "support-email": {}
 }
