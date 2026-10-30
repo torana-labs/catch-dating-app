@@ -19834,7 +19834,7 @@
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "coreAppErrorMessageVisiblecopyPaidBookingNotInApp": "This event isn’t taking paid bookings in the Catch app yet. You have not been charged.",
+  "coreAppErrorMessageVisiblecopyPaidBookingNotInApp": "This event isn’t taking paid bookings in the app yet. You have not been charged.",
   "@coreAppErrorMessageVisiblecopyPaidBookingNotInApp": {
     "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy): the event's paid seats are not sold through the organiser's checkout in the app.",
     "x-audience": "shared",
@@ -32078,9 +32078,9 @@
   "@hostPayoutsRazorpayNeedsReconnect": {"description": "Payouts screen badge: the connected Razorpay account can no longer take payments.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
   "hostPayoutsRazorpayReconnectTitle": "Reconnect Razorpay",
   "@hostPayoutsRazorpayReconnectTitle": {"description": "Payouts and form fee settings: action that replaces a Razorpay connection that cannot take payments.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
-  "hostPayoutsRazorpayReconnectBody": "Razorpay is no longer accepting Catch’s access to this account, so new paid bookings, memberships and form fees are paused. Reconnect your account to take payments again.",
+  "hostPayoutsRazorpayReconnectBody": "Razorpay is no longer accepting our access to this account, so new paid bookings, memberships and form fees are paused. Reconnect your account to take payments again.",
   "@hostPayoutsRazorpayReconnectBody": {"description": "Payouts screen: why reconnecting is needed and what is paused until then.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
-  "hostPayoutsRazorpayConnectingBody": "Didn’t finish approving Catch in Razorpay? Start again here. Catch replaces the unfinished connection, so you keep one account.",
+  "hostPayoutsRazorpayConnectingBody": "Didn’t finish approving us in Razorpay? Start again here. We replace the unfinished connection, so you keep one account.",
   "@hostPayoutsRazorpayConnectingBody": {"description": "Payouts screen: help for a Razorpay connection whose sign-in was not finished.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
   "membershipsPricePerMonth": "{price}/mo",
   "@membershipsPricePerMonth": {"description": "Membership price billed monthly.", "x-audience": "shared", "x-owner": "product", "x-surface": "host_memberships.presentation", "placeholders": {"price": {"type": "String"}}},

@@ -11043,7 +11043,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get coreAppErrorMessageVisiblecopyPaidBookingNotInApp =>
-      'This event isn’t taking paid bookings in the Catch app yet. You have not been charged.';
+      'This event isn’t taking paid bookings in the app yet. You have not been charged.';
 
   @override
   String get coreAppErrorMessageVisiblecopyWeCouldNotFind =>
@@ -25472,11 +25472,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostPayoutsRazorpayReconnectBody =>
-      'Razorpay is no longer accepting Catch’s access to this account, so new paid bookings, memberships and form fees are paused. Reconnect your account to take payments again.';
+      'Razorpay is no longer accepting our access to this account, so new paid bookings, memberships and form fees are paused. Reconnect your account to take payments again.';
 
   @override
   String get hostPayoutsRazorpayConnectingBody =>
-      'Didn’t finish approving Catch in Razorpay? Start again here. Catch replaces the unfinished connection, so you keep one account.';
+      'Didn’t finish approving us in Razorpay? Start again here. We replace the unfinished connection, so you keep one account.';
 
   @override
   String membershipsPricePerMonth({required String price}) {

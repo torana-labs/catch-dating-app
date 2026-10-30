@@ -17271,7 +17271,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy): the event's paid seats are not sold through the organiser's checkout in the app.
   ///
   /// In en, this message translates to:
-  /// **'This event isn’t taking paid bookings in the Catch app yet. You have not been charged.'**
+  /// **'This event isn’t taking paid bookings in the app yet. You have not been charged.'**
   String get coreAppErrorMessageVisiblecopyPaidBookingNotInApp;
 
   /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
@@ -41046,13 +41046,13 @@ abstract class AppLocalizations {
   /// Payouts screen: why reconnecting is needed and what is paused until then.
   ///
   /// In en, this message translates to:
-  /// **'Razorpay is no longer accepting Catch’s access to this account, so new paid bookings, memberships and form fees are paused. Reconnect your account to take payments again.'**
+  /// **'Razorpay is no longer accepting our access to this account, so new paid bookings, memberships and form fees are paused. Reconnect your account to take payments again.'**
   String get hostPayoutsRazorpayReconnectBody;
 
   /// Payouts screen: help for a Razorpay connection whose sign-in was not finished.
   ///
   /// In en, this message translates to:
-  /// **'Didn’t finish approving Catch in Razorpay? Start again here. Catch replaces the unfinished connection, so you keep one account.'**
+  /// **'Didn’t finish approving us in Razorpay? Start again here. We replace the unfinished connection, so you keep one account.'**
   String get hostPayoutsRazorpayConnectingBody;
 
   /// Membership price billed monthly.
