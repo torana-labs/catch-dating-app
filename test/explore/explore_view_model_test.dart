@@ -13,10 +13,10 @@ import 'package:catch_dating_app/contexts/events/data/external_event_repository.
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/explore.dart';
@@ -32,8 +32,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart';
 import '../events/events_test_helpers.dart' as event_test;
+import '../organizers/organizers_test_helpers.dart';
 import '../test_pump_helpers.dart';
 import 'explore_device_location_fakes.dart';
 
@@ -43,22 +43,24 @@ CityData _city(String name) => cityOptionByName(name)!.toCityData();
 
 String get _mumbaiMarketId => _city('mumbai').effectiveMarketId;
 
-ClubMembership _membership({required String clubId, String uid = 'runner-1'}) =>
-    ClubMembership(
-      id: clubMembershipId(clubId: clubId, uid: uid),
-      clubId: clubId,
-      uid: uid,
-      role: ClubMembershipRole.member,
-      status: ClubMembershipStatus.active,
-      joinedAt: DateTime(2026),
-    );
+OrganizerMembership _membership({
+  required String clubId,
+  String uid = 'runner-1',
+}) => OrganizerMembership(
+  id: organizerMembershipId(clubId: clubId, uid: uid),
+  clubId: clubId,
+  uid: uid,
+  role: OrganizerMembershipRole.member,
+  status: OrganizerMembershipStatus.active,
+  joinedAt: DateTime(2026),
+);
 
 ExploreEventItem _exploreItem({
   required String id,
-  required Club club,
+  required Organizer organizer,
   required DateTime startTime,
-  bool isJoinedClubMember = false,
-  bool isFollowedClubSignal = false,
+  bool isJoinedOrganizerMember = false,
+  bool isFollowedOrganizerSignal = false,
   int? bookedCount,
   int priceInPaise = 0,
   double? distanceFromUserKm,
@@ -68,7 +70,7 @@ ExploreEventItem _exploreItem({
 }) {
   final event = buildEvent(
     id: id,
-    clubId: club.id,
+    clubId: organizer.id,
     startTime: startTime,
     bookedCount: bookedCount,
     priceInPaise: priceInPaise,
@@ -83,10 +85,10 @@ ExploreEventItem _exploreItem({
       startingPointLat: startingPointLat,
       startingPointLng: startingPointLng,
     ),
-    club: club,
+    organizer: organizer,
     availability: availability,
-    isJoinedClubMember: isJoinedClubMember,
-    isFollowedClubSignal: isFollowedClubSignal,
+    isJoinedOrganizerMember: isJoinedOrganizerMember,
+    isFollowedOrganizerSignal: isFollowedOrganizerSignal,
     distanceFromUserKm: distanceFromUserKm,
   );
 }
@@ -96,16 +98,16 @@ void main() {
     test('ExploreDiscoveryEmptyState derives provider-free empty actions', () {
       final noSource = ExploreDiscoveryEmptyState.from(
         cityLabel: 'Mumbai',
-        hasSourceClubs: false,
+        hasSourceOrganizers: false,
         hasSearch: false,
         filters: const ExploreFilterSelection(),
       );
-      expect(noSource.kind, ExploreDiscoveryEmptyKind.noSourceClubs);
+      expect(noSource.kind, ExploreDiscoveryEmptyKind.noSourceOrganizers);
       expect(noSource.action, ExploreDiscoveryEmptyAction.none);
 
       final searchAndFilters = ExploreDiscoveryEmptyState.from(
         cityLabel: 'Mumbai',
-        hasSourceClubs: true,
+        hasSourceOrganizers: true,
         hasSearch: true,
         filters: const ExploreFilterSelection(highRatedOnly: true),
       );
@@ -122,7 +124,7 @@ void main() {
 
       final filtersOnly = ExploreDiscoveryEmptyState.from(
         cityLabel: 'Mumbai',
-        hasSourceClubs: true,
+        hasSourceOrganizers: true,
         hasSearch: false,
         filters: const ExploreFilterSelection(highRatedOnly: true),
       );
@@ -334,9 +336,9 @@ void main() {
     test('ExploreFilterSheetState derives distance and area options', () {
       final sheetState = ExploreFilterSheetState.from(
         filters: const ExploreFilterSelection(area: 'Bandra'),
-        sourceClubs: [
-          buildClub(id: 'area-khar', area: 'Khar'),
-          buildClub(id: 'area-empty', area: ''),
+        sourceOrganizers: [
+          buildOrganizer(id: 'area-khar', area: 'Khar'),
+          buildOrganizer(id: 'area-empty', area: ''),
         ],
         l10n: _l10n,
       );
@@ -383,7 +385,7 @@ void main() {
     test('ExploreFilterSheetState keeps cursor counts honest', () {
       final state = ExploreFilterSheetState.from(
         filters: const ExploreFilterSelection(),
-        sourceClubs: const [],
+        sourceOrganizers: const [],
         viewModel: const ExploreFeedViewModel(items: [], isExhaustive: false),
         l10n: _l10n,
       );
@@ -403,10 +405,10 @@ void main() {
     });
 
     test('ExploreCoverStoryState derives provider-free cover copy', () {
-      final club = buildClub(id: 'cover-club', name: 'Cover Club');
+      final organizer = buildOrganizer(id: 'cover-club', name: 'Cover Club');
       final item = _exploreItem(
         id: 'cover-event',
-        club: club,
+        organizer: organizer,
         startTime: DateTime(2026, 7, 2, 18),
         bookedCount: 19,
       );
@@ -426,16 +428,16 @@ void main() {
 
     test('ranked hero beats chronology and stays in the feed', () {
       final now = DateTime(2026, 7, 1, 10);
-      final club = buildClub(id: 'ranked-hero-club');
+      final organizer = buildOrganizer(id: 'ranked-hero-club');
       final soonest = _exploreItem(
         id: 'soonest',
-        club: club,
+        organizer: organizer,
         startTime: DateTime(2026, 7, 1, 18),
         bookedCount: 0,
       );
       final socialProof = _exploreItem(
         id: 'social-proof',
-        club: club,
+        organizer: organizer,
         startTime: DateTime(2026, 7, 2, 18),
         bookedCount: 12,
       );
@@ -450,8 +452,8 @@ void main() {
       );
       final section = ExploreFeedSectionState.from(
         viewModel: viewModel,
-        candidateClubs: const [],
-        joinedClubIds: const {},
+        candidateOrganizers: const [],
+        joinedOrganizerIds: const {},
         showThisWeekList: false,
         l10n: _l10n,
         now: now,
@@ -467,10 +469,10 @@ void main() {
 
     test('blocked events cannot become the Explore hero', () {
       final now = DateTime(2026, 7, 1, 10);
-      final club = buildClub(id: 'eligible-hero-club');
+      final organizer = buildOrganizer(id: 'eligible-hero-club');
       final blocked = _exploreItem(
         id: 'members-only',
-        club: club,
+        organizer: organizer,
         startTime: DateTime(2026, 7, 1, 18),
         bookedCount: 15,
         availability: const ViewerEventAvailability(
@@ -478,19 +480,19 @@ void main() {
           spotsRemaining: 5,
           isSaved: false,
           isHosted: false,
-          isClubMember: false,
+          isOrganizerMember: false,
         ),
       );
       final open = _exploreItem(
         id: 'open-event',
-        club: club,
+        organizer: organizer,
         startTime: DateTime(2026, 7, 2, 18),
         availability: const ViewerEventAvailability(
           status: ViewerEventAvailabilityStatus.open,
           spotsRemaining: 20,
           isSaved: false,
           isHosted: false,
-          isClubMember: false,
+          isOrganizerMember: false,
         ),
       );
 
@@ -501,20 +503,20 @@ void main() {
     });
 
     test('cover CTA describes the next detail action honestly', () {
-      final club = buildClub(id: 'cover-cta-club');
+      final organizer = buildOrganizer(id: 'cover-cta-club');
       final start = DateTime(2026, 7, 2, 18);
       ExploreCoverStoryState stateFor(ViewerEventAvailabilityStatus status) {
         return ExploreCoverStoryState.from(
           _exploreItem(
             id: status.name,
-            club: club,
+            organizer: organizer,
             startTime: start,
             availability: ViewerEventAvailability(
               status: status,
               spotsRemaining: 4,
               isSaved: false,
               isHosted: false,
-              isClubMember: false,
+              isOrganizerMember: false,
             ),
           ),
           l10n: _l10n,
@@ -543,13 +545,13 @@ void main() {
       'ExploreFeedSectionState counts the full feed and keeps the cover event visible',
       () {
         final now = DateTime(2026, 7, 1, 10);
-        final eventClub = buildClub(id: 'event-club');
-        final joinedClub = buildClub(
+        final eventOrganizer = buildOrganizer(id: 'event-club');
+        final joinedOrganizer = buildOrganizer(
           id: 'joined-club',
           name: 'Joined Club',
           nextEventLabel: 'Tonight',
         );
-        final spotlightClub = buildClub(
+        final spotlightOrganizer = buildOrganizer(
           id: 'spotlight-club',
           name: 'Spotlight Club',
           nextEventLabel: 'Tomorrow',
@@ -564,23 +566,23 @@ void main() {
             items: [
               _exploreItem(
                 id: 'featured-event',
-                club: eventClub,
+                organizer: eventOrganizer,
                 startTime: DateTime(2026, 7, 1, 18),
               ),
               _exploreItem(
                 id: 'second-event',
-                club: eventClub,
+                organizer: eventOrganizer,
                 startTime: DateTime(2026, 7, 2, 18),
               ),
               _exploreItem(
                 id: 'third-event',
-                club: eventClub,
+                organizer: eventOrganizer,
                 startTime: DateTime(2026, 7, 3, 18),
               ),
             ],
           ),
-          candidateClubs: [joinedClub, spotlightClub],
-          joinedClubIds: {'joined-club'},
+          candidateOrganizers: [joinedOrganizer, spotlightOrganizer],
+          joinedOrganizerIds: {'joined-club'},
           showThisWeekList: false,
           now: now,
         );
@@ -602,7 +604,7 @@ void main() {
           'second-event',
         );
         expect(
-          (state.cards[2] as ExploreMixedClubSpotlightCard).club.id,
+          (state.cards[2] as ExploreMixedOrganizerSpotlightCard).organizer.id,
           'spotlight-club',
         );
         expect(
@@ -618,23 +620,23 @@ void main() {
             items: [
               _exploreItem(
                 id: 'featured-event',
-                club: eventClub,
+                organizer: eventOrganizer,
                 startTime: DateTime(2026, 7, 1, 18),
               ),
               _exploreItem(
                 id: 'second-event',
-                club: eventClub,
+                organizer: eventOrganizer,
                 startTime: DateTime(2026, 7, 2, 18),
               ),
               _exploreItem(
                 id: 'third-event',
-                club: eventClub,
+                organizer: eventOrganizer,
                 startTime: DateTime(2026, 7, 3, 18),
               ),
             ],
           ),
-          candidateClubs: const [],
-          joinedClubIds: const {},
+          candidateOrganizers: const [],
+          joinedOrganizerIds: const {},
           showThisWeekList: false,
           promoteFeaturedItem: false,
           now: now,
@@ -650,17 +652,17 @@ void main() {
 
     test('ExploreFeedSectionState promotes a real two-day This week strip', () {
       final now = DateTime(2026, 7, 1, 10);
-      final club = buildClub(id: 'week-club');
+      final organizer = buildOrganizer(id: 'week-club');
       final featured = _exploreItem(
         id: 'featured-event',
-        club: club,
+        organizer: organizer,
         startTime: DateTime(2026, 7, 1, 18),
       );
       final weekItems = [
         for (var index = 0; index < 5; index += 1)
           _exploreItem(
             id: 'week-event-$index',
-            club: club,
+            organizer: organizer,
             startTime: DateTime(2026, 7, index + 2, 18),
           ),
       ];
@@ -668,8 +670,8 @@ void main() {
       final promoted = ExploreFeedSectionState.from(
         l10n: _l10n,
         viewModel: ExploreFeedViewModel(items: [featured, ...weekItems]),
-        candidateClubs: const [],
-        joinedClubIds: const {},
+        candidateOrganizers: const [],
+        joinedOrganizerIds: const {},
         showThisWeekList: true,
         now: now,
       );
@@ -685,8 +687,8 @@ void main() {
             ...weekItems.take(minimumExploreThisWeekRecommendationCount),
           ],
         ),
-        candidateClubs: const [],
-        joinedClubIds: const {},
+        candidateOrganizers: const [],
+        joinedOrganizerIds: const {},
         showThisWeekList: true,
         now: now,
       );
@@ -700,13 +702,13 @@ void main() {
             featured,
             _exploreItem(
               id: 'same-day-event',
-              club: club,
+              organizer: organizer,
               startTime: DateTime(2026, 7, 1, 20),
             ),
           ],
         ),
-        candidateClubs: const [],
-        joinedClubIds: const {},
+        candidateOrganizers: const [],
+        joinedOrganizerIds: const {},
         showThisWeekList: true,
         now: now,
       );
@@ -720,8 +722,8 @@ void main() {
     test(
       'mixed feed chronologically merges internal and external plans before clubs',
       () {
-        final club = buildClub(id: 'event-club');
-        final spotlightClub = buildClub(
+        final organizer = buildOrganizer(id: 'event-club');
+        final spotlightOrganizer = buildOrganizer(
           id: 'spotlight-club',
           nextEventLabel: 'Friday',
         );
@@ -738,19 +740,19 @@ void main() {
             items: [
               _exploreItem(
                 id: 'internal-late',
-                club: club,
+                organizer: organizer,
                 startTime: DateTime(2026, 7, 3, 18),
               ),
               _exploreItem(
                 id: 'internal-middle',
-                club: club,
+                organizer: organizer,
                 startTime: DateTime(2026, 7, 2, 18),
               ),
             ],
             externalItems: [external],
           ),
-          candidateClubs: [spotlightClub],
-          joinedClubIds: const {},
+          candidateOrganizers: [spotlightOrganizer],
+          joinedOrganizerIds: const {},
         );
 
         expect(cards, hasLength(4));
@@ -763,7 +765,7 @@ void main() {
           'internal-middle',
         );
         expect(
-          (cards[2] as ExploreMixedClubSpotlightCard).club.id,
+          (cards[2] as ExploreMixedOrganizerSpotlightCard).organizer.id,
           'spotlight-club',
         );
         expect(
@@ -801,27 +803,27 @@ void main() {
           items: const [],
           externalItems: externalItems,
         ),
-        candidateClubs: const [],
-        joinedClubIds: const {},
+        candidateOrganizers: const [],
+        joinedOrganizerIds: const {},
       );
 
       expect(cards.whereType<ExploreMixedExternalEventRowCard>(), hasLength(9));
     });
 
     test('ticket strip joins only uninterrupted internal event rows', () {
-      final club = buildClub(id: 'event-club');
+      final organizer = buildOrganizer(id: 'event-club');
       ExploreMixedEventRowCard internal(String id, int hour) =>
           ExploreMixedEventRowCard(
             _exploreItem(
               id: id,
-              club: club,
+              organizer: organizer,
               startTime: DateTime(2026, 7, 2, hour),
             ),
           );
       final cards = <ExploreMixedCard>[
         internal('first', 10),
         internal('second', 11),
-        ExploreMixedClubRowCard(buildClub(id: 'club-break')),
+        ExploreMixedOrganizerRowCard(buildOrganizer(id: 'club-break')),
         internal('third', 12),
         ExploreMixedExternalEventRowCard(
           ExploreExternalEventItem(
@@ -855,17 +857,17 @@ void main() {
     });
 
     test('mappableEventCount includes required-location event supply', () {
-      final club = buildClub(id: 'map-club');
+      final organizer = buildOrganizer(id: 'map-club');
       final unpinned = _exploreItem(
         id: 'unpinned',
-        club: club,
+        organizer: organizer,
         startTime: DateTime(2026, 7, 2, 11),
       );
       final viewModel = ExploreFeedViewModel(
         items: [
           _exploreItem(
             id: 'pinned',
-            club: club,
+            organizer: organizer,
             startTime: DateTime(2026, 7, 2, 10),
             startingPointLat: 19.06,
             startingPointLng: 72.83,
@@ -876,7 +878,7 @@ void main() {
               startingPointLat: null,
               startingPointLng: null,
             ),
-            club: club,
+            organizer: organizer,
           ),
         ],
         externalItems: [
@@ -896,25 +898,25 @@ void main() {
     });
 
     test('result count uses a plus while cursor pages remain', () {
-      final club = buildClub(id: 'windowed-count-club');
+      final organizer = buildOrganizer(id: 'windowed-count-club');
       final state = ExploreFeedSectionState.from(
         viewModel: ExploreFeedViewModel(
           items: [
             _exploreItem(
               id: 'windowed-one',
-              club: club,
+              organizer: organizer,
               startTime: DateTime(2026, 7, 2, 10),
             ),
             _exploreItem(
               id: 'windowed-two',
-              club: club,
+              organizer: organizer,
               startTime: DateTime(2026, 7, 2, 11),
             ),
           ],
           isExhaustive: false,
         ),
-        candidateClubs: const [],
-        joinedClubIds: const {},
+        candidateOrganizers: const [],
+        joinedOrganizerIds: const {},
         showThisWeekList: false,
         promoteFeaturedItem: false,
         l10n: _l10n,
@@ -950,12 +952,12 @@ void main() {
     });
 
     test('ExploreEventRowState derives provider-free event row labels', () {
-      final club = buildClub(id: 'row-club', name: 'Row Club');
+      final organizer = buildOrganizer(id: 'row-club', name: 'Row Club');
       final item = _exploreItem(
         id: 'row-event',
-        club: club,
+        organizer: organizer,
         startTime: DateTime(2026, 7, 2, 18),
-        isJoinedClubMember: true,
+        isJoinedOrganizerMember: true,
       );
 
       final state = ExploreEventRowState.from(item, l10n: _l10n);
@@ -971,13 +973,16 @@ void main() {
     test(
       'ExploreEventRowState keeps organizer identity for followed clubs',
       () {
-        final club = buildClub(id: 'member-row-club', name: 'Member Club');
+        final organizer = buildOrganizer(
+          id: 'member-row-club',
+          name: 'Member Club',
+        );
         final item = _exploreItem(
           id: 'member-row-event',
-          club: club,
+          organizer: organizer,
           startTime: DateTime(2026, 7, 2, 18),
-          isJoinedClubMember: true,
-          isFollowedClubSignal: true,
+          isJoinedOrganizerMember: true,
+          isFollowedOrganizerSignal: true,
         );
 
         expect(
@@ -1022,7 +1027,7 @@ void main() {
           citySlug: 'mumbai',
           startTime: DateTime(2026, 7, 2, 18),
           externalLinks: const [],
-        ).copyWith(canonicalHostId: '', compatibilityClubId: '');
+        ).copyWith(canonicalHostId: '', compatibilityOrganizerId: '');
         final state = ExploreExternalEventRowState.from(
           ExploreExternalEventItem(event: event),
           l10n: _l10n,
@@ -1035,8 +1040,8 @@ void main() {
       },
     );
 
-    test('ExploreClubCardState derives shared club card labels', () {
-      final club = buildClub(
+    test('ExploreOrganizerCardState derives shared club card labels', () {
+      final organizer = buildOrganizer(
         id: 'club-card',
         name: 'Tempo House',
         tags: const ['Bandra', 'music', 'social', 'late'],
@@ -1044,7 +1049,7 @@ void main() {
         nextEventLabel: 'Fri 8 PM',
       );
 
-      final state = ExploreClubCardState.from(club, l10n: _l10n);
+      final state = ExploreOrganizerCardState.from(organizer, l10n: _l10n);
 
       expect(state.memberCountLabel, '42 followers');
       expect(state.caption, 'FRI 8 PM');
@@ -1081,14 +1086,17 @@ void main() {
     test('ExploreScreenBodyState derives route branch precedence', () {
       final emptyState = ExploreDiscoveryEmptyState.from(
         cityLabel: 'Mumbai',
-        hasSourceClubs: false,
+        hasSourceOrganizers: false,
         hasSearch: false,
         filters: const ExploreFilterSelection(),
       );
-      const emptyViewModel = ExploreViewModel(joinedClubs: [], allClubs: []);
+      const emptyViewModel = ExploreViewModel(
+        joinedOrganizers: [],
+        allOrganizers: [],
+      );
       final populatedViewModel = ExploreViewModel(
-        joinedClubs: const [],
-        allClubs: [buildClub(id: 'club-content')],
+        joinedOrganizers: const [],
+        allOrganizers: [buildOrganizer(id: 'club-content')],
       );
 
       ExploreScreenBodyState body({
@@ -1129,16 +1137,16 @@ void main() {
       );
       expect(
         viewModelErrorWithFeed.kind,
-        ExploreScreenBodyKind.contentWithoutClubs,
+        ExploreScreenBodyKind.contentWithoutOrganizers,
       );
       expect(
         viewModelErrorWithFeed.retryTarget,
         ExploreScreenRetryTarget.explore,
       );
 
-      final populatedClubs = body(viewModel: populatedViewModel);
-      expect(populatedClubs.kind, ExploreScreenBodyKind.content);
-      expect(populatedClubs.viewModel, populatedViewModel);
+      final populatedOrganizers = body(viewModel: populatedViewModel);
+      expect(populatedOrganizers.kind, ExploreScreenBodyKind.content);
+      expect(populatedOrganizers.viewModel, populatedViewModel);
 
       final populatedEvents = body(eventFeedHasContent: true);
       expect(populatedEvents.kind, ExploreScreenBodyKind.content);
@@ -1163,7 +1171,10 @@ void main() {
     });
 
     test('ExploreDiscoveryScreenState derives route display state', () {
-      const emptyViewModel = ExploreViewModel(joinedClubs: [], allClubs: []);
+      const emptyViewModel = ExploreViewModel(
+        joinedOrganizers: [],
+        allOrganizers: [],
+      );
       final state = ExploreDiscoveryScreenState.from(
         l10n: _l10n,
         cityLabel: 'Mumbai',
@@ -1171,7 +1182,7 @@ void main() {
         filters: const ExploreFilterSelection(
           distanceFilter: ExploreDistanceFilter.threeKm,
         ),
-        hasSourceClubs: true,
+        hasSourceOrganizers: true,
         mappableEventCount: 4,
         viewModelLoading: false,
         viewModel: emptyViewModel,
@@ -1197,7 +1208,7 @@ void main() {
         cityLabel: 'Mumbai',
         query: '',
         filters: const ExploreFilterSelection(),
-        hasSourceClubs: false,
+        hasSourceOrganizers: false,
         mappableEventCount: 1,
         viewModelLoading: false,
         viewModel: emptyViewModel,
@@ -1414,46 +1425,58 @@ void main() {
     test(
       'matchesExploreClubSearchQuery matches name, area, host, and tags',
       () {
-        final bandraClub = buildClub();
-        final hostClub = buildClub(
+        final bandraOrganizer = buildOrganizer();
+        final hostOrganizer = buildOrganizer(
           id: 'club-2',
           name: 'Sunrise Crew',
           hostName: 'Asha',
         );
-        final taggedClub = buildClub(
+        final taggedOrganizer = buildOrganizer(
           id: 'club-3',
           name: 'Night Pacers',
           tags: const ['tempo', 'community'],
         );
 
-        expect(matchesExploreClubSearchQuery(bandraClub, 'bandra'), isTrue);
-        expect(matchesExploreClubSearchQuery(hostClub, 'asha'), isTrue);
-        expect(matchesExploreClubSearchQuery(taggedClub, 'tempo'), isTrue);
-        expect(matchesExploreClubSearchQuery(taggedClub, 'missing'), isFalse);
+        expect(
+          matchesExploreOrganizerSearchQuery(bandraOrganizer, 'bandra'),
+          isTrue,
+        );
+        expect(
+          matchesExploreOrganizerSearchQuery(hostOrganizer, 'asha'),
+          isTrue,
+        );
+        expect(
+          matchesExploreOrganizerSearchQuery(taggedOrganizer, 'tempo'),
+          isTrue,
+        );
+        expect(
+          matchesExploreOrganizerSearchQuery(taggedOrganizer, 'missing'),
+          isFalse,
+        );
       },
     );
 
     test('applyExploreFilters combines quick filters', () {
       final now = DateTime(2026, 1, 1, 8);
-      final matchingClub = buildClub(
+      final matchingOrganizer = buildOrganizer(
         id: 'matching-club',
         tags: const ['tempo'],
         rating: 4.8,
         nextEventAt: now.add(const Duration(days: 2)),
       );
-      final staleEventClub = buildClub(
+      final staleEventOrganizer = buildOrganizer(
         id: 'stale-event-club',
         tags: const ['tempo'],
         rating: 4.9,
         nextEventAt: now.subtract(const Duration(hours: 1)),
       );
-      final lowRatedClub = buildClub(
+      final lowRatedOrganizer = buildOrganizer(
         id: 'low-rated-club',
         tags: const ['tempo'],
         rating: 4.2,
         nextEventAt: now.add(const Duration(days: 2)),
       );
-      final wrongAreaClub = buildClub(
+      final wrongAreaOrganizer = buildOrganizer(
         id: 'wrong-area-club',
         area: 'Juhu',
         tags: const ['tempo'],
@@ -1462,7 +1485,12 @@ void main() {
       );
 
       final filtered = applyExploreFilters(
-        clubs: [matchingClub, staleEventClub, lowRatedClub, wrongAreaClub],
+        organizers: [
+          matchingOrganizer,
+          staleEventOrganizer,
+          lowRatedOrganizer,
+          wrongAreaOrganizer,
+        ],
         filters: const ExploreFilterSelection(
           timeFilter: ExploreTimeFilter.thisWeek,
           highRatedOnly: true,
@@ -1470,45 +1498,49 @@ void main() {
           activityTag: 'Tempo',
           area: 'bandra',
         ),
-        joinedClubIds: {'matching-club', 'stale-event-club', 'wrong-area-club'},
+        joinedOrganizerIds: {
+          'matching-club',
+          'stale-event-club',
+          'wrong-area-club',
+        },
         now: now,
       );
 
-      expect(filtered.map((club) => club.id), ['matching-club']);
+      expect(filtered.map((organizer) => organizer.id), ['matching-club']);
     });
 
     test('applyExploreFilters uses the selected time window', () {
       final now = DateTime(2026, 5, 26, 10);
-      final tonightClub = buildClub(
+      final tonightOrganizer = buildOrganizer(
         id: 'tonight-club',
         nextEventAt: DateTime(2026, 5, 26, 19),
       );
-      final tomorrowClub = buildClub(
+      final tomorrowOrganizer = buildOrganizer(
         id: 'tomorrow-club',
         nextEventAt: DateTime(2026, 5, 27, 8),
       );
-      final weekendClub = buildClub(
+      final weekendOrganizer = buildOrganizer(
         id: 'weekend-club',
         nextEventAt: DateTime(2026, 5, 30, 8),
       );
 
       final filtered = applyExploreFilters(
-        clubs: [tonightClub, tomorrowClub, weekendClub],
+        organizers: [tonightOrganizer, tomorrowOrganizer, weekendOrganizer],
         filters: const ExploreFilterSelection(
           timeFilter: ExploreTimeFilter.weekend,
         ),
-        joinedClubIds: const {},
+        joinedOrganizerIds: const {},
         now: now,
       );
 
-      expect(filtered.map((club) => club.id), ['weekend-club']);
+      expect(filtered.map((organizer) => organizer.id), ['weekend-club']);
     });
 
     test('applyExploreFilters ignores a distance-only selection on clubs', () {
       final now = DateTime(2026, 1, 1, 8);
       // Well outside the default "this week" window: if a distance-only
       // selection wrongly triggered club time-filtering, this club would vanish.
-      final club = buildClub(
+      final organizer = buildOrganizer(
         id: 'club-distance-only',
         nextEventAt: now.add(const Duration(days: 30)),
       );
@@ -1519,40 +1551,40 @@ void main() {
       // Distance is an active filter globally (it narrows the events feed)...
       expect(filters.hasActiveFilters, isTrue);
       // ...but not for the club list, which has no coordinates to filter on.
-      expect(filters.hasActiveClubFilters, isFalse);
+      expect(filters.hasActiveOrganizerFilters, isFalse);
 
       final filtered = applyExploreFilters(
-        clubs: [club],
+        organizers: [organizer],
         filters: filters,
-        joinedClubIds: const {},
+        joinedOrganizerIds: const {},
         now: now,
       );
 
-      expect(filtered.map((club) => club.id), ['club-distance-only']);
+      expect(filtered.map((organizer) => organizer.id), ['club-distance-only']);
     });
 
     test('clubMatchesScopeFilters short-circuits the tag check for events', () {
       // Default tags are ['social'] — the club does not carry 'running'.
-      final club = buildClub(id: 'club-social');
+      final organizer = buildOrganizer(id: 'club-social');
       const filters = ExploreFilterSelection(activityTag: 'running');
 
       // The events query already filtered by ActivityKind, so the club need not
       // also carry the tag as free text.
       expect(
-        clubMatchesScopeFilters(
-          club: club,
+        organizerMatchesScopeFilters(
+          organizer: organizer,
           filters: filters,
-          joinedClubIds: const {},
+          joinedOrganizerIds: const {},
           activityHandledByEventFilter: true,
         ),
         isTrue,
       );
       // The club list has no event filter behind it, so the tag must match.
       expect(
-        clubMatchesScopeFilters(
-          club: club,
+        organizerMatchesScopeFilters(
+          organizer: organizer,
           filters: filters,
-          joinedClubIds: const {},
+          joinedOrganizerIds: const {},
         ),
         isFalse,
       );
@@ -1610,34 +1642,39 @@ void main() {
     );
 
     test(
-      'exploreClubsViewModelProvider partitions joined and discover clubs',
+      'exploreOrganizersViewModelProvider partitions joined and discover clubs',
       () async {
-        final memberClub = buildClub(id: 'member-club');
-        final followedClub = buildClub(
+        final memberOrganizer = buildOrganizer(id: 'member-club');
+        final followedOrganizer = buildOrganizer(
           id: 'followed-club',
           hostUserId: 'host-2',
         );
-        final discoverClub = buildClub(
+        final discoverOrganizer = buildOrganizer(
           id: 'discover-club',
           hostUserId: 'host-3',
         );
-        final hostedClub = buildClub(id: 'hosted-club', hostUserId: 'runner-1');
+        final hostedOrganizer = buildOrganizer(
+          id: 'hosted-club',
+          hostUserId: 'runner-1',
+        );
 
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            watchActiveClubMembershipsForUserProvider('runner-1').overrideWith(
+            watchActiveOrganizerMembershipsForUserProvider(
+              'runner-1',
+            ).overrideWith(
               (ref) => Stream.value([
                 _membership(clubId: 'member-club'),
                 _membership(clubId: 'followed-club'),
               ]),
             ),
-            watchClubsByLocationProvider(_mumbaiMarketId).overrideWith(
+            watchOrganizersByLocationProvider(_mumbaiMarketId).overrideWith(
               (ref) => Stream.value([
-                memberClub,
-                followedClub,
-                discoverClub,
-                hostedClub,
+                memberOrganizer,
+                followedOrganizer,
+                discoverOrganizer,
+                hostedOrganizer,
               ]),
             ),
           ],
@@ -1645,7 +1682,7 @@ void main() {
         addTearDown(container.dispose);
 
         final subscription = container.listen(
-          exploreClubsViewModelProvider,
+          exploreOrganizersViewModelProvider,
           (_, _) {},
           fireImmediately: true,
         );
@@ -1660,35 +1697,35 @@ void main() {
         );
         final viewModel = subscription.read().value!;
 
-        expect(viewModel.joinedClubs.map((club) => club.id), [
+        expect(viewModel.joinedOrganizers.map((organizer) => organizer.id), [
           'member-club',
           'followed-club',
         ]);
-        expect(viewModel.allClubs.map((club) => club.id), [
+        expect(viewModel.allOrganizers.map((organizer) => organizer.id), [
           'member-club',
           'followed-club',
           'discover-club',
           'hosted-club',
         ]);
-        expect(viewModel.joinedClubIds, {'member-club', 'followed-club'});
+        expect(viewModel.joinedOrganizerIds, {'member-club', 'followed-club'});
       },
     );
 
     test(
-      'exploreClubsViewModelProvider shows empty city without waiting for auth',
+      'exploreOrganizersViewModelProvider shows empty city without waiting for auth',
       () async {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWith((ref) => const Stream.empty()),
-            watchClubsByLocationProvider(
+            watchOrganizersByLocationProvider(
               _mumbaiMarketId,
-            ).overrideWith((ref) => Stream.value(const <Club>[])),
+            ).overrideWith((ref) => Stream.value(const <Organizer>[])),
           ],
         );
         addTearDown(container.dispose);
 
         final subscription = container.listen(
-          exploreClubsViewModelProvider,
+          exploreOrganizersViewModelProvider,
           (_, _) {},
           fireImmediately: true,
         );
@@ -1700,16 +1737,16 @@ void main() {
         final viewModel = subscription.read().value!;
 
         expect(viewModel.isEmpty, isTrue);
-        expect(viewModel.joinedClubs, isEmpty);
-        expect(viewModel.allClubs, isEmpty);
+        expect(viewModel.joinedOrganizers, isEmpty);
+        expect(viewModel.allOrganizers, isEmpty);
       },
     );
 
     test(
-      'filteredExploreClubsProvider applies the normalized search query',
+      'filteredExploreOrganizersProvider applies the normalized search query',
       () async {
-        final bandraClub = buildClub(id: 'bandra-club');
-        final ashaClub = buildClub(
+        final bandraOrganizer = buildOrganizer(id: 'bandra-club');
+        final ashaOrganizer = buildOrganizer(
           id: 'asha-club',
           hostName: 'Asha',
           area: 'Juhu',
@@ -1720,33 +1757,33 @@ void main() {
             exploreSearchRepositoryProvider.overrideWithValue(
               _FakeExploreSearchRepository(error: StateError('search offline')),
             ),
-            watchClubsByLocationProvider(
-              _mumbaiMarketId,
-            ).overrideWith((ref) => Stream.value([bandraClub, ashaClub])),
+            watchOrganizersByLocationProvider(_mumbaiMarketId).overrideWith(
+              (ref) => Stream.value([bandraOrganizer, ashaOrganizer]),
+            ),
           ],
         );
         addTearDown(container.dispose);
         container.read(exploreSearchQueryProvider.notifier).setQuery('  asha');
 
         final subscription = container.listen(
-          filteredExploreClubsProvider,
+          filteredExploreOrganizersProvider,
           (_, _) {},
           fireImmediately: true,
         );
         addTearDown(subscription.close);
         await container.pump();
 
-        expect(subscription.read().value, [ashaClub]);
+        expect(subscription.read().value, [ashaOrganizer]);
       },
     );
 
     test(
       'exploreFeedViewModelProvider filters events by device distance',
       () async {
-        final club = buildClub(id: 'club-distance');
+        final organizer = buildOrganizer(id: 'club-distance');
         final near = event_test.buildEvent(
           id: 'near-event',
-          clubId: club.id,
+          clubId: organizer.id,
           meetingPoint: 'Near plaza',
           startTime: DateTime.now().add(const Duration(days: 1)),
           startingPointLat: 19.0,
@@ -1754,7 +1791,7 @@ void main() {
         );
         final far = event_test.buildEvent(
           id: 'far-event',
-          clubId: club.id,
+          clubId: organizer.id,
           meetingPoint: 'Far park',
           startTime: DateTime.now().add(const Duration(days: 2)),
           startingPointLat: 19.0,
@@ -1763,9 +1800,9 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value(null)),
-            watchClubsByLocationProvider(
+            watchOrganizersByLocationProvider(
               _mumbaiMarketId,
-            ).overrideWith((ref) => Stream.value([club])),
+            ).overrideWith((ref) => Stream.value([organizer])),
             eventDiscoveryRepositoryProvider.overrideWithValue(
               _FakeEventDiscoveryRepository([far, near]),
             ),
@@ -1818,20 +1855,20 @@ void main() {
       'exploreFeedViewModelProvider reuses one dated window and counts days',
       () async {
         final referenceNow = DateTime(2026, 5, 26, 10);
-        final club = buildClub(id: 'club-date-strip');
+        final organizer = buildOrganizer(id: 'club-date-strip');
         final tonight = event_test.buildEvent(
           id: 'date-strip-tonight',
-          clubId: club.id,
+          clubId: organizer.id,
           startTime: DateTime(2026, 5, 26, 20),
         );
         final tomorrow = event_test.buildEvent(
           id: 'date-strip-tomorrow',
-          clubId: club.id,
+          clubId: organizer.id,
           startTime: DateTime(2026, 5, 27, 8),
         );
         final dayTwo = event_test.buildEvent(
           id: 'date-strip-day-two',
-          clubId: club.id,
+          clubId: organizer.id,
           startTime: DateTime(2026, 5, 28, 12),
         );
         final container = ProviderContainer(
@@ -1840,9 +1877,9 @@ void main() {
               referenceNow,
             ),
             uidProvider.overrideWith((ref) => Stream.value(null)),
-            watchClubsByLocationProvider(
+            watchOrganizersByLocationProvider(
               _mumbaiMarketId,
-            ).overrideWith((ref) => Stream.value([club])),
+            ).overrideWith((ref) => Stream.value([organizer])),
             eventDiscoveryRepositoryProvider.overrideWithValue(
               _FakeEventDiscoveryRepository([dayTwo, tomorrow, tonight]),
             ),
@@ -1891,9 +1928,9 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value(null)),
-            watchClubsByLocationProvider(
+            watchOrganizersByLocationProvider(
               _mumbaiMarketId,
-            ).overrideWith((ref) => Stream.value(const <Club>[])),
+            ).overrideWith((ref) => Stream.value(const <Organizer>[])),
             eventDiscoveryRepositoryProvider.overrideWithValue(
               _FakeEventDiscoveryRepository([]),
             ),
@@ -1938,20 +1975,20 @@ void main() {
       'exploreFeedViewModelProvider resolves viewer-specific availability',
       () async {
         final user = event_test.buildUser();
-        final club = buildClub(id: 'club-availability');
+        final organizer = buildOrganizer(id: 'club-availability');
         final joinedEvent = event_test.buildEvent(
           id: 'joined-event',
-          clubId: club.id,
+          clubId: organizer.id,
           startTime: DateTime.now().add(const Duration(days: 1)),
         );
         final savedEvent = event_test.buildEvent(
           id: 'saved-event',
-          clubId: club.id,
+          clubId: organizer.id,
           startTime: DateTime.now().add(const Duration(days: 2)),
         );
         final requestEvent = event_test.buildEvent(
           id: 'request-event',
-          clubId: club.id,
+          clubId: organizer.id,
           startTime: DateTime.now().add(const Duration(days: 3)),
           eventPolicy: EventPolicyBundle.requestToJoinEvent(
             capacityLimit: 12,
@@ -1969,12 +2006,14 @@ void main() {
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value(user.uid)),
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            watchClubsByLocationProvider(
+            watchOrganizersByLocationProvider(
               _mumbaiMarketId,
-            ).overrideWith((ref) => Stream.value([club])),
-            watchActiveClubMembershipsForUserProvider(
+            ).overrideWith((ref) => Stream.value([organizer])),
+            watchActiveOrganizerMembershipsForUserProvider(
               user.uid,
-            ).overrideWith((ref) => Stream.value(const <ClubMembership>[])),
+            ).overrideWith(
+              (ref) => Stream.value(const <OrganizerMembership>[]),
+            ),
             watchEventParticipationsForUserProvider(user.uid).overrideWith(
               (ref) => Stream.value([
                 event_test.buildEventParticipation(
@@ -2048,15 +2087,15 @@ void main() {
       'exploreFeedViewModelProvider does not block on personal event enrichment',
       () async {
         final user = event_test.buildUser(uid: 'runner-enrichment');
-        final club = buildClub(id: 'club-enrichment');
+        final organizer = buildOrganizer(id: 'club-enrichment');
         final joinedEvent = event_test.buildEvent(
           id: 'joined-enrichment',
-          clubId: club.id,
+          clubId: organizer.id,
           startTime: DateTime.now().add(const Duration(days: 1)),
         );
         final discoverableEvent = event_test.buildEvent(
           id: 'discoverable-enrichment',
-          clubId: club.id,
+          clubId: organizer.id,
           startTime: DateTime.now().add(const Duration(days: 2)),
         );
         final personalEvents = StreamController<List<Event>>();
@@ -2066,12 +2105,14 @@ void main() {
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value(user.uid)),
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            watchClubsByLocationProvider(
+            watchOrganizersByLocationProvider(
               _mumbaiMarketId,
-            ).overrideWith((ref) => Stream.value([club])),
-            watchActiveClubMembershipsForUserProvider(
+            ).overrideWith((ref) => Stream.value([organizer])),
+            watchActiveOrganizerMembershipsForUserProvider(
               user.uid,
-            ).overrideWith((ref) => Stream.value(const <ClubMembership>[])),
+            ).overrideWith(
+              (ref) => Stream.value(const <OrganizerMembership>[]),
+            ),
             watchEventParticipationsForUserProvider(user.uid).overrideWith(
               (ref) => Stream.value([
                 event_test.buildEventParticipation(
@@ -2125,38 +2166,41 @@ void main() {
       },
     );
 
-    test('exploreClubsViewModelProvider surfaces auth uid errors', () async {
-      final container = ProviderContainer(
-        overrides: [
-          uidProvider.overrideWith(
-            (ref) => Stream.error(StateError('uid failed')),
-          ),
-          filteredExploreClubsProvider.overrideWithValue(
-            AsyncData([buildClub(id: 'available-club')]),
-          ),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'exploreOrganizersViewModelProvider surfaces auth uid errors',
+      () async {
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWith(
+              (ref) => Stream.error(StateError('uid failed')),
+            ),
+            filteredExploreOrganizersProvider.overrideWithValue(
+              AsyncData([buildOrganizer(id: 'available-club')]),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      final subscription = container.listen(
-        exploreClubsViewModelProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(subscription.close);
-      await container.pump();
+        final subscription = container.listen(
+          exploreOrganizersViewModelProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
+        await container.pump();
 
-      expect(subscription.read().hasError, isTrue);
-      expect(subscription.read().error, isA<StateError>());
-    });
+        expect(subscription.read().hasError, isTrue);
+        expect(subscription.read().error, isA<StateError>());
+      },
+    );
 
     test(
-      'exploreClubsViewModelProvider surfaces filtered list errors',
+      'exploreOrganizersViewModelProvider surfaces filtered list errors',
       () async {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            filteredExploreClubsProvider.overrideWithValue(
+            filteredExploreOrganizersProvider.overrideWithValue(
               AsyncError(StateError('filter failed'), StackTrace.empty),
             ),
           ],
@@ -2164,7 +2208,7 @@ void main() {
         addTearDown(container.dispose);
 
         final subscription = container.listen(
-          exploreClubsViewModelProvider,
+          exploreOrganizersViewModelProvider,
           (_, _) {},
           fireImmediately: true,
         );
@@ -2241,7 +2285,7 @@ ExternalEvent _externalEvent({
   return ExternalEvent(
     id: id,
     canonicalHostId: 'host-afterfly',
-    compatibilityClubId: 'club-afterfly',
+    compatibilityOrganizerId: 'club-afterfly',
     title: title,
     description: 'A reviewed external event.',
     startTime: startTime,

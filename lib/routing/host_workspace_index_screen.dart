@@ -26,7 +26,7 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
         ? state.extra as OrganizerProgramListAnchor
         : null,
     initialContactDisplayName: _routeContactNameExtra(state),
-    initialOrganizerId: _routeClubIdExtra(state),
+    initialOrganizerId: _routeOrganizerIdExtra(state),
   );
 
   final Uri uri;

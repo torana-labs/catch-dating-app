@@ -74,7 +74,7 @@
         },
         {
           "path": "lib/hosts/events/presentation/widgets/host_events_list.dart",
-          "symbol": "_HostEventsClubSectionState",
+          "symbol": "_HostEventsOrganizerSectionState",
           "owner": "CatchRootScreenHeader.title"
         }
       ]
@@ -106,13 +106,13 @@
       "routeName": "Routes.hostOrganizerScreen.name",
       "surfaces": [
         {
-          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "path": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
           "symbol": "HostOrganizerStateScaffold",
           "owner": "CatchRootScreenHeader.title"
         },
         {
-          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "symbol": "_HostClubsScaffoldState",
+          "path": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
+          "symbol": "_HostOrganizersScaffoldState",
           "owner": "CatchRootScreenHeader.title"
         }
       ]
@@ -357,7 +357,7 @@
       "occurrences": 1
     },
     {
-      "path": "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
+      "path": "lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
@@ -366,7 +366,7 @@
       "occurrences": 5
     },
     {
-      "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "path": "lib/hosts/presentation/host_operations/host_organizer_team_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
@@ -720,7 +720,7 @@
   ],
   "rawChromeExceptions": [
     {
-      "path": "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart",
+      "path": "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart",
       "expression": "SliverAppBar",
       "occurrences": 1,
       "reason": "Club detail media hero owns collapsing photo chrome, not a route title bar."

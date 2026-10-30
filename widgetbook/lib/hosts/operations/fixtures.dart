@@ -6,18 +6,18 @@ import 'package:catch_dating_app/platform/media/ordered_photo_picker.dart';
 
 final widgetbookHostUid = HostOperationsFixtures.hostUid;
 
-final widgetbookClub = HostOperationsFixtures.primaryClub;
+final widgetbookOrganizer = HostOperationsFixtures.primaryOrganizer;
 
 final widgetbookPrivateEvent = HostOperationsFixtures.privateEvent;
 
 final widgetbookEditableEvent = HostOperationsFixtures.event(
   id: 'design-host-editable-event',
-  club: widgetbookClub,
+  organizer: widgetbookOrganizer,
   start: DateTime(2030, 7, 2, 18, 30),
   bookedCount: 0,
 );
 
-Uint8List widgetbookCreateClubPngBytes() {
+Uint8List widgetbookCreateOrganizerPngBytes() {
   return base64Decode(
     'iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAFkl'
     'EQVR42mO4Y+DwnxTMMKphVAN2DAApmUpA0AfJaAAAAABJRU5ErkJggg==',
@@ -29,7 +29,7 @@ List<OrderedPhotoPreview> widgetbookOrderedPhotoPreviews(
   int count, {
   int? failedIndex,
 }) {
-  final bytes = widgetbookCreateClubPngBytes();
+  final bytes = widgetbookCreateOrganizerPngBytes();
   return [
     for (var index = 0; index < count; index++)
       OrderedPhotoPreview(

@@ -76,7 +76,7 @@
     "contracts/firestore/clubs.schema.json",
     "functions/src/clubs",
     "functions/src/admin",
-    "lib/clubs",
+    "lib/organizers",
     "lib/hosts",
     "admin/src/features/organizers",
     "website/src",

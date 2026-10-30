@@ -26,14 +26,14 @@ import 'shell_fixture.dart';
 Widget hostAnalyticsPeriodStates(BuildContext context) =>
     WidgetbookHostComponentFrame(
       child: HostAnalyticsPeriodInput(
-        selected: HostClubInsightsRangePreset.thirtyDays,
+        selected: HostOrganizerInsightsRangePreset.thirtyDays,
         onChanged: (_) {},
       ),
     );
 
 @widgetbook.UseCase(
   name: 'Insights scorecard states',
-  type: HostClubInsightsSection,
+  type: HostOrganizerInsightsSection,
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostInsightsScorecardStates(BuildContext context) {
@@ -46,7 +46,7 @@ Widget hostInsightsScorecardStates(BuildContext context) {
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
             analyticsRepository: _HostLoadingAnalyticsRepository(),
-            child: HostClubsScreen(initialTab: HostClubTab.insights),
+            child: HostOrganizersScreen(initialTab: HostOrganizerTab.insights),
           ),
         ),
       ),
@@ -54,7 +54,7 @@ Widget hostInsightsScorecardStates(BuildContext context) {
         label: 'loaded narrative scorecard',
         child: WidgetbookHostDeviceFrame(
           child: const WidgetbookHostShellScope(
-            child: HostClubsScreen(initialTab: HostClubTab.insights),
+            child: HostOrganizersScreen(initialTab: HostOrganizerTab.insights),
           ),
         ),
       ),
@@ -65,7 +65,9 @@ Widget hostInsightsScorecardStates(BuildContext context) {
             analyticsRepository: HostFixtureAnalyticsRepository(
               report: _emptyHostAnalyticsReport(),
             ),
-            child: const HostClubsScreen(initialTab: HostClubTab.insights),
+            child: const HostOrganizersScreen(
+              initialTab: HostOrganizerTab.insights,
+            ),
           ),
         ),
       ),
@@ -76,7 +78,9 @@ Widget hostInsightsScorecardStates(BuildContext context) {
             analyticsRepository: HostFixtureAnalyticsRepository(
               report: _emptyHostAnalyticsReport(unavailable: false),
             ),
-            child: const HostClubsScreen(initialTab: HostClubTab.insights),
+            child: const HostOrganizersScreen(
+              initialTab: HostOrganizerTab.insights,
+            ),
           ),
         ),
       ),
@@ -85,7 +89,7 @@ Widget hostInsightsScorecardStates(BuildContext context) {
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
             analyticsRepository: _HostDeniedAnalyticsRepository(),
-            child: HostClubsScreen(initialTab: HostClubTab.insights),
+            child: HostOrganizersScreen(initialTab: HostOrganizerTab.insights),
           ),
         ),
       ),
@@ -96,7 +100,9 @@ Widget hostInsightsScorecardStates(BuildContext context) {
             analyticsRepository: HostFixtureAnalyticsRepository(
               report: _partialHostAnalyticsReport(),
             ),
-            child: const HostClubsScreen(initialTab: HostClubTab.insights),
+            child: const HostOrganizersScreen(
+              initialTab: HostOrganizerTab.insights,
+            ),
           ),
         ),
       ),
@@ -107,7 +113,9 @@ Widget hostInsightsScorecardStates(BuildContext context) {
             analyticsRepository: HostFixtureAnalyticsRepository(
               report: _coachHostAnalyticsReport(),
             ),
-            child: const HostClubsScreen(initialTab: HostClubTab.insights),
+            child: const HostOrganizersScreen(
+              initialTab: HostOrganizerTab.insights,
+            ),
           ),
         ),
       ),
@@ -117,7 +125,9 @@ Widget hostInsightsScorecardStates(BuildContext context) {
           child: WidgetbookMediaOverride(
             textScaler: const TextScaler.linear(2),
             child: const WidgetbookHostShellScope(
-              child: HostClubsScreen(initialTab: HostClubTab.insights),
+              child: HostOrganizersScreen(
+                initialTab: HostOrganizerTab.insights,
+              ),
             ),
           ),
         ),
@@ -165,7 +175,7 @@ Widget _hostAnalyticsPreviewFor(String focus) {
     ),
     'HostAnalyticsReportBody' => HostAnalyticsReportBody(
       report: report,
-      rangePreset: HostClubInsightsRangePreset.thirtyDays,
+      rangePreset: HostOrganizerInsightsRangePreset.thirtyDays,
       currencyCode: 'INR',
       onOpenEventReport: (_) {},
       onOpenAllEvents: () {},
@@ -462,7 +472,7 @@ Widget hostAnalyticsObservedStagesSectionStates(
 Widget hostTrackingSettingsSectionState(BuildContext context) =>
     WidgetbookHostComponentFrame(
       child: HostTrackingSettingsSection(
-        organizerId: HostOperationsFixtures.primaryClub.id,
+        organizerId: HostOperationsFixtures.primaryOrganizer.id,
       ),
     );
 
@@ -486,7 +496,7 @@ Widget hostTrackingSettingsInputSectionStates(
         child: WidgetbookHostComponentFrame(
           child: HostTrackingSettingsInputSection(
             current: HostTrackingSettings(
-              organizerId: HostOperationsFixtures.primaryClub.id,
+              organizerId: HostOperationsFixtures.primaryOrganizer.id,
               revision: 0,
               metaPixelId: null,
               googleMeasurementId: null,

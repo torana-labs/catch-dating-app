@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart';
 import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart';
-import 'package:widgetbook_workspace/hosts/operations/create_club_profile.dart';
+import 'package:widgetbook_workspace/hosts/operations/create_organizer_profile.dart';
 import 'package:widgetbook_workspace/hosts/operations/customer_components.dart';
 import 'package:widgetbook_workspace/hosts/operations/customer_merge_components.dart';
 import 'package:widgetbook_workspace/hosts/operations/inbox_components.dart';
@@ -34,9 +34,13 @@ void main() {
     (hostStrictHostOrganizerMetricRowCatalogStates, HostOrganizerMetricRow, 1),
     (hostCrmAudienceCardStates, HostCrmAudienceCard, 3),
     (hostCrmChannelRowStates, HostCrmChannelRow, 2),
-    (hostClubPublicationChannelRowStates, HostClubPublicationChannelRow, 2),
-    (hostClubLogoManagerHeaderStates, HostClubLogoManagerHeader, 2),
-    (hostClubMediaManagerDockStates, HostClubMediaManagerDock, 1),
+    (
+      hostOrganizerPublicationChannelRowStates,
+      HostOrganizerPublicationChannelRow,
+      2,
+    ),
+    (hostOrganizerLogoManagerHeaderStates, HostOrganizerLogoManagerHeader, 2),
+    (hostOrganizerMediaManagerDockStates, HostOrganizerMediaManagerDock, 1),
     (hostCustomerIdentitySectionStates, HostCustomerIdentitySection, 1),
     (hostCustomerTimelineListStates, HostCustomerTimelineList, 1),
     (hostContactMergeReviewSheetStates, HostContactMergeCandidateCard, 1),

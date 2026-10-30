@@ -26,7 +26,7 @@ void main() {
       expect(state.selectedDate, DateUtils.dateOnly(nextEvent.startTime));
       expect(state.expanded, isFalse);
       expect(state.hasEvents, isTrue);
-      expect(state.clubIds, [nextEvent.clubId]);
+      expect(state.organizerIds, [nextEvent.clubId]);
     });
 
     test('preserves explicit selected date and header mode', () {
@@ -43,7 +43,7 @@ void main() {
       expect(state.selectedDate, DateUtils.dateOnly(selectedDate));
       expect(state.expanded, isTrue);
       expect(state.hasEvents, isFalse);
-      expect(state.clubIds, isEmpty);
+      expect(state.organizerIds, isEmpty);
     });
 
     test('derives agenda section state from club-name lookup phases', () {
@@ -56,9 +56,9 @@ void main() {
 
       expect(
         state.agendaSection(
-          clubNames: const CalendarClubNameLookupState.loading(),
+          organizerNames: const CalendarOrganizerNameLookupState.loading(),
         ),
-        isA<CalendarAgendaClubNamesLoadingState>().having(
+        isA<CalendarAgendaOrganizerNamesLoadingState>().having(
           (state) => state.skeletonCount,
           'skeletonCount',
           3,
@@ -68,9 +68,9 @@ void main() {
       final error = Exception('club names failed');
       expect(
         state.agendaSection(
-          clubNames: CalendarClubNameLookupState.failure(error),
+          organizerNames: CalendarOrganizerNameLookupState.failure(error),
         ),
-        isA<CalendarAgendaClubNamesErrorState>().having(
+        isA<CalendarAgendaOrganizerNamesErrorState>().having(
           (state) => state.error,
           'error',
           error,
@@ -78,7 +78,7 @@ void main() {
       );
 
       final ready = state.agendaSection(
-        clubNames: const CalendarClubNameLookupState.ready({
+        organizerNames: const CalendarOrganizerNameLookupState.ready({
           'club-1': 'Stride Social',
         }),
       );
@@ -91,7 +91,7 @@ void main() {
       );
       final row = (ready as CalendarAgendaReadyState).rows.single;
       expect(row.event, event);
-      expect(row.clubName, 'Stride Social');
+      expect(row.organizerName, 'Stride Social');
       expect(row.status, CalendarAgendaEventStatus.joined);
       expect(row.badgeLabel(_l10n), 'JOINED');
     });
@@ -103,7 +103,9 @@ void main() {
       );
 
       final agenda = state.agendaSection(
-        clubNames: CalendarClubNameLookupState.failure(Exception('ignored')),
+        organizerNames: CalendarOrganizerNameLookupState.failure(
+          Exception('ignored'),
+        ),
       );
 
       expect(
@@ -209,7 +211,7 @@ void main() {
 
       final agenda =
           state.agendaSection(
-                clubNames: const CalendarClubNameLookupState.ready({
+                organizerNames: const CalendarOrganizerNameLookupState.ready({
                   'joined-club': 'Joined Club',
                   'saved-club': 'Saved Club',
                   'cancelled-club': 'Cancelled Club',
@@ -222,7 +224,7 @@ void main() {
         'joined',
         'cancelled',
       ]);
-      expect(agenda.rows.map((row) => row.clubName), [
+      expect(agenda.rows.map((row) => row.organizerName), [
         'Saved Club',
         'Joined Club',
         'Cancelled Club',

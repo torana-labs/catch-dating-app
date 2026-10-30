@@ -43,7 +43,7 @@ class HostEventAnnouncementField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final events = ref.watch(watchEventsForClubProvider(organizerId));
+    final events = ref.watch(watchEventsForOrganizerProvider(organizerId));
     return events.when(
       loading: () => CatchFieldLanes.single(
         child: CatchField.read(

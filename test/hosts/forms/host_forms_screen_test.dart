@@ -6,8 +6,8 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configura
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
@@ -27,7 +27,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../clubs/clubs_test_helpers.dart';
+import '../../organizers/organizers_test_helpers.dart';
 import '../../test_pump_helpers.dart';
 
 // ignore_for_file: riverpod_lint/scoped_providers_should_specify_dependencies
@@ -180,9 +180,9 @@ void main() {
         screen,
         overrides: [
           uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
-          hostOperableClubsProvider(
+          hostOperableOrganizersProvider(
             'host-1',
-          ).overrideWithValue(const AsyncLoading<List<Club>>()),
+          ).overrideWithValue(const AsyncLoading<List<Organizer>>()),
         ],
         settle: false,
       );
@@ -195,8 +195,8 @@ void main() {
         screen,
         overrides: [
           uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
-          hostOperableClubsProvider('host-1').overrideWithValue(
-            AsyncError<List<Club>>(
+          hostOperableOrganizersProvider('host-1').overrideWithValue(
+            AsyncError<List<Organizer>>(
               StateError('clubs failed'),
               StackTrace.current,
             ),
@@ -212,9 +212,9 @@ void main() {
         screen,
         overrides: [
           uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
-          hostOperableClubsProvider(
+          hostOperableOrganizersProvider(
             'host-1',
-          ).overrideWithValue(const AsyncData<List<Club>>([])),
+          ).overrideWithValue(const AsyncData<List<Organizer>>([])),
         ],
         settle: false,
       );
@@ -241,7 +241,10 @@ void main() {
         addTearDown(tester.view.resetPhysicalSize);
         final formRequests = <HostFormListRequest>[];
         final responseRequests = <HostFormResponseListRequest>[];
-        final club = buildClub(id: 'forms-club', ownerUserId: 'host-1');
+        final organizer = buildOrganizer(
+          id: 'forms-club',
+          ownerUserId: 'host-1',
+        );
 
         final router = GoRouter(
           initialLocation: '/host/audience?view=forms&organizerId=forms-club',
@@ -264,9 +267,9 @@ void main() {
             overrides: [
               firebaseAuthProvider.overrideWithValue(_TestAuth('host-1')),
               uidProvider.overrideWith((ref) => Stream.value('host-1')),
-              hostOperableClubsProvider(
+              hostOperableOrganizersProvider(
                 'host-1',
-              ).overrideWithValue(AsyncData([club])),
+              ).overrideWithValue(AsyncData([organizer])),
               hostFormsDirectoryControllerProvider.overrideWith2(
                 (_) => _FixedHostFormsDirectoryController(formRequests),
               ),
@@ -480,8 +483,10 @@ void main() {
         overrides: [
           firebaseAuthProvider.overrideWithValue(_TestAuth('host-1')),
           uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
-          hostOperableClubsProvider('host-1').overrideWithValue(
-            AsyncData([buildClub(id: 'forms-club', ownerUserId: 'host-1')]),
+          hostOperableOrganizersProvider('host-1').overrideWithValue(
+            AsyncData([
+              buildOrganizer(id: 'forms-club', ownerUserId: 'host-1'),
+            ]),
           ),
           hostFormsDirectoryControllerProvider.overrideWith2(
             (_) => _FixedHostFormsDirectoryController([]),
@@ -533,11 +538,15 @@ void main() {
             overrides: [
               firebaseAuthProvider.overrideWithValue(auth),
               uidProvider.overrideWith((ref) => accounts.stream),
-              hostOperableClubsProvider('host-1').overrideWithValue(
-                AsyncData([buildClub(id: 'forms-club', ownerUserId: 'host-1')]),
+              hostOperableOrganizersProvider('host-1').overrideWithValue(
+                AsyncData([
+                  buildOrganizer(id: 'forms-club', ownerUserId: 'host-1'),
+                ]),
               ),
-              hostOperableClubsProvider('host-2').overrideWithValue(
-                AsyncData([buildClub(id: 'forms-club', ownerUserId: 'host-2')]),
+              hostOperableOrganizersProvider('host-2').overrideWithValue(
+                AsyncData([
+                  buildOrganizer(id: 'forms-club', ownerUserId: 'host-2'),
+                ]),
               ),
               hostFormsDirectoryControllerProvider.overrideWith2(
                 (_) => _AccountSwitchDirectoryController(
@@ -634,16 +643,16 @@ void main() {
     tester.view.physicalSize = const Size(1440, 1000);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
-    final club = buildClub(id: 'forms-club', ownerUserId: 'host-1');
+    final organizer = buildOrganizer(id: 'forms-club', ownerUserId: 'host-1');
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           firebaseAuthProvider.overrideWithValue(_TestAuth('host-1')),
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
-          hostOperableClubsProvider(
+          hostOperableOrganizersProvider(
             'host-1',
-          ).overrideWithValue(AsyncData([club])),
+          ).overrideWithValue(AsyncData([organizer])),
           hostFormsDirectoryControllerProvider.overrideWith2(
             (_) => _FixedHostFormsDirectoryController(
               <HostFormListRequest>[],

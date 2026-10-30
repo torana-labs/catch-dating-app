@@ -29,7 +29,7 @@ void main() {
           userProfile: buildUser(),
           clubId: 'club-1',
           participation: null,
-          isClubMember: true,
+          isOrganizerMember: true,
         ),
       ),
       overrides: [

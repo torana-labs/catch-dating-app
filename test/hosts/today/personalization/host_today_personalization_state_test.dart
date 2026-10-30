@@ -4,7 +4,7 @@ import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_contro
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../clubs/clubs_test_helpers.dart' show buildEvent;
+import '../../../organizers/organizers_test_helpers.dart' show buildEvent;
 
 void main() {
   const quiet = HostTodayState(status: HostTodayStatus.empty);

@@ -53,7 +53,7 @@ final class OrganizerEventCheckoutControllerProvider
 }
 
 String _$organizerEventCheckoutControllerHash() =>
-    r'07ca5390edd953229d0ca42faa10f26fdb5bdd9a';
+    r'9e51dec1a3d4943aedec9ffe94a0794f1caff07a';
 
 /// Action controller for organizer-routed paid bookings. The event dock runs
 /// these through [EventBookingController]'s book and cancel mutations so the

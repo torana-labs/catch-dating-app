@@ -4,11 +4,11 @@ import 'package:catch_dating_app/contexts/events/data/event_calendar_links.dart'
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -38,9 +38,9 @@ class WidgetbookDashboardScope extends StatelessWidget {
   });
 
   final Stream<UserProfile?>? profileStream;
-  final Stream<List<ClubMembership>>? membershipsStream;
+  final Stream<List<OrganizerMembership>>? membershipsStream;
   final Stream<List<Event>>? signedUpEventsStream;
-  final List<ClubMembership>? memberships;
+  final List<OrganizerMembership>? memberships;
   final List<Event>? signedUpEvents;
   final AsyncValue<List<ActivityNotification>>? notificationsValue;
   final Widget child;
@@ -50,13 +50,15 @@ class WidgetbookDashboardScope extends StatelessWidget {
     final effectiveMemberships = memberships ?? _memberships;
     final effectiveSignedUpEvents =
         signedUpEvents ?? [widgetbookDashboardNextEvent];
-    final clubNames = <String, String>{
-      widgetbookDashboardClub.id: widgetbookDashboardClub.name,
+    final organizerNames = <String, String>{
+      widgetbookDashboardOrganizer.id: widgetbookDashboardOrganizer.name,
     };
-    final focusClubQuery = ClubNameLookupQuery(
+    final focusOrganizerQuery = OrganizerNameLookupQuery(
       effectiveSignedUpEvents.map((event) => event.clubId),
     );
-    final clubsByIdQuery = ClubsByIdQuery([widgetbookDashboardClub.id]);
+    final organizersByIdQuery = OrganizersByIdQuery([
+      widgetbookDashboardOrganizer.id,
+    ]);
 
     return WidgetbookFixtureScope(
       overrides: [
@@ -69,12 +71,12 @@ class WidgetbookDashboardScope extends StatelessWidget {
               profileStream ??
               Stream<UserProfile?>.value(widgetbookDashboardViewer),
         ),
-        watchActiveClubMembershipsForUserProvider(
+        watchActiveOrganizerMembershipsForUserProvider(
           widgetbookDashboardViewer.uid,
         ).overrideWith(
           (ref) =>
               membershipsStream ??
-              Stream<List<ClubMembership>>.value(effectiveMemberships),
+              Stream<List<OrganizerMembership>>.value(effectiveMemberships),
         ),
         watchSignedUpEventsProvider(widgetbookDashboardViewer.uid).overrideWith(
           (ref) =>
@@ -97,15 +99,16 @@ class WidgetbookDashboardScope extends StatelessWidget {
         ).overrideWithValue(
           AsyncData<List<Review>>(DashboardSurfaceFixtures.reviews),
         ),
-        clubNameLookupProvider(
-          focusClubQuery,
-        ).overrideWith((ref) async => clubNames),
-        watchClubsByIdsProvider(clubsByIdQuery).overrideWith(
-          (ref) => Stream<List<Club>>.value([widgetbookDashboardClub]),
+        organizerNameLookupProvider(
+          focusOrganizerQuery,
+        ).overrideWith((ref) async => organizerNames),
+        watchOrganizersByIdsProvider(organizersByIdQuery).overrideWith(
+          (ref) =>
+              Stream<List<Organizer>>.value([widgetbookDashboardOrganizer]),
         ),
-        watchClubProvider(
-          widgetbookDashboardClub.id,
-        ).overrideWith((ref) => Stream<Club?>.value(widgetbookDashboardClub)),
+        watchOrganizerProvider(widgetbookDashboardOrganizer.id).overrideWith(
+          (ref) => Stream<Organizer?>.value(widgetbookDashboardOrganizer),
+        ),
         externalUrlLauncherProvider.overrideWithValue(_noopLauncher),
         nativeCalendarLauncherProvider.overrideWithValue(_noopCalendarLauncher),
       ],

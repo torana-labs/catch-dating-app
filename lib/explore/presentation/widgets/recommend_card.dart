@@ -20,7 +20,7 @@ class RecommendCard extends StatelessWidget {
   const RecommendCard({
     super.key,
     required this.event,
-    this.clubName,
+    this.organizerName,
     this.reasonLabel,
     this.width,
   }) : _loading = false;
@@ -39,7 +39,7 @@ class RecommendCard extends StatelessWidget {
         description: '',
         priceInPaise: 0,
       ),
-      clubName = CatchSkeleton.sampleOrganizerName,
+      organizerName = CatchSkeleton.sampleOrganizerName,
       reasonLabel = CatchSkeleton.sampleReasonText,
       _loading = true;
 
@@ -51,7 +51,7 @@ class RecommendCard extends StatelessWidget {
     return RecommendCard(
       key: key,
       event: recommendation.event,
-      clubName: recommendation.clubName,
+      organizerName: recommendation.organizerName,
       reasonLabel: recommendation.reasonLabel,
       width: width,
     );
@@ -65,14 +65,14 @@ class RecommendCard extends StatelessWidget {
     return RecommendCard(
       key: key,
       event: event,
-      clubName: 'Your organizer',
+      organizerName: 'Your organizer',
       reasonLabel: 'From your organizers',
       width: width,
     );
   }
 
   final Event event;
-  final String? clubName;
+  final String? organizerName;
   final String? reasonLabel;
   final double? width;
   final bool _loading;
@@ -104,9 +104,9 @@ class RecommendCard extends StatelessWidget {
   }
 
   String _buildSubtitle() {
-    final club = clubName;
-    if (club == null || club.isEmpty) return event.locationName;
-    return '$club · ${event.locationName}';
+    final organizer = organizerName;
+    if (organizer == null || organizer.isEmpty) return event.locationName;
+    return '$organizer · ${event.locationName}';
   }
 
   String _countdownLabel() {

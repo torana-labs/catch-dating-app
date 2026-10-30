@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -73,7 +73,7 @@ class SavedEventsScreen extends ConsumerWidget {
                 loadingBuilder: (_) =>
                     const EventAgendaSliverSkeleton(padding: EdgeInsets.zero),
                 errorBuilder: (_, error, _, onBoundaryRetry) =>
-                    SavedEventsClubNamesErrorState(
+                    SavedEventsOrganizerNamesErrorState(
                       error: error,
                       onRetry: onBoundaryRetry!,
                     ),
@@ -101,23 +101,25 @@ class SavedEventsScreen extends ConsumerWidget {
                     events,
                     now: referenceNow ?? DateTime.now(),
                   );
-                  final clubNames = ref.watch(
-                    clubNameLookupProvider(ClubNameLookupQuery(state.clubIds)),
+                  final organizerNames = ref.watch(
+                    organizerNameLookupProvider(
+                      OrganizerNameLookupQuery(state.organizerIds),
+                    ),
                   );
                   return CatchAsyncBoundary<Map<String, String>>.sliver(
-                    value: clubNames,
-                    onRetry: () => ref.invalidate(clubNameLookupProvider),
+                    value: organizerNames,
+                    onRetry: () => ref.invalidate(organizerNameLookupProvider),
                     loadingBuilder: (_) => const EventAgendaSliverSkeleton(
                       padding: EdgeInsets.zero,
                     ),
                     errorBuilder: (_, error, _, onBoundaryRetry) =>
-                        SavedEventsClubNamesErrorState(
+                        SavedEventsOrganizerNamesErrorState(
                           error: error,
                           onRetry: onBoundaryRetry!,
                         ),
                     builder: (context, names) => SavedEventsAgendaList(
                       state: state,
-                      clubNames: names,
+                      organizerNames: names,
                       padding: EdgeInsets.zero,
                       onEventSelected: (event) =>
                           _openEventDetail(context, event),
@@ -145,13 +147,13 @@ class SavedEventsAgendaList extends StatelessWidget {
   const SavedEventsAgendaList({
     super.key,
     required this.state,
-    required this.clubNames,
+    required this.organizerNames,
     required this.onEventSelected,
     this.padding,
   });
 
   final SavedEventsListState state;
-  final Map<String, String> clubNames;
+  final Map<String, String> organizerNames;
   final ValueChanged<Event> onEventSelected;
   final EdgeInsetsGeometry? padding;
 
@@ -159,8 +161,8 @@ class SavedEventsAgendaList extends StatelessWidget {
   Widget build(BuildContext context) {
     return EventAgendaSliverList(
       events: state.orderedEvents,
-      showClubName: true,
-      clubNameBuilder: (event) => clubNames[event.clubId],
+      showOrganizerName: true,
+      organizerNameBuilder: (event) => organizerNames[event.clubId],
       today: state.today,
       preserveInputOrder: true,
       badgeLabelBuilder: state.badgeLabelFor,
@@ -178,8 +180,8 @@ class SavedEventsAgendaList extends StatelessWidget {
   }
 }
 
-class SavedEventsClubNamesErrorState extends StatelessWidget {
-  const SavedEventsClubNamesErrorState({
+class SavedEventsOrganizerNamesErrorState extends StatelessWidget {
+  const SavedEventsOrganizerNamesErrorState({
     super.key,
     required this.error,
     required this.onRetry,

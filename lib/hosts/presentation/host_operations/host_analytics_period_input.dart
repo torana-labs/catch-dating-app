@@ -6,32 +6,32 @@ class HostAnalyticsPeriodInput extends StatelessWidget {
     required this.selected,
     required this.onChanged,
   });
-  final HostClubInsightsRangePreset selected;
-  final ValueChanged<HostClubInsightsRangePreset> onChanged;
+  final HostOrganizerInsightsRangePreset selected;
+  final ValueChanged<HostOrganizerInsightsRangePreset> onChanged;
   @override
   Widget build(BuildContext context) => CatchSection.content(
     title: context.l10n.hostsHostAnalyticsLabelPerformancePeriod,
-    child: CatchChoiceInput<HostClubInsightsRangePreset>.segmented(
+    child: CatchChoiceInput<HostOrganizerInsightsRangePreset>.segmented(
       contract:
           CatchContractConstraints.hostAnalyticsQueryCallablePayloadRangePreset,
       contractValueBuilder: (preset) => switch (preset) {
-        HostClubInsightsRangePreset.thirtyDays => '30d',
-        HostClubInsightsRangePreset.ninetyDays => '90d',
-        HostClubInsightsRangePreset.twelveMonths => '12m',
+        HostOrganizerInsightsRangePreset.thirtyDays => '30d',
+        HostOrganizerInsightsRangePreset.ninetyDays => '90d',
+        HostOrganizerInsightsRangePreset.twelveMonths => '12m',
       },
       selected: selected,
       onChanged: onChanged,
       options: [
         CatchOption(
-          value: HostClubInsightsRangePreset.thirtyDays,
+          value: HostOrganizerInsightsRangePreset.thirtyDays,
           label: context.l10n.hostsHostAnalyticsLabel30Days,
         ),
         CatchOption(
-          value: HostClubInsightsRangePreset.ninetyDays,
+          value: HostOrganizerInsightsRangePreset.ninetyDays,
           label: context.l10n.hostsHostAnalyticsLabel90Days,
         ),
         CatchOption(
-          value: HostClubInsightsRangePreset.twelveMonths,
+          value: HostOrganizerInsightsRangePreset.twelveMonths,
           label: context.l10n.hostsHostAnalyticsLabel12Months,
         ),
       ],

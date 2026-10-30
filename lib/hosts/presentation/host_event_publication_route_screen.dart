@@ -16,8 +16,8 @@ class HostEventPublicationRouteScreen extends ConsumerWidget {
     return CatchAsyncBoundary<_HostEventManageRouteData>(
       value: _hostEventManageRouteData(
         uid: catchAsyncStateFromAsyncValue(ref.watch(uidProvider)),
-        club: catchAsyncStateFromAsyncValue(
-          ref.watch(fetchClubProvider(clubId)),
+        organizer: catchAsyncStateFromAsyncValue(
+          ref.watch(fetchOrganizerProvider(clubId)),
         ),
         event: catchAsyncStateFromAsyncValue(
           ref.watch(watchEventProvider(eventId)),
@@ -26,7 +26,7 @@ class HostEventPublicationRouteScreen extends ConsumerWidget {
       ),
       onRetry: () {
         ref.invalidate(uidProvider);
-        ref.invalidate(fetchClubProvider(clubId));
+        ref.invalidate(fetchOrganizerProvider(clubId));
         ref.invalidate(watchEventProvider(eventId));
       },
       loadingBuilder: (_) => const HostEventPublicationStateScaffold(
@@ -40,8 +40,8 @@ class HostEventPublicationRouteScreen extends ConsumerWidget {
         ),
       ),
       builder: (context, data) {
-        final club = data.club;
-        if (club == null || data.event == null) {
+        final organizer = data.organizer;
+        if (organizer == null || data.event == null) {
           return HostEventPublicationStateScaffold(
             child: CatchErrorState(
               title: context
@@ -54,7 +54,7 @@ class HostEventPublicationRouteScreen extends ConsumerWidget {
             ),
           );
         }
-        if (data.uid == null || !club.isHostedBy(data.uid!)) {
+        if (data.uid == null || !organizer.isHostedBy(data.uid!)) {
           return HostEventPublicationStateScaffold(
             child: CatchErrorState(
               title: context
@@ -69,7 +69,7 @@ class HostEventPublicationRouteScreen extends ConsumerWidget {
           );
         }
         return PrivateEventCreateScreen(
-          club: club,
+          organizer: organizer,
           initialSavedEventId: eventId,
           initialPublicationReview: true,
           promptForDraftsOnStart: false,

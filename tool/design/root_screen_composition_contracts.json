@@ -209,7 +209,7 @@
       ]
     },
     {
-      "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+      "path": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
       "requires": [
         {
           "text": "HostEditorWorkspace("

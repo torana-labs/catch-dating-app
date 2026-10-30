@@ -227,8 +227,8 @@ class _ExploreEventsSliverPreview extends ConsumerWidget {
         onEventSelected: (_, _) {},
         onExternalEventOpened: (_) {},
         pinnedDayHeaders: false,
-        candidateClubs: widgetbookExploreClubs,
-        joinedClubIds: widgetbookExploreJoinedClubIds,
+        candidateOrganizers: widgetbookExploreOrganizers,
+        joinedOrganizerIds: widgetbookExploreJoinedOrganizerIds,
       ),
     );
   }
@@ -246,7 +246,7 @@ ExternalEvent _externalEvent({
   return ExternalEvent(
     id: id,
     canonicalHostId: 'widgetbook-external-host',
-    compatibilityClubId: widgetbookExploreClubs[1].id,
+    compatibilityOrganizerId: widgetbookExploreOrganizers[1].id,
     title: title,
     description:
         'A reviewed external plan shown as read-only supply in Explore with outbound booking only.',
@@ -255,7 +255,7 @@ ExternalEvent _externalEvent({
     timezone: 'Asia/Kolkata',
     meetingPoint: meetingPoint,
     locationDetails: 'Hosted outside Catch; confirm final details on source.',
-    photoUrl: widgetbookExploreClubs[1].imageUrl,
+    photoUrl: widgetbookExploreOrganizers[1].imageUrl,
     latitude: widgetbookExploreMumbai.latitude + 0.03,
     longitude: widgetbookExploreMumbai.longitude + 0.03,
     activityKind: activityKind,

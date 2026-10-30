@@ -6,8 +6,8 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configura
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_application_import.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
@@ -204,63 +204,63 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
         ],
       );
     }
-    ref.listen(hostOperableClubsProvider(uid), (_, next) {
+    ref.listen(hostOperableOrganizersProvider(uid), (_, next) {
       final state = catchAsyncStateFromAsyncValue(next);
       if (state.isSettledData) {
-        _bindAvailableOrganizer(uid, state.value ?? const <Club>[]);
+        _bindAvailableOrganizer(uid, state.value ?? const <Organizer>[]);
       }
     });
-    final clubsAsync = ref.watch(hostOperableClubsProvider(uid));
-    final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
-    if (clubsState.hasError) {
+    final organizersAsync = ref.watch(hostOperableOrganizersProvider(uid));
+    final organizersState = catchAsyncStateFromAsyncValue(organizersAsync);
+    if (organizersState.hasError) {
       return HostAudienceStateScaffold(
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
         slivers: [
           CatchLocalizedSliverErrorState(
-            clubsState.error!,
-            context: AppErrorContext.club,
-            onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
+            organizersState.error!,
+            context: AppErrorContext.organizer,
+            onRetry: () => ref.invalidate(hostOperableOrganizersProvider(uid)),
           ),
         ],
       );
     }
-    if (clubsState.isLoading) {
+    if (organizersState.isLoading) {
       return HostAudienceStateScaffold(
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
         slivers: const [CatchStateViewport.sliverLoading()],
       );
     }
-    final clubs = clubsState.value ?? const <Club>[];
-    if (clubs.isEmpty) {
+    final organizers = organizersState.value ?? const <Organizer>[];
+    if (organizers.isEmpty) {
       return HostAudienceNoOrganizerEmptyState(selected: _view);
     }
     ref.listen(hostOrganizerSelectionProvider(uid), (_, next) {
       if (_boundAccountId != uid) return;
       _preferredRouteOrganizerId = null;
       final available = catchAsyncStateFromAsyncValue(
-        ref.read(hostOperableClubsProvider(uid)),
+        ref.read(hostOperableOrganizersProvider(uid)),
       );
       if (available.isSettledData) {
-        _bindAvailableOrganizer(uid, available.value ?? const <Club>[]);
+        _bindAvailableOrganizer(uid, available.value ?? const <Organizer>[]);
       }
     });
     final selectedOrganizerId = ref.watch(hostOrganizerSelectionProvider(uid));
-    final selectedClub = resolveSelectedHostOrganizer(
-      clubs,
+    final selectedOrganizer = resolveSelectedHostOrganizer(
+      organizers,
       selectedOrganizerId: selectedOrganizerId,
       preferredOrganizerId: _preferredRouteOrganizerId,
     )!;
     if (_preferredRouteOrganizerId != null &&
-        _preferredRouteOrganizerId != selectedClub.id) {
-      if (_boundOrganizerId == selectedClub.id) _resetWorkspace();
+        _preferredRouteOrganizerId != selectedOrganizer.id) {
+      if (_boundOrganizerId == selectedOrganizer.id) _resetWorkspace();
       _preferredRouteOrganizerId = null;
     }
-    _bindOrganizer(selectedClub.id);
+    _bindOrganizer(selectedOrganizer.id);
     _scheduleWorkspaceRouteSync();
     final request = HostFormListRequest(
-      organizerId: selectedClub.id,
+      organizerId: selectedOrganizer.id,
       accountUid: uid,
       accountGeneration: _accountGeneration,
       statuses: _statuses.isEmpty
@@ -301,7 +301,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
         ref.watch(
           hostFormResponsesControllerProvider(
             HostFormResponseListRequest(
-              organizerId: selectedClub.id,
+              organizerId: selectedOrganizer.id,
               accountUid: uid,
               accountGeneration: _accountGeneration,
               accountMountKey: _responseMountKey,
@@ -322,7 +322,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
     return CatchRootScreenScaffold.withPrimaryRail(
       header: CatchRootScreenHeader.custom(
         HostAudienceHeader(
-          organizerId: selectedClub.id,
+          organizerId: selectedOrganizer.id,
           primaryAction: activeSearchIsForms
               ? CatchTopBarPrimaryButton(
                   key: const ValueKey('host-forms-create'),
@@ -330,7 +330,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                   icon: CatchIcons.add,
                   onPressed: () {
                     if (_directoryRequestCurrent(request)) {
-                      _openTemplates(selectedClub.id);
+                      _openTemplates(selectedOrganizer.id);
                     }
                   },
                 )
@@ -376,7 +376,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
         selectionPosition: _view.index.toDouble(),
         onChanged: (view) {
           if (_directoryRequestCurrent(request)) {
-            _selectAudienceView(view, selectedClub.id);
+            _selectAudienceView(view, selectedOrganizer.id);
           }
         },
       ),
@@ -421,7 +421,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                   },
                   onCreate: () {
                     if (_directoryRequestCurrent(request)) {
-                      _openTemplates(selectedClub.id);
+                      _openTemplates(selectedOrganizer.id);
                     }
                   },
                   onOpenForm: (form) {
@@ -439,9 +439,9 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                   children: [
                     HostFormResponsesSection(
                       key: ValueKey(
-                        'responses-$uid-${selectedClub.id}-$_accountGeneration-import-$_importRevision',
+                        'responses-$uid-${selectedOrganizer.id}-$_accountGeneration-import-$_importRevision',
                       ),
-                      organizerId: selectedClub.id,
+                      organizerId: selectedOrganizer.id,
                       accountId: uid,
                       accountGeneration: _accountGeneration,
                       accountMountKey: _responseMountKey,

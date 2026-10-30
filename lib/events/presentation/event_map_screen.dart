@@ -129,7 +129,7 @@ class _EventMapState extends ConsumerState<EventMap> {
                         context.l10n.eventsEventMapScreenTitleNoMappedEventsYet,
                     message: context
                         .l10n
-                        .eventsEventMapScreenMessageJoinClubsBookEvents,
+                        .eventsEventMapScreenMessageJoinOrganizersBookEvents,
                   ),
                 );
               }

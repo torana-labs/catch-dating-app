@@ -377,7 +377,7 @@ void main() {
       final storage = TestFirebaseStorage();
       final repository = ImageUploadRepository(storage);
 
-      await repository.uploadClubPhoto(
+      await repository.uploadOrganizerPhoto(
         clubId: 'club-1',
         position: 24,
         mediaId: 'abcdefghijklmnopqrstuvwx',
@@ -418,7 +418,7 @@ final _uploadCases = <UploadCase>[
     name: 'uploadClubCover',
     schemaFileName: 'organizer_media_objects.schema.json',
     expectedPathPrefix: 'organizers/club-1/media/',
-    invoke: (repository, image) => repository.uploadClubCover(
+    invoke: (repository, image) => repository.uploadOrganizerCover(
       uid: 'user-1',
       clubId: 'club-1',
       image: image,
@@ -428,7 +428,7 @@ final _uploadCases = <UploadCase>[
     name: 'uploadClubProfileImage',
     schemaFileName: 'organizer_logo_media_objects.schema.json',
     expectedPathPrefix: 'organizers/club-1/logo/',
-    invoke: (repository, image) => repository.uploadClubProfileImage(
+    invoke: (repository, image) => repository.uploadOrganizerProfileImage(
       uid: 'user-1',
       clubId: 'club-1',
       image: image,

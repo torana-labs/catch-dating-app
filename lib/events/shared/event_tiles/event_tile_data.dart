@@ -20,7 +20,7 @@ class EventTileData {
   const EventTileData({
     required this.event,
     required this.status,
-    this.clubName,
+    this.organizerName,
     this.reasonLabel,
     this.positionLabel,
   });
@@ -28,14 +28,14 @@ class EventTileData {
   factory EventTileData.fromEvent({
     required Event event,
     EventTileStatus status = EventTileStatus.open,
-    String? clubName,
+    String? organizerName,
     String? reasonLabel,
     String? positionLabel,
   }) {
     return EventTileData(
       event: event,
       status: status,
-      clubName: clubName,
+      organizerName: organizerName,
       reasonLabel: reasonLabel,
       positionLabel: positionLabel,
     );
@@ -43,7 +43,7 @@ class EventTileData {
 
   final Event event;
   final EventTileStatus status;
-  final String? clubName;
+  final String? organizerName;
   final String? reasonLabel;
   final String? positionLabel;
 

@@ -32,7 +32,9 @@ Future<HostEventEntrySelection?> showHostEventEntrySheet({
                     .get(createEventDraftControllerProvider.notifier)
                     .deleteDraft(clubId: draft.clubId, draftId: draft.id);
               });
-              ref.invalidate(clubEventDraftsProvider(clubId: draft.clubId));
+              ref.invalidate(
+                organizerEventDraftsProvider(clubId: draft.clubId),
+              );
             },
       ),
     ),

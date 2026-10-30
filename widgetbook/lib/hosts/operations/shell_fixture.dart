@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
@@ -9,23 +8,24 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_tracking_settings_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/update_club_patch.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_preference_controller.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_roadmap_provider.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
@@ -57,12 +57,12 @@ class WidgetbookHostShellScope extends StatelessWidget {
     super.key,
     required this.child,
     this.uid = 'design-host-owner',
-    this.hostedClubs,
-    this.ownedClubs,
+    this.hostedOrganizers,
+    this.ownedOrganizers,
     this.hostProfileStream,
-    this.hostedClubsStream,
-    this.ownedClubsStream,
-    this.clubEventStreams = const {},
+    this.hostedOrganizersStream,
+    this.ownedOrganizersStream,
+    this.organizerEventStreams = const {},
     this.paymentAccountValue,
     this.analyticsRepository = const HostFixtureAnalyticsRepository(),
     this.themeMode = ThemeMode.light,
@@ -70,33 +70,39 @@ class WidgetbookHostShellScope extends StatelessWidget {
 
   final Widget child;
   final String? uid;
-  final List<Club>? hostedClubs;
-  final List<Club>? ownedClubs;
+  final List<Organizer>? hostedOrganizers;
+  final List<Organizer>? ownedOrganizers;
   final Stream<HostProfile?>? hostProfileStream;
-  final Stream<List<Club>>? hostedClubsStream;
-  final Stream<List<Club>>? ownedClubsStream;
-  final Map<String, Stream<List<Event>>> clubEventStreams;
+  final Stream<List<Organizer>>? hostedOrganizersStream;
+  final Stream<List<Organizer>>? ownedOrganizersStream;
+  final Map<String, Stream<List<Event>>> organizerEventStreams;
   final AsyncValue<HostPaymentAccount?>? paymentAccountValue;
   final HostAnalyticsRepository analyticsRepository;
   final ThemeMode themeMode;
 
   @override
   Widget build(BuildContext context) {
-    final effectiveHostedClubs = hostedClubs ?? HostOperationsFixtures.clubs;
-    final effectiveOwnedClubs =
-        ownedClubs ??
-        [HostOperationsFixtures.primaryClub, HostOperationsFixtures.dinnerClub];
+    final effectiveHostedOrganizers =
+        hostedOrganizers ?? HostOperationsFixtures.organizers;
+    final effectiveOwnedOrganizers =
+        ownedOrganizers ??
+        [
+          HostOperationsFixtures.primaryOrganizer,
+          HostOperationsFixtures.dinnerOrganizer,
+        ];
     final effectiveUid = uid ?? widgetbookHostUid;
-    final eventClubIds = <String>{
-      for (final club in HostOperationsFixtures.clubs) club.id,
-      for (final club in effectiveHostedClubs) club.id,
-      for (final club in effectiveOwnedClubs) club.id,
-      ...clubEventStreams.keys,
+    final eventOrganizerIds = <String>{
+      for (final organizer in HostOperationsFixtures.organizers) organizer.id,
+      for (final organizer in effectiveHostedOrganizers) organizer.id,
+      for (final organizer in effectiveOwnedOrganizers) organizer.id,
+      ...organizerEventStreams.keys,
     };
-    final clubsById = <String, Club>{
-      for (final club in HostOperationsFixtures.clubs) club.id: club,
-      for (final club in effectiveHostedClubs) club.id: club,
-      for (final club in effectiveOwnedClubs) club.id: club,
+    final organizersById = <String, Organizer>{
+      for (final organizer in HostOperationsFixtures.organizers)
+        organizer.id: organizer,
+      for (final organizer in effectiveHostedOrganizers)
+        organizer.id: organizer,
+      for (final organizer in effectiveOwnedOrganizers) organizer.id: organizer,
     };
     final overrides = [
       programEventsControllerProvider.overrideWith((ref, request) {
@@ -119,10 +125,10 @@ class WidgetbookHostShellScope extends StatelessWidget {
         (ref, scope) => const HostTodayRoadmapEvidence(),
       ),
       hostTodayFeedControllerProvider.overrideWith2(
-        (_) => _WidgetbookHostTodayFeedController(clubEventStreams),
+        (_) => _WidgetbookHostTodayFeedController(organizerEventStreams),
       ),
       hostEventsTimelineControllerProvider.overrideWith2(
-        (_) => _WidgetbookHostEventsTimelineController(clubEventStreams),
+        (_) => _WidgetbookHostEventsTimelineController(organizerEventStreams),
       ),
       uidProvider.overrideWithValue(AsyncData<String?>(uid)),
       watchHostProfileProvider(effectiveUid).overrideWith(
@@ -130,13 +136,15 @@ class WidgetbookHostShellScope extends StatelessWidget {
             hostProfileStream ??
             Stream<HostProfile?>.value(HostOperationsFixtures.hostProfile),
       ),
-      watchClubsHostedByProvider(effectiveUid).overrideWith(
+      watchOrganizersHostedByProvider(effectiveUid).overrideWith(
         (ref) =>
-            hostedClubsStream ?? Stream<List<Club>>.value(effectiveHostedClubs),
+            hostedOrganizersStream ??
+            Stream<List<Organizer>>.value(effectiveHostedOrganizers),
       ),
-      watchClubsOwnedByProvider(effectiveUid).overrideWith(
+      watchOrganizersOwnedByProvider(effectiveUid).overrideWith(
         (ref) =>
-            ownedClubsStream ?? Stream<List<Club>>.value(effectiveOwnedClubs),
+            ownedOrganizersStream ??
+            Stream<List<Organizer>>.value(effectiveOwnedOrganizers),
       ),
       watchHostPaymentAccountsProvider(effectiveUid).overrideWithValue(
         switch (paymentAccountValue) {
@@ -148,8 +156,8 @@ class WidgetbookHostShellScope extends StatelessWidget {
           _ => const AsyncLoading<List<HostPaymentAccount>>(),
         },
       ),
-      hostClubEditControllerProvider.overrideWithValue(
-        const _NoopHostClubEditActions(),
+      hostOrganizerEditControllerProvider.overrideWithValue(
+        const _NoopHostOrganizerEditActions(),
       ),
       hostPaymentAccountControllerProvider.overrideWithValue(
         const _NoopHostPaymentAccountActions(),
@@ -159,18 +167,19 @@ class WidgetbookHostShellScope extends StatelessWidget {
         const _WidgetbookTrackingSettingsRepository(),
       ),
     ];
-    for (final clubId in eventClubIds) {
-      final club = clubsById[clubId];
-      if (club != null) {
+    for (final clubId in eventOrganizerIds) {
+      final organizer = organizersById[clubId];
+      if (organizer != null) {
         overrides.add(
-          clubDetailViewModelProvider(clubId).overrideWithValue(
-            AsyncData<ClubDetailViewModel?>(
-              ClubDetailViewModel(
-                club: club,
+          organizerDetailViewModelProvider(clubId).overrideWithValue(
+            AsyncData<OrganizerDetailViewModel?>(
+              OrganizerDetailViewModel(
+                organizer: organizer,
                 isHost: true,
                 isMember: false,
                 upcomingEvents:
-                    HostOperationsFixtures.eventsByClub[clubId] ?? const [],
+                    HostOperationsFixtures.eventsByOrganizer[clubId] ??
+                    const [],
                 reviews: const [],
                 userProfile: uid == null ? null : HostOperationsFixtures.owner,
                 uid: uid,
@@ -181,11 +190,11 @@ class WidgetbookHostShellScope extends StatelessWidget {
         );
       }
       overrides.addAll([
-        watchEventsForClubProvider(clubId).overrideWith(
+        watchEventsForOrganizerProvider(clubId).overrideWith(
           (ref) =>
-              clubEventStreams[clubId] ??
+              organizerEventStreams[clubId] ??
               Stream<List<Event>>.value(
-                HostOperationsFixtures.eventsByClub[clubId] ?? const [],
+                HostOperationsFixtures.eventsByOrganizer[clubId] ?? const [],
               ),
         ),
         hostCrmSummaryProvider(
@@ -215,7 +224,7 @@ class _WidgetbookHostTodayFeedController extends HostTodayFeedController {
       ref,
       eventStreamsByOrganizer[request.organizerId] ??
           Stream<List<Event>>.value(
-            HostOperationsFixtures.eventsByClub[request.organizerId] ??
+            HostOperationsFixtures.eventsByOrganizer[request.organizerId] ??
                 const [],
           ),
     );
@@ -286,7 +295,8 @@ class _WidgetbookHostEventsTimelineController
     final stream =
         eventStreamsByOrganizer[request.organizerId] ??
         Stream<List<Event>>.value(
-          HostOperationsFixtures.eventsByClub[request.organizerId] ?? const [],
+          HostOperationsFixtures.eventsByOrganizer[request.organizerId] ??
+              const [],
         );
     final events = await _readWidgetbookEvents(ref, stream);
     return HostEventsTimelineData(
@@ -324,30 +334,31 @@ Future<List<Event>> _readWidgetbookEvents(
   return completer.future;
 }
 
-final class _NoopHostClubEditActions implements HostClubEditActions {
-  const _NoopHostClubEditActions();
+final class _NoopHostOrganizerEditActions implements HostOrganizerEditActions {
+  const _NoopHostOrganizerEditActions();
 
   @override
-  Future<void> updateClub({
+  Future<void> updateOrganizer({
     required String clubId,
-    required UpdateClubPatch patch,
+    required UpdateOrganizerPatch patch,
   }) async {}
 
   @override
-  Future<List<HostPickedClubPhoto>> pickClubPhotos({int? limit}) async =>
-      const [];
+  Future<List<HostPickedOrganizerPhoto>> pickOrganizerPhotos({
+    int? limit,
+  }) async => const [];
 
   @override
-  Future<HostPickedClubLogo?> pickClubLogo() async => null;
+  Future<HostPickedOrganizerLogo?> pickOrganizerLogo() async => null;
 
   @override
-  Future<HostClubMediaSaveResult> updateClubMedia({
-    required Club club,
-    List<HostClubMediaInput>? photoInputs,
-    HostPickedClubLogo? logo,
+  Future<HostOrganizerMediaSaveResult> updateOrganizerMedia({
+    required Organizer organizer,
+    List<HostOrganizerMediaInput>? photoInputs,
+    HostPickedOrganizerLogo? logo,
     bool removeLogo = false,
-    ValueChanged<HostClubMediaProgress>? onProgress,
-  }) async => HostClubMediaSaveResult(
+    ValueChanged<HostOrganizerMediaProgress>? onProgress,
+  }) async => HostOrganizerMediaSaveResult(
     photoInputs: photoInputs,
     logo: logo,
     failures: const {},
@@ -355,9 +366,9 @@ final class _NoopHostClubEditActions implements HostClubEditActions {
   );
 
   @override
-  Future<void> discardClubMedia({
-    required List<HostClubMediaInput> photoInputs,
-    HostPickedClubLogo? logo,
+  Future<void> discardOrganizerMedia({
+    required List<HostOrganizerMediaInput> photoInputs,
+    HostPickedOrganizerLogo? logo,
   }) async {}
 }
 

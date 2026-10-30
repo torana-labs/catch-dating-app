@@ -3,11 +3,11 @@ part of '../host_operations_screen.dart';
 class HostWhatsappSetupSection extends ConsumerStatefulWidget {
   const HostWhatsappSetupSection({
     super.key,
-    required this.club,
+    required this.organizer,
     this.onBusyChanged,
   });
 
-  final Club club;
+  final Organizer organizer;
   final ValueChanged<bool>? onBusyChanged;
 
   @override
@@ -28,7 +28,9 @@ class _HostWhatsappSetupSectionState
 
   @override
   Widget build(BuildContext context) {
-    final messaging = ref.watch(hostMessagingSetupProvider(widget.club.id));
+    final messaging = ref.watch(
+      hostMessagingSetupProvider(widget.organizer.id),
+    );
     final loadedSetup = catchAsyncStateFromAsyncValue(messaging).value;
     if (loadedSetup != null &&
         !loadedSetup.canManageWhatsappSender(
@@ -41,13 +43,13 @@ class _HostWhatsappSetupSectionState
       child: CatchAsyncBoundary<HostMessagingSetup>(
         value: messaging,
         onRetry: () =>
-            ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
+            ref.invalidate(hostMessagingSetupProvider(widget.organizer.id)),
         initialLoadTimeout: null,
         loadingBuilder: (_) => const CatchLoadingIndicator(),
         errorBuilder: (_, error, _, onBoundaryRetry) =>
             CatchLocalizedErrorState(
               error,
-              context: AppErrorContext.club,
+              context: AppErrorContext.organizer,
               mode: CatchErrorStateMode.compact,
               onRetry: onBoundaryRetry,
             ),
@@ -153,30 +155,30 @@ class _HostWhatsappSetupSectionState
     await ref
         .read(hostAudienceControllerProvider)
         .completeWhatsappConnection(
-          organizerId: widget.club.id,
+          organizerId: widget.organizer.id,
           result: result,
         );
-    ref.invalidate(hostMessagingSetupProvider(widget.club.id));
+    ref.invalidate(hostMessagingSetupProvider(widget.organizer.id));
   });
 
   Future<void> _syncTemplates(String connectionId) => _run(() async {
     await ref
         .read(hostAudienceControllerProvider)
         .syncWhatsappTemplates(
-          organizerId: widget.club.id,
+          organizerId: widget.organizer.id,
           connectionId: connectionId,
         );
-    ref.invalidate(hostMessagingSetupProvider(widget.club.id));
+    ref.invalidate(hostMessagingSetupProvider(widget.organizer.id));
   });
 
   Future<void> _disconnectWhatsapp(String connectionId) => _run(() async {
     await ref
         .read(hostAudienceControllerProvider)
         .disconnectWhatsapp(
-          organizerId: widget.club.id,
+          organizerId: widget.organizer.id,
           connectionId: connectionId,
         );
-    ref.invalidate(hostMessagingSetupProvider(widget.club.id));
+    ref.invalidate(hostMessagingSetupProvider(widget.organizer.id));
   });
 
   Future<void> _sendTest(
@@ -195,13 +197,13 @@ class _HostWhatsappSetupSectionState
     await ref
         .read(hostAudienceControllerProvider)
         .sendWhatsappTest(
-          organizerId: widget.club.id,
+          organizerId: widget.organizer.id,
           connectionId: connection.connectionId,
           templateId: template.templateId,
           toE164: _testPhoneController.text.trim(),
           templateVariables: variables,
         );
-    ref.invalidate(hostMessagingSetupProvider(widget.club.id));
+    ref.invalidate(hostMessagingSetupProvider(widget.organizer.id));
     if (mounted) {
       showCatchNotice(context, context.l10n.hostsHostAudienceTestPending);
     }
@@ -218,7 +220,7 @@ class _HostWhatsappSetupSectionState
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {

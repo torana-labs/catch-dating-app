@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen_state.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
@@ -109,15 +109,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           selectedDate: _selectedDate,
           expanded: _calendarExpanded,
         );
-        final clubNamesAsync = calendarState.hasEvents
+        final organizerNamesAsync = calendarState.hasEvents
             ? ref.watch(
-                clubNameLookupProvider(
-                  ClubNameLookupQuery(calendarState.clubIds),
+                organizerNameLookupProvider(
+                  OrganizerNameLookupQuery(calendarState.organizerIds),
                 ),
               )
             : const AsyncData(<String, String>{});
         final agendaState = calendarState.agendaSection(
-          clubNames: _calendarClubNameLookupState(clubNamesAsync),
+          organizerNames: _calendarOrganizerNameLookupState(
+            organizerNamesAsync,
+          ),
         );
         topBarSelectedDate = calendarState.selectedDate;
         topBarToday = calendarState.summary.today;
@@ -148,7 +150,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 state: agendaState,
                 dayKeyBuilder: _agendaDayKey,
                 onEventSelected: (event) => _openEventDetail(context, event),
-                onRetryClubNames: () => ref.invalidate(clubNameLookupProvider),
+                onRetryOrganizerNames: () =>
+                    ref.invalidate(organizerNameLookupProvider),
               ),
               const CatchScrollTerminalGap.sliver(),
             ],
@@ -276,13 +279,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }
 }
 
-CalendarClubNameLookupState _calendarClubNameLookupState(
+CalendarOrganizerNameLookupState _calendarOrganizerNameLookupState(
   AsyncValue<Map<String, String>> value,
 ) {
   final names = value.asData?.value;
-  if (names != null) return CalendarClubNameLookupState.ready(names);
-  if (value.hasError) return CalendarClubNameLookupState.failure(value.error!);
-  return const CalendarClubNameLookupState.loading();
+  if (names != null) return CalendarOrganizerNameLookupState.ready(names);
+  if (value.hasError) {
+    return CalendarOrganizerNameLookupState.failure(value.error!);
+  }
+  return const CalendarOrganizerNameLookupState.loading();
 }
 
 class CalendarAgendaSliverSection extends StatelessWidget {
@@ -291,13 +296,13 @@ class CalendarAgendaSliverSection extends StatelessWidget {
     required this.state,
     required this.dayKeyBuilder,
     required this.onEventSelected,
-    required this.onRetryClubNames,
+    required this.onRetryOrganizerNames,
   });
 
   final CalendarAgendaSectionState state;
   final EventAgendaDayKeyBuilder dayKeyBuilder;
   final ValueChanged<Event> onEventSelected;
-  final VoidCallback onRetryClubNames;
+  final VoidCallback onRetryOrganizerNames;
 
   @override
   Widget build(BuildContext context) {
@@ -315,15 +320,15 @@ class CalendarAgendaSliverSection extends StatelessWidget {
         ),
         accountForBottomOverlay: false,
       ),
-      CalendarAgendaClubNamesLoadingState(:final skeletonCount) =>
+      CalendarAgendaOrganizerNamesLoadingState(:final skeletonCount) =>
         EventAgendaSliverSkeleton(count: skeletonCount),
-      CalendarAgendaClubNamesErrorState(:final error) =>
+      CalendarAgendaOrganizerNamesErrorState(:final error) =>
         CatchStateViewport.sliver(
           accountForBottomOverlay: false,
           child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.event,
-            onRetry: onRetryClubNames,
+            onRetry: onRetryOrganizerNames,
           ),
         ),
       CalendarAgendaReadyState(:final rows, :final today) =>
@@ -332,12 +337,12 @@ class CalendarAgendaSliverSection extends StatelessWidget {
             for (final row in rows)
               EventAgendaRow(
                 event: row.event,
-                clubName: row.clubName,
+                organizerName: row.organizerName,
                 badgeLabel: row.badgeLabel(context.l10n),
                 status: _eventTileStatusFor(row.status),
               ),
           ],
-          showClubName: true,
+          showOrganizerName: true,
           today: today,
           preserveInputOrder: true,
           dayKeyBuilder: dayKeyBuilder,

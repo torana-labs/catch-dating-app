@@ -8,7 +8,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
@@ -31,12 +31,12 @@ final _l10n = AppLocalizationsEn();
 void main() {
   test('HostEventEditState maps route provider states', () {
     final event = buildEvent();
-    final club = buildClub();
+    final organizer = buildOrganizer();
 
     expect(
       HostEventEditState.resolve(
         uid: const CatchAsyncState<String?>.loading(),
-        club: CatchAsyncState<Club?>.data(club),
+        organizer: CatchAsyncState<Organizer?>.data(organizer),
         event: CatchAsyncState<Event?>.data(event),
       ).status,
       HostEventEditRouteStatus.loading,
@@ -45,7 +45,7 @@ void main() {
     expect(
       HostEventEditState.resolve(
         uid: const CatchAsyncState<String?>.data('host-1'),
-        club: CatchAsyncState<Club?>.error(StateError('Club failed')),
+        organizer: CatchAsyncState<Organizer?>.error(StateError('Club failed')),
         event: CatchAsyncState<Event?>.data(event),
       ).status,
       HostEventEditRouteStatus.error,
@@ -54,7 +54,7 @@ void main() {
     expect(
       HostEventEditState.resolve(
         uid: const CatchAsyncState<String?>.data('host-1'),
-        club: const CatchAsyncState<Club?>.data(null),
+        organizer: const CatchAsyncState<Organizer?>.data(null),
         event: CatchAsyncState<Event?>.data(event),
       ).status,
       HostEventEditRouteStatus.notFound,
@@ -63,7 +63,7 @@ void main() {
     expect(
       HostEventEditState.resolve(
         uid: const CatchAsyncState<String?>.data('guest-1'),
-        club: CatchAsyncState<Club?>.data(club),
+        organizer: CatchAsyncState<Organizer?>.data(organizer),
         event: CatchAsyncState<Event?>.data(event),
       ).status,
       HostEventEditRouteStatus.unauthorized,
@@ -72,7 +72,7 @@ void main() {
     expect(
       HostEventEditState.resolve(
         uid: const CatchAsyncState<String?>.data('host-1'),
-        club: CatchAsyncState<Club?>.data(club),
+        organizer: CatchAsyncState<Organizer?>.data(organizer),
         event: CatchAsyncState<Event?>.data(event),
       ).status,
       HostEventEditRouteStatus.ready,
@@ -493,7 +493,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       EditHostedEventScreen(
-        club: buildClub(id: event.clubId),
+        organizer: buildOrganizer(id: event.clubId),
         event: event,
         now: () => DateTime(2026, 5, 21, 9),
       ),
@@ -635,7 +635,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       EditHostedEventScreen(
-        club: buildClub(id: event.clubId),
+        organizer: buildOrganizer(id: event.clubId),
         event: event,
         now: () => DateTime(2026, 5, 21, 9),
       ),
@@ -699,7 +699,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       EditHostedEventScreen(
-        club: buildClub(id: event.clubId),
+        organizer: buildOrganizer(id: event.clubId),
         event: event,
         now: () => DateTime(2026, 5, 21, 9),
       ),
@@ -755,7 +755,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       EditHostedEventScreen(
-        club: buildClub(id: event.clubId),
+        organizer: buildOrganizer(id: event.clubId),
         event: event,
         now: () => DateTime(2026, 5, 21, 9),
       ),
@@ -803,7 +803,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       EditHostedEventScreen(
-        club: buildClub(id: event.clubId),
+        organizer: buildOrganizer(id: event.clubId),
         event: event,
         now: () => DateTime(2026, 5, 21, 9),
       ),

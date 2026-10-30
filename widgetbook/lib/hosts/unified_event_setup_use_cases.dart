@@ -49,7 +49,7 @@ Widget privateEventCreateScreenPreview(BuildContext context) =>
           child: WidgetbookHostDeviceFrame(
             child: ProviderScope(
               child: PrivateEventCreateScreen(
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 promptForDraftsOnStart: false,
                 create:
                     ({
@@ -80,7 +80,7 @@ Widget privateEventSetupScreenPreview(BuildContext context) =>
           label: 'private with optional capabilities',
           child: WidgetbookHostDeviceFrame(
             child: PrivateEventSetupScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               receipt: const PrivateEventCreateReceipt(
                 eventId: 'preview-private-event',
                 setupRevision: 1,

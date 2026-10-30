@@ -45,7 +45,7 @@ enum Routes {
   ),
   exploreScreen('/organizers', AppRouteAudience.consumer),
   exploreMapScreen('/organizers/map', AppRouteAudience.consumer),
-  clubDetailScreen('/organizers/:clubId', AppRouteAudience.consumer),
+  organizerDetailScreen('/organizers/:clubId', AppRouteAudience.consumer),
   eventDetailScreen(
     '/organizers/:clubId/events/:eventId',
     AppRouteAudience.consumer,
@@ -226,20 +226,26 @@ enum Routes {
     '/host/organizer/:clubId/messaging',
     AppRouteAudience.host,
   ),
-  hostClubsScreen('/host/organizers', AppRouteAudience.host),
-  hostClubEventDefaultsScreen(
+  hostOrganizersScreen('/host/organizers', AppRouteAudience.host),
+  hostOrganizerEventDefaultsScreen(
     '/host/organizers/event-defaults',
     AppRouteAudience.host,
   ),
-  hostClubLiveGuideScreen('/host/organizers/live-guide', AppRouteAudience.host),
-  hostClubTeamScreen('/host/organizers/team', AppRouteAudience.host),
-  hostClubPaymentsScreen('/host/organizers/payments', AppRouteAudience.host),
-  hostClubMembershipsScreen(
+  hostOrganizerLiveGuideScreen(
+    '/host/organizers/live-guide',
+    AppRouteAudience.host,
+  ),
+  hostOrganizerTeamScreen('/host/organizers/team', AppRouteAudience.host),
+  hostOrganizerPaymentsScreen(
+    '/host/organizers/payments',
+    AppRouteAudience.host,
+  ),
+  hostOrganizerMembershipsScreen(
     '/host/organizers/memberships',
     AppRouteAudience.host,
   ),
-  hostClubDetailScreen('/host/organizers/:clubId', AppRouteAudience.host),
-  hostCreateClubScreen(
+  hostOrganizerDetailScreen('/host/organizers/:clubId', AppRouteAudience.host),
+  hostCreateOrganizerScreen(
     '/host/organizers/create-organizer',
     AppRouteAudience.host,
   ),

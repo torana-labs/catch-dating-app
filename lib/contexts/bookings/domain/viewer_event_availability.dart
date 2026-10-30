@@ -29,7 +29,7 @@ class ViewerEventAvailability {
     required this.spotsRemaining,
     required this.isSaved,
     required this.isHosted,
-    required this.isClubMember,
+    required this.isOrganizerMember,
     this.eligibility,
     this.admissionDecision,
     this.quotedPriceInPaise,
@@ -44,7 +44,7 @@ class ViewerEventAvailability {
   final int spotsRemaining;
   final bool isSaved;
   final bool isHosted;
-  final bool isClubMember;
+  final bool isOrganizerMember;
   final int? quotedPriceInPaise;
   final String? cohortId;
   final String? cohortLabel;
@@ -76,7 +76,7 @@ ViewerEventAvailability resolveViewerEventAvailability({
   EventParticipation? participation,
   bool isSaved = false,
   bool isHosted = false,
-  bool isClubMember = false,
+  bool isOrganizerMember = false,
   required DateTime now,
   bool hasValidInvite = false,
 }) {
@@ -86,7 +86,7 @@ ViewerEventAvailability resolveViewerEventAvailability({
     userProfile: userProfile,
     isSaved: isSaved,
     isHosted: isHosted,
-    isClubMember: isClubMember,
+    isOrganizerMember: isOrganizerMember,
   );
 
   if (event.isCancelled) {
@@ -181,7 +181,7 @@ ViewerEventAvailability resolveViewerEventAvailability({
     request: EventAdmissionRequest(
       attendee: attendee,
       hasValidInvite: hasValidInvite,
-      isClubMember: isClubMember,
+      isOrganizerMember: isOrganizerMember,
     ),
     roster: EventRosterSnapshot(
       bookedCountsByCohort: event.effectiveCohortCounts,
@@ -354,7 +354,7 @@ ViewerEventAvailability viewerEventAvailabilityFromState({
     spotsRemaining: event.spotsRemaining,
     isSaved: isSaved,
     isHosted: false,
-    isClubMember: viewer.membership == EventViewerMembership.active,
+    isOrganizerMember: viewer.membership == EventViewerMembership.active,
     quotedPriceInPaise: viewer.quotedPriceInPaise,
   );
 }
@@ -368,14 +368,14 @@ class _ViewerEventAvailabilityBuilder {
     required this.userProfile,
     required this.isSaved,
     required this.isHosted,
-    required this.isClubMember,
+    required this.isOrganizerMember,
   });
 
   final Event event;
   final UserProfile? userProfile;
   final bool isSaved;
   final bool isHosted;
-  final bool isClubMember;
+  final bool isOrganizerMember;
 
   ViewerEventAvailability build(
     ViewerEventAvailabilityStatus status, {
@@ -392,7 +392,7 @@ class _ViewerEventAvailabilityBuilder {
       spotsRemaining: event.spotsRemaining,
       isSaved: isSaved,
       isHosted: isHosted,
-      isClubMember: isClubMember,
+      isOrganizerMember: isOrganizerMember,
       quotedPriceInPaise:
           quotedPriceInPaise ??
           (userProfile == null

@@ -8,7 +8,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_cont
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_loading_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
@@ -28,7 +28,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import '../clubs/clubs_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 const _actor = 'host-1';
@@ -556,10 +556,10 @@ Future<_Harness> _pumpRemoval(
       firebaseAuthProvider.overrideWithValue(auth),
       hostContactsRepositoryProvider.overrideWithValue(repository),
       for (final uid in [_actor, 'host-2'])
-        hostOperableClubsProvider(uid).overrideWithValue(
+        hostOperableOrganizersProvider(uid).overrideWithValue(
           AsyncData([
-            buildClub(id: _organizer, ownerUserId: uid),
-            buildClub(id: _otherOrganizer, ownerUserId: uid),
+            buildOrganizer(id: _organizer, ownerUserId: uid),
+            buildOrganizer(id: _otherOrganizer, ownerUserId: uid),
           ]),
         ),
       for (final org in [_organizer, _otherOrganizer]) ...[

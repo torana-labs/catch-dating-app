@@ -49,7 +49,7 @@ final class PhoneImportRouteControllerProvider
 }
 
 String _$phoneImportRouteControllerHash() =>
-    r'45ce96ac0a87ff9c627d0e3831d081762df7eafd';
+    r'd494dcff50b07dab96fbddd37ed607fb717d7c1e';
 
 /// Canonical entry composition and fresh access checks. Route widgets own
 /// subscriptions, navigation and Flutter lifetime mechanics, not repositories.

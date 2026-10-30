@@ -211,7 +211,7 @@ return $default(_that.preview,_that.pending,_that.receipt,_that.error,_that.busy
 
 class _HostFormAdmissionState implements HostFormAdmissionState {
   const _HostFormAdmissionState({this.preview, this.pending, this.receipt, this.error, this.busy = false, this.actorAvailable = true});
-
+  
 
 @override final  HostFormAdmissionPreview? preview;
 @override final  PendingFormAdmission? pending;

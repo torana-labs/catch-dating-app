@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-15",
-  "sourceDigest": "sha256:3d433771de7e982c60b0c951bb780edd1cf905acaf2e7c0e3cbae9270b9b3479",
+  "sourceDigest": "sha256:2c8f7d64e72e4789e9620c92b0ee7bac2d5659f551ba5b42a598fe26717bcf37",
   "resolvedDigest": "sha256:3d56cc89b38064a1e2b4754d69438b60811f36fa8ae228df72d52d2dd0eb2349",
   "feature": {
     "id": "feature.host_event_create",
@@ -229,7 +229,7 @@
         {
           "id": "retry_route",
           "owner": "route_screen",
-          "codeValue": "reloadClub",
+          "codeValue": "reloadOrganizer",
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
@@ -911,7 +911,7 @@
         {
           "id": "dismiss_success",
           "owner": "wizard_state",
-          "codeValue": "backToClub",
+          "codeValue": "backToOrganizer",
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",

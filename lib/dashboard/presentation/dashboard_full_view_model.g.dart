@@ -72,7 +72,7 @@ final class DashboardFullViewModelProvider
       List<Event> signedUpEvents,
       UserProfile user,
       String uid,
-      List<String> followedClubIds,
+      List<String> followedOrganizerIds,
     })
     super.argument,
   }) : super(
@@ -107,14 +107,14 @@ final class DashboardFullViewModelProvider
               List<Event> signedUpEvents,
               UserProfile user,
               String uid,
-              List<String> followedClubIds,
+              List<String> followedOrganizerIds,
             });
     return dashboardFullViewModel(
       ref,
       signedUpEvents: argument.signedUpEvents,
       user: argument.user,
       uid: argument.uid,
-      followedClubIds: argument.followedClubIds,
+      followedOrganizerIds: argument.followedOrganizerIds,
     );
   }
 
@@ -139,7 +139,7 @@ final class DashboardFullViewModelProvider
 }
 
 String _$dashboardFullViewModelHash() =>
-    r'ea59607b296b20a0c14d7a86eb91991123451ddf';
+    r'21df40c2bc908d513a2c3a9fee04c26fdf8f1dc6';
 
 /// Combines signed-up and attended events into the live-layer home model.
 
@@ -151,7 +151,7 @@ final class DashboardFullViewModelFamily extends $Family
             List<Event> signedUpEvents,
             UserProfile user,
             String uid,
-            List<String> followedClubIds,
+            List<String> followedOrganizerIds,
           })
         > {
   DashboardFullViewModelFamily._()
@@ -169,13 +169,13 @@ final class DashboardFullViewModelFamily extends $Family
     required List<Event> signedUpEvents,
     required UserProfile user,
     required String uid,
-    required List<String> followedClubIds,
+    required List<String> followedOrganizerIds,
   }) => DashboardFullViewModelProvider._(
     argument: (
       signedUpEvents: signedUpEvents,
       user: user,
       uid: uid,
-      followedClubIds: followedClubIds,
+      followedOrganizerIds: followedOrganizerIds,
     ),
     from: this,
   );
@@ -247,4 +247,4 @@ final class DashboardHomeScreenStateProvider
 }
 
 String _$dashboardHomeScreenStateHash() =>
-    r'9826ffd9e8acedd059f5b6909be5c4bdc0b51c45';
+    r'670e6c4762ff228baa208d3edead0980be1ecbc6';

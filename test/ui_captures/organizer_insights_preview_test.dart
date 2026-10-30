@@ -16,7 +16,7 @@ import 'support/capture_pump.dart';
 
 void main() {
   testWidgets('captures organizer metrics and audience', (tester) async {
-    final organizerId = HostOperationsFixtures.primaryClub.id;
+    final organizerId = HostOperationsFixtures.primaryOrganizer.id;
     for (final view in [
       'performance',
       'reviews',

@@ -4,13 +4,16 @@ void _registerHostOperationsCustomerStateTests() {
   testWidgets(
     'customer directory keeps initial loading distinct from failure',
     (tester) async {
-      final club = buildClub(id: 'loading-club', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'loading-club',
+        ownerUserId: _hostUid,
+      );
       await _pumpHostScreen(
         tester,
         const HostCustomersScreen(),
         settle: false,
         overrides: [
-          ..._hostClubOverrides(owned: [club]),
+          ..._hostOrganizerOverrides(owned: [organizer]),
           hostCustomersDirectoryControllerProvider.overrideWith2(
             (_) => _PendingHostCustomersDirectoryController(),
           ),
@@ -28,12 +31,12 @@ void _registerHostOperationsCustomerStateTests() {
   testWidgets('customer directory failure names the directory resource', (
     tester,
   ) async {
-    final club = buildClub(id: 'error-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(id: 'error-club', ownerUserId: _hostUid);
     await _pumpHostScreen(
       tester,
       const HostCustomersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
+        ..._hostOrganizerOverrides(owned: [organizer]),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FailingHostCustomersDirectoryController(),
         ),

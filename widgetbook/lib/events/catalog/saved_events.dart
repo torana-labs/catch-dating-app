@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
@@ -76,14 +76,14 @@ Widget savedEventsScreenStates(BuildContext context) {
         label: 'club names loading',
         child: _SavedEventsRouteFrame(
           savedEvents: AsyncData<List<Event>>(savedEvents),
-          clubNames: const AsyncLoading<Map<String, String>>(),
+          organizerNames: const AsyncLoading<Map<String, String>>(),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'club names error',
         child: _SavedEventsRouteFrame(
           savedEvents: AsyncData<List<Event>>(savedEvents),
-          clubNames: AsyncError<Map<String, String>>(
+          organizerNames: AsyncError<Map<String, String>>(
             StateError('Club names failed'),
             StackTrace.empty,
           ),
@@ -132,8 +132,9 @@ Widget savedEventsAgendaSliverStates(BuildContext context) {
       slivers: [
         SavedEventsAgendaList(
           state: SavedEventsListState.from(events, now: widgetbookEventsNow),
-          clubNames: {
-            for (final event in events) event.clubId: widgetbookEventsClub.name,
+          organizerNames: {
+            for (final event in events)
+              event.clubId: widgetbookEventsOrganizer.name,
           },
           onEventSelected: (_) {},
         ),
@@ -144,15 +145,15 @@ Widget savedEventsAgendaSliverStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Club names error sliver',
-  type: SavedEventsClubNamesErrorState,
+  type: SavedEventsOrganizerNamesErrorState,
   path: '[Events]/Sections',
 )
-Widget savedEventsClubNamesErrorSliverState(BuildContext context) {
+Widget savedEventsOrganizerNamesErrorSliverState(BuildContext context) {
   return SizedBox(
     height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
     child: CustomScrollView(
       slivers: [
-        SavedEventsClubNamesErrorState(
+        SavedEventsOrganizerNamesErrorState(
           error: StateError('Club names failed'),
           onRetry: widgetbookNoop,
         ),
@@ -165,19 +166,19 @@ class _SavedEventsRouteFrame extends StatelessWidget {
   const _SavedEventsRouteFrame({
     this.uid = widgetbookEventsViewerUid,
     this.savedEvents,
-    this.clubNames,
+    this.organizerNames,
   });
 
   final String? uid;
   final AsyncValue<List<Event>>? savedEvents;
-  final AsyncValue<Map<String, String>>? clubNames;
+  final AsyncValue<Map<String, String>>? organizerNames;
 
   @override
   Widget build(BuildContext context) {
     final effectiveSavedEvents =
         savedEvents ?? AsyncData<List<Event>>(widgetbookEventsAgendaEvents());
     final events = _asyncDataList(effectiveSavedEvents);
-    final query = ClubNameLookupQuery(events.map((event) => event.clubId));
+    final query = OrganizerNameLookupQuery(events.map((event) => event.clubId));
 
     return WidgetbookEventDeviceFrame(
       child: WidgetbookFixtureScope(
@@ -188,11 +189,11 @@ class _SavedEventsRouteFrame extends StatelessWidget {
               uid!,
             ).overrideWithValue(effectiveSavedEvents),
           if (events.isNotEmpty)
-            clubNameLookupProvider(query).overrideWithValue(
-              clubNames ??
+            organizerNameLookupProvider(query).overrideWithValue(
+              organizerNames ??
                   AsyncData<Map<String, String>>({
                     for (final event in events)
-                      event.clubId: widgetbookEventsClub.name,
+                      event.clubId: widgetbookEventsOrganizer.name,
                   }),
             ),
         ],

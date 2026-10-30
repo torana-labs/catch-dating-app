@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_organizer_create.feature.json",
   "generatedFor": "2026-09-15",
-  "sourceDigest": "sha256:9c7ef30247758e7d835363050f0565b66142339adf06ed9f6155ce912ea11453",
-  "resolvedDigest": "sha256:5a9401d797a0e74b9094b50e56969ccd545c9e8c8a9dfd712c26b8de65857555",
+  "sourceDigest": "sha256:68b1aaa2cb4bbd03c1bc1084d80cc3c658decd5a6c9a2010935454c126863f9c",
+  "resolvedDigest": "sha256:566499d5b81f51997a73b77c4881b4d0f11a4e0674e731a04ece197a9288ebb5",
   "feature": {
     "id": "feature.host_organizer_create",
     "name": "Host Organizer Create",
@@ -41,38 +41,38 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/operations/create_club_routes.dart"
+          "widgetbook/lib/hosts/operations/create_organizer_routes.dart"
         ],
         "actionOwners": [
           {
             "id": "route_intent",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-            "symbol": "HostClubCreateRouteIntent"
+            "file": "lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart",
+            "symbol": "HostOrganizerCreateRouteIntent"
           },
           {
             "id": "primary_intent",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/create/create_club_screen_state.dart",
-            "symbol": "HostClubCreatePrimaryIntent"
+            "file": "lib/hosts/presentation/organizer_management/create/create_organizer_screen_state.dart",
+            "symbol": "HostOrganizerCreatePrimaryIntent"
           },
           {
             "id": "previous_intent",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/create/create_club_screen_state.dart",
-            "symbol": "HostClubCreatePreviousIntent"
+            "file": "lib/hosts/presentation/organizer_management/create/create_organizer_screen_state.dart",
+            "symbol": "HostOrganizerCreatePreviousIntent"
           },
           {
             "id": "submit_controller",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/create/create_club_controller.dart",
-            "symbol": "CreateClubController"
+            "file": "lib/hosts/presentation/organizer_management/create/create_organizer_controller.dart",
+            "symbol": "CreateOrganizerController"
           },
           {
             "id": "draft_controller",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/create/create_club_draft_controller.dart",
-            "symbol": "CreateClubDraftController"
+            "file": "lib/hosts/presentation/organizer_management/create/create_organizer_draft_controller.dart",
+            "symbol": "CreateOrganizerDraftController"
           }
         ],
         "componentContracts": [
@@ -170,7 +170,7 @@
         {
           "id": "navigate_back",
           "owner": "previous_intent",
-          "codeValue": "HostClubCreatePreviousIntent",
+          "codeValue": "HostOrganizerCreatePreviousIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -220,7 +220,7 @@
         {
           "id": "select_club_photos",
           "owner": "route_intent",
-          "codeValue": "HostClubCreatePickClubPhotosIntent",
+          "codeValue": "HostOrganizerCreatePickOrganizerPhotosIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -241,7 +241,7 @@
         {
           "id": "select_profile_image",
           "owner": "route_intent",
-          "codeValue": "HostClubCreatePickProfileImageIntent",
+          "codeValue": "HostOrganizerCreatePickProfileImageIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -262,7 +262,7 @@
         {
           "id": "remove_club_photo",
           "owner": "route_intent",
-          "codeValue": "HostClubCreateRemoveClubPhotoIntent",
+          "codeValue": "HostOrganizerCreateRemoveOrganizerPhotoIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -283,7 +283,7 @@
         {
           "id": "reorder_club_photo",
           "owner": "route_intent",
-          "codeValue": "HostClubCreateReorderClubPhotoIntent",
+          "codeValue": "HostOrganizerCreateReorderOrganizerPhotoIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -304,7 +304,7 @@
         {
           "id": "select_city",
           "owner": "route_intent",
-          "codeValue": "HostClubCreateCityChangedIntent",
+          "codeValue": "HostOrganizerCreateCityChangedIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -325,7 +325,7 @@
         {
           "id": "select_organizer_type",
           "owner": "route_intent",
-          "codeValue": "HostClubCreateOrganizerTypeChangedIntent",
+          "codeValue": "HostOrganizerCreateOrganizerTypeChangedIntent",
           "cardinality": "domain_bounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -345,7 +345,7 @@
         {
           "id": "update_defaults",
           "owner": "route_intent",
-          "codeValue": "HostClubCreateDefaultsChangedIntent",
+          "codeValue": "HostOrganizerCreateDefaultsChangedIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -483,7 +483,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": []
           },
@@ -542,7 +542,7 @@
               "create_club_draft_restored"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": []
           },
@@ -633,7 +633,7 @@
               "create_club_basics"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": []
           },
@@ -692,7 +692,7 @@
               "create_club_basics_validation"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": [
               "test/explore/explore_widgets_test.dart"
@@ -754,7 +754,7 @@
               "host_media_gallery_manager"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": [
               "test/explore/explore_widgets_test.dart"
@@ -815,7 +815,7 @@
               "create_club_details"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": []
           },
@@ -874,7 +874,7 @@
               "create_club_host_defaults"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": []
           },
@@ -933,7 +933,7 @@
               "create_club_event_success_defaults"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": []
           },
@@ -993,10 +993,10 @@
               "create_club_save_draft_error"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": [
-              "test/hosts/host_club_create_state_test.dart",
+              "test/hosts/host_organizer_create_state_test.dart",
               "test/explore/explore_widgets_test.dart"
             ]
           },
@@ -1086,10 +1086,10 @@
               "create_club_submit_pending"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": [
-              "test/clubs/clubs_controllers_test.dart",
+              "test/organizers/organizers_controllers_test.dart",
               "test/explore/explore_widgets_test.dart"
             ]
           },
@@ -1147,7 +1147,7 @@
               "create_club_submit_error"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": [
               "test/explore/explore_widgets_test.dart"
@@ -1206,7 +1206,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": [
               "test/explore/explore_widgets_test.dart"
@@ -1264,7 +1264,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": []
           },
@@ -1323,7 +1323,7 @@
               "create_club_submit_offline"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": []
           },
@@ -1382,7 +1382,7 @@
               "create_club_text_scale_2"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": []
           },
@@ -1440,7 +1440,7 @@
               "create_club_reduced_motion"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": []
           },
@@ -1498,7 +1498,7 @@
               "create_club_light_dark"
             ],
             "previewIds": [
-              "HostCreateClubScreen/Route and wizard states"
+              "HostCreateOrganizerScreen/Route and wizard states"
             ],
             "tests": []
           },
@@ -1543,7 +1543,7 @@
           "owner": "hosts",
           "routes": [
             {
-              "id": "hostCreateClubScreen",
+              "id": "hostCreateOrganizerScreen",
               "path": "/host/organizers/create-organizer",
               "role": "primary"
             }
@@ -1660,7 +1660,7 @@
           }
         ],
         "previews": [
-          "HostCreateClubScreen/Route and wizard states"
+          "HostCreateOrganizerScreen/Route and wizard states"
         ]
       }
     }

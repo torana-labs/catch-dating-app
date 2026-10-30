@@ -79,11 +79,11 @@ flutter analyze --fatal-infos \
   lib/platform/schema_contracts/generated/callables \
   lib/platform/schema_contracts/generated/schema_contracts.g.dart \
   lib/platform/schema_contracts/generated/schemas \
-  lib/contexts/organizers/data/clubs_repository.dart \
-  lib/contexts/organizers/data/club_callable_responses.dart \
-  lib/contexts/organizers/data/club_posts_repository.dart \
+  lib/contexts/organizers/data/organizers_repository.dart \
+  lib/contexts/organizers/data/organizer_callable_responses.dart \
+  lib/contexts/organizers/data/organizer_posts_repository.dart \
   lib/contexts/profiles/data/image_upload_repository.dart \
-  lib/hosts/presentation/club_management/create/create_club_controller.dart \
+  lib/hosts/presentation/organizer_management/create/create_organizer_controller.dart \
   lib/contexts/reviews/data/reviews_repository.dart \
   lib/contexts/reviews/data/review_callable_adapters.dart \
   lib/reviews/shared/reviews_section.dart \
@@ -107,8 +107,8 @@ flutter analyze --fatal-infos \
   test/core/callable_dto_contracts_test.dart \
   test/core/domain_fixture_parity_test.dart \
   test/core/update_user_profile_patch_test.dart \
-  test/core/update_club_patch_test.dart \
-  test/clubs/clubs_repository_test.dart \
+  test/core/update_organizer_patch_test.dart \
+  test/organizers/organizers_repository_test.dart \
   test/image_uploads/image_upload_repository_test.dart \
   test/reviews/reviews_repository_test.dart \
   test/events/event_repository_test.dart \
@@ -126,8 +126,8 @@ flutter test \
   test/core/callable_dto_contracts_test.dart \
   test/core/domain_fixture_parity_test.dart \
   test/core/update_user_profile_patch_test.dart \
-  test/core/update_club_patch_test.dart \
-  test/clubs/clubs_repository_test.dart \
+  test/core/update_organizer_patch_test.dart \
+  test/organizers/organizers_repository_test.dart \
   test/image_uploads/image_upload_repository_test.dart \
   test/reviews/reviews_repository_test.dart \
   test/events/event_repository_test.dart \

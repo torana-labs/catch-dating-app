@@ -32,9 +32,9 @@ void main() {
             )
             as Map<String, Object?>;
     expect(india.containsKey('seedWorld'), isFalse);
-    expect(story.club(fixtures).name, 'Evening Club');
-    expect(story.club(fixtures).location, 'mumbai');
-    expect(currencyCodeForCityName(story.club(fixtures).location), 'INR');
+    expect(story.organizer(fixtures).name, 'Evening Club');
+    expect(story.organizer(fixtures).location, 'mumbai');
+    expect(currencyCodeForCityName(story.organizer(fixtures).location), 'INR');
   });
 
   test(

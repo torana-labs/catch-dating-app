@@ -37,7 +37,7 @@ Future<void> submitValidEvent(WidgetTester tester) async {
   await tapCatchButton(tester, 'Schedule event');
 }
 
-Future<void> enterClubText(
+Future<void> enterOrganizerText(
   String label,
   String text,
   WidgetTester tester,
@@ -45,7 +45,7 @@ Future<void> enterClubText(
   await tester.enterText(find.widgetWithText(CatchField, label), text);
 }
 
-Future<void> selectClubCity(WidgetTester tester, String label) async {
+Future<void> selectOrganizerCity(WidgetTester tester, String label) async {
   tester.binding.focusManager.primaryFocus?.unfocus();
   await tester.pump();
   final cityDropdownIcon = find.byIcon(Icons.expand_more_rounded);

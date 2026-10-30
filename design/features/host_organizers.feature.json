@@ -46,44 +46,44 @@
           {
             "id": "route_screen",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
-            "symbol": "HostClubsScreen"
+            "file": "lib/hosts/presentation/host_operations/host_organizers_screen.dart",
+            "symbol": "HostOrganizersScreen"
           },
           {
             "id": "workspace",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-            "symbol": "HostClubsScaffold"
+            "file": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
+            "symbol": "HostOrganizersScaffold"
           },
           {
             "id": "edit_tab",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_club_edit_body.dart",
-            "symbol": "HostClubEditBody"
+            "file": "lib/hosts/presentation/host_operations/host_organizer_edit_body.dart",
+            "symbol": "HostOrganizerEditBody"
           },
           {
             "id": "edit_controller",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/host_club_edit_controller.dart",
-            "symbol": "HostClubEditController"
+            "file": "lib/hosts/presentation/organizer_management/host_organizer_edit_controller.dart",
+            "symbol": "HostOrganizerEditController"
           },
           {
             "id": "spoke_resolver",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
-            "symbol": "HostClubSpokeAsyncBoundary"
+            "file": "lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart",
+            "symbol": "HostOrganizerSpokeAsyncBoundary"
           },
           {
             "id": "defaults_saver",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/host_club_defaults_saver.dart",
-            "symbol": "HostClubDefaultsSaver"
+            "file": "lib/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart",
+            "symbol": "HostOrganizerDefaultsSaver"
           },
           {
             "id": "insights",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_club_insights_section.dart",
-            "symbol": "HostClubInsightsSection"
+            "file": "lib/hosts/presentation/host_operations/host_organizer_insights_section.dart",
+            "symbol": "HostOrganizerInsightsSection"
           },
           {
             "id": "payout_adapter",
@@ -100,8 +100,8 @@
           {
             "id": "team_screen",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-            "symbol": "HostClubTeamScreen"
+            "file": "lib/hosts/presentation/host_operations/host_organizer_team_screen.dart",
+            "symbol": "HostOrganizerTeamScreen"
           },
           {
             "id": "team_section",
@@ -112,7 +112,7 @@
           {
             "id": "team_controller",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/host_team_management_controller.dart",
+            "file": "lib/hosts/presentation/organizer_management/host_team_management_controller.dart",
             "symbol": "HostTeamManagementController"
           },
           {
@@ -237,7 +237,7 @@
         {
           "id": "create_organizer",
           "owner": "workspace",
-          "codeValue": "hostCreateClubScreen",
+          "codeValue": "hostCreateOrganizerScreen",
           "cardinality": "singleton",
           "scopeKeys": ["viewerUid", "routeInstanceId", "emptyStateVersion"],
           "outcomes": [{"kind": "route", "authority": {"registry": "flutter_screens", "id": "screen.host.club.create"}}],
@@ -264,7 +264,7 @@
         {
           "id": "update_organizer",
           "owner": "edit_controller",
-          "codeValue": "updateClub",
+          "codeValue": "updateOrganizer",
           "cardinality": "singleton",
           "scopeKeys": ["viewerUid", "clubId", "fieldId", "organizerVersion"],
           "outcomes": [
@@ -276,7 +276,7 @@
         {
           "id": "update_organizer_media",
           "owner": "edit_controller",
-          "codeValue": "updateClubMedia",
+          "codeValue": "updateOrganizerMedia",
           "cardinality": "singleton",
           "scopeKeys": ["viewerUid", "clubId", "mediaRevision"],
           "outcomes": [
@@ -474,7 +474,7 @@
         {
           "id": "open_hosted_organizer",
           "owner": "team_screen",
-          "codeValue": "_openHostedClub",
+          "codeValue": "_openHostedOrganizer",
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "clubId", "role"],
           "outcomes": [

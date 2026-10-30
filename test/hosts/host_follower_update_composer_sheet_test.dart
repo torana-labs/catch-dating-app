@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart' as club_test;
+import '../organizers/organizers_test_helpers.dart' as organizer_test;
 import '../test_pump_helpers.dart';
 
 void main() {
@@ -16,7 +16,7 @@ void main() {
     String? submitted;
     String? submittedRequestId;
     var requestSequence = 0;
-    final club = club_test.buildClub(id: 'organizer-1');
+    final organizer = organizer_test.buildOrganizer(id: 'organizer-1');
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
@@ -28,7 +28,7 @@ void main() {
                 onPressed: () => unawaited(
                   showHostFollowerUpdateComposer(
                     context: context,
-                    club: club,
+                    organizer: organizer,
                     remainingQuota: 2,
                     requestIdFactory: () => 'request-${requestSequence++}',
                     onSubmitPost: ({required requestId, required text}) async {
@@ -71,7 +71,7 @@ void main() {
     final requestIds = <String>[];
     var requestSequence = 0;
     var attempts = 0;
-    final club = club_test.buildClub(id: 'organizer-1');
+    final organizer = organizer_test.buildOrganizer(id: 'organizer-1');
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
@@ -83,7 +83,7 @@ void main() {
                 onPressed: () => unawaited(
                   showHostFollowerUpdateComposer(
                     context: context,
-                    club: club,
+                    organizer: organizer,
                     remainingQuota: 2,
                     requestIdFactory: () => 'request-${requestSequence++}',
                     onSubmitPost: ({required requestId, required text}) async {

@@ -249,7 +249,7 @@ Widget paymentConfirmationBodyStates(BuildContext context) {
             child: PaymentConfirmationBody(
               data: _confirmationData(paidPayment),
               event: widgetbookUtilityEvent,
-              clubName: 'Bandra Breakers',
+              organizerName: 'Bandra Breakers',
               onAddToCalendar: widgetbookNoop,
               onOpenDirections: widgetbookNoop,
               onInviteFriend: widgetbookNoop,

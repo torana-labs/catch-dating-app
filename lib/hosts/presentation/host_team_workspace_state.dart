@@ -1,15 +1,15 @@
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 
 final class HostTeamWorkspaceState {
   const HostTeamWorkspaceState({
     required this.profile,
-    required this.clubs,
+    required this.organizers,
     required this.actions,
   });
 
   final HostTeamProfileState profile;
-  final HostTeamHostedClubsState clubs;
+  final HostTeamHostedOrganizersState organizers;
   final HostTeamWorkspaceActionState actions;
 }
 
@@ -49,30 +49,30 @@ final class HostTeamWorkspaceActionState {
 
   bool get canEditProfile => editMode && uid != null && profileForEdit != null;
 
-  HostTeamClubNavigationState clubNavigationFor(Club club) {
-    final isOwner = club.isOwnedBy(uid);
-    return HostTeamClubNavigationState(
-      club: club,
+  HostTeamOrganizerNavigationState organizerNavigationFor(Organizer organizer) {
+    final isOwner = organizer.isOwnedBy(uid);
+    return HostTeamOrganizerNavigationState(
+      organizer: organizer,
       roleLabel: isOwner ? 'Owner' : 'Host team',
       destination: editMode && isOwner
-          ? HostTeamClubDestination.edit
-          : HostTeamClubDestination.preview,
+          ? HostTeamOrganizerDestination.edit
+          : HostTeamOrganizerDestination.preview,
     );
   }
 }
 
-enum HostTeamClubDestination { edit, preview }
+enum HostTeamOrganizerDestination { edit, preview }
 
-final class HostTeamClubNavigationState {
-  const HostTeamClubNavigationState({
-    required this.club,
+final class HostTeamOrganizerNavigationState {
+  const HostTeamOrganizerNavigationState({
+    required this.organizer,
     required this.roleLabel,
     required this.destination,
   });
 
-  final Club club;
+  final Organizer organizer;
   final String roleLabel;
-  final HostTeamClubDestination destination;
+  final HostTeamOrganizerDestination destination;
 }
 
 sealed class HostTeamProfileState {
@@ -103,26 +103,30 @@ final class HostTeamProfileContent extends HostTeamProfileState {
   final bool isFallback;
 }
 
-sealed class HostTeamHostedClubsState {
-  const HostTeamHostedClubsState();
+sealed class HostTeamHostedOrganizersState {
+  const HostTeamHostedOrganizersState();
 }
 
-final class HostTeamHostedClubsLoading extends HostTeamHostedClubsState {
-  const HostTeamHostedClubsLoading();
+final class HostTeamHostedOrganizersLoading
+    extends HostTeamHostedOrganizersState {
+  const HostTeamHostedOrganizersLoading();
 }
 
-final class HostTeamHostedClubsError extends HostTeamHostedClubsState {
-  const HostTeamHostedClubsError({required this.error});
+final class HostTeamHostedOrganizersError
+    extends HostTeamHostedOrganizersState {
+  const HostTeamHostedOrganizersError({required this.error});
 
   final Object error;
 }
 
-final class HostTeamHostedClubsEmpty extends HostTeamHostedClubsState {
-  const HostTeamHostedClubsEmpty();
+final class HostTeamHostedOrganizersEmpty
+    extends HostTeamHostedOrganizersState {
+  const HostTeamHostedOrganizersEmpty();
 }
 
-final class HostTeamHostedClubsContent extends HostTeamHostedClubsState {
-  const HostTeamHostedClubsContent({required this.clubs});
+final class HostTeamHostedOrganizersContent
+    extends HostTeamHostedOrganizersState {
+  const HostTeamHostedOrganizersContent({required this.organizers});
 
-  final List<Club> clubs;
+  final List<Organizer> organizers;
 }

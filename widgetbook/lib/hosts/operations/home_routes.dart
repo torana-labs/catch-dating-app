@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
@@ -16,21 +16,23 @@ import '../../support/page_preview.dart';
 import 'preview.dart';
 import 'shell_fixture.dart';
 
-final _longNameOwnerClub = HostOperationsFixtures.primaryClub.copyWith(
-  id: 'design-host-long-owner-club',
-  name: 'Bandra Sea Face Morning Run Club for New Members',
-  area: 'Bandra West Promenade',
-);
+final _longNameOwnerOrganizer = HostOperationsFixtures.primaryOrganizer
+    .copyWith(
+      id: 'design-host-long-owner-club',
+      name: 'Bandra Sea Face Morning Run Club for New Members',
+      area: 'Bandra West Promenade',
+    );
 
-final _longNameCoHostedClub = HostOperationsFixtures.coHostedClub.copyWith(
-  id: 'design-host-long-cohost-club',
-  name: 'South Mumbai Rooftop Dinner Collective With Guest Hosts',
-  area: 'Fort and Kala Ghoda',
-);
+final _longNameCoHostedOrganizer = HostOperationsFixtures.coHostedOrganizer
+    .copyWith(
+      id: 'design-host-long-cohost-club',
+      name: 'South Mumbai Rooftop Dinner Collective With Guest Hosts',
+      area: 'Fort and Kala Ghoda',
+    );
 
 final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
   id: 'design-host-long-name-event',
-  clubId: _longNameOwnerClub.id,
+  clubId: _longNameOwnerOrganizer.id,
   meetingPoint: 'Bandra West Promenade amphitheatre',
   meetingLocation: HostOperationsFixtures.upcomingEvent.meetingLocation!
       .copyWith(name: 'Bandra West Promenade amphitheatre'),
@@ -86,8 +88,8 @@ Widget hostHomeRouteStates(BuildContext context) {
         label: 'clubs loading',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedClubsStream:
-                HostOperationsFixtures.loadingStream<List<Club>>(),
+            hostedOrganizersStream:
+                HostOperationsFixtures.loadingStream<List<Organizer>>(),
             child: const HostTodayScreen(),
           ),
         ),
@@ -96,9 +98,10 @@ Widget hostHomeRouteStates(BuildContext context) {
         label: 'clubs error',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedClubsStream: HostOperationsFixtures.errorStream<List<Club>>(
-              'Hosted clubs failed',
-            ),
+            hostedOrganizersStream:
+                HostOperationsFixtures.errorStream<List<Organizer>>(
+                  'Hosted clubs failed',
+                ),
             child: const HostTodayScreen(),
           ),
         ),
@@ -107,7 +110,7 @@ Widget hostHomeRouteStates(BuildContext context) {
         label: 'clubs offline',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedClubsStream: Stream<List<Club>>.error(
+            hostedOrganizersStream: Stream<List<Organizer>>.error(
               obviousOfflineException(),
               StackTrace.empty,
             ),
@@ -119,14 +122,15 @@ Widget hostHomeRouteStates(BuildContext context) {
         label: 'events offline',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            clubEventStreams: {
-              HostOperationsFixtures.dinnerClub.id: Stream<List<Event>>.error(
-                obviousOfflineException(),
-                StackTrace.empty,
-              ),
+            organizerEventStreams: {
+              HostOperationsFixtures.dinnerOrganizer.id:
+                  Stream<List<Event>>.error(
+                    obviousOfflineException(),
+                    StackTrace.empty,
+                  ),
             },
             child: HostTodayScreen(
-              initialOrganizerId: HostOperationsFixtures.dinnerClub.id,
+              initialOrganizerId: HostOperationsFixtures.dinnerOrganizer.id,
             ),
           ),
         ),
@@ -135,8 +139,8 @@ Widget hostHomeRouteStates(BuildContext context) {
         label: 'empty host account',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedClubs: [],
-            ownedClubs: [],
+            hostedOrganizers: [],
+            ownedOrganizers: [],
             child: HostTodayScreen(),
           ),
         ),
@@ -151,10 +155,10 @@ Widget hostHomeRouteStates(BuildContext context) {
         label: 'owner and co-host switcher',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedClubs: HostOperationsFixtures.clubs,
-            ownedClubs: [
-              HostOperationsFixtures.primaryClub,
-              HostOperationsFixtures.dinnerClub,
+            hostedOrganizers: HostOperationsFixtures.organizers,
+            ownedOrganizers: [
+              HostOperationsFixtures.primaryOrganizer,
+              HostOperationsFixtures.dinnerOrganizer,
             ],
             child: const HostTodayScreen(
               initialOrganizerId: 'design-host-cohost-club',
@@ -166,15 +170,22 @@ Widget hostHomeRouteStates(BuildContext context) {
         label: 'long club names',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedClubs: [_longNameOwnerClub, _longNameCoHostedClub],
-            ownedClubs: [_longNameOwnerClub],
-            clubEventStreams: {
-              _longNameOwnerClub.id: Stream<List<Event>>.value([
+            hostedOrganizers: [
+              _longNameOwnerOrganizer,
+              _longNameCoHostedOrganizer,
+            ],
+            ownedOrganizers: [_longNameOwnerOrganizer],
+            organizerEventStreams: {
+              _longNameOwnerOrganizer.id: Stream<List<Event>>.value([
                 _longNameEvent,
               ]),
-              _longNameCoHostedClub.id: Stream<List<Event>>.value(const []),
+              _longNameCoHostedOrganizer.id: Stream<List<Event>>.value(
+                const [],
+              ),
             },
-            child: HostTodayScreen(initialOrganizerId: _longNameOwnerClub.id),
+            child: HostTodayScreen(
+              initialOrganizerId: _longNameOwnerOrganizer.id,
+            ),
           ),
         ),
       ),
@@ -182,8 +193,8 @@ Widget hostHomeRouteStates(BuildContext context) {
         label: 'co-host empty events',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            hostedClubs: [HostOperationsFixtures.coHostedClub],
-            ownedClubs: const [],
+            hostedOrganizers: [HostOperationsFixtures.coHostedOrganizer],
+            ownedOrganizers: const [],
             child: const HostTodayScreen(
               initialOrganizerId: 'design-host-cohost-club',
             ),
@@ -275,7 +286,7 @@ Widget hostTodayEventMetadataStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 Widget hostOrganizerIdentityPillStates(BuildContext context) {
-  final club = HostOperationsFixtures.primaryClub.copyWith(
+  final organizer = HostOperationsFixtures.primaryOrganizer.copyWith(
     profileImageUrl: 'assets/fixtures/club_hero_portrait.jpg',
   );
   return WidgetbookPageCatalogFrame(
@@ -288,7 +299,7 @@ Widget hostOrganizerIdentityPillStates(BuildContext context) {
           child: Align(
             alignment: Alignment.centerLeft,
             child: HostOrganizerAvatar(
-              club: club,
+              organizer: organizer,
               size: CatchLayout.appShellNavigationIdentityExtent,
             ),
           ),
@@ -298,8 +309,8 @@ Widget hostOrganizerIdentityPillStates(BuildContext context) {
         label: 'long-press switcher sheet',
         child: WidgetbookHostHomeSectionFrame(
           child: HostOrganizerSwitcherSheet(
-            clubs: HostOperationsFixtures.clubs,
-            selectedOrganizerId: club.id,
+            organizers: HostOperationsFixtures.organizers,
+            selectedOrganizerId: organizer.id,
           ),
         ),
       ),

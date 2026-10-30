@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
@@ -52,7 +52,7 @@ List<PickedEventPhoto> _createEventPickedPhotos() {
 }
 
 PickedEventPhoto _createEventPickedPhoto(String name) {
-  final bytes = widgetbookCreateClubPngBytes();
+  final bytes = widgetbookCreateOrganizerPngBytes();
   return PickedEventPhoto(
     image: XFile.fromData(bytes, name: '$name.png', mimeType: 'image/png'),
     bytes: bytes,
@@ -73,8 +73,8 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         label: 'route loading',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
-            clubValue: const AsyncLoading<Club?>(),
-            child: HostCreateEventRouteScreen(clubId: widgetbookClub.id),
+            organizerValue: const AsyncLoading<Organizer?>(),
+            child: HostCreateEventRouteScreen(clubId: widgetbookOrganizer.id),
           ),
         ),
       ),
@@ -82,11 +82,11 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         label: 'route error',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
-            clubValue: AsyncError<Club?>(
+            organizerValue: AsyncError<Organizer?>(
               StateError('Club fetch failed'),
               StackTrace.empty,
             ),
-            child: HostCreateEventRouteScreen(clubId: widgetbookClub.id),
+            child: HostCreateEventRouteScreen(clubId: widgetbookOrganizer.id),
           ),
         ),
       ),
@@ -94,11 +94,11 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         label: 'route offline',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
-            clubValue: AsyncError<Club?>(
+            organizerValue: AsyncError<Organizer?>(
               obviousOfflineException(),
               StackTrace.empty,
             ),
-            child: HostCreateEventRouteScreen(clubId: widgetbookClub.id),
+            child: HostCreateEventRouteScreen(clubId: widgetbookOrganizer.id),
           ),
         ),
       ),
@@ -106,8 +106,8 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         label: 'missing club',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
-            clubValue: const AsyncData<Club?>(null),
-            child: HostCreateEventRouteScreen(clubId: widgetbookClub.id),
+            organizerValue: const AsyncData<Organizer?>(null),
+            child: HostCreateEventRouteScreen(clubId: widgetbookOrganizer.id),
           ),
         ),
       ),
@@ -116,7 +116,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             child: CreateEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               formAutovalidateMode: AutovalidateMode.always,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -129,7 +129,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             child: CreateEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               initialDraft: _customActivityEventDraft,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -142,7 +142,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             child: CreateEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               initialDraft: HostOperationsFixtures.eventDraft,
               initialPickedEventPhotos: _createEventPickedPhotos(),
               loadMapTiles: false,
@@ -156,7 +156,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             child: CreateEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               initialDraft: HostOperationsFixtures.eventDraft,
               initialStep: 1,
               loadMapTiles: false,
@@ -171,7 +171,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           child: _HostCreateEventScope(
             drafts: [HostOperationsFixtures.eventDraft],
             child: CreateEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
             ),
@@ -183,7 +183,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             child: CreateEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               initialDraft: HostOperationsFixtures.eventDraft,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -198,7 +198,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
             child: _HostCreateEventMutationPreview(
               mode: _HostCreateEventMutationPreviewMode.saveDraftPending,
               child: CreateEventScreen(
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 initialDraft: HostOperationsFixtures.eventDraft,
                 loadMapTiles: false,
                 now: () => HostOperationsFixtures.now,
@@ -214,7 +214,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
             child: _HostCreateEventMutationPreview(
               mode: _HostCreateEventMutationPreviewMode.saveDraftError,
               child: CreateEventScreen(
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 initialDraft: HostOperationsFixtures.eventDraft,
                 loadMapTiles: false,
                 now: () => HostOperationsFixtures.now,
@@ -230,7 +230,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
             child: _HostCreateEventMutationPreview(
               mode: _HostCreateEventMutationPreviewMode.submitPending,
               child: CreateEventScreen(
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 initialDraft: HostOperationsFixtures.eventDraft,
                 initialStep: 2,
                 loadMapTiles: false,
@@ -247,7 +247,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
             child: _HostCreateEventMutationPreview(
               mode: _HostCreateEventMutationPreviewMode.submitError,
               child: CreateEventScreen(
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 initialDraft: HostOperationsFixtures.eventDraft,
                 initialStep: 2,
                 loadMapTiles: false,
@@ -264,7 +264,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
             child: _HostCreateEventMutationPreview(
               mode: _HostCreateEventMutationPreviewMode.submitOffline,
               child: CreateEventScreen(
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 initialDraft: HostOperationsFixtures.eventDraft,
                 initialStep: 2,
                 loadMapTiles: false,
@@ -280,7 +280,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           child: WidgetbookHostDeviceFrame(
             child: _HostCreateEventScope(
               child: CreateEventScreen(
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 initialDraft: HostOperationsFixtures.eventDraft,
                 initialStep: step.key,
                 loadMapTiles: false,
@@ -295,7 +295,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           child: WidgetbookHostDeviceFrame(
             child: _HostCreateEventScope(
               child: CreateEventScreen(
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 initialDraft: HostOperationsFixtures.eventDraft.copyWith(
                   externalBookingMode: true,
                   externalBookingProvider: ExternalBookingProvider.generic.name,
@@ -314,7 +314,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
             textScaler: const TextScaler.linear(2),
             child: _HostCreateEventScope(
               child: CreateEventScreen(
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 initialDraft: HostOperationsFixtures.eventDraft,
                 loadMapTiles: false,
                 now: () => HostOperationsFixtures.now,
@@ -330,7 +330,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
             disableAnimations: true,
             child: _HostCreateEventScope(
               child: CreateEventScreen(
-                club: widgetbookClub,
+                organizer: widgetbookOrganizer,
                 initialDraft: HostOperationsFixtures.eventDraft,
                 initialStep: 2,
                 loadMapTiles: false,
@@ -346,7 +346,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           child: _HostCreateEventScope(
             themeMode: ThemeMode.dark,
             child: CreateEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               initialDraft: HostOperationsFixtures.eventDraft,
               initialStep: 2,
               loadMapTiles: false,
@@ -360,7 +360,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             child: CreateEventSuccessScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               event: widgetbookPrivateEvent,
               inviteCode: 'SEAFACE',
               onManageEvent: () {},
@@ -388,8 +388,8 @@ Widget hostCreateEventRouteStateViewCatalogStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             child: HostCreateEventRouteBody(
-              clubId: widgetbookClub.id,
-              state: HostCreateEventRouteState.initial(widgetbookClub),
+              clubId: widgetbookOrganizer.id,
+              state: HostCreateEventRouteState.initial(widgetbookOrganizer),
             ),
           ),
         ),
@@ -413,7 +413,7 @@ Widget createEventScreenCatalogStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             child: CreateEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               initialDraft: HostOperationsFixtures.eventDraft,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -426,7 +426,7 @@ Widget createEventScreenCatalogStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             child: CreateEventScreen(
-              club: widgetbookClub,
+              organizer: widgetbookOrganizer,
               formAutovalidateMode: AutovalidateMode.always,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
@@ -452,7 +452,7 @@ Widget createEventSuccessScreenCatalogStates(BuildContext context) {
         label: 'public event',
         child: WidgetbookHostDeviceFrame(
           child: CreateEventSuccessScreen(
-            club: widgetbookClub,
+            organizer: widgetbookOrganizer,
             event: widgetbookEditableEvent,
             onManageEvent: () {},
             onDone: () {},
@@ -463,7 +463,7 @@ Widget createEventSuccessScreenCatalogStates(BuildContext context) {
         label: 'invite only',
         child: WidgetbookHostDeviceFrame(
           child: CreateEventSuccessScreen(
-            club: widgetbookClub,
+            organizer: widgetbookOrganizer,
             event: widgetbookPrivateEvent,
             inviteCode: 'SEAFACE',
             onManageEvent: () {},
@@ -558,13 +558,13 @@ class _HostCreateEventMutationPreviewState
 class _HostCreateEventScope extends StatelessWidget {
   const _HostCreateEventScope({
     required this.child,
-    this.clubValue,
+    this.organizerValue,
     this.drafts = const <EventDraft>[],
     this.themeMode = ThemeMode.light,
   });
 
   final Widget child;
-  final AsyncValue<Club?>? clubValue;
+  final AsyncValue<Organizer?>? organizerValue;
   final List<EventDraft> drafts;
   final ThemeMode themeMode;
 
@@ -578,13 +578,15 @@ class _HostCreateEventScope extends StatelessWidget {
           eventDraftRepositoryProvider.overrideWithValue(
             HostFixtureEventDraftRepository(drafts: drafts),
           ),
-          fetchClubProvider(widgetbookClub.id).overrideWith(
-            (ref) => switch (clubValue) {
+          fetchOrganizerProvider(widgetbookOrganizer.id).overrideWith(
+            (ref) => switch (organizerValue) {
               AsyncData(:final value) => value,
               AsyncError(:final error, :final stackTrace) =>
-                Future<Club?>.error(error, stackTrace),
-              AsyncLoading() => Future<Club?>.delayed(const Duration(days: 1)),
-              null => widgetbookClub,
+                Future<Organizer?>.error(error, stackTrace),
+              AsyncLoading() => Future<Organizer?>.delayed(
+                const Duration(days: 1),
+              ),
+              null => widgetbookOrganizer,
             },
           ),
           // Photo recovery restores before the wizard renders; previews start

@@ -321,7 +321,7 @@ List<EventMapItem> _eventMapItems() {
           1 => EventTileStatus.saved,
           _ => EventTileStatus.recommended,
         },
-        clubName: widgetbookEventsClub.name,
+        organizerName: widgetbookEventsOrganizer.name,
       ),
   ];
 }

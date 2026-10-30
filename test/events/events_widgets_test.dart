@@ -861,8 +861,8 @@ void main() {
                 EventAgendaSliverList(
                   events: [event],
                   today: now,
-                  showClubName: true,
-                  clubNameBuilder: (_) => 'Stride Social',
+                  showOrganizerName: true,
+                  organizerNameBuilder: (_) => 'Stride Social',
                 ),
               ],
             ),

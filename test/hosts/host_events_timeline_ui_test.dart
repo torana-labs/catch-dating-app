@@ -22,7 +22,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:riverpod/misc.dart' show Override;
 
-import '../clubs/clubs_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 typedef _Page = CursorPage<Event, DocumentSnapshot<Event>>;
@@ -45,8 +45,8 @@ void main() {
       find.byKey(const ValueKey('host-event-row-upcoming')),
       findsOneWidget,
     );
-    final section = tester.widget<HostEventsClubSection>(
-      find.byType(HostEventsClubSection),
+    final section = tester.widget<HostEventsOrganizerSection>(
+      find.byType(HostEventsOrganizerSection),
     );
     expect(section.state.loadingMorePast, isTrue);
     expect(section.state.status, HostEventsWorkspaceStatus.populated);
@@ -85,8 +85,8 @@ void main() {
             reads.completeHistory(failingScope: scope);
             await _publish(tester);
           }
-          final section = tester.widget<HostEventsClubSection>(
-            find.byType(HostEventsClubSection),
+          final section = tester.widget<HostEventsOrganizerSection>(
+            find.byType(HostEventsOrganizerSection),
           );
           expect(section.state.status, HostEventsWorkspaceStatus.error);
           expect(section.state.error, same(reads.error));
@@ -165,7 +165,7 @@ class _Harness {
     uidProvider.overrideWithValue(AsyncData(uid)),
     eventRepositoryProvider.overrideWithValue(repository),
     privateEventSetupTimelineRepositoryProvider.overrideWithValue(setups),
-    clubEventDraftsProvider.overrideWith((ref, clubId) async => []),
+    organizerEventDraftsProvider.overrideWith((ref, clubId) async => []),
     programEventsControllerProvider.overrideWith((ref, request) {
       final controller = ProgramEventsController(
         isActorCurrent: () => true,
@@ -188,8 +188,8 @@ class _Harness {
           theme: AppTheme.light,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: HostEventsClubCard(
-            club: buildClub(),
+          home: HostEventsOrganizerCard(
+            organizer: buildOrganizer(),
             now: _now,
             sessionBoundary: _now,
             onEventEntrySelected: (_, _, _) {},

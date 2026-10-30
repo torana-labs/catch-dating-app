@@ -81,7 +81,7 @@ String hostFormsLegacyRedirect(Uri uri) {
 String hostHomeLegacyRedirect() => Routes.hostTodayScreen.path;
 
 String? hostOrganizerIndexRedirect(Uri uri) {
-  if (uri.path != Routes.hostClubsScreen.path) return null;
+  if (uri.path != Routes.hostOrganizersScreen.path) return null;
   return Uri(
     path: Routes.hostOrganizerScreen.path,
     queryParameters: uri.queryParameters.isEmpty ? null : uri.queryParameters,

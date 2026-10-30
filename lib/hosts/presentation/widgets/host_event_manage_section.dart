@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart'
     show EventAdmissionFormat, EventPrivateAccessMode;
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_invite_link_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -120,7 +120,7 @@ class HostFullCapacityBanner extends StatelessWidget {
 class HostEventActionsSection extends StatelessWidget {
   const HostEventActionsSection({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.event,
     required this.actionState,
     required this.actionError,
@@ -132,7 +132,7 @@ class HostEventActionsSection extends StatelessWidget {
     required this.onSharePrivateLink,
   });
 
-  final Club club;
+  final Organizer organizer;
   final Event event;
   final HostEventActionDisplayState actionState;
   final Object? actionError;
@@ -257,13 +257,13 @@ class HostActionRow extends StatelessWidget {
 class HostPublicRegistrationField extends StatelessWidget {
   const HostPublicRegistrationField({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.event,
     required this.mutation,
     required this.onChanged,
   });
 
-  final Club club;
+  final Organizer organizer;
   final Event event;
   final MutationState<dynamic> mutation;
   final ValueChanged<bool> onChanged;
@@ -271,8 +271,8 @@ class HostPublicRegistrationField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final organizerPublished =
-        club.appVisibility == ClubAppVisibility.discoverable &&
-        club.publicPage?.allowsPublicWebRead == true;
+        organizer.appVisibility == OrganizerAppVisibility.discoverable &&
+        organizer.publicPage?.allowsPublicWebRead == true;
     final policy = event.effectiveEventPolicy;
     final supportsStandaloneRegistration =
         event.currency == 'INR' &&
@@ -375,12 +375,12 @@ class HostPublicRegistrationField extends StatelessWidget {
 class HostEventSummarySection extends StatelessWidget {
   const HostEventSummarySection({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.event,
     this.title,
   });
 
-  final Club club;
+  final Organizer organizer;
   final Event event;
   final String? title;
 
@@ -400,8 +400,8 @@ class HostEventSummarySection extends StatelessWidget {
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.people,
-          title: context.l10n.hostsHostEventManageScreenLabelClub,
-          body: club.name,
+          title: context.l10n.hostsHostEventManageScreenLabelOrganizer,
+          body: organizer.name,
         ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),

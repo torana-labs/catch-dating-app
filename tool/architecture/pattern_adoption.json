@@ -129,7 +129,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/clubs/presentation/detail/club_detail_screen.dart",
+          "path": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
           "role": "adopter route screen: auth-resolution-safe initial route cache, organizer authority and app-visibility boundary, host ownership preview boundary, relationship fail-closed state, and provider-free organizer-detail content composition",
           "status": "aligned"
         },
@@ -162,7 +162,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/explore/presentation/widgets/club_card.dart",
+          "path": "lib/explore/presentation/widgets/organizer_card.dart",
           "role": "provider-free Explore club card and compact club row widgets receiving explicit club data and route-owned club-selection callback",
           "providerFree": true,
           "status": "aligned"
@@ -271,7 +271,7 @@
         {
           "id": "ARCH-SCREEN-001-HOST-OPERATIONS-SPLIT",
           "path": "lib/hosts/presentation/host_operations_screen.dart",
-          "reason": "Host Operations is a 5k+ line multi-route file with multiple Consumer screens and a broad provider/ref surface. HostClubsScreenState and HostClubInsightsState are now extracted, but the file still needs route/workspace splits before applying screen-boundary adoption claims."
+          "reason": "Host Operations is a 5k+ line multi-route file with multiple Consumer screens and a broad provider/ref surface. HostOrganizersScreenState and HostOrganizerInsightsState are now extracted, but the file still needs route/workspace splits before applying screen-boundary adoption claims."
         },
         {
           "id": "ARCH-SCREEN-001-HOST-ATTENDANCE-PANEL-REFS",
@@ -454,17 +454,17 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "path": "lib/hosts/presentation/host_operations/host_organizer_team_screen.dart",
           "role": "Host team workspace with canonical route surface and scroll-derived divider",
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
+          "path": "lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart",
           "role": "Host organizer settings spokes with canonical route surface and scroll-derived divider",
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart",
+          "path": "lib/hosts/presentation/organizer_management/create/widgets/host_club_editor_loading_screen.dart",
           "role": "Host organizer step-flow loading state retaining the canonical step header",
           "status": "aligned"
         }
@@ -617,14 +617,14 @@
           "status": "aligned"
         },
         {
-          "path": "lib/clubs/presentation/detail/club_detail_screen_state.dart",
+          "path": "lib/organizers/presentation/detail/organizer_detail_screen_state.dart",
           "role": "provider-free Club Detail route/body adapter for live view-model data, initial-club fallback, loading/error/not-found branches, next-event selection, contact actions, host-message eligibility, event-route target, review visibility, membership dock state, host public-preview mode, and retry intent typing",
           "providerFree": true,
           "status": "aligned"
         },
         {
-          "path": "test/clubs/clubs_controllers_test.dart",
-          "role": "HostClubDetailScreenState and ClubDetailBodyState behavior coverage for live content, initial fallback, loading, error, not-found branches, contact actions, next-event selection, host-message eligibility, event route target, review visibility, and dock state",
+          "path": "test/organizers/organizers_controllers_test.dart",
+          "role": "HostOrganizerDetailScreenState and OrganizerDetailBodyState behavior coverage for live content, initial fallback, loading, error, not-found branches, contact actions, next-event selection, host-message eligibility, event route target, review visibility, and dock state",
           "status": "aligned"
         },
         {
@@ -652,8 +652,8 @@
           "status": "aligned"
         },
         {
-          "path": "lib/explore/presentation/explore_club_display_state.dart",
-          "role": "ExploreClubCardState and ExploreOrganizerMembershipActionState own provider-free organizer identity, trust copy, and membership-action visibility",
+          "path": "lib/explore/presentation/explore_organizer_display_state.dart",
+          "role": "ExploreOrganizerCardState and ExploreOrganizerMembershipActionState own provider-free organizer identity, trust copy, and membership-action visibility",
           "providerFree": true,
           "status": "aligned"
         },
@@ -794,7 +794,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_club_publication_state.dart",
+          "path": "lib/hosts/presentation/host_organizer_publication_state.dart",
           "role": "provider-free Host organizer publication adapter that preserves the independently governed Catch discovery and public-website channels, derives all four display states, and exposes the owner mutation target",
           "providerFree": true,
           "status": "aligned"
@@ -812,7 +812,7 @@
           "status": "aligned"
         },
         {
-          "path": "test/hosts/host_club_publication_state_test.dart",
+          "path": "test/hosts/host_organizer_publication_state_test.dart",
           "role": "Host organizer publication-state coverage for legacy Catch-only organizers and all four independent channel combinations",
           "status": "aligned"
         },
@@ -822,14 +822,14 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/club_management/create/create_club_screen_state.dart",
+          "path": "lib/hosts/presentation/organizer_management/create/create_organizer_screen_state.dart",
           "role": "provider-free Host Create Club wizard/edit display-state adapter for footer policy, edit scaffold affordances, media previews, city/currency display, validation, draft/submit requests, and submit-success transition",
           "providerFree": true,
           "status": "aligned"
         },
         {
-          "path": "test/hosts/host_club_create_state_test.dart",
-          "role": "HostClubCreateState, draft request, submit request, validation, media display, and submit outcome behavior coverage",
+          "path": "test/hosts/host_organizer_create_state_test.dart",
+          "role": "HostOrganizerCreateState, draft request, submit request, validation, media display, and submit outcome behavior coverage",
           "status": "aligned"
         },
         {
@@ -1161,21 +1161,21 @@
         "flutter test test/events/event_detail_screen_state_test.dart",
         "flutter test test/swipes/catches_event_screen_state_test.dart",
         "flutter test test/swipes/swipe_screen_test.dart",
-        "flutter test test/clubs/clubs_controllers_test.dart --plain-name 'HostClubDetailScreenState'",
-        "flutter test test/explore/explore_widgets_test.dart --plain-name 'ClubDetailBody'",
+        "flutter test test/organizers/organizers_controllers_test.dart --plain-name 'HostOrganizerDetailScreenState'",
+        "flutter test test/explore/explore_widgets_test.dart --plain-name 'OrganizerDetailBody'",
         "flutter test test/calendar/calendar_screen_test.dart",
         "flutter test test/explore/explore_view_model_test.dart test/explore/explore_widgets_test.dart",
         "flutter test test/profile/self_profile_screen_state_test.dart test/profile/self_profile_edit_tab_state_test.dart",
         "flutter test test/profile/profile_widgets_test.dart --plain-name 'text edit failure keeps the inline editor open with an error'",
         "flutter test test/chats/chat_screen_test.dart test/chats/chat_inbox_screen_test.dart",
-        "flutter test test/hosts/host_club_publication_state_test.dart",
+        "flutter test test/hosts/host_organizer_publication_state_test.dart",
         "flutter analyze --no-fatal-infos",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs",
         "flutter test test/swipes/filters_screen_test.dart test/swipes/event_recap_screen_state_test.dart test/swipes/event_recap_screen_test.dart",
         "flutter test test/dashboard/dashboard_screen_test.dart --plain-name 'notifications identity failure is not shown as signed out'",
         "flutter test test/payments/payment_history_screen_test.dart"
       ],
-      "notes": "This is a narrow display-state reference. CalendarHomeState remains the reference. CatchAsyncState is the provider-free async branch primitive for route-edge translations. EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState are aligned small adapters for host-card, companion entry, and booking dock display data; EventDetailDock keeps provider mutations and router side effects at the edge. CatchesEventScreenState is aligned for queue provider-wave mapping, empty/access copy, and active deck display data; SwipeScreen now owns CatchesProfileReviewActionState for write-pending/failure display while the remaining Catches Event work is capture/reference coverage. HostClubDetailScreenState and ClubDetailBodyState are aligned for Club Detail route async branch mapping, live data, initial route fallback, host public-preview mode, next-event selection, contact actions, host-message eligibility, event-route target, review visibility, membership dock state, and retry typing; capture work remains open under the Club Detail screen contract. ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityPickerState, ExploreCityButtonState, ExploreFilterRailState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState are aligned adopters for mixed-feed planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display data, route/body branch, city picker availability, map launcher, and empty-state actions. EventSuccessRevealActionState is aligned as a provider-free live reveal action-state adapter after the host route now translates mutation state into plain pending/error snapshots. SelfProfileScreenState and SelfProfileEditTabState are aligned provider-free Profile adopters after the route provider split and photo intent-factory rename. ChatsListScreenState, HostChatScreenState, ChatThreadLookupState, ChatReadMarkerState, and ChatRouteState are aligned provider-free Chats adopters after the route view-model split and batched inbox roster lookups. The main Explore route/feed body migration is tracked under ARCH-SCREEN-001; only the explicitly recorded ARCH-SCREEN-001D provider islands remain. The Chats inbox widget-level route reads are recorded as ARCH-SCREEN-001-CHATS-INBOX-BOUNDARY candidate debt, not as aligned screen-boundary adoption."
+      "notes": "This is a narrow display-state reference. CalendarHomeState remains the reference. CatchAsyncState is the provider-free async branch primitive for route-edge translations. EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState are aligned small adapters for host-card, companion entry, and booking dock display data; EventDetailDock keeps provider mutations and router side effects at the edge. CatchesEventScreenState is aligned for queue provider-wave mapping, empty/access copy, and active deck display data; SwipeScreen now owns CatchesProfileReviewActionState for write-pending/failure display while the remaining Catches Event work is capture/reference coverage. HostOrganizerDetailScreenState and OrganizerDetailBodyState are aligned for Club Detail route async branch mapping, live data, initial route fallback, host public-preview mode, next-event selection, contact actions, host-message eligibility, event-route target, review visibility, membership dock state, and retry typing; capture work remains open under the Club Detail screen contract. ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreOrganizerCardState, ExploreMapLauncherState, ExploreCityPickerState, ExploreCityButtonState, ExploreFilterRailState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState are aligned adopters for mixed-feed planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display data, route/body branch, city picker availability, map launcher, and empty-state actions. EventSuccessRevealActionState is aligned as a provider-free live reveal action-state adapter after the host route now translates mutation state into plain pending/error snapshots. SelfProfileScreenState and SelfProfileEditTabState are aligned provider-free Profile adopters after the route provider split and photo intent-factory rename. ChatsListScreenState, HostChatScreenState, ChatThreadLookupState, ChatReadMarkerState, and ChatRouteState are aligned provider-free Chats adopters after the route view-model split and batched inbox roster lookups. The main Explore route/feed body migration is tracked under ARCH-SCREEN-001; only the explicitly recorded ARCH-SCREEN-001D provider islands remain. The Chats inbox widget-level route reads are recorded as ARCH-SCREEN-001-CHATS-INBOX-BOUNDARY candidate debt, not as aligned screen-boundary adoption."
     },
     {
       "id": "ARCH-APP-TARGET-001",
@@ -1520,7 +1520,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "path": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
           "role": "root primary-rail adopter whose route states retain the same shell, with standard Edit and Insights bodies and an explicit full-bleed Preview body",
           "status": "aligned"
         },
@@ -1572,12 +1572,12 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "path": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
           "role": "aligned three-page adopter with independent per-club offsets and a direct embedded read-only Club Detail preview",
           "status": "aligned"
         },
         {
-          "path": "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+          "path": "lib/organizers/presentation/detail/organizer_detail_read_only_preview.dart",
           "role": "sliver-native consumer Club Detail adapter that keeps route chrome and interactions outside the embedded Host Preview page",
           "status": "aligned"
         }
@@ -1596,8 +1596,8 @@
       ],
       "requiredBackPropagation": "When nested title, pinned rail, paging, overlap, focus, restoration, semantic body role, terminal, content-width, or embedded-preview policy changes, inspect Profile and Host Clubs together, keep typed controllers route-owned, require every page to declare standard or explicitly edge-owned full-bleed composition, preserve direct narrow-width slivers and full-bleed previews, and update the component and scroll contracts in the same pass.",
       "requiredChecks": [
-        "flutter test --concurrency=1 test/core/widgets/catch_root_screen_primary_rail_test.dart test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart test/clubs/clubs_controllers_test.dart test/clubs/club_hero_top_bar_test.dart test/clubs/club_detail_read_only_preview_test.dart",
-        "flutter analyze --no-fatal-infos packages/catch_ui/lib/src/patterns/catch_root_screen_body.dart packages/catch_ui/lib/src/patterns/catch_root_screen_page_spec.dart packages/catch_ui/lib/src/patterns/catch_root_screen_page_owner.dart packages/catch_ui/lib/src/patterns/catch_root_screen_page_scroll_view.dart packages/catch_ui/lib/src/components/catch_tab_rail.dart packages/catch_ui/lib/src/components/catch_tab_controller_rail.dart lib/user_profile/presentation/profile_screen.dart lib/hosts/presentation/host_operations/host_clubs_scaffold.dart lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+        "flutter test --concurrency=1 test/core/widgets/catch_root_screen_primary_rail_test.dart test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart test/organizers/organizers_controllers_test.dart test/organizers/organizer_hero_top_bar_test.dart test/organizers/organizer_detail_read_only_preview_test.dart",
+        "flutter analyze --no-fatal-infos packages/catch_ui/lib/src/patterns/catch_root_screen_body.dart packages/catch_ui/lib/src/patterns/catch_root_screen_page_spec.dart packages/catch_ui/lib/src/patterns/catch_root_screen_page_owner.dart packages/catch_ui/lib/src/patterns/catch_root_screen_page_scroll_view.dart packages/catch_ui/lib/src/components/catch_tab_rail.dart packages/catch_ui/lib/src/components/catch_tab_controller_rail.dart lib/user_profile/presentation/profile_screen.dart lib/hosts/presentation/host_operations/host_organizers_scaffold.dart lib/organizers/presentation/detail/organizer_detail_read_only_preview.dart",
         "node tool/design/check_component_contracts.mjs",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
@@ -1649,13 +1649,13 @@
       "status": "reference",
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-provider-codegen-001-generated-auto-dispose-provider-family",
       "prototypeFiles": [
-        "lib/contexts/organizers/data/club_name_lookup.dart",
-        "lib/contexts/organizers/data/club_name_lookup.g.dart",
+        "lib/contexts/organizers/data/organizer_name_lookup.dart",
+        "lib/contexts/organizers/data/organizer_name_lookup.g.dart",
         "test/architecture/generated_provider_family_test.dart"
       ],
       "adopters": [
         {
-          "path": "lib/contexts/organizers/data/club_name_lookup.dart",
+          "path": "lib/contexts/organizers/data/organizer_name_lookup.dart",
           "role": "reference generated Future provider family keyed by a value-equality club-id query",
           "status": "aligned"
         },
@@ -1692,14 +1692,14 @@
       ],
       "exceptions": [
         {
-          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "reason": "_hostClubsForUserProvider remains the reviewed private part-file adapter exception recorded in provider_graph_reviews.json."
+          "path": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
+          "reason": "_hostOrganizersForUserProvider remains the reviewed private part-file adapter exception recorded in provider_graph_reviews.json."
         }
       ],
       "requiredBackPropagation": "When a handwritten feature-owned async provider family is migrated, preserve its provider name, family call shape, value-equality key semantics, lifecycle, .future access, and override contracts; regenerate adjacent output and remove the matching planned manual-provider review decision.",
       "requiredChecks": [
         "flutter test test/architecture/generated_provider_family_test.dart",
-        "flutter analyze --no-fatal-infos lib/contexts/organizers/data/club_name_lookup.dart lib/contexts/live/data/event_success_companion_clock.dart lib/contexts/discovery/data/explore_recommendations_repository.dart lib/contexts/profiles/data/public_profiles_lookup.dart lib/contexts/connections/data/swipe_candidate_repository.dart test/architecture/generated_provider_family_test.dart",
+        "flutter analyze --no-fatal-infos lib/contexts/organizers/data/organizer_name_lookup.dart lib/contexts/live/data/event_success_companion_clock.dart lib/contexts/discovery/data/explore_recommendations_repository.dart lib/contexts/profiles/data/public_profiles_lookup.dart lib/contexts/connections/data/swipe_candidate_repository.dart test/architecture/generated_provider_family_test.dart",
         "dart run tool/architecture/provider_graph.dart --check",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
@@ -1739,8 +1739,8 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_operations/host_club_edit_body.dart",
-          "role": "Host Club Identity and Contact adopter with typed UpdateClubPatch descriptors, schema-derived constraints, and one save delegate",
+          "path": "lib/hosts/presentation/host_operations/host_organizer_edit_body.dart",
+          "role": "Host Club Identity and Contact adopter with typed UpdateOrganizerPatch descriptors, schema-derived constraints, and one save delegate",
           "status": "aligned"
         },
         {
@@ -1775,7 +1775,7 @@
       "requiredBackPropagation": "When descriptor fields, save semantics, accordion ownership, or error mapping change, update the About You prototype, core descriptor tests, architecture exhibit, and every promoted adopter before broad rollout.",
       "requiredChecks": [
         "flutter test --concurrency=1 test/core/forms/catch_form_descriptors_test.dart test/core/forms/contract_alignment_test.dart test/profile/self_profile_edit_tab_state_test.dart test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart",
-        "flutter analyze --no-fatal-infos packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart lib/user_profile/presentation/self_profile_edit_tab_state.dart lib/user_profile/presentation/widgets/profile_tab_body.dart lib/hosts/presentation/host_operations/host_club_edit_body.dart test/core/forms/catch_form_descriptors_test.dart test/core/forms/contract_alignment_test.dart test/profile/self_profile_edit_tab_state_test.dart",
+        "flutter analyze --no-fatal-infos packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart lib/user_profile/presentation/self_profile_edit_tab_state.dart lib/user_profile/presentation/widgets/profile_tab_body.dart lib/hosts/presentation/host_operations/host_organizer_edit_body.dart test/core/forms/catch_form_descriptors_test.dart test/core/forms/contract_alignment_test.dart test/profile/self_profile_edit_tab_state_test.dart",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
       "notes": "Consumer Profile About You and Host Club Identity/Contact are promoted. Text commit behavior belongs to CatchFormList: explicit Cancel/Done is the default, while Consumer About You carries one deliberate on-blur compatibility override. CatchFormCustomRow keeps the profile height stepper feature-owned while routing accordion and save behavior through CatchFormRowScope."
@@ -1969,12 +1969,12 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/club_management/create",
+          "path": "lib/hosts/presentation/organizer_management/create",
           "role": "frozen-snapshot adopter across organizer submit, draft save, and draft restore with route, step, media, form, and default-decision freezing plus controller deduplication",
           "status": "aligned"
         },
         {
-          "path": "test/clubs/clubs_controllers_test.dart and test/explore/explore_widgets_test.dart",
+          "path": "test/organizers/organizers_controllers_test.dart and test/explore/explore_widgets_test.dart",
           "role": "controller and widget proof for one organizer submission and a frozen create route",
           "status": "aligned"
         },
@@ -2217,11 +2217,11 @@
       "prototypeFiles": [
         "packages/catch_ui/lib/src/components/catch_poster.dart",
         "packages/catch_ui/lib/src/components/catch_polaroid.dart",
-        "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart",
+        "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart",
         "lib/swipes/shared/profile_surface/profile_body.dart",
-        "test/clubs/club_hero_top_bar_test.dart",
+        "test/organizers/organizer_hero_top_bar_test.dart",
         "test/swipes/profile_surface_contract_test.dart",
-        "widgetbook/lib/clubs/catalog/poster.dart",
+        "widgetbook/lib/organizers/catalog/poster.dart",
         "widgetbook/lib/catches/catalog/profile_media.dart"
       ],
       "adopters": [
@@ -2232,13 +2232,13 @@
           "status": "aligned"
         },
         {
-          "path": "lib/explore/presentation/widgets/club_card.dart",
+          "path": "lib/explore/presentation/widgets/organizer_card.dart",
           "role": "Explore organizer-poster reference adopter with source-backed authority, host, rating, member, and tag composition",
           "providerFree": true,
           "status": "aligned"
         },
         {
-          "path": "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart",
+          "path": "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart",
           "role": "Organizer Detail poster reference adopter with route-owned share/back actions outside the provider-free poster module",
           "status": "aligned"
         },
@@ -2263,19 +2263,19 @@
       "candidateQueue": [
         {
           "id": "ARCH-ENTITY-MATERIAL-001-HOST-POSTER-RECIPE",
-          "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
+          "path": "lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart",
           "reason": "Phase 2 must add a schema-first persisted poster recipe plus a guided host editor; do not expose a save action until repository, rules, migration, and preview contracts exist."
         },
         {
           "id": "ARCH-ENTITY-MATERIAL-001-SHARE-POSTER",
-          "path": "lib/clubs/presentation/detail/widgets/club_share_card.dart",
-          "reason": "Share media uses ClubPlaceholderCover for fallback but has not yet adopted the complete poster recipe/layout canvas."
+          "path": "lib/organizers/presentation/detail/widgets/organizer_share_card.dart",
+          "reason": "Share media uses OrganizerPlaceholderCover for fallback but has not yet adopted the complete poster recipe/layout canvas."
         }
       ],
       "exceptions": [],
       "requiredBackPropagation": "When entity material roles, poster layouts/treatments, person-polaroid anatomy, or context-overlay ownership changes, update the design language, component contracts, Explore and Organizer Detail adopters, shared Profile adopter, Widgetbook states, focused widget tests, and this exhibit before migrating another surface.",
       "requiredChecks": [
-        "flutter test --concurrency=1 test/clubs/club_hero_top_bar_test.dart test/explore/explore_widgets_test.dart test/swipes/profile_surface_contract_test.dart test/swipes/profile_card_widget_test.dart",
+        "flutter test --concurrency=1 test/organizers/organizer_hero_top_bar_test.dart test/explore/explore_widgets_test.dart test/swipes/profile_surface_contract_test.dart test/swipes/profile_card_widget_test.dart",
         "node tool/design/check_component_contracts.mjs --check",
         "node tool/design/check_screen_contracts.mjs --check",
         "node tool/architecture/check_app_architecture_exhibits.mjs",

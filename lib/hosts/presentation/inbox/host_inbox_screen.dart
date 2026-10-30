@@ -7,8 +7,8 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_reposi
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -123,18 +123,18 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
       _selectedThreadId = null;
     }
     if (!uidState.isLoading) _accountId = uid;
-    final clubsAsync = uid == null
-        ? const AsyncLoading<List<Club>>()
-        : ref.watch(hostOperableClubsProvider(uid));
-    final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
-    final clubs = clubsState.value;
+    final organizersAsync = uid == null
+        ? const AsyncLoading<List<Organizer>>()
+        : ref.watch(hostOperableOrganizersProvider(uid));
+    final organizersState = catchAsyncStateFromAsyncValue(organizersAsync);
+    final organizers = organizersState.value;
     final selectedOrganizerId = uid == null
         ? null
         : ref.watch(hostOrganizerSelectionProvider(uid));
-    final selectedClub = clubs == null || clubs.isEmpty
+    final selectedOrganizer = organizers == null || organizers.isEmpty
         ? null
         : resolveSelectedHostOrganizer(
-            clubs,
+            organizers,
             selectedOrganizerId: selectedOrganizerId,
             preferredOrganizerId: selectedOrganizerId == null
                 ? widget.initialOrganizerId
@@ -152,8 +152,8 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
               ? HostInboxWorkspaceSection(
                   uidState: uidState,
                   uid: uid,
-                  clubsState: clubsState,
-                  selectedClub: selectedClub,
+                  organizersState: organizersState,
+                  selectedOrganizer: selectedOrganizer,
                   query: query,
                   now: now,
                   requestedScope: _requestedScope,
@@ -169,8 +169,8 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
                   child: _HostCampaignWorkspaceSliver(
                     uidState: uidState,
                     uid: uid,
-                    clubsState: clubsState,
-                    selectedClub: selectedClub,
+                    organizersState: organizersState,
+                    selectedOrganizer: selectedOrganizer,
                     initialSavedAudienceId: widget.initialSavedAudienceId,
                     preferredEventId: _requestedScope?.eventId,
                     initialSegment: _segment,
@@ -199,11 +199,11 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             compactForPrimaryRail: true,
             actions: [
               if (isInbox &&
-                  selectedClub != null &&
+                  selectedOrganizer != null &&
                   _requestedScope?.isProgram != true)
                 CatchIconAction.toolbar(
                   tooltip: context.l10n.hostInboxNewMessage,
-                  onPressed: () => _newMessage(selectedClub.id),
+                  onPressed: () => _newMessage(selectedOrganizer.id),
                   icon: CatchIcons.edit,
                 ),
             ],
@@ -227,15 +227,15 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     }
 
     if (!isInbox &&
-        selectedClub != null &&
+        selectedOrganizer != null &&
         !uidState.isLoading &&
-        !clubsState.isLoading &&
+        !organizersState.isLoading &&
         !uidState.hasError &&
-        !clubsState.hasError) {
+        !organizersState.hasError) {
       return CatchScaffold.workspace(
         backgroundColor: t.bg,
         body: HostSendsPageBody(
-          club: selectedClub,
+          organizer: selectedOrganizer,
           initialSavedAudienceId: widget.initialSavedAudienceId,
           preferredEventId: _requestedScope?.eventId,
           initialSegment: _segment,
@@ -247,14 +247,14 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
         ),
       );
     }
-    final detail = selectedThreadId == null || selectedClub == null
+    final detail = selectedThreadId == null || selectedOrganizer == null
         ? CatchEmptyState(
             icon: CatchIcons.chat,
             title: context.l10n.hostInboxSelectConversationTitle,
             message: context.l10n.hostInboxSelectConversationBody,
           )
         : HostInboxPersonPageBody(
-            organizerId: selectedClub.id,
+            organizerId: selectedOrganizer.id,
             selection: selectedThreadId,
             scope: _requestedScope,
             now: now,
@@ -269,7 +269,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
         spec: isInbox
             ? HostDirectoryWorkspace<String>(
                 index: buildMaster(context),
-                selection: selectedClub == null ? null : selectedThreadId,
+                selection: selectedOrganizer == null ? null : selectedThreadId,
                 detailBuilder: (_) => detail,
                 unselected: detail,
                 onBack: _closePerson,
@@ -310,7 +310,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     ref.invalidate(uidProvider);
     ref.invalidate(chatsListViewModelProvider);
     if (uid != null) {
-      ref.invalidate(hostOperableClubsProvider(uid));
+      ref.invalidate(hostOperableOrganizersProvider(uid));
       ref.invalidate(hostInboxCatchPagesProvider(uid));
     }
     if (_requestedScope?.eventId case final eventId?) {
@@ -324,7 +324,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
       }
     }
     if (organizerId != null) {
-      ref.invalidate(watchEventsForClubProvider(organizerId));
+      ref.invalidate(watchEventsForOrganizerProvider(organizerId));
       ref.invalidate(hostMessagingSetupProvider(organizerId));
     }
     setState(() {});
@@ -433,8 +433,8 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
   const _HostCampaignWorkspaceSliver({
     required this.uidState,
     required this.uid,
-    required this.clubsState,
-    required this.selectedClub,
+    required this.organizersState,
+    required this.selectedOrganizer,
     required this.initialSavedAudienceId,
     required this.preferredEventId,
     required this.initialSegment,
@@ -447,8 +447,8 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
 
   final CatchAsyncState<String?> uidState;
   final String? uid;
-  final CatchAsyncState<List<Club>> clubsState;
-  final Club? selectedClub;
+  final CatchAsyncState<List<Organizer>> organizersState;
+  final Organizer? selectedOrganizer;
   final String? initialSavedAudienceId;
   final String? preferredEventId;
   final HostInboxAudienceSegment initialSegment;
@@ -460,19 +460,19 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (uidState.hasError || clubsState.hasError) {
-      final failed = uidState.hasError ? uidState : clubsState;
+    if (uidState.hasError || organizersState.hasError) {
+      final failed = uidState.hasError ? uidState : organizersState;
       return CatchLocalizedSliverErrorState(
         failed.error!,
-        context: AppErrorContext.club,
-        onRetry: () => onRetry(selectedClub?.id),
+        context: AppErrorContext.organizer,
+        onRetry: () => onRetry(selectedOrganizer?.id),
       );
     }
     if (uidState.isLoading) return const ChatsListSkeleton();
     if (uid == null) return const _HostAuthRequiredSliver();
-    if (clubsState.isLoading) return const ChatsListSkeleton();
-    final club = selectedClub;
-    if (club == null) return const _HostNoOrganizerSliver();
+    if (organizersState.isLoading) return const ChatsListSkeleton();
+    final organizer = selectedOrganizer;
+    if (organizer == null) return const _HostNoOrganizerSliver();
     // The loaded sends workspace is composed above the scroll owner so it can
     // retain history alongside its selected report. This branch is state-only.
     return const SliverToBoxAdapter(child: SizedBox.shrink());
@@ -486,8 +486,8 @@ class _HostNoOrganizerSliver extends StatelessWidget {
   Widget build(BuildContext context) => CatchStateViewport.sliver(
     child: CatchEmptyState(
       icon: CatchIcons.people,
-      title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
-      message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+      title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstOrganizer,
+      message: context.l10n.hostsHostEventsScaffoldBodyCreateAOrganizerTo,
     ),
   );
 }

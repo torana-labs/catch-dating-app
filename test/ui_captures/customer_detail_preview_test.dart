@@ -27,7 +27,7 @@ void main() {
     'captures customer detail views and editing',
     (tester) async {
       final entry = findScreenCapture('host_customer_detail_memory');
-      final organizerId = HostOperationsFixtures.primaryClub.id;
+      final organizerId = HostOperationsFixtures.primaryOrganizer.id;
       final opened = <Uri>[];
       for (final view in [
         'overview',

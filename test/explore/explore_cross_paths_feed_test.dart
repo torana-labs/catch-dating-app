@@ -1,24 +1,24 @@
 import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/contexts/connections/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/explore/presentation/explore_cross_paths_provider.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_mixed_feed_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart' as clubs;
 import '../events/events_test_helpers.dart' as events;
+import '../organizers/organizers_test_helpers.dart' as organizers;
 
 ExploreEventItem _item({
   required String id,
-  required Club club,
+  required Organizer organizer,
   required DateTime startTime,
   ViewerEventAvailability? availability,
 }) {
   final event = events.buildEvent(
     id: id,
-    clubId: club.id,
+    clubId: organizer.id,
     startTime: startTime,
     crossPathsDiscoveryEnabled: true,
   );
@@ -32,7 +32,7 @@ ExploreEventItem _item({
       startingPointLat: 19.0608,
       startingPointLng: 72.8365,
     ),
-    club: club,
+    organizer: organizer,
     availability: availability,
   );
 }
@@ -85,10 +85,13 @@ CrossPathsSuggestion _suggestion({
 
 void main() {
   test('second organizer stays outside the first eight mixed cards', () {
-    final eventClub = clubs.buildClub(id: 'cadence-event-club');
-    final candidateClubs = [
-      clubs.buildClub(id: 'cadence-spotlight', nextEventLabel: 'Friday'),
-      clubs.buildClub(id: 'cadence-row', nextEventLabel: 'Saturday'),
+    final eventOrganizer = organizers.buildOrganizer(id: 'cadence-event-club');
+    final candidateOrganizers = [
+      organizers.buildOrganizer(
+        id: 'cadence-spotlight',
+        nextEventLabel: 'Friday',
+      ),
+      organizers.buildOrganizer(id: 'cadence-row', nextEventLabel: 'Saturday'),
     ];
 
     List<ExploreMixedCard> cardsFor(int eventCount) =>
@@ -98,43 +101,46 @@ void main() {
               for (var index = 0; index < eventCount; index += 1)
                 _item(
                   id: 'cadence-event-$index',
-                  club: eventClub,
+                  organizer: eventOrganizer,
                   startTime: DateTime(2026, 7, 2, 10 + index),
                 ),
             ],
           ),
-          candidateClubs: candidateClubs,
-          joinedClubIds: const {},
+          candidateOrganizers: candidateOrganizers,
+          joinedOrganizerIds: const {},
         );
 
     for (final eventCount in [1, 2, 3, 4, 7]) {
       expect(
-        cardsFor(eventCount).whereType<ExploreMixedClubRowCard>(),
+        cardsFor(eventCount).whereType<ExploreMixedOrganizerRowCard>(),
         isEmpty,
       );
     }
     final eightEventCards = cardsFor(8);
-    expect(eightEventCards.whereType<ExploreMixedClubRowCard>(), hasLength(1));
-    expect(eightEventCards.last, isA<ExploreMixedClubRowCard>());
     expect(
-      eightEventCards.take(8).whereType<ExploreMixedClubRowCard>(),
+      eightEventCards.whereType<ExploreMixedOrganizerRowCard>(),
+      hasLength(1),
+    );
+    expect(eightEventCards.last, isA<ExploreMixedOrganizerRowCard>());
+    expect(
+      eightEventCards.take(8).whereType<ExploreMixedOrganizerRowCard>(),
       isEmpty,
     );
   });
 
   test('callable context includes only booked or bookable events', () {
-    final club = clubs.buildClub(id: 'cross-paths-context-club');
+    final organizer = organizers.buildOrganizer(id: 'cross-paths-context-club');
     ExploreEventItem item(String id, ViewerEventAvailabilityStatus status) =>
         _item(
           id: id,
-          club: club,
+          organizer: organizer,
           startTime: DateTime(2026, 8, 8, 18),
           availability: ViewerEventAvailability(
             status: status,
             spotsRemaining: 4,
             isSaved: false,
             isHosted: false,
-            isClubMember: false,
+            isOrganizerMember: false,
           ),
         );
 
@@ -160,7 +166,7 @@ void main() {
               event: unselected.event.copyWith(
                 crossPathsDiscoveryEnabled: false,
               ),
-              club: unselected.club,
+              organizer: unselected.organizer,
               availability: unselected.availability,
             ),
           ],
@@ -171,10 +177,15 @@ void main() {
   });
 
   test('mixed feed stays event-majority and separates people', () {
-    final eventClub = clubs.buildClub(id: 'cross-paths-event-club');
-    final candidateClubs = [
-      clubs.buildClub(id: 'cross-paths-organizer-1', nextEventLabel: 'Friday'),
-      clubs.buildClub(
+    final eventOrganizer = organizers.buildOrganizer(
+      id: 'cross-paths-event-club',
+    );
+    final candidateOrganizers = [
+      organizers.buildOrganizer(
+        id: 'cross-paths-organizer-1',
+        nextEventLabel: 'Friday',
+      ),
+      organizers.buildOrganizer(
         id: 'cross-paths-organizer-2',
         nextEventLabel: 'Saturday',
       ),
@@ -189,13 +200,13 @@ void main() {
           for (var index = 0; index < starts.length; index += 1)
             _item(
               id: 'cross-paths-event-$index',
-              club: eventClub,
+              organizer: eventOrganizer,
               startTime: starts[index],
             ),
         ],
       ),
-      candidateClubs: candidateClubs,
-      joinedClubIds: const {},
+      candidateOrganizers: candidateOrganizers,
+      joinedOrganizerIds: const {},
       crossPathsSuggestions: [
         _suggestion(
           uid: 'person-1',
@@ -213,7 +224,10 @@ void main() {
     final firstEight = cards.take(8).toList(growable: false);
     expect(firstEight.whereType<ExploreMixedEventRowCard>(), hasLength(5));
     expect(firstEight.whereType<ExploreMixedPersonCard>(), hasLength(2));
-    expect(firstEight.whereType<ExploreMixedClubSpotlightCard>(), hasLength(1));
+    expect(
+      firstEight.whereType<ExploreMixedOrganizerSpotlightCard>(),
+      hasLength(1),
+    );
     for (var index = 0; index < cards.length - 1; index += 1) {
       final leftIsEvent =
           cards[index] is ExploreMixedEventRowCard ||

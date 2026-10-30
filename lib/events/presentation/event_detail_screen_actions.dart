@@ -58,11 +58,12 @@ mixin _EventDetailScreenActions on ConsumerState<EventDetailScreen> {
     required String hostUid,
     required String eventId,
   }) async {
-    final matchId = await ClubHostContactController.startConversationMutation
+    final matchId = await OrganizerHostContactController
+        .startConversationMutation
         .run(
           ref,
           (tx) => tx
-              .get(clubHostContactControllerProvider.notifier)
+              .get(organizerHostContactControllerProvider.notifier)
               .startConversation(
                 clubId: clubId,
                 hostUid: hostUid,

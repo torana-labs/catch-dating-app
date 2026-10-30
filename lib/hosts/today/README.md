@@ -43,7 +43,7 @@ Typed handoffs:
 - `hostApplicationDetailScreen` — `/host/audience/applications/:applicationId`
 - `hostAudienceScreen` — `/host/audience`
 - `hostInboxScreen` — `/host/inbox`
-- `hostClubPaymentsScreen` — `/host/organizers/payments`
+- `hostOrganizerPaymentsScreen` — `/host/organizers/payments`
 - `hostEventRehearsalStartScreen` — `/host/organizers/:clubId/rehearsals/new`
 
 ## Key code owners

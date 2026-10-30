@@ -72,11 +72,11 @@ class WidgetbookHostHomeSectionFrame extends StatelessWidget {
   const WidgetbookHostHomeSectionFrame({
     super.key,
     required this.child,
-    this.clubEventStreams = const {},
+    this.organizerEventStreams = const {},
   });
 
   final Widget child;
-  final Map<String, Stream<List<Event>>> clubEventStreams;
+  final Map<String, Stream<List<Event>>> organizerEventStreams;
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +95,7 @@ class WidgetbookHostHomeSectionFrame extends StatelessWidget {
 
     return WidgetbookHostDeviceFrame(
       child: WidgetbookHostShellScope(
-        clubEventStreams: clubEventStreams,
+        organizerEventStreams: organizerEventStreams,
         child: framedChild,
       ),
     );

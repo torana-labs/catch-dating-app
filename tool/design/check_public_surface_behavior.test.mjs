@@ -207,7 +207,7 @@ test("extracts app route id path and audience for ownership checks", () => {
     fs.readFileSync(`${repoRoot}/lib/routing/route_contract.dart`, "utf8"),
   );
   expectRoute(routes, "exploreScreen", "/organizers", "consumer");
-  expectRoute(routes, "hostClubDetailScreen", "/host/organizers/:clubId", "host");
+  expectRoute(routes, "hostOrganizerDetailScreen", "/host/organizers/:clubId", "host");
 });
 
 function cloneMatrix() {

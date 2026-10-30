@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_create_journal.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_inventory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
@@ -18,7 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../clubs/clubs_test_helpers.dart' show buildClub;
+import '../organizers/organizers_test_helpers.dart' show buildOrganizer;
 import '../support/catch_test_fonts.dart';
 import '../ui_captures/support/capture_device.dart';
 import '../ui_captures/support/capture_pump.dart';
@@ -105,9 +105,9 @@ Future<(ProviderContainer, ProgramCreateController, _Inventory)> _load({
       programCreateJournalProvider.overrideWithValue(
         ProgramCreateJournal(preferences: preferences),
       ),
-      hostOperableClubsProvider('account').overrideWithValue(
-        AsyncData<List<Club>>([
-          buildClub(
+      hostOperableOrganizersProvider('account').overrideWithValue(
+        AsyncData<List<Organizer>>([
+          buildOrganizer(
             id: 'organizer',
             name: 'Saket Run Club',
             ownerUserId: 'account',

@@ -15,12 +15,12 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final clubAsync = ref.watch(fetchClubProvider(clubId));
+    final organizerAsync = ref.watch(fetchOrganizerProvider(clubId));
     final eventAsync = ref.watch(watchEventProvider(eventId));
 
     final state = HostEventEditState.resolve(
       uid: _catchAsyncState(uidAsync),
-      club: _catchAsyncState(clubAsync),
+      organizer: _catchAsyncState(organizerAsync),
       event: _catchAsyncState(eventAsync),
       initialEvent: initialEvent,
     );
@@ -52,7 +52,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
             state.error!,
             context: AppErrorContext.event,
             onRetry: () {
-              ref.invalidate(fetchClubProvider(clubId));
+              ref.invalidate(fetchOrganizerProvider(clubId));
               ref.invalidate(watchEventProvider(eventId));
             },
           ),
@@ -103,7 +103,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
         ),
       ),
       HostEventEditRouteStatus.ready => EditHostedEventScreen(
-        club: state.club!,
+        organizer: state.organizer!,
         event: state.event!,
       ),
     };

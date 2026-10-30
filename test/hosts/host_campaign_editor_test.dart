@@ -13,14 +13,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart';
 
 void main() {
   testWidgets('initial audience id selects the Customers-owned audience', (
     tester,
   ) async {
     const organizerId = 'organizer-1';
-    final club = buildClub(id: organizerId);
+    final organizer = buildOrganizer(id: organizerId);
     final audience = _audience(organizerId);
 
     await tester.pumpWidget(
@@ -68,7 +68,7 @@ void main() {
               ),
             ),
           ),
-          watchEventsForClubProvider(
+          watchEventsForOrganizerProvider(
             organizerId,
           ).overrideWith((ref) => Stream.value(const <Event>[])),
         ],
@@ -79,7 +79,7 @@ void main() {
           home: Scaffold(
             body: SingleChildScrollView(
               child: HostCampaignEditor(
-                club: club,
+                organizer: organizer,
                 initialSavedAudienceId: audience.audienceId,
               ),
             ),

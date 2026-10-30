@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -122,7 +122,7 @@ class ExploreFilterSheetState {
 
   factory ExploreFilterSheetState.from({
     required ExploreFilterSelection filters,
-    required Iterable<Club> sourceClubs,
+    required Iterable<Organizer> sourceOrganizers,
     required AppLocalizations l10n,
     ExploreFeedViewModel? viewModel,
     bool feedLoading = false,
@@ -130,7 +130,7 @@ class ExploreFilterSheetState {
     return ExploreFilterSheetState(
       activeCount: activeExploreFilterCount(filters),
       distanceOptions: exploreDistanceFilterOptions(l10n),
-      areaOptions: _areaOptions(sourceClubs, filters.area),
+      areaOptions: _areaOptions(sourceOrganizers, filters.area),
       actionLabel: _exploreFilterSheetActionLabel(
         viewModel,
         feedLoading: feedLoading,
@@ -223,10 +223,13 @@ int activeExploreFilterCount(ExploreFilterSelection filters) {
   return count;
 }
 
-List<String> _areaOptions(Iterable<Club> clubs, String? selectedArea) {
+List<String> _areaOptions(
+  Iterable<Organizer> organizers,
+  String? selectedArea,
+) {
   final areas = <String>{};
-  for (final club in clubs) {
-    final area = club.area.trim();
+  for (final organizer in organizers) {
+    final area = organizer.area.trim();
     if (area.isNotEmpty) areas.add(area);
   }
   final selected = selectedArea?.trim();

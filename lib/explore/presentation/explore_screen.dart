@@ -1,10 +1,9 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
@@ -24,6 +23,7 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dar
 import 'package:catch_dating_app/explore/presentation/widgets/explore_screen_empty_state.dart';
 import 'package:catch_dating_app/kernel/city_data.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/organizer_membership_controller.dart';
 import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/platform/cities/city_repository.dart';
 import 'package:catch_dating_app/platform/device/device_location.dart';
@@ -84,7 +84,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     super.didChangeDependencies();
     final activeIndex = CatchTabViewportScope.maybeIndexOf(context);
     if (activeIndex == null) return;
-    final isActive = activeIndex == appShellClubsTabIndex;
+    final isActive = activeIndex == appShellOrganizersTabIndex;
     final shouldRefresh = _wasExploreTabActive == false && isActive;
     _wasExploreTabActive = isActive;
     if (!shouldRefresh || _reentryRefreshQueued) return;
@@ -110,7 +110,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     final recommendationsState = catchAsyncStateFromAsyncValue(
       ref.watch(exploreRecommendationsProvider),
     );
-    final viewModelAsync = ref.watch(exploreClubsViewModelProvider);
+    final viewModelAsync = ref.watch(exploreOrganizersViewModelProvider);
     final viewModelState = catchAsyncStateFromAsyncValue(viewModelAsync);
     ref.watch(exploreCityControllerProvider);
     final city = ref.watch(selectedExploreCityProvider);
@@ -135,10 +135,12 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     final visibleFilters = showAccountControls
         ? filters
         : filters.copyWith(joinedOnly: false);
-    final sourceClubsAsync = ref.watch(exploreSourceClubsProvider);
-    final sourceClubsState = catchAsyncStateFromAsyncValue(sourceClubsAsync);
-    final sourceClubs = sourceClubsState.value ?? const [];
-    final hasSourceClubs = sourceClubs.isNotEmpty;
+    final sourceOrganizersAsync = ref.watch(exploreSourceOrganizersProvider);
+    final sourceOrganizersState = catchAsyncStateFromAsyncValue(
+      sourceOrganizersAsync,
+    );
+    final sourceOrganizers = sourceOrganizersState.value ?? const [];
+    final hasSourceOrganizers = sourceOrganizers.isNotEmpty;
     final featuredItem = feedState.value?.featuredItem;
     final showFeaturedCover =
         featuredItem != null && !_searchRequested && query.isEmpty;
@@ -153,7 +155,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     );
     final filterSheetState = ExploreFilterSheetState.from(
       filters: visibleFilters,
-      sourceClubs: sourceClubs,
+      sourceOrganizers: sourceOrganizers,
       l10n: context.l10n,
       viewModel: feedState.value,
       feedLoading: feedState.isLoading,
@@ -163,7 +165,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       cityLabel: city.label,
       query: query,
       filters: visibleFilters,
-      hasSourceClubs: hasSourceClubs,
+      hasSourceOrganizers: hasSourceOrganizers,
       mappableEventCount: feedState.value?.mappableEventCount,
       viewModelLoading: viewModelState.isLoading,
       viewModelError: viewModelState.hasError ? viewModelState.error : null,
@@ -183,9 +185,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           ref.invalidate(exploreFeedViewModelProvider);
         case ExploreScreenRetryTarget.explore:
         case null:
-          ref.invalidate(watchClubsByLocationProvider(city.effectiveMarketId));
-          ref.invalidate(exploreClubsViewModelProvider);
-          ref.invalidate(exploreSourceClubsProvider);
+          ref.invalidate(
+            watchOrganizersByLocationProvider(city.effectiveMarketId),
+          );
+          ref.invalidate(exploreOrganizersViewModelProvider);
+          ref.invalidate(exploreSourceOrganizersProvider);
           ref.invalidate(exploreDiscoveryWindowProvider);
           ref.invalidate(exploreFeedViewModelProvider);
       }
@@ -246,7 +250,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             AnalyticsEvents.exploreEventOpened,
             parameters: {
               AnalyticsParameters.eventId: item.event.id,
-              AnalyticsParameters.clubId: item.club.id,
+              AnalyticsParameters.clubId: item.organizer.id,
               AnalyticsParameters.exploreSource: source,
               AnalyticsParameters.activityKind: item.event.activityKind.name,
               AnalyticsParameters.availabilityStatus:
@@ -359,11 +363,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       unawaited(ref.read(externalLinkControllerProvider).openExternal(uri));
     }
 
-    void openClub(Club club) {
+    void openOrganizer(Organizer organizer) {
       context.pushNamed(
-        Routes.clubDetailScreen.name,
-        pathParameters: {'clubId': club.id},
-        extra: club,
+        Routes.organizerDetailScreen.name,
+        pathParameters: {'clubId': organizer.id},
+        extra: organizer,
       );
     }
 
@@ -459,11 +463,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               context: context,
               feedState: feedState,
               recommendationsState: recommendationsState,
-              clubsViewModel: bodyState.viewModel,
+              organizersViewModel: bodyState.viewModel,
               filters: visibleFilters,
               searchQuery: query,
               onRetryFeed: () => ref.invalidate(exploreFeedViewModelProvider),
-              onRetryClubs: () =>
+              onRetryOrganizers: () =>
                   retryBodyState(ExploreScreenRetryTarget.explore),
               onClearSearch: () =>
                   ref.read(exploreSearchQueryProvider.notifier).clear(),
@@ -481,19 +485,19 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               onCrossPathsProfileSelected: openCrossPathsProfile,
               onCrossPathsImpression: logCrossPathsImpression,
               onExternalEventOpened: openExternalEvent,
-              onClubSelected: openClub,
+              onOrganizerSelected: openOrganizer,
               promoteFeaturedItem: showFeaturedCover,
             ),
-            ExploreScreenBodyKind.contentWithoutClubs =>
+            ExploreScreenBodyKind.contentWithoutOrganizers =>
               buildExploreBodySlivers(
                 context: context,
                 feedState: feedState,
                 recommendationsState: recommendationsState,
                 filters: visibleFilters,
                 searchQuery: query,
-                clubSectionError: bodyState.error,
+                organizerSectionError: bodyState.error,
                 onRetryFeed: () => ref.invalidate(exploreFeedViewModelProvider),
-                onRetryClubs: () => retryBodyState(bodyState.retryTarget),
+                onRetryOrganizers: () => retryBodyState(bodyState.retryTarget),
                 onClearSearch: () =>
                     ref.read(exploreSearchQueryProvider.notifier).clear(),
                 onClearFilters: () =>
@@ -510,7 +514,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 onCrossPathsProfileSelected: openCrossPathsProfile,
                 onCrossPathsImpression: logCrossPathsImpression,
                 onExternalEventOpened: openExternalEvent,
-                onClubSelected: openClub,
+                onOrganizerSelected: openOrganizer,
                 promoteFeaturedItem: showFeaturedCover,
               ),
             ExploreScreenBodyKind.empty => [
@@ -540,7 +544,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     listenToCatchMutationErrors(
       context,
       ref,
-      mutations: [ClubMembershipController.joinMutation],
+      mutations: [OrganizerMembershipController.joinMutation],
     );
     return Stack(
       children: [
@@ -684,9 +688,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     _restartInitialLoadDeadline();
     ref.invalidate(exploreDiscoveryReferenceNowProvider);
     ref.invalidate(exploreDiscoveryWindowProvider);
-    ref.invalidate(watchClubsByLocationProvider);
-    ref.invalidate(exploreSourceClubsProvider);
-    ref.invalidate(exploreClubsViewModelProvider);
+    ref.invalidate(watchOrganizersByLocationProvider);
+    ref.invalidate(exploreSourceOrganizersProvider);
+    ref.invalidate(exploreOrganizersViewModelProvider);
     ref.invalidate(exploreFeedViewModelProvider);
     ref.invalidate(exploreRecommendationsProvider);
 

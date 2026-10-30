@@ -12,9 +12,9 @@ void _registerHostOperationsCustomersTests() {
         screen,
         overrides: [
           uidProvider.overrideWithValue(const AsyncLoading<String?>()),
-          hostOperableClubsProvider(
+          hostOperableOrganizersProvider(
             _hostUid,
-          ).overrideWithValue(const AsyncLoading<List<Club>>()),
+          ).overrideWithValue(const AsyncLoading<List<Organizer>>()),
         ],
         settle: false,
         resetProviderScope: true,
@@ -30,9 +30,9 @@ void _registerHostOperationsCustomersTests() {
           uidProvider.overrideWithValue(
             AsyncError<String?>(StateError('uid failed'), StackTrace.current),
           ),
-          hostOperableClubsProvider(
+          hostOperableOrganizersProvider(
             _hostUid,
-          ).overrideWithValue(const AsyncLoading<List<Club>>()),
+          ).overrideWithValue(const AsyncLoading<List<Organizer>>()),
         ],
         settle: false,
         resetProviderScope: true,
@@ -45,9 +45,9 @@ void _registerHostOperationsCustomersTests() {
         screen,
         overrides: [
           uidProvider.overrideWithValue(const AsyncData<String?>(null)),
-          hostOperableClubsProvider(
+          hostOperableOrganizersProvider(
             _hostUid,
-          ).overrideWithValue(const AsyncLoading<List<Club>>()),
+          ).overrideWithValue(const AsyncLoading<List<Organizer>>()),
         ],
         settle: false,
         resetProviderScope: true,
@@ -61,9 +61,9 @@ void _registerHostOperationsCustomersTests() {
         screen,
         overrides: [
           uidProvider.overrideWithValue(const AsyncData<String?>(_hostUid)),
-          hostOperableClubsProvider(
+          hostOperableOrganizersProvider(
             _hostUid,
-          ).overrideWithValue(const AsyncLoading<List<Club>>()),
+          ).overrideWithValue(const AsyncLoading<List<Organizer>>()),
         ],
         settle: false,
         resetProviderScope: true,
@@ -77,8 +77,8 @@ void _registerHostOperationsCustomersTests() {
         screen,
         overrides: [
           uidProvider.overrideWithValue(const AsyncData<String?>(_hostUid)),
-          hostOperableClubsProvider(_hostUid).overrideWithValue(
-            AsyncError<List<Club>>(
+          hostOperableOrganizersProvider(_hostUid).overrideWithValue(
+            AsyncError<List<Organizer>>(
               StateError('clubs failed'),
               StackTrace.current,
             ),
@@ -95,9 +95,9 @@ void _registerHostOperationsCustomersTests() {
         screen,
         overrides: [
           uidProvider.overrideWithValue(const AsyncData<String?>(_hostUid)),
-          hostOperableClubsProvider(
+          hostOperableOrganizersProvider(
             _hostUid,
-          ).overrideWithValue(const AsyncData<List<Club>>([])),
+          ).overrideWithValue(const AsyncData<List<Organizer>>([])),
         ],
         settle: false,
         resetProviderScope: true,
@@ -415,13 +415,16 @@ void _registerHostOperationsCustomersTests() {
   testWidgets('customer search debounces and unavailable SMS stays hidden', (
     tester,
   ) async {
-    final club = buildClub(id: 'customers-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'customers-club',
+      ownerUserId: _hostUid,
+    );
     final requests = <HostCustomersDirectoryRequest>[];
     await _pumpHostScreen(
       tester,
       const HostCustomersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
+        ..._hostOrganizerOverrides(owned: [organizer]),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
             requests,
@@ -469,7 +472,10 @@ void _registerHostOperationsCustomersTests() {
       tester.view.physicalSize = const Size(1200, 900);
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
-      final club = buildClub(id: 'organizer-1', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'organizer-1',
+        ownerUserId: _hostUid,
+      );
 
       await _pumpHostScreen(
         tester,
@@ -479,7 +485,7 @@ void _registerHostOperationsCustomersTests() {
           initialContactDisplayName: 'Ananya Rao',
         ),
         overrides: [
-          ..._hostClubOverrides(owned: [club]),
+          ..._hostOrganizerOverrides(owned: [organizer]),
           hostCustomersDirectoryControllerProvider.overrideWith2(
             (_) => _FixedHostCustomersDirectoryController(
               [],
@@ -523,12 +529,15 @@ void _registerHostOperationsCustomersTests() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       final requests = <HostCustomersDirectoryRequest>[];
-      final club = buildClub(id: 'organizer-1', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'organizer-1',
+        ownerUserId: _hostUid,
+      );
       await _pumpHostScreen(
         tester,
         const HostCustomersScreen(),
         overrides: [
-          ..._hostClubOverrides(owned: [club]),
+          ..._hostOrganizerOverrides(owned: [organizer]),
           hostCustomersDirectoryControllerProvider.overrideWith2(
             (_) => _FixedHostCustomersDirectoryController(
               requests,

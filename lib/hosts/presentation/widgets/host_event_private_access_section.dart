@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_invite_link_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
@@ -27,7 +27,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class HostPrivateAccessAsyncBoundary extends StatelessWidget {
   const HostPrivateAccessAsyncBoundary({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.event,
     required this.accessAsync,
     required this.inviteLinksAsync,
@@ -42,7 +42,7 @@ class HostPrivateAccessAsyncBoundary extends StatelessWidget {
     required this.onDisableInviteLink,
   });
 
-  final Club club;
+  final Organizer organizer;
   final Event event;
   final AsyncValue<EventPrivateAccess?> accessAsync;
   final AsyncValue<List<EventInviteLink>> inviteLinksAsync;
@@ -91,7 +91,7 @@ class HostPrivateAccessAsyncBoundary extends StatelessWidget {
           access: access,
           inviteLinksState: catchAsyncStateFromAsyncValue(inviteLinksAsync),
           inviteLink: hostEventInviteUrl(
-            clubId: club.id,
+            clubId: organizer.id,
             eventId: event.id,
             inviteCode: access?.inviteCode,
           ),

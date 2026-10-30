@@ -7,10 +7,10 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/external_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
@@ -20,8 +20,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart';
 import '../events/events_test_helpers.dart' as event_test;
+import '../organizers/organizers_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
@@ -29,9 +29,9 @@ void main() {
     'signed-in synthetic viewer can see only its hidden-organizer QA event',
     () async {
       final user = event_test.buildUser(uid: 'cross_paths_mumbai_qa_user_002');
-      final organizer = buildClub(
+      final organizer = buildOrganizer(
         id: 'courtside',
-        appVisibility: ClubAppVisibility.hidden,
+        appVisibility: OrganizerAppVisibility.hidden,
       );
       final qaEvent = event_test.buildEvent(
         id: 'cross_paths_mumbai_qa_run_mumbai_01_01',
@@ -49,12 +49,12 @@ void main() {
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value(user.uid)),
           watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-          watchClubsByLocationProvider(
+          watchOrganizersByLocationProvider(
             'in-mh-mumbai',
-          ).overrideWith((ref) => Stream.value(const <Club>[])),
-          watchActiveClubMembershipsForUserProvider(
+          ).overrideWith((ref) => Stream.value(const <Organizer>[])),
+          watchActiveOrganizerMembershipsForUserProvider(
             user.uid,
-          ).overrideWith((ref) => Stream.value(const <ClubMembership>[])),
+          ).overrideWith((ref) => Stream.value(const <OrganizerMembership>[])),
           watchEventParticipationsForUserProvider(
             user.uid,
           ).overrideWith((ref) => Stream.value([participation])),
@@ -64,8 +64,8 @@ void main() {
           watchEventsByIdsProvider(
             EventsByIdQuery([qaEvent.id]),
           ).overrideWith((ref) => Stream.value([qaEvent])),
-          watchClubsForMessagingByIdsProvider(
-            ClubsByIdQuery([organizer.id]),
+          watchOrganizersForMessagingByIdsProvider(
+            OrganizersByIdQuery([organizer.id]),
           ).overrideWith((ref) => Stream.value([organizer])),
           eventDiscoveryRepositoryProvider.overrideWithValue(
             _FakeEventDiscoveryRepository(),

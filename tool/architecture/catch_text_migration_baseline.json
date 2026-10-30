@@ -9,7 +9,7 @@
     "lib/chats/presentation/widgets/chat_message_list.dart": {
       "badge": 1
     },
-    "lib/clubs/presentation/detail/widgets/club_photo_rail.dart": {
+    "lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart": {
       "monoLabelS": 2
     },
     "lib/platform/media/ordered_photo_picker.dart": {
@@ -51,7 +51,7 @@
     "lib/explore/presentation/widgets/featured_event_poster.dart": {
       "monoLabel": 1
     },
-    "lib/hosts/presentation/host_operations/host_club_media_rail.dart": {
+    "lib/hosts/presentation/host_operations/host_organizer_media_rail.dart": {
       "monoLabel": 1
     },
     "lib/hosts/presentation/widgets/host_event_manage_section.dart": {

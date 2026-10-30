@@ -36,7 +36,7 @@ void main() {
       expect(profile.bio, 'Runs intimate events.');
       expect(profile.status, HostProfileStatus.pending);
       expect(profile.verified, isTrue);
-      expect(profile.linkedClubIds, ['club-1', 'club-2']);
+      expect(profile.linkedOrganizerIds, ['club-1', 'club-2']);
       expect(profile.createdAt?.toUtc(), createdAt);
       expect(profile.updatedAt?.toUtc(), updatedAt);
     });

@@ -222,18 +222,18 @@ void main() {
           draft: buildDraft(id: 'd-2', clubId: 'club-2'),
         );
 
-        final club1Drafts = await repo.loadDrafts(
+        final organizer1Drafts = await repo.loadDrafts(
           clubId: 'club-1',
           userId: 'user-1',
         );
-        final club2Drafts = await repo.loadDrafts(
+        final organizer2Drafts = await repo.loadDrafts(
           clubId: 'club-2',
           userId: 'user-1',
         );
-        expect(club1Drafts.length, 1);
-        expect(club2Drafts.length, 1);
-        expect(club1Drafts.first.id, 'd-1');
-        expect(club2Drafts.first.id, 'd-2');
+        expect(organizer1Drafts.length, 1);
+        expect(organizer2Drafts.length, 1);
+        expect(organizer1Drafts.first.id, 'd-1');
+        expect(organizer2Drafts.first.id, 'd-2');
       });
 
       test('different userIds produce isolated lists', () async {

@@ -205,7 +205,7 @@ void main() {
     final externalEvent = ExternalEvent(
       id: 'bandra-mixer',
       canonicalHostId: 'host-bandra',
-      compatibilityClubId: 'club-bandra',
+      compatibilityOrganizerId: 'club-bandra',
       title: 'Bandra Singles Mixer',
       description: 'A reviewed external event.',
       startTime: startTime,

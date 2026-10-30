@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation.da
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
@@ -12,12 +12,12 @@ import 'package:flutter/material.dart';
 
 const widgetbookEventsViewerUid = 'widgetbook-event-viewer';
 
-const widgetbookEventsClubId = 'widgetbook-event-club';
+const widgetbookEventsOrganizerId = 'widgetbook-event-club';
 
 final widgetbookEventsNow = DateTime(2026, 6, 22, 9);
 
-final widgetbookEventsClub = Club(
-  id: widgetbookEventsClubId,
+final widgetbookEventsOrganizer = Organizer(
+  id: widgetbookEventsOrganizerId,
   name: 'Sunday Sea Face Crew',
   description:
       'A city running crew for easy starts, steady conversation, and a cafe finish.',
@@ -29,10 +29,10 @@ final widgetbookEventsClub = Club(
       'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&q=80',
   ownerUserId: 'host-mira',
   hostProfiles: const [
-    ClubHostProfile(
+    OrganizerHostProfile(
       uid: 'host-mira',
       displayName: 'Mira Shah',
-      role: ClubHostRole.owner,
+      role: OrganizerHostRole.owner,
     ),
   ],
   createdAt: DateTime(2025, 10, 4),
@@ -65,7 +65,7 @@ final widgetbookEventsViewer = UserProfile(
 final widgetbookEventsSignedUp = EventParticipation(
   id: '${widgetbookEvent.id}_$widgetbookEventsViewerUid',
   eventId: widgetbookEvent.id,
-  clubId: widgetbookEventsClubId,
+  clubId: widgetbookEventsOrganizerId,
   uid: widgetbookEventsViewerUid,
   status: EventParticipationStatus.signedUp,
   createdAt: widgetbookEventsNow.subtract(const Duration(days: 3)),
@@ -77,7 +77,7 @@ final widgetbookEventsSignedUp = EventParticipation(
 final widgetbookEventsReviews = [
   Review(
     id: 'widgetbook-event-review-1',
-    organizerId: widgetbookEventsClubId,
+    organizerId: widgetbookEventsOrganizerId,
     eventId: widgetbookEventsPastEvent.id,
     reviewerUserId: widgetbookEventsViewerUid,
     reviewerName: 'Neha',
@@ -87,7 +87,7 @@ final widgetbookEventsReviews = [
   ),
   Review(
     id: 'widgetbook-event-review-2',
-    organizerId: widgetbookEventsClubId,
+    organizerId: widgetbookEventsOrganizerId,
     eventId: widgetbookEventsPastEvent.id,
     reviewerUserId: 'runner-dev',
     reviewerName: 'Dev',
@@ -107,7 +107,7 @@ final widgetbookEventsReviews = [
   ),
   Review(
     id: 'widgetbook-event-review-3',
-    organizerId: widgetbookEventsClubId,
+    organizerId: widgetbookEventsOrganizerId,
     eventId: widgetbookEventsPastEvent.id,
     reviewerUserId: 'runner-ana',
     reviewerName: 'Ana',
@@ -117,7 +117,7 @@ final widgetbookEventsReviews = [
   ),
   Review(
     id: 'widgetbook-event-review-4',
-    organizerId: widgetbookEventsClubId,
+    organizerId: widgetbookEventsOrganizerId,
     eventId: widgetbookEventsPastEvent.id,
     reviewerUserId: 'runner-lee',
     reviewerName: 'Lee',
@@ -165,7 +165,7 @@ Event widgetbookEventDetailFixture({
   final start = startTime ?? DateTime(2026, 6, 24, 6, 30);
   return Event(
     id: id,
-    clubId: widgetbookEventsClubId,
+    clubId: widgetbookEventsOrganizerId,
     startTime: start,
     endTime: start.add(const Duration(hours: 1, minutes: 45)),
     meetingPoint: 'Carter Road Jetty',

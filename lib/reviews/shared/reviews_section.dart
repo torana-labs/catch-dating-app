@@ -18,8 +18,8 @@ enum ReviewsEmptyPresentation { hidden, inline, contained, standalone }
 /// Read-only club review aggregate.
 ///
 /// Reviews are event-scoped, so club pages must never expose review creation.
-class ClubReviewsSection extends StatelessWidget {
-  const ClubReviewsSection({
+class OrganizerReviewsSection extends StatelessWidget {
+  const OrganizerReviewsSection({
     super.key,
     required this.reviews,
     required this.currentUid,

@@ -26,7 +26,7 @@ Widget createEventStepHeaderCatalogStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: HostWizardStepHeader(
             title: 'Event basics',
-            subtitle: widgetbookClub.name,
+            subtitle: widgetbookOrganizer.name,
             currentStep: 0,
             totalSteps: 5,
             onClose: () {},

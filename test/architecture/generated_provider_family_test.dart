@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_companion_clock.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -179,15 +179,15 @@ void main() {
     final fixedNow = DateTime.utc(2026, 7, 16, 12);
     final container = ProviderContainer(
       overrides: [
-        clubNameLookupProvider(
-          ClubNameLookupQuery(const ['club-1']),
+        organizerNameLookupProvider(
+          OrganizerNameLookupQuery(const ['club-1']),
         ).overrideWithValue(
           const AsyncData<Map<String, String>>({'club-1': 'Stride Social'}),
         ),
         exploreRecommendedEventsProvider(
           ExploreRecommendationsQuery(
             userId: 'runner-1',
-            followedClubIds: const ['club-1'],
+            followedOrganizerIds: const ['club-1'],
           ),
         ).overrideWithValue(
           const AsyncData<List<ExploreEventRecommendationCandidate>>([]),
@@ -205,8 +205,8 @@ void main() {
     expect(
       container
           .read(
-            clubNameLookupProvider(
-              ClubNameLookupQuery(const ['club-1', 'club-1']),
+            organizerNameLookupProvider(
+              OrganizerNameLookupQuery(const ['club-1', 'club-1']),
             ),
           )
           .requireValue,
@@ -218,7 +218,7 @@ void main() {
             exploreRecommendedEventsProvider(
               ExploreRecommendationsQuery(
                 userId: 'runner-1',
-                followedClubIds: const ['club-1'],
+                followedOrganizerIds: const ['club-1'],
               ),
             ),
           )
