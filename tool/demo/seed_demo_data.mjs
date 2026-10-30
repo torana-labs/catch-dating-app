@@ -928,7 +928,7 @@ function buildSeed({
       {path: `users/${user.uid}`, data: user.userDoc},
       {path: `publicProfiles/${user.uid}`, data: user.publicProfileDoc},
     ]),
-    ...organizers.map((organizer) => ({path: `clubs/${organizer.id}`, data: organizer.doc})),
+    ...organizers.map((organizer) => ({path: `organizers/${organizer.id}`, data: organizer.doc})),
     ...memberships.map((membership) => ({path: `organizerMemberships/${membership.id}`, data: membership.doc})),
     ...events.map((event) => ({path: `events/${event.id}`, data: event.doc})),
     ...participations.map((participation) => ({path: `eventParticipations/${participation.id}`, data: participation.doc})),
@@ -1319,6 +1319,9 @@ function buildOrganizer({seedPrefix, seedMarker, city, organizerIndex, host}) {
       profileImageUrl: null,
       tags: ["social", organizerIndex % 2 === 0 ? "beginner-friendly" : "tempo", cityMeta.label.toLowerCase()],
       memberCount: 0,
+      followerCount: 0,
+      organizerType: "club",
+      organizerPhotos: [],
       rating: 0,
       reviewCount: 0,
       nextEventAt: null,
@@ -2724,7 +2727,7 @@ function isPublicProfilePath(docPath) {
 }
 
 function isOrganizerPath(docPath) {
-  return /^clubs\/[^/]+$/.test(docPath);
+  return /^organizers\/[^/]+$/.test(docPath);
 }
 
 function isOrganizerMembershipPath(docPath) {
@@ -3030,7 +3033,7 @@ async function filterAppendDocsForExistingTargets(firestore, docs) {
 
   const [existingEventIds, existingOrganizerIds] = await Promise.all([
     existingDocumentIds(firestore, "events", eventIds),
-    existingDocumentIds(firestore, "clubs", organizerIds),
+    existingDocumentIds(firestore, "organizers", organizerIds),
   ]);
 
   const skippedPaths = [];
@@ -3259,7 +3262,7 @@ function buildAppendAggregateUpdates(docs) {
   for (const doc of docs) {
     if (doc.path.startsWith("organizerMemberships/") &&
         doc.data.status === "active") {
-      const organizerUpdate = mapEntry(organizerUpdates, `clubs/${doc.data.organizerId}`);
+      const organizerUpdate = mapEntry(organizerUpdates, `organizers/${doc.data.organizerId}`);
       organizerUpdate.memberCount = (organizerUpdate.memberCount ?? 0) + 1;
     }
 

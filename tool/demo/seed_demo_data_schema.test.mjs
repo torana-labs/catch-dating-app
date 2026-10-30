@@ -15,7 +15,7 @@ test("seed document validation accepts valid profile and event docs", () => {
     docs: [
       {path: "users/runner-1", data: validUserProfileDoc()},
       {path: "publicProfiles/runner-1", data: validPublicProfileDoc()},
-      {path: "clubs/club-1", data: validOrganizerDoc()},
+      {path: "organizers/club-1", data: validOrganizerDoc()},
       {
         path: "organizerMemberships/club-1_runner-1",
         data: validOrganizerMembershipDoc(),
@@ -490,6 +490,9 @@ function validPublicProfileDoc() {
 
 function validOrganizerDoc() {
   return {
+    organizerType: "club",
+    organizerPhotos: [],
+    followerCount: 0,
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
