@@ -5,10 +5,8 @@ import {APPROVAL_ENVIRONMENT, planDecision, selectDispatchedRun, websiteChangedI
 
 const mainSha = "a".repeat(40);
 const liveSha = "b".repeat(40);
-const reviewers = [{type: "required_reviewers", reviewers: [{type: "User", reviewer: {login: "owner"}}]}];
 const base = {event: "workflow_run", eventSha: mainSha, eventConclusion: "success", mainSha,
-  validation: {validated: true, captureBinding: {sourceSha: mainSha}}, lineage: {liveSha, alreadyLive: false},
-  approvalRules: reviewers};
+  validation: {validated: true, captureBinding: {sourceSha: mainSha}}, lineage: {liveSha, alreadyLive: false}};
 
 test("the train releases main's validated head when it is newer than live", () => {
   assert.deepEqual(planDecision(base), {release: true, validate: false, sourceSha: mainSha, liveSha, reason: "release"});
@@ -84,12 +82,6 @@ test("the website changed when CI's planner would run Marketing validation, or c
   for (const unknown of [plan(["docs"], {full: true}), plan(["docs"], {complete: false}), plan(["docs"], {full: undefined}),
     {full: false, complete: true}, null]) {
     assert.equal(websiteChangedInPlan(unknown), true, JSON.stringify(unknown));
-  }
-});
-
-test("the train refuses to run when production approval would not wait for anyone", () => {
-  for (const approvalRules of [[], [{type: "wait_timer", wait_timer: 5}], [{type: "required_reviewers", reviewers: []}]]) {
-    assert.throws(() => planDecision({...base, approvalRules}), /must require a reviewer/u);
   }
 });
 

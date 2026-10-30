@@ -69,7 +69,7 @@ before removing resources or claiming savings from the invoice.
 
 The Deploy backend workflow installs its pinned source parser without lifecycle
 scripts and verifies affected targets before cloud authentication. Its deploy
-job builds Functions, replans after approval, authenticates, installs the cloud
+job builds Functions, replans just before deploying, authenticates, installs the cloud
 CLIs and materializes parameters. The target-aware metadata preflight then
 runs before any backend mutation.
 Hosting and explicit Remote Config/Extensions operations have separate owners:
@@ -544,7 +544,7 @@ The current workflows are:
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
 | `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and parallel per-role iOS simulator build gates. Cheap app-structure ratchets run before any expensive compile. |
-| `.github/workflows/backend-deploy.yml` | The one backend path: dev on every backend-relevant merge, prod after one `prod` approval, staging monthly. See Deploy Backend. |
+| `.github/workflows/backend-deploy.yml` | The one backend path: dev on every backend-relevant merge, prod automatically after dev succeeds, staging monthly. See Deploy Backend. |
 | `.github/workflows/_backend-deploy.yml` | Reusable per-environment job: credential-free plan from the `deployed/<env>` tag, readiness check, index `READY` wait, `deploy_firebase_targets.sh`, rules drift check, then the tag moves forward. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/_web-hosting-build.yml` | Builds one production Admin or Marketing Vite bundle or standalone Host Flutter web bundle, packages one lifecycle-hook-free Hosting target, and publishes workflow/run/source-bound bytes with an exact file inventory. |
@@ -719,7 +719,7 @@ only mobile signing, Maps, App Store Connect, and Play-publisher credentials, an
 the same store credentials for `Mobile Production` and requires a reviewer's
 approval; see [Mobile releases](#mobile-releases). `prod-backend` served only the
 retired Delivery workflow and is now unused; `Deploy backend` deploys prod
-through reviewer-protected `prod`. The `prod-backend` OIDC provider binds the immutable repository and owner IDs, ref,
+through `prod`. The `prod-backend` OIDC provider binds the immutable repository and owner IDs, ref,
 environment, caller workflow, reusable workflow, and automatic event type; both
 workflow paths are compared with the token's own repository name, never a
 hardcoded one. It reuses the existing deployment identity; it does not add
@@ -731,19 +731,23 @@ repository `1170579691`. Every provider and grant uses immutable IDs, so renamin
 or transferring the repository or its owner cannot break deployment sign-in
 (CAT-210).
 
-Keep required reviewers on shared `prod` for production data operations,
-non-Functions stages, snapshots, recovery, and older source without review proof.
-Functions pull requests complete Required CI after the selected automated
-validation; CI no longer creates or requires the
-credential-free `backend-review` job. That environment no longer has required
-reviewers; its identity, `refs/pull/*/merge` branch policy and prohibition on
-administrator bypass remain. Successful automated CI alone is never human
-approval. Non-no-op Functions source now retains protected `prod` review after
-dev delivery, including older source whose historical approvals cannot satisfy
-the unchanged helper's current reviewer-protection check.
+Shared `prod` has no required reviewers. The owner removed them on 30 Oct 2026,
+before launch, while all production data is synthetic: the approval only
+delayed deploys. `Deploy backend` prod runs and `Website Release` promotions
+now proceed automatically, as do manual dispatches that use `prod`. CI, the
+merge queue, dev deploying first and the readiness preflight remain the
+checks. To restore a human gate (for example at launch), add a required
+reviewer to `prod` in the repository's environment settings; both workflows
+then wait for approval again with no code change. `Mobile Production` keeps
+its own reviewer on `prod-mobile-release`.
 
-Every `Deploy backend` prod run waits for a `prod` reviewer. Dev and prod run
-independently, one deploy per environment at a time.
+Functions pull requests complete Required CI after the selected automated
+validation; CI no longer creates or requires the credential-free
+`backend-review` job. That environment no longer has required reviewers; its
+identity, `refs/pull/*/merge` branch policy and prohibition on administrator
+bypass remain.
+
+Dev and prod run independently, one deploy per environment at a time.
 
 Reviewer-protected `prod` may still hold duplicate mobile secrets from the
 GitHub iOS cutover. No mobile workflow reads them; the owner may delete them.
@@ -1326,9 +1330,8 @@ When it runs:
 
 - **Dev:** every merge to `main` that touches backend inputs deploys to dev
   automatically.
-- **Prod:** deploys the same commit after a `prod` environment reviewer
-  approves, but only when prod has something to receive. A merge with nothing
-  to deploy never asks for approval.
+- **Prod:** deploys the same commit automatically once dev succeeds, but only
+  when prod has something to receive.
 - **Staging:** refreshes on the first of each month at 02:17 UTC. Like a push,
   a scheduled run skips an environment without a deployed tag; only a manual
   dispatch may bootstrap it.
@@ -1723,7 +1726,7 @@ the exact production bytes, and `_web-hosting-promote.yml` downloads that
 artifact by id and digest without rebuilding it. Keep only Hosting/OIDC
 variables in that environment; App Store
 Connect and mobile signing secrets are owned by `prod-mobile`; backend
-production deploys through reviewer-protected `prod`.
+production deploys through `prod`.
 Temporary mobile
 rollback duplicates in `prod` follow the cutover cleanup above.
 
@@ -1812,8 +1815,9 @@ decides; it changes production traffic. Run it from a shell signed in to
 3. Verify: `curl -sI https://catchdates.com/` has no `x-catch-release` header,
    the page source has no `/_next/static/`, and a manual run of `Website
    Production Observability` passes.
-4. Hold the train. Reject `Website Release` approvals while rolled back,
-   because an approved promotion moves live back to Next.
+4. Hold the train. Add a required reviewer to the `prod` environment and
+   reject `Website Release` approvals while rolled back, because a promotion
+   moves live back to Next.
 5. Refresh the static build. The `Marketing Website` promoter only skips
    while Next owns live, so the next website-relevant merge deploys a current
    Vite build. It needs a green package build; check the latest run first.
@@ -1821,8 +1825,8 @@ decides; it changes production traffic. Run it from a shell signed in to
    `gcloud run services update catch-website-next --project catch-dating-app-64e51 --region asia-south1 --min default`.
    The next promotion sets it back to one.
 
-To return to Next, approve the next `Website Release` train once the fix is on
-main. To roll back to the previous Next release instead, clone the version in
+To return to Next, remove that reviewer (or approve the next `Website Release`
+train) once the fix is on main. To roll back to the previous Next release instead, clone the version in
 that promotion run's `rollback.json` artifact the same way (step 2). The warm
 instance stays with the newest Cloud Run revision, not the older pinned one.
 
