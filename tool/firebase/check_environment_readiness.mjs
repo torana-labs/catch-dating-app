@@ -1043,6 +1043,16 @@ function assessSecretBindings({requirement, targets, projectId, projectNumber,
       continue;
     }
     const binding = phase === "candidate" ? proposed : observed;
+    // Before its first deploy a Function has no live binding to check. An
+    // optional reference runs without a secret, so the deploy that creates
+    // the consumer may go ahead; the post-deploy check (with a candidate)
+    // still requires the Function.
+    if (phase === "deployed" && !candidate && observed.reason === "function-binding-missing" &&
+        requirement.binding?.optional === true) {
+      results.push(readinessResult({...base, metadata: {consumer, phase, source: "cloud-functions-v2"},
+        status: "inactive", reason: "optional-consumer-not-deployed"}));
+      continue;
+    }
     if (phase === "deployed" && !["ready", "inactive"].includes(observed.status)) {
       results.push(readinessResult({...base, ...observed}));
       continue;
