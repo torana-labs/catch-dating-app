@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.92.1
-updated: 2026-10-29
+version: 1.93.0
+updated: 2026-10-30
 owner: app_architecture
 status: active
 ---
@@ -3645,11 +3645,9 @@ project and app registrations, capability policy, deep-link ownership,
 role-scoped force-update prefix, store product, and routine release owner.
 
 Unresolved store-account and tester/device prerequisites are not target
-identity. `tool/app_target_external_gates.json` owns only their stable Issue,
-status, scope, and closure criteria. GitHub Issues and
-`docs/release_operations.md` own live run and artifact evidence. The Harness
-routes the external-gate contract through validation only; changing it cannot
-authorize signed packages, while changing `tool/app_targets.json` still can.
+identity. GitHub Issues own them, and `docs/release_operations.md` owns live
+run and artifact evidence. Changing `tool/app_targets.json` selects every
+installable target's builds in `main` validation.
 
 Target identity must not be reconstructed independently in shell scripts,
 Gradle, Xcode generators, Firebase activation scripts, or CI workflows. Those
@@ -3683,24 +3681,24 @@ Current native policy:
 - Force-update minimum builds and store URLs are role-prefixed. Consumer may
   temporarily fall back to the legacy unprefixed remote values during rollout;
   Host never does.
-- GitHub Actions is the routine mobile release owner for both roles. The
-  approval-free merge-driven producer fans out only for CI-authorized exact
-  role/platform targets and publishes verified iOS/Android packages plus a
-  post-comparison authority without touching either store. A separate exact
-  promoter requires an explicit manual dispatch and recorded release reason;
-  it uploads one already-signed package and cannot rebuild or resign it. Their
-  credentials live in the main-only `prod-mobile` environment, not the shared
+- GitHub Actions is the routine mobile release owner for both roles, through
+  fastlane (`fastlane/Fastfile`). `Mobile Beta` resolves each target from the
+  manifest, builds it with `tool/flutter_with_env.sh`, runs the identity and
+  package verifiers, and uploads it to TestFlight internal testing or the Play
+  internal track in one job. `Mobile Production` promotes a build testers
+  already have and cannot rebuild or resign it. Beta credentials live in the
+  main-only `prod-mobile` environment and production credentials in the
+  reviewer-gated `prod-mobile-release` environment, not the shared
   backend/data `prod` environment. Each ephemeral iOS runner imports the same
-  dedicated, fingerprint-checked CI Apple Development identity before invoking
-  automatic signing; Xcode still owns profile updates and distribution
-  re-signing at export. A runner must never create and then abandon a new
-  development certificate. Xcode Cloud has no checked build scripts; its
-  disabled workflows are App Store Connect history only. Play upload remains gated by
-  `APP-TARGET-ANDROID-PLAY-001` until console enrollment and publisher access
-  are proven.
+  dedicated CI Apple Development identity before invoking automatic signing;
+  Xcode still owns profile updates and distribution re-signing at export. A
+  runner must never create and then abandon a new development certificate.
+  Xcode Cloud has no checked build scripts; its disabled workflows are App
+  Store Connect history only. Android builds upload only for apps with a Play
+  record (`PLAY_ROLES` in `mobile-beta.yml`).
 
 Run
-`node tool/run.mjs check ci:mobile-release-package ci:mobile-release-workflow ci:mobile-promotion-core ci:mobile-promotion-workflow platform:app-targets platform:app-package-graphs`
+`node tool/run.mjs check platform:app-targets platform:app-package-graphs platform:mobile-package-policy`
 whenever app identity, package roots, native configuration, Firebase
 registration, links, force-update policy, or release ownership changes.
 

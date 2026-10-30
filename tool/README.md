@@ -558,13 +558,9 @@ composition entrypoint (`main_<role>_<environment>.dart`); aggregate Android
 build tasks and caller-supplied wrapper arguments that cannot resolve exactly
 one target fail before compilation.
 
-`tool/app_target_external_gates.json` separately owns the two unresolved
-TestFlight and Play owner prerequisites. It contains only stable issue links,
-status, scope, and closure criteria—never workflow runs, artifact receipts, or
-promotion history. Harness classifies this operational status under the Tools
-lane, so updating external proof cannot authorize signed packages. Real target
-identity or release-policy changes in `tool/app_targets.json` remain high-risk
-and still authorize the exact affected mobile release targets.
+Real target identity or release-policy changes in `tool/app_targets.json`
+remain high-risk: in `main` mode they still select the exact affected
+role/platform builds.
 
 ```sh
 node tool/platform/resolve_app_target.mjs --role host --environment prod
@@ -575,60 +571,30 @@ node tool/run.mjs check platform:verify-ios-release-identity
 The release-identity verifier accepts an `.xcarchive`, extracted `.app`, or
 signed `.ipa` and checks compiled target markers, version/build, embedded
 Firebase identity and OAuth URL scheme, plus role-specific signed entitlements.
-The exact producer verifies the IPA container and deep code signature before it
-persists byte-bound JSON receipts; legacy Xcode Cloud receipts remain historical
-cutover evidence only.
+The fastlane iOS beta lane runs it on the exported IPA, including the deep code
+signature, before anything uploads.
 
-`Mobile Internal Release` is the CI-authorized signed-package producer. Its iOS
-and Android jobs consume exact role/platform targets from the successful `main`
-CI impact plan, publish verified IPA/AAB packages for 90 days, and emit a strict
-post-comparison build authority. It never mutates TestFlight or Play.
-
-`Mobile Internal Exact Promotion` is the separate manual store authority. It
-accepts one current producer attempt and exact build-authority artifact, derives
-the selected package id/digest from that authority, re-extracts and reverifies
-the already-signed bytes immediately before credentials, then uploads to
-TestFlight or the Play `qa` track without Flutter, Gradle, Xcode archive/export,
-or signing work:
+Mobile releases run through fastlane (`fastlane/Fastfile`). `Mobile Beta`
+builds each app with `tool/flutter_with_env.sh`, runs the identity verifiers,
+`validate_google_maps_config.mjs` and `platform:mobile-package-policy`, then
+uploads to TestFlight internal testing or the Play internal track in the same
+job. `Mobile Production` promotes a build testers already have, behind a
+reviewer-gated environment, without rebuilding. `platform:app-targets` checks
+both workflows and the Fastfile lanes against `releasePolicy` in
+`tool/app_targets.json`. The operator guide is
+[Mobile releases](../docs/release_operations.md#mobile-releases).
 
 ```sh
 node tool/run.mjs check \
-  ci:mobile-release-package \
-  ci:mobile-release-workflow \
-  ci:mobile-promotion-core \
-  ci:mobile-promotion-workflow \
   platform:app-targets \
-  platform:mobile-build-number \
+  platform:mobile-package-policy \
   platform:verify-ios-release-identity \
-  platform:verify-app-store-build \
-  platform:verify-android-release-identity \
-  platform:upload-google-play-bundle
+  platform:verify-android-release-identity
 ```
-
-Promotion persists one immutable, exact-package claim for 90 days only after
-store verification and credential cleanup. Reuse requires the same successful
-promotion attempt, source and producer attempts, authority/package ids and
-digests, signed-byte SHA-256, and store result. App Store Connect
-version/build identity alone cannot prove IPA bytes: if Apple accepted an
-upload but the exact claim was not saved, exact automation fails closed and a
-new build is required. Play may reconcile an ambiguous retry only when the
-completed `qa` readback proves the exact version code and remote SHA-256.
 
 The Android package gate uses a checksum-pinned bundletool jar and compares the compiled
 target, role, Firebase, Maps, debug, package, version, and upload-certificate
-identity. `platform:verify-app-store-build` prevents a non-monotonic Apple build.
-Historical `platform:verify-ios-processing-receipts` evidence still binds the
-completed Xcode Cloud retirement, but current processing evidence belongs to an
-exact promotion run rather than package production.
-`platform:upload-google-play-bundle` refuses the production track and requires
-explicit `--apply --allow-prod`. `platform:xcode-cloud-workflow-state` is a
-guarded cutover operation, not a routine release command.
-
-Every Android exact promotion runs the separately authenticated, apply-guarded
-`platform:probe-google-play-access` fleet gate before the selected AAB uploader.
-It requires both Catch app records, both `qa` tracks, effective app-scoped edit
-access, and at least one Google Group tester per track; it creates and deletes
-an uncommitted edit for each app and never uploads or commits a release.
+identity.
 
 Do not add a bundle id, Firebase app id, native flavor, or store product only to
 a workflow or platform file. Add it to the target contract and make the

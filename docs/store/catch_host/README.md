@@ -13,8 +13,9 @@ submission is tracked in Linear (`CAT-39` "Prepare Catch Host release", and
 | Google Play, closed test | `1.0.1 (457901)`, Alpha track, India | `171c1cb07` | Submitted 2026-10-21 with 14 publishing changes. Production access needs at least 12 opted-in testers for 14 continuous days. |
 | Google Play, internal | `1.0.1 (452901)` | earlier 2026-10-20 upload | Available to internal testers since 2026-10-20; not reviewed |
 
-Both store builds come from the same mobile producer run (`39453202046`,
-attempt 2). The iOS build was promoted by run `39458936493`.
+Both store builds come from the same run (`39453202046`, attempt 2) of the
+retired Mobile Internal Release producer. The iOS build was promoted by run
+`39458936493`.
 
 ## Records in this folder
 
@@ -52,7 +53,7 @@ resolves the Host target to this build:
 | Entrypoint | `apps/host/lib/main_prod.dart` |
 | Xcode scheme / configuration | `host-prod` / `Release-host-prod` |
 | Marketing version | `1.0.1` (`apps/host/pubspec.yaml`) |
-| Producer | `.github/workflows/mobile-internal-release.yml` |
+| Builds and uploads | `.github/workflows/mobile-beta.yml` (`fastlane/Fastfile`); production through `.github/workflows/mobile-production.yml` |
 
 The legacy root `ios/` project is not the Host release source.
 

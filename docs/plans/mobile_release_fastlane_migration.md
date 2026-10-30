@@ -1,7 +1,7 @@
 ---
 doc_id: mobile_release_fastlane_migration
-version: 1.0.1
-updated: 2026-10-29
+version: 1.1.0
+updated: 2026-10-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -136,11 +136,30 @@ retries in place of hand-written loops (A-72 to A-74).
 
 ## Cutover
 
-1. Merge the fastlane path. The old pipeline keeps running until step 3; both
-   can upload safely because the new numbers start above the store maximum.
-2. Run `Mobile Beta` by hand for each app and platform and confirm testers
-   receive the builds.
-3. Delete the old pipeline and its coupling (below).
+1. Done. Merge the fastlane path. The old pipeline kept running until step 3;
+   both could upload safely because the new numbers start above the store
+   maximum.
+2. Done. `Mobile Beta` run `40975670519` uploaded both iOS apps to TestFlight
+   on 2026-10-30, run `40943509998` uploaded Host Android to Play internal
+   (version code 457902) on 2026-10-29, and run `40959763441` built the signed
+   Consumer Android bundle.
+3. Done on 2026-10-30. The old pipeline and its coupling are deleted (below).
+   What was kept, and the deviations from the delete list:
+   - Kept: `verify_ios_release_identity.mjs`,
+     `verify_android_release_bundle.mjs`, `check_mobile_package.mjs`,
+     `validate_google_maps_config.mjs`, `resolve_app_target.mjs`,
+     `delivery_core.mjs` and `ExportOptions.prod.plist`, which the fastlane
+     lanes or web hosting still use, and `release.owner`, which the identity
+     verifiers record.
+   - `main_ci_baseline.mjs` was deleted too: main now plans from
+     `github.event.before` (C-14).
+   - Main-mode `releaseTargets` became `buildTargets`, so main-fallback app
+     builds keep their role narrowing (C-47). Main `ciTargets` were not
+     aligned with `merge_group` (C-49 stays open).
+   - `tool/app_target_external_gates.json` was retired with its check
+     (C-36). Issues `#218` and `#199` stay open for the owner.
+   - `impact-plan.json` still binds `sourceCiRunId` and `sourceCiRunAttempt`
+     (C-12, optional cleanup).
 
 ### Delete list for step 3
 
