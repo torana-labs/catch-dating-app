@@ -1,12 +1,7 @@
 import {AsyncLocalStorage} from "node:async_hooks";
 import {subscribe} from "node:diagnostics_channel";
 import type {ServerResponse} from "node:http";
-import {
-  PUBLIC_PAGE_CACHE_CONTROL,
-  PUBLIC_PAGE_CACHE_MARK,
-  PUBLIC_PAGE_UNAVAILABLE_HEADERS,
-  PUBLIC_PAGE_UNAVAILABLE_MARK,
-} from "../app/next/publicPageCache";
+import {PUBLIC_PAGE_CACHE_CONTROL, PUBLIC_PAGE_CACHE_MARK, PUBLIC_PAGE_UNAVAILABLE_MARK} from "../app/next/publicPageCache";
 
 type Headers = Pick<ServerResponse, "hasHeader" | "removeHeader" | "setHeader">;
 
@@ -22,7 +17,9 @@ export function promotePublicPageCache(response: Headers, status: number): numbe
   response.removeHeader(PUBLIC_PAGE_CACHE_MARK);
   if (status !== 200) return status;
   if (unavailable) {
-    for (const [name, value] of Object.entries(PUBLIC_PAGE_UNAVAILABLE_HEADERS)) response.setHeader(name, value);
+    // The same answer as the proxy's failed preflight.
+    response.setHeader("Cache-Control", "private, no-store");
+    response.setHeader("Retry-After", "30");
     return 503;
   }
   if (cached) response.setHeader("Cache-Control", PUBLIC_PAGE_CACHE_CONTROL);

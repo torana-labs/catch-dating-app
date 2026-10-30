@@ -16,12 +16,11 @@ export const PUBLIC_PAGE_CACHE_CONTROL = `public, s-maxage=${PUBLIC_PAGE_CACHE_S
 export const PUBLIC_PAGE_CACHE_MARK = "x-catch-public-page";
 /**
  * A page that rendered its unavailable state because its data could not be
- * read. The server turns its 200 into a 503 with PUBLIC_PAGE_UNAVAILABLE_HEADERS,
- * so the visitor still sees the page's own message while no cache keeps it and
- * no monitor reads it as healthy. The mark never leaves either.
+ * read. The server turns its 200 into an uncached 503, so the visitor still
+ * sees the page's own message while no cache keeps it and no monitor reads it
+ * as healthy. This mark never leaves either.
  */
 export const PUBLIC_PAGE_UNAVAILABLE_MARK = "x-catch-public-page-unavailable";
-export const PUBLIC_PAGE_UNAVAILABLE_HEADERS = {"Cache-Control": "private, no-store", "Retry-After": "30"} as const;
 
 // Organiser, event and city-aware discovery pages render the same HTML for
 // every viewer. Claim, booking, follow, signed-in and private-shell routes stay
