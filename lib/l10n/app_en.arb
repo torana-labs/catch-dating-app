@@ -32219,7 +32219,7 @@
   "@hostMembershipsPayoutNotReady": {"description": "Payout account not ready.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
   "hostMembershipsRazorpayTitle": "Razorpay account",
   "@hostMembershipsRazorpayTitle": {"description": "Readiness row for the organizer's own connected Razorpay account, which collects membership payments.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
-  "hostMembershipsUnavailableNotOffered": "Catch hasn’t turned on memberships for your club yet.",
+  "hostMembershipsUnavailableNotOffered": "Catch hasn’t turned on memberships for you yet.",
   "@hostMembershipsUnavailableNotOffered": {"description": "Memberships are not offered to this organizer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
   "hostMembershipsUnavailableConnectRazorpay": "Connect your Razorpay account to sell memberships. Members pay you directly.",
   "@hostMembershipsUnavailableConnectRazorpay": {"description": "The organizer must connect their own Razorpay account.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.memberships"},
