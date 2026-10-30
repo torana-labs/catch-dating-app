@@ -2,7 +2,8 @@ name: Deploy backend
 
 # The one path from main to the Firebase backend (indexes, Functions, Firestore
 # and Storage rules). Dev deploys on every backend-relevant merge; prod then
-# deploys the same commit once a prod reviewer approves, and only when the
+# deploys the same commit automatically once dev succeeds (the prod
+# environment has no required reviewer since 30 Oct 2026), and only when the
 # commit changes something prod has not received. Staging refreshes on the
 # first of each month. Run it manually for prod, dev or staging, optionally as
 # a full deploy. Operator guide: docs/release_operations.md, "Deploy backend".

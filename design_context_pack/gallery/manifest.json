@@ -2203,7 +2203,7 @@
     {
       "id": "host_clubs_signed_out",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2220,7 +2220,7 @@
     {
       "id": "host_clubs_loading",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2237,7 +2237,7 @@
     {
       "id": "host_clubs_error",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2254,7 +2254,7 @@
     {
       "id": "host_clubs_offline",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2271,7 +2271,7 @@
     {
       "id": "host_clubs_empty",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2288,7 +2288,7 @@
     {
       "id": "host_clubs_cohost_edit",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2305,7 +2305,7 @@
     {
       "id": "host_clubs_inline_edit_pending",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2322,7 +2322,7 @@
     {
       "id": "host_clubs_inline_edit_error",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2339,7 +2339,7 @@
     {
       "id": "host_clubs_inline_edit_offline",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2356,7 +2356,7 @@
     {
       "id": "host_clubs_insights_report",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2373,7 +2373,7 @@
     {
       "id": "host_clubs_insights_loading",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2390,7 +2390,7 @@
     {
       "id": "host_clubs_insights_error",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2407,7 +2407,7 @@
     {
       "id": "host_clubs_insights_offline",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2424,7 +2424,7 @@
     {
       "id": "host_clubs_preview_tab",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2441,7 +2441,7 @@
     {
       "id": "host_clubs_payout_loading",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2458,7 +2458,7 @@
     {
       "id": "host_clubs_payout_ready",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2475,7 +2475,7 @@
     {
       "id": "host_clubs_payout_restricted",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2492,7 +2492,7 @@
     {
       "id": "host_clubs_payout_error",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2509,7 +2509,7 @@
     {
       "id": "host_clubs_payout_offline",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2526,7 +2526,7 @@
     {
       "id": "host_clubs_payout_setup_pending",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2543,7 +2543,7 @@
     {
       "id": "host_clubs_payout_setup_error",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2560,7 +2560,7 @@
     {
       "id": "host_clubs_payout_setup_offline",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2577,7 +2577,7 @@
     {
       "id": "host_clubs_payout_refresh_pending",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2594,7 +2594,7 @@
     {
       "id": "host_clubs_payout_refresh_error",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2611,7 +2611,7 @@
     {
       "id": "host_clubs_payout_refresh_offline",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2628,7 +2628,7 @@
     {
       "id": "host_clubs_team_pending",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2645,7 +2645,7 @@
     {
       "id": "host_clubs_team_error",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2662,7 +2662,7 @@
     {
       "id": "host_clubs_team_offline",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -2679,7 +2679,7 @@
     {
       "id": "host_clubs_text_scale_2",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2696,7 +2696,7 @@
     {
       "id": "host_clubs_reduced_motion",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2713,7 +2713,7 @@
     {
       "id": "host_clubs_light_dark",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizersScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2730,7 +2730,7 @@
     {
       "id": "host_team_active_profile",
       "routes": [
-        "hostClubTeamScreen"
+        "hostOrganizerTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2747,7 +2747,7 @@
     {
       "id": "host_team_text_scale_2",
       "routes": [
-        "hostClubTeamScreen"
+        "hostOrganizerTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2764,7 +2764,7 @@
     {
       "id": "host_team_reduced_motion",
       "routes": [
-        "hostClubTeamScreen"
+        "hostOrganizerTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2781,7 +2781,7 @@
     {
       "id": "host_team_fallback_profile",
       "routes": [
-        "hostClubTeamScreen"
+        "hostOrganizerTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2798,7 +2798,7 @@
     {
       "id": "host_team_clubs_loading",
       "routes": [
-        "hostClubTeamScreen"
+        "hostOrganizerTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2815,7 +2815,7 @@
     {
       "id": "host_team_clubs_error",
       "routes": [
-        "hostClubTeamScreen"
+        "hostOrganizerTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2832,7 +2832,7 @@
     {
       "id": "host_team_clubs_offline",
       "routes": [
-        "hostClubTeamScreen"
+        "hostOrganizerTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2849,7 +2849,7 @@
     {
       "id": "host_team_inline_profile_edit",
       "routes": [
-        "hostClubTeamScreen"
+        "hostOrganizerTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2866,7 +2866,7 @@
     {
       "id": "host_team_save_profile_pending",
       "routes": [
-        "hostClubTeamScreen"
+        "hostOrganizerTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2883,7 +2883,7 @@
     {
       "id": "host_team_save_profile_error",
       "routes": [
-        "hostClubTeamScreen"
+        "hostOrganizerTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2900,7 +2900,7 @@
     {
       "id": "host_team_save_profile_offline",
       "routes": [
-        "hostClubTeamScreen"
+        "hostOrganizerTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2917,7 +2917,7 @@
     {
       "id": "host_team_sign_out_error",
       "routes": [
-        "hostClubTeamScreen"
+        "hostOrganizerTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2934,7 +2934,7 @@
     {
       "id": "host_team_sign_out_offline",
       "routes": [
-        "hostClubTeamScreen"
+        "hostOrganizerTeamScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2951,7 +2951,7 @@
     {
       "id": "club_detail_member",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2968,7 +2968,7 @@
     {
       "id": "club_detail_visitor",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2985,7 +2985,7 @@
     {
       "id": "club_detail_guest",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3002,7 +3002,7 @@
     {
       "id": "club_detail_host_public",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3019,7 +3019,7 @@
     {
       "id": "club_detail_loading",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3036,7 +3036,7 @@
     {
       "id": "club_detail_initial_loading",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3053,7 +3053,7 @@
     {
       "id": "club_detail_empty_schedule",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3070,7 +3070,7 @@
     {
       "id": "host_club_detail_public",
       "routes": [
-        "hostClubDetailScreen"
+        "hostOrganizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3087,7 +3087,7 @@
     {
       "id": "host_club_detail_initial_loading",
       "routes": [
-        "hostClubDetailScreen"
+        "hostOrganizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3104,7 +3104,7 @@
     {
       "id": "host_club_detail_loading",
       "routes": [
-        "hostClubDetailScreen"
+        "hostOrganizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3121,7 +3121,7 @@
     {
       "id": "host_club_detail_error",
       "routes": [
-        "hostClubDetailScreen"
+        "hostOrganizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3138,7 +3138,7 @@
     {
       "id": "host_club_detail_offline",
       "routes": [
-        "hostClubDetailScreen"
+        "hostOrganizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3155,7 +3155,7 @@
     {
       "id": "host_club_detail_not_found",
       "routes": [
-        "hostClubDetailScreen"
+        "hostOrganizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3172,7 +3172,7 @@
     {
       "id": "host_club_detail_signed_out",
       "routes": [
-        "hostClubDetailScreen"
+        "hostOrganizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3189,7 +3189,7 @@
     {
       "id": "host_club_detail_non_host_preview",
       "routes": [
-        "hostClubDetailScreen"
+        "hostOrganizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3206,7 +3206,7 @@
     {
       "id": "host_club_detail_empty_schedule",
       "routes": [
-        "hostClubDetailScreen"
+        "hostOrganizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3223,7 +3223,7 @@
     {
       "id": "host_club_detail_text_scale_2",
       "routes": [
-        "hostClubDetailScreen"
+        "hostOrganizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3240,7 +3240,7 @@
     {
       "id": "host_club_detail_reduced_motion",
       "routes": [
-        "hostClubDetailScreen"
+        "hostOrganizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3257,7 +3257,7 @@
     {
       "id": "host_club_detail_light_dark",
       "routes": [
-        "hostClubDetailScreen"
+        "hostOrganizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3274,7 +3274,7 @@
     {
       "id": "club_detail_missing",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3291,7 +3291,7 @@
     {
       "id": "club_detail_error",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3308,7 +3308,7 @@
     {
       "id": "club_detail_join_pending",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3325,7 +3325,7 @@
     {
       "id": "club_detail_mutation_error",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3342,7 +3342,7 @@
     {
       "id": "club_detail_offline",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3359,7 +3359,7 @@
     {
       "id": "club_detail_text_scale_2",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -3376,7 +3376,7 @@
     {
       "id": "club_detail_reduced_motion",
       "routes": [
-        "clubDetailScreen"
+        "organizerDetailScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -4484,7 +4484,7 @@
     {
       "id": "create_club_basics",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4501,7 +4501,7 @@
     {
       "id": "create_club_basics_validation",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4518,7 +4518,7 @@
     {
       "id": "create_club_picked_media",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4535,7 +4535,7 @@
     {
       "id": "host_media_gallery_manager",
       "routes": [
-        "hostCreateClubScreen",
+        "hostCreateOrganizerScreen",
         "hostCreateEventScreen"
       ],
       "device": "iphone-17-pro",
@@ -4553,7 +4553,7 @@
     {
       "id": "create_club_draft_restored",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4570,7 +4570,7 @@
     {
       "id": "create_club_details",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4587,7 +4587,7 @@
     {
       "id": "create_club_host_defaults",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4604,7 +4604,7 @@
     {
       "id": "create_club_event_success_defaults",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4621,7 +4621,7 @@
     {
       "id": "create_club_save_draft_pending",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4638,7 +4638,7 @@
     {
       "id": "create_club_save_draft_error",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4655,7 +4655,7 @@
     {
       "id": "create_club_submit_pending",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4672,7 +4672,7 @@
     {
       "id": "create_club_submit_error",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4689,7 +4689,7 @@
     {
       "id": "create_club_submit_offline",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4706,7 +4706,7 @@
     {
       "id": "create_club_text_scale_2",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4723,7 +4723,7 @@
     {
       "id": "create_club_reduced_motion",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [
@@ -4740,7 +4740,7 @@
     {
       "id": "create_club_light_dark",
       "routes": [
-        "hostCreateClubScreen"
+        "hostCreateOrganizerScreen"
       ],
       "device": "iphone-17-pro",
       "themes": [

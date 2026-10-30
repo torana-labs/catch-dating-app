@@ -1002,9 +1002,9 @@ final _styleRegistry = <_StyleEntry>[
   ),
   _StyleEntry.single('statDisplay', 'data', CatchTextStyles.statDisplay),
   _StyleEntry.single(
-    'clubMemberSeal',
+    'organizerMemberSeal',
     'function',
-    CatchTextStyles.clubMemberSeal,
+    CatchTextStyles.organizerMemberSeal,
   ),
   _StyleEntry.single('debugDetails', 'debug', CatchTextStyles.debugDetails),
 ];

@@ -5,10 +5,10 @@ import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.
 import 'package:catch_dating_app/contexts/discovery/domain/saved_event.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -30,7 +30,7 @@ abstract class EventDetailViewModel with _$EventDetailViewModel {
     required bool isAuthenticated,
     required bool isHost,
     required bool isSaved,
-    @Default(false) bool isClubMember,
+    @Default(false) bool isOrganizerMember,
     required EventParticipation? participation,
   }) = _EventDetailViewModel;
 }
@@ -56,9 +56,9 @@ AsyncValue<EventDetailViewModel?> eventDetailViewModel(
   final isAuthenticated = uid != null;
   final eventAsync = ref.watch(watchEventProvider(eventId));
   final event = catchAsyncStateFromAsyncValue(eventAsync).value;
-  final clubAsync = event == null
-      ? const AsyncData<Club?>(null)
-      : ref.watch(fetchClubProvider(event.clubId));
+  final organizerAsync = event == null
+      ? const AsyncData<Organizer?>(null)
+      : ref.watch(fetchOrganizerProvider(event.clubId));
   final savedEventAsync = uid == null
       ? const AsyncData<SavedEvent?>(null)
       : ref.watch(watchSavedEventProvider(uid, eventId));
@@ -66,14 +66,14 @@ AsyncValue<EventDetailViewModel?> eventDetailViewModel(
       ? const AsyncData<EventParticipation?>(null)
       : ref.watch(watchEventParticipationProvider(eventId, uid));
   final membershipAsync = uid == null || event == null
-      ? const AsyncData<ClubMembership?>(null)
-      : ref.watch(watchClubMembershipProvider(event.clubId, uid));
+      ? const AsyncData<OrganizerMembership?>(null)
+      : ref.watch(watchOrganizerMembershipProvider(event.clubId, uid));
 
   return buildEventDetailViewModel(
     eventAsync: eventAsync,
     userProfileAsync: ref.watch(watchUserProfileProvider),
     reviewsAsync: ref.watch(watchReviewsForEventProvider(eventId)),
-    clubAsync: clubAsync,
+    organizerAsync: organizerAsync,
     savedEventAsync: savedEventAsync,
     participationAsync: participationAsync,
     membershipAsync: membershipAsync,
@@ -90,11 +90,11 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
   required AsyncValue<Event?> eventAsync,
   required AsyncValue<UserProfile?> userProfileAsync,
   required AsyncValue<List<Review>> reviewsAsync,
-  required AsyncValue<Club?> clubAsync,
+  required AsyncValue<Organizer?> organizerAsync,
   required AsyncValue<SavedEvent?> savedEventAsync,
   required AsyncValue<EventParticipation?> participationAsync,
-  AsyncValue<ClubMembership?> membershipAsync =
-      const AsyncData<ClubMembership?>(null),
+  AsyncValue<OrganizerMembership?> membershipAsync =
+      const AsyncData<OrganizerMembership?>(null),
   required String? currentUid,
   required bool isAuthenticated,
   AppRole appRole = AppRole.consumer,
@@ -105,7 +105,7 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
   final eventState = catchAsyncStateFromAsyncValue(eventAsync);
   final userProfileState = catchAsyncStateFromAsyncValue(userProfileAsync);
   final reviewsState = catchAsyncStateFromAsyncValue(reviewsAsync);
-  final clubState = catchAsyncStateFromAsyncValue(clubAsync);
+  final organizerState = catchAsyncStateFromAsyncValue(organizerAsync);
   final savedEventState = catchAsyncStateFromAsyncValue(savedEventAsync);
   final participationState = catchAsyncStateFromAsyncValue(participationAsync);
   final membershipState = catchAsyncStateFromAsyncValue(membershipAsync);
@@ -122,7 +122,7 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
   // Event and organizer authority are blocking for every viewer. Rendering a
   // public event before its organizer resolves can leak a hidden listing and
   // transiently show the wrong guest actions.
-  if (eventState.isLoading || clubState.isLoading) {
+  if (eventState.isLoading || organizerState.isLoading) {
     return const AsyncLoading();
   }
   // For authenticated users, also block on reviews + user profile.
@@ -142,10 +142,10 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
       eventState.stackTrace ?? StackTrace.current,
     );
   }
-  if (clubState.hasError) {
+  if (organizerState.hasError) {
     return AsyncError(
-      clubState.error!,
-      clubState.stackTrace ?? StackTrace.current,
+      organizerState.error!,
+      organizerState.stackTrace ?? StackTrace.current,
     );
   }
 
@@ -179,14 +179,14 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
 
   final event = eventState.value;
   if (event == null) return const AsyncData(null);
-  final club = clubState.value;
-  if (club == null) return const AsyncData(null);
+  final organizer = organizerState.value;
+  if (organizer == null) return const AsyncData(null);
   final isOwnedHostRoute =
-      isAuthenticated && currentUid != null && club.isHostedBy(currentUid);
+      isAuthenticated && currentUid != null && organizer.isHostedBy(currentUid);
   if (appRole.isHost && !isOwnedHostRoute) {
     return const AsyncData(null);
   }
-  if (!appRole.isHost && !club.isPubliclyBrowseable) {
+  if (!appRole.isHost && !organizer.isPubliclyBrowseable) {
     return const AsyncData(null);
   }
   if (isAuthenticated && !isOwnedHostRoute && membershipState.isLoading) {
@@ -205,11 +205,11 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
       : const <Review>[];
   final participation = isAuthenticated ? participationState.value : null;
   final isHost =
-      isAuthenticated && currentUid != null && club.isHostedBy(currentUid);
+      isAuthenticated && currentUid != null && organizer.isHostedBy(currentUid);
   final isSaved = isAuthenticated && savedEventState.value != null;
-  final isClubMember =
+  final isOrganizerMember =
       isAuthenticated &&
-      membershipState.value?.status == ClubMembershipStatus.active;
+      membershipState.value?.status == OrganizerMembershipStatus.active;
 
   return AsyncData(
     EventDetailViewModel(
@@ -219,7 +219,7 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
       isAuthenticated: isAuthenticated,
       isHost: isHost,
       isSaved: isSaved,
-      isClubMember: isClubMember,
+      isOrganizerMember: isOrganizerMember,
       participation: participation,
     ),
   );

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
@@ -54,7 +54,7 @@ Widget dashboardScreenStates(BuildContext context) {
         label: 'memberships loading',
         child: WidgetbookDashboardDeviceFrame(
           child: WidgetbookDashboardScope(
-            membershipsStream: _loadingStream<List<ClubMembership>>(),
+            membershipsStream: _loadingStream<List<OrganizerMembership>>(),
             child: const DashboardScreen(),
           ),
         ),
@@ -63,7 +63,7 @@ Widget dashboardScreenStates(BuildContext context) {
         label: 'memberships error',
         child: WidgetbookDashboardDeviceFrame(
           child: WidgetbookDashboardScope(
-            membershipsStream: _errorStream<List<ClubMembership>>(
+            membershipsStream: _errorStream<List<OrganizerMembership>>(
               'Memberships failed',
             ),
             child: const DashboardScreen(),

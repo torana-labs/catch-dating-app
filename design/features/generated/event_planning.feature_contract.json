@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/event_planning.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:3500f5027c56ca2f4dc93aeefcb16dc6f000b6f145b614f1bd5503b4a4956c61",
+  "sourceDigest": "sha256:f67dc723f4e33c1c95e700539271c2a78580d40be354287da85ab7dcc45f7e85",
   "resolvedDigest": "sha256:de9f405093e4d9a2159420a7297f4e9b63cfd80ed9e1d0dd0362e6e0a6061337",
   "feature": {
     "id": "feature.event_planning",
@@ -169,7 +169,7 @@
         {
           "id": "retry_club_names",
           "owner": "calendar_screen",
-          "codeValue": "clubNameLookupProvider",
+          "codeValue": "organizerNameLookupProvider",
           "cardinality": "singleton",
           "scopeKeys": [
             "clubIdSet",
@@ -1110,7 +1110,7 @@
         {
           "id": "retry_club_names",
           "owner": "saved_events_screen",
-          "codeValue": "clubNameLookupProvider",
+          "codeValue": "organizerNameLookupProvider",
           "cardinality": "singleton",
           "scopeKeys": [
             "clubIdSet",

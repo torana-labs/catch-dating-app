@@ -30,7 +30,7 @@ void _registerHostManageFromCreateEventTests() {
     await pumpEventsTestApp(
       tester,
       HostEventManageScreen(
-        club: buildClub(),
+        organizer: buildOrganizer(),
         event: event,
         onBackToSuccess: () {},
         initialSection: HostEventManageSection.guests,
@@ -115,7 +115,7 @@ void _registerHostManageFromCreateEventTests() {
         tester,
         StatefulBuilder(
           builder: (context, setState) => HostEventManageScreen(
-            club: buildClub(),
+            organizer: buildOrganizer(),
             event: event,
             onBackToSuccess: () {},
             initialSection: section,
@@ -230,7 +230,7 @@ void _registerHostManageFromCreateEventTests() {
     await pumpEventsTestApp(
       tester,
       HostEventManageScreen(
-        club: buildClub(),
+        organizer: buildOrganizer(),
         event: event,
         onBackToSuccess: () {},
       ),
@@ -276,7 +276,7 @@ void _registerHostManageFromCreateEventTests() {
     await pumpEventsTestApp(
       tester,
       HostEventManageScreen(
-        club: buildClub(),
+        organizer: buildOrganizer(),
         event: event,
         onBackToSuccess: () {},
       ),
@@ -317,7 +317,7 @@ void _registerHostManageFromCreateEventTests() {
     await pumpEventsTestApp(
       tester,
       HostEventManageScreen(
-        club: buildClub(),
+        organizer: buildOrganizer(),
         event: event,
         onBackToSuccess: () {},
       ),
@@ -360,7 +360,7 @@ void _registerHostManageFromCreateEventTests() {
     await pumpEventsTestApp(
       tester,
       HostEventManageScreen(
-        club: buildClub(),
+        organizer: buildOrganizer(),
         event: event,
         onBackToSuccess: () => returned = true,
       ),
@@ -401,7 +401,7 @@ void _registerHostManageFromCreateEventTests() {
     await pumpEventsTestApp(
       tester,
       HostEventManageScreen(
-        club: buildClub(),
+        organizer: buildOrganizer(),
         event: event,
         onBackToSuccess: () {},
       ),

@@ -340,8 +340,8 @@ abstract final class AnalyticsEvents {
   static const welcomeSplashShown = 'welcome_splash_shown';
   static const welcomeSplashSkipped = 'welcome_splash_skipped';
   static const welcomeCtaTapped = 'welcome_cta_tapped';
-  static const clubViewed = 'club_viewed';
-  static const clubJoined = 'club_joined';
+  static const organizerViewed = 'club_viewed';
+  static const organizerJoined = 'club_joined';
   static const exploreEventOpened = 'explore_event_opened';
   static const crossPathsImpression = 'cross_paths_impression';
   static const crossPathsProfileOpened = 'cross_paths_profile_open';
@@ -359,9 +359,9 @@ abstract final class AnalyticsEvents {
   static const homeActionTap = 'home_action_tap';
   static const catchWindowImpression = 'catch_window_impression';
   static const catchWindowOpen = 'catch_window_open';
-  static const clubPostCreated = 'club_post_created';
-  static const clubPostImpression = 'club_post_impression';
-  static const clubPostOpen = 'club_post_open';
+  static const organizerPostCreated = 'club_post_created';
+  static const organizerPostImpression = 'club_post_impression';
+  static const organizerPostOpen = 'club_post_open';
   static const eventViewed = 'event_viewed';
   static const eventBookingStarted = 'event_booking_started';
   static const eventBooked = 'event_booked';
@@ -371,7 +371,7 @@ abstract final class AnalyticsEvents {
   static const profileCompleted = 'profile_completed';
   static const postEventReactionSent = 'post_event_reaction_sent';
   static const matchCreated = 'match_created';
-  static const hostClubCreated = 'host_club_created';
+  static const hostOrganizerCreated = 'host_club_created';
   static const hostEventCreated = 'host_event_created';
   static const hostEventPublished = 'host_event_published';
   static const swipeSent = 'swipe_sent';

@@ -82,13 +82,13 @@ void _registerHostOperationsCustomerDetailTests() {
   testWidgets('customer overview groups status and directory controls', (
     tester,
   ) async {
-    final club = buildClub(id: 'header-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(id: 'header-club', ownerUserId: _hostUid);
     final requests = <HostCustomersDirectoryRequest>[];
     await _pumpHostScreen(
       tester,
       const HostCustomersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
+        ..._hostOrganizerOverrides(owned: [organizer]),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
             requests,
@@ -178,13 +178,16 @@ void _registerHostOperationsCustomerDetailTests() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final club = buildClub(id: 'phone-sort-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'phone-sort-club',
+      ownerUserId: _hostUid,
+    );
     final requests = <HostCustomersDirectoryRequest>[];
     await _pumpHostScreen(
       tester,
       const HostCustomersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
+        ..._hostOrganizerOverrides(owned: [organizer]),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
             requests,
@@ -221,13 +224,16 @@ void _registerHostOperationsCustomerDetailTests() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final club = buildClub(id: 'compact-overview-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'compact-overview-club',
+      ownerUserId: _hostUid,
+    );
 
     await _pumpHostScreen(
       tester,
       const HostCustomersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
+        ..._hostOrganizerOverrides(owned: [organizer]),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
             [],
@@ -292,16 +298,19 @@ void _registerHostOperationsCustomerDetailTests() {
   testWidgets('sender recovery opens dedicated WhatsApp Business setup', (
     tester,
   ) async {
-    final club = buildClub(id: 'messaging-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'messaging-club',
+      ownerUserId: _hostUid,
+    );
     await _pumpHostScreen(
       tester,
       const HostCustomersScreen(),
       overrides: [
-        ..._hostClubOverrides(
-          owned: [club],
+        ..._hostOrganizerOverrides(
+          owned: [organizer],
           messagingSetupByOrganizer: {
-            club.id: _hostMessagingSetup(
-              organizerId: club.id,
+            organizer.id: _hostMessagingSetup(
+              organizerId: organizer.id,
               connectionStatus: 'pending',
             ),
           },
@@ -343,16 +352,19 @@ void _registerHostOperationsCustomerDetailTests() {
   testWidgets(
     'sender recovery stays hidden where a sender cannot be connected',
     (tester) async {
-      final club = buildClub(id: 'messaging-club', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'messaging-club',
+        ownerUserId: _hostUid,
+      );
       await _pumpHostScreen(
         tester,
         const HostCustomersScreen(),
         overrides: [
-          ..._hostClubOverrides(
-            owned: [club],
+          ..._hostOrganizerOverrides(
+            owned: [organizer],
             messagingSetupByOrganizer: {
-              club.id: _hostMessagingSetup(
-                organizerId: club.id,
+              organizer.id: _hostMessagingSetup(
+                organizerId: organizer.id,
                 connected: false,
               ),
             },
@@ -392,12 +404,12 @@ void _registerHostOperationsCustomerDetailTests() {
   testWidgets('customer search shows clear only while input is non-empty', (
     tester,
   ) async {
-    final club = buildClub(id: 'search-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(id: 'search-club', ownerUserId: _hostUid);
     await _pumpHostScreen(
       tester,
       const HostCustomersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
+        ..._hostOrganizerOverrides(owned: [organizer]),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
             [],
@@ -445,7 +457,10 @@ void _registerHostOperationsCustomerDetailTests() {
     tester.view.physicalSize = const Size(393, 852);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
-    final club = buildClub(id: 'compact-header-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'compact-header-club',
+      ownerUserId: _hostUid,
+    );
     await _pumpHostScreen(
       tester,
       const MediaQuery(
@@ -456,7 +471,7 @@ void _registerHostOperationsCustomerDetailTests() {
         child: HostCustomersScreen(),
       ),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
+        ..._hostOrganizerOverrides(owned: [organizer]),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
             [],

@@ -211,7 +211,7 @@ return $default(_that.current,_that.pending,_that.error,_that.loading,_that.savi
 
 class _HostManagerEventSetupDefaultsState extends HostManagerEventSetupDefaultsState {
   const _HostManagerEventSetupDefaultsState({this.current, this.pending, this.error, this.loading = false, this.saving = false, this.actorAvailable = true}): super._();
-
+  
 
 @override final  ManagerEventSetupDefaults? current;
 @override final  ManagerEventSetupDefaultsUpdateRequest? pending;

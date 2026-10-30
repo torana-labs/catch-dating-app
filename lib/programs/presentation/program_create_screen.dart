@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_timezone.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -111,10 +111,10 @@ class ProgramCreateScreen extends ConsumerWidget {
             ),
           ],
         ),
-        data: (controller) => CatchAsyncBoundary<List<Club>>(
-          value: ref.watch(hostOperableClubsProvider(uid)),
+        data: (controller) => CatchAsyncBoundary<List<Organizer>>(
+          value: ref.watch(hostOperableOrganizersProvider(uid)),
           retainDataOn: const {},
-          onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
+          onRetry: () => ref.invalidate(hostOperableOrganizersProvider(uid)),
           loadingBuilder: (_) => Column(
             children: [
               CatchStepHeader(
@@ -147,15 +147,15 @@ class ProgramCreateScreen extends ConsumerWidget {
               Expanded(
                 child: CatchLocalizedErrorState(
                   error,
-                  context: AppErrorContext.club,
+                  context: AppErrorContext.organizer,
                   onRetry: retry,
                 ),
               ),
             ],
           ),
-          builder: (context, clubs) {
-            final organizer = clubs
-                .where((club) => club.id == organizerId)
+          builder: (context, organizers) {
+            final organizer = organizers
+                .where((organizer) => organizer.id == organizerId)
                 .firstOrNull;
             final selected = ref.watch(hostOrganizerSelectionProvider(uid));
             if (organizer == null ||

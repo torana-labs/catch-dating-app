@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.179.0
-updated: 2026-10-29
+version: 1.181.0
+updated: 2026-10-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -3224,6 +3224,18 @@ price, reconciled seats and a ready event-admission payment route. Public phone
 OTP never substitutes for invitation, application approval, membership, cohort
 or pair eligibility. The legacy boolean editor cannot change paid mode.
 
+Catch never collects a paid event booking on its own merchant account unless
+the `eventAdmission` route explicitly selects `razorpayRoute`. With
+`razorpayOAuth` the order belongs to the organizer's single ready connection;
+an absent, null or `disabled` route, or zero or several ready connections in
+the selected mode, makes paid booking unavailable rather than falling back.
+`quote` checks this read-only, without credentials or provider calls, so the
+guest learns before reviewing a price. `quote`, `prepare` and paid
+`configureEventRegistration` refuse with `failed-precondition` and
+`details.reason: "organizerPaymentsNotReady"`; clients match the reason, not
+the message. The retired `createRazorpayOrder` refuses every new order, and
+the Consumer app no longer calls it.
+
 `managePublicEventCheckout` quotes, prepares, finds, reconciles and cancels a
 UID-owned public checkout. It requires App Check, rate limits and current phone
 Auth; deletion and disabled-account checks do not require a Consumer profile.
@@ -3250,9 +3262,14 @@ and the scheduled end, even when a subsequent registration replaced that row.
 ### Organizer-connected form payments
 
 `paymentRoutingPolicies/app` owns application defaults; organizer overrides use
-`org_` plus the SHA-256 of the exact organizer ID. Both purposes (`formFee` and
-`eventAdmission`) are independent. A null organizer choice inherits; a null app
-choice or explicit `disabled` blocks that purpose. Policies cannot contain
+`org_` plus the SHA-256 of the exact organizer ID. The purposes (`formFee`,
+`eventAdmission` and `hostMembership`) are independent. A null organizer choice
+inherits; a null app choice or explicit `disabled` blocks that purpose. A
+policy written before memberships had a route has no `hostMembership` field,
+which reads as null, and an operator payload that omits it keeps the stored
+membership route. The route is the money-flow switch: `razorpayOAuth` is
+`hostCollected` and `razorpayRoute` is `platformSplit` (see
+[Commercial terms](#commercial-terms)). Policies cannot contain
 credentials, account IDs or webhook URLs. Direct client access is denied.
 `managePaymentRoutingPolicy` is restricted to Finance/Admin Owner and validates
 the organizer, expected revision and full replacement. The transaction writes
@@ -3261,8 +3278,9 @@ actor/payload retry replays; an intervening edit requires fresh review.
 
 The shared payment routing snapshot freezes the selected adapter, mode,
 currency, merchant country, policy revisions, merchant/destination accounts,
-fee amount, transfer allocation, settlement hold and immutable provider
-configuration reference. Its contract is provider-neutral;
+fee amount, transfer allocation, settlement hold, immutable provider
+configuration reference and, when configured, the effective commercial terms
+(`commercialTerms`). Its contract is provider-neutral;
 checkout public keys are optional for providers that do not require them.
 The routing registry resumes only the recorded adapter and never reselects an
 account from current defaults. An absent adapter fails explicitly. Configuration
@@ -3278,7 +3296,13 @@ mode, verified merchant webhook and pinned Secret Manager credential version.
 expiring OAuth state. Tokens and webhook secrets never enter Firestore or
 client projections. Refresh rotation has an exclusive durable lease; uncertain
 rotation requires reconnection. Disconnection blocks new checkouts while
-retaining server access to settle existing payments.
+retaining server access to settle existing payments. An organizer has at most
+one ready connection per mode. `begin` refuses while one is ready
+(`details.reason: "razorpayAlreadyConnected"`), and the completing transaction
+leaves a second account in `needsAttention` if another became ready meanwhile.
+A connection whose `lastErrorCode` is set cannot take payments even while its
+status reads `ready`; the Host app shows it as needing reconnection and replaces
+it by disconnecting it before a new `begin`.
 
 `organizerFormPayments` freezes the fee, merchant, verified respondent,
 version, draft revision and answer hash before creating an order. The draft's
@@ -3329,6 +3353,51 @@ Client session generations discard late lookup, checkout and error results
 after account or form changes. Reading an ended or manual-review payment never
 retries financial mutations.
 
+
+### Commercial terms
+
+What Catch charges an organizer is data, not code, and is separate from who
+collects the money. `commercialTerms/platform` holds the complete platform
+defaults; `commercialTerms/org_<sha256(organizerId)>` holds a sparse organizer
+override in which an absent key inherits (an explicit `commission.capMinor:
+null` removes the cap). The terms are the commission rate, cap, cycle length
+and anchor, base (net of refunds or gross) and tax treatment (before GST), the
+trial, the tools-only fee, who bears gateway fees, and per purpose
+(`eventAdmission`, `formFee`, `hostMembership`) whether it counts toward the
+commission and the at-source fee a `platformSplit` route deducts. The shapes
+are `contracts/shared/commercial_terms.schema.json`.
+
+Money flow and merchant of record are not restated in terms. They are the
+purpose's payment route (see the routing policies above): `hostCollected`
+means the guest pays the organizer's own merchant account and the organizer
+is merchant of record, and Catch bills its commission afterwards;
+`platformSplit` means Catch's platform account collects and transfers the
+organizer's share. A future Catch-as-merchant flow is a new route plus its
+adapter, not a terms change.
+
+Only `manageCommercialTerms` (Finance/Admin Owner) writes terms. A write names
+the reviewed revision and a reason; the same transaction bumps the revision,
+creates an immutable `commercialTermsRevisions/<termsId>_r<revision>` record
+and writes the admin audit log. Only the most recent exact command replays.
+An override must still merge into valid terms with the current defaults. Both
+collections deny all client access.
+
+`functions/src/commercialTerms/resolver.ts` is the single resolver. It merges
+the two layers for one purpose and freezes a `CommercialTermsSnapshot`
+(including both revisions, the money flow, the merchant of record and the
+resolution time) onto the new payment or charge. Ticket and form payments carry
+it as `routing.commercialTerms`; membership charges carry it as
+`hostMembershipCharges.commercialTerms`. Later edits change only new
+payments. Recorded payments keep their own transfer amounts, so the Secret
+Manager platform profile is credentials only; older versions that still carry
+`feeBasisPoints` load and the key is ignored.
+
+Without `commercialTerms/platform`, `platformSplit` payments and memberships
+fail closed, because their fee or launch depends on terms. A `hostCollected`
+ticket or form payment still proceeds, because guest money does not depend on
+Catch's terms, and carries no snapshot. A commission statement treats such
+payments, and every payment recorded before terms existed, as needing operator
+review rather than inventing terms for them.
 
 ### Form messaging decisions
 

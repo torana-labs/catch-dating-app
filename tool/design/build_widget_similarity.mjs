@@ -736,7 +736,7 @@ function buildGroundTruthRecall({
     },
     {
       id: "share-card-family",
-      members: ["ChatShareCard", "ClubShareCard", "EventShareCard"],
+      members: ["ChatShareCard", "OrganizerShareCard", "EventShareCard"],
       expectedDetectors: ["name"],
     },
     {

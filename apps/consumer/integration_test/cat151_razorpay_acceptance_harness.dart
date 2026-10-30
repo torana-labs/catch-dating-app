@@ -4,7 +4,7 @@ import 'package:catch_consumer_app/consumer_platform_app.dart';
 import 'package:catch_dating_app/app_bootstrap.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
@@ -221,7 +221,7 @@ class _Cat151AcceptanceScreenState
     final rawOrganizer = followup[0] as DocumentSnapshot<Map<String, dynamic>>;
     final organizer = rawOrganizer.data() == null
         ? null
-        : Club.fromJson({...rawOrganizer.data()!, 'id': rawOrganizer.id});
+        : Organizer.fromJson({...rawOrganizer.data()!, 'id': rawOrganizer.id});
     final viewer = followup[1] as EventViewerState;
     final participation = followup[2] as EventParticipation?;
     if (organizer == null) {
@@ -596,7 +596,7 @@ class _Cat151AcceptanceScreenState
               .get(const GetOptions(source: Source.server));
     final organizer = rawOrganizer?.data() == null
         ? null
-        : Club.fromJson({...rawOrganizer!.data()!, 'id': rawOrganizer.id});
+        : Organizer.fromJson({...rawOrganizer!.data()!, 'id': rawOrganizer.id});
     final rawUser = await db
         .collection('users')
         .doc(widget.uid)

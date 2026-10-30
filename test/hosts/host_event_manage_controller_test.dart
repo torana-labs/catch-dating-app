@@ -137,11 +137,11 @@ void main() {
 
   test('sharePrivateLink delegates to the external share controller', () async {
     final event = HostOperationsFixtures.privateEvent;
-    final club = HostOperationsFixtures.primaryClub;
+    final organizer = HostOperationsFixtures.primaryOrganizer;
     final controller = container.read(hostEventManageActionsProvider);
 
     await controller.sharePrivateLink(
-      club: club,
+      organizer: organizer,
       event: event,
       inviteLink: 'https://catchdates.com/events/e-1?invite=VIP123',
       l10n: AppLocalizationsEn(),

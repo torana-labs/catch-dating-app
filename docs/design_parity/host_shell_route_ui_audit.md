@@ -135,7 +135,7 @@ as source authority.
 | Events | `/host/events` | `HostEventsScreen` | `host_home_events_list` | `lib/hosts/events/presentation/host_events_screen.dart` |
 | Audience | `/host/audience` | `HostCustomersScreen` / `HostFormsScreen` | `host_customers_populated`, `host_forms_populated` | `lib/hosts/presentation/host_audience_view.dart` |
 | Inbox | `/host/inbox` | `HostInboxScreen` | `host_inbox_queries` | `lib/hosts/presentation/inbox/host_inbox_screen.dart` |
-| Organizer | `/host/organizer` | `HostClubsScreen` | `host_clubs_management` | `lib/hosts/presentation/host_operations/host_clubs_scaffold.dart` |
+| Organizer | `/host/organizer` | `HostOrganizersScreen` | `host_clubs_management` | `lib/hosts/presentation/host_operations/host_organizers_scaffold.dart` |
 
 Reproducible capture contexts:
 

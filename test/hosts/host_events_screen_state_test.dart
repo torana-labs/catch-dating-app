@@ -10,7 +10,7 @@ import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import '../clubs/clubs_test_helpers.dart' show buildEvent;
+import '../organizers/organizers_test_helpers.dart' show buildEvent;
 
 final _l10n = AppLocalizationsEn();
 

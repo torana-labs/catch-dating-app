@@ -9,10 +9,11 @@ import {inboundRouterDeps, messageNominationsEnabled} from "./inboundRouterRunti
 import {CATCH_RECEIPTS, readCatchReceipt} from "./whatsappEndpointStops";
 import {configuredConsumerScope} from "./whatsappReceiptConsumer";
 
-// When a listing nominated by WhatsApp finishes building, publish it if a
-// registered associate sent it and it is complete (autoPublish.ts), then tell
-// the person who sent it, in the same thread: live with its link, or waiting
-// for a check. Each organizer in a message gets its own message; a
+// When a listing nominated by message finishes building, publish it if a
+// registered associate sent it and it is complete (autoPublish.ts). A
+// WhatsApp nominator then hears back in the same thread: live with its link,
+// or waiting for a check. Instagram allows no message after 24 hours, so an
+// Instagram nominator heard at the start and gets nothing more. Each organizer in a message gets its own message; a
 // redelivered update never publishes or sends twice.
 
 type IntakeRequestState = Parameters<typeof autoPublishNominatedListing>[2] & {
@@ -29,6 +30,7 @@ export async function replyWhenListingReady(deps: {
   if (after?.status !== "completed" || before?.status === "completed" ||
       origin?.kind !== "message_nomination" || typeof origin.id !== "string") return "not_applicable";
   const stored = await deps.db.collection(CATCH_RECEIPTS).doc(origin.id).get();
+  const published = await deps.publish(requestId, after);
   // Receipts expire after 30 days; by then the reply window is long closed.
   if (!stored.exists) return "not_applicable";
   const receipt = readCatchReceipt(stored.data());
@@ -36,7 +38,6 @@ export async function replyWhenListingReady(deps: {
     after.request.seed.urls.filter((url): url is string => typeof url === "string") : [];
   const eventCount = typeof after.result?.eventCount === "number" ? after.result.eventCount : 0;
   const label = urls.length > 0 ? nominationLabel(urls) : "Your nomination";
-  const published = await deps.publish(requestId, after);
   return deps.reply({kind: "listing_ready", discriminator: requestId, sourceEventId: receipt.eventId,
     participantId: receipt.participantId, inboundAtMillis: Number(receipt.providerTimestampSeconds) * 1000,
     body: published.outcome === "published" ? replyCopy.listingLive(label, eventCount, published.canonicalPath) :

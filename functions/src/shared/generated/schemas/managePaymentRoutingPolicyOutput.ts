@@ -14,6 +14,7 @@ export const managePaymentRoutingPolicyCallableResponseSchema: Record<string, un
     "revision",
     "formFee",
     "eventAdmission",
+    "hostMembership",
     "updatedAtMillis"
   ],
   "properties": {
@@ -95,6 +96,63 @@ export const managePaymentRoutingPolicyCallableResponseSchema: Record<string, un
       ]
     },
     "eventAdmission": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "hostMembership": {
       "anyOf": [
         {
           "anyOf": [

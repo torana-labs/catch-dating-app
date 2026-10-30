@@ -4,8 +4,8 @@ import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../test/events/events_test_helpers.dart' as event_helpers;
+import '../test/organizers/organizers_test_helpers.dart' as organizer_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
 import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
@@ -17,10 +17,10 @@ void main() {
     tester,
   ) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
-    final club = club_helpers.buildClub();
+    final organizer = organizer_helpers.buildOrganizer();
     final attendedRun = event_helpers.buildEvent(
       id: 'attended-run-1',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime.now().subtract(const Duration(hours: 11)),
       endTime: DateTime.now().subtract(const Duration(hours: 10)),
       meetingPoint: 'Bandstand Steps',
@@ -32,8 +32,8 @@ void main() {
       overrides: appShellTestOverrides(
         uid: user.uid,
         user: user,
-        clubs: [club],
-        joinedClubIds: {club.id},
+        organizers: [organizer],
+        joinedOrganizerIds: {organizer.id},
         attendedEvents: [attendedRun],
       ),
     );
@@ -47,10 +47,10 @@ void main() {
 
   testWidgets('catches deck records like and pass decisions', (tester) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
-    final club = club_helpers.buildClub();
+    final organizer = organizer_helpers.buildOrganizer();
     final attendedRun = event_helpers.buildEvent(
       id: 'attended-run-1',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime.now().subtract(const Duration(hours: 11)),
       endTime: DateTime.now().subtract(const Duration(hours: 10)),
       meetingPoint: 'Bandstand Steps',
@@ -73,8 +73,8 @@ void main() {
       overrides: appShellTestOverrides(
         uid: user.uid,
         user: user,
-        clubs: [club],
-        joinedClubIds: {club.id},
+        organizers: [organizer],
+        joinedOrganizerIds: {organizer.id},
         attendedEvents: [attendedRun],
         swipeCandidates: [firstCandidate, secondCandidate],
         swipeRepository: swipeRepository,

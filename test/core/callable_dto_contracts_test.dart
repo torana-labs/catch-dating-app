@@ -13,8 +13,8 @@ import 'package:catch_dating_app/contexts/insights/data/user_analytics_repositor
 import 'package:catch_dating_app/contexts/live/data/event_success_callable_responses.dart';
 import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_callable_responses.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/update_club_patch.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_responses.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_callable_requests.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_callable_responses.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
@@ -165,7 +165,7 @@ void main() {
       );
       _expectValid(
         'UpdateOrganizerCallablePayload',
-        UpdateClubPatch.raw({
+        UpdateOrganizerPatch.raw({
           'name': 'Cubbon Morning Runners',
           'tags': ['social', 'beginner'],
         }).toCallableJson(clubId: 'club-1'),
@@ -492,7 +492,8 @@ void main() {
         throwsStateError,
       );
       expect(
-        () => StartClubHostConversationCallableResponse.fromCallableData(42),
+        () =>
+            StartOrganizerHostConversationCallableResponse.fromCallableData(42),
         throwsStateError,
       );
       expect(

@@ -13,7 +13,7 @@ extension _HostCustomersDirectoryActions on _HostCustomersScreenState {
   }
 
   Future<void> _openAudienceEditor(
-    Club club, {
+    Organizer organizer, {
     HostSavedAudience? audience,
   }) async {
     final saved = await context.pushNamed<HostSavedAudience>(
@@ -23,13 +23,13 @@ extension _HostCustomersDirectoryActions on _HostCustomersScreenState {
       pathParameters: audience == null
           ? const {}
           : {'audienceId': audience.audienceId},
-      queryParameters: {'organizerId': club.id},
+      queryParameters: {'organizerId': organizer.id},
       extra: audience,
     );
     if (!mounted || saved == null) return;
-    ref.invalidate(hostSavedAudiencesProvider(club.id));
-    ref.invalidate(hostAllSavedAudiencesProvider(club.id));
-    ref.invalidate(hostAllSavedAudienceSummariesProvider(club.id));
+    ref.invalidate(hostSavedAudiencesProvider(organizer.id));
+    ref.invalidate(hostAllSavedAudiencesProvider(organizer.id));
+    ref.invalidate(hostAllSavedAudienceSummariesProvider(organizer.id));
     ref.invalidate(hostGroupDirectoryControllerProvider);
   }
 }

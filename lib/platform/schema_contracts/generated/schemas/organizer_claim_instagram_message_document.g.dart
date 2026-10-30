@@ -8,7 +8,7 @@ const schemaOrganizerClaimInstagramMessageDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/organizer_claim_instagram_messages.schema.json',
   'title': 'OrganizerClaimInstagramMessageDocument',
-  'description': 'Server-only receipt for one Instagram direct message the claim webhook handled, stored at organizerClaimInstagramMessages/{messageKey}. Meta retries deliveries, so the receipt makes each message count once. It keeps no message text or sender id. Firestore TTL deletes it after expiresAt.',
+  'description': 'Server-only receipt for one Instagram direct message the webhook handled, stored at organizerClaimInstagramMessages/{messageKey}: a claim code, or a nominator\'s message that Catch answered. Meta retries deliveries, so the receipt makes each message count once and each reply go once. It keeps no message text or sender id; a nomination keeps the nominator\'s registry id. Firestore TTL deletes it after expiresAt.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'organizerClaimInstagramMessages',
@@ -19,6 +19,7 @@ const schemaOrganizerClaimInstagramMessageDocumentSchema = <String, Object?>{
     'messageKey',
     'outcome',
     'attemptId',
+    'nominatorId',
     'receivedAt',
     'expiresAt',
   ],
@@ -40,6 +41,11 @@ const schemaOrganizerClaimInstagramMessageDocumentSchema = <String, Object?>{
         'claimUnavailable',
         'senderUnknown',
         'rateLimited',
+        'nominationQueued',
+        'nominationWithoutLinks',
+        'nominationRateLimited',
+        'nominationUnclear',
+        'shareWithoutProfile',
       ],
       'x-catch-ownership': 'server-only',
     },
@@ -49,6 +55,19 @@ const schemaOrganizerClaimInstagramMessageDocumentSchema = <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'x-catch-ownership': 'server-only',
+    },
+    'nominatorId': <String, Object?>{
+      'description': 'The registered nominator who sent a nomination, so auto-publish can check they still are one. Null for claim messages.',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'pattern': '^instagram-[a-z0-9._]{1,30}\$',
         },
         <String, Object?>{
           'type': 'null',

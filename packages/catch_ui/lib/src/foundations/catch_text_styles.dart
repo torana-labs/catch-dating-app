@@ -439,7 +439,7 @@ abstract final class CatchTextStyles {
       );
 
   /// Compact numeric seal on club cards.
-  static TextStyle clubMemberSeal(BuildContext context, {Color? color}) =>
+  static TextStyle organizerMemberSeal(BuildContext context, {Color? color}) =>
       statusLabel(context, color: color).copyWith(height: 1.05);
 
   static TextStyle debugDetails(BuildContext context, {Color? color}) =>

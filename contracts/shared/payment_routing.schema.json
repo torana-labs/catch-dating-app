@@ -39,7 +39,8 @@
         "merchantAccountId": {"type": "string", "minLength": 1, "maxLength": 160},
         "destinationAccountId": {"type": ["string", "null"], "minLength": 1, "maxLength": 160},
         "configurationVersion": {"type": "string", "minLength": 1, "maxLength": 512},
-        "checkoutKey": {"type": ["string", "null"], "minLength": 1, "maxLength": 256}
+        "checkoutKey": {"type": ["string", "null"], "minLength": 1, "maxLength": 256},
+        "commercialTerms": {"description": "Effective commercial terms frozen when the attempt was prepared. Absent on payments prepared before commercial terms existed, or while platform defaults were unconfigured for a hostCollected route; a commission statement reviews those explicitly.", "$ref": "commercial_terms.schema.json#/definitions/snapshot"}
       }
     }
   }

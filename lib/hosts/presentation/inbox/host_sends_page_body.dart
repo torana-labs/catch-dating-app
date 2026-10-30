@@ -4,10 +4,10 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign.dart
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/contexts/messaging/data/host_whatsapp_embedded_signup.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_posts_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_posts_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_club_post_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_organizer_post_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_event_announcement_field.dart';
@@ -35,7 +35,7 @@ part 'host_sends_workspace.dart';
 class HostSendsPageBody extends ConsumerStatefulWidget {
   const HostSendsPageBody({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.initialSavedAudienceId,
     required this.onBusyChanged,
     required this.onOpenInbox,
@@ -47,7 +47,7 @@ class HostSendsPageBody extends ConsumerStatefulWidget {
   });
 
   final Widget Function(Widget historySliver) indexBuilder;
-  final Club club;
+  final Organizer organizer;
   final String? initialSavedAudienceId;
   final ValueChanged<bool> onBusyChanged;
   final VoidCallback onOpenInbox;

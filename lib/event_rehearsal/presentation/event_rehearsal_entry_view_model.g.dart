@@ -157,7 +157,7 @@ final class EventRehearsalEntryProvider
 }
 
 String _$eventRehearsalEntryHash() =>
-    r'f6f4658d16c48a7e6ede7df17c4dc7e3b2d05b59';
+    r'35e77e8038994d618264a2ef46c5518dcfb128df';
 
 /// One bounded upcoming-event window; failed lookups remain errors rather than
 /// being presented as an organizer with no event or no configured defaults.

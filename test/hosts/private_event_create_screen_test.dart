@@ -20,7 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../clubs/clubs_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart';
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 
@@ -59,7 +59,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: PrivateEventCreateScreen(
-            club: buildClub(),
+            organizer: buildOrganizer(),
             promptForDraftsOnStart: false,
             returnToResponsesOnSave: true,
             initialDraft: EventDraft(
@@ -151,7 +151,7 @@ void main() {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: PrivateEventCreateScreen(
-              club: buildClub(),
+              organizer: buildOrganizer(),
               promptForDraftsOnStart: false,
               initialSavedEventId: 'history-1',
               readSaved: ({required organizerId, required eventId}) async =>
@@ -264,7 +264,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: PrivateEventCreateScreen(
-            club: buildClub(),
+            organizer: buildOrganizer(),
             initialDraft: draft,
             promptForDraftsOnStart: false,
             readOrganizerDefaults: (_) async => ManagerEventSetupDefaults(
@@ -366,7 +366,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: PrivateEventCreateScreen(
-            club: buildClub(),
+            organizer: buildOrganizer(),
             initialDraft: draft,
             create:
                 ({
@@ -460,7 +460,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: PrivateEventCreateScreen(
-          club: buildClub(),
+          organizer: buildOrganizer(),
           initialDraft: draft,
           create: create,
           readSaved: ({required organizerId, required eventId}) async =>
@@ -622,7 +622,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: PrivateEventCreateScreen(
-          club: buildClub(),
+          organizer: buildOrganizer(),
           initialSavedEventId: 'event-1',
           readSaved: ({required organizerId, required eventId}) async {
             expect(organizerId, 'club-1');
@@ -724,7 +724,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: PrivateEventCreateScreen(
-            club: buildClub(),
+            organizer: buildOrganizer(),
             initialSavedEventId: 'event-1',
             readSaved: ({required organizerId, required eventId}) async {
               reads++;
@@ -786,7 +786,7 @@ void main() {
             textScaler: TextScaler.linear(2),
           ),
           child: PrivateEventSetupScreen(
-            club: buildClub(),
+            organizer: buildOrganizer(),
             receipt: const PrivateEventCreateReceipt(
               eventId: 'saved-private-event',
               setupRevision: 1,

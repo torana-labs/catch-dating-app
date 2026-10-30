@@ -17,7 +17,7 @@ Widget eventJoinedCelebrationScreenState(BuildContext context) {
   return WidgetbookEventDeviceFrame(
     child: EventJoinedCelebrationScreen(
       event: widgetbookEvent,
-      clubName: widgetbookEventsClub.name,
+      organizerName: widgetbookEventsOrganizer.name,
       paymentData: const PaymentConfirmationData(
         paymentId: 'pay_widgetbook_123',
         orderId: 'order_widgetbook_123',

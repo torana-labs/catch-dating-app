@@ -4,16 +4,16 @@ import 'package:catch_dating_app/contexts/events/data/event_calendar_links.dart'
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_location_links.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_event_focus_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/club_posts_home_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/organizer_posts_home_section.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show showEventVenueSessionScanner;
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
@@ -55,12 +55,14 @@ class _DashboardFullSliverBodyState
       if (widget.viewModel.pendingReviewEvent != null)
         widget.viewModel.pendingReviewEvent!,
     ];
-    final clubNamesAsync = ref.watch(
-      clubNameLookupProvider(
-        ClubNameLookupQuery(focusEvents.map((event) => event.clubId)),
+    final organizerNamesAsync = ref.watch(
+      organizerNameLookupProvider(
+        OrganizerNameLookupQuery(focusEvents.map((event) => event.clubId)),
       ),
     );
-    final clubNames = catchAsyncStateFromAsyncValue(clubNamesAsync).value;
+    final organizerNames = catchAsyncStateFromAsyncValue(
+      organizerNamesAsync,
+    ).value;
     final checkInMutation = ref.watch(
       DashboardEventFocusController.selfCheckInMutation,
     );
@@ -81,7 +83,7 @@ class _DashboardFullSliverBodyState
               pendingReviewEvent: widget.viewModel.pendingReviewEvent,
               now: ref.watch(dashboardNowProvider),
               onWindowImpression: _logWindowImpression,
-              clubNameBuilder: (event) => clubNames?[event.clubId],
+              organizerNameBuilder: (event) => organizerNames?[event.clubId],
               checkInState: EventFocusCheckInState(
                 isPending: checkInMutation.isPending,
                 error: checkInMutation.hasError
@@ -90,11 +92,11 @@ class _DashboardFullSliverBodyState
               ),
               actions: _buildEventFocusActions(context),
             ),
-          if (widget.viewModel.clubPostNotifications.isNotEmpty)
-            ClubPostsHomeSection(
-              notifications: widget.viewModel.clubPostNotifications,
+          if (widget.viewModel.organizerPostNotifications.isNotEmpty)
+            OrganizerPostsHomeSection(
+              notifications: widget.viewModel.organizerPostNotifications,
               onOpenPost: (notification) =>
-                  _openClubPost(context, notification),
+                  _openOrganizerPost(context, notification),
             ),
         ],
       ),
@@ -154,9 +156,12 @@ class _DashboardFullSliverBodyState
     context.go(Routes.exploreScreen.path);
   }
 
-  void _openClubPost(BuildContext context, ActivityNotification notification) {
+  void _openOrganizerPost(
+    BuildContext context,
+    ActivityNotification notification,
+  ) {
     _logAction(
-      context.l10n.dashboardDashboardFullVisiblecopyClubPosts,
+      context.l10n.dashboardDashboardFullVisiblecopyOrganizerPosts,
       context.l10n.dashboardDashboardFullVisiblecopyOpenPost,
     );
     final parameters = <String, Object>{};
@@ -170,7 +175,7 @@ class _DashboardFullSliverBodyState
     }
     ref
         .read(appAnalyticsProvider)
-        .logEvent(AnalyticsEvents.clubPostOpen, parameters: parameters);
+        .logEvent(AnalyticsEvents.organizerPostOpen, parameters: parameters);
     unawaited(
       ref
           .read(activityControllerProvider.notifier)

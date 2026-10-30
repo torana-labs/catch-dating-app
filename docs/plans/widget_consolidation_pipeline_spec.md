@@ -21,7 +21,7 @@ duplication and taxonomy drift:
   likely one concept); 17 `*Pill`, 8 `*Chip`, 9 `*Badge`, 10 `*Label` (four
   names); 41 `*Section`, 39 `*Body`, 15 `*Content`.
 - Known near-duplicate families visible from names alone:
-  `ChatShareCard`/`ClubShareCard`/`EventShareCard`, `DarkPill` vs
+  `ChatShareCard`/`OrganizerShareCard`/`EventShareCard`, `DarkPill` vs
   `EventSuccessDarkPill`, `CountdownBeatPill`/`CountdownCuePill`,
   `DashboardFocusLoadingCard`/`DashboardStrideLoadingCard`/`ClubDirectorySkeletonCard`.
 
@@ -384,7 +384,7 @@ If Phase C is skipped/fails (§6.5), the registry records
   "clusters": [ {"id": "c001-share-card", "rank": 1, "score": …, "cohesion": …,
                   "absorbCandidate": true, "nameSignal": "ShareCard",
                   "detectors": ["structural", "name"],
-                  "members": ["ChatShareCard", "ClubShareCard", "EventShareCard"],
+                  "members": ["ChatShareCard", "OrganizerShareCard", "EventShareCard"],
                   "paramCompatibility": {"min": …, "mean": …},
                   "visualBridges": [], "scope": "widget" | "screen"} ],
   "rankedPairs": [ {"a", "b", "jaccard", "containment", "flags": []} ],
@@ -522,7 +522,7 @@ Each packet must be reviewable **without opening any other file**:
 | ChatShareCard | lib/matches/… | composition | 11 | 84 | 6 | 9 | yes |
 | …
 
-**Similarity**: cohesion 0.87 · exact-shape subset: {ClubShareCard, EventShareCard}
+**Similarity**: cohesion 0.87 · exact-shape subset: {OrganizerShareCard, EventShareCard}
 **Param compatibility**: min 0.55 mean 0.71 — union of params: `title, subtitle, imageUrl, onShare, tone*, footer*` (`*` = not in all members)
 **Token deltas**: ChatShareCard uses `T:CatchSpacing.s3` where others use `T:CatchSpacing.s4`
 **Absorb candidate**: CatchShareCardSheet (packages/catch_ui/lib/src/components/catch_share_card_sheet.dart, contract catch.sheet.share_card)
@@ -574,7 +574,7 @@ member (link `file:line` for the rest). `INDEX.md` is a table:
      "decision": "absorb-into-existing",       // merge-new-primitive | absorb-into-existing | keep-distinct | rename-only | delete
      "canonicalSymbol": "CatchShareCardSheet",
      "members": [{"name": "ChatShareCard", "action": "absorb"},
-                  {"name": "ClubShareCard", "action": "absorb"}],
+                  {"name": "OrganizerShareCard", "action": "absorb"}],
      "rationale": "…", "decidedBy": "owner+claude", "date": "YYYY-MM-DD"}
   ]
 }

@@ -272,6 +272,13 @@ export {validateConfigureEventRegistrationCallableResponse} from "./validators/c
 export {validateOrganizerEventOfferPaymentDocument} from "./validators/organizerEventOfferPaymentDocument";
 export {validateOrganizerEventOfferRecipientDocument} from "./validators/organizerEventOfferRecipientDocument";
 export {validatePaymentRoutingSnapshot} from "./validators/paymentRoutingSnapshot";
+export {validateCommercialTerms} from "./validators/commercialTerms";
+export {validateCommercialTermsOverride} from "./validators/commercialTermsOverride";
+export {validateCommercialTermsSnapshot} from "./validators/commercialTermsSnapshot";
+export {validateManageCommercialTermsCallablePayload} from "./validators/manageCommercialTermsInput";
+export {validateManageCommercialTermsCallableResponse} from "./validators/manageCommercialTermsOutput";
+export {validateAdminListCommercialTermsCallablePayload} from "./validators/adminListCommercialTermsInput";
+export {validateAdminListCommercialTermsCallableResponse} from "./validators/adminListCommercialTermsOutput";
 export {validateManagePaymentRoutingPolicyCallablePayload} from "./validators/managePaymentRoutingPolicyInput";
 export {validateManagePaymentRoutingPolicyCallableResponse} from "./validators/managePaymentRoutingPolicyOutput";
 export {validateManageEventOfferCheckoutCallablePayload} from "./validators/manageEventOfferCheckoutInput";
@@ -607,6 +614,8 @@ export {validateOrganizerFormDomainDocument} from "./validators/organizerFormDom
 export {validateOrganizerPaymentConnectionDocument} from "./validators/organizerPaymentConnectionDocument";
 export {validateOrganizerPaymentOauthStateDocument} from "./validators/organizerPaymentOauthStateDocument";
 export {validatePaymentRoutingPolicyDocument} from "./validators/paymentRoutingPolicyDocument";
+export {validateCommercialTermsDocument} from "./validators/commercialTermsDocument";
+export {validateCommercialTermsRevisionDocument} from "./validators/commercialTermsRevisionDocument";
 export {validateOrganizerFormPaymentDocument} from "./validators/organizerFormPaymentDocument";
 export {validateOrganizerFormPaymentWebhookDocument} from "./validators/organizerFormPaymentWebhookDocument";
 export {validateOrganizerFormDraftDocument} from "./validators/organizerFormDraftDocument";

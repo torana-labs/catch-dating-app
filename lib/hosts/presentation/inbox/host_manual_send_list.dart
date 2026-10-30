@@ -49,7 +49,7 @@ class _HostManualSendListState extends ConsumerState<HostManualSendList> {
       ),
       error: (error, _) => CatchLocalizedErrorState(
         error,
-        context: AppErrorContext.club,
+        context: AppErrorContext.organizer,
         mode: CatchErrorStateMode.compact,
         onRetry: _resetAndReload,
       ),
@@ -92,7 +92,7 @@ class _HostManualSendListState extends ConsumerState<HostManualSendList> {
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {
@@ -140,7 +140,7 @@ class _HostManualSendListState extends ConsumerState<HostManualSendList> {
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {

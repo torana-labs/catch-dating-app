@@ -52,11 +52,11 @@ class HowCatchWorksSection extends StatelessWidget {
 List<CatchStepRowData> _howCatchWorksSteps(AppLocalizations l10n) => [
   CatchStepRowData(
     title: l10n.dashboardDashboardEmptyTitleBookAGroupEvent,
-    body: l10n.dashboardDashboardEmptyBodyPickAClubNear,
+    body: l10n.dashboardDashboardEmptyBodyPickAOrganizerNear,
   ),
   CatchStepRowData(
     title: l10n.dashboardDashboardEmptyTitleActuallyShowUp,
-    body: l10n.dashboardDashboardEmptyBodyMeetTheClubAt,
+    body: l10n.dashboardDashboardEmptyBodyMeetTheOrganizerAt,
   ),
   CatchStepRowData(
     title: l10n.dashboardDashboardEmptyTitleCatchWithin24Hours,

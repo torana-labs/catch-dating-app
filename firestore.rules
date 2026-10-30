@@ -1419,6 +1419,14 @@ service cloud.firestore {
     match /paymentRoutingPolicies/{policyId} {
       allow read, write: if false;
     }
+    // Commercial terms and their history are operator-owned through the
+    // audited manageCommercialTerms callable; clients never read them.
+    match /commercialTerms/{termsId} {
+      allow read, write: if false;
+    }
+    match /commercialTermsRevisions/{revisionId} {
+      allow read, write: if false;
+    }
     match /organizerPaymentConnections/{connectionId} {
       allow read, write: if false;
     }

@@ -12,7 +12,7 @@ test("flags old rail chrome zeroing in production code", () => {
   const result = scanSourceForRailContracts({
     relativePath: "lib/dashboard/presentation/widgets/dashboard_full.dart",
     source: `
-      Widget build(context) => ClubAvatarRail(
+      Widget build(context) => OrganizerAvatarRail(
         clubs: clubs,
         showDivider: false,
         headerPadding: EdgeInsets.zero,
@@ -28,7 +28,7 @@ test("flags old rail chrome zeroing in production code", () => {
 test("allows embedded rail defaults", () => {
   const result = scanSourceForRailContracts({
     relativePath: "lib/dashboard/presentation/widgets/dashboard_full.dart",
-    source: "Widget build(context) => ClubAvatarRail(clubs: clubs);",
+    source: "Widget build(context) => OrganizerAvatarRail(clubs: clubs);",
   });
 
   assert.equal(result.findings.length, 0);
@@ -38,7 +38,7 @@ test("allows full-bleed rail opt-in", () => {
   const result = scanSourceForRailContracts({
     relativePath: "lib/explore/presentation/widgets/explore_body.dart",
     source:
-      "Widget build(context) => ClubAvatarRail(clubs: clubs, fullBleed: true);",
+      "Widget build(context) => OrganizerAvatarRail(clubs: clubs, fullBleed: true);",
   });
 
   assert.equal(result.findings.length, 0);
@@ -64,7 +64,7 @@ test("reports redundant showDivider false without failing high", () => {
 
 test("ignores canonical rail implementations", () => {
   const result = scanSourceForRailContracts({
-    relativePath: "lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart",
+    relativePath: "lib/organizers/presentation/discovery/widgets/organizer_avatar_rail.dart",
     source: `
       Widget build(context) => CatchSection.horizontal(
         title: 'Your clubs',
@@ -92,7 +92,7 @@ test("scanRailContracts covers app and shared-package production sources", () =>
     root,
     "lib/dashboard/presentation/widgets/dashboard_full.dart",
     `
-      Widget build(context) => ClubAvatarRail(
+      Widget build(context) => OrganizerAvatarRail(
         clubs: clubs,
         showDivider: false,
         headerPadding: EdgeInsets.zero,
@@ -101,9 +101,9 @@ test("scanRailContracts covers app and shared-package production sources", () =>
   );
   writeFile(
     root,
-    "widgetbook/lib/clubs/catalog/discovery.dart",
+    "widgetbook/lib/organizers/catalog/discovery.dart",
     `
-      Widget build(context) => ClubAvatarRail(
+      Widget build(context) => OrganizerAvatarRail(
         clubs: clubs,
         showDivider: false,
         headerPadding: EdgeInsets.zero,

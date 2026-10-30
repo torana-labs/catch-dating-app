@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
@@ -19,7 +19,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../clubs/clubs_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 const _organizer = 'organizer-1';
@@ -150,8 +150,8 @@ Future<({ProviderContainer container, GoRouter router})> _pumpPeople(
   final container = ProviderContainer(
     overrides: [
       uidProvider.overrideWithValue(const AsyncData(_uid)),
-      hostOperableClubsProvider(_uid).overrideWithValue(
-        AsyncData([buildClub(id: _organizer, ownerUserId: _uid)]),
+      hostOperableOrganizersProvider(_uid).overrideWithValue(
+        AsyncData([buildOrganizer(id: _organizer, ownerUserId: _uid)]),
       ),
       hostContactsRepositoryProvider.overrideWithValue(repository),
       hostMessagingSetupProvider(

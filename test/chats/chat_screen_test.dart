@@ -19,8 +19,8 @@ import 'package:catch_dating_app/contexts/messaging/data/conversation_repository
 import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
@@ -317,7 +317,7 @@ HostChatScreenState _hostChatState({
   required AsyncValue<List<ChatMessage>> messagesAsync,
   required AsyncValue<List<SuvbotActionItem>> suvbotActionsAsync,
   required PublicProfile? profile,
-  required ClubHostProfile? hostProfile,
+  required OrganizerHostProfile? hostProfile,
   bool reportUserPending = false,
   bool blockUserPending = false,
   DateTime? now,
@@ -657,7 +657,7 @@ void main() {
       expect(state.otherUid, 'runner-2');
       expect(state.isSuvbot, isFalse);
       expect(state.isHostInquiry, isFalse);
-      expect(state.hostInquiryClubId, isNull);
+      expect(state.hostInquiryOrganizerId, isNull);
       expect(state.hostProfile, isNull);
       expect(state.publicProfileUid, 'runner-2');
       expect(state.initialProfile, same(routeProfile));
@@ -675,7 +675,7 @@ void main() {
           conversationType: MatchConversationType.clubHostInquiry,
           clubId: 'club-1',
         );
-        final club = Club(
+        final organizer = Organizer(
           id: 'club-1',
           name: 'Sea Face Social',
           description: 'Small social runs and conversation-led evenings.',
@@ -687,26 +687,26 @@ void main() {
           createdAt: DateTime(2026),
         );
 
-        final withoutClub = ChatThreadLookupState.resolve(
+        final withoutOrganizer = ChatThreadLookupState.resolve(
           matchId: match.id,
           uid: 'host-1',
           match: match,
           routeProfile: routeProfile,
         );
-        final withClub = ChatThreadLookupState.resolve(
+        final withOrganizer = ChatThreadLookupState.resolve(
           matchId: match.id,
           uid: 'host-1',
           match: match,
           routeProfile: routeProfile,
-          hostInquiryClub: club,
+          hostInquiryOrganizer: organizer,
         );
 
-        expect(withoutClub.hostInquiryClubId, 'club-1');
-        expect(withoutClub.publicProfileUid, isNull);
-        expect(withoutClub.initialProfile, isNull);
-        expect(withClub.otherUid, 'guest-1');
-        expect(withClub.publicProfileUid, 'guest-1');
-        expect(withClub.initialProfile, isNull);
+        expect(withoutOrganizer.hostInquiryOrganizerId, 'club-1');
+        expect(withoutOrganizer.publicProfileUid, isNull);
+        expect(withoutOrganizer.initialProfile, isNull);
+        expect(withOrganizer.otherUid, 'guest-1');
+        expect(withOrganizer.publicProfileUid, 'guest-1');
+        expect(withOrganizer.initialProfile, isNull);
       },
     );
 
@@ -718,7 +718,7 @@ void main() {
         conversationType: MatchConversationType.clubHostInquiry,
         clubId: 'club-1',
       );
-      final club = Club(
+      final organizer = Organizer(
         id: 'club-1',
         name: 'Sea Face Social',
         description: 'Small social runs and conversation-led evenings.',
@@ -728,10 +728,10 @@ void main() {
         ownerUserId: 'host-1',
         hostUserIds: const ['host-1'],
         hostProfiles: const [
-          ClubHostProfile(
+          OrganizerHostProfile(
             uid: 'host-1',
             displayName: 'Mira from Sea Face',
-            role: ClubHostRole.owner,
+            role: OrganizerHostRole.owner,
           ),
         ],
         createdAt: DateTime(2026),
@@ -742,7 +742,7 @@ void main() {
         uid: 'guest-1',
         match: match,
         routeProfile: null,
-        hostInquiryClub: club,
+        hostInquiryOrganizer: organizer,
       );
 
       expect(state.otherUid, 'host-1');
@@ -1125,7 +1125,7 @@ void main() {
         conversationType: MatchConversationType.clubHostInquiry,
         clubId: 'club-1',
       );
-      final club = Club(
+      final organizer = Organizer(
         id: 'club-1',
         name: 'Sea Face Social',
         description: 'Small social runs and conversation-led evenings.',
@@ -1149,9 +1149,9 @@ void main() {
             conversationRepositoryProvider.overrideWithValue(
               FakeConversationRepository(),
             ),
-            watchClubProvider(
+            watchOrganizerProvider(
               'club-1',
-            ).overrideWith((ref) => Stream.value(club)),
+            ).overrideWith((ref) => Stream.value(organizer)),
             watchPublicProfileProvider(
               'guest-1',
             ).overrideWith((ref) => Stream.value(profile)),
@@ -1699,7 +1699,7 @@ void main() {
         final matchRepository = FakeMatchRepository(match: match);
         final conversationRepository = FakeConversationRepository();
         final safetyRepository = FakeSafetyRepository();
-        final club = Club(
+        final organizer = Organizer(
           id: 'club-1',
           name: 'Sea Face Social',
           description: 'Small social runs and conversation-led evenings.',
@@ -1710,10 +1710,10 @@ void main() {
           ownerUserId: 'host-1',
           hostUserIds: const ['host-1'],
           hostProfiles: const [
-            ClubHostProfile(
+            OrganizerHostProfile(
               uid: 'host-1',
               displayName: 'Mira from Sea Face',
-              role: ClubHostRole.owner,
+              role: OrganizerHostRole.owner,
             ),
           ],
           createdAt: DateTime(2026),
@@ -1728,9 +1728,9 @@ void main() {
                 conversationRepository,
               ),
               safetyRepositoryProvider.overrideWith((ref) => safetyRepository),
-              watchClubProvider(
+              watchOrganizerProvider(
                 'club-1',
-              ).overrideWith((ref) => Stream.value(club)),
+              ).overrideWith((ref) => Stream.value(organizer)),
               watchEventProvider(
                 'event-1',
               ).overrideWith((ref) => Stream.value(null)),
@@ -1847,9 +1847,9 @@ void main() {
             conversationRepositoryProvider.overrideWithValue(
               conversationRepository,
             ),
-            watchClubProvider('club-1').overrideWith(
+            watchOrganizerProvider('club-1').overrideWith(
               (ref) => Stream.value(
-                Club(
+                Organizer(
                   id: 'club-1',
                   name: 'Sea Face Social',
                   description:
@@ -1910,9 +1910,9 @@ void main() {
               conversationRepository,
             ),
             safetyRepositoryProvider.overrideWith((ref) => safetyRepository),
-            watchClubProvider('club-1').overrideWith(
+            watchOrganizerProvider('club-1').overrideWith(
               (ref) => Stream.value(
-                Club(
+                Organizer(
                   id: 'club-1',
                   name: 'Sea Face Social',
                   description:
@@ -1977,9 +1977,9 @@ void main() {
               conversationRepository,
             ),
             safetyRepositoryProvider.overrideWith((ref) => safetyRepository),
-            watchClubProvider('club-1').overrideWith(
+            watchOrganizerProvider('club-1').overrideWith(
               (ref) => Stream.value(
-                Club(
+                Organizer(
                   id: 'club-1',
                   name: 'Sea Face Social',
                   description:

@@ -25,38 +25,38 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/operations/create_club_routes.dart"
+          "widgetbook/lib/hosts/operations/create_organizer_routes.dart"
         ],
         "actionOwners": [
           {
             "id": "route_intent",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-            "symbol": "HostClubCreateRouteIntent"
+            "file": "lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart",
+            "symbol": "HostOrganizerCreateRouteIntent"
           },
           {
             "id": "primary_intent",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/create/create_club_screen_state.dart",
-            "symbol": "HostClubCreatePrimaryIntent"
+            "file": "lib/hosts/presentation/organizer_management/create/create_organizer_screen_state.dart",
+            "symbol": "HostOrganizerCreatePrimaryIntent"
           },
           {
             "id": "previous_intent",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/create/create_club_screen_state.dart",
-            "symbol": "HostClubCreatePreviousIntent"
+            "file": "lib/hosts/presentation/organizer_management/create/create_organizer_screen_state.dart",
+            "symbol": "HostOrganizerCreatePreviousIntent"
           },
           {
             "id": "submit_controller",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/create/create_club_controller.dart",
-            "symbol": "CreateClubController"
+            "file": "lib/hosts/presentation/organizer_management/create/create_organizer_controller.dart",
+            "symbol": "CreateOrganizerController"
           },
           {
             "id": "draft_controller",
             "language": "dart",
-            "file": "lib/hosts/presentation/club_management/create/create_club_draft_controller.dart",
-            "symbol": "CreateClubDraftController"
+            "file": "lib/hosts/presentation/organizer_management/create/create_organizer_draft_controller.dart",
+            "symbol": "CreateOrganizerDraftController"
           }
         ],
         "componentContracts": [
@@ -144,7 +144,7 @@
         {
           "id": "navigate_back",
           "owner": "previous_intent",
-          "codeValue": "HostClubCreatePreviousIntent",
+          "codeValue": "HostOrganizerCreatePreviousIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -192,7 +192,7 @@
         {
           "id": "select_club_photos",
           "owner": "route_intent",
-          "codeValue": "HostClubCreatePickClubPhotosIntent",
+          "codeValue": "HostOrganizerCreatePickOrganizerPhotosIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -212,7 +212,7 @@
         {
           "id": "select_profile_image",
           "owner": "route_intent",
-          "codeValue": "HostClubCreatePickProfileImageIntent",
+          "codeValue": "HostOrganizerCreatePickProfileImageIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -232,7 +232,7 @@
         {
           "id": "remove_club_photo",
           "owner": "route_intent",
-          "codeValue": "HostClubCreateRemoveClubPhotoIntent",
+          "codeValue": "HostOrganizerCreateRemoveOrganizerPhotoIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -252,7 +252,7 @@
         {
           "id": "reorder_club_photo",
           "owner": "route_intent",
-          "codeValue": "HostClubCreateReorderClubPhotoIntent",
+          "codeValue": "HostOrganizerCreateReorderOrganizerPhotoIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -272,7 +272,7 @@
         {
           "id": "select_city",
           "owner": "route_intent",
-          "codeValue": "HostClubCreateCityChangedIntent",
+          "codeValue": "HostOrganizerCreateCityChangedIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -292,7 +292,7 @@
         {
           "id": "select_organizer_type",
           "owner": "route_intent",
-          "codeValue": "HostClubCreateOrganizerTypeChangedIntent",
+          "codeValue": "HostOrganizerCreateOrganizerTypeChangedIntent",
           "cardinality": "domain_bounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -311,7 +311,7 @@
         {
           "id": "update_defaults",
           "owner": "route_intent",
-          "codeValue": "HostClubCreateDefaultsChangedIntent",
+          "codeValue": "HostOrganizerCreateDefaultsChangedIntent",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",

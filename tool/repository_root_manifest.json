@@ -1,6 +1,6 @@
 {
-  "version": "3.1.0",
-  "updated": "2026-10-29",
+  "version": "3.2.0",
+  "updated": "2026-10-30",
   "ownerVocabulary": [
     "agent_operating_model",
     "app_platform",
@@ -25,6 +25,7 @@
     {"names": ["packages"], "kind": "source", "expectation": "tracked", "owner": "repository_tooling", "consumer": "package.json", "recovery": "Restore from Git and reinstall the owning Dart or npm workspace dependencies."},
     {"names": ["functions", "contracts", "analytics"], "kind": "source", "expectation": "tracked", "owner": "backend_platform", "recovery": "Restore from Git and regenerate contract outputs when required."},
     {"names": ["firebase", "extensions"], "kind": "config", "expectation": "tracked", "owner": "backend_platform", "consumer": "firebase.json", "recovery": "Restore from Git and validate the selected Firebase environment."},
+    {"names": ["infra"], "kind": "config", "expectation": "tracked", "owner": "backend_platform", "consumer": ".github/workflows/infra-plan.yml", "recovery": "Restore from Git; Terraform state lives in the GCS bucket, so nothing local needs recovery."},
     {"names": ["operations"], "kind": "source", "expectation": "tracked", "owner": "operations_platform", "consumer": "docs/operations_platform.md", "recovery": "Restore from Git and run npm --prefix operations test."},
     {"names": ["apps", "lib", "assets", "integration_test", "test"], "kind": "source", "expectation": "tracked", "owner": "app_platform", "recovery": "Restore from Git and run flutter pub get."},
     {"names": ["copy"], "kind": "source", "expectation": "tracked", "owner": "content_system", "consumer": "docs/app_architecture.md", "recovery": "Restore from Git and run the owning copy generator."},

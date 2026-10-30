@@ -156,9 +156,9 @@ class _EventAgeRangeFieldState extends State<EventAgeRangeField> {
     return CatchFieldLanes.single(
       child: CatchField.control(
         copy: catchFieldCopy(context.l10n),
-        title: context.l10n.hostsHostClubProfileTitleAgeRange,
+        title: context.l10n.hostsHostOrganizerProfileTitleAgeRange,
         contract: widget.minimumContract,
-        body: context.l10n.hostsHostClubProfileVisiblecopyMinageMaxage(
+        body: context.l10n.hostsHostOrganizerProfileVisiblecopyMinageMaxage(
           minAge: minLabel,
           maxAge: maxLabel,
         ),

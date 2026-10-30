@@ -269,7 +269,7 @@ class HostCustomersList extends StatelessWidget {
                   if (state.loadMoreError != null)
                     CatchLocalizedErrorState(
                       state.loadMoreError!,
-                      context: AppErrorContext.club,
+                      context: AppErrorContext.organizer,
                       mode: CatchErrorStateMode.compact,
                       onRetry: onLoadMore,
                     ),

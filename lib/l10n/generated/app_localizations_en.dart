@@ -720,35 +720,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatsSuvbotActionBarLabelCreateMatch => 'Create match';
 
   @override
-  String get clubsClubDetailScreenBodyClubid => 'clubId';
+  String get organizersOrganizerDetailScreenBodyOrganizerid => 'clubId';
 
   @override
-  String get clubsClubDetailScreenBodyEventid => 'eventId';
+  String get organizersOrganizerDetailScreenBodyEventid => 'eventId';
 
   @override
-  String get clubsClubDetailScreenBodyUid => 'uid';
+  String get organizersOrganizerDetailScreenBodyUid => 'uid';
 
   @override
-  String get clubsClubDetailScreenTitleClubNotFound => 'Organizer not found';
+  String get organizersOrganizerDetailScreenTitleOrganizerNotFound =>
+      'Organizer not found';
 
   @override
-  String get clubsClubDetailScreenMessageThisClubIsNo =>
+  String get organizersOrganizerDetailScreenMessageThisOrganizerIsNo =>
       'This organizer is no longer available.';
 
   @override
-  String get clubsClubContactSectionTitleContact => 'Contact';
+  String get organizersOrganizerContactSectionTitleContact => 'Contact';
 
   @override
-  String get clubsClubDetailBodyTitleAbout => 'About';
+  String get organizersOrganizerDetailBodyTitleAbout => 'About';
 
   @override
-  String get clubsClubDetailBodyTitleWhatWeDo => 'What we do';
+  String get organizersOrganizerDetailBodyTitleWhatWeDo => 'What we do';
 
   @override
-  String get clubsClubDetailBodyTitleFromTheClub => 'From the organizer';
+  String get organizersOrganizerDetailBodyTitleFromTheOrganizer =>
+      'From the organizer';
 
   @override
-  String get clubsClubDetailBodyTitleYourHosts => 'Your hosts';
+  String get organizersOrganizerDetailBodyTitleYourHosts => 'Your hosts';
 
   @override
   String get organizersAuthorityBadgeUnclaimed => 'Unclaimed listing';
@@ -772,50 +774,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get organizersAuthorityBadgeUnavailable => 'Unavailable';
 
   @override
-  String get clubsClubDetailBodyTitleReviews => 'Reviews';
+  String get organizersOrganizerDetailBodyTitleReviews => 'Reviews';
 
   @override
-  String get clubsClubDetailBodyTitleGetInTouch => 'Get in touch';
+  String get organizersOrganizerDetailBodyTitleGetInTouch => 'Get in touch';
 
   @override
-  String get clubsClubDetailDockLabelDisableClubPushNotifications =>
+  String
+  get organizersOrganizerDetailDockLabelDisableOrganizerPushNotifications =>
       'Disable organizer push notifications';
 
   @override
-  String get clubsClubDetailDockLabelEnableClubPushNotifications =>
+  String
+  get organizersOrganizerDetailDockLabelEnableOrganizerPushNotifications =>
       'Enable organizer push notifications';
 
   @override
-  String get clubsClubHeroAppBarTooltipBack => 'Back';
+  String get organizersOrganizerHeroAppBarTooltipBack => 'Back';
 
   @override
-  String get clubsClubHeroAppBarTooltipShareClub => 'Share organizer';
+  String get organizersOrganizerHeroAppBarTooltipShareOrganizer =>
+      'Share organizer';
 
   @override
-  String get clubsClubHostSectionMessageMessageHost => 'Message host';
+  String get organizersOrganizerHostSectionMessageMessageHost => 'Message host';
 
   @override
-  String get clubsClubPhotoStripTextFromTheClub => 'FROM THE ORGANIZER';
+  String get organizersOrganizerPhotoStripTextFromTheOrganizer =>
+      'FROM THE ORGANIZER';
 
   @override
-  String get clubsClubScheduleSectionTitleNoEventsScheduled =>
+  String get organizersOrganizerScheduleSectionTitleNoEventsScheduled =>
       'No events scheduled';
 
   @override
-  String get clubsClubScheduleSectionMessageFutureEventsWillAppear =>
+  String get organizersOrganizerScheduleSectionMessageFutureEventsWillAppear =>
       'Future events will appear here once the host publishes one.';
 
   @override
-  String get clubsClubAvatarRailTitleYourClubs => 'Your organizers';
+  String get organizersOrganizerAvatarRailTitleYourOrganizers =>
+      'Your organizers';
 
   @override
-  String get clubsClubDiscoverListTitleClubDirectory => 'Organizer directory';
+  String get organizersOrganizerDiscoverListTitleOrganizerDirectory =>
+      'Organizer directory';
 
   @override
-  String get clubsClubIdentityAtomsLabelOwner => 'Owner';
+  String get organizersOrganizerIdentityAtomsLabelOwner => 'Owner';
 
   @override
-  String get clubsClubIdentityAtomsLabelHost => 'Host';
+  String get organizersOrganizerIdentityAtomsLabelHost => 'Host';
 
   @override
   String get coreCatchAdaptivePickerTextCancel => 'Cancel';
@@ -1004,11 +1012,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'New catches, bookings, and event reminders will collect here.';
 
   @override
-  String get dashboardClubPostsHomeSectionTitleClubUpdates =>
+  String get dashboardOrganizerPostsHomeSectionTitleOrganizerUpdates =>
       'Organizer updates';
 
   @override
-  String get dashboardClubPostsHomeSectionTextLinkedEvent => 'Linked event';
+  String get dashboardOrganizerPostsHomeSectionTextLinkedEvent =>
+      'Linked event';
 
   @override
   String get dashboardEmptyHeroCardTextWelcomeToCatch => 'WELCOME TO CATCH';
@@ -1310,7 +1319,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsEventDetailScreenBodyEventid => 'eventId';
 
   @override
-  String get eventsEventDetailScreenBodyClubid => 'clubId';
+  String get eventsEventDetailScreenBodyOrganizerid => 'clubId';
 
   @override
   String get eventsEventLocationMapBodyScreenLabelGetDirections =>
@@ -1325,7 +1334,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'No mapped events yet';
 
   @override
-  String get eventsEventMapScreenMessageJoinClubsBookEvents =>
+  String get eventsEventMapScreenMessageJoinOrganizersBookEvents =>
       'Follow organizers, book events, or save future events to see starting points here.';
 
   @override
@@ -1614,7 +1623,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreScreenActionLoadMorePlans => 'Load more plans';
 
   @override
-  String get exploreExploreScreenTitleNoClubsMatchThis =>
+  String get exploreExploreScreenTitleNoOrganizersMatchThis =>
       'No organizers match this search';
 
   @override
@@ -1622,11 +1631,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Clear the search or filters to bring nearby organizers back into view.';
 
   @override
-  String get exploreExploreScreenMessageTryAnotherClubNeighborhood =>
+  String get exploreExploreScreenMessageTryAnotherOrganizerNeighborhood =>
       'Try another organizer, neighborhood, host, or tag.';
 
   @override
-  String get exploreExploreScreenTitleNoClubsMatchThese =>
+  String get exploreExploreScreenTitleNoOrganizersMatchThese =>
       'No organizers match these filters';
 
   @override
@@ -1703,10 +1712,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get exploreExploreFilterRailTextClubs => 'ORGANIZERS';
+  String get exploreExploreFilterRailTextOrganizers => 'ORGANIZERS';
 
   @override
-  String get exploreExploreFilterRailLabelJoinedClubs => 'Followed organizers';
+  String get exploreExploreFilterRailLabelJoinedOrganizers =>
+      'Followed organizers';
 
   @override
   String get exploreExploreFilterRailLabelRated45 => 'Rated 4.5+';
@@ -1725,20 +1735,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forceUpdateUpdateRequiredScreenLabelUpdateNow => 'Update now';
 
   @override
-  String get hostsCreateClubScreenTitleClubBasics => 'Organizer basics';
+  String get hostsCreateOrganizerScreenTitleOrganizerBasics =>
+      'Organizer basics';
 
   @override
-  String get hostsCreateClubScreenTitleClubDetails => 'Organizer details';
+  String get hostsCreateOrganizerScreenTitleOrganizerDetails =>
+      'Organizer details';
 
   @override
-  String get hostsCreateClubScreenTitleHostDefaults => 'Host defaults';
+  String get hostsCreateOrganizerScreenTitleHostDefaults => 'Host defaults';
 
   @override
-  String get hostsCreateClubScreenTitleEventSuccessDefaults =>
+  String get hostsCreateOrganizerScreenTitleEventSuccessDefaults =>
       'Event success defaults';
 
   @override
-  String get hostsClubBasicsStepTitleClubName => 'Organizer name';
+  String get hostsOrganizerBasicsStepTitleOrganizerName => 'Organizer name';
 
   @override
   String get hostsOrganizerTypeLabel => 'Organizer type';
@@ -1762,114 +1774,120 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsOrganizerTypeBrand => 'Brand';
 
   @override
-  String get hostsClubBasicsStepTitleCity => 'City';
+  String get hostsOrganizerBasicsStepTitleCity => 'City';
 
   @override
-  String get hostsClubBasicsStepTitleAreaNeighbourhood =>
+  String get hostsOrganizerBasicsStepTitleAreaNeighbourhood =>
       'Area / neighbourhood';
 
   @override
-  String get hostsClubBasicsStepPlaceholderEGBandraKoramangala =>
+  String get hostsOrganizerBasicsStepPlaceholderEGBandraKoramangala =>
       'e.g. Bandra, Koramangala';
 
   @override
-  String get hostsClubDetailsStepTitleDescription => 'Description';
+  String get hostsOrganizerDetailsStepTitleDescription => 'Description';
 
   @override
-  String get hostsClubEventSuccessDefaultsStepTitleLiveEventGuide =>
+  String get hostsOrganizerEventSuccessDefaultsStepTitleLiveEventGuide =>
       'Live event guide';
 
   @override
   String
-  get hostsClubEventSuccessDefaultsStepSubtitleNewEventsStartWithAReadyToRunPlanForThisActivity =>
+  get hostsOrganizerEventSuccessDefaultsStepSubtitleNewEventsStartWithAReadyToRunPlanForThisActivity =>
       'New events start with a ready-to-run plan for this activity. You can adjust any event\'s plan later.';
 
   @override
-  String get hostsClubHostDefaultsStepTextDefaultActivity => 'Default activity';
+  String get hostsOrganizerHostDefaultsStepTextDefaultActivity =>
+      'Default activity';
 
   @override
-  String get hostsClubHostDefaultsStepTextNewEventsStartFrom =>
+  String get hostsOrganizerHostDefaultsStepTextNewEventsStartFrom =>
       'New events start from this activity. Hosts can still change the activity and override the event-specific setup.';
 
   @override
-  String get hostsClubHostDefaultsStepTextDefaultEventPolicy =>
+  String get hostsOrganizerHostDefaultsStepTextDefaultEventPolicy =>
       'Default event policy';
 
   @override
-  String get hostsClubHostDefaultsStepTextTheseDefaultsPrefillNew =>
+  String get hostsOrganizerHostDefaultsStepTextTheseDefaultsPrefillNew =>
       'These defaults prefill new events. Hosts can override them per event before anyone books or joins the waitlist.';
 
   @override
-  String get hostsClubHostDefaultsStepTitleCohortCaps => 'Cohort caps';
+  String get hostsOrganizerHostDefaultsStepTitleCohortCaps => 'Cohort caps';
 
   @override
-  String get hostsClubHostDefaultsStepBodyOptionallyPrefillStraightMen =>
+  String get hostsOrganizerHostDefaultsStepBodyOptionallyPrefillStraightMen =>
       'Optionally prefill straight men and straight women caps for open events.';
 
   @override
-  String get hostsClubHostDefaultsStepTitleMaxStraightMen => 'Max straight men';
+  String get hostsOrganizerHostDefaultsStepTitleMaxStraightMen =>
+      'Max straight men';
 
   @override
-  String get hostsClubHostDefaultsStepTitleMaxStraightWomen =>
+  String get hostsOrganizerHostDefaultsStepTitleMaxStraightWomen =>
       'Max straight women';
 
   @override
-  String get hostsClubHostDefaultsStepTitleDemandPricing => 'Demand pricing';
+  String get hostsOrganizerHostDefaultsStepTitleDemandPricing =>
+      'Demand pricing';
 
   @override
-  String get hostsClubHostDefaultsStepBodyPrefillDynamicPricingControls =>
+  String get hostsOrganizerHostDefaultsStepBodyPrefillDynamicPricingControls =>
       'Prefill dynamic pricing controls for balanced singles events.';
 
   @override
-  String get hostsClubHostDefaultsStepTitleStep => 'Step';
+  String get hostsOrganizerHostDefaultsStepTitleStep => 'Step';
 
   @override
-  String get hostsClubHostDefaultsStepTitleMax => 'Max';
+  String get hostsOrganizerHostDefaultsStepTitleMax => 'Max';
 
   @override
-  String get hostsCreateClubContactFieldsTitleInstagramHandle =>
+  String get hostsCreateOrganizerContactFieldsTitleInstagramHandle =>
       'Instagram handle';
 
   @override
-  String get hostsCreateClubContactFieldsPlaceholderYourclub => '@yourclub';
+  String get hostsCreateOrganizerContactFieldsPlaceholderYourorganizer =>
+      '@yourclub';
 
   @override
-  String get hostsCreateClubContactFieldsTitlePhoneNumber => 'Phone number';
+  String get hostsCreateOrganizerContactFieldsTitlePhoneNumber =>
+      'Phone number';
 
   @override
-  String get hostsCreateClubContactFieldsTitleEmail => 'Email';
+  String get hostsCreateOrganizerContactFieldsTitleEmail => 'Email';
 
   @override
-  String get hostsCreateClubContactFieldsPlaceholderHelloYourclubCom =>
+  String
+  get hostsCreateOrganizerContactFieldsPlaceholderHelloYourorganizerCom =>
       'hello@yourclub.com';
 
   @override
-  String get hostsCreateClubPhotosPickerTextDragToReorderThe =>
+  String get hostsCreateOrganizerPhotosPickerTextDragToReorderThe =>
       'Add as many as you need. The first photo is the cover.';
 
   @override
-  String get hostsCreateClubPhotosPickerTextASquareLogoShown =>
+  String get hostsCreateOrganizerPhotosPickerTextASquareLogoShown =>
       'A square logo shown on your organizer profile and events. It stays separate from your gallery.';
 
   @override
-  String get hostsCreateClubPhotosPickerLabelChangeClubProfileImage =>
+  String get hostsCreateOrganizerPhotosPickerLabelChangeOrganizerProfileImage =>
       'Change organizer logo';
 
   @override
-  String get hostsCreateClubPhotosPickerLabelAddClubProfileImage =>
+  String get hostsCreateOrganizerPhotosPickerLabelAddOrganizerProfileImage =>
       'Add organizer logo';
 
   @override
-  String get hostsCreateClubPhotosPickerTextAddImage => 'Add image';
+  String get hostsCreateOrganizerPhotosPickerTextAddImage => 'Add image';
 
   @override
-  String get hostsCreateClubPhotosPickerActionAddLogo => 'Add logo';
+  String get hostsCreateOrganizerPhotosPickerActionAddLogo => 'Add logo';
 
   @override
-  String get hostsCreateClubPhotosPickerActionReplaceLogo => 'Replace';
+  String get hostsCreateOrganizerPhotosPickerActionReplaceLogo => 'Replace';
 
   @override
-  String get hostsCreateClubPhotosPickerActionRemoveLogo => 'Remove';
+  String get hostsCreateOrganizerPhotosPickerActionRemoveLogo => 'Remove';
 
   @override
   String get hostsEditHostedEventScreenBodyDecreaseDuration =>
@@ -2057,7 +2075,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsCreateEventSuccessScreenLabelManageEvent => 'Manage event';
 
   @override
-  String get hostsCreateEventSuccessScreenLabelBackToClub =>
+  String get hostsCreateEventSuccessScreenLabelBackToOrganizer =>
       'Back to organizer';
 
   @override
@@ -2065,7 +2083,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Event basics';
 
   @override
-  String get hostsHostCreateEventRouteLoadingScreenBodyLoadingClub =>
+  String get hostsHostCreateEventRouteLoadingScreenBodyLoadingOrganizer =>
       'Loading organizer';
 
   @override
@@ -2394,7 +2412,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Delete unused event';
 
   @override
-  String get hostsHostEventManageScreenLabelClub => 'Organizer';
+  String get hostsHostEventManageScreenLabelOrganizer => 'Organizer';
 
   @override
   String get hostsHostEventManageScreenLabelMeet => 'Meet';
@@ -2590,27 +2608,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsCatchRosterBoardLabelDeclineRequest => 'Decline request';
 
   @override
-  String get hostsHostClubToolsLabelPostUpdate => 'Post update';
+  String get hostsHostOrganizerToolsLabelPostUpdate => 'Post update';
 
   @override
-  String get hostsHostClubToolsTitlePostToFollowers => 'Post to followers';
+  String get hostsHostOrganizerToolsTitlePostToFollowers => 'Post to followers';
 
   @override
-  String get hostsHostClubToolsLabelPosting => 'Posting...';
+  String get hostsHostOrganizerToolsLabelPosting => 'Posting...';
 
   @override
-  String get hostsHostClubToolsCatchbuttonPostedToFollowers =>
+  String get hostsHostOrganizerToolsCatchbuttonPostedToFollowers =>
       'Posted to followers.';
 
   @override
-  String get hostsHostClubToolsTitleUpdate => 'Update';
+  String get hostsHostOrganizerToolsTitleUpdate => 'Update';
 
   @override
-  String get hostsHostClubToolsPlaceholderShareARouteNote =>
+  String get hostsHostOrganizerToolsPlaceholderShareARouteNote =>
       'Share a route note, meetup detail, or organizer update.';
 
   @override
-  String get hostsHostClubToolsTextCouldNotPostThis =>
+  String get hostsHostOrganizerToolsTextCouldNotPostThis =>
       'Could not post this update. Please try again.';
 
   @override
@@ -3190,7 +3208,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get safetySettingsScreenTitleCatchHost => 'Catch Host';
 
   @override
-  String get safetySettingsScreenBodyManageEventsAndClubs =>
+  String get safetySettingsScreenBodyManageEventsAndOrganizers =>
       'Manage events and organizers';
 
   @override
@@ -3210,7 +3228,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Event changes and cancellations';
 
   @override
-  String get safetySettingsScreenTitleClubAnnouncements =>
+  String get safetySettingsScreenTitleOrganizerAnnouncements =>
       'Organizer announcements';
 
   @override
@@ -3553,18 +3571,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userProfileProfileTabSkeletonTitlePhotos => 'Photos';
 
   @override
-  String get clubsClubHeroAppBarTitleClubDetailCollapsedTitle =>
+  String get organizersOrganizerHeroAppBarTitleOrganizerDetailCollapsedTitle =>
       'club-detail-collapsed-title';
 
   @override
-  String get clubsClubHeroAppBarTextClubDetailExpandedTitle =>
+  String get organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle =>
       'club-detail-expanded-title';
 
   @override
-  String get clubsClubScheduleSectionTitleSchedule => 'Schedule';
+  String get organizersOrganizerScheduleSectionTitleSchedule => 'Schedule';
 
   @override
-  String get clubsClubShareCardTextClubOnCatch => 'ORGANIZER ON CATCH';
+  String get organizersOrganizerShareCardTextOrganizerOnCatch =>
+      'ORGANIZER ON CATCH';
 
   @override
   String get dashboardDashboardEmptyTitleHowCatchWorks => 'How Catch works';
@@ -3640,21 +3659,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'no-selected-map-event';
 
   @override
-  String get hostsClubHostDefaultsStepLabelAdmissionFormat =>
+  String get hostsOrganizerHostDefaultsStepLabelAdmissionFormat =>
       'Admission format';
 
   @override
-  String get hostsClubHostDefaultsStepLabelCancellationPolicy =>
+  String get hostsOrganizerHostDefaultsStepLabelCancellationPolicy =>
       'Cancellation policy';
 
   @override
-  String get hostsCreateClubContactFieldsLabelContact => 'Contact';
+  String get hostsCreateOrganizerContactFieldsLabelContact => 'Contact';
 
   @override
-  String get hostsCreateClubPhotosPickerLabelClubPhotos => 'Gallery & cover';
+  String get hostsCreateOrganizerPhotosPickerLabelOrganizerPhotos =>
+      'Gallery & cover';
 
   @override
-  String get hostsCreateClubPhotosPickerLabelClubProfileImage =>
+  String get hostsCreateOrganizerPhotosPickerLabelOrganizerProfileImage =>
       'Organizer logo';
 
   @override
@@ -3703,11 +3723,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'That event belongs to a different organizer.';
 
   @override
-  String get hostsHostCreateEventScreenTitleClubNotFound =>
+  String get hostsHostCreateEventScreenTitleOrganizerNotFound =>
       'Organizer not found';
 
   @override
-  String get hostsHostCreateEventScreenMessageThisClubIsNo =>
+  String get hostsHostCreateEventScreenMessageThisOrganizerIsNo =>
       'This organizer is no longer available.';
 
   @override
@@ -3715,7 +3735,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Host access required';
 
   @override
-  String get hostsHostCreateEventScreenMessageOnlyThisClubS =>
+  String get hostsHostCreateEventScreenMessageOnlyThisOrganizerS =>
       'Only this organizer\'s host team can create events for this organizer.';
 
   @override
@@ -3916,31 +3936,33 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String clubsClubDetailDockTextMembers({required Object members}) {
+  String organizersOrganizerDetailDockTextMembers({required Object members}) {
     return '$members';
   }
 
   @override
-  String clubsClubHeroAppBarSemanticlabelNameCoverPhoto({
+  String organizersOrganizerHeroAppBarSemanticlabelNameCoverPhoto({
     required Object name,
   }) {
     return '$name cover photo';
   }
 
   @override
-  String clubsClubHostSectionLabelViewDisplaynameProfile({
+  String organizersOrganizerHostSectionLabelViewDisplaynameProfile({
     required Object displayName,
   }) {
     return 'View $displayName profile';
   }
 
   @override
-  String clubsClubPhotoStripTextLengthPhotos({required Object length}) {
+  String organizersOrganizerPhotoStripTextLengthPhotos({
+    required Object length,
+  }) {
     return '$length PHOTOS';
   }
 
   @override
-  String clubsClubShareCardLabelAreaCitylabel({
+  String organizersOrganizerShareCardLabelAreaCitylabel({
     required Object area,
     required Object cityLabel,
   }) {
@@ -3948,7 +3970,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String clubsClubShareCardSemanticlabelNameCoverPhoto({required Object name}) {
+  String organizersOrganizerShareCardSemanticlabelNameCoverPhoto({
+    required Object name,
+  }) {
     return '$name cover photo';
   }
 
@@ -4057,7 +4081,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String exploreExploreScreenTitleNoClubsInCitylabel({
+  String exploreExploreScreenTitleNoOrganizersInCitylabel({
     required Object cityLabel,
   }) {
     return 'No organizers in $cityLabel yet';
@@ -4229,7 +4253,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String hostsHostClubToolsSubtitleRemainingquotaOfWeeklyquotaPosts({
+  String hostsHostOrganizerToolsSubtitleRemainingquotaOfWeeklyquotaPosts({
     required Object remainingQuota,
     required Object weeklyQuota,
   }) {
@@ -4237,7 +4261,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String hostsHostClubToolsHelpertextValue1CharactersLeft({
+  String hostsHostOrganizerToolsHelpertextValue1CharactersLeft({
     required Object value1,
   }) {
     return '$value1 characters left';
@@ -4682,23 +4706,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userProfileProfileTabSkeletonTitleLifestyle => 'Lifestyle';
 
   @override
-  String clubsAvatarChipLabelOpenNameClub({required Object name}) {
+  String organizersAvatarChipLabelOpenNameOrganizer({required Object name}) {
     return 'Open $name organizer';
   }
 
   @override
-  String get clubsAvatarChipTextEventSoon => 'Event soon';
+  String get organizersAvatarChipTextEventSoon => 'Event soon';
 
   @override
-  String clubsDirectoryCardLabelOpenNameClub({required Object name}) {
+  String organizersDirectoryCardLabelOpenNameOrganizer({required Object name}) {
     return 'Open $name organizer';
   }
 
   @override
-  String get clubsDirectoryCardLabelJoined => 'Following';
+  String get organizersDirectoryCardLabelJoined => 'Following';
 
   @override
-  String get clubsDirectoryCardLabelJoin => 'Follow';
+  String get organizersDirectoryCardLabelJoin => 'Follow';
 
   @override
   String get dashboardDashboardEmptyHomeScreenLabelHome => 'Home';
@@ -6015,10 +6039,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String eventsEventJoinedCelebrationScreenMessageWithClubname({
-    required Object clubName,
+  String eventsEventJoinedCelebrationScreenMessageWithOrganizername({
+    required Object organizerName,
   }) {
-    return 'with $clubName';
+    return 'with $organizerName';
   }
 
   @override
@@ -6060,34 +6084,36 @@ class AppLocalizationsEn extends AppLocalizations {
       'You can manage only events that you host.';
 
   @override
-  String get hostsHostClubTeamScreenTitleSignOut => 'Sign out';
+  String get hostsHostOrganizerTeamScreenTitleSignOut => 'Sign out';
 
   @override
-  String get hostsHostClubTeamScreenLabelEdit => 'Edit';
+  String get hostsHostOrganizerTeamScreenLabelEdit => 'Edit';
 
   @override
-  String get hostsHostClubTeamScreenLabelPreview => 'Preview';
+  String get hostsHostOrganizerTeamScreenLabelPreview => 'Preview';
 
   @override
-  String get hostsHostClubTeamScreenTitleProfile => 'Profile';
+  String get hostsHostOrganizerTeamScreenTitleProfile => 'Profile';
 
   @override
-  String get hostsHostClubTeamScreenTitleDisplayName => 'Display name';
+  String get hostsHostOrganizerTeamScreenTitleDisplayName => 'Display name';
 
   @override
-  String get hostsHostClubTeamScreenTitleRoleTitle => 'Role title';
+  String get hostsHostOrganizerTeamScreenTitleRoleTitle => 'Role title';
 
   @override
-  String get hostsHostClubTeamScreenTitleStatus => 'Status';
+  String get hostsHostOrganizerTeamScreenTitleStatus => 'Status';
 
   @override
-  String get hostsHostClubTeamScreenTitleAboutYouAsA => 'About you as a host';
+  String get hostsHostOrganizerTeamScreenTitleAboutYouAsA =>
+      'About you as a host';
 
   @override
-  String get hostsHostClubTeamScreenTitleClubsYouHost => 'Organizers you host';
+  String get hostsHostOrganizerTeamScreenTitleOrganizersYouHost =>
+      'Organizers you host';
 
   @override
-  String get hostsHostClubTeamScreenTextNoHostClubsYet =>
+  String get hostsHostOrganizerTeamScreenTextNoHostOrganizersYet =>
       'No hosted organizers yet.';
 
   @override
@@ -6296,78 +6322,79 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sign in to manage host operations.';
 
   @override
-  String get hostsHostClubProfileTitleIdentity => 'Identity';
+  String get hostsHostOrganizerProfileTitleIdentity => 'Identity';
 
   @override
-  String get hostsHostClubProfileTitleMedia => 'Media';
+  String get hostsHostOrganizerProfileTitleMedia => 'Media';
 
   @override
-  String get hostsHostClubEditTabActionManageImages => 'Manage images';
+  String get hostsHostOrganizerEditTabActionManageImages => 'Manage images';
 
   @override
-  String get hostsHostClubEditTabBadgeLogo => 'LOGO';
+  String get hostsHostOrganizerEditTabBadgeLogo => 'LOGO';
 
   @override
-  String get hostsHostClubProfileLabelClubName => 'Organizer name';
+  String get hostsHostOrganizerProfileLabelOrganizerName => 'Organizer name';
 
   @override
-  String get hostsHostClubProfileLabelCity => 'City';
+  String get hostsHostOrganizerProfileLabelCity => 'City';
 
   @override
-  String get hostsHostClubProfileLabelAreaNeighbourhood =>
+  String get hostsHostOrganizerProfileLabelAreaNeighbourhood =>
       'Area / neighbourhood';
 
   @override
-  String get hostsHostClubProfileLabelDescription => 'Description';
+  String get hostsHostOrganizerProfileLabelDescription => 'Description';
 
   @override
-  String get hostsHostClubProfileTitleContact => 'Contact';
+  String get hostsHostOrganizerProfileTitleContact => 'Contact';
 
   @override
-  String get hostsHostClubProfileLabelInstagram => 'Instagram';
+  String get hostsHostOrganizerProfileLabelInstagram => 'Instagram';
 
   @override
-  String get hostsHostClubProfilePlaceholderYourclub => '@yourclub';
+  String get hostsHostOrganizerProfilePlaceholderYourorganizer => '@yourclub';
 
   @override
-  String get hostsHostClubProfileLabelPhone => 'Phone';
+  String get hostsHostOrganizerProfileLabelPhone => 'Phone';
 
   @override
-  String get hostsHostClubProfileLabelEmail => 'Email';
+  String get hostsHostOrganizerProfileLabelEmail => 'Email';
 
   @override
-  String get hostsHostClubProfilePlaceholderHelloYourclubCom =>
+  String get hostsHostOrganizerProfilePlaceholderHelloYourorganizerCom =>
       'hello@yourclub.com';
 
   @override
-  String get hostsHostClubEditTabTitleClubSettings => 'Organizer settings';
+  String get hostsHostOrganizerEditTabTitleOrganizerSettings =>
+      'Organizer settings';
 
   @override
-  String get hostsHostClubEditTabActionSaveMedia => 'Save media';
+  String get hostsHostOrganizerEditTabActionSaveMedia => 'Save media';
 
   @override
-  String get hostsHostClubEditTabActionDiscardMedia => 'Discard';
+  String get hostsHostOrganizerEditTabActionDiscardMedia => 'Discard';
 
   @override
-  String get hostsHostClubEditTabLabelEventDefaults => 'Event defaults';
+  String get hostsHostOrganizerEditTabLabelEventDefaults => 'Event defaults';
 
   @override
-  String get hostsHostClubEditTabLabelLiveEventGuide => 'Live event guide';
+  String get hostsHostOrganizerEditTabLabelLiveEventGuide => 'Live event guide';
 
   @override
-  String get hostsHostClubEditTabLabelPayments => 'Payments';
+  String get hostsHostOrganizerEditTabLabelPayments => 'Payments';
 
   @override
-  String get hostsHostClubEditTabLabelHostTeam => 'Host team';
+  String get hostsHostOrganizerEditTabLabelHostTeam => 'Host team';
 
   @override
-  String get hostsHostClubEditTabValueOn => 'On';
+  String get hostsHostOrganizerEditTabValueOn => 'On';
 
   @override
-  String get hostsHostClubEditTabValueOff => 'Off';
+  String get hostsHostOrganizerEditTabValueOff => 'Off';
 
   @override
-  String hostsHostClubEditTabValueHostCount({required int count}) {
+  String hostsHostOrganizerEditTabValueHostCount({required int count}) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
@@ -6378,45 +6405,47 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsHostClubProfileTitleDefaultActivity => 'Default activity';
+  String get hostsHostOrganizerProfileTitleDefaultActivity =>
+      'Default activity';
 
   @override
-  String get hostsHostClubProfileTitleAdmission => 'Admission';
+  String get hostsHostOrganizerProfileTitleAdmission => 'Admission';
 
   @override
-  String get hostsHostClubProfileTitleAgeRange => 'Age range';
+  String get hostsHostOrganizerProfileTitleAgeRange => 'Age range';
 
   @override
-  String get hostsHostClubProfileTitleCancellationPolicy =>
+  String get hostsHostOrganizerProfileTitleCancellationPolicy =>
       'Cancellation policy';
 
   @override
-  String get hostsHostClubsScaffoldLabelClubWorkspaceTabs =>
+  String get hostsHostOrganizersScaffoldLabelOrganizerWorkspaceTabs =>
       'Organizer workspace tabs';
 
   @override
-  String get hostsHostClubsScaffoldBodyDragLeftOrRight =>
+  String get hostsHostOrganizersScaffoldBodyDragLeftOrRight =>
       'Drag left or right to switch between Edit, Insights, and Preview.';
 
   @override
-  String get hostsHostClubsScaffoldLabelEdit => 'Edit';
+  String get hostsHostOrganizersScaffoldLabelEdit => 'Edit';
 
   @override
-  String get hostsHostClubsScaffoldLabelInsights => 'Insights';
+  String get hostsHostOrganizersScaffoldLabelInsights => 'Insights';
 
   @override
-  String get hostsHostClubsScaffoldLabelPreview => 'Preview';
+  String get hostsHostOrganizersScaffoldLabelPreview => 'Preview';
 
   @override
-  String get hostsHostClubsScaffoldTitleNoHostClubsYet =>
+  String get hostsHostOrganizersScaffoldTitleNoHostOrganizersYet =>
       'No hosted organizers yet';
 
   @override
-  String get hostsHostClubsScaffoldBodyCreateAClubOr =>
+  String get hostsHostOrganizersScaffoldBodyCreateAOrganizerOr =>
       'Create an organizer or accept a host invite to start managing events.';
 
   @override
-  String get hostsHostClubsScaffoldLabelCreateClub => 'Create organizer';
+  String get hostsHostOrganizersScaffoldLabelCreateOrganizer =>
+      'Create organizer';
 
   @override
   String get hostsHostEventsListTextEvents => 'Events';
@@ -6512,15 +6541,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventsRowCancelled => 'Cancelled';
 
   @override
-  String get hostsHostEventsScaffoldTitleCreateYourFirstClub =>
+  String get hostsHostEventsScaffoldTitleCreateYourFirstOrganizer =>
       'Create your first organizer';
 
   @override
-  String get hostsHostEventsScaffoldBodyCreateAClubTo =>
+  String get hostsHostEventsScaffoldBodyCreateAOrganizerTo =>
       'Create an organizer to publish events, manage attendees, and run Event Success.';
 
   @override
-  String get hostsHostEventsScaffoldLabelCreateClub => 'Create organizer';
+  String get hostsHostEventsScaffoldLabelCreateOrganizer => 'Create organizer';
 
   @override
   String get hostsHostOrganizerLabelMembers => 'Followers';
@@ -6606,7 +6635,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostTodayTitleNeedsYou => 'Needs attention';
 
   @override
-  String get hostsHostTodayTooltipSwitchClub => 'Switch organizer';
+  String get hostsHostTodayTooltipSwitchOrganizer => 'Switch organizer';
 
   @override
   String hostsHostTodayTextEventdaylabelTime({
@@ -7420,7 +7449,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreScreenStateActionlabelNoLink => 'No link';
 
   @override
-  String get exploreExploreScreenStateCaptionClubToKnow => 'Organizer to know';
+  String get exploreExploreScreenStateCaptionOrganizerToKnow =>
+      'Organizer to know';
 
   @override
   String get exploreExploreScreenStateLabelHostedBy => 'Hosted by';
@@ -7710,15 +7740,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String
-  get eventsEventDetailDesignPrimitivesVisiblecopyOnlyActiveClubMembers =>
+  get eventsEventDetailDesignPrimitivesVisiblecopyOnlyActiveOrganizerMembers =>
       'Only active organizer followers can book this event.';
 
   @override
-  String get clubsClubDetailDockVisiblecopyFreeToJoinLeave =>
+  String get organizersOrganizerDetailDockVisiblecopyFreeToJoinLeave =>
       'FREE TO JOIN · LEAVE ANYTIME';
 
   @override
-  String get clubsClubDetailDockVisiblecopyMemberManageAnytime =>
+  String get organizersOrganizerDetailDockVisiblecopyMemberManageAnytime =>
       'MEMBER · MANAGE ANYTIME';
 
   @override
@@ -7801,14 +7831,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Book a group event';
 
   @override
-  String get dashboardDashboardEmptyBodyPickAClubNear =>
+  String get dashboardDashboardEmptyBodyPickAOrganizerNear =>
       'Pick an organizer near you. Pay the fee — or don\'t; some are free.';
 
   @override
   String get dashboardDashboardEmptyTitleActuallyShowUp => 'Actually show up';
 
   @override
-  String get dashboardDashboardEmptyBodyMeetTheClubAt =>
+  String get dashboardDashboardEmptyBodyMeetTheOrganizerAt =>
       'Meet the organizer at the event. No cold matching happens here.';
 
   @override
@@ -8057,7 +8087,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get swipesProfileViewMapperTitleLifestyle => 'Lifestyle';
 
   @override
-  String get hostsHostClubsScaffoldVisiblecopyOwner => 'Owner';
+  String get hostsHostOrganizersScaffoldVisiblecopyOwner => 'Owner';
 
   @override
   String
@@ -8143,16 +8173,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get clubsClubDetailBodyLabelMembers => 'Followers';
+  String get organizersOrganizerDetailBodyLabelMembers => 'Followers';
 
   @override
-  String get clubsClubDetailBodyLabelRating => 'Rating';
+  String get organizersOrganizerDetailBodyLabelRating => 'Rating';
 
   @override
-  String get clubsClubDetailBodyLabelReviews => 'Reviews';
+  String get organizersOrganizerDetailBodyLabelReviews => 'Reviews';
 
   @override
-  String get clubsClubDetailBodyLabelEst => 'Established';
+  String get organizersOrganizerDetailBodyLabelEst => 'Established';
 
   @override
   String get eventsEventDetailOverviewSectionTitleAttendanceMatters =>
@@ -8242,19 +8272,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardEventFocusRailBadgelabelNextEvent => 'Next event';
 
   @override
-  String get clubsClubDetailDockLabelSignInToJoin => 'Sign in to follow';
+  String get organizersOrganizerDetailDockLabelSignInToJoin =>
+      'Sign in to follow';
 
   @override
-  String get clubsClubDetailDockLabelJoinClub => 'Follow organizer';
+  String get organizersOrganizerDetailDockLabelJoinOrganizer =>
+      'Follow organizer';
 
   @override
-  String get clubsClubDetailDockLabelJoined => 'Following';
+  String get organizersOrganizerDetailDockLabelJoined => 'Following';
 
   @override
-  String get clubsClubDetailDockLabelManage => 'Manage';
+  String get organizersOrganizerDetailDockLabelManage => 'Manage';
 
   @override
-  String get clubsClubDetailDockLabelNewEvent => 'New event';
+  String get organizersOrganizerDetailDockLabelNewEvent => 'New event';
 
   @override
   String get hostsHostEventAttendancePanelLabelAccepted => 'Accepted';
@@ -8269,28 +8301,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostEventAttendancePanelLabelProfile => 'Profile';
 
   @override
-  String get hostsClubHostDefaultsStepLabelOpen => 'OPEN';
+  String get hostsOrganizerHostDefaultsStepLabelOpen => 'OPEN';
 
   @override
-  String get hostsClubHostDefaultsStepLabelInvite => 'INVITE';
+  String get hostsOrganizerHostDefaultsStepLabelInvite => 'INVITE';
 
   @override
-  String get hostsClubHostDefaultsStepLabelBalanced => 'BALANCED';
+  String get hostsOrganizerHostDefaultsStepLabelBalanced => 'BALANCED';
 
   @override
-  String get hostsClubHostDefaultsStepDescriptionAnyoneEligibleCanBook =>
+  String get hostsOrganizerHostDefaultsStepDescriptionAnyoneEligibleCanBook =>
       'Anyone eligible can book until the event reaches capacity.';
 
   @override
-  String get hostsClubHostDefaultsStepDescriptionNewInviteOnlyEvents =>
+  String get hostsOrganizerHostDefaultsStepDescriptionNewInviteOnlyEvents =>
       'New invite-only events will ask for an event-specific code.';
 
   @override
-  String get hostsClubHostDefaultsStepDescriptionStraightMenAndWomen =>
+  String get hostsOrganizerHostDefaultsStepDescriptionStraightMenAndWomen =>
       'Straight men and women are kept within one spot of each other.';
 
   @override
-  String get hostsClubHostDefaultsStepDescriptionNewEventsStartOpen =>
+  String get hostsOrganizerHostDefaultsStepDescriptionNewEventsStartOpen =>
       'New events start open with optional straight men and straight women caps.';
 
   @override
@@ -8585,7 +8617,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get dashboardDashboardScreenVisiblecopyClubPosts => 'club_posts';
+  String get dashboardDashboardScreenVisiblecopyOrganizerPosts => 'club_posts';
 
   @override
   String get dashboardDashboardScreenVisiblecopyHome => 'home';
@@ -8611,7 +8643,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardDashboardFullVisiblecopyFindEvent => 'find_event';
 
   @override
-  String get dashboardDashboardFullVisiblecopyClubPosts => 'club_posts';
+  String get dashboardDashboardFullVisiblecopyOrganizerPosts => 'club_posts';
 
   @override
   String get dashboardDashboardFullVisiblecopyOpenPost => 'open_post';
@@ -9305,7 +9337,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreScreenStateVisiblecopyExplore => 'Explore';
 
   @override
-  String get exploreExploreScreenStateVisiblecopySearchEventsOrClubs =>
+  String get exploreExploreScreenStateVisiblecopySearchEventsOrOrganizers =>
       'Search events or organizers';
 
   @override
@@ -9366,7 +9398,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'READ-ONLY SUPPLY · NO CATCH BOOKING';
 
   @override
-  String get exploreExploreScreenStateVisiblecopyClubToKnow =>
+  String get exploreExploreScreenStateVisiblecopyOrganizerToKnow =>
       'ORGANIZER TO KNOW';
 
   @override
@@ -9417,11 +9449,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String exploreExploreScreenStateVisiblecopyClubmembercountlabelArea({
-    required Object clubMemberCountLabel,
+  String exploreExploreScreenStateVisiblecopyOrganizermembercountlabelArea({
+    required Object organizerMemberCountLabel,
     required Object area,
   }) {
-    return '$clubMemberCountLabel - $area';
+    return '$organizerMemberCountLabel - $area';
   }
 
   @override
@@ -9460,45 +9492,48 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsCreateClubScreenVisiblecopyRestoredYourClubDraft =>
+  String get hostsCreateOrganizerScreenVisiblecopyRestoredYourOrganizerDraft =>
       'Restored your organizer draft';
 
   @override
   String
-  get hostsCreateClubScreenVisiblecopyCreateclubscreenRestoresaveddraftFailed =>
+  get hostsCreateOrganizerScreenVisiblecopyCreateorganizerscreenRestoresaveddraftFailed =>
       'CreateClubScreen._restoreSavedDraft failed';
 
   @override
-  String get hostsCreateClubScreenVisiblecopyDraftUpdated => 'Draft updated';
+  String get hostsCreateOrganizerScreenVisiblecopyDraftUpdated =>
+      'Draft updated';
 
   @override
-  String get hostsCreateClubScreenVisiblecopyDraftSaved => 'Draft saved';
+  String get hostsCreateOrganizerScreenVisiblecopyDraftSaved => 'Draft saved';
 
   @override
-  String get hostsCreateClubScreenVisiblecopyCreateclubscreenSubmitFailed =>
+  String
+  get hostsCreateOrganizerScreenVisiblecopyCreateorganizerscreenSubmitFailed =>
       'CreateClubScreen._submit failed';
 
   @override
-  String get hostsClubBasicsStepVisiblecopyPleaseEnterAClub =>
+  String get hostsOrganizerBasicsStepVisiblecopyPleaseEnterAOrganizer =>
       'Please enter an organizer name';
 
   @override
-  String get hostsClubBasicsStepVisiblecopyPleaseSelectACity =>
+  String get hostsOrganizerBasicsStepVisiblecopyPleaseSelectACity =>
       'Please select a city';
 
   @override
-  String get hostsClubBasicsStepVisiblecopyPleaseEnterAnArea =>
+  String get hostsOrganizerBasicsStepVisiblecopyPleaseEnterAnArea =>
       'Please enter an area';
 
   @override
-  String get hostsClubDetailsStepVisiblecopyPleaseAddADescription =>
+  String get hostsOrganizerDetailsStepVisiblecopyPleaseAddADescription =>
       'Please add a description';
 
   @override
-  String get hostsCreateClubPhotosPickerVisiblecopyAddPhotos => 'Add photos';
+  String get hostsCreateOrganizerPhotosPickerVisiblecopyAddPhotos =>
+      'Add photos';
 
   @override
-  String get hostsCreateClubPhotosPickerVisiblecopyAddClubPhotos =>
+  String get hostsCreateOrganizerPhotosPickerVisiblecopyAddOrganizerPhotos =>
       'Add organizer photos';
 
   @override
@@ -9829,32 +9864,34 @@ class AppLocalizationsEn extends AppLocalizations {
       'Participant';
 
   @override
-  String get hostsHostClubTeamScreenVisiblecopyHostProfileSaved =>
+  String get hostsHostOrganizerTeamScreenVisiblecopyHostProfileSaved =>
       'Host profile saved.';
 
   @override
-  String get hostsHostClubTeamScreenVisiblecopyHostProfileCreated =>
+  String get hostsHostOrganizerTeamScreenVisiblecopyHostProfileCreated =>
       'Host profile created.';
 
   @override
-  String get hostsHostClubTeamScreenVisiblecopyCreatingProfile =>
+  String get hostsHostOrganizerTeamScreenVisiblecopyCreatingProfile =>
       'Creating profile...';
 
   @override
-  String get hostsHostClubTeamScreenVisiblecopyCreateHostProfile =>
+  String get hostsHostOrganizerTeamScreenVisiblecopyCreateHostProfile =>
       'Create host profile';
 
   @override
-  String get hostsHostClubTeamScreenVisiblecopyAddRoleTitle => 'Add role title';
+  String get hostsHostOrganizerTeamScreenVisiblecopyAddRoleTitle =>
+      'Add role title';
 
   @override
-  String get hostsHostClubTeamScreenVisiblecopyAddAHostBio => 'Add a host bio';
+  String get hostsHostOrganizerTeamScreenVisiblecopyAddAHostBio =>
+      'Add a host bio';
 
   @override
   String get hostsHostAuthRequiredScreenVisiblecopySignIn => 'Sign in';
 
   @override
-  String hostsHostClubProfileVisiblecopyMinageMaxage({
+  String hostsHostOrganizerProfileVisiblecopyMinageMaxage({
     required Object minAge,
     required Object maxAge,
   }) {
@@ -10695,7 +10732,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventSuccessEventSuccessHostSharedLabelReport => 'Report';
 
   @override
-  String eventsEventDetailScreenStateVisiblecopyClubReviewSummary({
+  String eventsEventDetailScreenStateVisiblecopyOrganizerReviewSummary({
     required Object rating,
     required Object reviewCount,
   }) {
@@ -10799,7 +10836,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Event unavailable';
 
   @override
-  String get coreAppErrorMessageVisiblecopyClubUnavailable =>
+  String get coreAppErrorMessageVisiblecopyOrganizerUnavailable =>
       'Organizer unavailable';
 
   @override
@@ -10841,7 +10878,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coreAppErrorMessageVisiblecopyReloadEvent => 'Reload event';
 
   @override
-  String get coreAppErrorMessageVisiblecopyReloadClub => 'Reload organizer';
+  String get coreAppErrorMessageVisiblecopyReloadOrganizer =>
+      'Reload organizer';
 
   @override
   String get coreAppErrorMessageVisiblecopyReloadCatches => 'Reload catches';
@@ -10864,7 +10902,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coreAppErrorMessageVisiblecopyEventNotFound => 'Event not found';
 
   @override
-  String get coreAppErrorMessageVisiblecopyClubNotFound =>
+  String get coreAppErrorMessageVisiblecopyOrganizerNotFound =>
       'Organizer not found';
 
   @override
@@ -10882,7 +10920,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coreAppErrorMessageVisiblecopyNotFound => 'Not found';
 
   @override
-  String get hostsHostOperationsScreenStateTitleClubs => 'Organizers';
+  String get hostsHostOperationsScreenStateTitleOrganizers => 'Organizers';
 
   @override
   String get imageUploadsProfilePhotoEditorScreenLabelNoPrompt => 'No prompt';
@@ -11100,15 +11138,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'This access application is already locked for review.';
 
   @override
-  String get coreAppErrorMessageVisiblecopyOnlyAClubHost =>
+  String get coreAppErrorMessageVisiblecopyOnlyAOrganizerHost =>
       'Only an organizer manager can edit this organizer.';
 
   @override
-  String get coreAppErrorMessageVisiblecopyOnlyTheClubOwner =>
+  String get coreAppErrorMessageVisiblecopyOnlyTheOrganizerOwner =>
       'Only the organizer owner can edit organizer details.';
 
   @override
-  String get coreAppErrorMessageVisiblecopyChooseAClubBefore =>
+  String get coreAppErrorMessageVisiblecopyChooseAOrganizerBefore =>
       'Choose an organizer before creating the event.';
 
   @override
@@ -11337,27 +11375,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'New attendee questions will move here until you open their thread.';
 
   @override
-  String get clubsClubShareCardFootnote =>
+  String get organizersOrganizerShareCardFootnote =>
       'Shares a visual organizer card with the organizer link.';
 
   @override
-  String clubsClubShareCardHostedBy({required String hostName}) {
+  String organizersOrganizerShareCardHostedBy({required String hostName}) {
     return 'Hosted by $hostName';
   }
 
   @override
-  String clubsClubShareTextIntro({required String clubName}) {
-    return 'Check out $clubName on Catch.';
+  String organizersOrganizerShareTextIntro({required String organizerName}) {
+    return 'Check out $organizerName on Catch.';
   }
 
   @override
-  String get clubsClubHostRoleOwner => 'OWNER';
+  String get organizersOrganizerHostRoleOwner => 'OWNER';
 
   @override
-  String get clubsClubHostRoleHost => 'HOST';
+  String get organizersOrganizerHostRoleHost => 'HOST';
 
   @override
-  String clubsClubHostEstablishedMeta({
+  String organizersOrganizerHostEstablishedMeta({
     required String role,
     required String established,
   }) {
@@ -11365,10 +11403,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get clubsClubScheduleHostedBadge => 'HOSTED';
+  String get organizersOrganizerScheduleHostedBadge => 'HOSTED';
 
   @override
-  String get clubsClubScheduleViewBadge => 'VIEW';
+  String get organizersOrganizerScheduleViewBadge => 'VIEW';
 
   @override
   String get eventsInviteShareButton => 'Share invite';
@@ -11397,9 +11435,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String eventsInviteShareHostPrivateIntro({
     required String eventTitle,
-    required String clubName,
+    required String organizerName,
   }) {
-    return 'You are invited to $eventTitle from $clubName.';
+    return 'You are invited to $eventTitle from $organizerName.';
   }
 
   @override
@@ -11711,7 +11749,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String exploreExploreScreenStateClubRatingReviews({
+  String exploreExploreScreenStateOrganizerRatingReviews({
     required Object rating,
     required int reviewCount,
   }) {
@@ -11726,7 +11764,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String exploreExploreScreenStateClubCardSemantics({
+  String exploreExploreScreenStateOrganizerCardSemantics({
     required Object title,
     required Object caption,
     required Object supportingLabel,
@@ -12492,56 +12530,56 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reviews for this event will appear here, including reviews submitted on your public Catch page.';
 
   @override
-  String get hostsHostClubPublicationTitle => 'Public visibility';
+  String get hostsHostOrganizerPublicationTitle => 'Public visibility';
 
   @override
-  String get hostsHostClubPublicationChannelCatch => 'Catch app';
+  String get hostsHostOrganizerPublicationChannelCatch => 'Catch app';
 
   @override
-  String get hostsHostClubPublicationChannelWebsite => 'Public website';
+  String get hostsHostOrganizerPublicationChannelWebsite => 'Public website';
 
   @override
-  String get hostsHostClubPublicationStatusVisible => 'Visible';
+  String get hostsHostOrganizerPublicationStatusVisible => 'Visible';
 
   @override
-  String get hostsHostClubPublicationStatusHidden => 'Hidden';
+  String get hostsHostOrganizerPublicationStatusHidden => 'Hidden';
 
   @override
-  String get hostsHostClubPublicationStatusEnabled => 'Enabled';
+  String get hostsHostOrganizerPublicationStatusEnabled => 'Enabled';
 
   @override
-  String get hostsHostClubPublicationStatusNotEnabled => 'Not enabled';
+  String get hostsHostOrganizerPublicationStatusNotEnabled => 'Not enabled';
 
   @override
-  String get hostsHostClubPublicationBodyPrivate =>
+  String get hostsHostOrganizerPublicationBodyPrivate =>
       'Only your Host team can access this organizer. You can still run events, import guests, and check people in.';
 
   @override
-  String get hostsHostClubPublicationBodyCatchOnly =>
+  String get hostsHostOrganizerPublicationBodyCatchOnly =>
       'People can find this organizer in Catch. Enable its website page to share it outside the app and support web registration. It will appear after the next website release.';
 
   @override
-  String get hostsHostClubPublicationBodyWebsiteOnly =>
+  String get hostsHostOrganizerPublicationBodyWebsiteOnly =>
       'The website page is enabled, but this organizer is hidden in Catch. Restore Catch visibility to keep both public settings in sync.';
 
   @override
-  String get hostsHostClubPublicationBodyEverywhere =>
+  String get hostsHostOrganizerPublicationBodyEverywhere =>
       'This organizer is enabled for Catch and the public website. Website changes appear after the next website release.';
 
   @override
-  String get hostsHostClubPublicationActionMakePublic =>
+  String get hostsHostOrganizerPublicationActionMakePublic =>
       'Make organizer public';
 
   @override
-  String get hostsHostClubPublicationActionEnableWebsite =>
+  String get hostsHostOrganizerPublicationActionEnableWebsite =>
       'Enable website page';
 
   @override
-  String get hostsHostClubPublicationActionRestoreCatch =>
+  String get hostsHostOrganizerPublicationActionRestoreCatch =>
       'Restore Catch visibility';
 
   @override
-  String get hostsHostClubPublicationActionMakePrivate =>
+  String get hostsHostOrganizerPublicationActionMakePrivate =>
       'Make organizer private';
 
   @override
@@ -16099,7 +16137,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsCreateEventReviewAdmission => 'Admission';
 
   @override
-  String get hostsCreateClubOverviewTitle => 'Organizer setup';
+  String get hostsCreateOrganizerOverviewTitle => 'Organizer setup';
 
   @override
   String get hostsWizardReviewBody =>
@@ -16109,10 +16147,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsCreateEventReviewTitle => 'Review event';
 
   @override
-  String get hostsCreateClubReviewTitle => 'Review organizer';
+  String get hostsCreateOrganizerReviewTitle => 'Review organizer';
 
   @override
-  String get hostsCreateClubCreateAction => 'Create organizer';
+  String get hostsCreateOrganizerCreateAction => 'Create organizer';
 
   @override
   String get hostsDraftExitTitle => 'Save your work?';
@@ -25735,6 +25773,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostMembershipsPayoutNotReady => 'Set up required';
+
+  @override
+  String get hostMembershipsRazorpayTitle => 'Razorpay account';
+
+  @override
+  String get hostMembershipsUnavailableNotOffered =>
+      'Catch hasn’t turned on memberships for you yet.';
+
+  @override
+  String get hostMembershipsUnavailableConnectRazorpay =>
+      'Connect your Razorpay account to sell memberships. Members pay you directly.';
+
+  @override
+  String get hostMembershipsUnavailableReconnectRazorpay =>
+      'Your Razorpay connection needs attention. Reconnect it to keep selling memberships.';
+
+  @override
+  String get hostMembershipsUnavailableSubscriptions =>
+      'Turn on Subscriptions in your Razorpay account, then turn on memberships again.';
+
+  @override
+  String get hostMembershipsUnavailablePayout =>
+      'Finish payout setup before selling memberships.';
+
+  @override
+  String get hostMembershipsUnavailableProvider =>
+      'Razorpay couldn’t be reached. Try again in a few minutes.';
 
   @override
   String get hostMembershipsUnavailableTitle => 'Not available yet';

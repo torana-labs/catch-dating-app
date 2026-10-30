@@ -3240,6 +3240,11 @@
           "tool": "contracts:organizer-nomenclature",
           "stage": "scanner-gate",
           "docAnchor": "docs/migrations/clubs_to_organizers.md#authority-and-compatibility"
+        },
+        {
+          "tool": "architecture:organizer-rename",
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#organizer-domain-cutover"
         }
       ]
     },
@@ -3259,7 +3264,7 @@
         "contracts/public/website_host_listing_projection.schema.json",
         "lib/routing/**",
         "lib/explore/**",
-        "lib/clubs/**",
+        "lib/organizers/**",
         "lib/events/**",
         "lib/organizers/**",
         "website/src/features/claims/**",

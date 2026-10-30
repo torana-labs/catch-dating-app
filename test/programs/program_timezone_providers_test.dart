@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_create_journal.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_inventory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
@@ -16,7 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../clubs/clubs_test_helpers.dart';
+import '../organizers/organizers_test_helpers.dart';
 
 const scope = (accountId: 'account', organizerId: 'organizer');
 
@@ -49,9 +49,9 @@ void main() {
   }) async {
     final container = ProviderContainer(
       overrides: [
-        hostOperableClubsProvider('account').overrideWithValue(
-          AsyncData<List<Club>>([
-            buildClub(id: 'organizer').copyWith(
+        hostOperableOrganizersProvider('account').overrideWithValue(
+          AsyncData<List<Organizer>>([
+            buildOrganizer(id: 'organizer').copyWith(
               location: city,
               locationCityId: '',
               locationMarketId: '',

@@ -25,12 +25,12 @@ import 'package:catch_dating_app/contexts/messaging/data/activity_notification_r
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_draft_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_draft.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_draft_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_draft.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
@@ -71,10 +71,11 @@ import 'package:flutter_riverpod/misc.dart' show ProviderListenable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../../test/events/events_test_helpers.dart' as event_helpers;
 import '../../test/onboarding/onboarding_test_helpers.dart'
     as onboarding_helpers;
+import '../../test/organizers/organizers_test_helpers.dart'
+    as organizer_helpers;
 import '../../test/support/empty_event_chat_repository.dart';
 
 const testShellCity = CityData(
@@ -156,15 +157,18 @@ Future<void> pumpMutationUi(WidgetTester tester) async {
 
 Future<void> pumpSheet(WidgetTester tester) => pumpAppShellFrames(tester);
 
-Future<void> openClubDetail(WidgetTester tester, Club club) async {
-  if (await _tapVisibleClubCard(tester, club)) return;
+Future<void> openOrganizerDetail(
+  WidgetTester tester,
+  Organizer organizer,
+) async {
+  if (await _tapVisibleOrganizerCard(tester, organizer)) return;
 
   final router = _routerFor(tester);
   unawaited(
     router.pushNamed(
-      Routes.clubDetailScreen.name,
-      pathParameters: {'clubId': club.id},
-      extra: club,
+      Routes.organizerDetailScreen.name,
+      pathParameters: {'clubId': organizer.id},
+      extra: organizer,
     ),
   );
   await pumpRoute(tester);
@@ -172,7 +176,7 @@ Future<void> openClubDetail(WidgetTester tester, Club club) async {
 
 Future<void> openEventDetail(
   WidgetTester tester, {
-  required Club club,
+  required Organizer organizer,
   required Event event,
   bool settle = true,
 }) async {
@@ -180,7 +184,7 @@ Future<void> openEventDetail(
   unawaited(
     router.pushNamed(
       Routes.eventDetailScreen.name,
-      pathParameters: {'clubId': club.id, 'eventId': event.id},
+      pathParameters: {'clubId': organizer.id, 'eventId': event.id},
       extra: event,
     ),
   );
@@ -239,15 +243,15 @@ Future<void> openAppTab(WidgetTester tester, String label) async {
 List<Object> appShellTestOverrides({
   required String? uid,
   required UserProfile? user,
-  List<Club> clubs = const [],
-  Set<String> joinedClubIds = const {},
+  List<Organizer> organizers = const [],
+  Set<String> joinedOrganizerIds = const {},
   List<Event> signedUpEvents = const [],
   List<Event> attendedEvents = const [],
   List<Event> recommendedEvents = const [],
-  Map<String, List<Event>> clubEvents = const {},
+  Map<String, List<Event>> organizerEvents = const {},
   Map<String, List<EventParticipation>> eventParticipations = const {},
   List<EventViewerState> eventViewerStates = const [],
-  Map<String, List<Review>> clubReviews = const {},
+  Map<String, List<Review>> organizerReviews = const {},
   Map<String, List<Review>> eventReviews = const {},
   List<Review> reviewsByUser = const [],
   List<PublicProfile> swipeCandidates = const [],
@@ -256,7 +260,7 @@ List<Object> appShellTestOverrides({
   ConversationRepository? conversationRepository,
   PaymentRepository? paymentRepository,
   EventRepository? eventRepository,
-  ClubsRepository? clubsRepository,
+  OrganizersRepository? organizersRepository,
   AuthRepository? authRepository,
   SafetyRepository? safetyRepository,
   UserProfileRepository? userProfileRepository,
@@ -268,25 +272,27 @@ List<Object> appShellTestOverrides({
   FcmService? fcmService,
   bool initializeFcm = false,
 }) {
-  final joinedClubs = clubs
-      .where((club) => joinedClubIds.contains(club.id))
+  final joinedOrganizers = organizers
+      .where((organizer) => joinedOrganizerIds.contains(organizer.id))
       .toList(growable: false);
   final knownEventsById = <String, Event>{
     for (final event in signedUpEvents) event.id: event,
     for (final event in attendedEvents) event.id: event,
     for (final event in recommendedEvents) event.id: event,
-    for (final event in clubEvents.values.expand((events) => events))
+    for (final event in organizerEvents.values.expand((events) => events))
       event.id: event,
   };
-  final clubsById = {for (final club in clubs) club.id: club};
-  final knownClubIds = knownEventsById.values
+  final organizersById = {
+    for (final organizer in organizers) organizer.id: organizer,
+  };
+  final knownOrganizerIds = knownEventsById.values
       .map((event) => event.clubId)
       .toSet();
-  final resolvedClubsRepository =
-      clubsRepository ??
-      (club_helpers.FakeClubsRepository()
-        ..clubsById.addAll(clubsById)
-        ..clubsByLocation[testShellCity.name] = clubs);
+  final resolvedOrganizersRepository =
+      organizersRepository ??
+      (organizer_helpers.FakeOrganizersRepository()
+        ..organizersById.addAll(organizersById)
+        ..organizersByLocation[testShellCity.name] = organizers);
   final participationsByEventId = <String, EventParticipation>{
     if (uid != null)
       for (final event in signedUpEvents)
@@ -370,20 +376,22 @@ List<Object> appShellTestOverrides({
     watchMyHostMembershipBenefitUsesProvider.overrideWith(
       (ref, _) => Stream.value(const []),
     ),
-    watchClubsByLocationProvider(
+    watchOrganizersByLocationProvider(
       testShellCity.name,
-    ).overrideWith((ref) => Stream.value(clubs)),
+    ).overrideWith((ref) => Stream.value(organizers)),
     reviewsRepositoryProvider.overrideWithValue(
       reviewsRepository ??
           FakeShellReviewsRepository(
-            clubReviews: clubReviews,
+            organizerReviews: organizerReviews,
             eventReviews: eventReviews,
             reviewsByUser: reviewsByUser,
           ),
     ),
-    clubsRepositoryProvider.overrideWithValue(resolvedClubsRepository),
-    clubDraftRepositoryProvider.overrideWithValue(
-      FakeShellClubDraftRepository(),
+    organizersRepositoryProvider.overrideWithValue(
+      resolvedOrganizersRepository,
+    ),
+    organizerDraftRepositoryProvider.overrideWithValue(
+      FakeShellOrganizerDraftRepository(),
     ),
     swipeCandidateRepositoryProvider.overrideWithValue(
       FakeShellSwipeCandidateRepository(candidates: swipeCandidates),
@@ -410,34 +418,36 @@ List<Object> appShellTestOverrides({
           ? fcmService
           : UnsupportedTestFcmService(),
     ),
-    for (final club in clubs) ...[
-      watchClubProvider(club.id).overrideWith((ref) => Stream.value(club)),
-      watchEventsForClubProvider(club.id).overrideWithValue(
-        AsyncData<List<Event>>(clubEvents[club.id] ?? const []),
+    for (final organizer in organizers) ...[
+      watchOrganizerProvider(
+        organizer.id,
+      ).overrideWith((ref) => Stream.value(organizer)),
+      watchEventsForOrganizerProvider(organizer.id).overrideWithValue(
+        AsyncData<List<Event>>(organizerEvents[organizer.id] ?? const []),
       ),
-      watchReviewsForClubProvider(club.id).overrideWithValue(
-        AsyncData<List<Review>>(clubReviews[club.id] ?? const []),
+      watchReviewsForOrganizerProvider(organizer.id).overrideWithValue(
+        AsyncData<List<Review>>(organizerReviews[organizer.id] ?? const []),
       ),
       if (uid != null)
-        watchClubMembershipProvider(club.id, uid).overrideWith(
+        watchOrganizerMembershipProvider(organizer.id, uid).overrideWith(
           (ref) => Stream.value(
-            joinedClubIds.contains(club.id)
-                ? ClubMembership(
-                    id: clubMembershipId(clubId: club.id, uid: uid),
-                    clubId: club.id,
+            joinedOrganizerIds.contains(organizer.id)
+                ? OrganizerMembership(
+                    id: organizerMembershipId(clubId: organizer.id, uid: uid),
+                    clubId: organizer.id,
                     uid: uid,
-                    role: ClubMembershipRole.member,
-                    status: ClubMembershipStatus.active,
+                    role: OrganizerMembershipRole.member,
+                    status: OrganizerMembershipStatus.active,
                     joinedAt: DateTime(2026),
                   )
                 : null,
           ),
         ),
     ],
-    for (final clubId in knownClubIds)
-      fetchClubProvider(
+    for (final clubId in knownOrganizerIds)
+      fetchOrganizerProvider(
         clubId,
-      ).overrideWith((ref) async => _clubById(clubs, clubId)),
+      ).overrideWith((ref) async => _organizerById(organizers, clubId)),
     for (final event in knownEventsById.values) ...[
       watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
       watchReviewsForEventProvider(event.id).overrideWithValue(
@@ -459,22 +469,24 @@ List<Object> appShellTestOverrides({
         ).overrideWithValue(AsyncData(participationsByEventId[event.id])),
       ],
     ],
-    exploreClubsViewModelProvider.overrideWithValue(
+    exploreOrganizersViewModelProvider.overrideWithValue(
       AsyncData(
         ExploreViewModel(
-          joinedClubs: joinedClubs,
-          allClubs: clubs,
-          joinedClubIds: joinedClubIds,
+          joinedOrganizers: joinedOrganizers,
+          allOrganizers: organizers,
+          joinedOrganizerIds: joinedOrganizerIds,
         ),
       ),
     ),
-    exploreSourceClubsProvider.overrideWithValue(AsyncData<List<Club>>(clubs)),
+    exploreSourceOrganizersProvider.overrideWithValue(
+      AsyncData<List<Organizer>>(organizers),
+    ),
     exploreFeedViewModelProvider.overrideWithValue(
       const AsyncData(ExploreFeedViewModel(items: [])),
     ),
     exploreRecommendationsProvider.overrideWithValue(const AsyncData([])),
-    filteredExploreClubsProvider.overrideWithValue(
-      AsyncData<List<Club>>(clubs),
+    filteredExploreOrganizersProvider.overrideWithValue(
+      AsyncData<List<Organizer>>(organizers),
     ),
     eventRepositoryProvider.overrideWithValue(
       eventRepository ?? event_helpers.FakeEventRepository(),
@@ -516,22 +528,24 @@ List<Object> appShellTestOverrides({
       watchReviewsByUserProvider(
         uid,
       ).overrideWith((ref) => Stream.value(reviewsByUser)),
-      watchActiveClubMembershipsForUserProvider(uid).overrideWith(
+      watchActiveOrganizerMembershipsForUserProvider(uid).overrideWith(
         (ref) => Stream.value([
-          for (final clubId in joinedClubIds)
-            ClubMembership(
-              id: clubMembershipId(clubId: clubId, uid: uid),
+          for (final clubId in joinedOrganizerIds)
+            OrganizerMembership(
+              id: organizerMembershipId(clubId: clubId, uid: uid),
               clubId: clubId,
               uid: uid,
-              role: ClubMembershipRole.member,
-              status: ClubMembershipStatus.active,
+              role: OrganizerMembershipRole.member,
+              status: OrganizerMembershipStatus.active,
               joinedAt: DateTime(2026),
             ),
         ]),
       ),
-      watchClubsHostedByProvider(uid).overrideWithValue(
-        AsyncData<List<Club>>(
-          clubs.where((club) => club.hostUserId == uid).toList(growable: false),
+      watchOrganizersHostedByProvider(uid).overrideWithValue(
+        AsyncData<List<Organizer>>(
+          organizers
+              .where((organizer) => organizer.hostUserId == uid)
+              .toList(growable: false),
         ),
       ),
       watchMatchesForUserProvider(
@@ -568,11 +582,14 @@ List<Object> appShellTestOverrides({
   ];
 }
 
-Future<bool> _tapVisibleClubCard(WidgetTester tester, Club club) async {
+Future<bool> _tapVisibleOrganizerCard(
+  WidgetTester tester,
+  Organizer organizer,
+) async {
   final candidates = [
-    find.byKey(ValueKey<String>('explore-organizer-${club.id}')),
-    find.byKey(ValueKey<String>('explore-club-row-${club.id}')),
-    find.byKey(ValueKey<String>('club-directory-${club.id}')),
+    find.byKey(ValueKey<String>('explore-organizer-${organizer.id}')),
+    find.byKey(ValueKey<String>('explore-club-row-${organizer.id}')),
+    find.byKey(ValueKey<String>('club-directory-${organizer.id}')),
   ];
   for (final candidate in candidates) {
     final visibleCandidate = candidate.hitTestable();
@@ -585,9 +602,9 @@ Future<bool> _tapVisibleClubCard(WidgetTester tester, Club club) async {
   return false;
 }
 
-Club? _clubById(List<Club> clubs, String id) {
-  for (final club in clubs) {
-    if (club.id == id) return club;
+Organizer? _organizerById(List<Organizer> organizers, String id) {
+  for (final organizer in organizers) {
+    if (organizer.id == id) return organizer;
   }
   return null;
 }
@@ -800,12 +817,12 @@ class FakeShellUserProfileRepository implements UserProfileRepository {
 
 class FakeShellReviewsRepository implements ReviewsRepository {
   FakeShellReviewsRepository({
-    this.clubReviews = const {},
+    this.organizerReviews = const {},
     this.eventReviews = const {},
     this.reviewsByUser = const [],
   });
 
-  final Map<String, List<Review>> clubReviews;
+  final Map<String, List<Review>> organizerReviews;
   final Map<String, List<Review>> eventReviews;
   final List<Review> reviewsByUser;
   Review? addedReview;
@@ -813,8 +830,8 @@ class FakeShellReviewsRepository implements ReviewsRepository {
   String? deletedReviewId;
 
   @override
-  Stream<List<Review>> watchReviewsForClub(String clubId) {
-    return Stream.value(clubReviews[clubId] ?? const []);
+  Stream<List<Review>> watchReviewsForOrganizer(String clubId) {
+    return Stream.value(organizerReviews[clubId] ?? const []);
   }
 
   @override
@@ -908,14 +925,14 @@ class FakeShellEventDraftRepository implements EventDraftRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class FakeShellClubDraftRepository implements ClubDraftRepository {
+class FakeShellOrganizerDraftRepository implements OrganizerDraftRepository {
   @override
-  Future<ClubDraft?> loadDraft({required String userId}) async => null;
+  Future<OrganizerDraft?> loadDraft({required String userId}) async => null;
 
   @override
   Future<void> saveDraft({
     required String userId,
-    required ClubDraft draft,
+    required OrganizerDraft draft,
   }) async {}
 
   @override

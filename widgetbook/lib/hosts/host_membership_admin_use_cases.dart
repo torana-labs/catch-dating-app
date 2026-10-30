@@ -65,7 +65,7 @@ Widget hostMembershipsCardStates(BuildContext context) =>
     WidgetbookFixtureScope(
       overrides: [
         hostMembershipsControllerProvider(
-          HostOperationsFixtures.primaryClub.id,
+          HostOperationsFixtures.primaryOrganizer.id,
         ).overrideWith(_PreviewMembershipsController.new),
       ],
       child: WidgetbookScrollCatalogFrame(
@@ -74,7 +74,7 @@ Widget hostMembershipsCardStates(BuildContext context) =>
         children: [
           WidgetbookContentFrame(
             child: HostMembershipsCard(
-              club: HostOperationsFixtures.primaryClub,
+              organizer: HostOperationsFixtures.primaryOrganizer,
               isOwner: true,
             ),
           ),
@@ -84,10 +84,10 @@ Widget hostMembershipsCardStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Owner loaded',
-  type: HostClubMembershipsScreen,
+  type: HostOrganizerMembershipsScreen,
   path: _path,
 )
-Widget hostClubMembershipsScreenLoaded(BuildContext context) =>
+Widget hostOrganizerMembershipsScreenLoaded(BuildContext context) =>
     WidgetbookPageCatalogFrame(
       title: 'HostClubMembershipsScreen',
       contractId: 'screen.host.clubs',
@@ -98,12 +98,12 @@ Widget hostClubMembershipsScreenLoaded(BuildContext context) =>
             child: WidgetbookFixtureScope(
               overrides: [
                 hostMembershipsControllerProvider(
-                  HostOperationsFixtures.primaryClub.id,
+                  HostOperationsFixtures.primaryOrganizer.id,
                 ).overrideWith(_PreviewMembershipsController.new),
               ],
               child: WidgetbookUtilityDeviceFrame(
-                child: HostClubMembershipsScreen(
-                  clubId: HostOperationsFixtures.primaryClub.id,
+                child: HostOrganizerMembershipsScreen(
+                  clubId: HostOperationsFixtures.primaryOrganizer.id,
                 ),
               ),
             ),

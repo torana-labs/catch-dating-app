@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
@@ -14,9 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HostPaymentAccountControllerCard extends ConsumerWidget {
-  const HostPaymentAccountControllerCard({super.key, required this.club});
+  const HostPaymentAccountControllerCard({super.key, required this.organizer});
 
-  final Club club;
+  final Organizer organizer;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -111,7 +111,7 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
       errorBuilder: (_, error, _, onBoundaryRetry) =>
           HostPaymentAccountErrorCard(error: error, onRetry: onBoundaryRetry),
       builder: (context, accounts) => HostPaymentAccountCard(
-        club: club,
+        organizer: organizer,
         accounts: accounts,
         actionErrorMessage: actionErrorMessage,
         onboardingPending: onboardingMutation.isPending,

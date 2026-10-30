@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.d
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_configuration.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operations.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_entry_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_operation_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_staff_controller.dart';
@@ -37,10 +37,10 @@ void main() {
         overrides: [
           eventRehearsalEntryProvider('club-1', null).overrideWith(
             (ref) async => EventRehearsalEntryData(
-              organizerDefaults: const ClubHostDefaults(),
+              organizerDefaults: const OrganizerHostDefaults(),
               events: const [],
               initialConfiguration: EventRehearsalConfiguration.defaults(
-                organizerDefaults: const ClubHostDefaults(),
+                organizerDefaults: const OrganizerHostDefaults(),
               ),
             ),
           ),

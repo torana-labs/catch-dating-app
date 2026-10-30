@@ -115,7 +115,7 @@ void main() {
       '$capture keeps the requested Person across list and detail',
       () async {
         final container = _captureContainer(capture);
-        final organizerId = HostOperationsFixtures.primaryClub.id;
+        final organizerId = HostOperationsFixtures.primaryOrganizer.id;
         const contactId = 'capture-customer-ananya';
         final contact = await container.read(
           hostAudienceContactDetailProvider(organizerId, contactId).future,
@@ -180,11 +180,11 @@ void main() {
       contactId: 'capture-customer-ananya',
     ),
     HostApplicationListRequest(
-      organizerId: HostOperationsFixtures.primaryClub.id,
+      organizerId: HostOperationsFixtures.primaryOrganizer.id,
       contactId: 'contact_1',
     ),
     HostApplicationListRequest(
-      organizerId: HostOperationsFixtures.primaryClub.id,
+      organizerId: HostOperationsFixtures.primaryOrganizer.id,
     ),
   ].indexed) {
     test('Person capture rejects unrelated request $index', () async {
@@ -296,7 +296,7 @@ void main() {
         ('host_form_response_application', 'org_1', 'form_1'),
         (
           'host_person_overview',
-          HostOperationsFixtures.primaryClub.id,
+          HostOperationsFixtures.primaryOrganizer.id,
           'capture-form-1',
         ),
       ]) {

@@ -81,3 +81,34 @@ test("invalid settings and injected secrets never write", async () => {
   }
   assert.equal(store.records.size, 0);
 });
+
+test("membership money flow is routed like tickets and forms", async () => {
+  const {db, deps} = fixture();
+  const oauth = {...route, route: "razorpayOAuth"};
+  const saved = await manage(request({...change, hostMembership: oauth}),
+    deps);
+  assert.deepEqual(saved.hostMembership, oauth);
+  assert.equal((await readPaymentRoute({db, organizerId: "org",
+    purpose: "hostMembership"})).selection.route, "razorpayOAuth");
+  // An operator client that predates memberships keeps the stored route.
+  const older = await manage(request({...change, expectedRevision: 1,
+    formFee: {route: "disabled"}}), deps);
+  assert.deepEqual(older.hostMembership, oauth);
+  // An explicit null clears it, which turns memberships off.
+  const cleared = await manage(request({...change, expectedRevision: 2,
+    hostMembership: null}), deps);
+  assert.equal(cleared.hostMembership, null);
+  await assert.rejects(readPaymentRoute({db, organizerId: "org",
+    purpose: "hostMembership"}), /disabled/);
+});
+
+test("policies stored before memberships read as membership-off",
+  async () => {
+    const {store, db, deps} = fixture();
+    await manage(request(change), deps);
+    const stored = store.records.get("paymentRoutingPolicies/app")!;
+    assert.equal("hostMembership" in stored, false);
+    assert.equal((await manage(request(read), deps)).hostMembership, null);
+    await assert.rejects(readPaymentRoute({db, organizerId: "org",
+      purpose: "hostMembership"}), /disabled/);
+  });

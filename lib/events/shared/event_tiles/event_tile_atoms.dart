@@ -4,24 +4,27 @@ import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-String eventTileKickerLabel(EventTileData data, {required bool showClubName}) {
-  final clubName = data.clubName?.trim();
-  if (showClubName && clubName != null && clubName.isNotEmpty) {
-    return clubName;
+String eventTileKickerLabel(
+  EventTileData data, {
+  required bool showOrganizerName,
+}) {
+  final organizerName = data.organizerName?.trim();
+  if (showOrganizerName && organizerName != null && organizerName.isNotEmpty) {
+    return organizerName;
   }
   final meetingPoint = data.meetingPoint.trim();
   if (meetingPoint.isNotEmpty) return meetingPoint;
-  if (clubName != null && clubName.isNotEmpty) return clubName;
+  if (organizerName != null && organizerName.isNotEmpty) return organizerName;
   return data.title;
 }
 
 String? eventTileSupportingLabel(
   EventTileData data, {
-  required bool showClubName,
+  required bool showOrganizerName,
 }) {
   final activity = data.activitySummaryLabel.trim();
   final meetingPoint = data.meetingPoint.trim();
-  if (showClubName && meetingPoint.isNotEmpty) {
+  if (showOrganizerName && meetingPoint.isNotEmpty) {
     return _joinEventTileLabels([activity, meetingPoint]);
   }
   if (activity.isNotEmpty && activity != data.title.trim()) return activity;

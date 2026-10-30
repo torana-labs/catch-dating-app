@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_live_workspace_tab_bar.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
@@ -15,8 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../test/events/events_test_helpers.dart' as event_helpers;
+import '../test/organizers/organizers_test_helpers.dart' as organizer_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
 import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
@@ -25,13 +25,13 @@ import 'support/host_app_shell_test_harness.dart';
 
 const _hostUid = 'host-journey-user';
 
-final _saketRunClub = club_helpers.buildClub(
+final _saketRunClub = organizer_helpers.buildOrganizer(
   id: 'host-journey-saket',
   name: 'Saket Run Club',
   hostUserId: _hostUid,
   ownerUserId: _hostUid,
 );
-final _lodhiSocials = club_helpers.buildClub(
+final _lodhiSocials = organizer_helpers.buildOrganizer(
   id: 'host-journey-lodhi',
   name: 'Lodhi Socials',
   hostUserId: _hostUid,
@@ -341,7 +341,7 @@ const _hostTabs = <String, Type>{
   'Events': HostEventsScreen,
   'Audience': HostCustomersScreen,
   'Inbox': HostInboxScreen,
-  'Organizer': HostClubsScreen,
+  'Organizer': HostOrganizersScreen,
 };
 
 /// A Host who already dismissed the first-run Today focus prompt.
@@ -351,7 +351,7 @@ HostShellBackend _returningHostBackend() => HostShellBackend(uid: _hostUid)
 Future<void> _pumpHost(
   WidgetTester tester,
   HostShellBackend backend, {
-  required List<Club> organizers,
+  required List<Organizer> organizers,
   String initialRoute = '/host/today',
 }) async {
   await pumpHostAppShell(

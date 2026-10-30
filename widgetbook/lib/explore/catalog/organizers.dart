@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/clubs/shared/club_cover.dart';
-import 'package:catch_dating_app/explore/presentation/explore_club_display_state.dart';
+import 'package:catch_dating_app/explore/presentation/explore_organizer_display_state.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/organizers/shared/organizer_cover.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -11,7 +11,7 @@ import 'fixtures.dart';
 
 @widgetbook.UseCase(
   name: 'Organizer poster states',
-  type: ClubCard,
+  type: OrganizerCard,
   path: '[Explore]/Cards',
 )
 Widget exploreOrganizerPosterCardStates(BuildContext context) {
@@ -21,13 +21,15 @@ Widget exploreOrganizerPosterCardStates(BuildContext context) {
     children: [
       WidgetbookPageStateCard(
         label: 'image-backed club',
-        child: AbsorbPointer(child: ClubCard(club: widgetbookExploreClubs[1])),
+        child: AbsorbPointer(
+          child: OrganizerCard(organizer: widgetbookExploreOrganizers[1]),
+        ),
       ),
       WidgetbookPageStateCard(
         label: 'fallback artwork',
         child: AbsorbPointer(
-          child: ClubCard(
-            club: widgetbookExploreClubs[2].copyWith(imageUrl: null),
+          child: OrganizerCard(
+            organizer: widgetbookExploreOrganizers[2].copyWith(imageUrl: null),
           ),
         ),
       ),
@@ -37,10 +39,10 @@ Widget exploreOrganizerPosterCardStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Club row states',
-  type: ExploreFeedClubRow,
+  type: ExploreFeedOrganizerRow,
   path: '[Explore]/Rows',
 )
-Widget exploreFeedClubRowStates(BuildContext context) {
+Widget exploreFeedOrganizerRowStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
     title: 'ExploreFeedClubRow',
     catalogId: 'row.explore.feed.club',
@@ -48,13 +50,17 @@ Widget exploreFeedClubRowStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'compact club',
         child: AbsorbPointer(
-          child: ExploreFeedClubRow(club: widgetbookExploreClubs[0]),
+          child: ExploreFeedOrganizerRow(
+            organizer: widgetbookExploreOrganizers[0],
+          ),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'host unknown',
         child: AbsorbPointer(
-          child: ExploreFeedClubRow(club: widgetbookExploreClubs[2]),
+          child: ExploreFeedOrganizerRow(
+            organizer: widgetbookExploreOrganizers[2],
+          ),
         ),
       ),
     ],
@@ -63,10 +69,10 @@ Widget exploreFeedClubRowStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Club cover states',
-  type: ClubCover,
+  type: OrganizerCover,
   path: '[Explore]/Cards',
 )
-Widget exploreClubCoverStates(BuildContext context) {
+Widget exploreOrganizerCoverStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
     title: 'ClubCover',
     catalogId: 'card.explore.feed.club_cover',
@@ -76,15 +82,15 @@ Widget exploreClubCoverStates(BuildContext context) {
         child: SizedBox(
           width: WidgetbookPreviewLayout.compactComponentWidth,
           height: WidgetbookPreviewLayout.compactPreviewExtent,
-          child: ClubCover(club: widgetbookExploreClubs[0]),
+          child: OrganizerCover(organizer: widgetbookExploreOrganizers[0]),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'compact fallback',
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.smallPreviewExtent,
-          child: ClubCover(
-            club: widgetbookExploreClubs[2].copyWith(imageUrl: null),
+          child: OrganizerCover(
+            organizer: widgetbookExploreOrganizers[2].copyWith(imageUrl: null),
             compact: true,
           ),
         ),
@@ -95,28 +101,28 @@ Widget exploreClubCoverStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Club tags states',
-  type: ExploreClubTagList,
+  type: ExploreOrganizerTagList,
   path: '[Explore]/Cards',
 )
-Widget exploreClubTagsStates(BuildContext context) {
+Widget exploreOrganizerTagsStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
     title: 'ExploreClubTagList',
     catalogId: 'card.explore.feed.club_tags',
     children: [
       WidgetbookPageStateCard(
         label: 'visible tags',
-        child: ExploreClubTagList(
-          state: ExploreClubCardState.from(
-            widgetbookExploreClubs[0],
+        child: ExploreOrganizerTagList(
+          state: ExploreOrganizerCardState.from(
+            widgetbookExploreOrganizers[0],
             l10n: context.l10n,
           ),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'member fallback',
-        child: ExploreClubTagList(
-          state: ExploreClubCardState.from(
-            widgetbookExploreClubs[0].copyWith(tags: []),
+        child: ExploreOrganizerTagList(
+          state: ExploreOrganizerCardState.from(
+            widgetbookExploreOrganizers[0].copyWith(tags: []),
             l10n: context.l10n,
           ),
         ),

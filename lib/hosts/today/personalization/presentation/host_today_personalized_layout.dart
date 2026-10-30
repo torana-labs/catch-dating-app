@@ -271,7 +271,7 @@ class _HostTodayPersonalizedLayoutState
             return;
           }
           await context.pushNamed<void>(
-            Routes.hostClubPaymentsScreen.name,
+            Routes.hostOrganizerPaymentsScreen.name,
             queryParameters: {'clubId': organizerId},
           );
       }

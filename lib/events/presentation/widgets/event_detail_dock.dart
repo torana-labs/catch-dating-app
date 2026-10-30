@@ -98,7 +98,7 @@ class EventDetailDock extends ConsumerWidget {
         const OrganizerSupplyCapabilities.claimedManaged(),
     this.isSaved = false,
     this.isHosted = false,
-    this.isClubMember = false,
+    this.isOrganizerMember = false,
     this.inviteCode,
     this.inviteLinkId,
     this.now,
@@ -112,7 +112,7 @@ class EventDetailDock extends ConsumerWidget {
   final OrganizerSupplyCapabilities organizerCapabilities;
   final bool isSaved;
   final bool isHosted;
-  final bool isClubMember;
+  final bool isOrganizerMember;
   final String? inviteCode;
   final String? inviteLinkId;
   final DateTime? now;

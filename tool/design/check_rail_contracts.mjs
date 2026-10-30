@@ -8,9 +8,9 @@ const productionRoots = ["lib/", "packages/catch_ui/lib/"];
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
 const canonicalImplementationPaths = new Set([
   "packages/catch_ui/lib/src/components/catch_section.dart",
-  "lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart",
+  "lib/organizers/presentation/discovery/widgets/organizer_avatar_rail.dart",
 ]);
-const railCallPattern = /\b(CatchSection\s*\.\s*horizontal|ClubAvatarRail)\s*\(/gu;
+const railCallPattern = /\b(CatchSection\s*\.\s*horizontal|OrganizerAvatarRail)\s*\(/gu;
 const zeroPaddingPattern =
   /\b(?:headerPadding|listPadding)\s*:\s*EdgeInsets\.zero\b/u;
 const showDividerFalsePattern = /\bshowDivider\s*:\s*false\b/u;

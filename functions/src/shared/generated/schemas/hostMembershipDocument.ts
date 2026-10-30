@@ -228,6 +228,48 @@ export const hostMembershipDocumentSchema: Record<string, unknown> = {
       "pattern": "^plan_[A-Za-z0-9]{6,40}$",
       "x-catch-ownership": "server-only"
     },
+    "payment": {
+      "description": "The account that owns this subscription, copied from the checkout that created it. Absent on memberships created under the original platform-account model.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "moneyFlow",
+        "providerAccountId",
+        "bindingId",
+        "mode"
+      ],
+      "properties": {
+        "provider": {
+          "enum": [
+            "razorpay"
+          ]
+        },
+        "moneyFlow": {
+          "description": "hostCollected: the guest pays the organizer's own merchant account and the organizer is merchant of record; Catch bills its commission afterwards. platformSplit: Catch's platform account collects and transfers the organizer's share (Razorpay Route), deducting any at-source fee.",
+          "enum": [
+            "hostCollected",
+            "platformSplit"
+          ]
+        },
+        "providerAccountId": {
+          "type": "string",
+          "pattern": "^acc_[A-Za-z0-9]{4,40}$"
+        },
+        "bindingId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "mode": {
+          "enum": [
+            "test",
+            "live"
+          ]
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
     "providerEventAtMillis": {
       "type": "integer",
       "minimum": 0,

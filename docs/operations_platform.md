@@ -120,7 +120,25 @@ only when `acquisition_policy.json` enables `webSearch`, cites an accepted
 `batch_web_search_policy` decision, and freezes positive per-run and monthly
 query caps. It sends only `web_search` queries the frozen plan scheduled, and
 reserves each query against both ledgers before the client runs. No runtime
-injects a client yet, so the channel is off.
+injects a client for planned discovery yet.
+
+The one live use is handle search for a nomination (owner decision, 30 Oct
+2026; SerpApi's free tier). When none of the pages a request names can be
+read, and they include an Instagram, Linktree or Beacons handle,
+`gatherIntakeEvidence` searches the quoted handle once and reads up to three
+result links that are organizer calendar pages with a deterministic adapter
+(Luma, for example). A page counts only if its structured data or text names
+the handle; otherwise it is recorded as `search_result_unconfirmed` and
+contributes nothing. A listing built from a page found this way carries the
+`found_by_search` gap, so it always waits for a person.
+
+The Functions runtime (`functions/src/operations/supplyIntake/linkSearch.ts`)
+runs the search only when `acquisition_policy.json` enables `webSearch` (one
+query per intake, 240 a month), the `batch_web_search_policy` decision is
+accepted, and the environment pins `SERPAPI_KEY_VERSION` to a
+`SERPAPI_API_KEY` secret version. Each query is reserved in
+`supplyIntakeUsage/web-search-<YYYY-MM>` before it leaves the process. A
+provider failure finds nothing, and the nomination carries on without it.
 
 Raw payloads remain in the acquisition result long enough for deterministic
 normalization or approved external-artifact storage. They are never part of an
@@ -149,6 +167,11 @@ partner id, and discovery requests are always submitted by `system`.
    adapter platform (an event's organizer, a profile's `sameAs`) are read too,
    one hop from the seed, up to twelve pages. A page that cannot be read, or
    whose template drifted, becomes a recorded outcome rather than an error.
+   Instagram profiles are never fetched: Business Discovery reads them (see
+   below), and the links in the bio and website become the organizer's
+   `sameAs`. Links in recent captions are related only: they are followed one
+   hop like the rest, and each fetched page says whether it is an event or a
+   calendar.
 2. **Build the listing.** Name, description, image and locality each record
    the page and adapter they came from. Organizer pages outrank event pages,
    and a nominator's typed name is used only when no page names the
@@ -238,6 +261,29 @@ overwritten. Every request records its `origin`.
   - a "listing ready" message per organizer when its request completes
     (`onMessageNominationListingReady`): live with its link when the listing
     auto-published, otherwise waiting for a check.
+
+  Instagram works the same way through @catch_dates. Staff register an
+  Instagram nominator by username; the registry keys them by it
+  (`instagram-<username>`), since usernames are public. `instagramClaimWebhook`
+  sends a message with a claim code to claim verification and any other to
+  `functions/src/catchMessaging/instagramInboundRouter.ts`. The router
+  classifies with the same rules, and reads the sender's username through the
+  Graph API only when the message would be more than support. Instagram
+  allows replies only within 24 hours of the person's message, so:
+  - an unclear message asks them to send it again starting with "nominate",
+    with no stored question;
+  - the acknowledgement promises no later message, and no "listing ready"
+    message follows;
+  - a shared post or an unsupported share asks for the @handle or profile
+    link, because Meta documents only a media URL in a share. A share whose
+    payload carries an instagram.com profile link nominates that profile.
+    Attachment types and payload field names (never values) are logged, so
+    the real share shape can be learned from prod.
+
+  A receipt in `organizerClaimInstagramMessages/{messageKey}` makes each
+  message answered once and records the nominator id for auto-publish. The
+  path runs only while `SUPPLY_MESSAGE_NOMINATIONS_ENABLED` is on and the
+  environment names Catch's Instagram account.
 
   Each reply is claimed once per message and purpose
   (`catchWhatsappAutoReplies`, no text kept), never goes to a number that
@@ -332,16 +378,17 @@ nomination from auto-publishing (below). An event refresh is not compared.
 
 ##### Auto-publishing trusted nominations
 
-A listing nominated by WhatsApp publishes without staff review when a
+A listing nominated by WhatsApp or Instagram publishes without staff review when a
 registered associate sent it and the adapters filled it completely (owner
 decision, 30 Oct 2026). `autoPublishNominatedListing`
 (`functions/src/operations/supplyIntake/autoPublish.ts`) runs from
-`onMessageNominationListingReady` before the "listing ready" reply and
+`onMessageNominationListingReady` before any "listing ready" reply and
 publishes only when all of these hold:
 
 - the request is a `message_nomination` from an associate, finished and not
   yet approved;
-- the sender is still an active nominator and still holds a sales role;
+- the sender is still an active nominator and still holds a sales role (read
+  from the WhatsApp receipt's number or the Instagram receipt's nominator id);
 - the build recorded no gaps (a missing image doesn't count, since listing
   images are never published) and needs no research;
 - the duplicate check compared the market's whole inventory and found nothing
@@ -429,6 +476,35 @@ most 12 pages per nomination and 600 a month. Every environment's worker
 reads its own copy of the decision, so dev and staging hold the same accepted
 record as production; without it a nomination fails closed with
 `ACQUISITION_POLICY_DECISION_REQUIRED`. The other four capabilities stay off.
+
+### Instagram Business Discovery
+
+instagram.com disallows crawlers, so Supply Intake never fetches it.
+`supply-intake/instagram-discovery.mjs` wraps the page source: an Instagram
+profile URL becomes one call to Meta's Business Discovery API, made as
+@catch_dates (`17841476918450741`). It reads another business or creator
+account's username, name, biography, website and twelve recent captions and
+permalinks, and nothing else. The response becomes a JSON snapshot that the
+`instagram` adapter (`sources/instagram/`) reads. Every other URL goes to the
+page source unchanged. Personal, private and age-gated accounts return
+nothing (`not_discoverable`). An expired token records
+`provider_auth_error`. Each intake makes at most two calls. Calls cost
+nothing and count against Meta's platform rate limit, not the page fetch
+budget.
+
+Business Discovery is part of the Instagram API with Facebook Login
+(graph.facebook.com), not the Instagram Login that the claim webhook uses. It
+needs `instagram_basic`, `instagram_manage_insights` and
+`pages_read_engagement`. Meta's App Review table puts an app that serves only
+a business you own on Standard Access, with no review. The token is a
+system-user token from the Torana business portfolio, stored as
+`CATCH_INSTAGRAM_DISCOVERY_TOKEN` and named by a pinned version in the
+GitHub variable `CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION`
+(`projects/<project>/secrets/CATCH_INSTAGRAM_DISCOVERY_TOKEN/versions/<n>`).
+Blank keeps discovery off. The Supply Intake functions' runtime service
+account needs Secret Manager Secret Accessor on that secret. A token the
+worker cannot read leaves Instagram profiles unread rather than failing the
+request.
 
 ## Reference Layout
 

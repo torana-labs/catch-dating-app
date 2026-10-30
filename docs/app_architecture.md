@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.93.0
+version: 1.94.0
 updated: 2026-10-30
 owner: app_architecture
 status: active
@@ -189,11 +189,16 @@ and authority for passed external events is a named app-team dependency. Until
 that dedicated flow exists, the app may expose eligibility in domain state but
 must not route the user into a generic or fabricated review workflow.
 
-`lib/organizers/` is the canonical import surface. Existing `Club` Dart model,
-repository, provider, and `lib/clubs/` filenames are transitional aliases for
-binary/source compatibility and may not justify new club-specific persistence,
-routes, or copy. Their removal follows the remote parity and released-client
-window in `docs/migrations/clubs_to_organizers.md`.
+`lib/organizers/` is the canonical import surface. Flutter code names say
+organizer: Dart types, providers, files, folders, route names and localization
+keys (`Organizer`, `OrganizersRepository`, `lib/organizers/`,
+`Routes.hostOrganizersScreen`). Club stays in Dart only as the `club` subtype
+(`OrganizerType.club`, run clubs, stored enum values) and in the names the
+generated schema contracts still declare (`clubId`, `clubPhotos`, the legacy
+club callable requests), which rename with those contracts.
+`contracts:organizer-nomenclature` fails on any other club name in Flutter
+code; `tool/architecture/rename_to_organizer.mjs` is the codemod that renames
+one.
 
 1. Inside a bounded context the folders are `domain`, `data`, `actions` and
    `parts` (see [Bounded Context Contract](#bounded-context-contract)). Legacy
@@ -444,7 +449,9 @@ PRs:
    path lines; conflicts are resolved by rerunning the script on the latest
    main, and its imports-only mode updates other open branches.
 3. **Finish.** Sort `lib/core/` into platform, kernel, pages and context parts,
-   and complete the Club to Organizer rename in code.
+   and rename Club to Organizer in Flutter code with a committed codemod whose
+   `--verify` mode proves the rename commit is its exact output. Wire names
+   (contracts, Functions, rules, route parameters) follow end to end.
 
 The baseline is empty when this phase ends.
 
@@ -553,7 +560,7 @@ applied after this spec uses these owners:
 - Shared activity/event visuals (cards, thumbnails, activity badges and map
   pins) live in `lib/contexts/events/parts`, not under
   `events/presentation/widgets`.
-- Club display-name lookup is a data/provider seam in
+- Organizer display-name lookup is a data/provider seam in
   `lib/contexts/organizers/data`.
 
 ### Explore discovery scope and filter boundary
@@ -562,7 +569,7 @@ Explore display models are split by responsibility: `explore_screen_state.dart`
 owns route branches and empty recovery; `explore_chrome_state.dart` owns search,
 city and map-launcher display; `explore_filter_state.dart` owns filter choices
 and live counts; `explore_event_display_state.dart` and
-`explore_club_display_state.dart` own event and organizer labels;
+`explore_organizer_display_state.dart` own event and organizer labels;
 `explore_mixed_feed_state.dart` owns feed ordering and grouping. These libraries
 accept plain values and keep provider reads in the route boundary.
 The screen mounts `ExploreScreenEmptyState`, `ExploreClearButton`, and
@@ -2662,8 +2669,8 @@ section models when that removes business logic from widgets.
 
 Reference files:
 
-- `lib/contexts/organizers/data/club_name_lookup.dart`
-- `lib/contexts/organizers/data/club_name_lookup.g.dart`
+- `lib/contexts/organizers/data/organizer_name_lookup.dart`
+- `lib/contexts/organizers/data/organizer_name_lookup.g.dart`
 - `test/architecture/generated_provider_family_test.dart`
 
 Use generated function providers for feature-owned async families. Keep the
@@ -2674,18 +2681,20 @@ and the adjacent generated output stays checked in.
 
 ```dart
 @riverpod
-Future<Map<String, String>> clubNameLookup(
+Future<Map<String, String>> organizerNameLookup(
   Ref ref,
-  ClubNameLookupQuery query,
+  OrganizerNameLookupQuery query,
 ) async {
-  if (query.clubIds.isEmpty) return const <String, String>{};
+  if (query.organizerIds.isEmpty) return const <String, String>{};
 
-  final repository = ref.watch(clubsRepositoryProvider);
-  final clubs = await Future.wait(query.clubIds.map(repository.fetchClub));
+  final repository = ref.watch(organizersRepositoryProvider);
+  final organizers = await Future.wait(
+    query.organizerIds.map(repository.fetchOrganizer),
+  );
 
   return {
-    for (final club in clubs)
-      if (club != null) club.id: club.name,
+    for (final organizer in organizers)
+      if (organizer != null) organizer.id: organizer.name,
   };
 }
 ```
@@ -2986,7 +2995,7 @@ or implementation technique cannot justify a second shared implementation.
 - **Materials and bindings.** A domain-free visual material (`CatchTicket`,
   `CatchPoster`, `CatchTable`) lives in the design system in both
   frameworks. A feature binding maps domain data onto it under the name an
-  agent would write (`EventCard`, `ClubCard`, `ParticipantTable`), one per
+  agent would write (`EventCard`, `OrganizerCard`, `ParticipantTable`), one per
   framework with the same name. A new entity card binds an existing material;
   it never draws its own geometry.
 - **Role selection.** Classify the public responsibility, not a child it
@@ -3536,7 +3545,7 @@ and row-status policy. `HostInboxScreen` owns selected-organizer provider reads,
 workspace composition, typed route effects, and sheets;
 `HostInboxBroadcastController` owns the event-broadcast mutation even when its
 composer is mounted by Sends, and
-`HostAudienceController` owns campaign mutations. `HostClubPostController`
+`HostAudienceController` owns campaign mutations. `HostOrganizerPostController`
 owns follower-update submission while the shared route-specific composer owns
 only pending/error presentation and closes after callable acceptance.
 
@@ -4280,10 +4289,10 @@ Reference files:
 
 - `packages/catch_ui/lib/src/components/catch_poster.dart`
 - `packages/catch_ui/lib/src/components/catch_polaroid.dart`
-- `lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart`
+- `lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart`
 - `lib/swipes/shared/profile_surface/profile_body.dart`
 - `design/components/catch.components.json`
-- `widgetbook/lib/clubs/catalog/poster.dart`
+- `widgetbook/lib/organizers/catalog/poster.dart`
 - `widgetbook/lib/catches/catalog/profile_media.dart`
 
 Entity material is a presentation contract, not feature-local decoration:
@@ -4297,10 +4306,10 @@ The Organizer Detail reference composition is:
 
 ```dart
 child: CatchPoster(
-  media: ClubCover(
+  media: OrganizerCover(
     club: club,
     semanticLabel: context.l10n
-        .clubsClubHeroAppBarSemanticlabelNameCoverPhoto(
+        .organizersOrganizerHeroAppBarSemanticlabelNameCoverPhoto(
           name: club.name,
         ),
   ),
@@ -4616,7 +4625,7 @@ Widget build(BuildContext context) {
           : null,
     );
     final hostState = eventDetailHostStateFrom(
-      clubState: _catchAsyncState(ref.watch(fetchClubProvider(widget.clubId))),
+      clubState: _catchAsyncState(ref.watch(fetchOrganizerProvider(widget.clubId))),
       currentUid: vm.userProfile?.uid,
       canMessageHost:
           sectionVisibility.showConsumerActions && vm.isAuthenticated,
@@ -4708,13 +4717,13 @@ Widget build(BuildContext context) {
         onRetryCompanion: () =>
             ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
         onViewClub: (clubId) => context.pushNamed(
-          Routes.clubDetailScreen.name,
+          Routes.organizerDetailScreen.name,
           pathParameters: {'clubId': clubId},
         ),
         onMessageHost: (clubId, hostUid) => unawaited(
           _messageHost(context, ref, clubId: clubId, hostUid: hostUid),
         ),
-        onRetryHosts: () => ref.invalidate(fetchClubProvider(widget.clubId)),
+        onRetryHosts: () => ref.invalidate(fetchOrganizerProvider(widget.clubId)),
         inviteCode: widget.inviteCode,
         inviteLinkId: widget.inviteLinkId,
         now: now,
@@ -5000,7 +5009,7 @@ Reference files:
 - `packages/catch_ui/lib/src/patterns/catch_form_list.dart` and the `CatchFormTextField`, `CatchFormChoiceField` and `CatchFormRangeField` members
 - `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
 - `lib/user_profile/presentation/widgets/profile_tab_body.dart`
-- `lib/hosts/presentation/host_operations/host_club_edit_body.dart`
+- `lib/hosts/presentation/host_operations/host_organizer_edit_body.dart`
 - `test/core/forms/catch_form_descriptors_test.dart`
 - `test/core/forms/contract_alignment_test.dart`
 - `test/profile/self_profile_edit_tab_state_test.dart`
@@ -5043,7 +5052,7 @@ than reopening raw styling parameters on the descriptor mapper.
 
 The consumer Profile About You section remains the descriptor reference
 prototype. Host Club Identity and Contact are the first promoted descriptor
-adopter: both sections use typed `UpdateClubPatch` descriptors and one save
+adopter: both sections use typed `UpdateOrganizerPatch` descriptors and one save
 delegate. Running/Lifestyle retain their existing self-profile descriptors, and
 onboarding retains its step-specific composition.
 

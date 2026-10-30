@@ -272,6 +272,13 @@ export {configureEventRegistrationCallableResponseSchema} from "./schemas/config
 export {organizerEventOfferPaymentDocumentSchema} from "./schemas/organizerEventOfferPaymentDocument";
 export {organizerEventOfferRecipientDocumentSchema} from "./schemas/organizerEventOfferRecipientDocument";
 export {paymentRoutingSnapshotSchema} from "./schemas/paymentRoutingSnapshot";
+export {commercialTermsSchema} from "./schemas/commercialTerms";
+export {commercialTermsOverrideSchema} from "./schemas/commercialTermsOverride";
+export {commercialTermsSnapshotSchema} from "./schemas/commercialTermsSnapshot";
+export {manageCommercialTermsCallablePayloadSchema} from "./schemas/manageCommercialTermsInput";
+export {manageCommercialTermsCallableResponseSchema} from "./schemas/manageCommercialTermsOutput";
+export {adminListCommercialTermsCallablePayloadSchema} from "./schemas/adminListCommercialTermsInput";
+export {adminListCommercialTermsCallableResponseSchema} from "./schemas/adminListCommercialTermsOutput";
 export {managePaymentRoutingPolicyCallablePayloadSchema} from "./schemas/managePaymentRoutingPolicyInput";
 export {managePaymentRoutingPolicyCallableResponseSchema} from "./schemas/managePaymentRoutingPolicyOutput";
 export {manageEventOfferCheckoutCallablePayloadSchema} from "./schemas/manageEventOfferCheckoutInput";
@@ -607,6 +614,8 @@ export {organizerFormDomainDocumentSchema} from "./schemas/organizerFormDomainDo
 export {organizerPaymentConnectionDocumentSchema} from "./schemas/organizerPaymentConnectionDocument";
 export {organizerPaymentOauthStateDocumentSchema} from "./schemas/organizerPaymentOauthStateDocument";
 export {paymentRoutingPolicyDocumentSchema} from "./schemas/paymentRoutingPolicyDocument";
+export {commercialTermsDocumentSchema} from "./schemas/commercialTermsDocument";
+export {commercialTermsRevisionDocumentSchema} from "./schemas/commercialTermsRevisionDocument";
 export {organizerFormPaymentDocumentSchema} from "./schemas/organizerFormPaymentDocument";
 export {organizerFormPaymentWebhookDocumentSchema} from "./schemas/organizerFormPaymentWebhookDocument";
 export {organizerFormDraftDocumentSchema} from "./schemas/organizerFormDraftDocument";

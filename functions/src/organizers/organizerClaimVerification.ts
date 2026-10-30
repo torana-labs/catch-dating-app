@@ -42,7 +42,11 @@ import type {InstagramInboundMessage} from "./instagramClaimProtocol";
 import type {InstagramMessagingProvider} from "./instagramMessagingProvider";
 
 type ClaimMethod = StartOrganizerClaimVerificationCallablePayload["method"];
-type MessageOutcome = OrganizerClaimInstagramMessageDocument["outcome"];
+// The receipt also records nomination replies (instagramInboundRouter.ts);
+// claim verification writes only these.
+type MessageOutcome = Exclude<OrganizerClaimInstagramMessageDocument["outcome"],
+  "nominationQueued" | "nominationWithoutLinks" | "nominationRateLimited" |
+  "nominationUnclear" | "shareWithoutProfile">;
 
 const minuteMillis = 60 * 1000;
 export const CLAIM_CODE_LIFETIME_MILLIS = 30 * minuteMillis;
@@ -68,6 +72,9 @@ export const catchInstagramAccountId = defineString(
   "CATCH_INSTAGRAM_ACCOUNT_ID", {default: ""});
 const catchInstagramHandle = defineString("CATCH_INSTAGRAM_HANDLE",
   {default: ""});
+// instagramClaimWebhook.ts declares the same param; Firebase keeps one.
+export const catchInstagramGraphVersion = defineString(
+  "CATCH_INSTAGRAM_GRAPH_VERSION", {default: "v26.0"});
 
 export interface ClaimVerificationConfig {
   instagramEnabled: boolean;
@@ -496,6 +503,7 @@ function stageReceipt(
     messageKey: message.messageKey,
     outcome,
     attemptId,
+    nominatorId: null,
     receivedAt: deps.serverTimestamp(),
     expiresAt: admin.firestore.Timestamp.fromMillis(
       deps.now() + MESSAGE_RECEIPT_LIFETIME_MILLIS),

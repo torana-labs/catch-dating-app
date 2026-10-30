@@ -216,7 +216,7 @@ void main() {
         );
 
         await expectLater(
-          repository.watchEventsForClub(clubId: 'club-2'),
+          repository.watchEventsForOrganizer(clubId: 'club-2'),
           emits([earlier, later]),
         );
       },
@@ -238,7 +238,7 @@ void main() {
       });
 
       await expectLater(
-        repository.watchEventsForClub(clubId: 'club-2'),
+        repository.watchEventsForOrganizer(clubId: 'club-2'),
         emits([real]),
       );
     });
@@ -260,16 +260,17 @@ void main() {
         });
 
         await expectLater(
-          repository.watchEventsForClub(clubId: 'club-2'),
+          repository.watchEventsForOrganizer(clubId: 'club-2'),
           emits([published]),
         );
         await expectLater(
-          repository.watchEventsForClubs(clubIds: const ['club-2']),
+          repository.watchEventsForOrganizers(organizerIds: const ['club-2']),
           emits([published]),
         );
-        expect(await repository.fetchUpcomingEventsForClubs(const ['club-2']), [
-          published,
-        ]);
+        expect(
+          await repository.fetchUpcomingEventsForOrganizers(const ['club-2']),
+          [published],
+        );
       },
     );
 
@@ -401,7 +402,9 @@ void main() {
         await _seedEvent(firestore, buildEvent(id: 'other', clubId: 'club-3'));
 
         await expectLater(
-          repository.watchEventsForClubs(clubIds: const ['club-2', 'club-1']),
+          repository.watchEventsForOrganizers(
+            organizerIds: const ['club-2', 'club-1'],
+          ),
           emits([earlier, later]),
         );
       },
@@ -554,8 +557,10 @@ void main() {
       'fetchUpcomingEventsForClubs returns empty without querying for no clubs',
       () async {
         await _seedEvent(firestore, buildEvent());
-
-        expect(await repository.fetchUpcomingEventsForClubs(const []), isEmpty);
+        expect(
+          await repository.fetchUpcomingEventsForOrganizers(const []),
+          isEmpty,
+        );
       },
     );
 
@@ -577,11 +582,9 @@ void main() {
           buildEvent(id: 'other-club', clubId: 'club-11'),
         );
 
-        final results = await repository.fetchUpcomingEventsForClubs(const [
-          'club-1',
-          'club-2',
-          'club-3',
-        ]);
+        final results = await repository.fetchUpcomingEventsForOrganizers(
+          const ['club-1', 'club-2', 'club-3'],
+        );
 
         expect(results, [event]);
       },
@@ -602,7 +605,7 @@ void main() {
         await _seedEvent(firestore, early);
         await _seedEvent(firestore, late);
 
-        final results = await repository.fetchUpcomingEventsForClubs([
+        final results = await repository.fetchUpcomingEventsForOrganizers([
           for (var i = 1; i <= 12; i += 1) 'club-$i',
         ]);
 
@@ -1060,33 +1063,39 @@ void main() {
       },
     );
 
-    test('watchEventsForClubProvider delegates to the repository', () async {
-      final event = buildEvent();
-      await _seedEvent(firestore, event);
+    test(
+      'watchEventsForOrganizerProvider delegates to the repository',
+      () async {
+        final event = buildEvent();
+        await _seedEvent(firestore, event);
 
-      final provider = watchEventsForClubProvider('club-1');
-      final subscription = container.listen(provider, (_, _) {});
-      addTearDown(subscription.close);
+        final provider = watchEventsForOrganizerProvider('club-1');
+        final subscription = container.listen(provider, (_, _) {});
+        addTearDown(subscription.close);
 
-      final value = await container.read(provider.future);
+        final value = await container.read(provider.future);
 
-      expect(value, [event]);
-    });
+        expect(value, [event]);
+      },
+    );
 
-    test('watchEventsForClubsProvider delegates to the repository', () async {
-      final first = buildEvent(id: 'first');
-      final second = buildEvent(id: 'second', clubId: 'club-2');
-      await _seedEvent(firestore, first);
-      await _seedEvent(firestore, second);
+    test(
+      'watchEventsForOrganizersProvider delegates to the repository',
+      () async {
+        final first = buildEvent(id: 'first');
+        final second = buildEvent(id: 'second', clubId: 'club-2');
+        await _seedEvent(firestore, first);
+        await _seedEvent(firestore, second);
 
-      final provider = watchEventsForClubsProvider(
-        EventsForClubsQuery(const ['club-2', 'club-1']),
-      );
-      final subscription = container.listen(provider, (_, _) {});
-      addTearDown(subscription.close);
+        final provider = watchEventsForOrganizersProvider(
+          EventsForOrganizersQuery(const ['club-2', 'club-1']),
+        );
+        final subscription = container.listen(provider, (_, _) {});
+        addTearDown(subscription.close);
 
-      expect(await container.read(provider.future), [first, second]);
-    });
+        expect(await container.read(provider.future), [first, second]);
+      },
+    );
 
     test('watchAttendedEventsProvider delegates to the repository', () async {
       final event = buildEvent();
@@ -1181,7 +1190,7 @@ void main() {
 
       final results = await container.read(
         recommendedEventsProvider(
-          RecommendedEventsQuery.fromClubIds(const ['club-1']),
+          RecommendedEventsQuery.fromOrganizerIds(const ['club-1']),
         ).future,
       );
 

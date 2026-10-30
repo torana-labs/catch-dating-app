@@ -32,7 +32,7 @@ final class EventRehearsalConfiguration {
   });
 
   factory EventRehearsalConfiguration.defaults({
-    required ClubHostDefaults organizerDefaults,
+    required OrganizerHostDefaults organizerDefaults,
     Event? event,
     EventSuccessPlan? plan,
     int? sourceGuestCount,
@@ -71,7 +71,7 @@ final class EventRehearsalConfiguration {
     );
   }
 
-  final ClubHostDefaults organizerDefaults;
+  final OrganizerHostDefaults organizerDefaults;
   final Event? sourceEvent;
   final EventSuccessPlan? sourcePlan;
   final int? sourceGuestCount;

@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-10-19",
-  "sourceDigest": "sha256:9394b74224b2769b388fea06049361fe75a179a3222d77a209c19fad57a4b21d",
-  "resolvedDigest": "sha256:7aeb718dc7c523fa49e08ccb4ce0f58d16f9831e2a6edfde1be14dbdd67cf984",
+  "sourceDigest": "sha256:2e3f85cc65d996f1d6064fed64ab31455b1db26e8841c41667502f5591697c88",
+  "resolvedDigest": "sha256:6f2eafd8c79be9f18a8e507e31d350380c26f6a2c969d570ade4a8e60ca4a560",
   "feature": {
     "id": "feature.organizer_detail",
     "name": "Organizer Detail",
@@ -39,34 +39,34 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/clubs/catalog/dock.dart",
-          "widgetbook/lib/clubs/catalog/schedule.dart",
-          "widgetbook/lib/clubs/catalog/screen.dart"
+          "widgetbook/lib/organizers/catalog/dock.dart",
+          "widgetbook/lib/organizers/catalog/schedule.dart",
+          "widgetbook/lib/organizers/catalog/screen.dart"
         ],
         "actionOwners": [
           {
             "id": "route_screen",
             "language": "dart",
-            "file": "lib/clubs/presentation/detail/club_detail_screen.dart",
-            "symbol": "ClubDetailScreen"
+            "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+            "symbol": "OrganizerDetailScreen"
           },
           {
             "id": "membership",
             "language": "dart",
-            "file": "lib/clubs/presentation/detail/club_membership_controller.dart",
-            "symbol": "ClubMembershipController"
+            "file": "lib/organizers/presentation/detail/organizer_membership_controller.dart",
+            "symbol": "OrganizerMembershipController"
           },
           {
             "id": "membership_dock",
             "language": "dart",
-            "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-            "symbol": "ClubMembershipDock"
+            "file": "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart",
+            "symbol": "OrganizerMembershipDock"
           },
           {
             "id": "host_contact",
             "language": "dart",
-            "file": "lib/clubs/presentation/detail/club_host_contact_controller.dart",
-            "symbol": "ClubHostContactController"
+            "file": "lib/organizers/presentation/detail/organizer_host_contact_controller.dart",
+            "symbol": "OrganizerHostContactController"
           }
         ],
         "componentContracts": [
@@ -265,7 +265,7 @@
         {
           "id": "share_organizer",
           "owner": "route_screen",
-          "codeValue": "showClubShareCardSheet",
+          "codeValue": "showOrganizerShareCardSheet",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -354,7 +354,7 @@
         {
           "id": "open_contact",
           "owner": "route_screen",
-          "codeValue": "openClubContact",
+          "codeValue": "openOrganizerContact",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -406,11 +406,11 @@
               "club_detail_initial_loading"
             ],
             "previewIds": [
-              "ClubDetailScreen/Screen states"
+              "OrganizerDetailScreen/Screen states"
             ],
             "tests": [
-              "test/clubs/clubs_controllers_test.dart",
-              "test/clubs/clubs_flow_test.dart"
+              "test/organizers/organizers_controllers_test.dart",
+              "test/organizers/organizers_flow_test.dart"
             ]
           },
           "actionCases": [
@@ -459,10 +459,10 @@
               "club_detail_missing"
             ],
             "previewIds": [
-              "ClubDetailScreen/Screen states"
+              "OrganizerDetailScreen/Screen states"
             ],
             "tests": [
-              "test/clubs/clubs_controllers_test.dart"
+              "test/organizers/organizers_controllers_test.dart"
             ]
           },
           "actionCases": [
@@ -511,10 +511,10 @@
               "club_detail_error"
             ],
             "previewIds": [
-              "ClubDetailScreen/Screen states"
+              "OrganizerDetailScreen/Screen states"
             ],
             "tests": [
-              "test/clubs/clubs_controllers_test.dart"
+              "test/organizers/organizers_controllers_test.dart"
             ]
           },
           "actionCases": [
@@ -564,11 +564,11 @@
               "club_detail_member"
             ],
             "previewIds": [
-              "ClubDetailScreen/Screen states"
+              "OrganizerDetailScreen/Screen states"
             ],
             "tests": [
-              "test/clubs/clubs_flow_test.dart",
-              "test/clubs/clubs_controllers_test.dart"
+              "test/organizers/organizers_flow_test.dart",
+              "test/organizers/organizers_controllers_test.dart"
             ]
           },
           "actionCases": [
@@ -618,10 +618,10 @@
               "club_detail_visitor"
             ],
             "previewIds": [
-              "ClubDetailScreen/Screen states"
+              "OrganizerDetailScreen/Screen states"
             ],
             "tests": [
-              "test/clubs/clubs_flow_test.dart"
+              "test/organizers/organizers_flow_test.dart"
             ]
           },
           "actionCases": [
@@ -671,10 +671,10 @@
               "club_detail_guest"
             ],
             "previewIds": [
-              "ClubDetailScreen/Screen states"
+              "OrganizerDetailScreen/Screen states"
             ],
             "tests": [
-              "test/clubs/clubs_flow_test.dart"
+              "test/organizers/organizers_flow_test.dart"
             ]
           },
           "actionCases": [
@@ -724,10 +724,10 @@
               "club_detail_host_public"
             ],
             "previewIds": [
-              "ClubDetailDock/Dock states"
+              "OrganizerDetailDock/Dock states"
             ],
             "tests": [
-              "test/clubs/clubs_controllers_test.dart"
+              "test/organizers/organizers_controllers_test.dart"
             ]
           },
           "actionCases": [
@@ -777,7 +777,7 @@
               "club_detail_empty_schedule"
             ],
             "previewIds": [
-              "ClubScheduleSection/Schedule states"
+              "OrganizerScheduleSection/Schedule states"
             ],
             "tests": []
           },
@@ -828,10 +828,10 @@
               "club_detail_join_pending"
             ],
             "previewIds": [
-              "ClubDetailDock/Dock states"
+              "OrganizerDetailDock/Dock states"
             ],
             "tests": [
-              "test/clubs/clubs_controllers_test.dart"
+              "test/organizers/organizers_controllers_test.dart"
             ]
           },
           "actionCases": [
@@ -908,7 +908,7 @@
               "club_detail_mutation_error"
             ],
             "previewIds": [
-              "ClubDetailScreen/Screen states"
+              "OrganizerDetailScreen/Screen states"
             ],
             "tests": []
           },
@@ -986,7 +986,7 @@
               "club_detail_offline"
             ],
             "previewIds": [
-              "ClubDetailScreen/Screen states"
+              "OrganizerDetailScreen/Screen states"
             ],
             "tests": []
           },
@@ -1037,7 +1037,7 @@
               "club_detail_text_scale_2"
             ],
             "previewIds": [
-              "ClubDetailScreen/Screen states"
+              "OrganizerDetailScreen/Screen states"
             ],
             "tests": []
           },
@@ -1088,7 +1088,7 @@
               "club_detail_reduced_motion"
             ],
             "previewIds": [
-              "ClubDetailScreen/Screen states"
+              "OrganizerDetailScreen/Screen states"
             ],
             "tests": []
           },
@@ -1129,7 +1129,7 @@
           "owner": "clubs",
           "routes": [
             {
-              "id": "clubDetailScreen",
+              "id": "organizerDetailScreen",
               "path": "/organizers/:clubId",
               "role": "primary"
             }
@@ -1222,9 +1222,9 @@
           }
         ],
         "previews": [
-          "ClubDetailDock/Dock states",
-          "ClubDetailScreen/Screen states",
-          "ClubScheduleSection/Schedule states"
+          "OrganizerDetailDock/Dock states",
+          "OrganizerDetailScreen/Screen states",
+          "OrganizerScheduleSection/Schedule states"
         ]
       }
     },
@@ -1243,14 +1243,14 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/operations/club_preview.dart"
+          "widgetbook/lib/hosts/operations/organizer_preview.dart"
         ],
         "actionOwners": [
           {
             "id": "route_screen",
             "language": "dart",
-            "file": "lib/clubs/presentation/detail/club_detail_screen.dart",
-            "symbol": "ClubDetailScreen"
+            "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+            "symbol": "OrganizerDetailScreen"
           }
         ],
         "componentContracts": [
@@ -1355,7 +1355,7 @@
         {
           "id": "share_organizer",
           "owner": "route_screen",
-          "codeValue": "showClubShareCardSheet",
+          "codeValue": "showOrganizerShareCardSheet",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -1418,7 +1418,7 @@
         {
           "id": "open_contact",
           "owner": "route_screen",
-          "codeValue": "openClubContact",
+          "codeValue": "openOrganizerContact",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -1485,11 +1485,11 @@
               "host_club_detail_loading"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": [
-              "test/clubs/clubs_controllers_test.dart",
-              "test/clubs/clubs_flow_test.dart"
+              "test/organizers/organizers_controllers_test.dart",
+              "test/organizers/organizers_flow_test.dart"
             ]
           },
           "actionCases": [
@@ -1535,10 +1535,10 @@
               "host_club_detail_initial_loading"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": [
-              "test/clubs/clubs_controllers_test.dart",
+              "test/organizers/organizers_controllers_test.dart",
               "test/explore/explore_widgets_test.dart"
             ]
           },
@@ -1586,10 +1586,10 @@
               "host_club_detail_error"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": [
-              "test/clubs/clubs_controllers_test.dart",
+              "test/organizers/organizers_controllers_test.dart",
               "test/explore/explore_widgets_test.dart"
             ]
           },
@@ -1637,10 +1637,10 @@
               "host_club_detail_not_found"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": [
-              "test/clubs/clubs_controllers_test.dart",
+              "test/organizers/organizers_controllers_test.dart",
               "test/explore/explore_widgets_test.dart"
             ]
           },
@@ -1687,7 +1687,7 @@
               "host_club_detail_public"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": [
               "test/explore/explore_widgets_test.dart"
@@ -1737,7 +1737,7 @@
               "host_club_detail_public"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": [
               "test/explore/explore_widgets_test.dart"
@@ -1787,7 +1787,7 @@
               "host_club_detail_empty_schedule"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": []
           },
@@ -1833,10 +1833,10 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": [
-              "test/clubs/clubs_flow_test.dart"
+              "test/organizers/organizers_flow_test.dart"
             ]
           },
           "actionCases": [
@@ -1885,10 +1885,10 @@
               "host_club_detail_signed_out"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": [
-              "test/clubs/clubs_controllers_test.dart",
+              "test/organizers/organizers_controllers_test.dart",
               "test/explore/explore_widgets_test.dart"
             ]
           },
@@ -1936,7 +1936,7 @@
               "host_club_detail_non_host_preview"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": []
           },
@@ -1984,7 +1984,7 @@
               "host_club_detail_signed_out"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": []
           },
@@ -2032,7 +2032,7 @@
               "host_club_detail_public"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": []
           },
@@ -2081,7 +2081,7 @@
               "host_club_detail_text_scale_2"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": []
           },
@@ -2129,7 +2129,7 @@
               "host_club_detail_public"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": []
           },
@@ -2177,7 +2177,7 @@
               "host_club_detail_public"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": [
               "test/explore/explore_widgets_test.dart"
@@ -2227,7 +2227,7 @@
               "host_club_detail_offline"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": []
           },
@@ -2275,7 +2275,7 @@
               "host_club_detail_text_scale_2"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": []
           },
@@ -2323,7 +2323,7 @@
               "host_club_detail_reduced_motion"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": []
           },
@@ -2371,7 +2371,7 @@
               "host_club_detail_light_dark"
             ],
             "previewIds": [
-              "ClubDetailScreen/Public preview states"
+              "OrganizerDetailScreen/Public preview states"
             ],
             "tests": []
           },
@@ -2408,7 +2408,7 @@
           "owner": "hosts",
           "routes": [
             {
-              "id": "hostClubDetailScreen",
+              "id": "hostOrganizerDetailScreen",
               "path": "/host/organizers/:clubId",
               "role": "primary"
             }
@@ -2501,7 +2501,7 @@
           }
         ],
         "previews": [
-          "ClubDetailScreen/Public preview states"
+          "OrganizerDetailScreen/Public preview states"
         ]
       }
     },

@@ -33,7 +33,7 @@
     {
       "rule": "manualProviderDeclaration",
       "path": "lib/hosts/presentation/host_operations/host_route_providers.dart",
-      "symbol": "_hostClubsForUserProvider",
+      "symbol": "_hostOrganizersForUserProvider",
       "operation": "Provider.autoDispose.family",
       "status": "accepted-exception",
       "rationale": "Existing private auto-dispose adapter in a route part file; preserve the exact exception reviewed in provider_graph_reviews.json, without admitting additional declarations."

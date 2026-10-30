@@ -34,7 +34,7 @@ class HostTrackingSettingsSection extends ConsumerWidget {
             : CatchLocalizedErrorState(
                 auth.error ??
                     const SignInRequiredException('read tracking settings'),
-                context: AppErrorContext.club,
+                context: AppErrorContext.organizer,
                 onRetry: () => ref.invalidate(uidProvider),
               ),
       );
@@ -74,7 +74,7 @@ class HostTrackingSettingsSection extends ConsumerWidget {
         title: context.l10n.hostsTrackingSettingsTitle,
         child: CatchLocalizedErrorState(
           error,
-          context: AppErrorContext.club,
+          context: AppErrorContext.organizer,
           onRetry: retry,
         ),
       ),

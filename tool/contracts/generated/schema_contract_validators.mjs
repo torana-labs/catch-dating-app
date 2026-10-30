@@ -270,6 +270,13 @@ import {
   organizerEventOfferPaymentDocumentSchema,
   organizerEventOfferRecipientDocumentSchema,
   paymentRoutingSnapshotSchema,
+  commercialTermsSchema,
+  commercialTermsOverrideSchema,
+  commercialTermsSnapshotSchema,
+  manageCommercialTermsCallablePayloadSchema,
+  manageCommercialTermsCallableResponseSchema,
+  adminListCommercialTermsCallablePayloadSchema,
+  adminListCommercialTermsCallableResponseSchema,
   managePaymentRoutingPolicyCallablePayloadSchema,
   managePaymentRoutingPolicyCallableResponseSchema,
   manageEventOfferCheckoutCallablePayloadSchema,
@@ -605,6 +612,8 @@ import {
   organizerPaymentConnectionDocumentSchema,
   organizerPaymentOauthStateDocumentSchema,
   paymentRoutingPolicyDocumentSchema,
+  commercialTermsDocumentSchema,
+  commercialTermsRevisionDocumentSchema,
   organizerFormPaymentDocumentSchema,
   organizerFormPaymentWebhookDocumentSchema,
   organizerFormDraftDocumentSchema,
@@ -1589,6 +1598,13 @@ export const validateConfigureEventRegistrationCallableResponse = ajv.compile(co
 export const validateOrganizerEventOfferPaymentDocument = ajv.compile(organizerEventOfferPaymentDocumentSchema);
 export const validateOrganizerEventOfferRecipientDocument = ajv.compile(organizerEventOfferRecipientDocumentSchema);
 export const validatePaymentRoutingSnapshot = ajv.compile(paymentRoutingSnapshotSchema);
+export const validateCommercialTerms = ajv.compile(commercialTermsSchema);
+export const validateCommercialTermsOverride = ajv.compile(commercialTermsOverrideSchema);
+export const validateCommercialTermsSnapshot = ajv.compile(commercialTermsSnapshotSchema);
+export const validateManageCommercialTermsCallablePayload = ajv.compile(manageCommercialTermsCallablePayloadSchema);
+export const validateManageCommercialTermsCallableResponse = ajv.compile(manageCommercialTermsCallableResponseSchema);
+export const validateAdminListCommercialTermsCallablePayload = ajv.compile(adminListCommercialTermsCallablePayloadSchema);
+export const validateAdminListCommercialTermsCallableResponse = ajv.compile(adminListCommercialTermsCallableResponseSchema);
 export const validateManagePaymentRoutingPolicyCallablePayload = ajv.compile(managePaymentRoutingPolicyCallablePayloadSchema);
 export const validateManagePaymentRoutingPolicyCallableResponse = ajv.compile(managePaymentRoutingPolicyCallableResponseSchema);
 export const validateManageEventOfferCheckoutCallablePayload = ajv.compile(manageEventOfferCheckoutCallablePayloadSchema);
@@ -1924,6 +1940,8 @@ export const validateOrganizerFormDomainDocument = ajv.compile(organizerFormDoma
 export const validateOrganizerPaymentConnectionDocument = ajv.compile(organizerPaymentConnectionDocumentSchema);
 export const validateOrganizerPaymentOauthStateDocument = ajv.compile(organizerPaymentOauthStateDocumentSchema);
 export const validatePaymentRoutingPolicyDocument = ajv.compile(paymentRoutingPolicyDocumentSchema);
+export const validateCommercialTermsDocument = ajv.compile(commercialTermsDocumentSchema);
+export const validateCommercialTermsRevisionDocument = ajv.compile(commercialTermsRevisionDocumentSchema);
 export const validateOrganizerFormPaymentDocument = ajv.compile(organizerFormPaymentDocumentSchema);
 export const validateOrganizerFormPaymentWebhookDocument = ajv.compile(organizerFormPaymentWebhookDocumentSchema);
 export const validateOrganizerFormDraftDocument = ajv.compile(organizerFormDraftDocumentSchema);

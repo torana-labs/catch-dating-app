@@ -344,7 +344,7 @@ class HostToolPalette {
                 alpha: CatchOpacity.revealMutedForeground,
               )
             : t.primarySoft.withValues(
-                alpha: CatchOpacity.clubCoverPaletteLine,
+                alpha: CatchOpacity.organizerCoverPaletteLine,
               ),
         t.surface,
         t.raised.withValues(alpha: CatchOpacity.eventHeroMutedInk),

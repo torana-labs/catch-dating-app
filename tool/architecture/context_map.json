@@ -55,7 +55,6 @@
 
     {"path": "lib/safety/", "context": "safety"},
 
-    {"path": "lib/clubs/", "context": "organizers"},
     {"path": "lib/organizers/", "context": "organizers"},
 
     {"path": "lib/event_policies/", "context": "events"},

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_page_body.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_preference_controller.dart';
@@ -42,13 +42,13 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
     final accountId = uid.isSettledData ? uid.value : null;
     final organizersAsync = accountId == null
         ? null
-        : ref.watch(hostOperableClubsProvider(accountId));
+        : ref.watch(hostOperableOrganizersProvider(accountId));
     final organizers = organizersAsync == null
         ? null
         : catchAsyncStateFromAsyncValue(organizersAsync);
     final organizer = organizers?.isSettledData == true
         ? organizers?.value
-              ?.where((club) => club.id == widget.organizerId)
+              ?.where((organizer) => organizer.id == widget.organizerId)
               .firstOrNull
         : null;
     final scope =
@@ -115,7 +115,7 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
           if (uid.error != null) {
             ref.invalidate(uidProvider);
           } else if (organizers?.error != null) {
-            ref.invalidate(hostOperableClubsProvider(accountId!));
+            ref.invalidate(hostOperableOrganizersProvider(accountId!));
           } else if (scope != null) {
             ref.invalidate(hostTodayPreferenceProvider(scope));
           }

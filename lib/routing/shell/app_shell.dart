@@ -409,7 +409,7 @@ List<AppShellNavigationItem> _consumerNavigationItems() => [
   ),
   AppShellNavigationItem(
     destination: AppShellNavigationDestination.consumerExplore,
-    branchIndex: appShellClubsTabIndex,
+    branchIndex: appShellOrganizersTabIndex,
     materialIcon: CatchIcons.explore,
     materialSelectedIcon: CatchIcons.explore,
     cupertinoIcon: CupertinoIcons.person_2,

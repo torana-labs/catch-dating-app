@@ -25,6 +25,10 @@ export {listOrganizerFormPayments} from
   "./payments/formPayments/formPaymentLedger";
 export {managePaymentRoutingPolicy} from
   "./payments/managePaymentRoutingPolicy";
+export {manageCommercialTerms} from
+  "./commercialTerms/manageCommercialTerms";
+export {adminListCommercialTerms} from
+  "./commercialTerms/adminListCommercialTerms";
 export {prepareOrganizerFormPayment, getOrganizerFormPayment,
   findOrganizerFormPayment,
   manageOrganizerFormPaymentConnection} from

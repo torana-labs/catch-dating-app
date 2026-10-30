@@ -5,8 +5,8 @@ import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../test/events/events_test_helpers.dart' as event_helpers;
+import '../test/organizers/organizers_test_helpers.dart' as organizer_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
 import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
@@ -18,9 +18,9 @@ void main() {
     tester,
   ) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
-    final club = club_helpers.buildClub();
+    final organizer = organizer_helpers.buildOrganizer();
     final event = event_helpers.buildEvent(
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime.now().add(const Duration(hours: 3)),
     );
     final reporter = RecordingAnalyticsReporter();
@@ -31,24 +31,24 @@ void main() {
       overrides: appShellTestOverrides(
         uid: user.uid,
         user: user,
-        clubs: [club],
-        joinedClubIds: {club.id},
-        clubEvents: {
-          club.id: [event],
+        organizers: [organizer],
+        joinedOrganizerIds: {organizer.id},
+        organizerEvents: {
+          organizer.id: [event],
         },
         analytics: AppAnalytics(reporter: reporter, shouldCollect: true),
       ),
     );
 
-    await openClubDetail(tester, club);
+    await openOrganizerDetail(tester, organizer);
     await flushAppShellCallbacks(tester);
     await pumpAppShellFrames(tester);
 
-    await openEventDetail(tester, club: club, event: event);
+    await openEventDetail(tester, organizer: organizer, event: event);
     await flushAppShellCallbacks(tester);
     await pumpAppShellFrames(tester);
 
-    expect(reporter.screenViews, contains(Routes.clubDetailScreen.name));
+    expect(reporter.screenViews, contains(Routes.organizerDetailScreen.name));
     expect(reporter.screenViews, contains(Routes.eventDetailScreen.name));
   });
 
@@ -56,10 +56,10 @@ void main() {
     tester,
   ) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
-    final club = club_helpers.buildClub();
+    final organizer = organizer_helpers.buildOrganizer();
     final attendedRun = event_helpers.buildEvent(
       id: 'attended-run-1',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime.now().subtract(const Duration(hours: 11)),
       endTime: DateTime.now().subtract(const Duration(hours: 10)),
       checkedInCount: 2,
@@ -76,8 +76,8 @@ void main() {
       overrides: appShellTestOverrides(
         uid: user.uid,
         user: user,
-        clubs: [club],
-        joinedClubIds: {club.id},
+        organizers: [organizer],
+        joinedOrganizerIds: {organizer.id},
         attendedEvents: [attendedRun],
         swipeCandidates: [candidate],
       ),

@@ -68,9 +68,6 @@ class ExploreSearchResult {
 
   final List<String> organizerIds;
   final List<String> eventIds;
-
-  @Deprecated('Use organizerIds')
-  List<String> get clubIds => organizerIds;
 }
 
 List<String> _stringList(Object? value) {

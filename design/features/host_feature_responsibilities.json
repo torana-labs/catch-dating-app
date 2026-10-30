@@ -16,7 +16,7 @@
         "hostApplicationDetailScreen",
         "hostAudienceScreen",
         "hostInboxScreen",
-        "hostClubPaymentsScreen",
+        "hostOrganizerPaymentsScreen",
         "hostEventRehearsalStartScreen"
       ],
       "targetRoot": "lib/hosts/today",
@@ -576,17 +576,17 @@
       "primaryRouteId": "hostOrganizerScreen",
       "ownedRouteIds": [
         "hostOrganizerScreen",
-        "hostClubsScreen",
-        "hostClubEventDefaultsScreen",
-        "hostClubLiveGuideScreen",
-        "hostClubTeamScreen",
-        "hostClubPaymentsScreen"
+        "hostOrganizersScreen",
+        "hostOrganizerEventDefaultsScreen",
+        "hostOrganizerLiveGuideScreen",
+        "hostOrganizerTeamScreen",
+        "hostOrganizerPaymentsScreen"
       ],
       "handoffRouteIds": [
-        "hostCreateClubScreen",
+        "hostCreateOrganizerScreen",
         "hostEventsScreen",
         "hostAppEventManageScreen",
-        "hostClubDetailScreen"
+        "hostOrganizerDetailScreen"
       ],
       "targetRoot": "lib/hosts/organizer",
       "migrationStatus": "targetDefinedLegacyImplementation",
@@ -605,7 +605,7 @@
       ],
       "currentRoots": [
         "lib/hosts/presentation/host_operations",
-        "lib/hosts/presentation/club_management",
+        "lib/hosts/presentation/organizer_management",
         "lib/hosts/presentation/payments"
       ],
       "featureContractBindings": [
@@ -636,7 +636,7 @@
       "additionalDataContracts": [],
       "sharedDependencies": [
         {
-          "path": "lib/contexts/organizers/data/clubs_repository.dart",
+          "path": "lib/contexts/organizers/data/organizers_repository.dart",
           "reason": "Transitional Organizer repository alias remains the canonical Flutter read/write seam during the domain cutover."
         },
         {
@@ -649,7 +649,7 @@
         }
       ],
       "testFiles": [
-        "test/hosts/host_club_defaults_saver_test.dart",
+        "test/hosts/host_organizer_defaults_saver_test.dart",
         "test/hosts/host_organizer_identity_switcher_test.dart",
         "test/hosts/host_team_management_controller_test.dart",
         "test/hosts/host_team_management_section_test.dart",

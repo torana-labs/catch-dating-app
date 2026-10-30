@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
@@ -15,7 +15,7 @@ class HostMessagingSetupScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final club = ref.watch(watchClubProvider(clubId));
+    final organizer = ref.watch(watchOrganizerProvider(clubId));
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: context.l10n.hostSendsSettings,
@@ -29,17 +29,18 @@ class HostMessagingSetupScreen extends ConsumerWidget {
       body: CatchRouteBody.standardSlivers(
         slivers: [
           CatchAsyncBoundary.sliver(
-            value: club,
-            onRetry: () => ref.invalidate(watchClubProvider(clubId)),
-            errorContext: AppErrorContext.club,
+            value: organizer,
+            onRetry: () => ref.invalidate(watchOrganizerProvider(clubId)),
+            errorContext: AppErrorContext.organizer,
             builder: (context, value) => SliverToBoxAdapter(
               child: value == null
                   ? CatchLocalizedErrorState(
                       StateError('Organizer not found.'),
-                      context: AppErrorContext.club,
-                      onRetry: () => ref.invalidate(watchClubProvider(clubId)),
+                      context: AppErrorContext.organizer,
+                      onRetry: () =>
+                          ref.invalidate(watchOrganizerProvider(clubId)),
                     )
-                  : HostWhatsappSetupSection(club: value),
+                  : HostWhatsappSetupSection(organizer: value),
             ),
           ),
         ],

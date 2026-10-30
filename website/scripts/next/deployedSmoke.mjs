@@ -46,14 +46,21 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
     }
     const text = await response.text(); evidence.push({path, status: response.status}); return {response, text};
   }
-  for (const [path, title] of [["/", homePageCopy.hero.title], ["/host/", hostLandingCopy.hero.title], ["/explore/", explorePageCopy.lead], ["/mumbai/", explorePageCopy.lead]]) {
+  // A page that could not read its plans answers 503, so a 200 never carries
+  // the unavailable message.
+  for (const [path, title, unavailable] of [["/", homePageCopy.hero.title, homePageCopy.week.unavailable],
+    ["/host/", hostLandingCopy.hero.title], ["/explore/", explorePageCopy.lead, explorePageCopy.unavailable],
+    ["/mumbai/", explorePageCopy.lead, explorePageCopy.unavailable]]) {
     const {response, text} = await get(path);
     assert.ok(text.includes(title) && text.includes("<h1"), `${path} rendered content`);
+    assert.ok(!unavailable || !text.includes(unavailable), `${path} rendered its unavailable state`);
     if (live && ["/", "/host/"].includes(path)) assert.doesNotMatch(response.headers.get("x-robots-tag") ?? "", /noindex/u);
   }
   // The directory is Explore's organisers view; its query comes along (CAT-261).
-  const directory = await get("/organizers/?q=run", 308);
-  assert.equal(directory.response.headers.get("location"), "/explore/?q=run&show=organisers", "/organizers/ redirect");
+  // The proxy answers it with the retired routes' 301 on the public origin.
+  const directory = await get("/organizers/?q=run", 301);
+  assert.equal(new URL(directory.response.headers.get("location") ?? "", base).href,
+    `${base}/explore/?q=run&show=organisers`, "/organizers/ redirect");
   const catalog = await get("/api/public-catalog");
   assert.match(catalog.response.headers.get("cache-control"), /no-store/u);
   const data = JSON.parse(catalog.text); assert.ok(Array.isArray(data.listings));
@@ -89,13 +96,43 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
   return {sourceSha, base, checks: evidence};
 }
 /**
+ * Waits, within a bound, until a deployment's home page answers as the
+ * selected release, then hands over to the full check. A Hosting release does
+ * not reach every edge at the instant its API call returns, and an edge may
+ * still hold the previous release's page for its one-minute shared lifetime;
+ * run 41075702618's first request came seconds after its channel release.
+ * The wait asks the real path, not a cache-busting one, because that is what
+ * the checks ask next. A deployment that never serves the release still fails,
+ * naming what it served instead.
+ */
+export async function awaitServedRelease(base, sourceSha, {fetchImpl = fetch, attempts = 18, delayMs = 10_000,
+  sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))} = {}) {
+  assert.match(sourceSha ?? "", /^[a-f0-9]{40}$/u);
+  let served;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      const response = await fetchImpl(`${base}/`, {redirect: "manual", signal: AbortSignal.timeout(30_000)});
+      served = {status: response.status, release: response.headers.get("x-catch-release"),
+        age: response.headers.get("age"), cache: response.headers.get("x-cache")};
+      await response.body?.cancel();
+      if (served.status === 200 && served.release === sourceSha) return {attempt, ...served};
+    } catch (error) {served = {error: String(error?.message ?? error)};}
+    if (attempt < attempts) await sleep(delayMs);
+  }
+  assert.fail(`${base}/ did not serve ${sourceSha} after ${attempts} attempts; last answer ${JSON.stringify(served)}`);
+}
+/**
  * The release a deployment must serve. Promotion runs on main's head but
  * releases the accepted preview's source (RELEASE_SHA); a preview releases
- * the commit it runs on.
+ * the commit it runs on. The routes and copy above are this file's source's,
+ * so promotion runs the release's own copy of this file, never main's: main
+ * may have reworked a route since (an older Explore, for one, fails main's).
  */
 export function expectedRelease(env) {
   return env.RELEASE_SHA || env.GITHUB_SHA;
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  console.log(JSON.stringify(await verifyDeployedWebsite(process.argv[2], expectedRelease(process.env)), null, 2));
+  const release = expectedRelease(process.env);
+  console.error(JSON.stringify({served: await awaitServedRelease(process.argv[2], release)}));
+  console.log(JSON.stringify(await verifyDeployedWebsite(process.argv[2], release), null, 2));
 }

@@ -176,7 +176,7 @@ Widget hostEmptyStateStates(BuildContext context) {
           child: CatchEmptyState(
             title: 'No active events yet',
             message:
-                'Create an event for ${HostOperationsFixtures.primaryClub.name} to start filling the host dashboard.',
+                'Create an event for ${HostOperationsFixtures.primaryOrganizer.name} to start filling the host dashboard.',
             padding: EdgeInsets.zero,
             actions: [
               Wrap(

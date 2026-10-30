@@ -7547,6 +7547,752 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminListCommercialTermsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallablePayloadOrganizerQuery = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallablePayload.organizerQuery',
+    maxLength: 80,
+    minLength: 2,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCurrency = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.currency',
+    required: true,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.eventAdmission.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.formFee.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.formFee.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.hostMembership.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.hostMembership.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsTrialDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistory = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsActorUid = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsReason = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.reason',
+    maxLength: 500,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsRevision = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.commission.base',
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.commission.cycleAnchor',
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.commission.cycleDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.commission.rateBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.commission.taxTreatment',
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCurrency = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.currency',
+    required: true,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.purposes.eventAdmission.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.purposes.formFee.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.purposes.formFee.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.purposes.hostMembership.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.purposes.hostMembership.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.toolsOnly.feeMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.trial.anchor',
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsTrialDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.trial.days',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryComplete = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.historyComplete',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerReason = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.reason',
+    maxLength: 500,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerRevision = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.commission.base',
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.commission.cycleAnchor',
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.commission.cycleDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.commission.rateBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.commission.taxTreatment',
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.gatewayFeeBearer',
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.purposes.eventAdmission.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.purposes.formFee.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.purposes.formFee.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.purposes.hostMembership.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.purposes.hostMembership.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.toolsOnly.feeMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.trial.anchor',
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsTrialDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.trial.days',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerUpdatedByUid = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.updatedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerMatches = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizerMatches',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerMatchesItemsCityName = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizerMatches.items.cityName',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerMatchesItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizerMatches.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerMatchesItemsOrganizerName = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizerMatches.items.organizerName',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerName = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizerName',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverrides = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsOrganizerName = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.organizerName',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsReason = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.reason',
+    maxLength: 500,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsRevision = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.base',
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.cycleAnchor',
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.cycleDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.rateBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.taxTreatment',
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.gatewayFeeBearer',
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.eventAdmission.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.formFee.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.formFee.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.hostMembership.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.hostMembership.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.toolsOnly.feeMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.trial.anchor',
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsTrialDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.trial.days',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesComplete = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overridesComplete',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformReason = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.reason',
+    maxLength: 500,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformRevision = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCurrency = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.currency',
+    required: true,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.purposes.eventAdmission.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.purposes.formFee.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.purposes.formFee.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.purposes.hostMembership.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.purposes.hostMembership.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsTrialDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformUpdatedByUid = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.updatedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseTermsId = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.termsId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^(platform|org_[a-f0-9]{64})\$',
+  );
+
   static const adminListCrossPathsShowcaseCandidatesCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'adminListCrossPathsShowcaseCandidatesCallablePayload.cursor',
     maxLength: 180,
@@ -9613,7 +10359,7 @@ abstract final class CatchContractConstraints {
     path: 'adminListSupplyNominatorsCallableResponse.nominators.items.channel',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['whatsapp'],
+    enumValues: <String>['whatsapp', 'instagram'],
   );
 
   static const adminListSupplyNominatorsCallableResponseNominatorsItemsDefaultMarket = CatchContractFieldConstraints(
@@ -9630,16 +10376,21 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminListSupplyNominatorsCallableResponseNominatorsItemsInstagramHandle = CatchContractFieldConstraints(
+    path: 'adminListSupplyNominatorsCallableResponse.nominators.items.instagramHandle',
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9._]{1,30}\$',
+  );
+
   static const adminListSupplyNominatorsCallableResponseNominatorsItemsNominatorId = CatchContractFieldConstraints(
     path: 'adminListSupplyNominatorsCallableResponse.nominators.items.nominatorId',
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^whatsapp-[a-f0-9]{64}\$',
+    pattern: '^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})\$',
   );
 
   static const adminListSupplyNominatorsCallableResponseNominatorsItemsPhoneLast4 = CatchContractFieldConstraints(
     path: 'adminListSupplyNominatorsCallableResponse.nominators.items.phoneLast4',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^[0-9]{4}\$',
   );
@@ -14449,9 +15200,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminSetSupplyNominatorCallablePayloadInstagramHandle = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallablePayload.instagramHandle',
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9._]{1,30}\$',
+  );
+
   static const adminSetSupplyNominatorCallablePayloadPhoneE164 = CatchContractFieldConstraints(
     path: 'adminSetSupplyNominatorCallablePayload.phoneE164',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^\\+[1-9][0-9]{6,14}\$',
   );
@@ -14488,16 +15244,21 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-z][a-z0-9-]{1,49}\$',
   );
 
+  static const adminSetSupplyNominatorCallableResponseInstagramHandle = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallableResponse.instagramHandle',
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9._]{1,30}\$',
+  );
+
   static const adminSetSupplyNominatorCallableResponseNominatorId = CatchContractFieldConstraints(
     path: 'adminSetSupplyNominatorCallableResponse.nominatorId',
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^whatsapp-[a-f0-9]{64}\$',
+    pattern: '^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})\$',
   );
 
   static const adminSetSupplyNominatorCallableResponsePhoneLast4 = CatchContractFieldConstraints(
     path: 'adminSetSupplyNominatorCallableResponse.phoneLast4',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^[0-9]{4}\$',
   );
@@ -24328,6 +25089,675 @@ abstract final class CatchContractConstraints {
   static const clubScheduleLockDocumentSynthetic = CatchContractFieldConstraints(
     path: 'clubScheduleLockDocument.synthetic',
     valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'commercialTerms.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const commercialTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'commercialTerms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const commercialTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'commercialTerms.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const commercialTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'commercialTerms.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const commercialTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTerms.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const commercialTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'commercialTerms.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const commercialTermsCurrency = CatchContractFieldConstraints(
+    path: 'commercialTerms.currency',
+    required: true,
+  );
+
+  static const commercialTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'commercialTerms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const commercialTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTerms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const commercialTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'commercialTerms.purposes.eventAdmission.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTerms.purposes.formFee.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const commercialTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'commercialTerms.purposes.formFee.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTerms.purposes.hostMembership.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const commercialTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'commercialTerms.purposes.hostMembership.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'commercialTerms.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const commercialTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'commercialTerms.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const commercialTermsTrialDays = CatchContractFieldConstraints(
+    path: 'commercialTerms.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const commercialTermsDocumentLastMutationHash = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.lastMutationHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const commercialTermsDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const commercialTermsDocumentReason = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.reason',
+    maxLength: 500,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const commercialTermsDocumentRevision = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const commercialTermsDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.schemaVersion',
+    required: true,
+  );
+
+  static const commercialTermsDocumentScope = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.scope',
+    required: true,
+    enumValues: <String>['platform', 'organizer'],
+  );
+
+  static const commercialTermsDocumentTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.commission.base',
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const commercialTermsDocumentTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const commercialTermsDocumentTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.commission.cycleAnchor',
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const commercialTermsDocumentTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.commission.cycleDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const commercialTermsDocumentTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.commission.rateBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const commercialTermsDocumentTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.commission.taxTreatment',
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const commercialTermsDocumentTermsCurrency = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.currency',
+    required: true,
+  );
+
+  static const commercialTermsDocumentTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const commercialTermsDocumentTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const commercialTermsDocumentTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.purposes.eventAdmission.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsDocumentTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.purposes.formFee.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const commercialTermsDocumentTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.purposes.formFee.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsDocumentTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.purposes.hostMembership.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const commercialTermsDocumentTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.purposes.hostMembership.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsDocumentTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.toolsOnly.feeMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const commercialTermsDocumentTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.trial.anchor',
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const commercialTermsDocumentTermsTrialDays = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.terms.trial.days',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const commercialTermsDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const commercialTermsDocumentUpdatedByUid = CatchContractFieldConstraints(
+    path: 'commercialTermsDocument.updatedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const commercialTermsOverrideCommissionBase = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.commission.base',
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const commercialTermsOverrideCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const commercialTermsOverrideCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.commission.cycleAnchor',
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const commercialTermsOverrideCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.commission.cycleDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const commercialTermsOverrideCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.commission.rateBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const commercialTermsOverrideCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.commission.taxTreatment',
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const commercialTermsOverrideGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.gatewayFeeBearer',
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const commercialTermsOverridePurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.purposes.eventAdmission.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const commercialTermsOverridePurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.purposes.eventAdmission.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsOverridePurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.purposes.formFee.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const commercialTermsOverridePurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.purposes.formFee.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsOverridePurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.purposes.hostMembership.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const commercialTermsOverridePurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.purposes.hostMembership.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsOverrideToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.toolsOnly.feeMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const commercialTermsOverrideTrialAnchor = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.trial.anchor',
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const commercialTermsOverrideTrialDays = CatchContractFieldConstraints(
+    path: 'commercialTermsOverride.trial.days',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const commercialTermsRevisionDocumentActorUid = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const commercialTermsRevisionDocumentCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const commercialTermsRevisionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const commercialTermsRevisionDocumentReason = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.reason',
+    maxLength: 500,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const commercialTermsRevisionDocumentRevision = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const commercialTermsRevisionDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.schemaVersion',
+    required: true,
+  );
+
+  static const commercialTermsRevisionDocumentScope = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.scope',
+    required: true,
+    enumValues: <String>['platform', 'organizer'],
+  );
+
+  static const commercialTermsRevisionDocumentTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.commission.base',
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const commercialTermsRevisionDocumentTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const commercialTermsRevisionDocumentTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.commission.cycleAnchor',
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const commercialTermsRevisionDocumentTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.commission.cycleDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const commercialTermsRevisionDocumentTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.commission.rateBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const commercialTermsRevisionDocumentTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.commission.taxTreatment',
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const commercialTermsRevisionDocumentTermsCurrency = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.currency',
+    required: true,
+  );
+
+  static const commercialTermsRevisionDocumentTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const commercialTermsRevisionDocumentTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const commercialTermsRevisionDocumentTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.purposes.eventAdmission.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsRevisionDocumentTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.purposes.formFee.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const commercialTermsRevisionDocumentTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.purposes.formFee.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsRevisionDocumentTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.purposes.hostMembership.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const commercialTermsRevisionDocumentTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.purposes.hostMembership.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsRevisionDocumentTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.toolsOnly.feeMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const commercialTermsRevisionDocumentTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.trial.anchor',
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const commercialTermsRevisionDocumentTermsTrialDays = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.terms.trial.days',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const commercialTermsRevisionDocumentTermsId = CatchContractFieldConstraints(
+    path: 'commercialTermsRevisionDocument.termsId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^(platform|org_[a-f0-9]{64})\$',
+  );
+
+  static const commercialTermsSnapshotCommissionBase = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const commercialTermsSnapshotCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const commercialTermsSnapshotCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const commercialTermsSnapshotCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const commercialTermsSnapshotCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const commercialTermsSnapshotCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const commercialTermsSnapshotCurrency = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.currency',
+    required: true,
+  );
+
+  static const commercialTermsSnapshotGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const commercialTermsSnapshotMerchantOfRecord = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.merchantOfRecord',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const commercialTermsSnapshotMoneyFlow = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.moneyFlow',
+    required: true,
+    enumValues: <String>['hostCollected', 'platformSplit'],
+  );
+
+  static const commercialTermsSnapshotOrganizerId = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const commercialTermsSnapshotOrganizerRevision = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.organizerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const commercialTermsSnapshotPlatformRevision = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.platformRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const commercialTermsSnapshotPurpose = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.purpose',
+    required: true,
+    enumValues: <String>['eventAdmission', 'formFee', 'hostMembership'],
+  );
+
+  static const commercialTermsSnapshotPurposeTermsAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.purposeTerms.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const commercialTermsSnapshotPurposeTermsCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.purposeTerms.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commercialTermsSnapshotResolvedAtMillis = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.resolvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const commercialTermsSnapshotToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const commercialTermsSnapshotTrialAnchor = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const commercialTermsSnapshotTrialDays = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const commercialTermsSnapshotVersion = CatchContractFieldConstraints(
+    path: 'commercialTermsSnapshot.version',
+    required: true,
   );
 
   static const commitEventOffersCallablePayloadEventId = CatchContractFieldConstraints(
@@ -92948,6 +94378,147 @@ abstract final class CatchContractConstraints {
     maximum: 1500000,
   );
 
+  static const hostMembershipChargeDocumentCommercialTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsCurrency = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.currency',
+    required: true,
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsMerchantOfRecord = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.merchantOfRecord',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsMoneyFlow = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.moneyFlow',
+    required: true,
+    enumValues: <String>['hostCollected', 'platformSplit'],
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsOrganizerId = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsOrganizerRevision = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.organizerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsPlatformRevision = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.platformRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsPurpose = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.purpose',
+    required: true,
+    enumValues: <String>['eventAdmission', 'formFee', 'hostMembership'],
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsPurposeTermsAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.purposeTerms.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsPurposeTermsCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.purposeTerms.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsResolvedAtMillis = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.resolvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsTrialDays = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const hostMembershipChargeDocumentCommercialTermsVersion = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.commercialTerms.version',
+    required: true,
+  );
+
   static const hostMembershipChargeDocumentCreatedAtMillis = CatchContractFieldConstraints(
     path: 'hostMembershipChargeDocument.createdAtMillis',
     required: true,
@@ -92975,6 +94546,11 @@ abstract final class CatchContractConstraints {
     path: 'hostMembershipChargeDocument.mode',
     required: true,
     enumValues: <String>['test', 'live'],
+  );
+
+  static const hostMembershipChargeDocumentMoneyFlow = CatchContractFieldConstraints(
+    path: 'hostMembershipChargeDocument.moneyFlow',
+    enumValues: <String>['hostCollected', 'platformSplit'],
   );
 
   static const hostMembershipChargeDocumentOrganizerId = CatchContractFieldConstraints(
@@ -93111,6 +94687,39 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const hostMembershipCheckoutDocumentPaymentBindingId = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.payment.bindingId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipCheckoutDocumentPaymentMode = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.payment.mode',
+    required: true,
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const hostMembershipCheckoutDocumentPaymentMoneyFlow = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.payment.moneyFlow',
+    required: true,
+    enumValues: <String>['hostCollected', 'platformSplit'],
+  );
+
+  static const hostMembershipCheckoutDocumentPaymentProvider = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.payment.provider',
+    required: true,
+    enumValues: <String>['razorpay'],
+  );
+
+  static const hostMembershipCheckoutDocumentPaymentProviderAccountId = CatchContractFieldConstraints(
+    path: 'hostMembershipCheckoutDocument.payment.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^acc_[A-Za-z0-9]{4,40}\$',
+  );
+
   static const hostMembershipCheckoutDocumentPlanId = CatchContractFieldConstraints(
     path: 'hostMembershipCheckoutDocument.planId',
     required: true,
@@ -93245,6 +94854,39 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
+  );
+
+  static const hostMembershipDocumentPaymentBindingId = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.payment.bindingId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostMembershipDocumentPaymentMode = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.payment.mode',
+    required: true,
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const hostMembershipDocumentPaymentMoneyFlow = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.payment.moneyFlow',
+    required: true,
+    enumValues: <String>['hostCollected', 'platformSplit'],
+  );
+
+  static const hostMembershipDocumentPaymentProvider = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.payment.provider',
+    required: true,
+    enumValues: <String>['razorpay'],
+  );
+
+  static const hostMembershipDocumentPaymentProviderAccountId = CatchContractFieldConstraints(
+    path: 'hostMembershipDocument.payment.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^acc_[A-Za-z0-9]{4,40}\$',
   );
 
   static const hostMembershipDocumentPlanId = CatchContractFieldConstraints(
@@ -93459,6 +95101,12 @@ abstract final class CatchContractConstraints {
     maximum: 1500000,
   );
 
+  static const hostMembershipPlanDocumentPricesAnnualProviderAccountId = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.prices.annual.providerAccountId',
+    valueTypes: <String>['string'],
+    pattern: '^acc_[A-Za-z0-9]{4,40}\$',
+  );
+
   static const hostMembershipPlanDocumentPricesAnnualProviderPriceIdsRazorpay = CatchContractFieldConstraints(
     path: 'hostMembershipPlanDocument.prices.annual.providerPriceIds.razorpay',
     valueTypes: <String>['string'],
@@ -93479,6 +95127,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1000,
     maximum: 1500000,
+  );
+
+  static const hostMembershipPlanDocumentPricesMonthlyProviderAccountId = CatchContractFieldConstraints(
+    path: 'hostMembershipPlanDocument.prices.monthly.providerAccountId',
+    valueTypes: <String>['string'],
+    pattern: '^acc_[A-Za-z0-9]{4,40}\$',
   );
 
   static const hostMembershipPlanDocumentPricesMonthlyProviderPriceIdsRazorpay = CatchContractFieldConstraints(
@@ -93616,6 +95270,11 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['test', 'live'],
   );
 
+  static const hostMembershipProgramDocumentPaymentMoneyFlow = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.payment.moneyFlow',
+    enumValues: <String>['hostCollected', 'platformSplit'],
+  );
+
   static const hostMembershipProgramDocumentPaymentProvider = CatchContractFieldConstraints(
     path: 'hostMembershipProgramDocument.payment.provider',
     required: true,
@@ -93627,6 +95286,14 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^acc_[A-Za-z0-9]{4,40}\$',
+  );
+
+  static const hostMembershipProgramDocumentPaymentWebhookId = CatchContractFieldConstraints(
+    path: 'hostMembershipProgramDocument.payment.webhookId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const hostMembershipProgramDocumentRevision = CatchContractFieldConstraints(
@@ -103461,6 +105128,393 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const manageCommercialTermsCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.action',
+    required: true,
+    enumValues: <String>['read', 'replace'],
+  );
+
+  static const manageCommercialTermsCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const manageCommercialTermsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageCommercialTermsCallablePayloadReason = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.reason',
+    maxLength: 500,
+    minLength: 3,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.commission.base',
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.commission.cycleAnchor',
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.commission.cycleDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.commission.rateBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.commission.taxTreatment',
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsCurrency = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.currency',
+    required: true,
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.purposes.eventAdmission.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.purposes.formFee.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.purposes.formFee.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.purposes.hostMembership.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.purposes.hostMembership.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.toolsOnly.feeMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.trial.anchor',
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const manageCommercialTermsCallablePayloadTermsTrialDays = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallablePayload.terms.trial.days',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsCurrency = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.currency',
+    required: true,
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.purposes.eventAdmission.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.purposes.formFee.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.purposes.formFee.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.purposes.hostMembership.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.purposes.hostMembership.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const manageCommercialTermsCallableResponseEffectiveTermsTrialDays = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.effectiveTerms.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const manageCommercialTermsCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageCommercialTermsCallableResponsePlatformRevision = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.platformRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const manageCommercialTermsCallableResponseReason = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.reason',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageCommercialTermsCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const manageCommercialTermsCallableResponseTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.commission.base',
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const manageCommercialTermsCallableResponseTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const manageCommercialTermsCallableResponseTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.commission.cycleAnchor',
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const manageCommercialTermsCallableResponseTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.commission.cycleDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const manageCommercialTermsCallableResponseTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.commission.rateBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const manageCommercialTermsCallableResponseTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.commission.taxTreatment',
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const manageCommercialTermsCallableResponseTermsCurrency = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.currency',
+    required: true,
+  );
+
+  static const manageCommercialTermsCallableResponseTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const manageCommercialTermsCallableResponseTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const manageCommercialTermsCallableResponseTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.purposes.eventAdmission.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageCommercialTermsCallableResponseTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.purposes.formFee.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const manageCommercialTermsCallableResponseTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.purposes.formFee.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageCommercialTermsCallableResponseTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.purposes.hostMembership.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const manageCommercialTermsCallableResponseTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.purposes.hostMembership.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageCommercialTermsCallableResponseTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.toolsOnly.feeMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const manageCommercialTermsCallableResponseTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.trial.anchor',
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const manageCommercialTermsCallableResponseTermsTrialDays = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.terms.trial.days',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const manageCommercialTermsCallableResponseTermsId = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.termsId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^(platform|org_[a-f0-9]{64})\$',
+  );
+
+  static const manageCommercialTermsCallableResponseUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'manageCommercialTermsCallableResponse.updatedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const manageEventApprovalNotificationsCallablePayloadAction = CatchContractFieldConstraints(
     path: 'manageEventApprovalNotificationsCallablePayload.action',
     required: true,
@@ -104571,6 +106625,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const manageHostMembershipProgramCallableResponsePaymentMode = CatchContractFieldConstraints(
+    path: 'manageHostMembershipProgramCallableResponse.paymentMode',
+    enumValues: <String>['hostCollected', 'platformSplit'],
+  );
+
   static const manageHostMembershipProgramCallableResponseProgramBillingPauseState = CatchContractFieldConstraints(
     path: 'manageHostMembershipProgramCallableResponse.program.billingPauseState',
     required: true,
@@ -104615,6 +106674,11 @@ abstract final class CatchContractConstraints {
     path: 'manageHostMembershipProgramCallableResponse.routeAccountReady',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const manageHostMembershipProgramCallableResponseUnavailableReason = CatchContractFieldConstraints(
+    path: 'manageHostMembershipProgramCallableResponse.unavailableReason',
+    enumValues: <String>['notOffered', 'termsNotConfigured', 'razorpayNotConnected', 'razorpayNeedsAttention', 'subscriptionsNotEnabled', 'payoutAccountNotReady', 'providerUnavailable'],
   );
 
   static const manageHostRosterIntakeCallablePayloadAction = CatchContractFieldConstraints(
@@ -110683,11 +112747,17 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const organizerClaimInstagramMessageDocumentNominatorId = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.nominatorId',
+    valueTypes: <String>['string'],
+    pattern: '^instagram-[a-z0-9._]{1,30}\$',
+  );
+
   static const organizerClaimInstagramMessageDocumentOutcome = CatchContractFieldConstraints(
     path: 'organizerClaimInstagramMessageDocument.outcome',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['verified', 'wrongSender', 'expiredCode', 'codeAlreadyUsed', 'unknownCode', 'claimUnavailable', 'senderUnknown', 'rateLimited'],
+    enumValues: <String>['verified', 'wrongSender', 'expiredCode', 'codeAlreadyUsed', 'unknownCode', 'claimUnavailable', 'senderUnknown', 'rateLimited', 'nominationQueued', 'nominationWithoutLinks', 'nominationRateLimited', 'nominationUnclear', 'shareWithoutProfile'],
   );
 
   static const organizerClaimInstagramMessageDocumentReceivedAtNanoseconds = CatchContractFieldConstraints(
@@ -117521,6 +119591,147 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsCurrency = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.currency',
+    required: true,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsMerchantOfRecord = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.merchantOfRecord',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsMoneyFlow = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.moneyFlow',
+    required: true,
+    enumValues: <String>['hostCollected', 'platformSplit'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsOrganizerRevision = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.organizerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsPlatformRevision = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.platformRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsPurpose = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.purpose',
+    required: true,
+    enumValues: <String>['eventAdmission', 'formFee', 'hostMembership'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsPurposeTermsAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.purposeTerms.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsPurposeTermsCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.purposeTerms.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsResolvedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.resolvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsTrialDays = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const organizerEventOfferPaymentDocumentRoutingCommercialTermsVersion = CatchContractFieldConstraints(
+    path: 'organizerEventOfferPaymentDocument.routing.commercialTerms.version',
+    required: true,
+  );
+
   static const organizerEventOfferPaymentDocumentRoutingConfigurationVersion = CatchContractFieldConstraints(
     path: 'organizerEventOfferPaymentDocument.routing.configurationVersion',
     maxLength: 512,
@@ -118906,6 +121117,147 @@ abstract final class CatchContractConstraints {
     maxLength: 256,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCurrency = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.currency',
+    required: true,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsMerchantOfRecord = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.merchantOfRecord',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsMoneyFlow = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.moneyFlow',
+    required: true,
+    enumValues: <String>['hostCollected', 'platformSplit'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsOrganizerRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.organizerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsPlatformRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.platformRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsPurpose = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.purpose',
+    required: true,
+    enumValues: <String>['eventAdmission', 'formFee', 'hostMembership'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsPurposeTermsAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.purposeTerms.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsPurposeTermsCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.purposeTerms.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsResolvedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.resolvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsTrialDays = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsVersion = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.version',
+    required: true,
   );
 
   static const organizerFormAdmissionReceiptDocumentProviderPaymentRoutingConfigurationVersion = CatchContractFieldConstraints(
@@ -121607,6 +123959,147 @@ abstract final class CatchContractConstraints {
     maxLength: 256,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsCurrency = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.currency',
+    required: true,
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsMerchantOfRecord = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.merchantOfRecord',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsMoneyFlow = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.moneyFlow',
+    required: true,
+    enumValues: <String>['hostCollected', 'platformSplit'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsOrganizerRevision = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.organizerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsPlatformRevision = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.platformRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsPurpose = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.purpose',
+    required: true,
+    enumValues: <String>['eventAdmission', 'formFee', 'hostMembership'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsPurposeTermsAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.purposeTerms.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsPurposeTermsCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.purposeTerms.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsResolvedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.resolvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsTrialDays = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const organizerFormPaymentDocumentRoutingCommercialTermsVersion = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.commercialTerms.version',
+    required: true,
   );
 
   static const organizerFormPaymentDocumentRoutingConfigurationVersion = CatchContractFieldConstraints(
@@ -132313,6 +134806,147 @@ abstract final class CatchContractConstraints {
     maxLength: 256,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsCurrency = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.currency',
+    required: true,
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsMerchantOfRecord = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.merchantOfRecord',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsMoneyFlow = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.moneyFlow',
+    required: true,
+    enumValues: <String>['hostCollected', 'platformSplit'],
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsOrganizerId = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsOrganizerRevision = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.organizerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsPlatformRevision = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.platformRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsPurpose = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.purpose',
+    required: true,
+    enumValues: <String>['eventAdmission', 'formFee', 'hostMembership'],
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsPurposeTermsAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.purposeTerms.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsPurposeTermsCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.purposeTerms.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsResolvedAtMillis = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.resolvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsTrialDays = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const paymentRoutingSnapshotCommercialTermsVersion = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.commercialTerms.version',
+    required: true,
   );
 
   static const paymentRoutingSnapshotConfigurationVersion = CatchContractFieldConstraints(
@@ -144890,6 +147524,147 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsCurrency = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.currency',
+    required: true,
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsMerchantOfRecord = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.merchantOfRecord',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsMoneyFlow = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.moneyFlow',
+    required: true,
+    enumValues: <String>['hostCollected', 'platformSplit'],
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsOrganizerId = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsOrganizerRevision = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.organizerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsPlatformRevision = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.platformRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsPurpose = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.purpose',
+    required: true,
+    enumValues: <String>['eventAdmission', 'formFee', 'hostMembership'],
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsPurposeTermsAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.purposeTerms.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsPurposeTermsCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.purposeTerms.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsResolvedAtMillis = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.resolvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsTrialDays = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const publicEventAdmissionReceiptDocumentRoutingCommercialTermsVersion = CatchContractFieldConstraints(
+    path: 'publicEventAdmissionReceiptDocument.routing.commercialTerms.version',
+    required: true,
+  );
+
   static const publicEventAdmissionReceiptDocumentRoutingConfigurationVersion = CatchContractFieldConstraints(
     path: 'publicEventAdmissionReceiptDocument.routing.configurationVersion',
     maxLength: 512,
@@ -145310,6 +148085,147 @@ abstract final class CatchContractConstraints {
     maxLength: 256,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsCurrency = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.currency',
+    required: true,
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsMerchantOfRecord = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.merchantOfRecord',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsMoneyFlow = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.moneyFlow',
+    required: true,
+    enumValues: <String>['hostCollected', 'platformSplit'],
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsOrganizerId = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsOrganizerRevision = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.organizerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsPlatformRevision = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.platformRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsPurpose = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.purpose',
+    required: true,
+    enumValues: <String>['eventAdmission', 'formFee', 'hostMembership'],
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsPurposeTermsAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.purposeTerms.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsPurposeTermsCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.purposeTerms.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsResolvedAtMillis = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.resolvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsTrialDays = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const publicEventPaymentDocumentRoutingCommercialTermsVersion = CatchContractFieldConstraints(
+    path: 'publicEventPaymentDocument.routing.commercialTerms.version',
+    required: true,
   );
 
   static const publicEventPaymentDocumentRoutingConfigurationVersion = CatchContractFieldConstraints(
@@ -163046,7 +165962,7 @@ abstract final class CatchContractConstraints {
   static const supplyIntakeRequestsDocumentResultCaptureReceiptsItemsAdapterId = CatchContractFieldConstraints(
     path: 'supplyIntakeRequestsDocument.result.captureReceipts.items.adapterId',
     required: true,
-    enumValues: <String>['page_fetch', 'static_page'],
+    enumValues: <String>['page_fetch', 'static_page', 'instagram_business_discovery'],
   );
 
   static const supplyIntakeRequestsDocumentResultCaptureReceiptsItemsBudgetWindowIntakeConsumed = CatchContractFieldConstraints(
@@ -163481,7 +166397,7 @@ abstract final class CatchContractConstraints {
     path: 'supplyNominatorDocument.channel',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['whatsapp'],
+    enumValues: <String>['whatsapp', 'instagram'],
   );
 
   static const supplyNominatorDocumentCreatedAt = CatchContractFieldConstraints(
@@ -163507,21 +166423,25 @@ abstract final class CatchContractConstraints {
 
   static const supplyNominatorDocumentEndpointHash = CatchContractFieldConstraints(
     path: 'supplyNominatorDocument.endpointHash',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const supplyNominatorDocumentInstagramHandle = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.instagramHandle',
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9._]{1,30}\$',
   );
 
   static const supplyNominatorDocumentNominatorId = CatchContractFieldConstraints(
     path: 'supplyNominatorDocument.nominatorId',
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^whatsapp-[a-f0-9]{64}\$',
+    pattern: '^(?:whatsapp-[a-f0-9]{64}|instagram-[a-z0-9._]{1,30})\$',
   );
 
   static const supplyNominatorDocumentPhoneLast4 = CatchContractFieldConstraints(
     path: 'supplyNominatorDocument.phoneLast4',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^[0-9]{4}\$',
   );
@@ -177437,6 +180357,119 @@ abstract final class CatchContractConstraints {
     'adminListClubDetailsCallablePayload.limit': adminListClubDetailsCallablePayloadLimit,
     'adminListClubDetailsCallablePayload.publishStatus': adminListClubDetailsCallablePayloadPublishStatus,
     'adminListClubDetailsCallablePayload.query': adminListClubDetailsCallablePayloadQuery,
+    'adminListCommercialTermsCallablePayload.organizerId': adminListCommercialTermsCallablePayloadOrganizerId,
+    'adminListCommercialTermsCallablePayload.organizerQuery': adminListCommercialTermsCallablePayloadOrganizerQuery,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.commission.base': adminListCommercialTermsCallableResponseEffectiveTermsCommissionBase,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.commission.capMinor': adminListCommercialTermsCallableResponseEffectiveTermsCommissionCapMinor,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.commission.cycleAnchor': adminListCommercialTermsCallableResponseEffectiveTermsCommissionCycleAnchor,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.commission.cycleDays': adminListCommercialTermsCallableResponseEffectiveTermsCommissionCycleDays,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.commission.rateBasisPoints': adminListCommercialTermsCallableResponseEffectiveTermsCommissionRateBasisPoints,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.commission.taxTreatment': adminListCommercialTermsCallableResponseEffectiveTermsCommissionTaxTreatment,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.currency': adminListCommercialTermsCallableResponseEffectiveTermsCurrency,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.gatewayFeeBearer': adminListCommercialTermsCallableResponseEffectiveTermsGatewayFeeBearer,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.eventAdmission.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseEffectiveTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.eventAdmission.countsTowardCommission': adminListCommercialTermsCallableResponseEffectiveTermsPurposesEventAdmissionCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.formFee.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseEffectiveTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.formFee.countsTowardCommission': adminListCommercialTermsCallableResponseEffectiveTermsPurposesFormFeeCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.hostMembership.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseEffectiveTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.hostMembership.countsTowardCommission': adminListCommercialTermsCallableResponseEffectiveTermsPurposesHostMembershipCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.toolsOnly.feeMinor': adminListCommercialTermsCallableResponseEffectiveTermsToolsOnlyFeeMinor,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.trial.anchor': adminListCommercialTermsCallableResponseEffectiveTermsTrialAnchor,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.trial.days': adminListCommercialTermsCallableResponseEffectiveTermsTrialDays,
+    'adminListCommercialTermsCallableResponse.history': adminListCommercialTermsCallableResponseHistory,
+    'adminListCommercialTermsCallableResponse.history.items.actorUid': adminListCommercialTermsCallableResponseHistoryItemsActorUid,
+    'adminListCommercialTermsCallableResponse.history.items.createdAtMillis': adminListCommercialTermsCallableResponseHistoryItemsCreatedAtMillis,
+    'adminListCommercialTermsCallableResponse.history.items.reason': adminListCommercialTermsCallableResponseHistoryItemsReason,
+    'adminListCommercialTermsCallableResponse.history.items.revision': adminListCommercialTermsCallableResponseHistoryItemsRevision,
+    'adminListCommercialTermsCallableResponse.history.items.terms.commission.base': adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionBase,
+    'adminListCommercialTermsCallableResponse.history.items.terms.commission.capMinor': adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionCapMinor,
+    'adminListCommercialTermsCallableResponse.history.items.terms.commission.cycleAnchor': adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionCycleAnchor,
+    'adminListCommercialTermsCallableResponse.history.items.terms.commission.cycleDays': adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionCycleDays,
+    'adminListCommercialTermsCallableResponse.history.items.terms.commission.rateBasisPoints': adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionRateBasisPoints,
+    'adminListCommercialTermsCallableResponse.history.items.terms.commission.taxTreatment': adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionTaxTreatment,
+    'adminListCommercialTermsCallableResponse.history.items.terms.currency': adminListCommercialTermsCallableResponseHistoryItemsTermsCurrency,
+    'adminListCommercialTermsCallableResponse.history.items.terms.gatewayFeeBearer': adminListCommercialTermsCallableResponseHistoryItemsTermsGatewayFeeBearer,
+    'adminListCommercialTermsCallableResponse.history.items.terms.purposes.eventAdmission.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.history.items.terms.purposes.eventAdmission.countsTowardCommission': adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesEventAdmissionCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.history.items.terms.purposes.formFee.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.history.items.terms.purposes.formFee.countsTowardCommission': adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesFormFeeCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.history.items.terms.purposes.hostMembership.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.history.items.terms.purposes.hostMembership.countsTowardCommission': adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesHostMembershipCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.history.items.terms.toolsOnly.feeMinor': adminListCommercialTermsCallableResponseHistoryItemsTermsToolsOnlyFeeMinor,
+    'adminListCommercialTermsCallableResponse.history.items.terms.trial.anchor': adminListCommercialTermsCallableResponseHistoryItemsTermsTrialAnchor,
+    'adminListCommercialTermsCallableResponse.history.items.terms.trial.days': adminListCommercialTermsCallableResponseHistoryItemsTermsTrialDays,
+    'adminListCommercialTermsCallableResponse.historyComplete': adminListCommercialTermsCallableResponseHistoryComplete,
+    'adminListCommercialTermsCallableResponse.organizer.reason': adminListCommercialTermsCallableResponseOrganizerReason,
+    'adminListCommercialTermsCallableResponse.organizer.revision': adminListCommercialTermsCallableResponseOrganizerRevision,
+    'adminListCommercialTermsCallableResponse.organizer.terms.commission.base': adminListCommercialTermsCallableResponseOrganizerTermsCommissionBase,
+    'adminListCommercialTermsCallableResponse.organizer.terms.commission.capMinor': adminListCommercialTermsCallableResponseOrganizerTermsCommissionCapMinor,
+    'adminListCommercialTermsCallableResponse.organizer.terms.commission.cycleAnchor': adminListCommercialTermsCallableResponseOrganizerTermsCommissionCycleAnchor,
+    'adminListCommercialTermsCallableResponse.organizer.terms.commission.cycleDays': adminListCommercialTermsCallableResponseOrganizerTermsCommissionCycleDays,
+    'adminListCommercialTermsCallableResponse.organizer.terms.commission.rateBasisPoints': adminListCommercialTermsCallableResponseOrganizerTermsCommissionRateBasisPoints,
+    'adminListCommercialTermsCallableResponse.organizer.terms.commission.taxTreatment': adminListCommercialTermsCallableResponseOrganizerTermsCommissionTaxTreatment,
+    'adminListCommercialTermsCallableResponse.organizer.terms.gatewayFeeBearer': adminListCommercialTermsCallableResponseOrganizerTermsGatewayFeeBearer,
+    'adminListCommercialTermsCallableResponse.organizer.terms.purposes.eventAdmission.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseOrganizerTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.organizer.terms.purposes.eventAdmission.countsTowardCommission': adminListCommercialTermsCallableResponseOrganizerTermsPurposesEventAdmissionCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.organizer.terms.purposes.formFee.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseOrganizerTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.organizer.terms.purposes.formFee.countsTowardCommission': adminListCommercialTermsCallableResponseOrganizerTermsPurposesFormFeeCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.organizer.terms.purposes.hostMembership.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseOrganizerTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.organizer.terms.purposes.hostMembership.countsTowardCommission': adminListCommercialTermsCallableResponseOrganizerTermsPurposesHostMembershipCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.organizer.terms.toolsOnly.feeMinor': adminListCommercialTermsCallableResponseOrganizerTermsToolsOnlyFeeMinor,
+    'adminListCommercialTermsCallableResponse.organizer.terms.trial.anchor': adminListCommercialTermsCallableResponseOrganizerTermsTrialAnchor,
+    'adminListCommercialTermsCallableResponse.organizer.terms.trial.days': adminListCommercialTermsCallableResponseOrganizerTermsTrialDays,
+    'adminListCommercialTermsCallableResponse.organizer.updatedAtMillis': adminListCommercialTermsCallableResponseOrganizerUpdatedAtMillis,
+    'adminListCommercialTermsCallableResponse.organizer.updatedByUid': adminListCommercialTermsCallableResponseOrganizerUpdatedByUid,
+    'adminListCommercialTermsCallableResponse.organizerId': adminListCommercialTermsCallableResponseOrganizerId,
+    'adminListCommercialTermsCallableResponse.organizerMatches': adminListCommercialTermsCallableResponseOrganizerMatches,
+    'adminListCommercialTermsCallableResponse.organizerMatches.items.cityName': adminListCommercialTermsCallableResponseOrganizerMatchesItemsCityName,
+    'adminListCommercialTermsCallableResponse.organizerMatches.items.organizerId': adminListCommercialTermsCallableResponseOrganizerMatchesItemsOrganizerId,
+    'adminListCommercialTermsCallableResponse.organizerMatches.items.organizerName': adminListCommercialTermsCallableResponseOrganizerMatchesItemsOrganizerName,
+    'adminListCommercialTermsCallableResponse.organizerName': adminListCommercialTermsCallableResponseOrganizerName,
+    'adminListCommercialTermsCallableResponse.overrides': adminListCommercialTermsCallableResponseOverrides,
+    'adminListCommercialTermsCallableResponse.overrides.items.organizerId': adminListCommercialTermsCallableResponseOverridesItemsOrganizerId,
+    'adminListCommercialTermsCallableResponse.overrides.items.organizerName': adminListCommercialTermsCallableResponseOverridesItemsOrganizerName,
+    'adminListCommercialTermsCallableResponse.overrides.items.reason': adminListCommercialTermsCallableResponseOverridesItemsReason,
+    'adminListCommercialTermsCallableResponse.overrides.items.revision': adminListCommercialTermsCallableResponseOverridesItemsRevision,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.base': adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionBase,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.capMinor': adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionCapMinor,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.cycleAnchor': adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionCycleAnchor,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.cycleDays': adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionCycleDays,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.rateBasisPoints': adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionRateBasisPoints,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.taxTreatment': adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionTaxTreatment,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.gatewayFeeBearer': adminListCommercialTermsCallableResponseOverridesItemsTermsGatewayFeeBearer,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.eventAdmission.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.eventAdmission.countsTowardCommission': adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesEventAdmissionCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.formFee.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.formFee.countsTowardCommission': adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesFormFeeCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.hostMembership.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.hostMembership.countsTowardCommission': adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesHostMembershipCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.toolsOnly.feeMinor': adminListCommercialTermsCallableResponseOverridesItemsTermsToolsOnlyFeeMinor,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.trial.anchor': adminListCommercialTermsCallableResponseOverridesItemsTermsTrialAnchor,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.trial.days': adminListCommercialTermsCallableResponseOverridesItemsTermsTrialDays,
+    'adminListCommercialTermsCallableResponse.overrides.items.updatedAtMillis': adminListCommercialTermsCallableResponseOverridesItemsUpdatedAtMillis,
+    'adminListCommercialTermsCallableResponse.overridesComplete': adminListCommercialTermsCallableResponseOverridesComplete,
+    'adminListCommercialTermsCallableResponse.platform.reason': adminListCommercialTermsCallableResponsePlatformReason,
+    'adminListCommercialTermsCallableResponse.platform.revision': adminListCommercialTermsCallableResponsePlatformRevision,
+    'adminListCommercialTermsCallableResponse.platform.terms.commission.base': adminListCommercialTermsCallableResponsePlatformTermsCommissionBase,
+    'adminListCommercialTermsCallableResponse.platform.terms.commission.capMinor': adminListCommercialTermsCallableResponsePlatformTermsCommissionCapMinor,
+    'adminListCommercialTermsCallableResponse.platform.terms.commission.cycleAnchor': adminListCommercialTermsCallableResponsePlatformTermsCommissionCycleAnchor,
+    'adminListCommercialTermsCallableResponse.platform.terms.commission.cycleDays': adminListCommercialTermsCallableResponsePlatformTermsCommissionCycleDays,
+    'adminListCommercialTermsCallableResponse.platform.terms.commission.rateBasisPoints': adminListCommercialTermsCallableResponsePlatformTermsCommissionRateBasisPoints,
+    'adminListCommercialTermsCallableResponse.platform.terms.commission.taxTreatment': adminListCommercialTermsCallableResponsePlatformTermsCommissionTaxTreatment,
+    'adminListCommercialTermsCallableResponse.platform.terms.currency': adminListCommercialTermsCallableResponsePlatformTermsCurrency,
+    'adminListCommercialTermsCallableResponse.platform.terms.gatewayFeeBearer': adminListCommercialTermsCallableResponsePlatformTermsGatewayFeeBearer,
+    'adminListCommercialTermsCallableResponse.platform.terms.purposes.eventAdmission.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponsePlatformTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.platform.terms.purposes.eventAdmission.countsTowardCommission': adminListCommercialTermsCallableResponsePlatformTermsPurposesEventAdmissionCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.platform.terms.purposes.formFee.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponsePlatformTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.platform.terms.purposes.formFee.countsTowardCommission': adminListCommercialTermsCallableResponsePlatformTermsPurposesFormFeeCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.platform.terms.purposes.hostMembership.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponsePlatformTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.platform.terms.purposes.hostMembership.countsTowardCommission': adminListCommercialTermsCallableResponsePlatformTermsPurposesHostMembershipCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.platform.terms.toolsOnly.feeMinor': adminListCommercialTermsCallableResponsePlatformTermsToolsOnlyFeeMinor,
+    'adminListCommercialTermsCallableResponse.platform.terms.trial.anchor': adminListCommercialTermsCallableResponsePlatformTermsTrialAnchor,
+    'adminListCommercialTermsCallableResponse.platform.terms.trial.days': adminListCommercialTermsCallableResponsePlatformTermsTrialDays,
+    'adminListCommercialTermsCallableResponse.platform.updatedAtMillis': adminListCommercialTermsCallableResponsePlatformUpdatedAtMillis,
+    'adminListCommercialTermsCallableResponse.platform.updatedByUid': adminListCommercialTermsCallableResponsePlatformUpdatedByUid,
+    'adminListCommercialTermsCallableResponse.termsId': adminListCommercialTermsCallableResponseTermsId,
     'adminListCrossPathsShowcaseCandidatesCallablePayload.cursor': adminListCrossPathsShowcaseCandidatesCallablePayloadCursor,
     'adminListCrossPathsShowcaseCandidatesCallablePayload.limit': adminListCrossPathsShowcaseCandidatesCallablePayloadLimit,
     'adminListCrossPathsShowcaseCandidatesCallablePayload.marketId': adminListCrossPathsShowcaseCandidatesCallablePayloadMarketId,
@@ -177730,6 +180763,7 @@ abstract final class CatchContractConstraints {
     'adminListSupplyNominatorsCallableResponse.nominators.items.channel': adminListSupplyNominatorsCallableResponseNominatorsItemsChannel,
     'adminListSupplyNominatorsCallableResponse.nominators.items.defaultMarket': adminListSupplyNominatorsCallableResponseNominatorsItemsDefaultMarket,
     'adminListSupplyNominatorsCallableResponse.nominators.items.displayName': adminListSupplyNominatorsCallableResponseNominatorsItemsDisplayName,
+    'adminListSupplyNominatorsCallableResponse.nominators.items.instagramHandle': adminListSupplyNominatorsCallableResponseNominatorsItemsInstagramHandle,
     'adminListSupplyNominatorsCallableResponse.nominators.items.nominatorId': adminListSupplyNominatorsCallableResponseNominatorsItemsNominatorId,
     'adminListSupplyNominatorsCallableResponse.nominators.items.phoneLast4': adminListSupplyNominatorsCallableResponseNominatorsItemsPhoneLast4,
     'adminListSupplyNominatorsCallableResponse.nominators.items.role': adminListSupplyNominatorsCallableResponseNominatorsItemsRole,
@@ -178384,12 +181418,14 @@ abstract final class CatchContractConstraints {
     'adminSetSupplyNominatorCallablePayload.active': adminSetSupplyNominatorCallablePayloadActive,
     'adminSetSupplyNominatorCallablePayload.defaultMarket': adminSetSupplyNominatorCallablePayloadDefaultMarket,
     'adminSetSupplyNominatorCallablePayload.displayName': adminSetSupplyNominatorCallablePayloadDisplayName,
+    'adminSetSupplyNominatorCallablePayload.instagramHandle': adminSetSupplyNominatorCallablePayloadInstagramHandle,
     'adminSetSupplyNominatorCallablePayload.phoneE164': adminSetSupplyNominatorCallablePayloadPhoneE164,
     'adminSetSupplyNominatorCallablePayload.role': adminSetSupplyNominatorCallablePayloadRole,
     'adminSetSupplyNominatorCallablePayload.uid': adminSetSupplyNominatorCallablePayloadUid,
     'adminSetSupplyNominatorCallableResponse.active': adminSetSupplyNominatorCallableResponseActive,
     'adminSetSupplyNominatorCallableResponse.created': adminSetSupplyNominatorCallableResponseCreated,
     'adminSetSupplyNominatorCallableResponse.defaultMarket': adminSetSupplyNominatorCallableResponseDefaultMarket,
+    'adminSetSupplyNominatorCallableResponse.instagramHandle': adminSetSupplyNominatorCallableResponseInstagramHandle,
     'adminSetSupplyNominatorCallableResponse.nominatorId': adminSetSupplyNominatorCallableResponseNominatorId,
     'adminSetSupplyNominatorCallableResponse.phoneLast4': adminSetSupplyNominatorCallableResponsePhoneLast4,
     'adminShareSalesDemoPartnerReviewCallablePayload.blueprintId': adminShareSalesDemoPartnerReviewCallablePayloadBlueprintId,
@@ -179735,6 +182771,110 @@ abstract final class CatchContractConstraints {
     'clubScheduleLockDocument.slot': clubScheduleLockDocumentSlot,
     'clubScheduleLockDocument.startTimeMillis': clubScheduleLockDocumentStartTimeMillis,
     'clubScheduleLockDocument.synthetic': clubScheduleLockDocumentSynthetic,
+    'commercialTerms.commission.base': commercialTermsCommissionBase,
+    'commercialTerms.commission.capMinor': commercialTermsCommissionCapMinor,
+    'commercialTerms.commission.cycleAnchor': commercialTermsCommissionCycleAnchor,
+    'commercialTerms.commission.cycleDays': commercialTermsCommissionCycleDays,
+    'commercialTerms.commission.rateBasisPoints': commercialTermsCommissionRateBasisPoints,
+    'commercialTerms.commission.taxTreatment': commercialTermsCommissionTaxTreatment,
+    'commercialTerms.currency': commercialTermsCurrency,
+    'commercialTerms.gatewayFeeBearer': commercialTermsGatewayFeeBearer,
+    'commercialTerms.purposes.eventAdmission.atSourceFeeBasisPoints': commercialTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'commercialTerms.purposes.eventAdmission.countsTowardCommission': commercialTermsPurposesEventAdmissionCountsTowardCommission,
+    'commercialTerms.purposes.formFee.atSourceFeeBasisPoints': commercialTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'commercialTerms.purposes.formFee.countsTowardCommission': commercialTermsPurposesFormFeeCountsTowardCommission,
+    'commercialTerms.purposes.hostMembership.atSourceFeeBasisPoints': commercialTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'commercialTerms.purposes.hostMembership.countsTowardCommission': commercialTermsPurposesHostMembershipCountsTowardCommission,
+    'commercialTerms.toolsOnly.feeMinor': commercialTermsToolsOnlyFeeMinor,
+    'commercialTerms.trial.anchor': commercialTermsTrialAnchor,
+    'commercialTerms.trial.days': commercialTermsTrialDays,
+    'commercialTermsDocument.lastMutationHash': commercialTermsDocumentLastMutationHash,
+    'commercialTermsDocument.organizerId': commercialTermsDocumentOrganizerId,
+    'commercialTermsDocument.reason': commercialTermsDocumentReason,
+    'commercialTermsDocument.revision': commercialTermsDocumentRevision,
+    'commercialTermsDocument.schemaVersion': commercialTermsDocumentSchemaVersion,
+    'commercialTermsDocument.scope': commercialTermsDocumentScope,
+    'commercialTermsDocument.terms.commission.base': commercialTermsDocumentTermsCommissionBase,
+    'commercialTermsDocument.terms.commission.capMinor': commercialTermsDocumentTermsCommissionCapMinor,
+    'commercialTermsDocument.terms.commission.cycleAnchor': commercialTermsDocumentTermsCommissionCycleAnchor,
+    'commercialTermsDocument.terms.commission.cycleDays': commercialTermsDocumentTermsCommissionCycleDays,
+    'commercialTermsDocument.terms.commission.rateBasisPoints': commercialTermsDocumentTermsCommissionRateBasisPoints,
+    'commercialTermsDocument.terms.commission.taxTreatment': commercialTermsDocumentTermsCommissionTaxTreatment,
+    'commercialTermsDocument.terms.currency': commercialTermsDocumentTermsCurrency,
+    'commercialTermsDocument.terms.gatewayFeeBearer': commercialTermsDocumentTermsGatewayFeeBearer,
+    'commercialTermsDocument.terms.purposes.eventAdmission.atSourceFeeBasisPoints': commercialTermsDocumentTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'commercialTermsDocument.terms.purposes.eventAdmission.countsTowardCommission': commercialTermsDocumentTermsPurposesEventAdmissionCountsTowardCommission,
+    'commercialTermsDocument.terms.purposes.formFee.atSourceFeeBasisPoints': commercialTermsDocumentTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'commercialTermsDocument.terms.purposes.formFee.countsTowardCommission': commercialTermsDocumentTermsPurposesFormFeeCountsTowardCommission,
+    'commercialTermsDocument.terms.purposes.hostMembership.atSourceFeeBasisPoints': commercialTermsDocumentTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'commercialTermsDocument.terms.purposes.hostMembership.countsTowardCommission': commercialTermsDocumentTermsPurposesHostMembershipCountsTowardCommission,
+    'commercialTermsDocument.terms.toolsOnly.feeMinor': commercialTermsDocumentTermsToolsOnlyFeeMinor,
+    'commercialTermsDocument.terms.trial.anchor': commercialTermsDocumentTermsTrialAnchor,
+    'commercialTermsDocument.terms.trial.days': commercialTermsDocumentTermsTrialDays,
+    'commercialTermsDocument.updatedAtMillis': commercialTermsDocumentUpdatedAtMillis,
+    'commercialTermsDocument.updatedByUid': commercialTermsDocumentUpdatedByUid,
+    'commercialTermsOverride.commission.base': commercialTermsOverrideCommissionBase,
+    'commercialTermsOverride.commission.capMinor': commercialTermsOverrideCommissionCapMinor,
+    'commercialTermsOverride.commission.cycleAnchor': commercialTermsOverrideCommissionCycleAnchor,
+    'commercialTermsOverride.commission.cycleDays': commercialTermsOverrideCommissionCycleDays,
+    'commercialTermsOverride.commission.rateBasisPoints': commercialTermsOverrideCommissionRateBasisPoints,
+    'commercialTermsOverride.commission.taxTreatment': commercialTermsOverrideCommissionTaxTreatment,
+    'commercialTermsOverride.gatewayFeeBearer': commercialTermsOverrideGatewayFeeBearer,
+    'commercialTermsOverride.purposes.eventAdmission.atSourceFeeBasisPoints': commercialTermsOverridePurposesEventAdmissionAtSourceFeeBasisPoints,
+    'commercialTermsOverride.purposes.eventAdmission.countsTowardCommission': commercialTermsOverridePurposesEventAdmissionCountsTowardCommission,
+    'commercialTermsOverride.purposes.formFee.atSourceFeeBasisPoints': commercialTermsOverridePurposesFormFeeAtSourceFeeBasisPoints,
+    'commercialTermsOverride.purposes.formFee.countsTowardCommission': commercialTermsOverridePurposesFormFeeCountsTowardCommission,
+    'commercialTermsOverride.purposes.hostMembership.atSourceFeeBasisPoints': commercialTermsOverridePurposesHostMembershipAtSourceFeeBasisPoints,
+    'commercialTermsOverride.purposes.hostMembership.countsTowardCommission': commercialTermsOverridePurposesHostMembershipCountsTowardCommission,
+    'commercialTermsOverride.toolsOnly.feeMinor': commercialTermsOverrideToolsOnlyFeeMinor,
+    'commercialTermsOverride.trial.anchor': commercialTermsOverrideTrialAnchor,
+    'commercialTermsOverride.trial.days': commercialTermsOverrideTrialDays,
+    'commercialTermsRevisionDocument.actorUid': commercialTermsRevisionDocumentActorUid,
+    'commercialTermsRevisionDocument.createdAtMillis': commercialTermsRevisionDocumentCreatedAtMillis,
+    'commercialTermsRevisionDocument.organizerId': commercialTermsRevisionDocumentOrganizerId,
+    'commercialTermsRevisionDocument.reason': commercialTermsRevisionDocumentReason,
+    'commercialTermsRevisionDocument.revision': commercialTermsRevisionDocumentRevision,
+    'commercialTermsRevisionDocument.schemaVersion': commercialTermsRevisionDocumentSchemaVersion,
+    'commercialTermsRevisionDocument.scope': commercialTermsRevisionDocumentScope,
+    'commercialTermsRevisionDocument.terms.commission.base': commercialTermsRevisionDocumentTermsCommissionBase,
+    'commercialTermsRevisionDocument.terms.commission.capMinor': commercialTermsRevisionDocumentTermsCommissionCapMinor,
+    'commercialTermsRevisionDocument.terms.commission.cycleAnchor': commercialTermsRevisionDocumentTermsCommissionCycleAnchor,
+    'commercialTermsRevisionDocument.terms.commission.cycleDays': commercialTermsRevisionDocumentTermsCommissionCycleDays,
+    'commercialTermsRevisionDocument.terms.commission.rateBasisPoints': commercialTermsRevisionDocumentTermsCommissionRateBasisPoints,
+    'commercialTermsRevisionDocument.terms.commission.taxTreatment': commercialTermsRevisionDocumentTermsCommissionTaxTreatment,
+    'commercialTermsRevisionDocument.terms.currency': commercialTermsRevisionDocumentTermsCurrency,
+    'commercialTermsRevisionDocument.terms.gatewayFeeBearer': commercialTermsRevisionDocumentTermsGatewayFeeBearer,
+    'commercialTermsRevisionDocument.terms.purposes.eventAdmission.atSourceFeeBasisPoints': commercialTermsRevisionDocumentTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'commercialTermsRevisionDocument.terms.purposes.eventAdmission.countsTowardCommission': commercialTermsRevisionDocumentTermsPurposesEventAdmissionCountsTowardCommission,
+    'commercialTermsRevisionDocument.terms.purposes.formFee.atSourceFeeBasisPoints': commercialTermsRevisionDocumentTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'commercialTermsRevisionDocument.terms.purposes.formFee.countsTowardCommission': commercialTermsRevisionDocumentTermsPurposesFormFeeCountsTowardCommission,
+    'commercialTermsRevisionDocument.terms.purposes.hostMembership.atSourceFeeBasisPoints': commercialTermsRevisionDocumentTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'commercialTermsRevisionDocument.terms.purposes.hostMembership.countsTowardCommission': commercialTermsRevisionDocumentTermsPurposesHostMembershipCountsTowardCommission,
+    'commercialTermsRevisionDocument.terms.toolsOnly.feeMinor': commercialTermsRevisionDocumentTermsToolsOnlyFeeMinor,
+    'commercialTermsRevisionDocument.terms.trial.anchor': commercialTermsRevisionDocumentTermsTrialAnchor,
+    'commercialTermsRevisionDocument.terms.trial.days': commercialTermsRevisionDocumentTermsTrialDays,
+    'commercialTermsRevisionDocument.termsId': commercialTermsRevisionDocumentTermsId,
+    'commercialTermsSnapshot.commission.base': commercialTermsSnapshotCommissionBase,
+    'commercialTermsSnapshot.commission.capMinor': commercialTermsSnapshotCommissionCapMinor,
+    'commercialTermsSnapshot.commission.cycleAnchor': commercialTermsSnapshotCommissionCycleAnchor,
+    'commercialTermsSnapshot.commission.cycleDays': commercialTermsSnapshotCommissionCycleDays,
+    'commercialTermsSnapshot.commission.rateBasisPoints': commercialTermsSnapshotCommissionRateBasisPoints,
+    'commercialTermsSnapshot.commission.taxTreatment': commercialTermsSnapshotCommissionTaxTreatment,
+    'commercialTermsSnapshot.currency': commercialTermsSnapshotCurrency,
+    'commercialTermsSnapshot.gatewayFeeBearer': commercialTermsSnapshotGatewayFeeBearer,
+    'commercialTermsSnapshot.merchantOfRecord': commercialTermsSnapshotMerchantOfRecord,
+    'commercialTermsSnapshot.moneyFlow': commercialTermsSnapshotMoneyFlow,
+    'commercialTermsSnapshot.organizerId': commercialTermsSnapshotOrganizerId,
+    'commercialTermsSnapshot.organizerRevision': commercialTermsSnapshotOrganizerRevision,
+    'commercialTermsSnapshot.platformRevision': commercialTermsSnapshotPlatformRevision,
+    'commercialTermsSnapshot.purpose': commercialTermsSnapshotPurpose,
+    'commercialTermsSnapshot.purposeTerms.atSourceFeeBasisPoints': commercialTermsSnapshotPurposeTermsAtSourceFeeBasisPoints,
+    'commercialTermsSnapshot.purposeTerms.countsTowardCommission': commercialTermsSnapshotPurposeTermsCountsTowardCommission,
+    'commercialTermsSnapshot.resolvedAtMillis': commercialTermsSnapshotResolvedAtMillis,
+    'commercialTermsSnapshot.toolsOnly.feeMinor': commercialTermsSnapshotToolsOnlyFeeMinor,
+    'commercialTermsSnapshot.trial.anchor': commercialTermsSnapshotTrialAnchor,
+    'commercialTermsSnapshot.trial.days': commercialTermsSnapshotTrialDays,
+    'commercialTermsSnapshot.version': commercialTermsSnapshotVersion,
     'commitEventOffersCallablePayload.eventId': commitEventOffersCallablePayloadEventId,
     'commitEventOffersCallablePayload.mode': commitEventOffersCallablePayloadMode,
     'commitEventOffersCallablePayload.organizerId': commitEventOffersCallablePayloadOrganizerId,
@@ -188964,10 +192104,32 @@ abstract final class CatchContractConstraints {
     'hostMembershipBenefitUseDocument.state': hostMembershipBenefitUseDocumentState,
     'hostMembershipBenefitUseDocument.uid': hostMembershipBenefitUseDocumentUid,
     'hostMembershipChargeDocument.amountPaise': hostMembershipChargeDocumentAmountPaise,
+    'hostMembershipChargeDocument.commercialTerms.commission.base': hostMembershipChargeDocumentCommercialTermsCommissionBase,
+    'hostMembershipChargeDocument.commercialTerms.commission.capMinor': hostMembershipChargeDocumentCommercialTermsCommissionCapMinor,
+    'hostMembershipChargeDocument.commercialTerms.commission.cycleAnchor': hostMembershipChargeDocumentCommercialTermsCommissionCycleAnchor,
+    'hostMembershipChargeDocument.commercialTerms.commission.cycleDays': hostMembershipChargeDocumentCommercialTermsCommissionCycleDays,
+    'hostMembershipChargeDocument.commercialTerms.commission.rateBasisPoints': hostMembershipChargeDocumentCommercialTermsCommissionRateBasisPoints,
+    'hostMembershipChargeDocument.commercialTerms.commission.taxTreatment': hostMembershipChargeDocumentCommercialTermsCommissionTaxTreatment,
+    'hostMembershipChargeDocument.commercialTerms.currency': hostMembershipChargeDocumentCommercialTermsCurrency,
+    'hostMembershipChargeDocument.commercialTerms.gatewayFeeBearer': hostMembershipChargeDocumentCommercialTermsGatewayFeeBearer,
+    'hostMembershipChargeDocument.commercialTerms.merchantOfRecord': hostMembershipChargeDocumentCommercialTermsMerchantOfRecord,
+    'hostMembershipChargeDocument.commercialTerms.moneyFlow': hostMembershipChargeDocumentCommercialTermsMoneyFlow,
+    'hostMembershipChargeDocument.commercialTerms.organizerId': hostMembershipChargeDocumentCommercialTermsOrganizerId,
+    'hostMembershipChargeDocument.commercialTerms.organizerRevision': hostMembershipChargeDocumentCommercialTermsOrganizerRevision,
+    'hostMembershipChargeDocument.commercialTerms.platformRevision': hostMembershipChargeDocumentCommercialTermsPlatformRevision,
+    'hostMembershipChargeDocument.commercialTerms.purpose': hostMembershipChargeDocumentCommercialTermsPurpose,
+    'hostMembershipChargeDocument.commercialTerms.purposeTerms.atSourceFeeBasisPoints': hostMembershipChargeDocumentCommercialTermsPurposeTermsAtSourceFeeBasisPoints,
+    'hostMembershipChargeDocument.commercialTerms.purposeTerms.countsTowardCommission': hostMembershipChargeDocumentCommercialTermsPurposeTermsCountsTowardCommission,
+    'hostMembershipChargeDocument.commercialTerms.resolvedAtMillis': hostMembershipChargeDocumentCommercialTermsResolvedAtMillis,
+    'hostMembershipChargeDocument.commercialTerms.toolsOnly.feeMinor': hostMembershipChargeDocumentCommercialTermsToolsOnlyFeeMinor,
+    'hostMembershipChargeDocument.commercialTerms.trial.anchor': hostMembershipChargeDocumentCommercialTermsTrialAnchor,
+    'hostMembershipChargeDocument.commercialTerms.trial.days': hostMembershipChargeDocumentCommercialTermsTrialDays,
+    'hostMembershipChargeDocument.commercialTerms.version': hostMembershipChargeDocumentCommercialTermsVersion,
     'hostMembershipChargeDocument.createdAtMillis': hostMembershipChargeDocumentCreatedAtMillis,
     'hostMembershipChargeDocument.feePaise': hostMembershipChargeDocumentFeePaise,
     'hostMembershipChargeDocument.membershipId': hostMembershipChargeDocumentMembershipId,
     'hostMembershipChargeDocument.mode': hostMembershipChargeDocumentMode,
+    'hostMembershipChargeDocument.moneyFlow': hostMembershipChargeDocumentMoneyFlow,
     'hostMembershipChargeDocument.organizerId': hostMembershipChargeDocumentOrganizerId,
     'hostMembershipChargeDocument.periodEndMillis': hostMembershipChargeDocumentPeriodEndMillis,
     'hostMembershipChargeDocument.periodStartMillis': hostMembershipChargeDocumentPeriodStartMillis,
@@ -188987,6 +192149,11 @@ abstract final class CatchContractConstraints {
     'hostMembershipCheckoutDocument.expiresAtMillis': hostMembershipCheckoutDocumentExpiresAtMillis,
     'hostMembershipCheckoutDocument.interval': hostMembershipCheckoutDocumentInterval,
     'hostMembershipCheckoutDocument.organizerId': hostMembershipCheckoutDocumentOrganizerId,
+    'hostMembershipCheckoutDocument.payment.bindingId': hostMembershipCheckoutDocumentPaymentBindingId,
+    'hostMembershipCheckoutDocument.payment.mode': hostMembershipCheckoutDocumentPaymentMode,
+    'hostMembershipCheckoutDocument.payment.moneyFlow': hostMembershipCheckoutDocumentPaymentMoneyFlow,
+    'hostMembershipCheckoutDocument.payment.provider': hostMembershipCheckoutDocumentPaymentProvider,
+    'hostMembershipCheckoutDocument.payment.providerAccountId': hostMembershipCheckoutDocumentPaymentProviderAccountId,
     'hostMembershipCheckoutDocument.planId': hostMembershipCheckoutDocumentPlanId,
     'hostMembershipCheckoutDocument.priceInPaise': hostMembershipCheckoutDocumentPriceInPaise,
     'hostMembershipCheckoutDocument.provider': hostMembershipCheckoutDocumentProvider,
@@ -189007,6 +192174,11 @@ abstract final class CatchContractConstraints {
     'hostMembershipDocument.pastDueSinceMillis': hostMembershipDocumentPastDueSinceMillis,
     'hostMembershipDocument.pause.initiator': hostMembershipDocumentPauseInitiator,
     'hostMembershipDocument.pause.pausedAtMillis': hostMembershipDocumentPausePausedAtMillis,
+    'hostMembershipDocument.payment.bindingId': hostMembershipDocumentPaymentBindingId,
+    'hostMembershipDocument.payment.mode': hostMembershipDocumentPaymentMode,
+    'hostMembershipDocument.payment.moneyFlow': hostMembershipDocumentPaymentMoneyFlow,
+    'hostMembershipDocument.payment.provider': hostMembershipDocumentPaymentProvider,
+    'hostMembershipDocument.payment.providerAccountId': hostMembershipDocumentPaymentProviderAccountId,
     'hostMembershipDocument.planId': hostMembershipDocumentPlanId,
     'hostMembershipDocument.planName': hostMembershipDocumentPlanName,
     'hostMembershipDocument.priceInPaise': hostMembershipDocumentPriceInPaise,
@@ -189036,9 +192208,11 @@ abstract final class CatchContractConstraints {
     'hostMembershipPlanDocument.perks': hostMembershipPlanDocumentPerks,
     'hostMembershipPlanDocument.perks.items': hostMembershipPlanDocumentPerksItems,
     'hostMembershipPlanDocument.prices.annual.amountPaise': hostMembershipPlanDocumentPricesAnnualAmountPaise,
+    'hostMembershipPlanDocument.prices.annual.providerAccountId': hostMembershipPlanDocumentPricesAnnualProviderAccountId,
     'hostMembershipPlanDocument.prices.annual.providerPriceIds.razorpay': hostMembershipPlanDocumentPricesAnnualProviderPriceIdsRazorpay,
     'hostMembershipPlanDocument.prices.annual.revision': hostMembershipPlanDocumentPricesAnnualRevision,
     'hostMembershipPlanDocument.prices.monthly.amountPaise': hostMembershipPlanDocumentPricesMonthlyAmountPaise,
+    'hostMembershipPlanDocument.prices.monthly.providerAccountId': hostMembershipPlanDocumentPricesMonthlyProviderAccountId,
     'hostMembershipPlanDocument.prices.monthly.providerPriceIds.razorpay': hostMembershipPlanDocumentPricesMonthlyProviderPriceIdsRazorpay,
     'hostMembershipPlanDocument.prices.monthly.revision': hostMembershipPlanDocumentPricesMonthlyRevision,
     'hostMembershipPlanDocument.publishedAtMillis': hostMembershipPlanDocumentPublishedAtMillis,
@@ -189058,8 +192232,10 @@ abstract final class CatchContractConstraints {
     'hostMembershipProgramDocument.organizerId': hostMembershipProgramDocumentOrganizerId,
     'hostMembershipProgramDocument.payment.bindingId': hostMembershipProgramDocumentPaymentBindingId,
     'hostMembershipProgramDocument.payment.mode': hostMembershipProgramDocumentPaymentMode,
+    'hostMembershipProgramDocument.payment.moneyFlow': hostMembershipProgramDocumentPaymentMoneyFlow,
     'hostMembershipProgramDocument.payment.provider': hostMembershipProgramDocumentPaymentProvider,
     'hostMembershipProgramDocument.payment.providerAccountId': hostMembershipProgramDocumentPaymentProviderAccountId,
+    'hostMembershipProgramDocument.payment.webhookId': hostMembershipProgramDocumentPaymentWebhookId,
     'hostMembershipProgramDocument.revision': hostMembershipProgramDocumentRevision,
     'hostMembershipProgramDocument.schemaVersion': hostMembershipProgramDocumentSchemaVersion,
     'hostMembershipProgramDocument.state': hostMembershipProgramDocumentState,
@@ -190420,6 +193596,67 @@ abstract final class CatchContractConstraints {
     'listSuvbotDemoActionsCallableResponse.actions.items.requiresText': listSuvbotDemoActionsCallableResponseActionsItemsRequiresText,
     'listTransportVendorsCallablePayload.organizerId': listTransportVendorsCallablePayloadOrganizerId,
     'listTransportVendorsCallablePayload.programId': listTransportVendorsCallablePayloadProgramId,
+    'manageCommercialTermsCallablePayload.action': manageCommercialTermsCallablePayloadAction,
+    'manageCommercialTermsCallablePayload.expectedRevision': manageCommercialTermsCallablePayloadExpectedRevision,
+    'manageCommercialTermsCallablePayload.organizerId': manageCommercialTermsCallablePayloadOrganizerId,
+    'manageCommercialTermsCallablePayload.reason': manageCommercialTermsCallablePayloadReason,
+    'manageCommercialTermsCallablePayload.terms.commission.base': manageCommercialTermsCallablePayloadTermsCommissionBase,
+    'manageCommercialTermsCallablePayload.terms.commission.capMinor': manageCommercialTermsCallablePayloadTermsCommissionCapMinor,
+    'manageCommercialTermsCallablePayload.terms.commission.cycleAnchor': manageCommercialTermsCallablePayloadTermsCommissionCycleAnchor,
+    'manageCommercialTermsCallablePayload.terms.commission.cycleDays': manageCommercialTermsCallablePayloadTermsCommissionCycleDays,
+    'manageCommercialTermsCallablePayload.terms.commission.rateBasisPoints': manageCommercialTermsCallablePayloadTermsCommissionRateBasisPoints,
+    'manageCommercialTermsCallablePayload.terms.commission.taxTreatment': manageCommercialTermsCallablePayloadTermsCommissionTaxTreatment,
+    'manageCommercialTermsCallablePayload.terms.currency': manageCommercialTermsCallablePayloadTermsCurrency,
+    'manageCommercialTermsCallablePayload.terms.gatewayFeeBearer': manageCommercialTermsCallablePayloadTermsGatewayFeeBearer,
+    'manageCommercialTermsCallablePayload.terms.purposes.eventAdmission.atSourceFeeBasisPoints': manageCommercialTermsCallablePayloadTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'manageCommercialTermsCallablePayload.terms.purposes.eventAdmission.countsTowardCommission': manageCommercialTermsCallablePayloadTermsPurposesEventAdmissionCountsTowardCommission,
+    'manageCommercialTermsCallablePayload.terms.purposes.formFee.atSourceFeeBasisPoints': manageCommercialTermsCallablePayloadTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'manageCommercialTermsCallablePayload.terms.purposes.formFee.countsTowardCommission': manageCommercialTermsCallablePayloadTermsPurposesFormFeeCountsTowardCommission,
+    'manageCommercialTermsCallablePayload.terms.purposes.hostMembership.atSourceFeeBasisPoints': manageCommercialTermsCallablePayloadTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'manageCommercialTermsCallablePayload.terms.purposes.hostMembership.countsTowardCommission': manageCommercialTermsCallablePayloadTermsPurposesHostMembershipCountsTowardCommission,
+    'manageCommercialTermsCallablePayload.terms.toolsOnly.feeMinor': manageCommercialTermsCallablePayloadTermsToolsOnlyFeeMinor,
+    'manageCommercialTermsCallablePayload.terms.trial.anchor': manageCommercialTermsCallablePayloadTermsTrialAnchor,
+    'manageCommercialTermsCallablePayload.terms.trial.days': manageCommercialTermsCallablePayloadTermsTrialDays,
+    'manageCommercialTermsCallableResponse.effectiveTerms.commission.base': manageCommercialTermsCallableResponseEffectiveTermsCommissionBase,
+    'manageCommercialTermsCallableResponse.effectiveTerms.commission.capMinor': manageCommercialTermsCallableResponseEffectiveTermsCommissionCapMinor,
+    'manageCommercialTermsCallableResponse.effectiveTerms.commission.cycleAnchor': manageCommercialTermsCallableResponseEffectiveTermsCommissionCycleAnchor,
+    'manageCommercialTermsCallableResponse.effectiveTerms.commission.cycleDays': manageCommercialTermsCallableResponseEffectiveTermsCommissionCycleDays,
+    'manageCommercialTermsCallableResponse.effectiveTerms.commission.rateBasisPoints': manageCommercialTermsCallableResponseEffectiveTermsCommissionRateBasisPoints,
+    'manageCommercialTermsCallableResponse.effectiveTerms.commission.taxTreatment': manageCommercialTermsCallableResponseEffectiveTermsCommissionTaxTreatment,
+    'manageCommercialTermsCallableResponse.effectiveTerms.currency': manageCommercialTermsCallableResponseEffectiveTermsCurrency,
+    'manageCommercialTermsCallableResponse.effectiveTerms.gatewayFeeBearer': manageCommercialTermsCallableResponseEffectiveTermsGatewayFeeBearer,
+    'manageCommercialTermsCallableResponse.effectiveTerms.purposes.eventAdmission.atSourceFeeBasisPoints': manageCommercialTermsCallableResponseEffectiveTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'manageCommercialTermsCallableResponse.effectiveTerms.purposes.eventAdmission.countsTowardCommission': manageCommercialTermsCallableResponseEffectiveTermsPurposesEventAdmissionCountsTowardCommission,
+    'manageCommercialTermsCallableResponse.effectiveTerms.purposes.formFee.atSourceFeeBasisPoints': manageCommercialTermsCallableResponseEffectiveTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'manageCommercialTermsCallableResponse.effectiveTerms.purposes.formFee.countsTowardCommission': manageCommercialTermsCallableResponseEffectiveTermsPurposesFormFeeCountsTowardCommission,
+    'manageCommercialTermsCallableResponse.effectiveTerms.purposes.hostMembership.atSourceFeeBasisPoints': manageCommercialTermsCallableResponseEffectiveTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'manageCommercialTermsCallableResponse.effectiveTerms.purposes.hostMembership.countsTowardCommission': manageCommercialTermsCallableResponseEffectiveTermsPurposesHostMembershipCountsTowardCommission,
+    'manageCommercialTermsCallableResponse.effectiveTerms.toolsOnly.feeMinor': manageCommercialTermsCallableResponseEffectiveTermsToolsOnlyFeeMinor,
+    'manageCommercialTermsCallableResponse.effectiveTerms.trial.anchor': manageCommercialTermsCallableResponseEffectiveTermsTrialAnchor,
+    'manageCommercialTermsCallableResponse.effectiveTerms.trial.days': manageCommercialTermsCallableResponseEffectiveTermsTrialDays,
+    'manageCommercialTermsCallableResponse.organizerId': manageCommercialTermsCallableResponseOrganizerId,
+    'manageCommercialTermsCallableResponse.platformRevision': manageCommercialTermsCallableResponsePlatformRevision,
+    'manageCommercialTermsCallableResponse.reason': manageCommercialTermsCallableResponseReason,
+    'manageCommercialTermsCallableResponse.revision': manageCommercialTermsCallableResponseRevision,
+    'manageCommercialTermsCallableResponse.terms.commission.base': manageCommercialTermsCallableResponseTermsCommissionBase,
+    'manageCommercialTermsCallableResponse.terms.commission.capMinor': manageCommercialTermsCallableResponseTermsCommissionCapMinor,
+    'manageCommercialTermsCallableResponse.terms.commission.cycleAnchor': manageCommercialTermsCallableResponseTermsCommissionCycleAnchor,
+    'manageCommercialTermsCallableResponse.terms.commission.cycleDays': manageCommercialTermsCallableResponseTermsCommissionCycleDays,
+    'manageCommercialTermsCallableResponse.terms.commission.rateBasisPoints': manageCommercialTermsCallableResponseTermsCommissionRateBasisPoints,
+    'manageCommercialTermsCallableResponse.terms.commission.taxTreatment': manageCommercialTermsCallableResponseTermsCommissionTaxTreatment,
+    'manageCommercialTermsCallableResponse.terms.currency': manageCommercialTermsCallableResponseTermsCurrency,
+    'manageCommercialTermsCallableResponse.terms.gatewayFeeBearer': manageCommercialTermsCallableResponseTermsGatewayFeeBearer,
+    'manageCommercialTermsCallableResponse.terms.purposes.eventAdmission.atSourceFeeBasisPoints': manageCommercialTermsCallableResponseTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'manageCommercialTermsCallableResponse.terms.purposes.eventAdmission.countsTowardCommission': manageCommercialTermsCallableResponseTermsPurposesEventAdmissionCountsTowardCommission,
+    'manageCommercialTermsCallableResponse.terms.purposes.formFee.atSourceFeeBasisPoints': manageCommercialTermsCallableResponseTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'manageCommercialTermsCallableResponse.terms.purposes.formFee.countsTowardCommission': manageCommercialTermsCallableResponseTermsPurposesFormFeeCountsTowardCommission,
+    'manageCommercialTermsCallableResponse.terms.purposes.hostMembership.atSourceFeeBasisPoints': manageCommercialTermsCallableResponseTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'manageCommercialTermsCallableResponse.terms.purposes.hostMembership.countsTowardCommission': manageCommercialTermsCallableResponseTermsPurposesHostMembershipCountsTowardCommission,
+    'manageCommercialTermsCallableResponse.terms.toolsOnly.feeMinor': manageCommercialTermsCallableResponseTermsToolsOnlyFeeMinor,
+    'manageCommercialTermsCallableResponse.terms.trial.anchor': manageCommercialTermsCallableResponseTermsTrialAnchor,
+    'manageCommercialTermsCallableResponse.terms.trial.days': manageCommercialTermsCallableResponseTermsTrialDays,
+    'manageCommercialTermsCallableResponse.termsId': manageCommercialTermsCallableResponseTermsId,
+    'manageCommercialTermsCallableResponse.updatedAtMillis': manageCommercialTermsCallableResponseUpdatedAtMillis,
     'manageEventApprovalNotificationsCallablePayload.action': manageEventApprovalNotificationsCallablePayloadAction,
     'manageEventApprovalNotificationsCallablePayload.choices.emailUpdates': manageEventApprovalNotificationsCallablePayloadChoicesEmailUpdates,
     'manageEventApprovalNotificationsCallablePayload.choices.phoneUpdates': manageEventApprovalNotificationsCallablePayloadChoicesPhoneUpdates,
@@ -190573,6 +193810,7 @@ abstract final class CatchContractConstraints {
     'manageHostMembershipProgramCallablePayload.organizerId': manageHostMembershipProgramCallablePayloadOrganizerId,
     'manageHostMembershipProgramCallableResponse.feeConfigured': manageHostMembershipProgramCallableResponseFeeConfigured,
     'manageHostMembershipProgramCallableResponse.organizerId': manageHostMembershipProgramCallableResponseOrganizerId,
+    'manageHostMembershipProgramCallableResponse.paymentMode': manageHostMembershipProgramCallableResponsePaymentMode,
     'manageHostMembershipProgramCallableResponse.program.billingPauseState': manageHostMembershipProgramCallableResponseProgramBillingPauseState,
     'manageHostMembershipProgramCallableResponse.program.memberCount': manageHostMembershipProgramCallableResponseProgramMemberCount,
     'manageHostMembershipProgramCallableResponse.program.mode': manageHostMembershipProgramCallableResponseProgramMode,
@@ -190580,6 +193818,7 @@ abstract final class CatchContractConstraints {
     'manageHostMembershipProgramCallableResponse.program.revision': manageHostMembershipProgramCallableResponseProgramRevision,
     'manageHostMembershipProgramCallableResponse.program.state': manageHostMembershipProgramCallableResponseProgramState,
     'manageHostMembershipProgramCallableResponse.routeAccountReady': manageHostMembershipProgramCallableResponseRouteAccountReady,
+    'manageHostMembershipProgramCallableResponse.unavailableReason': manageHostMembershipProgramCallableResponseUnavailableReason,
     'manageHostRosterIntakeCallablePayload.action': manageHostRosterIntakeCallablePayloadAction,
     'manageHostRosterIntakeCallablePayload.eventId': manageHostRosterIntakeCallablePayloadEventId,
     'manageHostRosterIntakeCallablePayload.excludedRowIds': manageHostRosterIntakeCallablePayloadExcludedRowIds,
@@ -191414,6 +194653,7 @@ abstract final class CatchContractConstraints {
     'organizerClaimInstagramMessageDocument.expiresAt._nanoseconds': organizerClaimInstagramMessageDocumentExpiresAtNanoseconds,
     'organizerClaimInstagramMessageDocument.expiresAt._seconds': organizerClaimInstagramMessageDocumentExpiresAtSeconds,
     'organizerClaimInstagramMessageDocument.messageKey': organizerClaimInstagramMessageDocumentMessageKey,
+    'organizerClaimInstagramMessageDocument.nominatorId': organizerClaimInstagramMessageDocumentNominatorId,
     'organizerClaimInstagramMessageDocument.outcome': organizerClaimInstagramMessageDocumentOutcome,
     'organizerClaimInstagramMessageDocument.receivedAt._nanoseconds': organizerClaimInstagramMessageDocumentReceivedAtNanoseconds,
     'organizerClaimInstagramMessageDocument.receivedAt._seconds': organizerClaimInstagramMessageDocumentReceivedAtSeconds,
@@ -192353,6 +195593,27 @@ abstract final class CatchContractConstraints {
     'organizerEventOfferPaymentDocument.routing.appRevision': organizerEventOfferPaymentDocumentRoutingAppRevision,
     'organizerEventOfferPaymentDocument.routing.bindingId': organizerEventOfferPaymentDocumentRoutingBindingId,
     'organizerEventOfferPaymentDocument.routing.checkoutKey': organizerEventOfferPaymentDocumentRoutingCheckoutKey,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.commission.base': organizerEventOfferPaymentDocumentRoutingCommercialTermsCommissionBase,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.commission.capMinor': organizerEventOfferPaymentDocumentRoutingCommercialTermsCommissionCapMinor,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.commission.cycleAnchor': organizerEventOfferPaymentDocumentRoutingCommercialTermsCommissionCycleAnchor,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.commission.cycleDays': organizerEventOfferPaymentDocumentRoutingCommercialTermsCommissionCycleDays,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.commission.rateBasisPoints': organizerEventOfferPaymentDocumentRoutingCommercialTermsCommissionRateBasisPoints,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.commission.taxTreatment': organizerEventOfferPaymentDocumentRoutingCommercialTermsCommissionTaxTreatment,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.currency': organizerEventOfferPaymentDocumentRoutingCommercialTermsCurrency,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.gatewayFeeBearer': organizerEventOfferPaymentDocumentRoutingCommercialTermsGatewayFeeBearer,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.merchantOfRecord': organizerEventOfferPaymentDocumentRoutingCommercialTermsMerchantOfRecord,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.moneyFlow': organizerEventOfferPaymentDocumentRoutingCommercialTermsMoneyFlow,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.organizerId': organizerEventOfferPaymentDocumentRoutingCommercialTermsOrganizerId,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.organizerRevision': organizerEventOfferPaymentDocumentRoutingCommercialTermsOrganizerRevision,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.platformRevision': organizerEventOfferPaymentDocumentRoutingCommercialTermsPlatformRevision,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.purpose': organizerEventOfferPaymentDocumentRoutingCommercialTermsPurpose,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.purposeTerms.atSourceFeeBasisPoints': organizerEventOfferPaymentDocumentRoutingCommercialTermsPurposeTermsAtSourceFeeBasisPoints,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.purposeTerms.countsTowardCommission': organizerEventOfferPaymentDocumentRoutingCommercialTermsPurposeTermsCountsTowardCommission,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.resolvedAtMillis': organizerEventOfferPaymentDocumentRoutingCommercialTermsResolvedAtMillis,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.toolsOnly.feeMinor': organizerEventOfferPaymentDocumentRoutingCommercialTermsToolsOnlyFeeMinor,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.trial.anchor': organizerEventOfferPaymentDocumentRoutingCommercialTermsTrialAnchor,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.trial.days': organizerEventOfferPaymentDocumentRoutingCommercialTermsTrialDays,
+    'organizerEventOfferPaymentDocument.routing.commercialTerms.version': organizerEventOfferPaymentDocumentRoutingCommercialTermsVersion,
     'organizerEventOfferPaymentDocument.routing.configurationVersion': organizerEventOfferPaymentDocumentRoutingConfigurationVersion,
     'organizerEventOfferPaymentDocument.routing.destinationAccountId': organizerEventOfferPaymentDocumentRoutingDestinationAccountId,
     'organizerEventOfferPaymentDocument.routing.merchantAccountId': organizerEventOfferPaymentDocumentRoutingMerchantAccountId,
@@ -192540,6 +195801,27 @@ abstract final class CatchContractConstraints {
     'organizerFormAdmissionReceiptDocument.providerPayment.routing.appRevision': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingAppRevision,
     'organizerFormAdmissionReceiptDocument.providerPayment.routing.bindingId': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingBindingId,
     'organizerFormAdmissionReceiptDocument.providerPayment.routing.checkoutKey': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCheckoutKey,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.commission.base': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCommissionBase,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.commission.capMinor': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCommissionCapMinor,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.commission.cycleAnchor': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCommissionCycleAnchor,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.commission.cycleDays': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCommissionCycleDays,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.commission.rateBasisPoints': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCommissionRateBasisPoints,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.commission.taxTreatment': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCommissionTaxTreatment,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.currency': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsCurrency,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.gatewayFeeBearer': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsGatewayFeeBearer,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.merchantOfRecord': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsMerchantOfRecord,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.moneyFlow': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsMoneyFlow,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.organizerId': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsOrganizerId,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.organizerRevision': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsOrganizerRevision,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.platformRevision': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsPlatformRevision,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.purpose': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsPurpose,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.purposeTerms.atSourceFeeBasisPoints': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsPurposeTermsAtSourceFeeBasisPoints,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.purposeTerms.countsTowardCommission': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsPurposeTermsCountsTowardCommission,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.resolvedAtMillis': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsResolvedAtMillis,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.toolsOnly.feeMinor': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsToolsOnlyFeeMinor,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.trial.anchor': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsTrialAnchor,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.trial.days': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsTrialDays,
+    'organizerFormAdmissionReceiptDocument.providerPayment.routing.commercialTerms.version': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingCommercialTermsVersion,
     'organizerFormAdmissionReceiptDocument.providerPayment.routing.configurationVersion': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingConfigurationVersion,
     'organizerFormAdmissionReceiptDocument.providerPayment.routing.destinationAccountId': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingDestinationAccountId,
     'organizerFormAdmissionReceiptDocument.providerPayment.routing.merchantAccountId': organizerFormAdmissionReceiptDocumentProviderPaymentRoutingMerchantAccountId,
@@ -192917,6 +196199,27 @@ abstract final class CatchContractConstraints {
     'organizerFormPaymentDocument.routing.appRevision': organizerFormPaymentDocumentRoutingAppRevision,
     'organizerFormPaymentDocument.routing.bindingId': organizerFormPaymentDocumentRoutingBindingId,
     'organizerFormPaymentDocument.routing.checkoutKey': organizerFormPaymentDocumentRoutingCheckoutKey,
+    'organizerFormPaymentDocument.routing.commercialTerms.commission.base': organizerFormPaymentDocumentRoutingCommercialTermsCommissionBase,
+    'organizerFormPaymentDocument.routing.commercialTerms.commission.capMinor': organizerFormPaymentDocumentRoutingCommercialTermsCommissionCapMinor,
+    'organizerFormPaymentDocument.routing.commercialTerms.commission.cycleAnchor': organizerFormPaymentDocumentRoutingCommercialTermsCommissionCycleAnchor,
+    'organizerFormPaymentDocument.routing.commercialTerms.commission.cycleDays': organizerFormPaymentDocumentRoutingCommercialTermsCommissionCycleDays,
+    'organizerFormPaymentDocument.routing.commercialTerms.commission.rateBasisPoints': organizerFormPaymentDocumentRoutingCommercialTermsCommissionRateBasisPoints,
+    'organizerFormPaymentDocument.routing.commercialTerms.commission.taxTreatment': organizerFormPaymentDocumentRoutingCommercialTermsCommissionTaxTreatment,
+    'organizerFormPaymentDocument.routing.commercialTerms.currency': organizerFormPaymentDocumentRoutingCommercialTermsCurrency,
+    'organizerFormPaymentDocument.routing.commercialTerms.gatewayFeeBearer': organizerFormPaymentDocumentRoutingCommercialTermsGatewayFeeBearer,
+    'organizerFormPaymentDocument.routing.commercialTerms.merchantOfRecord': organizerFormPaymentDocumentRoutingCommercialTermsMerchantOfRecord,
+    'organizerFormPaymentDocument.routing.commercialTerms.moneyFlow': organizerFormPaymentDocumentRoutingCommercialTermsMoneyFlow,
+    'organizerFormPaymentDocument.routing.commercialTerms.organizerId': organizerFormPaymentDocumentRoutingCommercialTermsOrganizerId,
+    'organizerFormPaymentDocument.routing.commercialTerms.organizerRevision': organizerFormPaymentDocumentRoutingCommercialTermsOrganizerRevision,
+    'organizerFormPaymentDocument.routing.commercialTerms.platformRevision': organizerFormPaymentDocumentRoutingCommercialTermsPlatformRevision,
+    'organizerFormPaymentDocument.routing.commercialTerms.purpose': organizerFormPaymentDocumentRoutingCommercialTermsPurpose,
+    'organizerFormPaymentDocument.routing.commercialTerms.purposeTerms.atSourceFeeBasisPoints': organizerFormPaymentDocumentRoutingCommercialTermsPurposeTermsAtSourceFeeBasisPoints,
+    'organizerFormPaymentDocument.routing.commercialTerms.purposeTerms.countsTowardCommission': organizerFormPaymentDocumentRoutingCommercialTermsPurposeTermsCountsTowardCommission,
+    'organizerFormPaymentDocument.routing.commercialTerms.resolvedAtMillis': organizerFormPaymentDocumentRoutingCommercialTermsResolvedAtMillis,
+    'organizerFormPaymentDocument.routing.commercialTerms.toolsOnly.feeMinor': organizerFormPaymentDocumentRoutingCommercialTermsToolsOnlyFeeMinor,
+    'organizerFormPaymentDocument.routing.commercialTerms.trial.anchor': organizerFormPaymentDocumentRoutingCommercialTermsTrialAnchor,
+    'organizerFormPaymentDocument.routing.commercialTerms.trial.days': organizerFormPaymentDocumentRoutingCommercialTermsTrialDays,
+    'organizerFormPaymentDocument.routing.commercialTerms.version': organizerFormPaymentDocumentRoutingCommercialTermsVersion,
     'organizerFormPaymentDocument.routing.configurationVersion': organizerFormPaymentDocumentRoutingConfigurationVersion,
     'organizerFormPaymentDocument.routing.destinationAccountId': organizerFormPaymentDocumentRoutingDestinationAccountId,
     'organizerFormPaymentDocument.routing.merchantAccountId': organizerFormPaymentDocumentRoutingMerchantAccountId,
@@ -194430,6 +197733,27 @@ abstract final class CatchContractConstraints {
     'paymentRoutingSnapshot.appRevision': paymentRoutingSnapshotAppRevision,
     'paymentRoutingSnapshot.bindingId': paymentRoutingSnapshotBindingId,
     'paymentRoutingSnapshot.checkoutKey': paymentRoutingSnapshotCheckoutKey,
+    'paymentRoutingSnapshot.commercialTerms.commission.base': paymentRoutingSnapshotCommercialTermsCommissionBase,
+    'paymentRoutingSnapshot.commercialTerms.commission.capMinor': paymentRoutingSnapshotCommercialTermsCommissionCapMinor,
+    'paymentRoutingSnapshot.commercialTerms.commission.cycleAnchor': paymentRoutingSnapshotCommercialTermsCommissionCycleAnchor,
+    'paymentRoutingSnapshot.commercialTerms.commission.cycleDays': paymentRoutingSnapshotCommercialTermsCommissionCycleDays,
+    'paymentRoutingSnapshot.commercialTerms.commission.rateBasisPoints': paymentRoutingSnapshotCommercialTermsCommissionRateBasisPoints,
+    'paymentRoutingSnapshot.commercialTerms.commission.taxTreatment': paymentRoutingSnapshotCommercialTermsCommissionTaxTreatment,
+    'paymentRoutingSnapshot.commercialTerms.currency': paymentRoutingSnapshotCommercialTermsCurrency,
+    'paymentRoutingSnapshot.commercialTerms.gatewayFeeBearer': paymentRoutingSnapshotCommercialTermsGatewayFeeBearer,
+    'paymentRoutingSnapshot.commercialTerms.merchantOfRecord': paymentRoutingSnapshotCommercialTermsMerchantOfRecord,
+    'paymentRoutingSnapshot.commercialTerms.moneyFlow': paymentRoutingSnapshotCommercialTermsMoneyFlow,
+    'paymentRoutingSnapshot.commercialTerms.organizerId': paymentRoutingSnapshotCommercialTermsOrganizerId,
+    'paymentRoutingSnapshot.commercialTerms.organizerRevision': paymentRoutingSnapshotCommercialTermsOrganizerRevision,
+    'paymentRoutingSnapshot.commercialTerms.platformRevision': paymentRoutingSnapshotCommercialTermsPlatformRevision,
+    'paymentRoutingSnapshot.commercialTerms.purpose': paymentRoutingSnapshotCommercialTermsPurpose,
+    'paymentRoutingSnapshot.commercialTerms.purposeTerms.atSourceFeeBasisPoints': paymentRoutingSnapshotCommercialTermsPurposeTermsAtSourceFeeBasisPoints,
+    'paymentRoutingSnapshot.commercialTerms.purposeTerms.countsTowardCommission': paymentRoutingSnapshotCommercialTermsPurposeTermsCountsTowardCommission,
+    'paymentRoutingSnapshot.commercialTerms.resolvedAtMillis': paymentRoutingSnapshotCommercialTermsResolvedAtMillis,
+    'paymentRoutingSnapshot.commercialTerms.toolsOnly.feeMinor': paymentRoutingSnapshotCommercialTermsToolsOnlyFeeMinor,
+    'paymentRoutingSnapshot.commercialTerms.trial.anchor': paymentRoutingSnapshotCommercialTermsTrialAnchor,
+    'paymentRoutingSnapshot.commercialTerms.trial.days': paymentRoutingSnapshotCommercialTermsTrialDays,
+    'paymentRoutingSnapshot.commercialTerms.version': paymentRoutingSnapshotCommercialTermsVersion,
     'paymentRoutingSnapshot.configurationVersion': paymentRoutingSnapshotConfigurationVersion,
     'paymentRoutingSnapshot.destinationAccountId': paymentRoutingSnapshotDestinationAccountId,
     'paymentRoutingSnapshot.merchantAccountId': paymentRoutingSnapshotMerchantAccountId,
@@ -196134,6 +199458,27 @@ abstract final class CatchContractConstraints {
     'publicEventAdmissionReceiptDocument.routing.appRevision': publicEventAdmissionReceiptDocumentRoutingAppRevision,
     'publicEventAdmissionReceiptDocument.routing.bindingId': publicEventAdmissionReceiptDocumentRoutingBindingId,
     'publicEventAdmissionReceiptDocument.routing.checkoutKey': publicEventAdmissionReceiptDocumentRoutingCheckoutKey,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.commission.base': publicEventAdmissionReceiptDocumentRoutingCommercialTermsCommissionBase,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.commission.capMinor': publicEventAdmissionReceiptDocumentRoutingCommercialTermsCommissionCapMinor,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.commission.cycleAnchor': publicEventAdmissionReceiptDocumentRoutingCommercialTermsCommissionCycleAnchor,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.commission.cycleDays': publicEventAdmissionReceiptDocumentRoutingCommercialTermsCommissionCycleDays,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.commission.rateBasisPoints': publicEventAdmissionReceiptDocumentRoutingCommercialTermsCommissionRateBasisPoints,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.commission.taxTreatment': publicEventAdmissionReceiptDocumentRoutingCommercialTermsCommissionTaxTreatment,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.currency': publicEventAdmissionReceiptDocumentRoutingCommercialTermsCurrency,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.gatewayFeeBearer': publicEventAdmissionReceiptDocumentRoutingCommercialTermsGatewayFeeBearer,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.merchantOfRecord': publicEventAdmissionReceiptDocumentRoutingCommercialTermsMerchantOfRecord,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.moneyFlow': publicEventAdmissionReceiptDocumentRoutingCommercialTermsMoneyFlow,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.organizerId': publicEventAdmissionReceiptDocumentRoutingCommercialTermsOrganizerId,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.organizerRevision': publicEventAdmissionReceiptDocumentRoutingCommercialTermsOrganizerRevision,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.platformRevision': publicEventAdmissionReceiptDocumentRoutingCommercialTermsPlatformRevision,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.purpose': publicEventAdmissionReceiptDocumentRoutingCommercialTermsPurpose,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.purposeTerms.atSourceFeeBasisPoints': publicEventAdmissionReceiptDocumentRoutingCommercialTermsPurposeTermsAtSourceFeeBasisPoints,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.purposeTerms.countsTowardCommission': publicEventAdmissionReceiptDocumentRoutingCommercialTermsPurposeTermsCountsTowardCommission,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.resolvedAtMillis': publicEventAdmissionReceiptDocumentRoutingCommercialTermsResolvedAtMillis,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.toolsOnly.feeMinor': publicEventAdmissionReceiptDocumentRoutingCommercialTermsToolsOnlyFeeMinor,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.trial.anchor': publicEventAdmissionReceiptDocumentRoutingCommercialTermsTrialAnchor,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.trial.days': publicEventAdmissionReceiptDocumentRoutingCommercialTermsTrialDays,
+    'publicEventAdmissionReceiptDocument.routing.commercialTerms.version': publicEventAdmissionReceiptDocumentRoutingCommercialTermsVersion,
     'publicEventAdmissionReceiptDocument.routing.configurationVersion': publicEventAdmissionReceiptDocumentRoutingConfigurationVersion,
     'publicEventAdmissionReceiptDocument.routing.destinationAccountId': publicEventAdmissionReceiptDocumentRoutingDestinationAccountId,
     'publicEventAdmissionReceiptDocument.routing.merchantAccountId': publicEventAdmissionReceiptDocumentRoutingMerchantAccountId,
@@ -196193,6 +199538,27 @@ abstract final class CatchContractConstraints {
     'publicEventPaymentDocument.routing.appRevision': publicEventPaymentDocumentRoutingAppRevision,
     'publicEventPaymentDocument.routing.bindingId': publicEventPaymentDocumentRoutingBindingId,
     'publicEventPaymentDocument.routing.checkoutKey': publicEventPaymentDocumentRoutingCheckoutKey,
+    'publicEventPaymentDocument.routing.commercialTerms.commission.base': publicEventPaymentDocumentRoutingCommercialTermsCommissionBase,
+    'publicEventPaymentDocument.routing.commercialTerms.commission.capMinor': publicEventPaymentDocumentRoutingCommercialTermsCommissionCapMinor,
+    'publicEventPaymentDocument.routing.commercialTerms.commission.cycleAnchor': publicEventPaymentDocumentRoutingCommercialTermsCommissionCycleAnchor,
+    'publicEventPaymentDocument.routing.commercialTerms.commission.cycleDays': publicEventPaymentDocumentRoutingCommercialTermsCommissionCycleDays,
+    'publicEventPaymentDocument.routing.commercialTerms.commission.rateBasisPoints': publicEventPaymentDocumentRoutingCommercialTermsCommissionRateBasisPoints,
+    'publicEventPaymentDocument.routing.commercialTerms.commission.taxTreatment': publicEventPaymentDocumentRoutingCommercialTermsCommissionTaxTreatment,
+    'publicEventPaymentDocument.routing.commercialTerms.currency': publicEventPaymentDocumentRoutingCommercialTermsCurrency,
+    'publicEventPaymentDocument.routing.commercialTerms.gatewayFeeBearer': publicEventPaymentDocumentRoutingCommercialTermsGatewayFeeBearer,
+    'publicEventPaymentDocument.routing.commercialTerms.merchantOfRecord': publicEventPaymentDocumentRoutingCommercialTermsMerchantOfRecord,
+    'publicEventPaymentDocument.routing.commercialTerms.moneyFlow': publicEventPaymentDocumentRoutingCommercialTermsMoneyFlow,
+    'publicEventPaymentDocument.routing.commercialTerms.organizerId': publicEventPaymentDocumentRoutingCommercialTermsOrganizerId,
+    'publicEventPaymentDocument.routing.commercialTerms.organizerRevision': publicEventPaymentDocumentRoutingCommercialTermsOrganizerRevision,
+    'publicEventPaymentDocument.routing.commercialTerms.platformRevision': publicEventPaymentDocumentRoutingCommercialTermsPlatformRevision,
+    'publicEventPaymentDocument.routing.commercialTerms.purpose': publicEventPaymentDocumentRoutingCommercialTermsPurpose,
+    'publicEventPaymentDocument.routing.commercialTerms.purposeTerms.atSourceFeeBasisPoints': publicEventPaymentDocumentRoutingCommercialTermsPurposeTermsAtSourceFeeBasisPoints,
+    'publicEventPaymentDocument.routing.commercialTerms.purposeTerms.countsTowardCommission': publicEventPaymentDocumentRoutingCommercialTermsPurposeTermsCountsTowardCommission,
+    'publicEventPaymentDocument.routing.commercialTerms.resolvedAtMillis': publicEventPaymentDocumentRoutingCommercialTermsResolvedAtMillis,
+    'publicEventPaymentDocument.routing.commercialTerms.toolsOnly.feeMinor': publicEventPaymentDocumentRoutingCommercialTermsToolsOnlyFeeMinor,
+    'publicEventPaymentDocument.routing.commercialTerms.trial.anchor': publicEventPaymentDocumentRoutingCommercialTermsTrialAnchor,
+    'publicEventPaymentDocument.routing.commercialTerms.trial.days': publicEventPaymentDocumentRoutingCommercialTermsTrialDays,
+    'publicEventPaymentDocument.routing.commercialTerms.version': publicEventPaymentDocumentRoutingCommercialTermsVersion,
     'publicEventPaymentDocument.routing.configurationVersion': publicEventPaymentDocumentRoutingConfigurationVersion,
     'publicEventPaymentDocument.routing.destinationAccountId': publicEventPaymentDocumentRoutingDestinationAccountId,
     'publicEventPaymentDocument.routing.merchantAccountId': publicEventPaymentDocumentRoutingMerchantAccountId,
@@ -198713,6 +202079,7 @@ abstract final class CatchContractConstraints {
     'supplyNominatorDocument.defaultMarket': supplyNominatorDocumentDefaultMarket,
     'supplyNominatorDocument.displayName': supplyNominatorDocumentDisplayName,
     'supplyNominatorDocument.endpointHash': supplyNominatorDocumentEndpointHash,
+    'supplyNominatorDocument.instagramHandle': supplyNominatorDocumentInstagramHandle,
     'supplyNominatorDocument.nominatorId': supplyNominatorDocumentNominatorId,
     'supplyNominatorDocument.phoneLast4': supplyNominatorDocumentPhoneLast4,
     'supplyNominatorDocument.role': supplyNominatorDocumentRole,

@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {districtAdapter} from "./district/extractor.mjs";
+import {instagramAdapter} from "./instagram/extractor.mjs";
 import {lumaAdapter} from "./luma/extractor.mjs";
 import {openGraphAdapter} from "./open-graph/extractor.mjs";
 import {schemaOrgEventAdapter} from "./schema-org-event/extractor.mjs";
@@ -12,6 +13,7 @@ const directory = path.dirname(fileURLToPath(import.meta.url));
 export const SOURCE_PROFILE_IDS = Object.freeze([
   "cntraveller",
   "district",
+  "instagram",
   "luma",
   "open-graph",
   "schema-org-event",
@@ -24,6 +26,7 @@ export const PAGE_EXTRACTION_VERSION = 1;
 // platforms.json, a classifier in surfaces.mjs, and real-page fixtures.
 const PLATFORM_ADAPTERS = Object.freeze(new Map([
   [districtAdapter.platform, districtAdapter],
+  [instagramAdapter.platform, instagramAdapter],
   [lumaAdapter.platform, lumaAdapter],
   [urbanautAdapter.platform, urbanautAdapter],
 ]));
@@ -103,6 +106,8 @@ export function extractWithAdapters({snapshot, timezone = "Asia/Kolkata", observ
       templateFingerprint: result.templateFingerprint,
       organizers: result.organizers,
       events: result.events,
+      // Links the page mentions without vouching for them as the organizer's.
+      relatedUrls: result.relatedUrls ?? [],
       attempts,
       metadata,
     };
@@ -123,6 +128,7 @@ function abstention(reason, attempts) {
     templateFingerprint: null,
     organizers: [],
     events: [],
+    relatedUrls: [],
     attempts,
   };
 }

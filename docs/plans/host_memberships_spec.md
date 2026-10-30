@@ -1,7 +1,7 @@
 ---
 doc_id: host_memberships_spec
-version: 0.2.0
-updated: 2026-10-29
+version: 0.3.1
+updated: 2026-10-30
 owner: host_tooling
 status: proposed
 ---
@@ -24,6 +24,9 @@ existing owners and are linked rather than restated:
   admission and pricing policy.
 - [`docs/backend_operation_catalog.md`](../backend_operation_catalog.md) for
   write ownership.
+- [`docs/data_contracts.md`](../data_contracts.md#commercial-terms) for
+  commercial terms: what Catch charges, the money-flow switch and the terms
+  snapshot every payment freezes.
 
 Every decision made while writing or building this is recorded in
 [Decisions](#decisions) or [Open questions](#open-questions).
@@ -34,8 +37,12 @@ Every decision made while writing or building this is recorded in
    annual price or both, an optional member cap, structured benefits and
    free-text perks.
 2. A member can join with a Razorpay subscription: UPI Autopay, card e-mandate
-   or eNACH, India only. Each renewal is split so the host's Route linked
-   account receives the amount minus the Catch platform fee.
+   or eNACH, India only. By default (`hostCollected`) the subscription lives on
+   the host's own Razorpay account, so every renewal is paid to the host, who
+   is merchant of record and invoices its members. Catch takes nothing at
+   source and bills its commission to the host afterwards
+   ([D-19](#decisions)). A `platformSplit` mode keeps the original Route split
+   behind a configuration switch.
 3. Checkout applies membership automatically for active members:
    - a member price, where 100% off means the event is included;
    - an early-access window;
@@ -94,10 +101,13 @@ These are deferred to phase 2 or later:
 
 | Concern | Current source | What it means for memberships |
 | --- | --- | --- |
-| Route platform config | `functions/src/payments/razorpayPlatformPaymentConfig.ts` | The pinned Secret Manager JSON holds `keyId`, `keySecret`, `webhookSecret`, `platformAccountId` and an **exact-key** `feeBasisPoints` (`formFee`, `eventAdmission`). Memberships add an optional `hostMembership` fee key and fail closed without it. |
-| Linked accounts | `functions/src/payments/hostPaymentAccounts.ts`, `functions/src/payments/razorpayHostAccounts.ts`, `contracts/firestore/host_payment_accounts.schema.json` | `hostPaymentAccounts/{ownerUid}_razorpay` is the Route linked account. Readiness is `readReadyRouteAccount` in `functions/src/payments/formPayments/razorpayRouteFormAuthority.ts`, keyed through `organizerOwnerUserId` (`functions/src/shared/organizerHosts.ts`). Memberships reuse it unchanged. |
+| Commercial terms | `functions/src/commercialTerms/` | What Catch charges: platform defaults plus organizer overrides, resolved and frozen per charge. Memberships use the `hostMembership` purpose. |
+| Money flow | `functions/src/payments/paymentRouting.ts`, `paymentRoutingPolicies` | The `hostMembership` route selects the mode: `razorpayOAuth` is `hostCollected`, `razorpayRoute` is `platformSplit`. |
+| Organizer OAuth connection | `functions/src/payments/formPayments/organizerRazorpayConnection.ts`, `formPaymentCredentials.ts`, `organizerPaymentConnections` | `hostCollected` reuses the organizer's ready connection, its credential vault and refresh lease, exactly as ticketing does. |
+| Route platform config | `functions/src/payments/razorpayPlatformPaymentConfig.ts` | `platformSplit` only. The pinned Secret Manager JSON holds credentials (`keyId`, `keySecret`, `webhookSecret`, `platformAccountId`); fees are commercial terms. |
+| Linked accounts | `functions/src/payments/hostPaymentAccounts.ts`, `functions/src/payments/razorpayHostAccounts.ts`, `contracts/firestore/host_payment_accounts.schema.json` | `platformSplit` only. `hostPaymentAccounts/{ownerUid}_razorpay` is the Route linked account. Readiness is `readReadyRouteAccount` in `functions/src/payments/formPayments/razorpayRouteFormAuthority.ts`, keyed through `organizerOwnerUserId` (`functions/src/shared/organizerHosts.ts`). |
 | Razorpay REST client | `functions/src/payments/formPayments/razorpayPaymentProvider.ts`, `functions/src/payments/formPayments/razorpayRouteProvider.ts` | It uses `fetch` with strict parsers, but has no plan, subscription or payment-transfer endpoints and supports only `order_id` checkout signatures. Memberships add a separate subscription client in the same style, with an injected `fetchImpl` for tests. |
-| Transfers | `razorpayRouteProvider.ts` `orderFields` (order-level `transfers[]`), `eventCheckout/eventPaymentSettlement.ts` | Subscriptions cannot carry order transfers. Each `subscription.charged` payment is split with `POST /v1/payments/{id}/transfers`. |
+| Transfers | `razorpayRouteProvider.ts` `orderFields` (order-level `transfers[]`), `eventCheckout/eventPaymentSettlement.ts` | `platformSplit` only. Subscriptions cannot carry order transfers, so each `subscription.charged` payment is split with `POST /v1/payments/{id}/transfers`. `hostCollected` makes no transfer. |
 | Existing Route webhook | `functions/src/payments/formPayments/formPaymentTriggers.ts` (`organizerFormPaymentWebhook`), `razorpayFormProvider.ts` (`formWebhookEvents`) | It accepts only `payment.*` and `refund.*` and dispatches by receipt prefix. Memberships get their own endpoint, so the form and event inbox stays unchanged. |
 | Legacy Razorpay | `functions/src/payments/razorpayWebhook.ts`, `createRazorpayOrder.ts` (retired) | Not used. |
 | Event pricing and admission | `functions/src/events/eventPolicy.ts`: `quotePriceInPaise`, `signupPolicyDecision`, `requiresCommunityMembership` | The list price stays the policy quote. Membership evaluation runs **after** the policy quote and does not change the policy hash (`seatAuthority/firestoreAdapter.ts` `deriveEventSeatPolicy`), so policy locks are unaffected. |
@@ -130,7 +140,7 @@ This is the per-host program and payment binding. It is written by
 | --- | --- |
 | `organizerId` | |
 | `state` | `enabled` or `disabled`. |
-| `payment` | `{provider: "razorpay", providerAccountId: "acc_…", bindingId: "{ownerUid}_razorpay", mode: "test" \| "live"}`. This is the snapshot taken when the program was enabled. It is re-verified at every checkout and every transfer. |
+| `payment` | `{provider: "razorpay", moneyFlow, providerAccountId: "acc_…", bindingId, mode: "test" \| "live", webhookId?}`. This is the snapshot taken when the program was enabled. For `hostCollected`, `providerAccountId` is the host's own merchant account, `bindingId` its `organizerPaymentConnections` id and `webhookId` the membership webhook Catch registered there. For `platformSplit`, `providerAccountId` is the Route linked account and `bindingId` is `{ownerUid}_razorpay`. A program without `moneyFlow` predates modes and is `platformSplit`. It is re-verified at every checkout and every transfer. |
 | `billingPause` | `{state: "active" \| "pausing" \| "paused" \| "resuming", requestedAtMillis, requestedBy, reason, processedCount, cursor}`. |
 | `memberCount` | Count of non-expired memberships across all plans. A projection. |
 | `revision`, `createdAtMillis`, `updatedAtMillis` | |
@@ -144,7 +154,7 @@ This is one tier. `planId` is `hmp_<random>`. It is written by
 | --- | --- |
 | `organizerId`, `name` (≤ 60), `description` (≤ 500) | |
 | `status` | `draft`, `published` or `archived`. Only published plans can be bought. Archiving stops new joins and leaves existing members untouched. |
-| `prices` | `{monthly?: Price, annual?: Price}`. At least one is required. A `Price` is `{amountPaise, providerPriceIds: {razorpay?: "plan_…"}, revision}`. Amounts run from ₹10 to ₹15,000 (1,000–1,500,000 paise). The RBI auto-debit ceiling is ₹15,000 per charge without re-authentication; see [D-6](#decisions). |
+| `prices` | `{monthly?: Price, annual?: Price}`. At least one is required. A `Price` is `{amountPaise, providerPriceIds: {razorpay?: "plan_…"}, providerAccountId?, revision}`, where `providerAccountId` is the account the provider plan lives on (absent means Catch's platform account). Amounts run from ₹10 to ₹15,000 (1,000–1,500,000 paise). The RBI auto-debit ceiling is ₹15,000 per charge without re-authentication; see [D-6](#decisions). |
 | `memberCap` | `null` or 1–100,000. |
 | `trialDays` | 0–30. Default 0. |
 | `benefits[]` | Typed and enforced, each type at most once (see below). |
@@ -185,6 +195,7 @@ state machine ([§7](#7-membership-state-machine)).
 | `memberSinceMillis` | The first time the member ever became entitled. Never reset. |
 | `tenure` | `{accumulatedMillis, stretchStartedAtMillis \| null}`. Cumulative entitled time across stretches. |
 | `provider` (`"razorpay"`), `providerSubscriptionId`, `providerPlanId` | |
+| `payment` | The program binding the subscription was bought on, copied from its checkout. Every later provider call (pause, resume, cancel, refresh) uses it, so a mode switch never moves an existing subscription. Absent on memberships from before modes. |
 | `providerEventAtMillis` | Monotonic ordering guard. |
 | `lastCheckoutId`, `revision`, `createdAtMillis`, `updatedAtMillis` | |
 
@@ -196,20 +207,28 @@ state machine ([§7](#7-membership-state-machine)).
 
 - `organizerId`, `planId`, `uid`, `interval`, `priceInPaise`;
 - `state`: `open`, `authorized`, `expired` or `failed`;
+- `payment`: the program binding the subscription is created on;
 - `providerSubscriptionId`, `authorizationUrl` (the Razorpay `short_url`);
 - `expiresAtMillis` (now + 30 minutes), `createdAtMillis`, `updatedAtMillis`.
 
 The member can read their own checkout to watch its progress.
 
-`hostMembershipCharges/{providerPaymentId}` is the charge and transfer ledger. It
-holds:
+`hostMembershipCharges/{providerPaymentId}` is the charge ledger, and the
+commission statement's membership source ([#1126](https://github.com/torana-labs/catch-dating-app/issues/1126)).
+It holds:
 
 - `membershipId`, `organizerId`, `uid`, `amountPaise`, `feePaise`,
   `transferAmountPaise`;
 - `periodStartMillis`, `periodEndMillis`;
-- `transfer`: `{state: "pending" | "requesting" | "created" | "failed",
-  transferId | null, attempts, lastError | null}`;
+- `moneyFlow` and `commercialTerms`, the effective terms frozen when the charge
+  was recorded;
+- `transfer`: `{state: "pending" | "requesting" | "created" | "failed" |
+  "notRequired", transferId | null, attempts, lastError | null}`;
 - `providerAccountId`, `mode`, `createdAtMillis`, `updatedAtMillis`.
+
+A `hostCollected` charge has `feePaise` and `transferAmountPaise` 0 and
+`transfer.state` `notRequired`. `listHostMembershipChargesForStatement` reads
+one organizer's charges by `createdAtMillis` window, oldest first.
 
 `hostMembershipWebhookReceipts/{hmwh_<sha256(eventId or body)>}` records each
 webhook event received. It holds:
@@ -348,10 +367,55 @@ These call the evaluator inside their existing transaction or read:
 | `publicRegistration/policy.ts` `publicCheckoutQuote` and `reservation.ts` | The quote takes an optional member pricing. `amountPaise` becomes the member price, and a `listAmountPaise` is added when it differs. A member price of 0 is refused here, and the member books in the app instead ([D-8](#decisions)). The frozen-quote comparison continues to guard the price. |
 | Stripe and waitlist-offer acceptance | List price only; the restrictions still apply ([D-9](#decisions)). |
 
-## 6. Razorpay Subscriptions and Route flow
+## 6. Money flows, Razorpay Subscriptions and webhooks
+
+### 6.0 Modes
+
+The organizer's membership money flow is the `hostMembership` payment route in
+`paymentRoutingPolicies` (app default plus organizer override, written by the
+audited `managePaymentRoutingPolicy`), the same switch tickets and form fees
+use. Catch's commercial terms are separate data
+([`data_contracts.md`](../data_contracts.md#commercial-terms)).
+
+| Route | Mode | Where the subscription lives | Money | Catch's fee |
+| --- | --- | --- | --- | --- |
+| `razorpayOAuth` | `hostCollected` (the owner's default) | The host's own Razorpay account, through the existing OAuth connection | Paid to the host, who is merchant of record and invoices members | None at source. Each charge counts toward the commission statement at its frozen terms. |
+| `razorpayRoute` | `platformSplit` (off unless selected) | Catch's platform account | Split to the host's Route linked account | The terms' `hostMembership.atSourceFeeBasisPoints`, deducted before the transfer |
+| none, `disabled`, Stripe | unavailable | | | |
+
+A Catch-as-merchant flow later is a new route plus its adapter, not a change to
+plans, memberships or the state machine.
+
+### 6.0.1 Subscriptions on a connected account
+
+`hostCollected` calls Razorpay's Plans and Subscriptions APIs on the host's
+account with the merchant OAuth access token (`Authorization: Bearer`), the
+token ticketing and form fees already use. The evidence, checked on 30 Oct:
+
+- Catch's OAuth authorization requests the `read_write` scope
+  (`razorpayFormProvider.ts`). Razorpay documents `read_write` as read and
+  write access to all resources on the API.
+- Razorpay's official Node SDK applies an OAuth token as a Bearer header to
+  every resource, Subscriptions and Plans included, with no product
+  allow-list.
+- Partner webhooks on a merchant account (`/v2/accounts/{id}/webhooks`) take
+  any active event, so `subscription.*` events can be registered there.
+
+No Razorpay page states Subscriptions-over-OAuth in so many words, and the
+session could not open razorpay.com. So the runtime does not assume it: enabling
+a `hostCollected` program probes `GET /v1/subscriptions?count=1` on the host's
+account and fails closed with `subscriptionsNotEnabled` when Razorpay refuses
+the product. The first test-mode run in §13 confirms it end to end.
+
+What the host must have: a Razorpay account connected to Catch through Payments
+(the same OAuth connection ticketing uses), with Subscriptions turned on.
+Razorpay enables Subscriptions per account; live mode needs Razorpay's
+activation and recurring payment methods (UPI Autopay, card e-mandate, eNACH)
+on the account.
 
 All provider calls go through `HostMembershipBillingProvider`, defined in
-`functions/src/hostMemberships/billingProvider.ts`:
+`functions/src/hostMemberships/billingProvider.ts`. One instance acts on one
+account:
 
 ```ts
 interface HostMembershipBillingProvider {
@@ -360,16 +424,21 @@ interface HostMembershipBillingProvider {
   createSubscription(input): Promise<{providerSubscriptionId, authorizationUrl}>;
   fetchSubscription(id): Promise<ProviderSubscriptionSnapshot>;
   pause(id) / resume(id) / cancelAtPeriodEnd(id): Promise<ProviderSubscriptionSnapshot>;
-  splitCharge(input): Promise<{transferId}>;                 // Route transfer
+  splitCharge(input): Promise<{transferId}>;                 // platformSplit only
   findChargeTransfer(paymentId, account): Promise<{transferId} | null>;
+  probeSubscriptions(): Promise<"enabled" | "notEnabled">;
+  ensureMerchantWebhook({url}): Promise<{webhookId}>;        // hostCollected only
   verifyWebhook(rawBody, signature): boolean;
   parseWebhook(rawBody): ProviderSubscriptionEvent | null;
 }
 ```
 
-The Razorpay implementation is `razorpaySubscriptionProvider.ts`. It uses
-`fetch` with Basic auth from the pinned platform config, a 15-second timeout, a
-64 KB response cap, strict parsers, and injected `fetchImpl` for tests.
+The Razorpay implementation is `razorpaySubscriptionProvider.ts`. It authenticates
+with the merchant OAuth token (`hostCollected`) or the pinned platform key
+(`platformSplit`) and uses `fetch` with a 15-second timeout, a 64 KB response
+cap, strict parsers, and injected `fetchImpl` for tests. Each membership,
+checkout and program records the binding it was created on, and every later
+call uses that binding (`runtime.ts` `providerFor`).
 `ProviderSubscriptionSnapshot` is provider-neutral:
 
 ```ts
@@ -382,11 +451,24 @@ A Stripe adapter would implement the same interface.
 ### 6.1 Flow
 
 1. **Enable the program.** A host manager calls `manageHostMembershipProgram`
-   `enable`. The server runs `readReadyRouteAccount(organizerId)`, loads the
-   platform config, and requires `feeBasisPoints.hostMembership`. It then
-   snapshots `{provider, providerAccountId, bindingId, mode}`.
+   `enable`. The server resolves the mode (§6.0), then fails closed with the
+   first host-facing reason: `notOffered`, `razorpayNotConnected`,
+   `razorpayNeedsAttention`, `payoutAccountNotReady`, `termsNotConfigured`,
+   `subscriptionsNotEnabled` or `providerUnavailable`.
+   - `hostCollected` takes the organizer's one ready OAuth connection in that
+     mode, probes Subscriptions on its account, and registers (or reuses) a
+     membership webhook there at
+     `hostMembershipRazorpayWebhook?connectionId=<id>`, signed with the
+     connection's webhook secret.
+   - `platformSplit` runs `readReadyRouteAccount(organizerId)` and loads the
+     platform config.
+
+   It then snapshots the binding on the program. A program with members cannot
+   change binding. When the binding changes, published plans get provider
+   prices on the new account.
 2. **Publish a plan.** `manageHostMembershipPlans` `publish` creates one
-   Razorpay plan per enabled interval with `POST /v1/plans`:
+   Razorpay plan per enabled interval, on the bound account, with
+   `POST /v1/plans`:
 
    ```
    {period: monthly | yearly, interval: 1,
@@ -394,18 +476,23 @@ A Stripe adapter would implement the same interface.
     notes: {catchProject, catchPlanId, organizerId, interval}}
    ```
 
-   The returned `plan_…` ids are stored under `providerPriceIds.razorpay`.
+   The returned `plan_…` ids are stored under `providerPriceIds.razorpay`,
+   with the account under `providerAccountId`.
    Plan creation is idempotent: the `catchPlanId`, interval and revision are
-   kept in notes, and a retry reuses a stored id.
+   kept in notes, and a retry reuses a stored id on the same account.
 3. **Join.** The member calls `manageHostMembershipCheckout` `prepare` with
    `{planId, interval}`. Inside a transaction the server checks:
-   - the plan is published;
-   - the program is enabled and not billing-paused;
+   - the plan is published, and its price lives on the program's account;
+   - the program is enabled, not billing-paused, and its binding is still the
+     organizer's effective mode;
+   - for `hostCollected`, the bound connection is still ready;
+   - Catch's commercial terms resolve;
    - the member has no entitled or paused membership with this host;
    - the cap: `activeMemberCount` plus open unexpired checkouts must be below
      `memberCap`.
 
-   It then writes the checkout and calls `POST /v1/subscriptions`:
+   It then writes the checkout with the binding and calls
+   `POST /v1/subscriptions` on that account:
 
    ```
    {plan_id, total_count: 120 (monthly) | 10 (annual), quantity: 1,
@@ -419,56 +506,69 @@ A Stripe adapter would implement the same interface.
    `subscription.activated` and `subscription.charged`. These reach the
    membership state machine through the webhook ([§6.2](#62-webhooks)) or a pull
    refresh (`manageHostMembershipCheckout` `refresh`, which calls
-   `fetchSubscription`). Both apply the same provider snapshot, so either path
-   gives the same result.
-5. **Split each charge.** For every `subscription.charged` payment (the first
-   and every renewal):
-   1. Upsert `hostMembershipCharges/{pay_…}`.
-   2. Compute `fee = floor(amount × feeBasisPoints.hostMembership / 10000)`.
-   3. Set `transfer = amount − fee`, which must be at least 100 paise.
-   4. Re-verify the destination account.
-   5. Mark the charge `requesting`, then call
-      `POST /v1/payments/{pay_…}/transfers`:
+   `fetchSubscription` on the checkout's account). Both apply the same provider
+   snapshot, so either path gives the same result.
+5. **Record each charge.** For every `subscription.charged` payment (the first
+   and every renewal), upsert `hostMembershipCharges/{pay_…}` with the
+   effective commercial terms resolved at that moment.
+   - `hostCollected`: the money is already the host's. No fee is deducted and
+     no transfer is made (`transfer.state: notRequired`).
+   - `platformSplit`:
+     1. Compute `fee = floor(amount × atSourceFeeBasisPoints / 10000)` from the
+        frozen terms, and `transfer = amount − fee`, which must be at least
+        100 paise.
+     2. Re-verify the destination account.
+     3. Mark the charge `requesting`, then call
+        `POST /v1/payments/{pay_…}/transfers`:
 
-      ```
-      {transfers: [{account, amount, currency: INR, on_hold: 0,
-        notes: {catchMembershipChargeId}}]}
-      ```
+        ```
+        {transfers: [{account, amount, currency: INR, on_hold: 0,
+          notes: {catchMembershipChargeId}}]}
+        ```
 
-   If the outcome is unknown, the server recovers with
-   `GET /v1/payments/{pay_…}/transfers` before retrying. There is no settlement
-   hold, because membership revenue is not tied to an event.
-   `reconcileHostMembershipCharges` runs every 15 minutes and retries
-   `pending`, `requesting` and `failed` transfers, with at most 5 attempts.
-6. **Pause, resume or cancel.** Each calls the provider first
-   (`POST /v1/subscriptions/{id}/pause {pause_at: "now"}`, `/resume`, or
-   `/cancel {cancel_at_cycle_end: 1}`), then applies the returned snapshot plus
-   the local intent (`pause.initiator`, `cancelAtPeriodEnd`).
+     If the outcome is unknown, the server recovers with
+     `GET /v1/payments/{pay_…}/transfers` before retrying. There is no
+     settlement hold, because membership revenue is not tied to an event.
+     `reconcileHostMembershipCharges` runs every 15 minutes and retries
+     `pending`, `requesting` and `failed` transfers, with at most 5 attempts.
+6. **Pause, resume or cancel.** Each calls the provider on the membership's
+   account first (`POST /v1/subscriptions/{id}/pause {pause_at: "now"}`,
+   `/resume`, or `/cancel {cancel_at_cycle_end: 1}`), then applies the
+   returned snapshot plus the local intent (`pause.initiator`,
+   `cancelAtPeriodEnd`).
 
 ### 6.2 Webhooks
 
-The endpoint is `hostMembershipRazorpayWebhook`, an `onRequest` function
-registered as its own Razorpay webhook. It subscribes to these events:
-
-- `subscription.authenticated`, `.activated`, `.charged`, `.pending`,
-  `.halted`, `.paused`, `.resumed`, `.cancelled`, `.completed`, `.updated`;
-- `payment.failed`.
+The endpoint is `hostMembershipRazorpayWebhook`, an `onRequest` function. For
+`hostCollected` Catch registers it on each host's merchant account with
+`?connectionId=<organizerPaymentConnections id>`; for `platformSplit` it is
+registered once on the platform account without a query. It subscribes to the
+`subscription.authenticated`, `.activated`, `.charged`, `.pending`,
+`.halted`, `.paused`, `.resumed`, `.cancelled`, `.completed` and `.updated`
+events.
 
 Processing steps:
 
-1. Verify `x-razorpay-signature` as HMAC-SHA256 of the raw body with the pinned
-   config's `webhookSecret`, compared in constant time. An invalid signature
-   gets 400 and no write.
-2. Parse the payload strictly. Require `account_id == platformAccountId` and
-   `notes.catchProject` equal to this project. A foreign or unknown payload gets
-   200 and **zero writes**, matching the existing ownership-marker rule in
-   `docs/data_contracts.md`.
-3. Dedupe with a create-only receipt keyed by `x-razorpay-event-id`, falling
-   back to a body digest. A duplicate gets 200 and no processing.
-4. Apply the snapshot from the payload's `subscription` entity. Ordering is
-   guarded by `providerEventAtMillis`: an older event never overwrites a newer
-   state. The single exception is that `charged` always records its charge.
-5. Return 200 after commit. Return 500 on transient errors so Razorpay retries;
+1. Resolve the delivering account from the URL: the connection's account and
+   its vault webhook secret, or the platform account and the pinned config's
+   `webhookSecret`. An unknown connection gets 400 and no write. A
+   disconnected connection still reports renewals of existing members.
+2. Verify `x-razorpay-signature` as HMAC-SHA256 of the raw body with that
+   secret, compared in constant time. An invalid signature gets 400 and no
+   write.
+3. Parse the payload strictly. Require `account_id` to equal the delivering
+   account and `notes.catchProject` to equal this project. A foreign or
+   unknown payload gets 200 and **zero writes**, matching the existing
+   ownership-marker rule in `docs/data_contracts.md`.
+4. Dedupe with a create-only receipt keyed by the connection and
+   `x-razorpay-event-id`, falling back to a body digest. A duplicate gets 200
+   and no processing.
+5. Apply the snapshot from the payload's `subscription` entity, only to a
+   checkout created on the delivering account. A host's merchant account can
+   therefore never write a membership bound elsewhere. Ordering is guarded by
+   `providerEventAtMillis`: an older event never overwrites a newer state. The
+   single exception is that `charged` always records its charge.
+6. Return 200 after commit. Return 503 on transient errors so Razorpay retries;
    dedupe makes the retry safe.
 
 ## 7. Membership state machine
@@ -599,7 +699,9 @@ Segments never use dating-private data. They follow the guardrails in
 ### 9.2 Host (`apps/host`, `lib/hosts/presentation/memberships/**`)
 
 - **Memberships** (Organizer settings, then Memberships):
-  - program status, Route-account readiness and billing pause;
+  - program status, payment account readiness (the host's Razorpay connection
+    for `hostCollected`, the Route account for `platformSplit`), the
+    host-facing reason memberships are unavailable, and billing pause;
   - the plan list with member counts;
   - a plan editor covering name, description, monthly and annual prices, cap,
     trial, benefits, perks and the booking cap.
@@ -658,20 +760,31 @@ Functions unit tests use `node:test` beside the source:
   - counter deltas;
   - revival after `halted`.
 - `razorpaySubscriptionProvider.test.ts`:
-  - request shapes with a fake `fetchImpl`;
+  - request shapes with a fake `fetchImpl`, for the platform key and the
+    merchant OAuth token;
   - strict parsing;
   - webhook HMAC verification, including a tampered body and a wrong secret;
+  - the Subscriptions probe (enabled, not enabled, expired token, outage);
+  - merchant webhook reuse and creation;
   - transfer recovery.
 - `webhook.test.ts`:
-  - with an in-memory Firestore fake: signature rejection;
+  - with an in-memory Firestore fake: signature rejection and unknown
+    connections;
   - a foreign account or project gives zero writes;
   - dedupe;
-  - activation creates the membership;
-  - a charge creates the transfer;
+  - activation creates the membership with its binding;
+  - a `hostCollected` charge records frozen terms with no fee or transfer,
+    and the statement read returns it;
+  - a merchant account cannot apply a checkout bound elsewhere;
+  - a `platformSplit` charge creates the transfer minus the at-source fee;
   - `pending` makes it `past_due`;
   - `cancelled` makes it `expired`.
 - `callables.test.ts`: program, plan, checkout, self-serve and event-rules
-  callables, covering authority, validation, cap and pause gates.
+  callables, covering authority, validation, cap and pause gates, every
+  unavailable reason, and checkout failing closed when the bound mode can no
+  longer run.
+- `functions/src/commercialTerms/*.test.ts`: merge and override precedence,
+  snapshots, the resolver and the audited admin callable.
 - `organizerAudienceModel.test.ts` additions: the four segments and window
   boundaries.
 - `publicRegistration/policy` additions: the member-price quote and the refusal
@@ -710,8 +823,10 @@ Manual QA, in Razorpay **test mode** only:
 
 1. Create a plan in each interval.
 2. Subscribe with the test UPI or card mandate.
-3. Trigger `subscription.charged` through the test dashboard and check the
-   transfer on the test linked account.
+3. Trigger `subscription.charged` through the test dashboard. For
+   `hostCollected`, check the charge on the host's test account and its
+   `hostMembershipCharges` row with terms and no transfer. For
+   `platformSplit`, check the transfer on the test linked account.
 4. Pause, resume and cancel.
 5. Run a host billing pause.
 6. Simulate a failed payment using Razorpay's test-mode failure card.
@@ -722,7 +837,7 @@ Manual QA, in Razorpay **test mode** only:
 | --- | --- | --- |
 | Plans | Tiers, monthly and annual, cap, trial, typed benefits (`eventDiscount`, `earlyAccess`, `membersOnlyAccess`), free-text perks, booking cap | Credits and quotas ("N events a month"), guest passes, plan switching with proration |
 | Event rules | Member price override (percent or fixed; 100% means included), early-access hours, members-only | Reserved member capacity, plus a cap on member share of capacity (crowd-out) |
-| Payments | Razorpay Subscriptions, hosted authorization link, Route payment-level transfer minus platform fee, webhook and pull reconciliation | Native in-app subscription checkout, refunds of membership charges, Stripe Connect Express with Stripe Billing on connected accounts |
+| Payments | Razorpay Subscriptions on the host's own account (`hostCollected`) or Catch's account with a Route split (`platformSplit`), hosted authorization link, charges recorded with frozen commercial terms, webhook and pull reconciliation | Native in-app subscription checkout, refunds of membership charges, a Catch-as-merchant mode, Stripe Connect Express with Stripe Billing on connected accounts |
 | Lifecycle | All six statuses, member pause, resume and cancel at period end, host-wide billing pause | Undo of a scheduled cancel, host-initiated removal with refund, dunning messaging |
 | Badges | Own profile, attendee and check-in rows | Tenure badges, opt-in public-profile badge |
 | CRM | Membership fields, four segments, filter, detail row | Welcome, failed-payment and win-back automations through Inbox |
@@ -734,15 +849,57 @@ Manual QA, in Razorpay **test mode** only:
    and `definitionVersion` 4 is reached by the daily refresh plus organic
    rebuilds. Hosts with no members are unaffected. To refresh at once,
    `refreshHostMembershipSegments` can be invoked manually for one organizer.
-2. **Razorpay (test first).**
-   1. On the platform account, enable Subscriptions and confirm Route on
-      subscription payments (`POST /payments/:id/transfers`).
-   2. Create a webhook pointing at `hostMembershipRazorpayWebhook` with the
-      events listed in [§6.2](#62-webhooks). Use the same secret as the pinned
-      config's `webhookSecret`.
-   3. Add `feeBasisPoints.hostMembership` to the pinned
-      `catch.razorpay-platform-payments/v1` secret as a new Secret Manager
-      version, then update `RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION`.
+2. **Configuration (test first).** Nothing is hard-coded. A Finance or Admin
+   Owner operator sets it once in Admin, right after the first prod backend
+   deploy that contains `adminListCommercialTerms` and `manageCommercialTerms`.
+   No callable is run by hand.
+   1. Commercial terms: open **Finance → Commercial terms**. While platform
+      terms are unsaved the page says so and offers **Start from the owner's
+      30 Oct decision**: 5% commission net of refunds, ₹10,000 cap per 30-day
+      cycle before GST, 30-day trial, ₹5,000 tools-only fee, host bears gateway
+      fees, and every purpose (tickets, form fees, memberships) counting toward
+      commission with no fee deducted at source. The values are
+      `ownerDecisionCommercialTerms` in
+      `admin/src/shared/domain/commercialTermsDecision.ts`, pinned by a test to
+      the decision record. Choose **Review the change**, check every row, keep
+      or edit the reason, and choose **Save as revision 1**. The save names
+      revision 0, so a second concurrent first save is refused and an exact
+      retry after a lost response is applied once. The page writes through
+      `manageCommercialTerms` (`organizerId: null`).
+   2. The membership route: open **Finance → Payment routing**, choose
+      **Change routing**, set Host memberships to *Host collects* in *Test
+      mode*, leave Event tickets and Form fees as shown, review and save. This
+      is `managePaymentRoutingPolicy` `replace` on the app policy with
+      `hostMembership: {route: "razorpayOAuth", mode: "test", currency: "INR",
+      merchantCountry: "IN"}` and the other purposes unchanged. If the page
+      says no app policy is saved yet, form fees currently follow each
+      organizer's own connection; set Form fees to the route and mode hosts use
+      today before saving, because the first policy replaces that behaviour.
+      Turning a purpose live, onto Route or off needs a typed confirmation.
+   3. The partner OAuth configuration ticketing already uses
+      (`FORM_RAZORPAY_PARTNER_CONFIG_VERSION`).
+
+   Deploying the backend before these saves stops no host-collected checkout.
+   Route is chosen only by an explicit routing policy and also needs
+   `RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION`. Until the terms are saved,
+   Route payments and memberships fail closed, and host-collected payments
+   carry no terms snapshot. If Admin ships first, both screens say they are
+   unavailable until the backend deploy reaches prod; they never write
+   anything partially.
+3. **Razorpay, per host (test first).** The host connects their Razorpay test
+   account in Payments and turns on Subscriptions there. Turning memberships on
+   then registers the membership webhook on that account automatically.
+   `platformSplit` instead needs Subscriptions and Route on the platform
+   account, a platform webhook at `hostMembershipRazorpayWebhook` without a
+   query using the pinned config's `webhookSecret`, and the
+   `hostMembership.atSourceFeeBasisPoints` term.
+4. **Firebase deploy order.** This follows `docs/release_operations.md`:
+   1. `firestore.indexes.json`;
+   2. `firestore.rules`;
+   3. Functions: the new callables, webhook and schedules, plus the changed
+      `getEventViewerState`, `signUpForFreeEvent`, `managePublicEventCheckout`
+      and audience projection;
+   4. the Host and Consumer apps.
 3. **Firebase deploy order.** This follows `docs/release_operations.md`:
    1. `firestore.indexes.json`;
    2. `firestore.rules`;
@@ -754,8 +911,13 @@ Manual QA, in Razorpay **test mode** only:
    Older app builds keep working: the new viewer-state and roster fields are
    returned only to clients that send `includeHostMembership: true`
    ([Q-6](#open-questions)).
-4. Hosts enable memberships per organizer. No global flag is needed, because
+5. Hosts enable memberships per organizer. No global flag is needed, because
    nothing changes until a program is enabled and a plan is published.
+6. **Records from the platform-account model.** Programs, checkouts,
+   memberships, prices and charges without `moneyFlow`/`payment` read as
+   `platformSplit` on Catch's platform account, so any existing subscription
+   keeps working there. Memberships never launched under that model, so none
+   are expected.
 
 ## Decisions
 
@@ -832,15 +994,43 @@ review.
   membership. A provider failure is logged for operator recovery and never
   blocks deletion.
 
+- **D-19 Host-collected money flow (owner, 30 Oct).** Membership money goes
+  to the host's own Razorpay account through the existing OAuth connection,
+  as ticketing does. Catch is not merchant of record, holds no GSTIN, takes no
+  fee at source and bills its commission afterwards from the charge ledger.
+  The Route split stays available as `platformSplit`, off unless selected,
+  because the owner may switch to it or to Catch-as-merchant later
+  ([decision](https://github.com/torana-labs/catch-knowledge/blob/main/decisions/2026-10-30-membership-money-flow-and-commercial-terms.md)).
+- **D-20 One money-flow switch.** The membership mode is the routing policy's
+  `hostMembership` route, the same audited switch with organizer overrides
+  that tickets and form fees use. Commercial terms hold only the economics, so
+  the money flow is never configured in two places.
+- **D-21 Bindings are snapshots.** Programs, checkouts, memberships, prices and
+  charges record the account they were created on. Every provider call for an
+  existing subscription uses its own binding, so switching mode or
+  reconnecting changes only new members. A program with members cannot
+  change binding.
+- **D-22 Verify Subscriptions, do not assume it.** Enabling probes
+  Subscriptions on the host's account and fails closed with a host-facing
+  reason (§6.0.1).
+- **D-23 Per-connection membership webhook.** Catch registers its membership
+  webhook on each host's account with the connection's existing webhook
+  secret and routes it by `connectionId`, keeping D-15's separate endpoint.
+- **D-24 Terms frozen per charge.** Each charge freezes the terms in force when
+  it is captured, so a renewal months later follows the terms of its cycle and
+  a later edit never rewrites a recorded charge.
+
 ## Open questions
 
-- **Q-1 Platform fee.** What should `feeBasisPoints.hostMembership` be? The
-  form and event values come from the pinned config. Nothing is hard-coded, so
-  memberships stay unavailable until it is set.
-- **Q-2 GST and invoicing.** Membership charges are collected on the Catch
-  platform account and transferred. Should Catch issue a GST invoice for the
-  platform fee, and does the host need an invoice per member charge? Customer
-  receipts in the MVP are Razorpay's own emails.
+- **Q-1 Platform fee.** *Resolved by the owner, 30 Oct* ([decision](https://github.com/torana-labs/catch-knowledge/blob/main/decisions/2026-10-30-membership-money-flow-and-commercial-terms.md)).
+  Memberships count toward the ticketing commission (5% of net sales, capped
+  at ₹10,000 per rolling 30-day cycle per host, before GST); nothing is
+  deducted at source. See [D-19](#decisions) and
+  [#1126](https://github.com/torana-labs/catch-dating-app/issues/1126).
+- **Q-2 GST and invoicing.** *Resolved by the owner, 30 Oct* ([decision](https://github.com/torana-labs/catch-knowledge/blob/main/decisions/2026-10-30-membership-money-flow-and-commercial-terms.md)).
+  The host is merchant of record and invoices its members; Catch holds no
+  GSTIN and bills its commission to the host afterwards. Hosts bear gateway
+  charges.
 - **Q-3 Undo cancel.** Should a scheduled cancellation be reversible? Razorpay
   has no direct API for it; it may need a new subscription at period end.
 - **Q-4 Host removal.** Should hosts be able to remove a member, with or without

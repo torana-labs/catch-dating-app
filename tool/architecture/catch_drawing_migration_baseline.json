@@ -111,16 +111,16 @@
       "Icon": 10,
       "Tooltip": 1
     },
-    "lib/clubs/presentation/detail/widgets/club_contact_section.dart": {
+    "lib/organizers/presentation/detail/widgets/organizer_contact_section.dart": {
       "Icon": 1
     },
-    "lib/clubs/presentation/detail/widgets/club_detail_body.dart": {
+    "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart": {
       "Icon": 2
     },
-    "lib/clubs/presentation/detail/widgets/club_detail_dock.dart": {
+    "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart": {
       "Icon": 6
     },
-    "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart": {
+    "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart": {
       "ClipRSuperellipse": 1,
       "ClipRect": 1,
       "CustomClipper": 1,
@@ -128,18 +128,18 @@
       "Material": 1,
       "Radius": 4
     },
-    "lib/clubs/presentation/detail/widgets/club_host_section.dart": {
+    "lib/organizers/presentation/detail/widgets/organizer_host_section.dart": {
       "Icon": 3,
       "Tooltip": 1
     },
-    "lib/clubs/presentation/detail/widgets/club_photo_rail.dart": {
+    "lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart": {
       "ColoredBox": 1,
       "Icon": 1
     },
-    "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart": {
+    "lib/organizers/presentation/discovery/widgets/organizer_list_tile_parts/directory_card.dart": {
       "Icon": 1
     },
-    "lib/clubs/shared/club_placeholder_cover.dart": {
+    "lib/organizers/shared/organizer_placeholder_cover.dart": {
       "CustomPaint": 1,
       "CustomPainter": 1,
       "LinearGradient": 2,
@@ -189,7 +189,7 @@
       "Icon": 2,
       "Radius": 1
     },
-    "lib/dashboard/presentation/widgets/club_posts_home_section.dart": {
+    "lib/dashboard/presentation/widgets/organizer_posts_home_section.dart": {
       "Icon": 2
     },
     "lib/dashboard/presentation/widgets/empty_hero_card.dart": {
@@ -414,7 +414,7 @@
     "lib/explore/presentation/explore_map_screen.dart": {
       "Icon": 1
     },
-    "lib/explore/presentation/widgets/club_card.dart": {
+    "lib/explore/presentation/widgets/organizer_card.dart": {
       "Icon": 1
     },
     "lib/explore/presentation/widgets/explore_city_picker.dart": {
@@ -457,7 +457,7 @@
     "lib/hosts/events/presentation/host_events_screen.dart": {
       "Icon": 1
     },
-    "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart": {
+    "lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart": {
       "Icon": 1,
       "Image": 1
     },
@@ -512,13 +512,13 @@
     "lib/hosts/presentation/host_operations/host_analytics_trend_section.dart": {
       "BorderRadius": 4
     },
-    "lib/hosts/presentation/host_operations/host_club_media_rail.dart": {
+    "lib/hosts/presentation/host_operations/host_organizer_media_rail.dart": {
       "Border": 1,
       "BorderSide": 1,
       "BoxDecoration": 1,
       "DecoratedBox": 1
     },
-    "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart": {
+    "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart": {
       "Icon": 1
     },
     "lib/hosts/presentation/inbox/host_inbox_scope_menu.dart": {

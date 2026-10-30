@@ -344,8 +344,15 @@ const schemaSpecs = [
   {name: "OrganizerEventOfferPaymentDocument", source: "firestore/organizer_event_offer_payments.schema.json", typeOutput: "functions/src/shared/generated/organizerEventOfferPaymentDocument.ts"},
   {name: "OrganizerEventOfferRecipientDocument", source: "firestore/organizer_event_offer_recipients.schema.json", typeOutput: "functions/src/shared/generated/organizerEventOfferRecipientDocument.ts"},
   {name: "PaymentRoutingSnapshot", source: "embedded/payment_routing_snapshot.schema.json", typeOutput: "functions/src/shared/generated/paymentRoutingSnapshot.ts"},
-  {name: "ManagePaymentRoutingPolicyCallablePayload", source: "callables/manage_payment_routing_policy_payload.schema.json", typeOutput: "functions/src/shared/generated/managePaymentRoutingPolicyCallablePayload.ts"},
-  {name: "ManagePaymentRoutingPolicyCallableResponse", source: "callable_responses/manage_payment_routing_policy_response.schema.json", typeOutput: "functions/src/shared/generated/managePaymentRoutingPolicyCallableResponse.ts"},
+  {name: "CommercialTerms", source: "embedded/commercial_terms.schema.json", typeOutput: "functions/src/shared/generated/commercialTerms.ts", additionalTypeOutputs: ["admin/src/generated/contracts/commercialTerms.ts"]},
+  {name: "CommercialTermsOverride", source: "embedded/commercial_terms_override.schema.json", typeOutput: "functions/src/shared/generated/commercialTermsOverride.ts", additionalTypeOutputs: ["admin/src/generated/contracts/commercialTermsOverride.ts"]},
+  {name: "CommercialTermsSnapshot", source: "embedded/commercial_terms_snapshot.schema.json", typeOutput: "functions/src/shared/generated/commercialTermsSnapshot.ts"},
+  {name: "ManageCommercialTermsCallablePayload", source: "callables/manage_commercial_terms_payload.schema.json", typeOutput: "functions/src/shared/generated/manageCommercialTermsCallablePayload.ts", additionalTypeOutputs: ["admin/src/generated/contracts/manageCommercialTermsCallablePayload.ts"]},
+  {name: "ManageCommercialTermsCallableResponse", source: "callable_responses/manage_commercial_terms_response.schema.json", typeOutput: "functions/src/shared/generated/manageCommercialTermsCallableResponse.ts", additionalTypeOutputs: ["admin/src/generated/contracts/manageCommercialTermsCallableResponse.ts"]},
+  {name: "AdminListCommercialTermsCallablePayload", source: "callables/admin_list_commercial_terms_payload.schema.json", typeOutput: "functions/src/shared/generated/adminListCommercialTermsCallablePayload.ts", additionalTypeOutputs: ["admin/src/generated/contracts/adminListCommercialTermsCallablePayload.ts"]},
+  {name: "AdminListCommercialTermsCallableResponse", source: "callable_responses/admin_list_commercial_terms_response.schema.json", typeOutput: "functions/src/shared/generated/adminListCommercialTermsCallableResponse.ts", additionalTypeOutputs: ["admin/src/generated/contracts/adminListCommercialTermsCallableResponse.ts"]},
+  {name: "ManagePaymentRoutingPolicyCallablePayload", source: "callables/manage_payment_routing_policy_payload.schema.json", typeOutput: "functions/src/shared/generated/managePaymentRoutingPolicyCallablePayload.ts", additionalTypeOutputs: ["admin/src/generated/contracts/managePaymentRoutingPolicyCallablePayload.ts"]},
+  {name: "ManagePaymentRoutingPolicyCallableResponse", source: "callable_responses/manage_payment_routing_policy_response.schema.json", typeOutput: "functions/src/shared/generated/managePaymentRoutingPolicyCallableResponse.ts", additionalTypeOutputs: ["admin/src/generated/contracts/managePaymentRoutingPolicyCallableResponse.ts"]},
   {"name": "ManageEventOfferCheckoutCallablePayload", "source": "callables/manage_event_offer_checkout_payload.schema.json", "typeOutput": "functions/src/shared/generated/manageEventOfferCheckoutCallablePayload.ts"},
   {"name": "PrepareEventOfferInvitationCallablePayload", "source": "callables/prepare_event_offer_invitation_payload.schema.json", "typeOutput": "functions/src/shared/generated/prepareEventOfferInvitationCallablePayload.ts"},
   {"name": "PrepareEventOfferInvitationCallableResponse", "source": "callable_responses/prepare_event_offer_invitation_response.schema.json", "typeOutput": "functions/src/shared/generated/prepareEventOfferInvitationCallableResponse.ts"},
@@ -1983,6 +1990,17 @@ const schemaSpecs = [
     name: "PaymentRoutingPolicyDocument",
     source: "firestore/payment_routing_policies.schema.json",
     typeOutput: "functions/src/shared/generated/paymentRoutingPolicyDocument.ts",
+  },
+  {
+    name: "CommercialTermsDocument",
+    source: "firestore/commercial_terms.schema.json",
+    typeOutput: "functions/src/shared/generated/commercialTermsDocument.ts",
+  },
+  {
+    name: "CommercialTermsRevisionDocument",
+    source: "firestore/commercial_terms_revisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/commercialTermsRevisionDocument.ts",
   },
   {
     name: "OrganizerFormPaymentDocument",
@@ -9531,9 +9549,9 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
   [
     "CreateClubCallableRequest.hostDefaults",
     {
-      dartType: "ClubHostDefaults",
+      dartType: "OrganizerHostDefaults",
       imports: [
-        "import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';",
+        "import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';",
       ],
       jsonExpression: (name) => `${name}.toJson()`,
       nullableJsonExpression: (name) => `${name}?.toJson()`,
@@ -9900,9 +9918,9 @@ function dartPatchClassConfig(specName) {
         includeTimestampJsonHelper: false,
         imports: [
           "import 'package:catch_dating_app/kernel/sentinels.dart';",
-          "import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';",
+          "import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';",
         ],
-        objectFields: new Map([["hostDefaults", "ClubHostDefaults"]]),
+        objectFields: new Map([["hostDefaults", "OrganizerHostDefaults"]]),
         listObjectFields: new Map(),
       };
     default:

@@ -627,25 +627,25 @@ const SPECS = [
     ],
   },
   {
-    className: "ClubMembership",
+    className: "OrganizerMembership",
     schema: "firestore/club_memberships.schema.json",
-    output: "lib/contexts/organizers/domain/club_membership.dart",
+    output: "lib/contexts/organizers/domain/organizer_membership.dart",
     imports: [IMPORT_CONVERTERS],
-    extensionFile: "lib/contexts/organizers/domain/club_membership_extensions.dart",
+    extensionFile: "lib/contexts/organizers/domain/organizer_membership_extensions.dart",
     enums: [
-      {name: "ClubMembershipRole", schemaPointer: "/properties/role"},
-      {name: "ClubMembershipStatus", schemaPointer: "/properties/status"},
+      {name: "OrganizerMembershipRole", schemaPointer: "/properties/role"},
+      {name: "OrganizerMembershipStatus", schemaPointer: "/properties/status"},
     ],
     classes: [
       {
-        name: "ClubMembership",
+        name: "OrganizerMembership",
         fields: [
           {name: "id", dartType: "String", synthetic: true,
             forceRequired: true, jsonKey: {includeToJson: false}},
           {name: "clubId", dartType: "String"},
           {name: "uid", dartType: "String"},
-          {name: "role", enumType: "ClubMembershipRole"},
-          {name: "status", enumType: "ClubMembershipStatus"},
+          {name: "role", enumType: "OrganizerMembershipRole"},
+          {name: "status", enumType: "OrganizerMembershipStatus"},
           {name: "pushNotificationsEnabled", dartType: "bool",
             default: "false"},
           {name: "joinedAt", timestamp: "required"},
@@ -1165,9 +1165,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 //     Hand-rolled non-freezed value objects with enum-fallback fromJson and
 //     bespoke equality; out of scope for a json_serializable projection.
 //
-//   Club / ClubHostProfile (lib/contexts/organizers/domain/club.dart)
-//     Club carries derived getters (isOwnedBy/isHostedBy/displayHostProfiles)
+//   Organizer / OrganizerHostProfile (lib/contexts/organizers/domain/organizer.dart)
+//     Organizer carries derived getters (isOwnedBy/isHostedBy/displayHostProfiles)
 //     and is a curated projection of a schema with ~20 extra fields
 //     (entityKind, ownership, claim, publicPage, verifiedReviewCount, ...).
-//     ClubHostProfile is co-located in club.dart; splitting it is deferred to
+//     OrganizerHostProfile is co-located in organizer.dart; splitting it is deferred to
 //     keep this change focused and low-risk.

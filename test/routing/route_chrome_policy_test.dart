@@ -10,7 +10,7 @@ void main() {
     for (final route in <Routes>[
       Routes.notificationsScreen,
       Routes.eventRecapScreen,
-      Routes.clubDetailScreen,
+      Routes.organizerDetailScreen,
       Routes.eventDetailScreen,
       Routes.chatScreen,
     ]) {

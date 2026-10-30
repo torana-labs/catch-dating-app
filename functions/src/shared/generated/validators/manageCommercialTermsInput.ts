@@ -1,0 +1,10 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+import type {ManageCommercialTermsCallablePayload} from "../manageCommercialTermsCallablePayload";
+import {manageCommercialTermsCallablePayloadSchema} from "../schemas/manageCommercialTermsInput";
+import {lazyValidator} from "../schemaValidationRuntime";
+
+export const validateManageCommercialTermsCallablePayload =
+  lazyValidator<ManageCommercialTermsCallablePayload>(manageCommercialTermsCallablePayloadSchema);

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -34,7 +34,7 @@ Future<void> _noopRefresh(HostPaymentProvider provider) async {}
 class HostPaymentAccountCard extends StatelessWidget {
   const HostPaymentAccountCard({
     super.key,
-    required this.club,
+    required this.organizer,
     this.account,
     this.accounts = const [],
     this.loading = false,
@@ -47,7 +47,7 @@ class HostPaymentAccountCard extends StatelessWidget {
     this.onRefresh = _noopRefresh,
   });
 
-  final Club club;
+  final Organizer organizer;
   final HostPaymentAccount? account;
   final List<HostPaymentAccount> accounts;
   final bool loading;
@@ -66,8 +66,8 @@ class HostPaymentAccountCard extends StatelessWidget {
     HostPaymentPresentation presentation,
   ) async {
     final t = CatchTokens.of(context);
-    final derivedCountry = countryIsoCodeForCityName(club.location);
-    final derivedCurrency = currencyCodeForCityName(club.location);
+    final derivedCountry = countryIsoCodeForCityName(organizer.location);
+    final derivedCurrency = currencyCodeForCityName(organizer.location);
     final country = account?.country ?? derivedCountry;
     final currency = provider == HostPaymentProvider.razorpay
         ? 'INR'
@@ -182,7 +182,7 @@ class HostPaymentAccountCard extends StatelessWidget {
     isDismissible: !onboardingPending,
     enableDrag: !onboardingPending,
     builder: (sheetContext) => _RazorpaySetupSheet(
-      club: club,
+      organizer: organizer,
       pending: onboardingPending,
       onSubmit: (details) async {
         Navigator.of(sheetContext).pop();
@@ -206,7 +206,7 @@ class HostPaymentAccountCard extends StatelessWidget {
     return HostPaymentAccountSection(
       accounts: account == null ? accounts : [account!, ...accounts],
       recommendedProvider: defaultHostPaymentProviderForCountry(
-        countryIsoCodeForCityName(club.location),
+        countryIsoCodeForCityName(organizer.location),
       ),
       actionErrorMessage: actionErrorMessage,
       onboardingPending: onboardingPending,
@@ -220,12 +220,12 @@ class HostPaymentAccountCard extends StatelessWidget {
 
 class _RazorpaySetupSheet extends StatefulWidget {
   const _RazorpaySetupSheet({
-    required this.club,
+    required this.organizer,
     required this.pending,
     required this.onSubmit,
   });
 
-  final Club club;
+  final Organizer organizer;
   final bool pending;
   final Future<void> Function(RazorpayHostOnboardingDetails details) onSubmit;
 
@@ -274,17 +274,19 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
   @override
   void initState() {
     super.initState();
-    final contactName = widget.club.hostName ?? widget.club.name;
-    _legalBusinessName = TextEditingController(text: widget.club.name);
+    final contactName = widget.organizer.hostName ?? widget.organizer.name;
+    _legalBusinessName = TextEditingController(text: widget.organizer.name);
     _contactName = TextEditingController(text: contactName);
-    _email = TextEditingController(text: widget.club.email ?? '');
-    _phone = TextEditingController(text: widget.club.phoneNumber ?? '');
-    _businessModel = TextEditingController(text: widget.club.description);
+    _email = TextEditingController(text: widget.organizer.email ?? '');
+    _phone = TextEditingController(text: widget.organizer.phoneNumber ?? '');
+    _businessModel = TextEditingController(text: widget.organizer.description);
     _beneficiaryName = TextEditingController(text: contactName);
     _stakeholderName = TextEditingController(text: contactName);
-    _stakeholderEmail = TextEditingController(text: widget.club.email ?? '');
+    _stakeholderEmail = TextEditingController(
+      text: widget.organizer.email ?? '',
+    );
     _stakeholderPhone = TextEditingController(
-      text: widget.club.phoneNumber ?? '',
+      text: widget.organizer.phoneNumber ?? '',
     );
   }
 

@@ -7,8 +7,8 @@ Event? _routeEventExtra(GoRouterState state) => switch (state.extra) {
   _ => null,
 };
 
-String? _routeClubIdExtra(GoRouterState state) => switch (state.extra) {
-  final Club club => club.id,
+String? _routeOrganizerIdExtra(GoRouterState state) => switch (state.extra) {
+  final Organizer organizer => organizer.id,
   _ => null,
 };
 
@@ -99,11 +99,11 @@ OrganizerMomentScope _programMomentScope(GoRouterState state) =>
 String? _organizerAudienceUriRedirect(BuildContext _, GoRouterState state) {
   final setting = state.uri.queryParameters['setting'];
   final route = const {
-    Routes.hostClubEventDefaultsScreen,
-    Routes.hostClubLiveGuideScreen,
-    Routes.hostClubTeamScreen,
-    Routes.hostClubPaymentsScreen,
-    Routes.hostClubMembershipsScreen,
+    Routes.hostOrganizerEventDefaultsScreen,
+    Routes.hostOrganizerLiveGuideScreen,
+    Routes.hostOrganizerTeamScreen,
+    Routes.hostOrganizerPaymentsScreen,
+    Routes.hostOrganizerMembershipsScreen,
   }.where((route) => route.name == setting).firstOrNull;
   if (route != null && state.uri.queryParameters['clubId'] != null) {
     return state.uri

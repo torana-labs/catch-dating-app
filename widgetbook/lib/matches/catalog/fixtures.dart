@@ -26,7 +26,7 @@ final widgetbookMatchesTaylorMatch =
 
 final widgetbookMatchesEvent = MatchesChatSurfaceFixtures.event;
 
-final widgetbookMatchesClub = MatchesChatSurfaceFixtures.club;
+final widgetbookMatchesOrganizer = MatchesChatSurfaceFixtures.organizer;
 
 class WidgetbookMatchesCelebrationPreview extends StatelessWidget {
   const WidgetbookMatchesCelebrationPreview({super.key, required this.match});
@@ -60,7 +60,7 @@ CatchField widgetbookMatchesChatPersonRowForPreview(
       imageUrl: preview.photoUrl,
       timestamp: AppTimeFormatters.chatTimestamp(preview.timestamp),
       context: null,
-      avatarShape: preview.match.isClubHostInquiry
+      avatarShape: preview.match.isOrganizerHostInquiry
           ? CatchAvatarVariant.square
           : CatchAvatarVariant.circle,
       activityLabel: (unreadCount) > 0
@@ -167,15 +167,15 @@ ChatThreadPreview widgetbookMatchesThreadPreviewFor({
 }) {
   final otherUid = match.otherId(uid);
   final profile = MatchesChatSurfaceFixtures.profileFor(otherUid);
-  final hostProfile = match.isClubHostInquiry
-      ? widgetbookMatchesClub.displayHostProfiles
+  final hostProfile = match.isOrganizerHostInquiry
+      ? widgetbookMatchesOrganizer.displayHostProfiles
             .where((host) => host.uid == otherUid)
             .firstOrNull
       : null;
   final displayName = hostProfile?.displayName ?? profile.name;
   final hasConversation = match.lastMessagePreview != null;
   final previewText = !hasConversation
-      ? match.isClubHostInquiry
+      ? match.isOrganizerHostInquiry
             ? 'Ask the host'
             : 'You matched!'
       : match.lastMessageSenderId == uid

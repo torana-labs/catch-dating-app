@@ -1,6 +1,9 @@
 /* eslint-disable max-len */
 import type {Firestore} from "firebase-admin/firestore";
+import {logger} from "firebase-functions";
+import type {InstagramDiscoveryConfig} from "./instagramDiscovery";
 import {importShadowProjection, type ProjectionImportWriter} from "../projectionImporter";
+import {linkSearchFor, serpApiKeyVersion, type LinkSearchPort} from "./linkSearch";
 import {loadOrganizerInventory, type OrganizerInventory} from "./organizerInventory";
 import {
   packagedIntake,
@@ -30,6 +33,12 @@ export interface SupplyIntakeWorkerDeps {
   projectionWriter: ProjectionImportWriter;
   /** Network transport for live page fetches; only tests replace it. */
   transport?: unknown;
+  /** The handle search for one run, or null when it is off; defaults to SerpApi under the policy. */
+  linkSearch?: (policy: AcquisitionPolicy) => Promise<LinkSearchPort | null>;
+  /** Catch's Instagram account and token for Business Discovery, or null while it is off. */
+  instagramDiscovery?: () => Promise<InstagramDiscoveryConfig | null>;
+  /** Network transport for Business Discovery calls; only tests replace it. */
+  discoveryTransport?: unknown;
 }
 
 export type SupplyIntakeOutcome = "completed" | "failed" | "retry" | "busy" | "skipped";
@@ -71,11 +80,17 @@ export async function processSupplyIntakeRequest(deps: SupplyIntakeWorkerDeps, r
     const policy = await runtime.loadSupplyAcquisitionPolicy();
     // Read before any page fetch is reserved, so a failed read costs no budget.
     const inventory = await loadOrganizerInventory(deps.db, request, runtime.organizerReferenceFromDocument);
+    const linkSearch = await (deps.linkSearch ?? ((current) => defaultLinkSearch(deps, current)))(policy);
     const {source, settle} = await pageSourceFor(deps, policy);
+    const discovery = await instagramDiscovery(deps);
+    // Instagram profiles go to Business Discovery; every other URL to the
+    // page source.
+    const pageSource = discovery ? new runtime.InstagramDiscoveryPageSource({inner: source, policy, ...discovery,
+      clock: deps.now, ...(deps.discoveryTransport ? {transport: deps.discoveryTransport} : {})}) : source;
     let result;
     try {
-      result = await runSupplyIntake({request, pageSource: source, now: deps.now,
-        existingOrganizers: inventory?.organizers ?? null});
+      result = await runSupplyIntake({request, pageSource, now: deps.now,
+        existingOrganizers: inventory?.organizers ?? null, linkSearch});
     } finally {
       await settle();
     }
@@ -168,6 +183,36 @@ async function pageSourceFor(deps: SupplyIntakeWorkerDeps, policy: AcquisitionPo
       });
     },
   };
+}
+
+/** SerpApi, when the policy, the owner's decision and this environment's pinned key all allow it. */
+async function defaultLinkSearch(deps: SupplyIntakeWorkerDeps, policy: AcquisitionPolicy): Promise<LinkSearchPort | null> {
+  const runtime = await packagedIntake();
+  return linkSearchFor({db: deps.db, now: deps.now, usageCollection: supplyIntakeCollections.usage,
+    decisionsCollection: supplyIntakeCollections.decisions, keyVersion: serpApiKeyVersion.value(),
+    isAccepted: (decision) => {
+      try {
+        runtime.assertAcceptedAcquisitionDecision(decision, {decisionId: String(policy.webSearch.decisionId),
+          gapId: "batch_web_search_policy"});
+        return true;
+      } catch {
+        return false;
+      }
+    }}, policy.webSearch);
+}
+
+/**
+ * Discovery settings when this environment has them. An unreadable token
+ * leaves Instagram profiles unread, as before, rather than failing the
+ * request.
+ */
+async function instagramDiscovery(deps: SupplyIntakeWorkerDeps): Promise<InstagramDiscoveryConfig | null> {
+  try {
+    return await deps.instagramDiscovery?.() ?? null;
+  } catch (error) {
+    logger.warn("Instagram discovery unavailable.", {code: errorCode(error)});
+    return null;
+  }
 }
 
 /**

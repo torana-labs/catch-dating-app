@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-10-29",
+  "updated": "2026-10-30",
   "sourceOfTruth": {
     "behavior": "Contracts in design/components/catch.components.json; Flutter is the reference implementation",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "ae614ef3a722f5cc134abdcb96c7b321421179fc4b1a6139631cc0b929f02450",
+  "sourceDigest": "1222fade9de778289f6246e132a2158b4a52d10d038a0a51bca6199a79cb1c65",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "ae614ef3a722f5cc134abdcb96c7b321421179fc4b1a6139631cc0b929f02450",
-    "contractDigest": "ae614ef3a722f5cc134abdcb96c7b321421179fc4b1a6139631cc0b929f02450"
+    "digest": "1222fade9de778289f6246e132a2158b4a52d10d038a0a51bca6199a79cb1c65",
+    "contractDigest": "1222fade9de778289f6246e132a2158b4a52d10d038a0a51bca6199a79cb1c65"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "bece2f19eb506716e8cf05c1a8733e65cd22efda59938d682b0fe94800326420",
+    "handoffRequestDigest": "2d9d682f7fee2ec2653a76553cfd864288068a20ec642bb4e68dc7b32721fd61",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -298,8 +298,8 @@
           "CatchPoster",
           "CatchPosterHeader",
           "CatchPosterImage",
-          "ClubCard",
-          "ClubPlaceholderCover"
+          "OrganizerCard",
+          "OrganizerPlaceholderCover"
         ]
       },
       {
@@ -2210,8 +2210,8 @@
       "contractId": "catch.club_dock",
       "conceptRole": "composition",
       "conceptId": null,
-      "dartSymbol": "ClubDetailDock",
-      "dartFile": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "dartSymbol": "OrganizerDetailDock",
+      "dartFile": "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart",
       "reactSymbol": null,
       "reactFile": null,
       "reactApi": null,
@@ -2239,7 +2239,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ClubDock",
       "claudeAllowed": true,
-      "contractDigest": "723edf9a0c675ff11d4c0531adde12b2b449cf8d2addbc792c0f721636bc3338"
+      "contractDigest": "8c50d33ac7d037ea446fb91562c564f280e7fcca648971d3f655d20993ca6355"
     },
     {
       "contractId": "catch.cover_story",
@@ -2729,7 +2729,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "OrganizerPoster",
       "claudeAllowed": true,
-      "contractDigest": "03d2c835a617b647c404817d0c712a80e0097a429debe6049bdf5b906d849e3a"
+      "contractDigest": "b4613fcb28792ccbe43ceb9cd594a8fdf0d3a03981fd5cf55b8d1ef6b47c078f"
     },
     {
       "contractId": "catch.person_polaroid",
@@ -2770,8 +2770,8 @@
       "contractId": "catch.club_cover",
       "conceptRole": "composition",
       "conceptId": null,
-      "dartSymbol": "ClubCover",
-      "dartFile": "lib/clubs/shared/club_cover.dart",
+      "dartSymbol": "OrganizerCover",
+      "dartFile": "lib/organizers/shared/organizer_cover.dart",
       "reactSymbol": null,
       "reactFile": null,
       "reactApi": null,
@@ -2797,9 +2797,9 @@
       "figmaDrift": [],
       "codeConnectStatus": "planned",
       "codeConnectTemplate": null,
-      "claudeHandoffName": "ClubCover",
+      "claudeHandoffName": "OrganizerCover",
       "claudeAllowed": true,
-      "contractDigest": "fb8fc90a6948d1e63b2d697e44576e3a3eb880bd8f5569af74baf175d6de448c"
+      "contractDigest": "cf5dcc68c542b68ed613f5466ad7555a18a55f72389e514011d9a97fe6a55bea"
     },
     {
       "contractId": "catch.motion_viewport",

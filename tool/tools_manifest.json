@@ -1317,6 +1317,35 @@
       }
     },
     {
+      "id": "architecture:organizer-rename",
+      "category": "generator",
+      "path": "tool/architecture/rename_to_organizer.mjs",
+      "command": "node tool/architecture/rename_to_organizer.mjs --plan",
+      "safety": "local",
+      "status": "active",
+      "description": "Renames Club to Organizer in Flutter code: Dart file and folder names, identifiers, code references in comments, localization keys, and the registries and tools that name them. Names the generated schema contracts declare, string literals and the club subtype stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
+      "checks": [
+        "node --test tool/architecture/rename_to_organizer.test.mjs",
+        "node --check tool/architecture/rename_to_organizer.mjs"
+      ],
+      "role": "generator",
+      "rules": [
+        "ORGANIZER-AUTHORITY-001"
+      ],
+      "impactPaths": [
+        "tool/architecture/rename_to_organizer.mjs",
+        "tool/architecture/rename_to_organizer.test.mjs",
+        "tool/architecture/move_to_contexts.mjs",
+        "tool/lib/dart_source.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
       "id": "audit:mutation-error-surfaces",
       "category": "audit",
       "path": "tool/architecture/check_mutation_error_surfaces.mjs",
@@ -3315,7 +3344,7 @@
         "storage.rules",
         "tool/firebase/check_rules_deployment_drift.test.mjs"
       ],
-      "description": "Compares normalized committed Firestore and Storage rules with every applicable active Firebase Rules release, skipping only when no read credential is available.",
+      "description": "Compares normalized committed Firestore and Storage rules with every applicable active Firebase Rules release, skipping only when no read credential is available or the only one is a Claude Code cloud session's proxy gcloud token.",
       "checks": [
         "node --check tool/firebase/check_rules_deployment_drift.mjs",
         "node --test tool/firebase/check_rules_deployment_drift.test.mjs",
@@ -3555,6 +3584,32 @@
         "bash tool/ci/check_toolchain_consistency.sh"
       ],
       "role": "generator"
+    },
+    {
+      "id": "env:pinned-node",
+      "category": "env",
+      "path": "tool/ci/install_pinned_node.sh",
+      "command": "bash tool/ci/install_pinned_node.sh",
+      "safety": "remote-read-local-writes-artifacts",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/install_pinned_node.test.mjs",
+        "tool/ci/toolchain.env"
+      ],
+      "description": "Installs the checksum-verified latest release of the tool/ci/toolchain.env NODE_VERSION major into ~/.local/bin when the node on PATH is another major, for cloud agent setup scripts.",
+      "checks": [
+        "bash -n tool/ci/install_pinned_node.sh",
+        "node --test tool/ci/install_pinned_node.test.mjs",
+        "bash tool/ci/install_pinned_node.sh --help"
+      ],
+      "role": "operator"
     },
     {
       "id": "platform:mobile-package-policy",
@@ -6068,7 +6123,7 @@
       "command": "node tool/check_organizer_nomenclature.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Keeps organizers canonical across contracts, Flutter, React, Functions, routes, media, and product copy while club remains a subtype and compatibility projection.",
+      "description": "Keeps organizers canonical across contracts, Flutter, React, Functions, routes, media, and product copy while club remains a subtype. Flutter Dart file names, identifiers and localization keys must say organizer: what tool/architecture/rename_to_organizer.mjs would still rename fails, apart from the club subtype and names the generated schema contracts declare.",
       "checks": [
         "node --check tool/check_organizer_nomenclature.mjs",
         "node --test tool/check_organizer_nomenclature.test.mjs",
@@ -6083,7 +6138,8 @@
         "path": "tool/check_organizer_nomenclature.test.mjs",
         "contains": [
           "organizer nomenclature gate rejects legacy authority and generic copy",
-          "organizer nomenclature gate passes a canonical fixture"
+          "organizer nomenclature gate passes a canonical fixture",
+          "organizer nomenclature gate rejects club in Flutter names but keeps the subtype and contract names"
         ]
       }
     },

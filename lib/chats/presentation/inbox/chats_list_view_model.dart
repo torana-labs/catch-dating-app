@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
@@ -103,7 +103,7 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
   final matchesAsync = ref.watch(watchMatchesForUserProvider(currentUid));
   return matchesAsync.whenData((matches) {
     final roleMatches = AppConfig.appRole.isHost
-        ? matches.where((match) => match.isClubHostInquiry)
+        ? matches.where((match) => match.isOrganizerHostInquiry)
         : matches;
     final displayMatches = AppConfig.appRole.isHost
         ? roleMatches.toList(growable: false)
@@ -111,35 +111,37 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
             roleMatches.toList(growable: false),
             currentUid,
           );
-    final hostInquiryClubIds = {
+    final hostInquiryOrganizerIds = {
       for (final match in displayMatches)
-        if (match.isClubHostInquiry && match.clubId != null) match.clubId!,
+        if (match.isOrganizerHostInquiry && match.clubId != null) match.clubId!,
     };
-    final clubsState = hostInquiryClubIds.isEmpty
+    final organizersState = hostInquiryOrganizerIds.isEmpty
         ? null
         : catchAsyncStateFromAsyncValue(
             ref.watch(
-              watchClubsForMessagingByIdsProvider(
-                ClubsByIdQuery(hostInquiryClubIds),
+              watchOrganizersForMessagingByIdsProvider(
+                OrganizersByIdQuery(hostInquiryOrganizerIds),
               ),
             ),
           );
-    final clubsById = hostInquiryClubIds.isEmpty
-        ? const <String, Club>{}
+    final organizersById = hostInquiryOrganizerIds.isEmpty
+        ? const <String, Organizer>{}
         : {
-            for (final club in clubsState?.value ?? const <Club>[])
-              club.id: club,
+            for (final organizer
+                in organizersState?.value ?? const <Organizer>[])
+              organizer.id: organizer,
           };
     final publicProfileUids = <String>{};
     for (final match in displayMatches) {
       final otherUid = match.otherId(currentUid);
-      final club = match.isClubHostInquiry && match.clubId != null
-          ? clubsById[match.clubId!]
+      final organizer = match.isOrganizerHostInquiry && match.clubId != null
+          ? organizersById[match.clubId!]
           : null;
-      final hostProfile = _hostProfileFor(club, otherUid);
+      final hostProfile = _hostProfileFor(organizer, otherUid);
       final otherParticipantIsHost = hostProfile != null;
       final shouldReadPublicProfile =
-          !match.isClubHostInquiry || (club != null && !otherParticipantIsHost);
+          !match.isOrganizerHostInquiry ||
+          (organizer != null && !otherParticipantIsHost);
       if (shouldReadPublicProfile) publicProfileUids.add(otherUid);
     }
     final profilesState = publicProfileUids.isEmpty
@@ -159,7 +161,7 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
           (match) => chatThreadPreviewForMatch(
             match,
             currentUid,
-            clubsById: clubsById,
+            organizersById: organizersById,
             profilesByUid: profilesByUid,
           ),
         )
@@ -191,32 +193,32 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
 ChatThreadPreview chatThreadPreviewForMatch(
   Match match,
   String uid, {
-  required Map<String, Club> clubsById,
+  required Map<String, Organizer> organizersById,
   required Map<String, PublicProfile> profilesByUid,
   bool isHostViewer = false,
 }) {
   final otherUid = match.otherId(uid);
-  final club = match.isClubHostInquiry && match.clubId != null
-      ? clubsById[match.clubId!]
+  final organizer = match.isOrganizerHostInquiry && match.clubId != null
+      ? organizersById[match.clubId!]
       : null;
-  final hostProfile = _hostProfileFor(club, otherUid);
+  final hostProfile = _hostProfileFor(organizer, otherUid);
   final otherParticipantIsHost = hostProfile != null;
   final shouldReadPublicProfile =
       isHostViewer ||
-      !match.isClubHostInquiry ||
-      (club != null && !otherParticipantIsHost);
+      !match.isOrganizerHostInquiry ||
+      (organizer != null && !otherParticipantIsHost);
   final profile = shouldReadPublicProfile ? profilesByUid[otherUid] : null;
   final displayName =
       hostProfile?.displayName ??
       profile?.name ??
-      (match.isClubHostInquiry
+      (match.isOrganizerHostInquiry
           ? StructuredDomainCopy.chatHostConversationTitle
           : StructuredDomainCopy.chatUnknownDisplayName);
   final photoUrl = hostProfile?.avatarUrl ?? profile?.primaryPhotoThumbnailUrl;
   final hasConversation = match.lastMessagePreview != null;
   final String previewText;
   if (!hasConversation) {
-    previewText = match.isClubHostInquiry
+    previewText = match.isOrganizerHostInquiry
         ? 'Ask the host'
         : match.isCrossPathsEventPlan
         ? StructuredDomainCopy.chatCrossPathsEventPlanReady
@@ -241,9 +243,9 @@ ChatThreadPreview chatThreadPreviewForMatch(
   );
 }
 
-ClubHostProfile? _hostProfileFor(Club? club, String uid) {
-  if (club == null) return null;
-  for (final host in club.displayHostProfiles) {
+OrganizerHostProfile? _hostProfileFor(Organizer? organizer, String uid) {
+  if (organizer == null) return null;
+  for (final host in organizer.displayHostProfiles) {
     if (host.uid == uid) return host;
   }
   return null;

@@ -8,7 +8,7 @@ void main() {
   group('AppDeepLinks', () {
     test('builds an organizer detail URL from the router path contract', () {
       expect(
-        AppDeepLinks.club('club-1').toString(),
+        AppDeepLinks.organizer('club-1').toString(),
         'https://catchdates.com/organizers/club-1',
       );
     });
@@ -22,13 +22,13 @@ void main() {
 
     test('encodes route parameter values as path segments', () {
       expect(
-        AppDeepLinks.club('club with spaces').toString(),
+        AppDeepLinks.organizer('club with spaces').toString(),
         'https://catchdates.com/organizers/club%20with%20spaces',
       );
     });
 
     test('rejects missing route parameter values', () {
-      expect(() => AppDeepLinks.club(''), throwsArgumentError);
+      expect(() => AppDeepLinks.organizer(''), throwsArgumentError);
     });
 
     test('builds consumer in-app event paths by default', () {

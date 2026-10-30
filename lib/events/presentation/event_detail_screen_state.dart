@@ -7,7 +7,6 @@ import 'package:catch_dating_app/contexts/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_profile_requirements.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
@@ -204,7 +203,7 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
       const OrganizerSupplyCapabilities.claimedManaged(),
   bool isSaved = false,
   bool isHosted = false,
-  bool isClubMember = false,
+  bool isOrganizerMember = false,
   EventViewerState? currentViewer,
   EventDetailBookingDockMutationState mutationState =
       const EventDetailBookingDockMutationState(),
@@ -220,7 +219,7 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
     organizerCapabilities: organizerCapabilities,
     isSaved: isSaved,
     isHosted: isHosted,
-    isClubMember: isClubMember,
+    isOrganizerMember: isOrganizerMember,
     currentViewer: currentViewer,
     mutationState: mutationState,
   );
@@ -282,7 +281,7 @@ EventDetailBookingDockState _baseBookingDockState({
       const OrganizerSupplyCapabilities.claimedManaged(),
   bool isSaved = false,
   bool isHosted = false,
-  bool isClubMember = false,
+  bool isOrganizerMember = false,
   EventViewerState? currentViewer,
   EventDetailBookingDockMutationState mutationState =
       const EventDetailBookingDockMutationState(),
@@ -341,7 +340,7 @@ EventDetailBookingDockState _baseBookingDockState({
           participation: participation,
           isSaved: isSaved,
           isHosted: isHosted,
-          isClubMember: isClubMember,
+          isOrganizerMember: isOrganizerMember,
           now: now,
           hasValidInvite: hasInviteCode,
         )
@@ -358,7 +357,7 @@ EventDetailBookingDockState _baseBookingDockState({
   );
   final admissionPolicy = event.effectiveEventPolicy.admissionPolicy;
   final activeMember = currentViewer == null
-      ? isClubMember
+      ? isOrganizerMember
       : currentViewer.membership == EventViewerMembership.active;
   final requiresHostApproval =
       admissionPolicy.manualApprovalRequired &&
@@ -673,17 +672,17 @@ bool eventDetailCanOpenCompanion({
 
 EventDetailHostState eventDetailHostStateFrom({
   required AppLocalizations l10n,
-  required CatchAsyncState<Club?> clubState,
+  required CatchAsyncState<Organizer?> organizerState,
   required String? currentUid,
   required bool canMessageHost,
 }) {
-  return switch (clubState.status) {
+  return switch (organizerState.status) {
     CatchAsyncStatus.data => () {
-      final club = clubState.value;
-      if (club == null) return const EventDetailHostState.hidden();
-      final hostProfiles = club.displayHostProfiles;
+      final organizer = organizerState.value;
+      if (organizer == null) return const EventDetailHostState.hidden();
+      final hostProfiles = organizer.displayHostProfiles;
       final hostProfile = hostProfiles.isEmpty ? null : hostProfiles.first;
-      final hostUid = hostProfile?.uid ?? club.ownerOrPrimaryHostUserId;
+      final hostUid = hostProfile?.uid ?? organizer.ownerOrPrimaryHostUserId;
       final canMessage =
           canMessageHost &&
           hostUid != null &&
@@ -691,30 +690,30 @@ EventDetailHostState eventDetailHostStateFrom({
           currentUid != hostUid;
 
       return EventDetailHostState.content(
-        clubId: club.id,
+        clubId: organizer.id,
         hostUid: hostUid,
-        hostName: club.displayHostName,
-        photoUrl: hostProfile?.avatarUrl ?? club.logoPhotoUrl,
-        meta: _hostMeta(club, l10n),
-        verified: club.organizerAuthority.isOwnerVerified,
+        hostName: organizer.displayHostName,
+        photoUrl: hostProfile?.avatarUrl ?? organizer.logoPhotoUrl,
+        meta: _hostMeta(organizer, l10n),
+        verified: organizer.organizerAuthority.isOwnerVerified,
         canMessage: canMessage,
       );
     }(),
     CatchAsyncStatus.loading => const EventDetailHostState.loading(),
-    CatchAsyncStatus.error => EventDetailHostState.error(clubState.error!),
+    CatchAsyncStatus.error => EventDetailHostState.error(organizerState.error!),
   };
 }
 
-String? _hostMeta(Club club, AppLocalizations l10n) {
+String? _hostMeta(Organizer organizer, AppLocalizations l10n) {
   final parts = <String>[];
-  parts.add(organizerTrustLabel(club.organizerAuthority.trustState, l10n));
-  final area = club.area.trim();
+  parts.add(organizerTrustLabel(organizer.organizerAuthority.trustState, l10n));
+  final area = organizer.area.trim();
   if (area.isNotEmpty) parts.add(area.toUpperCase());
-  if (club.reviewCount > 0) {
+  if (organizer.reviewCount > 0) {
     parts.add(
-      l10n.eventsEventDetailScreenStateVisiblecopyClubReviewSummary(
-        rating: club.rating.toStringAsFixed(1),
-        reviewCount: club.reviewCount,
+      l10n.eventsEventDetailScreenStateVisiblecopyOrganizerReviewSummary(
+        rating: organizer.rating.toStringAsFixed(1),
+        reviewCount: organizer.reviewCount,
       ),
     );
   }

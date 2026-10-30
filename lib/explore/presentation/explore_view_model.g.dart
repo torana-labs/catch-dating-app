@@ -358,8 +358,8 @@ abstract class _$ExploreFilters extends $Notifier<ExploreFilterSelection> {
 /// **Pattern D variant:** Combines location-filtered clubs with client-side
 /// search to produce a filtered list for the UI.
 
-@ProviderFor(exploreSourceClubs)
-final exploreSourceClubsProvider = ExploreSourceClubsProvider._();
+@ProviderFor(exploreSourceOrganizers)
+final exploreSourceOrganizersProvider = ExploreSourceOrganizersProvider._();
 
 /// Algolia swap point: replace this provider's body to use a remote search
 /// index. The VM and screen are not affected.
@@ -367,103 +367,103 @@ final exploreSourceClubsProvider = ExploreSourceClubsProvider._();
 /// **Pattern D variant:** Combines location-filtered clubs with client-side
 /// search to produce a filtered list for the UI.
 
-final class ExploreSourceClubsProvider
+final class ExploreSourceOrganizersProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<Club>>,
-          AsyncValue<List<Club>>,
-          AsyncValue<List<Club>>
+          AsyncValue<List<Organizer>>,
+          AsyncValue<List<Organizer>>,
+          AsyncValue<List<Organizer>>
         >
-    with $Provider<AsyncValue<List<Club>>> {
+    with $Provider<AsyncValue<List<Organizer>>> {
   /// Algolia swap point: replace this provider's body to use a remote search
   /// index. The VM and screen are not affected.
   ///
   /// **Pattern D variant:** Combines location-filtered clubs with client-side
   /// search to produce a filtered list for the UI.
-  ExploreSourceClubsProvider._()
+  ExploreSourceOrganizersProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'exploreSourceClubsProvider',
+        name: r'exploreSourceOrganizersProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$exploreSourceClubsHash();
+  String debugGetCreateSourceHash() => _$exploreSourceOrganizersHash();
 
   @$internal
   @override
-  $ProviderElement<AsyncValue<List<Club>>> $createElement(
+  $ProviderElement<AsyncValue<List<Organizer>>> $createElement(
     $ProviderPointer pointer,
   ) => $ProviderElement(pointer);
 
   @override
-  AsyncValue<List<Club>> create(Ref ref) {
-    return exploreSourceClubs(ref);
+  AsyncValue<List<Organizer>> create(Ref ref) {
+    return exploreSourceOrganizers(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(AsyncValue<List<Club>> value) {
+  Override overrideWithValue(AsyncValue<List<Organizer>> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<AsyncValue<List<Club>>>(value),
+      providerOverride: $SyncValueProvider<AsyncValue<List<Organizer>>>(value),
     );
   }
 }
 
-String _$exploreSourceClubsHash() =>
-    r'e6b94ed26a266a55eabd8e5ad4b893e37c4b35c1';
+String _$exploreSourceOrganizersHash() =>
+    r'd30047b8829dcb69f7a4a8db2459c56c99b39dfc';
 
-@ProviderFor(filteredExploreClubs)
-final filteredExploreClubsProvider = FilteredExploreClubsProvider._();
+@ProviderFor(filteredExploreOrganizers)
+final filteredExploreOrganizersProvider = FilteredExploreOrganizersProvider._();
 
-final class FilteredExploreClubsProvider
+final class FilteredExploreOrganizersProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<Club>>,
-          AsyncValue<List<Club>>,
-          AsyncValue<List<Club>>
+          AsyncValue<List<Organizer>>,
+          AsyncValue<List<Organizer>>,
+          AsyncValue<List<Organizer>>
         >
-    with $Provider<AsyncValue<List<Club>>> {
-  FilteredExploreClubsProvider._()
+    with $Provider<AsyncValue<List<Organizer>>> {
+  FilteredExploreOrganizersProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'filteredExploreClubsProvider',
+        name: r'filteredExploreOrganizersProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$filteredExploreClubsHash();
+  String debugGetCreateSourceHash() => _$filteredExploreOrganizersHash();
 
   @$internal
   @override
-  $ProviderElement<AsyncValue<List<Club>>> $createElement(
+  $ProviderElement<AsyncValue<List<Organizer>>> $createElement(
     $ProviderPointer pointer,
   ) => $ProviderElement(pointer);
 
   @override
-  AsyncValue<List<Club>> create(Ref ref) {
-    return filteredExploreClubs(ref);
+  AsyncValue<List<Organizer>> create(Ref ref) {
+    return filteredExploreOrganizers(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(AsyncValue<List<Club>> value) {
+  Override overrideWithValue(AsyncValue<List<Organizer>> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<AsyncValue<List<Club>>>(value),
+      providerOverride: $SyncValueProvider<AsyncValue<List<Organizer>>>(value),
     );
   }
 }
 
-String _$filteredExploreClubsHash() =>
-    r'4666125803063efcbdd84afa114dc8c5ad874f2d';
+String _$filteredExploreOrganizersHash() =>
+    r'211d732c4ca60c6c2a649817de818f0b2c57ce30';
 
 /// **Pattern D: View-model provider**
 ///
@@ -472,8 +472,9 @@ String _$filteredExploreClubsHash() =>
 /// [ExploreViewModel] that partitions clubs into joined and discover
 /// lists for the UI.
 
-@ProviderFor(exploreClubsViewModel)
-final exploreClubsViewModelProvider = ExploreClubsViewModelProvider._();
+@ProviderFor(exploreOrganizersViewModel)
+final exploreOrganizersViewModelProvider =
+    ExploreOrganizersViewModelProvider._();
 
 /// **Pattern D: View-model provider**
 ///
@@ -482,7 +483,7 @@ final exploreClubsViewModelProvider = ExploreClubsViewModelProvider._();
 /// [ExploreViewModel] that partitions clubs into joined and discover
 /// lists for the UI.
 
-final class ExploreClubsViewModelProvider
+final class ExploreOrganizersViewModelProvider
     extends
         $FunctionalProvider<
           AsyncValue<ExploreViewModel>,
@@ -496,19 +497,19 @@ final class ExploreClubsViewModelProvider
   /// a
   /// [ExploreViewModel] that partitions clubs into joined and discover
   /// lists for the UI.
-  ExploreClubsViewModelProvider._()
+  ExploreOrganizersViewModelProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'exploreClubsViewModelProvider',
+        name: r'exploreOrganizersViewModelProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$exploreClubsViewModelHash();
+  String debugGetCreateSourceHash() => _$exploreOrganizersViewModelHash();
 
   @$internal
   @override
@@ -518,7 +519,7 @@ final class ExploreClubsViewModelProvider
 
   @override
   AsyncValue<ExploreViewModel> create(Ref ref) {
-    return exploreClubsViewModel(ref);
+    return exploreOrganizersViewModel(ref);
   }
 
   /// {@macro riverpod.override_with_value}
@@ -530,5 +531,5 @@ final class ExploreClubsViewModelProvider
   }
 }
 
-String _$exploreClubsViewModelHash() =>
-    r'8639ff8d04b339ecc3cf411d5c03f15e377a7949';
+String _$exploreOrganizersViewModelHash() =>
+    r'fe28df1691c475781086a584bc679b2d7a99444a';

@@ -14,7 +14,7 @@ abstract class ExternalEvent with _$ExternalEvent {
   const factory ExternalEvent({
     required String id,
     required String canonicalHostId,
-    required String compatibilityClubId,
+    required String compatibilityOrganizerId,
     required String title,
     required String description,
     @TimestampConverter() required DateTime startTime,
@@ -50,7 +50,7 @@ abstract class ExternalEvent with _$ExternalEvent {
     return _ExternalEvent(
       id: _string(json['eventId']) ?? '',
       canonicalHostId: _string(json['canonicalHostId']) ?? '',
-      compatibilityClubId: _string(json['compatibilityClubId']) ?? '',
+      compatibilityOrganizerId: _string(json['compatibilityClubId']) ?? '',
       title: _string(json['title']) ?? '',
       description: _string(json['description']) ?? '',
       startTime: _requiredTimestamp(json['startTime'], 'startTime'),

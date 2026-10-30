@@ -12,9 +12,13 @@ export interface RazorpayPlatformPaymentConfig {
   keyId: string;
   keySecret: string;
   webhookSecret: string;
-  /** `hostMembership` is optional; memberships stay unavailable without it. */
-  feeBasisPoints: {formFee: number; eventAdmission: number;
-    hostMembership?: number};
+  /**
+   * @deprecated Fees are commercial terms (functions/src/commercialTerms);
+   * this profile holds credentials only. Older pinned versions still carry
+   * the key, so it is accepted and ignored. Recorded payments keep their own
+   * transfer amounts, so no payment depends on it.
+   */
+  feeBasisPoints?: Record<string, number>;
 }
 
 /** A pinned platform profile is independent of Technology Partner approval.
@@ -56,9 +60,11 @@ export class RazorpayPlatformPaymentConfigLoader {
 function parseConfig(raw: string): RazorpayPlatformPaymentConfig {
   if (Buffer.byteLength(raw, "utf8") > 32 * 1024) unavailable();
   const value: unknown = JSON.parse(raw);
-  if (!record(value) || Object.keys(value).sort().join(",") !==
-      ["feeBasisPoints", "keyId", "keySecret", "mode", "platformAccountId",
-        "schema", "webhookSecret"].join(",") ||
+  const credentialKeys = ["keyId", "keySecret", "mode", "platformAccountId",
+    "schema", "webhookSecret"];
+  if (!record(value) || ![credentialKeys,
+    [...credentialKeys, "feeBasisPoints"].sort()].some((keys) =>
+    Object.keys(value).sort().join(",") === keys.join(",")) ||
       value.schema !== "catch.razorpay-platform-payments/v1" ||
       value.mode !== "test" && value.mode !== "live" ||
       typeof value.platformAccountId !== "string" ||
@@ -66,12 +72,12 @@ function parseConfig(raw: string): RazorpayPlatformPaymentConfig {
       typeof value.keyId !== "string" ||
       !new RegExp(`^rzp_${value.mode}_[A-Za-z0-9]+$`, "u").test(value.keyId) ||
       !secret(value.keySecret) || !secret(value.webhookSecret) ||
-      !record(value.feeBasisPoints) ||
-      !["eventAdmission,formFee", "eventAdmission,formFee,hostMembership"]
-        .includes(Object.keys(value.feeBasisPoints).sort().join(",")) ||
-      !Object.values(value.feeBasisPoints).every((fee) =>
-        typeof fee === "number" && Number.isSafeInteger(fee) &&
-        fee >= 0 && fee < 10000)) unavailable();
+      value.feeBasisPoints !== undefined && (!record(value.feeBasisPoints) ||
+        !["eventAdmission,formFee", "eventAdmission,formFee,hostMembership"]
+          .includes(Object.keys(value.feeBasisPoints).sort().join(",")) ||
+        !Object.values(value.feeBasisPoints).every((fee) =>
+          typeof fee === "number" && Number.isSafeInteger(fee) &&
+          fee >= 0 && fee < 10000))) unavailable();
   return value as unknown as RazorpayPlatformPaymentConfig;
 }
 

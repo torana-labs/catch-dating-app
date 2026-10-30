@@ -164,6 +164,7 @@ export async function processorFixture() {
       calls.routes++;
       return h.routing;
     },
+    collectionReady: async () => true,
     invite: async () => null,
     execution,
   };

@@ -138,7 +138,7 @@ void main() {
         home: const Scaffold(
           body: Column(
             children: [
-              ClubReviewsSection(reviews: [], currentUid: 'runner-1'),
+              OrganizerReviewsSection(reviews: [], currentUid: 'runner-1'),
               ReviewsPreviewSection(reviews: [], currentUid: 'runner-1'),
             ],
           ),

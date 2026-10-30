@@ -248,7 +248,7 @@ Deprecation is a within-migration tool, never an end state.
 classification, decrease-only baselines, the legacy-mirror cutover shape for
 data, and the pre-launch clean-schema mandate (no backwards compatibility
 anywhere) — but UI/architecture migrations still end with agent-asserted
-tracker states, transitional aliases that outlive their slice (`lib/clubs/`),
+tracker states, transitional aliases that outlive their slice (`lib/organizers/`),
 and baselines with no expiry pressure. This is the root cause of "the agent
 does an incomplete job": completion is defined by diligence, not by a
 machine.
@@ -642,7 +642,7 @@ at the existing component, so agents renamed and rebuilt.
 - **Materials and bindings.** Domain-free materials (`CatchTicket`,
   `CatchPoster`, `CatchTable`) live in the design system in both
   frameworks; thin feature bindings with predicted names (`EventCard`,
-  `ClubCard`, `ParticipantTable`) map domain data onto them. This resolves
+  `OrganizerCard`, `ParticipantTable`) map domain data onto them. This resolves
   the draft rename sheet's Q1 (split, rather than either keeping feature-shaped
   T2 widgets or forcing domain types into the design system), Q2 (`Pin` and
   `Map`) and Q3 (`ChatInput` stays chat-owned with aliases; it moves into the
@@ -1682,9 +1682,9 @@ pass:
 
 | Registry id or area | Today | After |
 |---|---|---|
-| `catch.organizer_poster` | `CatchOrganizerPoster` (+ `OrganizerPosterLayout`/`Treatment`) | `CatchPoster` in `catch_ui` (L3) with `CatchPosterVariant` and `CatchPosterTone`; members become `ClubCard` and `ClubPlaceholderCover` |
+| `catch.organizer_poster` | `CatchOrganizerPoster` (+ `OrganizerPosterLayout`/`Treatment`) | `CatchPoster` in `catch_ui` (L3) with `CatchPosterVariant` and `CatchPosterTone`; members become `OrganizerCard` and `OrganizerPlaceholderCover` |
 | `catch.event_card` | `CatchEventCard.ticket` | `EventCard` (L5 Card) rendering `CatchTicket` |
-| `catch.club_cover` | `CatchClubCover` | `ClubCover` (L5 Cover) |
+| `catch.club_cover` | `CatchClubCover` | `OrganizerCover` (L5 Cover) |
 | `catch.map_preview` | `CatchMapPreview` | `MapPreview` (L5 Preview) |
 | `catch.cover_story` | `CatchCoverStory` | `FeaturedEventPoster` (L5 Poster), a `CatchPoster` binding if its anatomy matches |
 | `catch.chat_composer` | `ChatInputBar` (self-declared naming exception) | `ChatInput` (L5 Input); exception removed |
@@ -1694,7 +1694,7 @@ pass:
 | Other `Catch` prefixes outside the design system | `CatchAdaptiveTabScaffold`, `CatchCelebrationScreen`, `CatchStartupAnimationScope`, `CatchProfileView` | `AdaptiveTabScaffold`, `CelebrationScreen`, `StartupAnimationScope`, `ProfileBody` |
 | Map adapter (`lib/locations/shared`) | `CatchGoogleMap`, `CatchGoogleMapController`, `CatchMapMarker`, `CatchMapMarkerBitmap`, `CatchMapMarkerHue`, `CatchMapCircle`, `CatchMapPolyline`, `CatchMapCameraPosition`, `CatchMapType` | `LocationMap`, `LocationMapController`, `MapMarker`, `MapMarkerBitmap`, `MapMarkerHue`, `MapCircle`, `MapPolyline`, `MapCameraPosition`, `LocationMapType` |
 | Design-system vocabulary | `CatchFormRowList`, `CatchSectionRowList`, `CatchStepRowList`, `CatchFormStepRowList`, `CatchDockSurface` | `List` and `Dock` spellings; `CatchSectionRowList` is reviewed as a possible `CatchSection` recipe first, because `CatchSectionList` already exists |
-| Compositions | `ClubDetailDock`, `EventDetailBody`, `NotificationRow`, startup screen | level and role recorded (Dock, Body, Row, Screen) |
+| Compositions | `OrganizerDetailDock`, `EventDetailBody`, `NotificationRow`, startup screen | level and role recorded (Dock, Body, Row, Screen) |
 
 Tooling in the same pass: registry `aliases` for components and role nouns,
 indexed by the catalog and context pack; a new-widget gate that rejects a name
@@ -1726,7 +1726,7 @@ table above. The gate also forced the widgets that moved with renamed files to
 conform: the profile surface (`ProfileSection`, `ProfileHeader`,
 `ProfileCompatibilitySection` and siblings, with the view models renamed to
 `*SectionData`), `FeaturedEventTopBar`, `FeaturedEventBody`,
-`ExploreClubTagList`, and the roster helpers `ParticipantRowAction`,
+`ExploreOrganizerTagList`, and the roster helpers `ParticipantRowAction`,
 `ParticipantDecisionButton` and `ParticipantStat`. `CatchPoster` gained
 registered anatomy (`CatchPosterImage`, `CatchPosterHeader`) in place of
 widget-returning helpers. Moving it into `catch_ui` put it under the text-scale
@@ -1799,7 +1799,7 @@ slices:
 
 - Thin `ConsumerWidget` adapters that were named `*Controller` take the role
   they fill: `PaymentHistoryListController` is `PaymentHistoryBody`,
-  `MembershipTrailingController` is `ClubJoinAction`.
+  `MembershipTrailingController` is `OrganizerJoinAction`.
 - A predicted name that collides with a dependency's widget gets the feature
   prefix: the wrapper of `country_code_picker`'s `CountryCodePicker` is
   `PhoneCountryCodePicker`.
@@ -1841,7 +1841,7 @@ Slice 4a (2026-10-18): hosts, minus the files below; the ratchet fell from
 84 to 37. Panel and the adaptive-workspace Pane are Section
 (`HostCustomerHistorySection`, `CreateEventConsequenceSection`), the
 spoke-route resolver that selects loading, error and data states is
-`HostClubSpokeAsyncBoundary`, and `StepperFooter` is `HostStepperDock`. The
+`HostOrganizerSpokeAsyncBoundary`, and `StepperFooter` is `HostStepperDock`. The
 pass-through `HostClubOrganizerOverview` was deleted in favour of the
 `HostOrganizerMetricGrid` it wrapped. Renaming `host_analytics.dart`, a
 938-line file on the source-size ratchet, required splitting it (a renamed
@@ -1852,11 +1852,11 @@ and off the ratchet.
 Slice 4b (2026-10-18): the twelve hosts files 4a left; the ratchet fell from
 37 to 11, and every remaining entry waits on another active task (below).
 Queue and Bar took the role they render (`HostManualSendList`,
-`HostRuntimeClaimList`, `HostRosterInsightRail`, `HostClubMediaRail`),
+`HostRuntimeClaimList`, `HostRosterInsightRail`, `HostOrganizerMediaRail`),
 Composer is Editor (`HostCampaignEditor`), Control and Disclosure are Field
 (`HostEventLiveLocationField`, `HostGuestIntakeSettingsField`), Renderer is
 Body (`HostFormBody`), and the overview adapter is
-`HostClubOrganizerSectionList`. `HostFormBody`'s no-op `_HostFormSchemaBoundary`
+`HostOrganizerSectionList`. `HostFormBody`'s no-op `_HostFormSchemaBoundary`
 existed only to satisfy `catch_field_requires_section_context`, which exempted
 any ancestor whose type name contained `FormSchema`; its question fields now
 return through `CatchFieldLanes.single`, the canonical single-row boundary,
@@ -1878,7 +1878,7 @@ Open: seven Widgetbook functions stack `@UseCase` annotations and the
 generator emits only the first of each, so 14 entries never render (for
 example `HostTeamManagementSection`); split them into one function each.
 Slice 4b replaced the stacked entries for `HostOrganizerMetricGrid`,
-`HostOrganizerMetricRow` and `HostClubOrganizerSectionList` with exact use
+`HostOrganizerMetricRow` and `HostOrganizerSectionList` with exact use
 cases.
 
 Deferred: `CatchAsyncState`, `CatchAsyncPhase` and `CatchAsyncStatus` (app

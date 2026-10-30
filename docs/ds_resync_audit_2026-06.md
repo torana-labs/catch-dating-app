@@ -151,7 +151,7 @@ skin-in-place. Analyze-clean project-wide; explore (57) + clubs (62) + routing (
 - **Test re-baseline:** deleted 5 retired-interaction tests (open-map-drag, peek summary, wrist-lift
   motion reveal, selected-pin half-sheet, closed-feed-below-lid); fixed 2 chrome/feed tests for the
   new `Column` layout; added a map-pill→route nav test; cleaned 4 now-unused imports + 2 helpers.
-  Also fixed 3 **pre-existing** `ClubDetailBody` failures (this session's earlier `_ClubHostRow`
+  Also fixed 3 **pre-existing** `OrganizerDetailBody` failures (this session's earlier `_ClubHostRow`
   restructure dropped "Hosted by X" → name + `OWNER ·`/`HOST ·` mono meta; tests still asserted the
   old copy — updated to the displayName + `textContaining('… · ')`).
 - **Explore refinements — LANDED (both, this batch).** (1) **CoverStory swap:** the feed's
@@ -168,7 +168,7 @@ skin-in-place. Analyze-clean project-wide; explore (57) + clubs (62) + routing (
   selected-lead path (`buildExploreMapSheetLeadSlivers`) intentionally KEEPS `CatchEventSpotlightCard`.
   Owner QA: the cover is now CTA-only (no tap-anywhere) and opens without the card morph — confirm
   visually. (2) **Motion-reveal cleanup:** deleted `lib/core/device_motion.dart`,
-  `lib/explore/presentation/explore_map_motion_reveal.dart`, `test/clubs/explore_map_motion_reveal_test.dart`;
+  `lib/explore/presentation/explore_map_motion_reveal.dart`, `test/organizers/explore_map_motion_reveal_test.dart`;
   stripped `DeviceMotionSource` mocks from `screen_capture_catalog.dart` + `app_shell_test_harness.dart`;
   dropped `sensors_plus` from `pubspec.yaml`/`pubspec.lock` and regenerated `ios/Podfile.lock` via
   `pod install` (the 6 `sensors_plus` pod entries removed; no other pods touched). Verified: explore
@@ -289,7 +289,7 @@ non-field controls.
   `event_detail_design_primitives.dart` (`CatchLayout.eventDetailHost*` tokens),
   parametrized for the dark spotlight surface.
 - Wired via `_EventDetailHostsSection` in `event_detail_body.dart` — watches
-  `fetchClubProvider`, maps `Club` → host name/avatar/meta/stats, and wires
+  `fetchOrganizerProvider`, maps `Club` → host name/avatar/meta/stats, and wires
   View club (→ club detail) + Message host (→ `startConversation` → chat).
 - `EventDetailHeroTopBar` enriched: activity **tag pill** (glyph + label) on both the
   standard + ticket heroes, poster **w700** title, condensed standard-hero title
@@ -311,11 +311,11 @@ data-threading into the hero); series kicker (no `Event` series/recurrence field
   banner (tinted wash or neutral hairline) + leading glyph + title/body (`calloutFill` token).
 - **`CatchOptionCard`** (Wave 2) — `lib/core/widgets/catch_option_card.dart`: descriptive
   selectable choice card (check/circle + ink-border selected + ink wash).
-- **`CatchClubDock` + `ClubMembershipDock`** (Wave 2 primitive **+ Wave 4 screen**) —
-  `lib/clubs/presentation/detail/widgets/catch_club_dock.dart`: the 4-state pinned club
+- **`CatchClubDock` + `OrganizerMembershipDock`** (Wave 2 primitive **+ Wave 4 screen**) —
+  `lib/organizers/presentation/detail/widgets/catch_club_dock.dart`: the 4-state pinned club
   dock (guest/visitor/member/owner) with count block, activity-pigmented Join CTA,
   accent-filled notifications bell (fixes the raw-Material-colorScheme bell drift), quiet
-  "Joined" control, and mono footnote. **Wired** into `ClubDetailScreen` as
+  "Joined" control, and mono footnote. **Wired** into `OrganizerDetailScreen` as
   `bottomNavigationBar`, replacing the inline Membership/Join-Catch sections in
   `club_detail_body.dart`. `clubs_flow_test` updated ("Leave club"→"Joined") and green.
 - **DashboardEventCard activity tint** (Wave 3) — `EventActionCard` gained opt-in

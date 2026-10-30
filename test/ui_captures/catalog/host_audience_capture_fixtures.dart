@@ -2,7 +2,7 @@ part of 'screen_capture_catalog.dart';
 
 final _audienceCaptureJourney = HostAudienceJourneyFixture.maya;
 final _personCaptureJourney = HostAudienceJourneyFixture.ananya(
-  HostOperationsFixtures.primaryClub.id,
+  HostOperationsFixtures.primaryOrganizer.id,
 );
 Map<String, Object?> _audienceCaptureDetailMap() =>
     _audienceCaptureJourney.responseData();
@@ -390,7 +390,7 @@ List<Object> _audienceCaptureSources(
 ];
 List<Object> _audienceCaptureFormOverrides({bool published = false}) => [
   hostFormEditorControllerProvider(
-    HostOperationsFixtures.primaryClub.id,
+    HostOperationsFixtures.primaryOrganizer.id,
     'saturday-social-application',
   ).overrideWith(
     published
@@ -449,11 +449,11 @@ List<Object> _audienceCapturePersonOverrides() => [
     options: _personCaptureJourney.filterOptions,
   ),
   hostAudienceContactDetailProvider(
-    HostOperationsFixtures.primaryClub.id,
+    HostOperationsFixtures.primaryOrganizer.id,
     'capture-customer-ananya',
   ).overrideWithValue(AsyncData(_hostCustomerMemoryDetail())),
   hostCommunicationPlanProvider(
-    HostOperationsFixtures.primaryClub.id,
+    HostOperationsFixtures.primaryOrganizer.id,
     'capture-customer-ananya',
   ).overrideWithValue(AsyncData(_hostCustomerMemoryCommunicationPlan())),
   hostApplicationDetailProvider(

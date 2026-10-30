@@ -34,7 +34,8 @@ test("lists each Supply Intake capability with its decision and whether its poli
   assert.ok(pages.limits.some((limit) => limit.label === "Pages per month"));
   assert.equal(crawl.decision, null);
   assert.deepEqual([search.enabled, search.decision, search.decisionId, search.limits.map((limit) => limit.value)],
-    [false, null, "policy-batch-web-search-policy", [0, 0]], "batch web search stays off until the owner decides");
+    [true, null, "policy-batch-web-search-policy", [1, 240]],
+    "web search is switched on in the policy file but runs only once the owner's decision is accepted");
 });
 
 test("only intake reviewers can read the policies", async () => {

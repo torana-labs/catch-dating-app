@@ -31,7 +31,7 @@
     },
     {
       "rule": "bare_catch",
-      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
+      "path": "lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart",
       "snippet": "} catch (_) {"
     },
     {

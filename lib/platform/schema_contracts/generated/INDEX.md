@@ -279,6 +279,13 @@ Do not edit it by hand.
 | OrganizerEventOfferPaymentDocument | `firestore/organizer_event_offer_payments.schema.json` | `functions/src/shared/generated/organizerEventOfferPaymentDocument.ts` |
 | OrganizerEventOfferRecipientDocument | `firestore/organizer_event_offer_recipients.schema.json` | `functions/src/shared/generated/organizerEventOfferRecipientDocument.ts` |
 | PaymentRoutingSnapshot | `embedded/payment_routing_snapshot.schema.json` | `functions/src/shared/generated/paymentRoutingSnapshot.ts` |
+| CommercialTerms | `embedded/commercial_terms.schema.json` | `functions/src/shared/generated/commercialTerms.ts` |
+| CommercialTermsOverride | `embedded/commercial_terms_override.schema.json` | `functions/src/shared/generated/commercialTermsOverride.ts` |
+| CommercialTermsSnapshot | `embedded/commercial_terms_snapshot.schema.json` | `functions/src/shared/generated/commercialTermsSnapshot.ts` |
+| ManageCommercialTermsCallablePayload | `callables/manage_commercial_terms_payload.schema.json` | `functions/src/shared/generated/manageCommercialTermsCallablePayload.ts` |
+| ManageCommercialTermsCallableResponse | `callable_responses/manage_commercial_terms_response.schema.json` | `functions/src/shared/generated/manageCommercialTermsCallableResponse.ts` |
+| AdminListCommercialTermsCallablePayload | `callables/admin_list_commercial_terms_payload.schema.json` | `functions/src/shared/generated/adminListCommercialTermsCallablePayload.ts` |
+| AdminListCommercialTermsCallableResponse | `callable_responses/admin_list_commercial_terms_response.schema.json` | `functions/src/shared/generated/adminListCommercialTermsCallableResponse.ts` |
 | ManagePaymentRoutingPolicyCallablePayload | `callables/manage_payment_routing_policy_payload.schema.json` | `functions/src/shared/generated/managePaymentRoutingPolicyCallablePayload.ts` |
 | ManagePaymentRoutingPolicyCallableResponse | `callable_responses/manage_payment_routing_policy_response.schema.json` | `functions/src/shared/generated/managePaymentRoutingPolicyCallableResponse.ts` |
 | ManageEventOfferCheckoutCallablePayload | `callables/manage_event_offer_checkout_payload.schema.json` | `functions/src/shared/generated/manageEventOfferCheckoutCallablePayload.ts` |
@@ -614,6 +621,8 @@ Do not edit it by hand.
 | OrganizerPaymentConnectionDocument | `firestore/organizer_payment_connections.schema.json` | `functions/src/shared/generated/organizerPaymentConnectionDocument.ts` |
 | OrganizerPaymentOauthStateDocument | `firestore/organizer_payment_oauth_states.schema.json` | `functions/src/shared/generated/organizerPaymentOauthStateDocument.ts` |
 | PaymentRoutingPolicyDocument | `firestore/payment_routing_policies.schema.json` | `functions/src/shared/generated/paymentRoutingPolicyDocument.ts` |
+| CommercialTermsDocument | `firestore/commercial_terms.schema.json` | `functions/src/shared/generated/commercialTermsDocument.ts` |
+| CommercialTermsRevisionDocument | `firestore/commercial_terms_revisions.schema.json` | `functions/src/shared/generated/commercialTermsRevisionDocument.ts` |
 | OrganizerFormPaymentDocument | `firestore/organizer_form_payments.schema.json` | `functions/src/shared/generated/organizerFormPaymentDocument.ts` |
 | OrganizerFormPaymentWebhookDocument | `firestore/organizer_form_payment_webhooks.schema.json` | `functions/src/shared/generated/organizerFormPaymentWebhookDocument.ts` |
 | OrganizerFormDraftDocument | `firestore/organizer_form_drafts.schema.json` | `functions/src/shared/generated/organizerFormDraftDocument.ts` |
@@ -1579,6 +1588,13 @@ Do not edit it by hand.
 | `schemaOrganizerEventOfferPaymentDocumentSchema` | OrganizerEventOfferPaymentDocument | `firestore/organizer_event_offer_payments.schema.json` | `lib/platform/schema_contracts/generated/schemas/organizer_event_offer_payment_document.g.dart` |
 | `schemaOrganizerEventOfferRecipientDocumentSchema` | OrganizerEventOfferRecipientDocument | `firestore/organizer_event_offer_recipients.schema.json` | `lib/platform/schema_contracts/generated/schemas/organizer_event_offer_recipient_document.g.dart` |
 | `schemaPaymentRoutingSnapshotSchema` | PaymentRoutingSnapshot | `embedded/payment_routing_snapshot.schema.json` | `lib/platform/schema_contracts/generated/schemas/payment_routing_snapshot.g.dart` |
+| `schemaCommercialTermsSchema` | CommercialTerms | `embedded/commercial_terms.schema.json` | `lib/platform/schema_contracts/generated/schemas/commercial_terms.g.dart` |
+| `schemaCommercialTermsOverrideSchema` | CommercialTermsOverride | `embedded/commercial_terms_override.schema.json` | `lib/platform/schema_contracts/generated/schemas/commercial_terms_override.g.dart` |
+| `schemaCommercialTermsSnapshotSchema` | CommercialTermsSnapshot | `embedded/commercial_terms_snapshot.schema.json` | `lib/platform/schema_contracts/generated/schemas/commercial_terms_snapshot.g.dart` |
+| `schemaManageCommercialTermsCallablePayloadSchema` | ManageCommercialTermsCallablePayload | `callables/manage_commercial_terms_payload.schema.json` | `lib/platform/schema_contracts/generated/schemas/manage_commercial_terms_callable_payload.g.dart` |
+| `schemaManageCommercialTermsCallableResponseSchema` | ManageCommercialTermsCallableResponse | `callable_responses/manage_commercial_terms_response.schema.json` | `lib/platform/schema_contracts/generated/schemas/manage_commercial_terms_callable_response.g.dart` |
+| `schemaAdminListCommercialTermsCallablePayloadSchema` | AdminListCommercialTermsCallablePayload | `callables/admin_list_commercial_terms_payload.schema.json` | `lib/platform/schema_contracts/generated/schemas/admin_list_commercial_terms_callable_payload.g.dart` |
+| `schemaAdminListCommercialTermsCallableResponseSchema` | AdminListCommercialTermsCallableResponse | `callable_responses/admin_list_commercial_terms_response.schema.json` | `lib/platform/schema_contracts/generated/schemas/admin_list_commercial_terms_callable_response.g.dart` |
 | `schemaManagePaymentRoutingPolicyCallablePayloadSchema` | ManagePaymentRoutingPolicyCallablePayload | `callables/manage_payment_routing_policy_payload.schema.json` | `lib/platform/schema_contracts/generated/schemas/manage_payment_routing_policy_callable_payload.g.dart` |
 | `schemaManagePaymentRoutingPolicyCallableResponseSchema` | ManagePaymentRoutingPolicyCallableResponse | `callable_responses/manage_payment_routing_policy_response.schema.json` | `lib/platform/schema_contracts/generated/schemas/manage_payment_routing_policy_callable_response.g.dart` |
 | `schemaManageEventOfferCheckoutCallablePayloadSchema` | ManageEventOfferCheckoutCallablePayload | `callables/manage_event_offer_checkout_payload.schema.json` | `lib/platform/schema_contracts/generated/schemas/manage_event_offer_checkout_callable_payload.g.dart` |
@@ -1914,6 +1930,8 @@ Do not edit it by hand.
 | `schemaOrganizerPaymentConnectionDocumentSchema` | OrganizerPaymentConnectionDocument | `firestore/organizer_payment_connections.schema.json` | `lib/platform/schema_contracts/generated/schemas/organizer_payment_connection_document.g.dart` |
 | `schemaOrganizerPaymentOauthStateDocumentSchema` | OrganizerPaymentOauthStateDocument | `firestore/organizer_payment_oauth_states.schema.json` | `lib/platform/schema_contracts/generated/schemas/organizer_payment_oauth_state_document.g.dart` |
 | `schemaPaymentRoutingPolicyDocumentSchema` | PaymentRoutingPolicyDocument | `firestore/payment_routing_policies.schema.json` | `lib/platform/schema_contracts/generated/schemas/payment_routing_policy_document.g.dart` |
+| `schemaCommercialTermsDocumentSchema` | CommercialTermsDocument | `firestore/commercial_terms.schema.json` | `lib/platform/schema_contracts/generated/schemas/commercial_terms_document.g.dart` |
+| `schemaCommercialTermsRevisionDocumentSchema` | CommercialTermsRevisionDocument | `firestore/commercial_terms_revisions.schema.json` | `lib/platform/schema_contracts/generated/schemas/commercial_terms_revision_document.g.dart` |
 | `schemaOrganizerFormPaymentDocumentSchema` | OrganizerFormPaymentDocument | `firestore/organizer_form_payments.schema.json` | `lib/platform/schema_contracts/generated/schemas/organizer_form_payment_document.g.dart` |
 | `schemaOrganizerFormPaymentWebhookDocumentSchema` | OrganizerFormPaymentWebhookDocument | `firestore/organizer_form_payment_webhooks.schema.json` | `lib/platform/schema_contracts/generated/schemas/organizer_form_payment_webhook_document.g.dart` |
 | `schemaOrganizerFormDraftDocumentSchema` | OrganizerFormDraftDocument | `firestore/organizer_form_drafts.schema.json` | `lib/platform/schema_contracts/generated/schemas/organizer_form_draft_document.g.dart` |
@@ -2684,6 +2702,7 @@ Do not edit it by hand.
 | AdminSalesImportCompensationApplyRequest | AdminSalesImportCompensationApplyPayload | `callables/admin_sales_import_compensation_apply_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_sales_import_compensation_apply_request.g.dart` |
 | AdminSalesImportCompensationPreviewRequest | AdminSalesImportCompensationPreviewPayload | `callables/admin_sales_import_compensation_preview_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_sales_import_compensation_preview_request.g.dart` |
 | SetEventPublicationCallableRequest | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/set_event_publication_callable_request.g.dart` |
+| AdminListCommercialTermsCallableRequest | AdminListCommercialTermsCallablePayload | `callables/admin_list_commercial_terms_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_commercial_terms_callable_request.g.dart` |
 | PrepareEventOfferInvitationCallableRequest | PrepareEventOfferInvitationCallablePayload | `callables/prepare_event_offer_invitation_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/prepare_event_offer_invitation_callable_request.g.dart` |
 | PreviewOrganizerFormAdmissionCallableRequest | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/preview_organizer_form_admission_callable_request.g.dart` |
 | CommitOrganizerFormAdmissionCallableRequest | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/commit_organizer_form_admission_callable_request.g.dart` |
@@ -3089,6 +3108,7 @@ Do not edit it by hand.
 | SalesDemoSetupCallablePayload | not an object schema |
 | ManagePublicEventCheckoutCallablePayload | not an object schema |
 | ConfigureEventRegistrationCallablePayload | cannot map field "mode" (no type) |
+| ManageCommercialTermsCallablePayload | cannot map field "action" (no type) |
 | ManagePaymentRoutingPolicyCallablePayload | cannot map field "action" (no type) |
 | ManageEventOfferCheckoutCallablePayload | not an object schema |
 | SetEventRcsPreferenceCallablePayload | cannot map field "decision" (no type) |

@@ -2,11 +2,19 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {defineSecret, defineString} from "firebase-functions/params";
 import {onRequest} from "firebase-functions/v2/https";
+import {routeInstagramInbound} from
+  "../catchMessaging/instagramInboundRouter";
+import {messageNominationsEnabled} from
+  "../catchMessaging/inboundRouterRuntime";
+import {defaultMessageNominationDeps} from
+  "../operations/supplyIntake/messageNominations";
 import {
   InstagramAccessTokenSource,
   InstagramAccessTokenStore,
 } from "./instagramAccessTokenStore";
-import {handleInstagramClaimWebhook} from "./instagramClaimProtocol";
+import {extractClaimCode, handleInstagramClaimWebhook} from
+  "./instagramClaimProtocol";
+import type {InstagramInboundMessage} from "./instagramClaimProtocol";
 import {
   FakeInstagramProvider,
   InstagramGraphProvider,
@@ -57,22 +65,47 @@ export function instagramClaimProvider(): InstagramMessagingProvider {
   });
 }
 
+/**
+ * A message with a claim code goes to claim verification; any other goes
+ * to the nomination router. Each path has its own switch, and a message
+ * whose path is off is acknowledged and ignored so Meta keeps the
+ * subscription healthy.
+ */
+async function handleInstagramMessages(messages: InstagramInboundMessage[]) {
+  const claimsEnabled = instagramClaimsEnabled.value();
+  const nominationsEnabled = messageNominationsEnabled.value();
+  for (const message of messages) {
+    if (extractClaimCode(message.text)) {
+      if (claimsEnabled) {
+        await processInstagramClaimMessages([message],
+          {...defaultClaimVerificationDeps, provider: instagramClaimProvider});
+      }
+    } else if (nominationsEnabled) {
+      const db = admin.firestore();
+      const outcome = await routeInstagramInbound({
+        ...defaultMessageNominationDeps(db,
+          (uid) => admin.auth().getUser(uid)),
+        provider: instagramClaimProvider,
+        serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+      }, message);
+      if (outcome !== "support") {
+        logger.info("Instagram message routed", {outcome});
+      }
+    }
+  }
+}
+
 export const instagramClaimWebhook = onRequest({
   secrets: [appSecret, instagramAccessToken, verifyToken], maxInstances: 2,
   concurrency: 10, invoker: "public",
 }, async (request, response) => {
-  const enabled = instagramClaimsEnabled.value();
   const result = await handleInstagramClaimWebhook({
     method: request.method, query: request.query,
     rawBody: request.rawBody,
     signature: request.header("x-hub-signature-256"),
   }, {accountId: catchInstagramAccountId.value().trim(),
     appSecret: appSecret.value(), verifyToken: verifyToken.value()},
-  // Switched off, signed deliveries are acknowledged and ignored so Meta
-  // keeps the subscription healthy.
-  async (messages) => enabled ? processInstagramClaimMessages(messages,
-    {...defaultClaimVerificationDeps, provider: instagramClaimProvider}) :
-    undefined);
+  handleInstagramMessages);
   if (result.status === 503) {
     logger.warn("Instagram claim webhook unavailable", {body: result.body});
   }

@@ -80,7 +80,7 @@ HostProfile _hostProfileFromDocument(
     bio: _string(data['bio']),
     status: _status(data['status']),
     verified: data['verified'] == true,
-    linkedClubIds: [
+    linkedOrganizerIds: [
       for (final value in data['linkedClubIds'] as List? ?? const [])
         if (value is String && value.isNotEmpty) value,
     ],

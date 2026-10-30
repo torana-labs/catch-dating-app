@@ -63,8 +63,8 @@ Future<_CrmHarness> _pumpCrm(
   final container = ProviderContainer(
     overrides: [
       uidProvider.overrideWith((ref) => Stream.value(_actor)),
-      hostOperableClubsProvider(_actor).overrideWithValue(
-        AsyncData([buildClub(id: _organizer, ownerUserId: _actor)]),
+      hostOperableOrganizersProvider(_actor).overrideWithValue(
+        AsyncData([buildOrganizer(id: _organizer, ownerUserId: _actor)]),
       ),
       hostContactsRepositoryProvider.overrideWithValue(_Contacts()),
       hostMessagingSetupProvider(

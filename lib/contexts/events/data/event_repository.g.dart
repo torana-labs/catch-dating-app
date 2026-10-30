@@ -277,10 +277,10 @@ final class WatchEventInviteLinksFamily extends $Family
   String toString() => r'watchEventInviteLinksProvider';
 }
 
-@ProviderFor(watchEventsForClub)
-final watchEventsForClubProvider = WatchEventsForClubFamily._();
+@ProviderFor(watchEventsForOrganizer)
+final watchEventsForOrganizerProvider = WatchEventsForOrganizerFamily._();
 
-final class WatchEventsForClubProvider
+final class WatchEventsForOrganizerProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<Event>>,
@@ -288,23 +288,23 @@ final class WatchEventsForClubProvider
           Stream<List<Event>>
         >
     with $FutureModifier<List<Event>>, $StreamProvider<List<Event>> {
-  WatchEventsForClubProvider._({
-    required WatchEventsForClubFamily super.from,
+  WatchEventsForOrganizerProvider._({
+    required WatchEventsForOrganizerFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'watchEventsForClubProvider',
+         name: r'watchEventsForOrganizerProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$watchEventsForClubHash();
+  String debugGetCreateSourceHash() => _$watchEventsForOrganizerHash();
 
   @override
   String toString() {
-    return r'watchEventsForClubProvider'
+    return r'watchEventsForOrganizerProvider'
         ''
         '($argument)';
   }
@@ -318,12 +318,13 @@ final class WatchEventsForClubProvider
   @override
   Stream<List<Event>> create(Ref ref) {
     final argument = this.argument as String;
-    return watchEventsForClub(ref, argument);
+    return watchEventsForOrganizer(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is WatchEventsForClubProvider && other.argument == argument;
+    return other is WatchEventsForOrganizerProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -332,25 +333,25 @@ final class WatchEventsForClubProvider
   }
 }
 
-String _$watchEventsForClubHash() =>
-    r'fd4d52b8f0ceb8ba17c85c11c216fdb7899cb7b1';
+String _$watchEventsForOrganizerHash() =>
+    r'e16359b6bc8880382311443547de40231fe30bc6';
 
-final class WatchEventsForClubFamily extends $Family
+final class WatchEventsForOrganizerFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Event>>, String> {
-  WatchEventsForClubFamily._()
+  WatchEventsForOrganizerFamily._()
     : super(
         retry: null,
-        name: r'watchEventsForClubProvider',
+        name: r'watchEventsForOrganizerProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  WatchEventsForClubProvider call(String clubId) =>
-      WatchEventsForClubProvider._(argument: clubId, from: this);
+  WatchEventsForOrganizerProvider call(String clubId) =>
+      WatchEventsForOrganizerProvider._(argument: clubId, from: this);
 
   @override
-  String toString() => r'watchEventsForClubProvider';
+  String toString() => r'watchEventsForOrganizerProvider';
 }
 
 @ProviderFor(eventVenueSession)
@@ -430,10 +431,10 @@ final class EventVenueSessionFamily extends $Family
   String toString() => r'eventVenueSessionProvider';
 }
 
-@ProviderFor(watchEventsForClubs)
-final watchEventsForClubsProvider = WatchEventsForClubsFamily._();
+@ProviderFor(watchEventsForOrganizers)
+final watchEventsForOrganizersProvider = WatchEventsForOrganizersFamily._();
 
-final class WatchEventsForClubsProvider
+final class WatchEventsForOrganizersProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<Event>>,
@@ -441,23 +442,23 @@ final class WatchEventsForClubsProvider
           Stream<List<Event>>
         >
     with $FutureModifier<List<Event>>, $StreamProvider<List<Event>> {
-  WatchEventsForClubsProvider._({
-    required WatchEventsForClubsFamily super.from,
-    required EventsForClubsQuery super.argument,
+  WatchEventsForOrganizersProvider._({
+    required WatchEventsForOrganizersFamily super.from,
+    required EventsForOrganizersQuery super.argument,
   }) : super(
          retry: null,
-         name: r'watchEventsForClubsProvider',
+         name: r'watchEventsForOrganizersProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$watchEventsForClubsHash();
+  String debugGetCreateSourceHash() => _$watchEventsForOrganizersHash();
 
   @override
   String toString() {
-    return r'watchEventsForClubsProvider'
+    return r'watchEventsForOrganizersProvider'
         ''
         '($argument)';
   }
@@ -470,13 +471,14 @@ final class WatchEventsForClubsProvider
 
   @override
   Stream<List<Event>> create(Ref ref) {
-    final argument = this.argument as EventsForClubsQuery;
-    return watchEventsForClubs(ref, argument);
+    final argument = this.argument as EventsForOrganizersQuery;
+    return watchEventsForOrganizers(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is WatchEventsForClubsProvider && other.argument == argument;
+    return other is WatchEventsForOrganizersProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -485,25 +487,29 @@ final class WatchEventsForClubsProvider
   }
 }
 
-String _$watchEventsForClubsHash() =>
-    r'c739d8f639ebf58ef2c7c89936d18a26a5a104af';
+String _$watchEventsForOrganizersHash() =>
+    r'5e24eb2f65dab395d6bb744a82834352e99da162';
 
-final class WatchEventsForClubsFamily extends $Family
-    with $FunctionalFamilyOverride<Stream<List<Event>>, EventsForClubsQuery> {
-  WatchEventsForClubsFamily._()
+final class WatchEventsForOrganizersFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          Stream<List<Event>>,
+          EventsForOrganizersQuery
+        > {
+  WatchEventsForOrganizersFamily._()
     : super(
         retry: null,
-        name: r'watchEventsForClubsProvider',
+        name: r'watchEventsForOrganizersProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  WatchEventsForClubsProvider call(EventsForClubsQuery query) =>
-      WatchEventsForClubsProvider._(argument: query, from: this);
+  WatchEventsForOrganizersProvider call(EventsForOrganizersQuery query) =>
+      WatchEventsForOrganizersProvider._(argument: query, from: this);
 
   @override
-  String toString() => r'watchEventsForClubsProvider';
+  String toString() => r'watchEventsForOrganizersProvider';
 }
 
 @ProviderFor(watchEventsByIds)
@@ -641,7 +647,7 @@ final class RecommendedEventsProvider
   }
 }
 
-String _$recommendedEventsHash() => r'bc5ff15bfc6186cb5f74823a30b2fb2ec3c7749c';
+String _$recommendedEventsHash() => r'6921697995784cf88ddb76c73d27f04f778ad2b7';
 
 /// Returns upcoming events from clubs the user follows.
 

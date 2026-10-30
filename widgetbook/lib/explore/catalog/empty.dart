@@ -91,7 +91,7 @@ Widget exploreScreenEmptyStateStates(BuildContext context) {
         label: 'no source clubs',
         child: ExploreScreenEmptyState(
           state: const ExploreDiscoveryEmptyState(
-            kind: ExploreDiscoveryEmptyKind.noSourceClubs,
+            kind: ExploreDiscoveryEmptyKind.noSourceOrganizers,
             cityLabel: 'Mumbai',
             action: ExploreDiscoveryEmptyAction.none,
           ),

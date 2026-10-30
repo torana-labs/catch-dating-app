@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.0.0
+version: 3.0.2
 updated: 2026-10-30
 owner: recursive_audit_loop
 status: active
@@ -69,7 +69,7 @@ before removing resources or claiming savings from the invoice.
 
 The Deploy backend workflow installs its pinned source parser without lifecycle
 scripts and verifies affected targets before cloud authentication. Its deploy
-job builds Functions, replans after approval, authenticates, installs the cloud
+job builds Functions, replans just before deploying, authenticates, installs the cloud
 CLIs and materializes parameters. The target-aware metadata preflight then
 runs before any backend mutation.
 Hosting and explicit Remote Config/Extensions operations have separate owners:
@@ -173,10 +173,14 @@ hide a meaningful source change.
 Authentication uses `FIREBASE_RULES_ACCESS_TOKEN`,
 `GOOGLE_OAUTH_ACCESS_TOKEN`, or an authenticated `gcloud` session. A machine
 with no credentials prints a clear skip and exits zero so untrusted CI remains
-usable. Once credentials exist, API/authorization errors, missing releases, and
-content drift fail. The authenticated backend promotion runs the same check
-against the exact CI-approved source after its ordered deploy stages, with a
-bounded retry window for Rules release propagation.
+usable. A Claude Code cloud session counts as having none: its `gcloud` token
+comes from `CLOUDSDK_AUTH_ACCESS_TOKEN`, which belongs to the session's egress
+proxy and cannot read Catch's projects, so the check skips without sending it.
+An explicit token still runs the comparison there. Once credentials exist,
+API/authorization errors, missing releases, and content drift fail. The
+authenticated backend promotion runs the same check against the exact
+CI-approved source after its ordered deploy stages, with a bounded retry window
+for Rules release propagation.
 
 ## Storage Rules Cross-Service Readiness
 
@@ -540,7 +544,7 @@ The current workflows are:
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
 | `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and parallel per-role iOS simulator build gates. Cheap app-structure ratchets run before any expensive compile. |
-| `.github/workflows/backend-deploy.yml` | The one backend path: dev on every backend-relevant merge, prod after one `prod` approval, staging monthly. See Deploy Backend. |
+| `.github/workflows/backend-deploy.yml` | The one backend path: dev on every backend-relevant merge, prod automatically after dev succeeds, staging monthly. See Deploy Backend. |
 | `.github/workflows/_backend-deploy.yml` | Reusable per-environment job: credential-free plan from the `deployed/<env>` tag, readiness check, index `READY` wait, `deploy_firebase_targets.sh`, rules drift check, then the tag moves forward. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/_web-hosting-build.yml` | Builds one production Admin or Marketing Vite bundle or standalone Host Flutter web bundle, packages one lifecycle-hook-free Hosting target, and publishes workflow/run/source-bound bytes with an exact file inventory. |
@@ -715,7 +719,7 @@ only mobile signing, Maps, App Store Connect, and Play-publisher credentials, an
 the same store credentials for `Mobile Production` and requires a reviewer's
 approval; see [Mobile releases](#mobile-releases). `prod-backend` served only the
 retired Delivery workflow and is now unused; `Deploy backend` deploys prod
-through reviewer-protected `prod`. The `prod-backend` OIDC provider binds the immutable repository and owner IDs, ref,
+through `prod`. The `prod-backend` OIDC provider binds the immutable repository and owner IDs, ref,
 environment, caller workflow, reusable workflow, and automatic event type; both
 workflow paths are compared with the token's own repository name, never a
 hardcoded one. It reuses the existing deployment identity; it does not add
@@ -727,19 +731,23 @@ repository `1170579691`. Every provider and grant uses immutable IDs, so renamin
 or transferring the repository or its owner cannot break deployment sign-in
 (CAT-210).
 
-Keep required reviewers on shared `prod` for production data operations,
-non-Functions stages, snapshots, recovery, and older source without review proof.
-Functions pull requests complete Required CI after the selected automated
-validation; CI no longer creates or requires the
-credential-free `backend-review` job. That environment no longer has required
-reviewers; its identity, `refs/pull/*/merge` branch policy and prohibition on
-administrator bypass remain. Successful automated CI alone is never human
-approval. Non-no-op Functions source now retains protected `prod` review after
-dev delivery, including older source whose historical approvals cannot satisfy
-the unchanged helper's current reviewer-protection check.
+Shared `prod` has no required reviewers. The owner removed them on 30 Oct 2026,
+before launch, while all production data is synthetic: the approval only
+delayed deploys. `Deploy backend` prod runs and `Website Release` promotions
+now proceed automatically, as do manual dispatches that use `prod`. CI, the
+merge queue, dev deploying first and the readiness preflight remain the
+checks. To restore a human gate (for example at launch), add a required
+reviewer to `prod` in the repository's environment settings; both workflows
+then wait for approval again with no code change. `Mobile Production` keeps
+its own reviewer on `prod-mobile-release`.
 
-Every `Deploy backend` prod run waits for a `prod` reviewer. Dev and prod run
-independently, one deploy per environment at a time.
+Functions pull requests complete Required CI after the selected automated
+validation; CI no longer creates or requires the credential-free
+`backend-review` job. That environment no longer has required reviewers; its
+identity, `refs/pull/*/merge` branch policy and prohibition on administrator
+bypass remain.
+
+Dev and prod run independently, one deploy per environment at a time.
 
 Reviewer-protected `prod` may still hold duplicate mobile secrets from the
 GitHub iOS cutover. No mobile workflow reads them; the owner may delete them.
@@ -1322,9 +1330,8 @@ When it runs:
 
 - **Dev:** every merge to `main` that touches backend inputs deploys to dev
   automatically.
-- **Prod:** deploys the same commit after a `prod` environment reviewer
-  approves, but only when prod has something to receive. A merge with nothing
-  to deploy never asks for approval.
+- **Prod:** deploys the same commit automatically once dev succeeds, but only
+  when prod has something to receive.
 - **Staging:** refreshes on the first of each month at 02:17 UTC. Like a push,
   a scheduled run skips an environment without a deployed tag; only a manual
   dispatch may bootstrap it.
@@ -1405,45 +1412,59 @@ provider activation and generates no Catch delivery receipt.
 ### Instagram claim verification activation
 
 Organisers prove a claim by sending a code from the listing's Instagram
-account to Catch's Instagram account. The method stays hidden, and
-`instagramClaimWebhook` stays out of every deploy plan as a dormant target in
-`tool/firebase/list_firebase_function_targets.mjs`, until the owner completes
-these steps:
+account to @catch_dates. `instagramClaimWebhook` uses the Instagram API with
+Instagram Login (`graph.instagram.com`) and deploys everywhere. Only prod
+names Catch's account, so only prod answers Meta. Dev and staging return 503.
+A Meta app has one callback URL, so @catch_dates's messages go to prod.
 
-1. Create three secrets in Secret Manager in every project that deploys from
-   main. Readiness blocks any deploy that includes `instagramClaimWebhook`
-   until they exist:
-   - `CATCH_INSTAGRAM_APP_SECRET`: the app secret that signs webhooks. For
-     Instagram Login, that is the Instagram app secret shown under API setup
-     with Instagram login.
-   - `CATCH_INSTAGRAM_ACCESS_TOKEN`: a long-lived Instagram user token for
-     Catch's account, with `instagram_business_basic` and
-     `instagram_business_manage_messages`.
-   - `CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: a random string of at least 32
-     characters.
-2. Set these GitHub environment variables:
-   - `CATCH_INSTAGRAM_ACCOUNT_ID`: the professional account id.
-   - `CATCH_INSTAGRAM_HANDLE`: the username, without @.
-   - `CATCH_INSTAGRAM_GRAPH_VERSION`: optional; the default is `v26.0`.
-3. Remove `functions:instagramClaimWebhook` from
-   `dormantFirebaseFunctionTargets` in a PR. Its merge deploys the webhook.
-4. In the Meta app dashboard, under API setup with Instagram login:
-   - Configure webhooks with the callback URL
-     `https://asia-south1-<project>.cloudfunctions.net/instagramClaimWebhook`
-     and the same verify token.
-   - Subscribe the `messages` field.
-   - Turn on the webhook subscription for Catch's account.
-   A Meta app has one callback URL, so only one environment receives these
-   messages at a time.
-5. On Catch's Instagram account, turn on Allow access to messages under
-   Message controls, Connected tools.
-6. Send a test message from an account with a role on the app. Check that the
-   webhook answers it, then set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` and
-   deploy again.
+Fixed values:
 
-Until App Review grants Advanced Access, only accounts with a role on the
-Meta app can message through the API. With the method switched off, the
-webhook still answers the handshake and acknowledges signed deliveries.
+- Meta app: Catch, `1596668525274018`, in the Torana business portfolio
+  (`290587228549920`).
+- Instagram account: @catch_dates, id `17841476918450741`. This is the
+  `entry.id` in webhooks. The "Catch-IG" id `1404389366089349` is the
+  Instagram app id, not the account id.
+- GitHub variables in `prod` and `prod-backend`:
+  `CATCH_INSTAGRAM_ACCOUNT_ID=17841476918450741` and
+  `CATCH_INSTAGRAM_HANDLE=catch_dates`. Leave them unset in dev and staging.
+  `CATCH_INSTAGRAM_GRAPH_VERSION` is optional; the default is `v26.0`.
+
+Secrets in prod Secret Manager (`catch-dating-app-64e51`). Dev and staging
+keep their existing versions so readiness passes; those values are unused.
+
+- `CATCH_INSTAGRAM_ACCESS_TOKEN`: in the Meta app, Instagram, API setup with
+  Instagram login, Generate access tokens, Generate token on the @catch_dates
+  row. It is long-lived and lasts 60 days; a deploy is needed to pick up a new
+  version.
+- `CATCH_INSTAGRAM_APP_SECRET`: on the same page, Set up Instagram business
+  login, Business login settings, Instagram app secret.
+- `CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: `openssl rand -hex 32`.
+
+After a prod deploy that includes the webhook:
+
+1. In the Meta app, Instagram, API setup with Instagram login, Configure
+   webhooks: callback URL
+   `https://asia-south1-catch-dating-app-64e51.cloudfunctions.net/instagramClaimWebhook`
+   and the verify token, then Verify and save.
+2. Subscribe the `messages` field.
+3. On the @catch_dates row, turn on Webhook subscription.
+4. In the Instagram app as @catch_dates: Settings and activity, Messages and
+   story replies, Message controls, Connected tools, Allow access to messages.
+5. From an Instagram account with a role on the Meta app, send a message to
+   @catch_dates. The webhook acknowledges it and logs nothing on success.
+6. Set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` in `prod` and `prod-backend`,
+   then deploy prod again.
+
+Access level. Meta's App Review table says an app serving only a business you
+own needs Standard Access. Its webhook setup page lists Advanced Access for
+Instagram Login webhooks, and its messaging guide says testers need a role on
+the app. Test a message from an account without a role. If no webhook
+arrives, submit App Review for `instagram_business_basic` and
+`instagram_business_manage_messages` from Complete app review on the same
+page.
+
+With the method switched off, the webhook still answers the handshake and
+acknowledges signed deliveries.
 
 #### Instagram access token renewal
 
@@ -1782,7 +1803,7 @@ the exact production bytes, and `_web-hosting-promote.yml` downloads that
 artifact by id and digest without rebuilding it. Keep only Hosting/OIDC
 variables in that environment; App Store
 Connect and mobile signing secrets are owned by `prod-mobile`; backend
-production deploys through reviewer-protected `prod`.
+production deploys through `prod`.
 Temporary mobile
 rollback duplicates in `prod` follow the cutover cleanup above.
 
@@ -1871,8 +1892,9 @@ decides; it changes production traffic. Run it from a shell signed in to
 3. Verify: `curl -sI https://catchdates.com/` has no `x-catch-release` header,
    the page source has no `/_next/static/`, and a manual run of `Website
    Production Observability` passes.
-4. Hold the train. Reject `Website Release` approvals while rolled back,
-   because an approved promotion moves live back to Next.
+4. Hold the train. Add a required reviewer to the `prod` environment and
+   reject `Website Release` approvals while rolled back, because a promotion
+   moves live back to Next.
 5. Refresh the static build. The `Marketing Website` promoter only skips
    while Next owns live, so the next website-relevant merge deploys a current
    Vite build. It needs a green package build; check the latest run first.
@@ -1880,8 +1902,8 @@ decides; it changes production traffic. Run it from a shell signed in to
    `gcloud run services update catch-website-next --project catch-dating-app-64e51 --region asia-south1 --min default`.
    The next promotion sets it back to one.
 
-To return to Next, approve the next `Website Release` train once the fix is on
-main. To roll back to the previous Next release instead, clone the version in
+To return to Next, remove that reviewer (or approve the next `Website Release`
+train) once the fix is on main. To roll back to the previous Next release instead, clone the version in
 that promotion run's `rollback.json` artifact the same way (step 2). The warm
 instance stays with the newest Cloud Run revision, not the older pinned one.
 
@@ -2682,7 +2704,7 @@ Each beta build runs the same checks as before upload: the IPA identity, the
 Google Maps configuration, the Android bundle identity and signing certificate,
 the package size and payload policy, and the live callable dependency check
 for the app's role. Android builds run only for the apps listed in the
-workflow's `PLAY_ROLES` (Host today). Google Play's API cannot create an app,
+workflow's `PLAY_ROLES` (Consumer and Host since 2026-10-30). Google Play's API cannot create an app,
 so a new app's record and its first bundle are made by hand in Play Console
 before the app is added there. For that first bundle, run `Mobile Beta` for the
 app with `android_upload` off: it builds, verifies and signs the bundle without
@@ -2837,9 +2859,11 @@ human confirmation outside repository checks:
 - Install and launch of the current Consumer and Host TestFlight builds with
   App Check, Maps, phone auth, push, and role-specific entrypoint proof
   (issue `#218`).
-- Consumer and Host Play internal-testing install and launch evidence; the
-  Consumer Play app record and its first hand upload remain open in issue
-  `#199`.
+- Host Play internal-testing install and launch evidence. Consumer has it: its
+  Play record exists, its first bundle `1.0.2 (100000)` was uploaded by hand on
+  2026-10-30, Mobile Beta run `41024235942` uploaded `100001`, and the owner
+  installed it and signed in by phone OTP after the Play app-signing
+  fingerprints were registered in Firebase.
 - Crashlytics visibility and symbolication evidence.
 - Analytics DebugView event evidence.
 - Store metadata, screenshots, privacy forms, support URL, privacy policy, and
