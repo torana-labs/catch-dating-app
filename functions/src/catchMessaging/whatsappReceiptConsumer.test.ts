@@ -20,7 +20,7 @@ import {consumeCatchReplyStatus, advanceCatchDelivery,
 
 const time = 1800000000000;
 const scope = {wabaId: "123", phoneNumberId: "456"};
-function fixture() {
+function fixture(start = time) {
   const fake = new FormPaymentTestStore();
   const db = fake as unknown as Firestore;
   const operationId = catchReplyId(scope, "wamid.inbound");
@@ -31,11 +31,11 @@ function fixture() {
     inboundEventId: "cwhe_" + "a".repeat(64), inboundMessageId: "wamid.inbound",
     inboundTextHash: "a".repeat(64), bodyHash: "b".repeat(64),
     materialHash: "c".repeat(64), readinessEvidenceHash: "d".repeat(64),
-    reviewedAtMillis: time,
-    deadlineMillis: time + CATCH_SUPPORT_WINDOW_MS, state: "completed",
+    reviewedAtMillis: start,
+    deadlineMillis: start + CATCH_SUPPORT_WINDOW_MS, state: "completed",
     providerMessageId: "wamid.outbound", deliveryStatus: "accepted",
     deliveryEventId: null, deliveryAtMillis: null,
-    createdAtMillis: time, updatedAtMillis: time});
+    createdAtMillis: start, updatedAtMillis: start});
   const key = CATCH_REPLY_OPERATIONS + "/" + operationId;
   fake.records.set(key, {...operation});
   function receipt(status: string, patch: Record<string, unknown> = {}) {
@@ -43,11 +43,11 @@ function fixture() {
       entry: [{id: scope.wabaId, changes: [{field: "messages", value: {
         messaging_product: "whatsapp", metadata: {phone_number_id: "456"},
         statuses: [{id: "wamid.outbound", status, timestamp:
-          String(time / 1000 + 1), recipient_id: "919000000001"}],
+          String(start / 1000 + 1), recipient_id: "919000000001"}],
       }}]}]}));
     const event = parseCatchWhatsappWebhook(raw, scope)[0];
-    const record = {...event, receivedAtMillis: time + 2000,
-      expiresAt: Timestamp.fromMillis(time + WEBHOOK_RETENTION_MILLIS),
+    const record = {...event, receivedAtMillis: start + 2000,
+      expiresAt: Timestamp.fromMillis(start + WEBHOOK_RETENTION_MILLIS),
       ...patch};
     fake.records.set(CATCH_RECEIPTS + "/" + event.eventId, record);
     return event.eventId;
@@ -228,7 +228,7 @@ test("exported triggers default disabled without database initialization",
   });
 
 test("exported trigger callbacks reconcile early status and replay safely",
-  {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async (t) => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {
     assert.match(process.env.FIRESTORE_EMULATOR_HOST!,
       /^(localhost|127\.0\.0\.1):[0-9]+$/u);
     const keys = ["CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED",
@@ -239,11 +239,13 @@ test("exported trigger callbacks reconcile early status and replay safely",
     });
     const app = initializeApp({projectId: "demo-catch-cat16-consumers"});
     const db = getFirestore(app);
-    const f = fixture();
+    // The triggers read the real clock, and so do the Firestore client's gRPC
+    // deadlines, so build the fixture just behind it instead of mocking
+    // Date.now (a frozen future clock makes every call exceed its deadline).
+    const f = fixture(Math.floor(Date.now() / 1000) * 1000 - 3000);
     const eventId = f.receipt("delivered");
     const receiptRef = db.collection(CATCH_RECEIPTS).doc(eventId);
     const operationRef = db.doc(f.key);
-    t.mock.method(Date, "now", () => time + 3000);
     try {
       const original = f.fake.records.get(CATCH_RECEIPTS + "/" + eventId)!;
       await receiptRef.set(original);

@@ -35,8 +35,8 @@ permissions:
 env:
   # Apps with a Google Play app record. Play's API cannot create an app, and
   # its first bundle must be uploaded by hand in Play Console, so an app joins
-  # this list only after both are done (Consumer has no record yet).
-  PLAY_ROLES: host
+  # this list only after both are done.
+  PLAY_ROLES: consumer host
 
 jobs:
   plan:
