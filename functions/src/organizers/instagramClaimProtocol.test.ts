@@ -70,7 +70,8 @@ test("a signed delivery hands over inbound messages and acknowledges",
     });
     assert.deepEqual(result, {status: 200, body: "ok"});
     assert.deepEqual(received, [{senderId: "901", text: "482 173",
-      messageKey: createHash("sha256").update("m1").digest("hex")}]);
+      messageKey: createHash("sha256").update("m1").digest("hex"),
+      attachments: [], unsupported: false}]);
   });
 
 test("a processing failure asks Meta to retry", async () => {
@@ -114,3 +115,30 @@ test("claim codes are read with or without the display space", () => {
   assert.equal(extractClaimCode("hello"), null);
   assert.equal(extractClaimCode(null), null);
 });
+
+test("shares keep their type, any instagram.com page link and field names",
+  () => {
+    const cdn = "https://scontent.cdninstagram.com/v/abc.jpg";
+    const body = {object: "instagram", entry: [{id: config.accountId,
+      messaging: [
+        {...inbound("m1", "901", ""), message: {mid: "m1", attachments: [
+          {type: "ig_post", payload: {url: cdn, title: "x"}},
+          {type: "share",
+            payload: {url: "https://instagram.com/afterfly.in/?igsh=1"}},
+          {type: "share",
+            payload: {url: "http://www.instagram.com/afterfly.in/"}},
+        ]}},
+        {...inbound("m2", "902", ""),
+          message: {mid: "m2", is_unsupported: true}},
+      ]}]};
+    const [shared, unsupported] = parseInstagramWebhook(
+      Buffer.from(JSON.stringify(body)), config.accountId);
+    assert.deepEqual(shared.attachments, [
+      {type: "ig_post", pageUrl: null, payloadKeys: ["url", "title"]},
+      {type: "share", pageUrl: "https://www.instagram.com/afterfly.in/",
+        payloadKeys: ["url"]},
+      {type: "share", pageUrl: null, payloadKeys: ["url"]},
+    ]);
+    assert.deepEqual([unsupported.unsupported, unsupported.text,
+      unsupported.attachments], [true, null, []]);
+  });

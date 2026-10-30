@@ -239,6 +239,29 @@ overwritten. Every request records its `origin`.
     (`onMessageNominationListingReady`): live with its link when the listing
     auto-published, otherwise waiting for a check.
 
+  Instagram works the same way through @catch_dates. Staff register an
+  Instagram nominator by username; the registry keys them by it
+  (`instagram-<username>`), since usernames are public. `instagramClaimWebhook`
+  sends a message with a claim code to claim verification and any other to
+  `functions/src/catchMessaging/instagramInboundRouter.ts`. The router
+  classifies with the same rules, and reads the sender's username through the
+  Graph API only when the message would be more than support. Instagram
+  allows replies only within 24 hours of the person's message, so:
+  - an unclear message asks them to send it again starting with "nominate",
+    with no stored question;
+  - the acknowledgement promises no later message, and no "listing ready"
+    message follows;
+  - a shared post or an unsupported share asks for the @handle or profile
+    link, because Meta documents only a media URL in a share. A share whose
+    payload carries an instagram.com profile link nominates that profile.
+    Attachment types and payload field names (never values) are logged, so
+    the real share shape can be learned from prod.
+
+  A receipt in `organizerClaimInstagramMessages/{messageKey}` makes each
+  message answered once and records the nominator id for auto-publish. The
+  path runs only while `SUPPLY_MESSAGE_NOMINATIONS_ENABLED` is on and the
+  environment names Catch's Instagram account.
+
   Each reply is claimed once per message and purpose
   (`catchWhatsappAutoReplies`, no text kept), never goes to a number that
   sent STOP, and only goes out inside WhatsApp's 24-hour window. Replies use
@@ -327,16 +350,17 @@ organizers as that inventory.
 
 ##### Auto-publishing trusted nominations
 
-A listing nominated by WhatsApp publishes without staff review when a
+A listing nominated by WhatsApp or Instagram publishes without staff review when a
 registered associate sent it and the adapters filled it completely (owner
 decision, 30 Oct 2026). `autoPublishNominatedListing`
 (`functions/src/operations/supplyIntake/autoPublish.ts`) runs from
-`onMessageNominationListingReady` before the "listing ready" reply and
+`onMessageNominationListingReady` before any "listing ready" reply and
 publishes only when all of these hold:
 
 - the request is a `message_nomination` from an associate, finished and not
   yet approved;
-- the sender is still an active nominator and still holds a sales role;
+- the sender is still an active nominator and still holds a sales role (read
+  from the WhatsApp receipt's number or the Instagram receipt's nominator id);
 - the build recorded no gaps (a missing image doesn't count, since listing
   images are never published) and needs no research;
 - the duplicate check compared the market's whole inventory and found nothing

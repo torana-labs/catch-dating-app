@@ -5,10 +5,11 @@
 // Typed callable request DTO emitted from callables/admin_set_supply_nominator_payload.schema.json.
 // Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Adds or updates someone who may nominate organizers by sending links to Catch's WhatsApp number. Messages from this number become Supply Intake nominations credited to the uid. The uid must hold a sales role (associate) or a current partner membership (partner). Setting active to false stops new messages counting; nothing is deleted.
+/// Adds or updates someone who may nominate organizers by sending links to Catch's WhatsApp number or Instagram account. Exactly one of phoneE164 and instagramHandle names them. Their messages become Supply Intake nominations credited to the uid. The uid must hold a sales role (associate) or a current partner membership (partner). Setting active to false stops new messages counting; nothing is deleted.
 final class AdminSetSupplyNominatorCallableRequest {
   const AdminSetSupplyNominatorCallableRequest({
-    required this.phoneE164,
+    this.phoneE164,
+    this.instagramHandle,
     required this.uid,
     required this.role,
     required this.displayName,
@@ -16,7 +17,8 @@ final class AdminSetSupplyNominatorCallableRequest {
     required this.active,
   });
 
-  final String phoneE164;
+  final String? phoneE164;
+  final String? instagramHandle;
   final String uid;
   final String role;
   final String displayName;
@@ -24,7 +26,8 @@ final class AdminSetSupplyNominatorCallableRequest {
   final bool active;
 
   Map<String, Object?> toJson() => {
-    'phoneE164': phoneE164,
+    'phoneE164': ?phoneE164,
+    'instagramHandle': ?instagramHandle,
     'uid': uid,
     'role': role,
     'displayName': displayName,

@@ -6,11 +6,10 @@ export const adminSetSupplyNominatorCallablePayloadSchema: Record<string, unknow
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_set_supply_nominator_payload.schema.json",
   "title": "AdminSetSupplyNominatorCallablePayload",
-  "description": "Adds or updates someone who may nominate organizers by sending links to Catch's WhatsApp number. Messages from this number become Supply Intake nominations credited to the uid. The uid must hold a sales role (associate) or a current partner membership (partner). Setting active to false stops new messages counting; nothing is deleted.",
+  "description": "Adds or updates someone who may nominate organizers by sending links to Catch's WhatsApp number or Instagram account. Exactly one of phoneE164 and instagramHandle names them. Their messages become Supply Intake nominations credited to the uid. The uid must hold a sales role (associate) or a current partner membership (partner). Setting active to false stops new messages counting; nothing is deleted.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "phoneE164",
     "uid",
     "role",
     "displayName",
@@ -21,6 +20,10 @@ export const adminSetSupplyNominatorCallablePayloadSchema: Record<string, unknow
     "phoneE164": {
       "type": "string",
       "pattern": "^\\+[1-9][0-9]{6,14}$"
+    },
+    "instagramHandle": {
+      "type": "string",
+      "pattern": "^[a-z0-9._]{1,30}$"
     },
     "uid": {
       "type": "string",

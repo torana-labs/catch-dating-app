@@ -11,12 +11,13 @@ import {publicSlugFor} from "../../admin/organizerListingReviewQueue";
 import {CATCH_RECEIPTS} from "../../catchMessaging/whatsappEndpointStops";
 import {catchEndpointHash} from "../../catchMessaging/whatsappReply";
 import {validateOperationWorkItem} from "../validation";
-import {resolveWhatsappNominator, type NominatorDeps} from "./nominators";
+import {INSTAGRAM_MESSAGE_RECEIPTS} from "../../catchMessaging/instagramInboundRouter";
+import {resolveNominatorById, resolveWhatsappNominator, type NominatorAuthority, type NominatorDeps} from "./nominators";
 import {intakeMarket} from "./requests";
 import {marketForIdOrAlias} from "../../locations/marketConfig";
 
 // The owner's 30 Oct decision: a listing a registered associate nominated by
-// WhatsApp, which the adapters filled completely, publishes without staff
+// message (WhatsApp or Instagram), which the adapters filled completely, publishes without staff
 // review, through the same transaction staff approval uses: noindex,
 // claimable and hidden in the app. Staff withdraw one with a suppress
 // decision. Anything short of a complete listing keeps waiting for review.
@@ -55,7 +56,7 @@ interface RequestState {
 }
 
 /**
- * Publishes a finished WhatsApp nomination when every condition holds, and
+ * Publishes a finished message nomination when every condition holds, and
  * otherwise says why it waits for staff. A request staff already approved,
  * or one this already published, is left alone.
  */
@@ -86,12 +87,9 @@ export async function autoPublishNominatedListing(deps: AutoPublishDeps, request
 
   // The nominator must still be registered and still an associate now, not
   // only when the message arrived.
-  const participantId = (await db.collection(CATCH_RECEIPTS).doc(String(request.origin?.id)).get()).data()?.participantId;
-  if (typeof participantId !== "string" || !/^[1-9][0-9]{6,14}$/u.test(participantId)) {
-    return {outcome: "needs_review", reasons: ["message_expired"]};
-  }
-  const endpointHash = catchEndpointHash("+" + participantId);
-  const nominator = await db.runTransaction((tx) => resolveWhatsappNominator(tx, db, deps, endpointHash, deps.now()));
+  const sender = await messageSender(db, String(request.origin?.id));
+  if (!sender) return {outcome: "needs_review", reasons: ["message_expired"]};
+  const nominator = await db.runTransaction((tx) => sender(tx, deps));
   if (!nominator || nominator.role !== "associate" || nominator.uid !== request.submittedBy?.uid) {
     return {outcome: "needs_review", reasons: ["nominator_not_current"]};
   }
@@ -104,7 +102,7 @@ export async function autoPublishNominatedListing(deps: AutoPublishDeps, request
     }, {
       listingWorkItemId: workItem.value.workItemId, contentHash: String(result.listingContentHash), name, publicSlug,
       marketId: market.marketId, organizerType: AUTO_PUBLISH_ORGANIZER_TYPE,
-      note: `Auto-published: registered associate ${nominator.nominatorId} nominated it by WhatsApp and the adapters filled every field. Identity was vouched for by the nominator, not reviewed by staff.`,
+      note: `Auto-published: registered associate ${nominator.nominatorId} nominated it by message and the adapters filled every field. Identity was vouched for by the nominator, not reviewed by staff.`,
     });
     logger.info("Nominated listing auto-published.", {requestId, organizerId: approved.organizerId, created: approved.created});
     return {outcome: "published", organizerId: approved.organizerId, canonicalPath: `/organizers/${publicSlug}/`};
@@ -115,6 +113,26 @@ export async function autoPublishNominatedListing(deps: AutoPublishDeps, request
     logger.info("Nominated listing left for review.", {requestId, code: error.code, message: error.message});
     return {outcome: "needs_review", reasons: [`approval_refused:${error.code}`]};
   }
+}
+
+/**
+ * Who sent the nominating message, read from its receipt: a WhatsApp
+ * receipt names the number, an Instagram one the nominator. Null once the
+ * receipt has expired.
+ */
+async function messageSender(db: FirebaseFirestore.Firestore, messageKey: string):
+  Promise<((tx: FirebaseFirestore.Transaction, deps: AutoPublishDeps) => Promise<NominatorAuthority | null>) | null> {
+  const [whatsapp, instagram] = await Promise.all([db.collection(CATCH_RECEIPTS).doc(messageKey).get(),
+    db.collection(INSTAGRAM_MESSAGE_RECEIPTS).doc(messageKey).get()]);
+  const participantId = whatsapp.data()?.participantId;
+  if (typeof participantId === "string" && /^[1-9][0-9]{6,14}$/u.test(participantId)) {
+    return (tx, deps) => resolveWhatsappNominator(tx, db, deps, catchEndpointHash("+" + participantId), deps.now());
+  }
+  const nominatorId = instagram.data()?.nominatorId;
+  if (typeof nominatorId === "string" && nominatorId.startsWith("instagram-")) {
+    return (tx, deps) => resolveNominatorById(tx, db, deps, nominatorId, deps.now());
+  }
+  return null;
 }
 
 /** The request stores the market's slug or alias; publishing needs its id. */
