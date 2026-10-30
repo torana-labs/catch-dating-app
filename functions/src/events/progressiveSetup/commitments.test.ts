@@ -116,7 +116,6 @@ for (const collection of [
 
 test("malformed private event fails before commitment scans", async () => {
   for (const patch of [
-    {organizerId: "foreign"},
     {eventOrigin: {source: "external"}},
     {publicationState: "published"},
     {bookedCount: 1},

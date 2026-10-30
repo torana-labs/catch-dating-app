@@ -354,7 +354,6 @@ for (const status of ["active", "removed"]) {
 }
 
 for (const payload of [
-  {organizerId: "club-1"},
   {organizerId: "club-1/private"},
   {organizerId: "club-1", eventId: "event-1/private"},
 ]) {

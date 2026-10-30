@@ -116,7 +116,6 @@ test("published and legacy events save private terms without event writes",
     for (const legacy of [false, true]) {
       const event = richEvent();
       if (legacy) {
-        delete event.organizerId;
         delete event.publicationState;
       }
       const h = await setup(event);

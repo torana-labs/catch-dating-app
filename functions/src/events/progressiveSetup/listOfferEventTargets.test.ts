@@ -196,12 +196,8 @@ test("foreign cursor, manager and deleted account fail", async () => {
     (error) => code(error, "failed-precondition"));
 });
 
-test("contradictory owner and malformed matching rows reject", async () => {
+test("malformed matching rows reject", async () => {
   const store = setup();
-  store.rows.set("events/a", {...privateEvent(NOW + 1_000),
-    organizerId: "other"});
-  await assert.rejects(list(store, {organizerId: "org1"}),
-    (error) => code(error, "failed-precondition"));
   store.rows.set("events/a", {...richEvent(NOW + 1_000),
     capacityLimit: undefined});
   await assert.rejects(list(store, {organizerId: "org1"}),

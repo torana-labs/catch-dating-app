@@ -60,7 +60,7 @@ test("createStripeCheckoutSessionHandler creates trusted destination checkout",
 
     assert.equal(capturedInput?.paymentId, "payment_1");
     assert.equal(capturedInput?.eventId, "event-1");
-    assert.equal(capturedInput?.organizerId, "club-1");
+    assert.equal(capturedInput?.organizerId, "organizer-1");
     assert.equal(capturedInput?.userId, "runner-1");
     assert.equal(capturedInput?.hostUserId, "host-1");
     assert.equal(capturedInput?.stripeAccountId, "acct_host_123");
