@@ -212,6 +212,35 @@ test("play fingerprints find a symlinked build-tools apksigner and read rotated-
     sha1: sha1("12"), sha256: sha256("ef"), reader: "apksigner"});
 });
 
+// build-tools 37 prints the extra Android 17+ signer Play adds first, with its
+// own certificate (run 41126725076). The app-signing key is the signer whose
+// SHA-256 Play reports, wherever it is listed.
+const hybrid = "V3.2 Hybrid Classical Signer: (minSdkVersion=37, maxSdkVersion=2147483647)";
+const multiSigner = [
+  `echo "${hybrid} certificate DN: CN=Android"`,
+  `echo "${hybrid} certificate SHA-256 digest: ${sha256("aa")}"`,
+  `echo "${hybrid} certificate SHA-1 digest: ${sha1("bb")}"`,
+  `echo "Signer #1 certificate DN: CN=Android"`,
+  `echo "Signer #1 certificate SHA-256 digest: ${sha256("ef")}"`,
+  `echo "Signer #1 certificate SHA-1 digest: ${sha1("12")}"`,
+].join("; ");
+
+test("play fingerprints pick the signer whose SHA-256 Play reports", (t) => {
+  const result = play(t, {reported: sha256("ef"), keytool: 'echo "Not a signed jar file"', androidHomeApksigner: multiSigner});
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), {package: "com.catchdates.app", versionCode: "100001",
+    sha1: sha1("12"), sha256: sha256("ef"), reader: "apksigner"});
+  const hybridOnly = play(t, {reported: sha256("aa"), keytool: 'echo "Not a signed jar file"', androidHomeApksigner: multiSigner});
+  assert.equal(JSON.parse(hybridOnly.stdout).sha1, sha1("bb"));
+});
+
+test("play fingerprints list the signers when none has Play's SHA-256", (t) => {
+  const result = play(t, {reported: sha256("99"), keytool: 'echo "Not a signed jar file"', androidHomeApksigner: multiSigner});
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, new RegExp(`No apksigner signer has Play's certificateSha256Hash ${sha256("99")}`, "u"));
+  assert.match(result.stderr, new RegExp(`V3\\.2 Hybrid Classical Signer: \\(minSdkVersion=37, maxSdkVersion=2147483647\\)=${sha256("aa")}; Signer #1=${sha256("ef")}`, "u"));
+});
+
 test("play fingerprints explain why neither reader worked", (t) => {
   const result = play(t, {reported: sha256("ef"), keytool: 'echo "Not a signed jar file"',
     apksigner: 'echo "DOES NOT VERIFY"; echo "ERROR: no signers" >&2; exit 1'});
