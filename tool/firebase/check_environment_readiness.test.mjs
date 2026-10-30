@@ -1256,15 +1256,34 @@ test("flight credentials remain inactive when the separately controlled policy i
   assert.equal(result.reference, fn.serviceConfig.environmentVariables.FLIGHT_PROVIDER_CONFIG_VERSION);
 });
 
-test("a new optional consumer may be deployed before it exists; a required one, or the post-deploy check, may not", () => {
+test("a new consumer may be deployed before it exists; the post-deploy check still requires it", () => {
+  let latestState = "ENABLED";
+  const commands = [];
   const run = (targets, candidate = undefined) => runEnvironmentReadiness({aliases, environments: ["dev"], manifest,
     sourceSha: "a".repeat(40), candidate, phase: "deployed", targets,
-    runCommand: (spec) => spec.args[0] === "functions" ? metadata([]) : readyMetadataRunner(spec)});
+    runCommand: (spec) => {
+      commands.push(spec.args);
+      if (spec.args[0] === "functions") return metadata([]);
+      if (spec.args[0] === "secrets" && spec.args[1] === "versions" && spec.args[3] === "latest") {
+        return metadata({name: "projects/catchdates-dev/secrets/ALGOLIA_SEARCH_API_KEY/versions/4", state: latestState,
+          payload: "never-persist-me"});
+      }
+      return readyMetadataRunner(spec);
+    }});
   const fresh = run(["functions:onMessageNominationListingReady"]);
   const result = fresh.environments[0].results.find((entry) => entry.id ===
     "functions.reference.catch-auto-reply:onMessageNominationListingReady");
   assert.deepEqual([fresh.exitCode, result.status, result.reason], [0, "inactive", "optional-consumer-not-deployed"]);
-  assert.equal(run(["functions:exploreSearch"]).exitCode, 1, "a required secret consumer must exist");
+  const required = run(["functions:exploreSearch"]);
+  const secret = required.environments[0].results.find((entry) => entry.id ===
+    "functions.secret.algolia-search-api-key:exploreSearch");
+  assert.deepEqual([required.exitCode, secret.status, secret.reason, secret.metadata.reference],
+    [0, "ready", "first-deploy-latest-version-enabled", "projects/catchdates-dev/secrets/ALGOLIA_SEARCH_API_KEY/versions/4"]);
+  assert.equal(JSON.stringify(required).includes("never-persist-me"), false);
+  assert.equal(commands.some((args) => args.includes("access")), false, "no payload is read");
+  latestState = "DISABLED";
+  assert.equal(run(["functions:exploreSearch"]).exitCode, 1, "the version the deploy binds must be enabled");
+  latestState = "ENABLED";
   const candidate = {version: 1, sourceSha: "a".repeat(40), environment: "dev", projectId: "catchdates-dev",
     paramsSha256: "c".repeat(64), functions: [{consumer: "onMessageNominationListingReady",
       serviceAccount: "123-compute@developer.gserviceaccount.com"}],
