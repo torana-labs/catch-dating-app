@@ -259,37 +259,37 @@ abstract final class CatchOpacity {
   static const double surfaceSashFill = 0.92;
 
   /// Club-cover fallback art overlay highlight.
-  static const double clubCoverHighlightOverlay = 0.10;
+  static const double organizerCoverHighlightOverlay = 0.10;
 
   /// Club-cover fallback art low scrim.
-  static const double clubCoverLowScrim = 0.04;
+  static const double organizerCoverLowScrim = 0.04;
 
   /// Club-cover fallback location-chip fill.
-  static const double clubCoverChipFill = 0.72;
+  static const double organizerCoverChipFill = 0.72;
 
   /// Club-cover fallback location-chip border.
-  static const double clubCoverChipBorder = 0.62;
+  static const double organizerCoverChipBorder = 0.62;
 
   /// Club-cover fallback pattern block overlay.
-  static const double clubCoverPatternBlock = 0.44;
+  static const double organizerCoverPatternBlock = 0.44;
 
   /// Club-cover fallback pattern line overlay.
-  static const double clubCoverPatternLine = 0.28;
+  static const double organizerCoverPatternLine = 0.28;
 
   /// Club-cover fallback pattern dot overlay.
-  static const double clubCoverPatternDot = 0.50;
+  static const double organizerCoverPatternDot = 0.50;
 
   /// Club-cover deterministic palette accent blend.
-  static const double clubCoverAccentBlend = 0.22;
+  static const double organizerCoverAccentBlend = 0.22;
 
   /// Club-cover deterministic palette deep blend.
-  static const double clubCoverDeepBlend = 0.18;
+  static const double organizerCoverDeepBlend = 0.18;
 
   /// Club-cover deterministic palette line.
-  static const double clubCoverPaletteLine = 0.30;
+  static const double organizerCoverPaletteLine = 0.30;
 
   /// Club-cover deterministic palette block.
-  static const double clubCoverPaletteBlock = 0.45;
+  static const double organizerCoverPaletteBlock = 0.45;
 
   /// Event detail hero top-control scrim.
   static const double eventHeroOverlayScrim = 0.35;
@@ -503,19 +503,19 @@ abstract final class CatchOpacity {
   static const double photoSlotDeleteChrome = 0.90;
 
   /// Compact club member seal fill.
-  static const double clubMemberSealCompactFill = 0.90;
+  static const double organizerMemberSealCompactFill = 0.90;
 
   /// Full club member seal fill.
-  static const double clubMemberSealFill = 0.72;
+  static const double organizerMemberSealFill = 0.72;
 
   /// Club member seal accent border.
-  static const double clubMemberSealBorder = 0.46;
+  static const double organizerMemberSealBorder = 0.46;
 
   /// Club rating pill fill.
-  static const double clubRatingFill = 0.13;
+  static const double organizerRatingFill = 0.13;
 
   /// Club rating pill border.
-  static const double clubRatingBorder = 0.30;
+  static const double organizerRatingBorder = 0.30;
 
   /// Floating pass-button fill over profile media.
   static const double passButtonFill = 0.96;

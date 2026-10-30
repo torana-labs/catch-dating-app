@@ -98,7 +98,7 @@ AsyncValue<ChatsListViewModel> hostInboxCatchViewModel(Ref ref) {
       ref.watch(matchStreamProvider(cached.id)),
     ).value;
     if (match != null &&
-        match.isClubHostInquiry &&
+        match.isOrganizerHostInquiry &&
         !match.isBlocked &&
         !match.isClosed &&
         (match.user1Id == uid || match.user2Id == uid)) {
@@ -119,7 +119,7 @@ AsyncValue<ChatsListViewModel> hostInboxCatchViewModel(Ref ref) {
       match,
       uid,
       isHostViewer: true,
-      clubsById: const {},
+      organizersById: const {},
       profilesByUid: profiles ?? const {},
     );
   }

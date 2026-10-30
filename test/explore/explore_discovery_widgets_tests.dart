@@ -37,18 +37,18 @@ void _registerExploreDiscoveryWidgetsTests() {
   testWidgets('ClubsContent renders personal rail and mixed discovery cards', (
     tester,
   ) async {
-    await _pumpClubsSlivers(tester, [
+    await _pumpOrganizersSlivers(tester, [
       _exploreBodySliverGroup(
-        includeClubDirectory: false,
-        clubsViewModel: ExploreViewModel(
-          joinedClubs: [
-            buildClub(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
+        includeOrganizerDirectory: false,
+        organizersViewModel: ExploreViewModel(
+          joinedOrganizers: [
+            buildOrganizer(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
           ],
-          allClubs: [
-            buildClub(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
-            buildClub(id: 'discover-1'),
+          allOrganizers: [
+            buildOrganizer(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
+            buildOrganizer(id: 'discover-1'),
           ],
-          joinedClubIds: {'joined-1'},
+          joinedOrganizerIds: {'joined-1'},
         ),
       ),
     ]);
@@ -61,22 +61,22 @@ void _registerExploreDiscoveryWidgetsTests() {
   testWidgets('Explore body keeps joined rail and club directory together', (
     tester,
   ) async {
-    final joinedClub = buildClub(
+    final joinedOrganizer = buildOrganizer(
       id: 'joined-directory-club',
       name: 'Joined Pacers',
       nextEventLabel: 'Sat 6:30 AM',
     );
-    final discoverClub = buildClub(
+    final discoverOrganizer = buildOrganizer(
       id: 'discover-directory-club',
       name: 'Discover Social',
     );
 
-    await _pumpClubsSlivers(tester, [
+    await _pumpOrganizersSlivers(tester, [
       _exploreBodySliverGroup(
-        clubsViewModel: ExploreViewModel(
-          joinedClubs: [joinedClub],
-          allClubs: [joinedClub, discoverClub],
-          joinedClubIds: {joinedClub.id},
+        organizersViewModel: ExploreViewModel(
+          joinedOrganizers: [joinedOrganizer],
+          allOrganizers: [joinedOrganizer, discoverOrganizer],
+          joinedOrganizerIds: {joinedOrganizer.id},
         ),
       ),
     ]);
@@ -97,20 +97,23 @@ void _registerExploreDiscoveryWidgetsTests() {
   testWidgets('Explore body exposes an honest load-more action', (
     tester,
   ) async {
-    final club = buildClub(id: 'cursor-club', name: 'Cursor Club');
+    final organizer = buildOrganizer(id: 'cursor-club', name: 'Cursor Club');
     final event = event_test.buildEvent(
       id: 'cursor-event',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime.now().add(const Duration(days: 1)),
     );
     var loadMoreCalls = 0;
 
-    await _pumpClubsSlivers(tester, [
+    await _pumpOrganizersSlivers(tester, [
       _exploreBodySliverGroup(
-        clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
+        organizersViewModel: const ExploreViewModel(
+          joinedOrganizers: [],
+          allOrganizers: [],
+        ),
         feedAsync: AsyncData(
           ExploreFeedViewModel(
-            items: [ExploreEventItem(event: event, club: club)],
+            items: [ExploreEventItem(event: event, organizer: organizer)],
             isExhaustive: false,
           ),
         ),
@@ -134,7 +137,7 @@ void _registerExploreDiscoveryWidgetsTests() {
   testWidgets('ExploreEventsSection renders event-first content', (
     tester,
   ) async {
-    final club = buildClub(
+    final organizer = buildOrganizer(
       id: 'club-event',
       name: 'Pace Social',
       area: 'Necklace Road',
@@ -149,7 +152,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     );
     final featuredEvent = event_test.buildEvent(
       id: 'event-featured',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: eventDay.add(const Duration(hours: 10)),
       meetingPoint: 'People Plaza',
       bookedCount: 8,
@@ -157,7 +160,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     );
     final bodyEvent = event_test.buildEvent(
       id: 'event-body',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: eventDay.add(const Duration(hours: 14)),
       meetingPoint: 'Library steps',
       bookedCount: 8,
@@ -180,7 +183,7 @@ void _registerExploreDiscoveryWidgetsTests() {
                     items: [
                       ExploreEventItem(
                         event: featuredEvent,
-                        club: club,
+                        organizer: organizer,
                         availability: resolveViewerEventAvailability(
                           event: featuredEvent,
                           userProfile: null,
@@ -190,7 +193,7 @@ void _registerExploreDiscoveryWidgetsTests() {
                       ),
                       ExploreEventItem(
                         event: bodyEvent,
-                        club: club,
+                        organizer: organizer,
                         availability: resolveViewerEventAvailability(
                           event: bodyEvent,
                           userProfile: null,
@@ -231,25 +234,25 @@ void _registerExploreDiscoveryWidgetsTests() {
       addTearDown(tester.view.resetDevicePixelRatio);
 
       final today = DateUtils.dateOnly(DateTime.now());
-      final eventClub = buildClub(id: 'group-event-club');
-      final spotlightClub = buildClub(
+      final eventOrganizer = buildOrganizer(id: 'group-event-club');
+      final spotlightOrganizer = buildOrganizer(
         id: 'group-spotlight-club',
         name: 'Spotlight Club',
         nextEventLabel: 'Friday',
       );
       final first = event_test.buildEvent(
         id: 'group-first',
-        clubId: eventClub.id,
+        clubId: eventOrganizer.id,
         startTime: today.add(const Duration(hours: 10)),
       );
       final second = event_test.buildEvent(
         id: 'group-second',
-        clubId: eventClub.id,
+        clubId: eventOrganizer.id,
         startTime: today.add(const Duration(hours: 11)),
       );
       final nextDay = event_test.buildEvent(
         id: 'group-next-day',
-        clubId: eventClub.id,
+        clubId: eventOrganizer.id,
         startTime: today.add(const Duration(days: 1, hours: 10)),
       );
       final external =
@@ -272,17 +275,17 @@ void _registerExploreDiscoveryWidgetsTests() {
                     items: [
                       ExploreEventItem(
                         event: first,
-                        club: eventClub,
+                        organizer: eventOrganizer,
                         status: EventTileStatus.open,
                       ),
                       ExploreEventItem(
                         event: second,
-                        club: eventClub,
+                        organizer: eventOrganizer,
                         status: EventTileStatus.open,
                       ),
                       ExploreEventItem(
                         event: nextDay,
-                        club: eventClub,
+                        organizer: eventOrganizer,
                         status: EventTileStatus.open,
                       ),
                     ],
@@ -292,7 +295,7 @@ void _registerExploreDiscoveryWidgetsTests() {
                 filters: const ExploreFilterSelection(
                   timeFilter: ExploreTimeFilter.anytime,
                 ),
-                candidateClubs: [spotlightClub],
+                candidateOrganizers: [spotlightOrganizer],
                 now: today,
               ),
             ),
@@ -327,10 +330,10 @@ void _registerExploreDiscoveryWidgetsTests() {
     tester,
   ) async {
     final today = DateUtils.dateOnly(DateTime.now());
-    final club = buildClub(id: 'inline-header-club');
+    final organizer = buildOrganizer(id: 'inline-header-club');
     final event = event_test.buildEvent(
       id: 'inline-header-event',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: today.add(const Duration(hours: 10)),
     );
 
@@ -345,7 +348,7 @@ void _registerExploreDiscoveryWidgetsTests() {
                   items: [
                     ExploreEventItem(
                       event: event,
-                      club: club,
+                      organizer: organizer,
                       status: EventTileStatus.open,
                     ),
                   ],
@@ -377,22 +380,22 @@ void _registerExploreDiscoveryWidgetsTests() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     final today = DateUtils.dateOnly(DateTime.now());
-    final eventClub = buildClub(id: 'boundary-event-club');
-    final directoryClub = buildClub(
+    final eventOrganizer = buildOrganizer(id: 'boundary-event-club');
+    final directoryOrganizer = buildOrganizer(
       id: 'boundary-directory-club',
       name: 'Boundary Social',
     );
-    final directoryClubs = [
-      directoryClub,
+    final directoryOrganizers = [
+      directoryOrganizer,
       for (var index = 1; index < 10; index += 1)
-        buildClub(
+        buildOrganizer(
           id: 'boundary-directory-club-$index',
           name: 'Boundary Social $index',
         ),
     ];
     final event = event_test.buildEvent(
       id: 'boundary-event',
-      clubId: eventClub.id,
+      clubId: eventOrganizer.id,
       startTime: today.add(const Duration(hours: 10)),
     );
 
@@ -412,16 +415,16 @@ void _registerExploreDiscoveryWidgetsTests() {
                         items: [
                           ExploreEventItem(
                             event: event,
-                            club: eventClub,
+                            organizer: eventOrganizer,
                             status: EventTileStatus.open,
                           ),
                         ],
                       ),
                     ),
                   ),
-                  clubsViewModel: ExploreViewModel(
-                    joinedClubs: const [],
-                    allClubs: directoryClubs,
+                  organizersViewModel: ExploreViewModel(
+                    joinedOrganizers: const [],
+                    allOrganizers: directoryOrganizers,
                   ),
                   filters: const ExploreFilterSelection(
                     timeFilter: ExploreTimeFilter.anytime,
@@ -464,32 +467,35 @@ void _registerExploreDiscoveryWidgetsTests() {
   testWidgets('Explore body slivers keep feed visible when clubs fail', (
     tester,
   ) async {
-    final club = buildClub(id: 'club-feed-only', name: 'Pace Social');
+    final organizer = buildOrganizer(id: 'club-feed-only', name: 'Pace Social');
     final featuredEvent = event_test.buildEvent(
       id: 'event-feed-featured',
-      clubId: club.id,
+      clubId: organizer.id,
       meetingPoint: 'People Plaza',
       bookedCount: 8,
       capacityLimit: 12,
     );
     final bodyEvent = event_test.buildEvent(
       id: 'event-feed-only',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime.now().add(const Duration(hours: 4)),
       meetingPoint: 'People Plaza',
       bookedCount: 8,
       capacityLimit: 12,
     );
 
-    await _pumpClubsSlivers(tester, [
+    await _pumpOrganizersSlivers(tester, [
       _exploreBodySliverGroup(
-        clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
+        organizersViewModel: const ExploreViewModel(
+          joinedOrganizers: [],
+          allOrganizers: [],
+        ),
         feedAsync: AsyncData(
           ExploreFeedViewModel(
             items: [
               ExploreEventItem(
                 event: featuredEvent,
-                club: club,
+                organizer: organizer,
                 availability: resolveViewerEventAvailability(
                   event: featuredEvent,
                   userProfile: null,
@@ -499,7 +505,7 @@ void _registerExploreDiscoveryWidgetsTests() {
               ),
               ExploreEventItem(
                 event: bodyEvent,
-                club: club,
+                organizer: organizer,
                 availability: resolveViewerEventAvailability(
                   event: bodyEvent,
                   userProfile: null,
@@ -510,7 +516,7 @@ void _registerExploreDiscoveryWidgetsTests() {
             ],
           ),
         ),
-        clubSectionError: StateError('clubs failed'),
+        organizerSectionError: StateError('clubs failed'),
       ),
     ]);
 
@@ -521,16 +527,16 @@ void _registerExploreDiscoveryWidgetsTests() {
   testWidgets('ExploreDiscoveryCoverHeader CTA delegates featured item', (
     tester,
   ) async {
-    final club = buildClub(id: 'club-cover', name: 'Pace Social');
+    final organizer = buildOrganizer(id: 'club-cover', name: 'Pace Social');
     final event = event_test.buildEvent(
       id: 'event-cover',
-      clubId: club.id,
+      clubId: organizer.id,
       bookedCount: 8,
       capacityLimit: 12,
     );
     final item = ExploreEventItem(
       event: event,
-      club: club,
+      organizer: organizer,
       availability: resolveViewerEventAvailability(
         event: event,
         userProfile: null,
@@ -573,15 +579,18 @@ void _registerExploreDiscoveryWidgetsTests() {
       );
     }
 
-    final club = buildClub(id: 'club-cover-safe', name: 'Pace Social');
+    final organizer = buildOrganizer(
+      id: 'club-cover-safe',
+      name: 'Pace Social',
+    );
     final event = event_test.buildEvent(
       id: 'event-cover-safe',
-      clubId: club.id,
+      clubId: organizer.id,
       meetingPoint: 'People Plaza',
     );
     final item = ExploreEventItem(
       event: event,
-      club: club,
+      organizer: organizer,
       availability: resolveViewerEventAvailability(
         event: event,
         userProfile: null,

@@ -3,43 +3,40 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test(
-    'shared router does not import host management form implementations',
-    () {
-      final router = File('lib/routing/go_router.dart').readAsStringSync();
+  test('shared router does not import host management form implementations', () {
+    final router = File('lib/routing/go_router.dart').readAsStringSync();
 
-      expect(router, isNot(contains('clubs/presentation/create/')));
-      expect(
-        router,
-        isNot(contains('events/presentation/create_event_screen.dart')),
-      );
-      expect(
-        router,
-        isNot(contains('hosts/presentation/club_management/create/')),
-      );
-      expect(
-        router,
-        isNot(contains('hosts/presentation/event_management/create/')),
-      );
-      expect(
-        router,
-        contains(
-          'hosts/presentation/club_management/host_create_club_screen.dart',
-        ),
-      );
-      expect(
-        router,
-        contains(
-          'hosts/presentation/event_management/host_create_event_screen.dart',
-        ),
-      );
-    },
-  );
+    expect(router, isNot(contains('organizers/presentation/create/')));
+    expect(
+      router,
+      isNot(contains('events/presentation/create_event_screen.dart')),
+    );
+    expect(
+      router,
+      isNot(contains('hosts/presentation/organizer_management/create/')),
+    );
+    expect(
+      router,
+      isNot(contains('hosts/presentation/event_management/create/')),
+    );
+    expect(
+      router,
+      contains(
+        'hosts/presentation/organizer_management/host_create_organizer_screen.dart',
+      ),
+    );
+    expect(
+      router,
+      contains(
+        'hosts/presentation/event_management/host_create_event_screen.dart',
+      ),
+    );
+  });
 
   test('host management implementation files live outside consumer folders', () {
     expect(
       File(
-        'lib/clubs/presentation/create/create_club_screen.dart',
+        'lib/organizers/presentation/create/create_organizer_screen.dart',
       ).existsSync(),
       isFalse,
     );
@@ -49,7 +46,7 @@ void main() {
     );
     expect(
       File(
-        'lib/clubs/presentation/detail/club_host_management_controller.dart',
+        'lib/organizers/presentation/detail/organizer_host_management_controller.dart',
       ).existsSync(),
       isFalse,
     );
@@ -61,7 +58,7 @@ void main() {
     );
     expect(
       File(
-        'lib/hosts/presentation/club_management/create/create_club_screen.dart',
+        'lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart',
       ).existsSync(),
       isTrue,
     );
@@ -73,7 +70,7 @@ void main() {
     );
     expect(
       File(
-        'lib/hosts/presentation/club_management/host_team_management_controller.dart',
+        'lib/hosts/presentation/organizer_management/host_team_management_controller.dart',
       ).existsSync(),
       isTrue,
     );

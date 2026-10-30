@@ -1,0 +1,470 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/admin_payment_routing.feature.json",
+  "generatedFor": "2026-10-30",
+  "sourceDigest": "sha256:95dee1f35f20fefd589336f2e537047990a8afe416a3ee2dbf90d47bb6e0083f",
+  "resolvedDigest": "sha256:f55e8a92689e07798b739a73092531a5bfd963b1b4e5b8b4c8dcfc79c9464839",
+  "feature": {
+    "id": "feature.admin_payment_routing",
+    "name": "Admin Payment Routing",
+    "owner": "admin_console",
+    "status": "pilot",
+    "description": "Finance and Admin Owner see who collects event tickets, form fees and host memberships and whether each is in test or live mode, preview a routing change against the saved revision, and type a confirmation before any purpose goes live, switches to the Route split, or turns off."
+  },
+  "coverage": {
+    "surfaces": 1,
+    "states": 1,
+    "scenarios": 1,
+    "actionCases": 6,
+    "actions": 7,
+    "captures": 0,
+    "previews": 1,
+    "testFiles": 3,
+    "evidenceExceptions": 0
+  },
+  "surfaces": [
+    {
+      "id": "admin_web",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_payment_routing"
+      },
+      "actionScope": {
+        "included": "Refreshing the app routing policy, starting an edit, choosing a route and mode per purpose, reviewing the change, typing the required confirmations, saving against the reviewed revision, and retrying an unconfirmed save exactly.",
+        "excluded": [
+          "Organizer routing overrides are not edited here.",
+          "A selected route does not prove the Razorpay account behind it is ready; provider setup stays in its own flows.",
+          "Stripe routes are preserved when stored but cannot be chosen."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "admin/src/stories/AdminFinanceSettings.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/payment-routing/controllers/usePaymentRoutingController.ts",
+            "symbol": "usePaymentRoutingController"
+          },
+          {
+            "id": "screen",
+            "language": "typescript",
+            "file": "admin/src/features/payment-routing/ui/PaymentRoutingScreen.tsx",
+            "symbol": "PaymentRoutingWorkspace"
+          }
+        ],
+        "componentContracts": [
+          "route_payment_routing",
+          "workspace_payment_routing"
+        ],
+        "dataContracts": [
+          "contracts/callables/manage_payment_routing_policy_payload.schema.json",
+          "contracts/callable_responses/manage_payment_routing_policy_response.schema.json",
+          "contracts/shared/payment_routing.schema.json"
+        ],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "managePaymentRoutingPolicy",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "payment-routing": [
+            "admin/src/features/payment-routing/controllers/usePaymentRoutingController.test.tsx",
+            "admin/src/features/payment-routing/controllers/paymentRoutingForm.test.ts",
+            "admin/src/features/payment-routing/ui/PaymentRoutingScreen.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 1,
+        "scenarios": 1,
+        "actionCases": 6,
+        "actions": 7,
+        "captures": 0,
+        "previews": 1,
+        "testFiles": 3,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "policy": {
+          "default": "saved",
+          "values": [
+            "saved",
+            "unsaved"
+          ]
+        },
+        "edit": {
+          "default": "viewing",
+          "values": [
+            "viewing",
+            "editing",
+            "preview"
+          ]
+        },
+        "risk": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "unconfirmed",
+            "confirmed"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "refresh_payment_routing",
+          "owner": "controller",
+          "codeValue": "refresh",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "policyRevision"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "payment-routing"
+              ]
+            }
+          ],
+          "description": "Rereads the app payment routing policy.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "start_routing_edit",
+          "owner": "controller",
+          "codeValue": "startEdit",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "policyRevision"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "payment-routing"
+              ]
+            }
+          ],
+          "description": "Opens a draft of the saved routing.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "choose_purpose_route",
+          "owner": "controller",
+          "codeValue": "setPurpose",
+          "cardinality": "domain_bounded",
+          "scopeKeys": [
+            "purpose",
+            "draftVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "payment-routing"
+              ]
+            }
+          ],
+          "description": "Chooses who collects one purpose and its test or live mode.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "review_routing_change",
+          "owner": "controller",
+          "codeValue": "review",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "policyRevision",
+            "draftVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "payment-routing"
+              ]
+            }
+          ],
+          "description": "Shows each changed purpose and the confirmations it needs.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "type_routing_confirmation",
+          "owner": "controller",
+          "codeValue": "setTyped",
+          "cardinality": "domain_bounded",
+          "scopeKeys": [
+            "confirmationId",
+            "draftVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "payment-routing"
+              ]
+            }
+          ],
+          "description": "Types the phrase for a live, Route or off change.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "save_payment_routing",
+          "owner": "controller",
+          "codeValue": "save",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "actorUid",
+            "expectedRevision",
+            "draftVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "payment-routing"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "finance.payment_routing_saved"
+            }
+          ],
+          "description": "Saves the reviewed routing as the next revision.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "cancel_routing_edit",
+          "owner": "controller",
+          "codeValue": "cancelEdit",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "draftVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "payment-routing"
+              ]
+            }
+          ],
+          "description": "Discards the draft.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "payment_routing",
+          "stateId": "payment-routing",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "policy": "saved",
+            "edit": "viewing",
+            "risk": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_payment_routing/PaymentRoutingRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/payment-routing/controllers/usePaymentRoutingController.test.tsx",
+              "admin/src/features/payment-routing/controllers/paymentRoutingForm.test.ts",
+              "admin/src/features/payment-routing/ui/PaymentRoutingScreen.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "routing_saved",
+              "dimensions": {
+                "policy": "saved",
+                "edit": "viewing",
+                "risk": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "refresh_payment_routing",
+                  "start_routing_edit"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "choose_purpose_route",
+                  "review_routing_change",
+                  "type_routing_confirmation",
+                  "save_payment_routing",
+                  "cancel_routing_edit"
+                ]
+              }
+            },
+            {
+              "id": "routing_unsaved",
+              "dimensions": {
+                "policy": "unsaved",
+                "edit": "viewing",
+                "risk": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "refresh_payment_routing",
+                  "start_routing_edit"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "choose_purpose_route",
+                  "review_routing_change",
+                  "type_routing_confirmation",
+                  "save_payment_routing",
+                  "cancel_routing_edit"
+                ]
+              }
+            },
+            {
+              "id": "routing_editing",
+              "dimensions": {
+                "policy": "saved",
+                "edit": "editing",
+                "risk": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "choose_purpose_route",
+                  "review_routing_change",
+                  "cancel_routing_edit"
+                ],
+                "disabled": [
+                  "save_payment_routing"
+                ],
+                "notAllowed": [
+                  "refresh_payment_routing",
+                  "start_routing_edit",
+                  "type_routing_confirmation"
+                ]
+              }
+            },
+            {
+              "id": "routing_preview_standard",
+              "dimensions": {
+                "policy": "saved",
+                "edit": "preview",
+                "risk": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "save_payment_routing",
+                  "cancel_routing_edit"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "refresh_payment_routing",
+                  "start_routing_edit",
+                  "choose_purpose_route",
+                  "review_routing_change",
+                  "type_routing_confirmation"
+                ]
+              }
+            },
+            {
+              "id": "routing_preview_unconfirmed",
+              "dimensions": {
+                "policy": "saved",
+                "edit": "preview",
+                "risk": "unconfirmed"
+              },
+              "actions": {
+                "enabled": [
+                  "type_routing_confirmation",
+                  "cancel_routing_edit"
+                ],
+                "disabled": [
+                  "save_payment_routing"
+                ],
+                "notAllowed": [
+                  "refresh_payment_routing",
+                  "start_routing_edit",
+                  "choose_purpose_route",
+                  "review_routing_change"
+                ]
+              }
+            },
+            {
+              "id": "routing_preview_confirmed",
+              "dimensions": {
+                "policy": "saved",
+                "edit": "preview",
+                "risk": "confirmed"
+              },
+              "actions": {
+                "enabled": [
+                  "type_routing_confirmation",
+                  "save_payment_routing",
+                  "cancel_routing_edit"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "refresh_payment_routing",
+                  "start_routing_edit",
+                  "choose_purpose_route",
+                  "review_routing_change"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_payment_routing",
+          "source": "admin/src/features/payment-routing/ui/PaymentRoutingScreen.tsx",
+          "exportName": "PaymentRoutingScreen"
+        },
+        "components": [
+          {
+            "id": "route_payment_routing",
+            "kind": "route",
+            "source": "admin/src/features/payment-routing/ui/PaymentRoutingScreen.tsx",
+            "exportName": "PaymentRoutingScreen",
+            "storybook": {
+              "status": "ready",
+              "story": "admin/src/stories/AdminFinanceSettings.stories.tsx",
+              "exportName": "PaymentRoutingRouteStory",
+              "states": [
+                "payment-routing"
+              ]
+            }
+          },
+          {
+            "id": "workspace_payment_routing",
+            "kind": "workspace",
+            "source": "admin/src/features/payment-routing/ui/PaymentRoutingScreen.tsx",
+            "exportName": "PaymentRoutingWorkspace",
+            "storybook": {
+              "status": "ready",
+              "story": "admin/src/stories/AdminFinanceSettings.stories.tsx",
+              "exportName": "PaymentRoutingWorkspaceStory",
+              "states": [
+                "change-preview",
+                "typed-confirmation"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "route_payment_routing/PaymentRoutingRouteStory"
+        ]
+      }
+    }
+  ]
+}

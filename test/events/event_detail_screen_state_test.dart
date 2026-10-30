@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
@@ -13,7 +13,7 @@ import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart' as clubs;
+import '../organizers/organizers_test_helpers.dart' as organizers;
 import 'events_test_helpers.dart' as events;
 
 final _l10n = AppLocalizationsEn();
@@ -521,7 +521,7 @@ void main() {
       expect(
         eventDetailHostStateFrom(
           l10n: _l10n,
-          clubState: const CatchAsyncState<Club?>.data(null),
+          organizerState: const CatchAsyncState<Organizer?>.data(null),
           currentUid: 'runner-1',
           canMessageHost: true,
         ).status,
@@ -530,7 +530,7 @@ void main() {
       expect(
         eventDetailHostStateFrom(
           l10n: _l10n,
-          clubState: const CatchAsyncState<Club?>.loading(),
+          organizerState: const CatchAsyncState<Organizer?>.loading(),
           currentUid: 'runner-1',
           canMessageHost: true,
         ).status,
@@ -540,7 +540,7 @@ void main() {
       final error = StateError('club failed');
       final errored = eventDetailHostStateFrom(
         l10n: _l10n,
-        clubState: CatchAsyncState<Club?>.error(error),
+        organizerState: CatchAsyncState<Organizer?>.error(error),
         currentUid: 'runner-1',
         canMessageHost: true,
       );
@@ -549,7 +549,7 @@ void main() {
     });
 
     test('derives content display data and message availability', () {
-      final club = clubs.buildClub(
+      final organizer = organizers.buildOrganizer(
         id: 'host-club',
         name: 'Tempo House',
         hostName: 'Mira',
@@ -562,7 +562,7 @@ void main() {
 
       final state = eventDetailHostStateFrom(
         l10n: _l10n,
-        clubState: CatchAsyncState<Club?>.data(club),
+        organizerState: CatchAsyncState<Organizer?>.data(organizer),
         currentUid: 'runner-1',
         canMessageHost: true,
       );
@@ -578,7 +578,7 @@ void main() {
 
       final self = eventDetailHostStateFrom(
         l10n: _l10n,
-        clubState: CatchAsyncState<Club?>.data(club),
+        organizerState: CatchAsyncState<Organizer?>.data(organizer),
         currentUid: 'host-1',
         canMessageHost: true,
       );
@@ -586,7 +586,7 @@ void main() {
     });
 
     test('shows the verified seal only for owner-verified authority', () {
-      final club = clubs.buildClub().copyWith(
+      final organizer = organizers.buildOrganizer().copyWith(
         claim: OrganizerClaim.fromJson({'state': 'verified'}),
         provenance: OrganizerProvenance.fromJson({
           'origin': 'scraper',
@@ -597,7 +597,7 @@ void main() {
 
       final state = eventDetailHostStateFrom(
         l10n: _l10n,
-        clubState: CatchAsyncState<Club?>.data(club),
+        organizerState: CatchAsyncState<Organizer?>.data(organizer),
         currentUid: 'runner-1',
         canMessageHost: true,
       );

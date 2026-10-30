@@ -40,50 +40,52 @@ export function assertSupplyIntakeRequest(value) {
  * as a gap; every other failure is a per-page outcome.
  */
 export async function gatherIntakeEvidence({request, pageSource, now, maxPages = MAX_INTAKE_PAGES,
-  timezone = "Asia/Kolkata"}) {
+  timezone = "Asia/Kolkata", linkSearch = null}) {
   const intake = assertSupplyIntakeRequest(request);
   invariant(pageSource && typeof pageSource.capture === "function", "ACQUISITION_PORT_MISSING",
     "Intake gathering requires an injected page source.");
   invariant(Number.isSafeInteger(maxPages) && maxPages > 0 && maxPages <= MAX_INTAKE_PAGES,
     "INVALID_INTAKE_REQUEST", `Intake gathering reads at most ${MAX_INTAKE_PAGES} pages.`);
+  invariant(linkSearch === null || typeof linkSearch.search === "function", "ACQUISITION_PORT_MISSING",
+    "A link search port must offer search().");
   const observedAt = new Date(now).toISOString();
   const queue = intake.seed.urls.map((url) => ({url, via: "seed"}));
   const seen = new Set();
-  const pages = [];
-  const organizers = [];
-  const events = [];
-  const invalidUrls = [];
-  let stoppedReason = null;
-  while (queue.length > 0 && pages.length < maxPages) {
-    const next = queue.shift();
+  const gathered = {requestId: intake.requestId, observedAt, pages: [], organizers: [], events: [],
+    invalidUrls: [], stoppedReason: null, search: null};
+  const read = async (next, accept = () => true) => {
     let surface;
     try {
       surface = normalizeOrganizerSurfaceUrl(next.url);
     } catch {
-      invalidUrls.push(next.url);
-      continue;
+      gathered.invalidUrls.push(next.url);
+      return;
     }
     const key = surface.normalizedKey ?? surface.canonicalUrl;
-    if (seen.has(key)) continue;
+    if (seen.has(key)) return;
     seen.add(key);
     let captured;
     try {
-      captured = await pageSource.capture({runKey: `${intake.requestId}|page-${pages.length + 1}`,
+      captured = await pageSource.capture({runKey: `${intake.requestId}|page-${gathered.pages.length + 1}`,
         url: surface.canonicalUrl});
     } catch (error) {
       if (error?.code === "BUDGET_EXCEEDED") {
-        stoppedReason = "fetch_budget_exhausted";
-        break;
+        gathered.stoppedReason = "fetch_budget_exhausted";
+        return;
       }
       throw error;
     }
     const page = {url: surface.canonicalUrl, via: next.via, platform: surface.platform,
       surfaceKind: surface.surfaceKind, normalizedKey: surface.normalizedKey, receipt: captured.receipt,
       adapterId: null, pageKind: null, abstainReason: null};
-    pages.push(page);
+    gathered.pages.push(page);
     if (!captured.snapshot) {
       page.abstainReason = captured.receipt.outcome;
-      continue;
+      return;
+    }
+    if (!accept(captured.snapshot)) {
+      page.abstainReason = "search_result_unconfirmed";
+      return;
     }
     const extraction = extractWithAdapters({snapshot: captured.snapshot, timezone, observedAt});
     Object.assign(page, {adapterId: extraction.adapterId ?? null, pageKind: extraction.pageKind ?? null,
@@ -93,16 +95,94 @@ export async function gatherIntakeEvidence({request, pageSource, now, maxPages =
       Object.assign(page, {surfaceKind: corrected.surfaceKind, normalizedKey: corrected.normalizedKey});
     }
     for (const organizer of extraction.organizers ?? []) {
-      organizers.push({...organizer, pageUrl: page.url, adapterId: extraction.adapterId,
+      gathered.organizers.push({...organizer, pageUrl: page.url, adapterId: extraction.adapterId,
         pageKind: extraction.pageKind});
     }
     for (const event of extraction.events ?? []) {
-      events.push({...event, pageUrl: page.url, adapterId: extraction.adapterId});
+      gathered.events.push({...event, pageUrl: page.url, adapterId: extraction.adapterId});
     }
     for (const url of followUrls(extraction, next.via)) queue.push({url, via: page.url});
+  };
+  while (queue.length > 0 && gathered.pages.length < maxPages && !gathered.stoppedReason) {
+    await read(queue.shift());
   }
-  if (queue.length > 0 && !stoppedReason) stoppedReason = "page_limit_reached";
-  return {requestId: intake.requestId, observedAt, pages, organizers, events, invalidUrls, stoppedReason};
+  if (queue.length > 0 && !gathered.stoppedReason) gathered.stoppedReason = "page_limit_reached";
+  if (linkSearch && !gathered.stoppedReason) await searchForOwnPages({intake, gathered, linkSearch, read, maxPages});
+  return gathered;
+}
+
+const LINK_IN_BIO_HOSTS = new Set(["linktr.ee", "beacons.ai"]);
+const MAX_SEARCH_PAGES = 3;
+
+/**
+ * When no page a nomination named could be read (an Instagram profile, a
+ * Linktree or Beacons page), search once for the handle and read the
+ * organizer's own calendar pages the results point to. A page found this way
+ * counts only if it names the nominated handle itself, so a namesake is never
+ * merged in; the listing then waits for a person, never publishing on its own.
+ */
+async function searchForOwnPages({intake, gathered, linkSearch, read, maxPages}) {
+  const readable = gathered.pages.some((page) => page.via === "seed" && !page.abstainReason);
+  const handles = seedHandles(intake.seed.urls);
+  if (readable || handles.length === 0) return;
+  const query = handles.map((handle) => `"${handle}"`).join(" OR ");
+  let results;
+  try {
+    results = await linkSearch.search({runKey: `${intake.requestId}|search-1`, query});
+  } catch (error) {
+    if (error?.code !== "BUDGET_EXCEEDED") throw error;
+    gathered.search = {query, outcome: "budget_exhausted", resultCount: 0, candidateUrls: []};
+    return;
+  }
+  if (results === null) return;
+  const candidateUrls = [...new Set((results ?? []).map((result) => result?.url).filter((url) =>
+    typeof url === "string" && ownCalendarPage(url)))].slice(0, MAX_SEARCH_PAGES);
+  gathered.search = {query, outcome: "searched", resultCount: (results ?? []).length, candidateUrls};
+  const names = handles.map((handle) => handle.toLowerCase());
+  const confirms = (snapshot) => {
+    const haystack = JSON.stringify([snapshot.jsonLd, snapshot.embeddedJson, snapshot.text]).toLowerCase();
+    return names.some((handle) => new RegExp(`(^|[^a-z0-9._])@?${escapeRegExp(handle)}([^a-z0-9_]|\\.(?![a-z0-9])|$)`, "u")
+      .test(haystack));
+  };
+  for (const url of candidateUrls) {
+    if (gathered.pages.length >= maxPages || gathered.stoppedReason) break;
+    await read({url, via: "search"}, confirms);
+  }
+}
+
+/** The Instagram, Linktree and Beacons handles a nomination names. */
+function seedHandles(urls) {
+  const handles = new Set();
+  for (const url of urls) {
+    try {
+      const surface = normalizeOrganizerSurfaceUrl(url);
+      if (surface.platform === "instagram" && surface.normalizedKey?.startsWith("instagram:")) {
+        handles.add(surface.normalizedKey.slice("instagram:".length));
+        continue;
+      }
+      const parsed = new URL(surface.canonicalUrl);
+      const host = parsed.hostname.replace(/^www\./u, "");
+      const first = parsed.pathname.split("/").filter(Boolean)[0];
+      if (LINK_IN_BIO_HOSTS.has(host) && first) handles.add(decodeURIComponent(first));
+    } catch {
+      // An unusable seed is already recorded as invalid.
+    }
+  }
+  return [...handles].filter((handle) => /^[A-Za-z0-9._]{3,30}$/u.test(handle)).sort();
+}
+
+function ownCalendarPage(url) {
+  try {
+    const surface = surfaceForOrganizerPage(normalizeOrganizerSurfaceUrl(url));
+    return pageAdapterFor(surface.platform) !== null &&
+      ["organizerProfile", "eventCalendar"].includes(surface.surfaceKind);
+  } catch {
+    return false;
+  }
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
 
 // Follow only the organizer's own pages that an adapter can read, one hop
@@ -183,6 +263,8 @@ export function buildIntakeListing({request, gathered, now, findings = [], resea
   if (gathered.pages.some((page) => page.via === "seed" && page.abstainReason)) gaps.push("seed_page_unreadable");
   if (gathered.invalidUrls.length > 0) gaps.push("seed_url_invalid");
   if (gathered.stoppedReason) gaps.push(gathered.stoppedReason);
+  // A page found by searching the handle is a person's call, never automatic.
+  if (gathered.pages.some((page) => page.via === "search" && !page.abstainReason)) gaps.push("found_by_search");
   if (name && intake.seed.name && normalizeName(name) !== normalizeName(intake.seed.name)) {
     gaps.push("name_differs_from_nomination");
   }
@@ -295,7 +377,8 @@ function listingLinks(gathered, linkFindings = []) {
     }
   };
   for (const page of gathered.pages) {
-    if (page.receipt.outcome !== "fetched" || page.pageKind === "event_page") continue;
+    if (page.receipt.outcome !== "fetched" || page.pageKind === "event_page" ||
+        page.abstainReason === "search_result_unconfirmed") continue;
     add(page.url, page.url, {organizerRole: page.pageKind === "organizer_page"});
   }
   for (const organizer of gathered.organizers) {

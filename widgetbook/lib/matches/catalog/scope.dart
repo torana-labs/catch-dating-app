@@ -10,7 +10,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
@@ -80,9 +80,9 @@ class WidgetbookMatchesMatchesListRouteScope extends StatelessWidget {
         watchEventProvider(
           MatchesChatSurfaceFixtures.eventId,
         ).overrideWith((ref) => Stream<Event?>.value(widgetbookMatchesEvent)),
-        watchClubProvider(
+        watchOrganizerProvider(
           MatchesChatSurfaceFixtures.clubId,
-        ).overrideWith((ref) => Stream.value(widgetbookMatchesClub)),
+        ).overrideWith((ref) => Stream.value(widgetbookMatchesOrganizer)),
         ..._publicProfileOverrides,
       ],
       child:
@@ -172,9 +172,9 @@ class WidgetbookMatchesChatRouteScope extends StatelessWidget {
             includeEvent ? widgetbookMatchesEvent : null,
           ),
         ),
-        watchClubProvider(
+        watchOrganizerProvider(
           MatchesChatSurfaceFixtures.clubId,
-        ).overrideWith((ref) => Stream.value(widgetbookMatchesClub)),
+        ).overrideWith((ref) => Stream.value(widgetbookMatchesOrganizer)),
         ..._publicProfileOverrides,
       ],
       child: _ChatRouter(

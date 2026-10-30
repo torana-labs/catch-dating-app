@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +14,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../clubs/clubs_test_helpers.dart' show FakeClubsRepository, buildClub;
 import '../events/events_test_helpers.dart'
     show buildEvent, buildEventParticipation;
+import '../organizers/organizers_test_helpers.dart'
+    show FakeOrganizersRepository, buildOrganizer;
 import '../test_pump_helpers.dart';
 
 void main() {
@@ -247,8 +248,8 @@ Future<void> _pumpLauncherHarness(
   String uid = 'runner-1',
   EventParticipation? participation,
 }) async {
-  final clubsRepository = FakeClubsRepository()
-    ..clubsById[event.clubId] = buildClub(id: event.clubId);
+  final organizersRepository = FakeOrganizersRepository()
+    ..organizersById[event.clubId] = buildOrganizer(id: event.clubId);
   final eventSuccessRepository = _FakeEventSuccessRepository(plan: plan);
   late final GoRouter router;
   router = GoRouter(
@@ -275,7 +276,7 @@ Future<void> _pumpLauncherHarness(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        clubsRepositoryProvider.overrideWithValue(clubsRepository),
+        organizersRepositoryProvider.overrideWithValue(organizersRepository),
         eventRepositoryProvider.overrideWithValue(
           _FakeEventRepository(event: event),
         ),

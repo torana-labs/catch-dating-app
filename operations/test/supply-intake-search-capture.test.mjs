@@ -350,8 +350,10 @@ test("a reviewed SerpAPI file needs no network and normalizes like a live captur
   assert.equal("rawPayload" in acquisitionReceipt(result), false);
 });
 
-test("live web search is off by default and never reaches a client", async () => {
-  const policy = await loadSupplyAcquisitionPolicy();
+test("live web search stays off when the policy disables it, and never reaches a client", async () => {
+  const base = await loadSupplyAcquisitionPolicy();
+  const policy = {...structuredClone(base), webSearch: {...base.webSearch, enabled: false, adapterId: null,
+    decisionId: null, maxQueriesPerRun: 0, maxQueriesPerMonth: 0}};
   let calls = 0;
   const searchClient = {search: async () => {
     calls += 1;

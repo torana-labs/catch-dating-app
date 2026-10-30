@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_organizer_selection_controller.g.dart';
@@ -22,21 +22,25 @@ class HostOrganizerSelection extends _$HostOrganizerSelection {
   }
 }
 
-Club? resolveSelectedHostOrganizer(
-  List<Club> clubs, {
+Organizer? resolveSelectedHostOrganizer(
+  List<Organizer> organizers, {
   String? selectedOrganizerId,
   String? preferredOrganizerId,
 }) {
-  if (clubs.isEmpty) return null;
+  if (organizers.isEmpty) return null;
   final preferredId = preferredOrganizerId?.trim();
   if (preferredId != null && preferredId.isNotEmpty) {
-    final preferred = clubs.where((club) => club.id == preferredId).firstOrNull;
+    final preferred = organizers
+        .where((organizer) => organizer.id == preferredId)
+        .firstOrNull;
     if (preferred != null) return preferred;
   }
   final selectedId = selectedOrganizerId?.trim();
   if (selectedId != null && selectedId.isNotEmpty) {
-    final selected = clubs.where((club) => club.id == selectedId).firstOrNull;
+    final selected = organizers
+        .where((organizer) => organizer.id == selectedId)
+        .firstOrNull;
     if (selected != null) return selected;
   }
-  return clubs.first;
+  return organizers.first;
 }

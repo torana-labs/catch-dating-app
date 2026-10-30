@@ -91,7 +91,7 @@ or directly above the raw color expression.
    bundled fonts. Production must have zero `GoogleFonts` outside the sandbox.
 
 5. **A "palette-owner" file** (a class holding a PARALLEL hardcoded palette, e.g.
-   `ProfileCardPalette`, `ClubCoverVisualPalette`, `pace_level_theme`) → rewrite its
+   `ProfileCardPalette`, `OrganizerCoverVisualPalette`, `pace_level_theme`) → rewrite its
    `of(context)` to DERIVE every field from `CatchTokens` (drop `isDark` hex
    branches — the tokens are already brightness-aware):
    ```dart

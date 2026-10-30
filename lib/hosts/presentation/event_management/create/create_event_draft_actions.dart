@@ -86,13 +86,13 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
 
     final drafts = await ref
         .read(createEventDraftControllerProvider.notifier)
-        .loadDrafts(clubId: widget.club.id);
+        .loadDrafts(clubId: widget.organizer.id);
     if (!mounted || !sideEffectState.shouldShowDraftPicker(drafts)) return;
 
     final picked = await showHostEventEntrySheet(
       context: context,
       state: HostEventEntryState.resolve(
-        organizerId: widget.club.id,
+        organizerId: widget.organizer.id,
         drafts: drafts,
       ),
       onDeleteDraft: _deleteDraftFromPicker,
@@ -103,7 +103,7 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
     if (picked.intent == HostEventEntryIntent.createProgram) {
       await context.pushNamed(
         Routes.hostCreateProgramScreen.name,
-        pathParameters: {'clubId': widget.club.id},
+        pathParameters: {'clubId': widget.organizer.id},
       );
       return;
     }
@@ -225,7 +225,7 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
       ref,
       (tx) async => tx
           .get(createEventDraftControllerProvider.notifier)
-          .deleteDraft(clubId: widget.club.id, draftId: intent.draftId),
+          .deleteDraft(clubId: widget.organizer.id, draftId: intent.draftId),
     );
   }
 
@@ -234,7 +234,7 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
     final now = widget.now();
     final draft = _currentDraftSnapshot.toDraft(
       id: draftAction.draftIdForSave(now: now),
-      clubId: widget.club.id,
+      clubId: widget.organizer.id,
       savedAt: now,
     );
 
@@ -308,7 +308,7 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
     );
   }
 
-  void _applyClubDefaults(ClubHostDefaults defaults) {
+  void _applyOrganizerDefaults(OrganizerHostDefaults defaults) {
     _selectedActivityKind = defaults.primaryActivityKind;
     _selectedInteractionModel = _selectedActivityKind.defaultInteractionModel;
     _routePlan = RouteEventPlan.defaultForActivity(_selectedActivityKind);

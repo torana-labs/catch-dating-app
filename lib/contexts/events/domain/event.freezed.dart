@@ -132,7 +132,7 @@ $EventMeetingLocationCopyWith<$Res>? get meetingLocation {
 @override
 @pragma('vm:prefer-inline')
 $EventConstraintsCopyWith<$Res> get constraints {
-
+  
   return $EventConstraintsCopyWith<$Res>(_self.constraints, (value) {
     return _then(_self.copyWith(constraints: value));
   });
@@ -501,7 +501,7 @@ $EventMeetingLocationCopyWith<$Res>? get meetingLocation {
 @override
 @pragma('vm:prefer-inline')
 $EventConstraintsCopyWith<$Res> get constraints {
-
+  
   return $EventConstraintsCopyWith<$Res>(_self.constraints, (value) {
     return _then(_self.copyWith(constraints: value));
   });

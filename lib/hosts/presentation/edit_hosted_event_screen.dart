@@ -10,8 +10,8 @@ import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_scope_notice.dart';
@@ -64,14 +64,14 @@ abstract final class EditHostedEventKeys {
 class EditHostedEventScreen extends ConsumerStatefulWidget {
   const EditHostedEventScreen({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.event,
     this.now,
     this.loadMapTiles = true,
     this.formAutovalidateMode = AutovalidateMode.disabled,
   });
 
-  final Club club;
+  final Organizer organizer;
   final Event event;
   final DateTime Function()? now;
   final bool loadMapTiles;

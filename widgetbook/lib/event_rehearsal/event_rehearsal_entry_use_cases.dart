@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_configuration.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_copy.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_choice_tile.dart';
@@ -63,7 +63,7 @@ class _EntryPreview extends StatefulWidget {
 }
 
 class _EntryPreviewState extends State<_EntryPreview> {
-  static const defaults = ClubHostDefaults(
+  static const defaults = OrganizerHostDefaults(
     primaryActivityKind: ActivityKind.socialRun,
     supportedActivityKinds: [ActivityKind.socialRun, ActivityKind.singlesMixer],
   );
@@ -174,7 +174,7 @@ Widget _rehearsalEditorLauncher(BuildContext context) => Scaffold(
       context: context,
       builder: (_) => EventRehearsalCustomiseSheet(
         configuration: EventRehearsalConfiguration.defaults(
-          organizerDefaults: const ClubHostDefaults(),
+          organizerDefaults: const OrganizerHostDefaults(),
         ),
       ),
     ),

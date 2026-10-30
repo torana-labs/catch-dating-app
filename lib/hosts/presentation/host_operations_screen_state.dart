@@ -1,130 +1,139 @@
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/foundation.dart';
 
-enum HostClubTab { edit, insights, preview }
+enum HostOrganizerTab { edit, insights, preview }
 
-enum HostClubInsightsRangePreset { thirtyDays, ninetyDays, twelveMonths }
+enum HostOrganizerInsightsRangePreset { thirtyDays, ninetyDays, twelveMonths }
 
 @immutable
-class HostClubsScreenState {
-  const HostClubsScreenState._({
-    required this.clubs,
+class HostOrganizersScreenState {
+  const HostOrganizersScreenState._({
+    required this.organizers,
     required this.currentUid,
-    required this.selectedClubIndex,
+    required this.selectedOrganizerIndex,
     required this.selectedTab,
   });
 
-  factory HostClubsScreenState.resolve({
-    required List<Club> clubs,
+  factory HostOrganizersScreenState.resolve({
+    required List<Organizer> organizers,
     required String currentUid,
-    int selectedClubIndex = 0,
-    String? selectedClubId,
-    HostClubTab selectedTab = HostClubTab.edit,
+    int selectedOrganizerIndex = 0,
+    String? selectedOrganizerId,
+    HostOrganizerTab selectedTab = HostOrganizerTab.edit,
   }) {
-    return HostClubsScreenState._(
-      clubs: List<Club>.unmodifiable(clubs),
+    return HostOrganizersScreenState._(
+      organizers: List<Organizer>.unmodifiable(organizers),
       currentUid: currentUid,
-      selectedClubIndex: _resolveSelectedClubIndex(
-        clubs: clubs,
-        selectedClubIndex: selectedClubIndex,
-        selectedClubId: selectedClubId,
+      selectedOrganizerIndex: _resolveSelectedOrganizerIndex(
+        organizers: organizers,
+        selectedOrganizerIndex: selectedOrganizerIndex,
+        selectedOrganizerId: selectedOrganizerId,
       ),
       selectedTab: selectedTab,
     );
   }
 
-  final List<Club> clubs;
+  final List<Organizer> organizers;
   final String currentUid;
-  final int selectedClubIndex;
-  final HostClubTab selectedTab;
+  final int selectedOrganizerIndex;
+  final HostOrganizerTab selectedTab;
 
-  bool get hasClubs => clubs.isNotEmpty;
-  bool get showClubPicker => clubs.length > 1;
-  Club? get selectedClub => hasClubs ? clubs[selectedClubIndex] : null;
+  bool get hasOrganizers => organizers.isNotEmpty;
+  bool get showOrganizerPicker => organizers.length > 1;
+  Organizer? get selectedOrganizer =>
+      hasOrganizers ? organizers[selectedOrganizerIndex] : null;
   String title(AppLocalizations l10n) =>
-      selectedClub?.name ?? l10n.hostsHostOperationsScreenStateTitleClubs;
-  bool get selectedClubIsOwner => selectedClub?.isOwnedBy(currentUid) ?? false;
+      selectedOrganizer?.name ??
+      l10n.hostsHostOperationsScreenStateTitleOrganizers;
+  bool get selectedOrganizerIsOwner =>
+      selectedOrganizer?.isOwnedBy(currentUid) ?? false;
 
-  HostClubsScreenState selectClubIndex(int index) {
-    return HostClubsScreenState.resolve(
-      clubs: clubs,
+  HostOrganizersScreenState selectOrganizerIndex(int index) {
+    return HostOrganizersScreenState.resolve(
+      organizers: organizers,
       currentUid: currentUid,
-      selectedClubIndex: index,
+      selectedOrganizerIndex: index,
       selectedTab: selectedTab,
     );
   }
 
-  HostClubsScreenState selectTab(HostClubTab tab) {
-    return HostClubsScreenState.resolve(
-      clubs: clubs,
+  HostOrganizersScreenState selectTab(HostOrganizerTab tab) {
+    return HostOrganizersScreenState.resolve(
+      organizers: organizers,
       currentUid: currentUid,
-      selectedClubIndex: selectedClubIndex,
+      selectedOrganizerIndex: selectedOrganizerIndex,
       selectedTab: tab,
     );
   }
 
-  static int _resolveSelectedClubIndex({
-    required List<Club> clubs,
-    required int selectedClubIndex,
-    String? selectedClubId,
+  static int _resolveSelectedOrganizerIndex({
+    required List<Organizer> organizers,
+    required int selectedOrganizerIndex,
+    String? selectedOrganizerId,
   }) {
-    if (clubs.isEmpty) return 0;
-    final selectedId = selectedClubId;
+    if (organizers.isEmpty) return 0;
+    final selectedId = selectedOrganizerId;
     if (selectedId != null) {
-      final index = clubs.indexWhere((club) => club.id == selectedId);
+      final index = organizers.indexWhere(
+        (organizer) => organizer.id == selectedId,
+      );
       if (index != -1) return index;
     }
-    if (selectedClubIndex < 0) return 0;
-    if (selectedClubIndex >= clubs.length) return clubs.length - 1;
-    return selectedClubIndex;
+    if (selectedOrganizerIndex < 0) return 0;
+    if (selectedOrganizerIndex >= organizers.length) {
+      return organizers.length - 1;
+    }
+    return selectedOrganizerIndex;
   }
 }
 
 @immutable
-class HostClubInsightsQueryState {
-  const HostClubInsightsQueryState({
+class HostOrganizerInsightsQueryState {
+  const HostOrganizerInsightsQueryState({
     required this.clubId,
     required this.rangePreset,
   });
 
   final String clubId;
-  final HostClubInsightsRangePreset rangePreset;
+  final HostOrganizerInsightsRangePreset rangePreset;
 }
 
 @immutable
-class HostClubInsightsState {
-  const HostClubInsightsState._({
+class HostOrganizerInsightsState {
+  const HostOrganizerInsightsState._({
     required this.clubId,
     required this.rangePreset,
   });
 
-  factory HostClubInsightsState.initial({required String clubId}) =>
-      HostClubInsightsState._(
+  factory HostOrganizerInsightsState.initial({required String clubId}) =>
+      HostOrganizerInsightsState._(
         clubId: clubId,
-        rangePreset: HostClubInsightsRangePreset.thirtyDays,
+        rangePreset: HostOrganizerInsightsRangePreset.thirtyDays,
       );
 
   final String clubId;
-  final HostClubInsightsRangePreset rangePreset;
+  final HostOrganizerInsightsRangePreset rangePreset;
 
-  HostClubInsightsQueryState get query =>
-      HostClubInsightsQueryState(clubId: clubId, rangePreset: rangePreset);
+  HostOrganizerInsightsQueryState get query =>
+      HostOrganizerInsightsQueryState(clubId: clubId, rangePreset: rangePreset);
 
-  HostClubInsightsState selectClub(String clubId) {
+  HostOrganizerInsightsState selectOrganizer(String clubId) {
     if (clubId == this.clubId) return this;
     return _copyWith(clubId: clubId);
   }
 
-  HostClubInsightsState selectRange(HostClubInsightsRangePreset rangePreset) {
+  HostOrganizerInsightsState selectRange(
+    HostOrganizerInsightsRangePreset rangePreset,
+  ) {
     return _copyWith(rangePreset: rangePreset);
   }
 
-  HostClubInsightsState _copyWith({
+  HostOrganizerInsightsState _copyWith({
     String? clubId,
-    HostClubInsightsRangePreset? rangePreset,
+    HostOrganizerInsightsRangePreset? rangePreset,
   }) {
-    return HostClubInsightsState._(
+    return HostOrganizerInsightsState._(
       clubId: clubId ?? this.clubId,
       rangePreset: rangePreset ?? this.rangePreset,
     );

@@ -2,8 +2,9 @@ name: Website Release
 
 # The release train from main to catchdates.com. After main CI succeeds (and
 # hourly, in case an event was missed), it previews main's head with the
-# existing Next Website Preview workflow, waits for a reviewer to approve the
-# preview in the protected prod environment, then promotes that exact preview
+# existing Next Website Preview workflow, passes the prod environment's gate
+# (no required reviewer since 30 Oct 2026; add one to approve releases by
+# hand again), then promotes that exact preview
 # with Next Website Promotion. Both workflows keep every check of their own.
 # When the website changed since live but main's head ran no website
 # validation of its own, the train first runs full CI on that head.
@@ -119,7 +120,8 @@ jobs:
     needs: [plan, preview]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
-    # The protected environment's required reviewers are the release gate. The
+    # The prod environment is the release gate: a required reviewer on it
+    # makes this job wait for approval. It has none since 30 Oct 2026. The
     # job holds no token and uses none of the environment's credentials.
     environment:
       name: prod

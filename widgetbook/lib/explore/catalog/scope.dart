@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
@@ -23,7 +23,7 @@ class WidgetbookExploreScope extends StatelessWidget {
     required this.child,
     this.searchQuery,
     this.seedFilters = const WidgetbookExploreFilterSeed(),
-    this.sourceClubs,
+    this.sourceOrganizers,
     this.viewModel,
     this.feed,
     this.uid = widgetbookExploreViewerUid,
@@ -34,7 +34,7 @@ class WidgetbookExploreScope extends StatelessWidget {
   final Widget child;
   final String? searchQuery;
   final WidgetbookExploreFilterSeed seedFilters;
-  final AsyncValue<List<Club>>? sourceClubs;
+  final AsyncValue<List<Organizer>>? sourceOrganizers;
   final AsyncValue<ExploreViewModel>? viewModel;
   final AsyncValue<ExploreFeedViewModel>? feed;
   final String? uid;
@@ -43,15 +43,17 @@ class WidgetbookExploreScope extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveSourceClubs =
-        sourceClubs ??
-        AsyncData<List<Club>>(List.unmodifiable(widgetbookExploreClubs));
+    final effectiveSourceOrganizers =
+        sourceOrganizers ??
+        AsyncData<List<Organizer>>(
+          List.unmodifiable(widgetbookExploreOrganizers),
+        );
     final effectiveViewModel =
         viewModel ??
         AsyncData(
           ExploreViewModel.partition(
-            clubs: widgetbookExploreClubs,
-            joinedClubIds: widgetbookExploreJoinedClubIds,
+            organizers: widgetbookExploreOrganizers,
+            joinedOrganizerIds: widgetbookExploreJoinedOrganizerIds,
           ),
         );
     final effectiveFeed =
@@ -78,8 +80,12 @@ class WidgetbookExploreScope extends StatelessWidget {
         deviceLocationProvider.overrideWith(
           () => _PreviewDeviceLocation(deviceLocation),
         ),
-        exploreSourceClubsProvider.overrideWithValue(effectiveSourceClubs),
-        exploreClubsViewModelProvider.overrideWithValue(effectiveViewModel),
+        exploreSourceOrganizersProvider.overrideWithValue(
+          effectiveSourceOrganizers,
+        ),
+        exploreOrganizersViewModelProvider.overrideWithValue(
+          effectiveViewModel,
+        ),
         exploreFeedViewModelProvider.overrideWithValue(effectiveFeed),
         if (uid != null)
           watchOutgoingCrossPathsInvitationProvider(

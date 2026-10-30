@@ -3,12 +3,12 @@ import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_configuration.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const defaults = ClubHostDefaults(
+  const defaults = OrganizerHostDefaults(
     primaryActivityKind: ActivityKind.singlesMixer,
   );
 

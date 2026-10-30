@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/organizers/shared/organizer_placeholder_cover.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'support/golden_pump.dart';
 
 final _portrait = FileImage(File('test/goldens/fixtures/portrait.jpg'));
-final _organizer = Club(
+final _organizer = Organizer(
   id: 'entity-material-organizer',
   name: 'Afterfly Social',
   description: 'Bombay moves together.',
@@ -31,7 +31,7 @@ void main() {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CatchPoster(
-              media: ClubPlaceholderCover(club: _organizer),
+              media: OrganizerPlaceholderCover(organizer: _organizer),
               kicker: 'Run club · Mumbai',
               title: _organizer.name,
               tagline: _organizer.description,

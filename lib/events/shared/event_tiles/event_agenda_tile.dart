@@ -10,14 +10,14 @@ class EventAgendaTile extends StatelessWidget {
     super.key,
     required this.data,
     this.onTap,
-    this.showClubName = false,
+    this.showOrganizerName = false,
     this.badgeLabel,
     this.stripPosition = EventDateRailCardStripPosition.single,
   });
 
   final EventTileData data;
   final VoidCallback? onTap;
-  final bool showClubName;
+  final bool showOrganizerName;
   final String? badgeLabel;
   final EventDateRailCardStripPosition stripPosition;
 
@@ -25,10 +25,10 @@ class EventAgendaTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return EventDateRailCard(
       event: data.event,
-      kicker: eventTileKickerLabel(data, showClubName: showClubName),
+      kicker: eventTileKickerLabel(data, showOrganizerName: showOrganizerName),
       supportingLabel: eventTileSupportingLabel(
         data,
-        showClubName: showClubName,
+        showOrganizerName: showOrganizerName,
       ),
       priceLabel: eventPriceLabel(context.l10n, data.event),
       statusLabel: eventTileCardStatusLabel(

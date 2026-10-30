@@ -23,8 +23,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../clubs/clubs_test_helpers.dart' show buildClub;
 import '../../events/events_test_helpers.dart' show buildEvent;
+import '../../organizers/organizers_test_helpers.dart' show buildOrganizer;
 import '../../test_pump_helpers.dart';
 
 typedef _EventPage = CursorPage<Event, DocumentSnapshot<Event>>;
@@ -589,7 +589,7 @@ class _Rig {
                 body: CustomScrollView(
                   slivers: [
                     HostTodayBody(
-                      organizer: buildClub(id: request.organizerId),
+                      organizer: buildOrganizer(id: request.organizerId),
                       state: state,
                       now: boundary,
                       onRetry: () => ref.read(provider.notifier).retry(),

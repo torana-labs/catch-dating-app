@@ -3,8 +3,8 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
@@ -22,11 +22,11 @@ HostTodayRoadmapEvidence hostTodayRoadmap(
   final uid = identity.isSettledData ? identity.value : null;
   if (uid != scope.accountId) return const HostTodayRoadmapEvidence();
   final membership = catchAsyncStateFromAsyncValue(
-    ref.watch(hostOperableClubsProvider(scope.accountId)),
+    ref.watch(hostOperableOrganizersProvider(scope.accountId)),
   );
   final organizer = membership.isSettledData
       ? membership.value
-            ?.where((club) => club.id == scope.organizerId)
+            ?.where((organizer) => organizer.id == scope.organizerId)
             .firstOrNull
       : null;
   if (organizer == null) return const HostTodayRoadmapEvidence();
@@ -63,7 +63,7 @@ Future<bool> hostTodayRehearsalCompletion(
     throw StateError('Organizer access is unavailable.');
   }
   final membership = catchAsyncStateFromAsyncValue(
-    ref.watch(hostOperableClubsProvider(scope.accountId)),
+    ref.watch(hostOperableOrganizersProvider(scope.accountId)),
   );
   final organizers = membership.isSettledData ? membership.value : null;
   if (organizers == null ||
@@ -76,7 +76,7 @@ Future<bool> hostTodayRehearsalCompletion(
 }
 
 HostTodayRoadmapEvidence buildHostTodayRoadmapEvidence({
-  required Club organizer,
+  required Organizer organizer,
   required String accountId,
   required HostCrmSummary? audience,
   required List<HostPaymentAccount>? paymentAccounts,

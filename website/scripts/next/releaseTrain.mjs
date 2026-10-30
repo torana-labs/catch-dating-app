@@ -11,8 +11,9 @@ import {currentReleaseLineage} from "./previewRelease.mjs";
 
 // The website release train. After main CI completes (or on the hourly
 // fallback), it previews main's head through the existing preview workflow,
-// waits for a person to approve the preview in the protected environment,
-// then runs the existing promotion workflow on that exact preview. It never
+// passes the prod environment's gate (no required reviewer since 30 Oct 2026;
+// adding one makes it wait for approval again), then runs the existing
+// promotion workflow on that exact preview. It never
 // relaxes either workflow's own checks; it only removes the hand dispatches.
 // When the website changed since live but main's head ran no website
 // validation of its own, it first runs full CI on that head, so a docs or
@@ -38,13 +39,8 @@ const github = (endpoint) => JSON.parse(command("gh", ["api", "-H", "Cache-Contr
  * changed between live and main's head; `validationRuns` are the full CI runs
  * a train already dispatched for the head.
  */
-export function planDecision({event, eventSha, eventConclusion, mainSha, validation, lineage, approvalRules,
+export function planDecision({event, eventSha, eventConclusion, mainSha, validation, lineage,
   websiteChanged, validationRuns = []}) {
-  const reviewers = (approvalRules ?? []).filter((rule) => rule?.type === "required_reviewers")
-    .flatMap((rule) => rule.reviewers ?? []);
-  // Without required reviewers the environment would not wait for anyone, so
-  // the train refuses rather than promote unapproved.
-  assert.ok(reviewers.length > 0, `The ${APPROVAL_ENVIRONMENT} environment must require a reviewer before production`);
   // A newer merge cancels main's push run of a commit; the merge queue run that
   // tested the same commit still validates it, so only a failure stops here.
   if (event === "workflow_run" && !["success", "cancelled"].includes(eventConclusion)) return skip("ci_unsuccessful");
@@ -107,7 +103,6 @@ export function selectDispatchedRun({runs, requestedAt, expectedSha = null}) {
 async function plan() {
   const repository = canonicalRepository(process.env);
   const mainSha = github(`repos/${repository}/git/ref/heads/main`).object.sha;
-  const approvalRules = github(`repos/${repository}/environments/${APPROVAL_ENVIRONMENT}`).protection_rules;
   let validation = null;
   try {
     validation = await waitMainMarketingValidation({repository, sourceSha: mainSha, maxWaitMs: 0});
@@ -120,7 +115,7 @@ async function plan() {
   const validationRuns = unvalidated ? github(`repos/${repository}/actions/workflows/${CI_WORKFLOW}/runs?branch=main&event=workflow_dispatch&head_sha=${mainSha}&per_page=100`)
     .workflow_runs.filter((run) => run.head_sha === mainSha && run.triggering_actor?.login === BOT) : [];
   const decision = planDecision({event: process.env.GITHUB_EVENT_NAME, eventSha: process.env.EVENT_HEAD_SHA,
-    eventConclusion: process.env.EVENT_CONCLUSION, mainSha, validation, lineage, approvalRules,
+    eventConclusion: process.env.EVENT_CONCLUSION, mainSha, validation, lineage,
     websiteChanged, validationRuns});
   output({release: String(decision.release), validate: String(decision.validate), source_sha: decision.sourceSha ?? "",
     reason: decision.reason});
@@ -177,7 +172,7 @@ async function runPreview() {
   const channel = JSON.parse(fs.readFileSync(path.join(directory, "channel.json"), "utf8"));
   assert.match(channel.url ?? "", /^https:\/\/[a-z0-9-]+--next-candidate-[a-z0-9]+\.web\.app\/?$/u, "Unexpected preview URL");
   output({preview_run_id: String(run.id), preview_url: channel.url});
-  summary(`Preview of \`${sourceSha}\`: ${channel.url}\n\nApprove the ${APPROVAL_ENVIRONMENT} deployment to release it.`);
+  summary(`Preview of \`${sourceSha}\`: ${channel.url}\n\nIt is promoted once the ${APPROVAL_ENVIRONMENT} environment's gate passes.`);
 }
 
 async function runPromotion() {

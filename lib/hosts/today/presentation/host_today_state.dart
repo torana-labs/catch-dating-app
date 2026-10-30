@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
@@ -15,15 +15,15 @@ class HostTodayRouteState {
   const HostTodayRouteState({
     required this.status,
     this.uid,
-    this.organizers = const <Club>[],
+    this.organizers = const <Organizer>[],
     this.error,
     this.stackTrace,
-    this.errorContext = AppErrorContext.club,
+    this.errorContext = AppErrorContext.organizer,
   });
 
   final HostTodayRouteStatus status;
   final String? uid;
-  final List<Club> organizers;
+  final List<Organizer> organizers;
   final Object? error;
   final StackTrace? stackTrace;
   final AppErrorContext errorContext;

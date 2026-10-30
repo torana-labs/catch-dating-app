@@ -5,9 +5,9 @@ import 'package:catch_dating_app/kernel/country_markets.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../test/events/event_viewer_state_fixtures.dart';
 import '../test/events/events_test_helpers.dart' as event_helpers;
+import '../test/organizers/organizers_test_helpers.dart' as organizer_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
 import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
@@ -19,10 +19,10 @@ void main() {
     tester,
   ) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
-    final club = club_helpers.buildClub();
+    final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'run-1',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 1,
@@ -34,10 +34,10 @@ void main() {
       overrides: appShellTestOverrides(
         uid: user.uid,
         user: user,
-        clubs: [club],
-        joinedClubIds: {club.id},
-        clubEvents: {
-          club.id: [run],
+        organizers: [organizer],
+        joinedOrganizerIds: {organizer.id},
+        organizerEvents: {
+          organizer.id: [run],
         },
         eventViewerStates: [
           viewerFixture(eventId: run.id, organizerId: run.organizerId),
@@ -47,9 +47,9 @@ void main() {
     );
 
     await openAppTab(tester, 'Explore');
-    await openClubDetail(tester, club);
+    await openOrganizerDetail(tester, organizer);
     await pumpRoute(tester);
-    await openEventDetail(tester, club: club, event: run);
+    await openEventDetail(tester, organizer: organizer, event: run);
 
     await pumpUntilFound(tester, find.byKey(EventActionKeys.bookButton));
     await tester.tap(find.byKey(EventActionKeys.bookButton));
@@ -70,10 +70,10 @@ void main() {
         email: 'suvrat@example.com',
         phoneNumber: '+919876543210',
       );
-      final club = club_helpers.buildClub();
+      final organizer = organizer_helpers.buildOrganizer();
       final run = event_helpers.buildEvent(
         id: 'paid-run-1',
-        clubId: club.id,
+        clubId: organizer.id,
         startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
         meetingPoint: 'Carter Road Amphitheatre',
         bookedCount: 1,
@@ -93,10 +93,10 @@ void main() {
         overrides: appShellTestOverrides(
           uid: user.uid,
           user: user,
-          clubs: [club],
-          joinedClubIds: {club.id},
-          clubEvents: {
-            club.id: [run],
+          organizers: [organizer],
+          joinedOrganizerIds: {organizer.id},
+          organizerEvents: {
+            organizer.id: [run],
           },
           eventViewerStates: [
             viewerFixture(
@@ -110,9 +110,9 @@ void main() {
       );
 
       await openAppTab(tester, 'Explore');
-      await openClubDetail(tester, club);
+      await openOrganizerDetail(tester, organizer);
       await pumpRoute(tester);
-      await openEventDetail(tester, club: club, event: run);
+      await openEventDetail(tester, organizer: organizer, event: run);
 
       await pumpUntilFound(tester, find.byKey(EventActionKeys.bookButton));
       await tester.tap(find.byKey(EventActionKeys.bookButton));
@@ -136,10 +136,10 @@ void main() {
 
   testWidgets('event detail cancels an existing booking', (tester) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
-    final club = club_helpers.buildClub();
+    final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'run-1',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 1,
@@ -151,8 +151,8 @@ void main() {
       overrides: appShellTestOverrides(
         uid: user.uid,
         user: user,
-        clubs: [club],
-        joinedClubIds: {club.id},
+        organizers: [organizer],
+        joinedOrganizerIds: {organizer.id},
         signedUpEvents: [run],
         eventViewerStates: [
           viewerFixture(
@@ -165,7 +165,12 @@ void main() {
       ),
     );
 
-    await openEventDetail(tester, club: club, event: run, settle: false);
+    await openEventDetail(
+      tester,
+      organizer: organizer,
+      event: run,
+      settle: false,
+    );
     await tester.tap(find.byKey(EventActionKeys.cancelBookingButton));
     await flushAppShellCallbacks(tester);
     await pumpMutationUi(tester);
@@ -176,10 +181,10 @@ void main() {
 
   testWidgets('event detail joins a waitlist for a full event', (tester) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
-    final club = club_helpers.buildClub();
+    final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'run-1',
-      clubId: club.id,
+      clubId: organizer.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 20,
@@ -191,10 +196,10 @@ void main() {
       overrides: appShellTestOverrides(
         uid: user.uid,
         user: user,
-        clubs: [club],
-        joinedClubIds: {club.id},
-        clubEvents: {
-          club.id: [run],
+        organizers: [organizer],
+        joinedOrganizerIds: {organizer.id},
+        organizerEvents: {
+          organizer.id: [run],
         },
         eventViewerStates: [
           viewerFixture(
@@ -208,9 +213,9 @@ void main() {
     );
 
     await openAppTab(tester, 'Explore');
-    await openClubDetail(tester, club);
+    await openOrganizerDetail(tester, organizer);
     await pumpRoute(tester);
-    await openEventDetail(tester, club: club, event: run);
+    await openEventDetail(tester, organizer: organizer, event: run);
 
     await tester.tap(find.byKey(EventActionKeys.joinWaitlistButton));
     await flushAppShellCallbacks(tester);

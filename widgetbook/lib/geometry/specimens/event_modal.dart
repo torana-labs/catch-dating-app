@@ -75,7 +75,7 @@ class _HostEventModalFrame extends StatelessWidget {
 }
 
 final _hostEventEntryComparisonState = HostEventEntryState.resolve(
-  organizerId: HostOperationsFixtures.primaryClub.id,
+  organizerId: HostOperationsFixtures.primaryOrganizer.id,
   drafts: [HostOperationsFixtures.eventDraft],
   repeatSource: HostOperationsFixtures.upcomingEvent,
 );

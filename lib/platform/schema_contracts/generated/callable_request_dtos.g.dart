@@ -54,6 +54,7 @@ export 'callables/admin_link_organizer_intake_to_sales_request.g.dart';
 export 'callables/admin_link_sales_inbound_intent_callable_request.g.dart';
 export 'callables/admin_list_action_executions_callable_request.g.dart';
 export 'callables/admin_list_club_details_callable_request.g.dart';
+export 'callables/admin_list_commercial_terms_callable_request.g.dart';
 export 'callables/admin_list_cross_paths_showcase_candidates_callable_request.g.dart';
 export 'callables/admin_list_event_details_callable_request.g.dart';
 export 'callables/admin_list_external_event_details_callable_request.g.dart';

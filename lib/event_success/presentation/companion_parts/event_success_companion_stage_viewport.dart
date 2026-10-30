@@ -370,7 +370,7 @@ class CompanionPrivacyText extends StatelessWidget {
       padding: CatchInsets.contentDense,
       radius: CatchRadius.sm,
       backgroundColor: stageTheme.foreground.withValues(
-        alpha: CatchOpacity.clubCoverHighlightOverlay,
+        alpha: CatchOpacity.organizerCoverHighlightOverlay,
       ),
       borderSpec: CatchBorder.resolve(
         CatchTokens.of(context),

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/theme/activity_palette.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -7,14 +7,17 @@ import 'package:flutter/material.dart';
 
 Future<String?> showHostOrganizerSwitcherSheet({
   required BuildContext context,
-  required List<Club> clubs,
+  required List<Organizer> organizers,
   required String selectedOrganizerId,
 }) {
-  assert(clubs.length > 1, 'Organizer switcher requires multiple organizers.');
+  assert(
+    organizers.length > 1,
+    'Organizer switcher requires multiple organizers.',
+  );
   return showCatchBottomSheet<String>(
     context: context,
     builder: (sheetContext) => HostOrganizerSwitcherSheet(
-      clubs: clubs,
+      organizers: organizers,
       selectedOrganizerId: selectedOrganizerId,
     ),
   );
@@ -23,27 +26,27 @@ Future<String?> showHostOrganizerSwitcherSheet({
 class HostOrganizerAvatar extends StatelessWidget {
   const HostOrganizerAvatar({
     super.key,
-    required this.club,
+    required this.organizer,
     required this.size,
     this.selected = false,
   });
 
-  final Club club;
+  final Organizer organizer;
   final double size;
   final bool selected;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final rawLogoUrl = club.logoPhotoUrl?.trim();
+    final rawLogoUrl = organizer.logoPhotoUrl?.trim();
     return CatchAvatar(
       size: size,
-      name: club.name,
-      initials: CatchAvatar.initialsOf(club.name),
+      name: organizer.name,
+      initials: CatchAvatar.initialsOf(organizer.name),
       imageUrl: rawLogoUrl?.isNotEmpty == true ? rawLogoUrl : null,
       colors: ActivityPalette.resolve(
         context,
-        club.hostDefaults.primaryActivityKind,
+        organizer.hostDefaults.primaryActivityKind,
       ).avatarColors,
       borderWidth: selected ? CatchStroke.underline : CatchStroke.hairline,
       borderColor: selected ? t.ink : t.line2,
@@ -54,22 +57,22 @@ class HostOrganizerAvatar extends StatelessWidget {
 class HostOrganizerSwitcherSheet extends StatelessWidget {
   const HostOrganizerSwitcherSheet({
     super.key,
-    required this.clubs,
+    required this.organizers,
     required this.selectedOrganizerId,
   });
 
-  final List<Club> clubs;
+  final List<Organizer> organizers;
   final String selectedOrganizerId;
 
   @override
   Widget build(BuildContext context) {
     return CatchSelectionSheet<String>(
       key: const ValueKey<String>('host-organizer-switcher-sheet'),
-      title: context.l10n.hostsHostTodayTooltipSwitchClub,
+      title: context.l10n.hostsHostTodayTooltipSwitchOrganizer,
       value: selectedOrganizerId,
       items: [
-        for (final club in clubs)
-          CatchSelectionMenuItem(value: club.id, label: club.name),
+        for (final organizer in organizers)
+          CatchSelectionMenuItem(value: organizer.id, label: organizer.name),
       ],
     );
   }

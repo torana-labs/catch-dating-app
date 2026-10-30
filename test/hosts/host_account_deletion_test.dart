@@ -30,10 +30,10 @@ Future<void> _pump(WidgetTester tester, _DeletionController controller) async {
     routes: [
       GoRoute(
         path: '/',
-        builder: (_, _) => const HostClubsScaffold(
-          clubs: [],
+        builder: (_, _) => const HostOrganizersScaffold(
+          organizers: [],
           currentUid: 'host-review-test',
-          initialTab: HostClubTab.edit,
+          initialTab: HostOrganizerTab.edit,
         ),
       ),
       GoRoute(

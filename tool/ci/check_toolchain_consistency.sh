@@ -14,7 +14,8 @@ for name in \
   FIREBASE_TOOLS_VERSION \
   COCOAPODS_VERSION \
   APPLE_CI_RUNNER \
-  XCODE_MIN_VERSION; do
+  XCODE_MIN_VERSION \
+  TERRAFORM_VERSION; do
   if [[ -z "${!name:-}" ]]; then
     echo "Missing $name in tool/ci/toolchain.env"
     exit 1

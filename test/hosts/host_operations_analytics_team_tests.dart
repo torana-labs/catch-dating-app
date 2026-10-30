@@ -4,23 +4,26 @@ void _registerHostOperationsAnalyticsTeamTests() {
   testWidgets(
     'Organizer audience retry preserves unknown versus measured zero',
     (tester) async {
-      final club = buildClub(id: 'audience-layout', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'audience-layout',
+        ownerUserId: _hostUid,
+      );
       var attempts = 0;
       await _pumpHostScreen(
         tester,
         Scaffold(
           body: SingleChildScrollView(
-            child: HostClubOrganizerSectionList(club: club),
+            child: HostOrganizerSectionList(organizer: organizer),
           ),
         ),
         overrides: [
-          watchEventsForClubProvider(
-            club.id,
+          watchEventsForOrganizerProvider(
+            organizer.id,
           ).overrideWithValue(const AsyncData<List<Event>>([])),
-          hostCrmSummaryProvider(club.id).overrideWith((ref) async {
+          hostCrmSummaryProvider(organizer.id).overrideWith((ref) async {
             attempts++;
             if (attempts == 1) throw StateError('Temporarily unavailable');
-            return _emptyCrmSummary(club.id);
+            return _emptyCrmSummary(organizer.id);
           }),
         ],
       );
@@ -59,7 +62,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
   testWidgets('Host club workspace keeps shared chrome across every tab', (
     tester,
   ) async {
-    final ownedClub = buildClub(
+    final ownedOrganizer = buildOrganizer(
       id: 'owned-club',
       name: 'Saket Run Club',
       description: 'Morning runs, plenty of sunshine and energy.',
@@ -67,27 +70,27 @@ void _registerHostOperationsAnalyticsTeamTests() {
       location: 'in-mp-indore',
       ownerUserId: _hostUid,
     );
-    final secondClub = buildClub(
+    final secondOrganizer = buildOrganizer(
       id: 'second-club',
       name: 'Second Club',
       ownerUserId: _hostUid,
     );
     final previewEvent = buildEvent(
-      clubId: ownedClub.id,
+      clubId: ownedOrganizer.id,
       startTime: DateTime(2030, 7, 20, 7),
     );
 
     await _pumpHostScreen(
       tester,
-      const HostClubsScreen(),
+      const HostOrganizersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [ownedClub, secondClub]),
-        watchEventsForClubProvider(
-          ownedClub.id,
+        ..._hostOrganizerOverrides(owned: [ownedOrganizer, secondOrganizer]),
+        watchEventsForOrganizerProvider(
+          ownedOrganizer.id,
         ).overrideWithValue(AsyncData<List<Event>>([previewEvent])),
-        clubDetailViewModelProvider(ownedClub.id).overrideWithValue(
-          AsyncData<ClubDetailViewModel?>(
-            _previewViewModel(ownedClub, events: [previewEvent]),
+        organizerDetailViewModelProvider(ownedOrganizer.id).overrideWithValue(
+          AsyncData<OrganizerDetailViewModel?>(
+            _previewViewModel(ownedOrganizer, events: [previewEvent]),
           ),
         ),
         watchHostPaymentAccountsProvider(
@@ -147,7 +150,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expectSharedChrome();
     expect(
       CatchFieldInteractionPlaneScope.outsetsOf(
-        tester.element(find.byType(HostClubEditBody)),
+        tester.element(find.byType(HostOrganizerEditBody)),
       ),
       EdgeInsets.zero,
     );
@@ -206,11 +209,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(find.byType(HostAnalyticsPeriodInput), findsOneWidget);
 
     expectSharedChrome();
-    expect(find.byType(HostClubInsightsSection), findsOneWidget);
+    expect(find.byType(HostOrganizerInsightsSection), findsOneWidget);
     final insightsBodyPadding = tester
         .widgetList<SliverPadding>(
           find.ancestor(
-            of: find.byType(HostClubInsightsSection),
+            of: find.byType(HostOrganizerInsightsSection),
             matching: find.byType(SliverPadding),
           ),
         )
@@ -229,13 +232,15 @@ void _registerHostOperationsAnalyticsTeamTests() {
     );
     expect(find.byTooltip('Back to Organizer'), findsNothing);
     final rangeOptions = find.byType(
-      CatchChoiceInput<HostClubInsightsRangePreset>,
+      CatchChoiceInput<HostOrganizerInsightsRangePreset>,
     );
     expect(
       tester
-          .widget<CatchChoiceInput<HostClubInsightsRangePreset>>(rangeOptions)
+          .widget<CatchChoiceInput<HostOrganizerInsightsRangePreset>>(
+            rangeOptions,
+          )
           .selected,
-      {HostClubInsightsRangePreset.thirtyDays},
+      {HostOrganizerInsightsRangePreset.thirtyDays},
     );
     await Scrollable.ensureVisible(
       tester.element(find.text('90 days')),
@@ -246,9 +251,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await pumpFeatureUi(tester);
     expect(
       tester
-          .widget<CatchChoiceInput<HostClubInsightsRangePreset>>(rangeOptions)
+          .widget<CatchChoiceInput<HostOrganizerInsightsRangePreset>>(
+            rangeOptions,
+          )
           .selected,
-      {HostClubInsightsRangePreset.ninetyDays},
+      {HostOrganizerInsightsRangePreset.ninetyDays},
     );
 
     await tester.tap(tab('Preview'));
@@ -294,9 +301,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await pumpFeatureUi(tester);
     expect(
       tester
-          .widget<CatchChoiceInput<HostClubInsightsRangePreset>>(rangeOptions)
+          .widget<CatchChoiceInput<HostOrganizerInsightsRangePreset>>(
+            rangeOptions,
+          )
           .selected,
-      {HostClubInsightsRangePreset.ninetyDays},
+      {HostOrganizerInsightsRangePreset.ninetyDays},
     );
 
     await tester.tap(tab('Edit'));
@@ -319,7 +328,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      final ownedClub = buildClub(
+      final ownedOrganizer = buildOrganizer(
         id: 'wide-club',
         name: 'Wide Club',
         ownerUserId: _hostUid,
@@ -327,18 +336,18 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
       await _pumpHostScreen(
         tester,
-        const HostClubsScreen(
-          initialExpandedEditField: HostClubEditFieldKeys.description,
+        const HostOrganizersScreen(
+          initialExpandedEditField: HostOrganizerEditFieldKeys.description,
         ),
         overrides: [
-          ..._hostClubOverrides(owned: [ownedClub]),
+          ..._hostOrganizerOverrides(owned: [ownedOrganizer]),
           watchHostPaymentAccountsProvider(
             _hostUid,
           ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
         ],
       );
 
-      final editTab = find.byType(HostClubEditBody);
+      final editTab = find.byType(HostOrganizerEditBody);
       expect(editTab, findsOneWidget);
       expect(
         tester.getSize(editTab).width,
@@ -349,7 +358,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
         closeTo(CatchLayout.workspaceEditorWidth / 2, 0.1),
       );
       expect(
-        tester.getSize(find.byType(HostClubMediaRail)).width,
+        tester.getSize(find.byType(HostOrganizerMediaRail)).width,
         closeTo(
           CatchLayout.workspaceEditorWidth - CatchInsets.pageBody.horizontal,
           0.1,
@@ -375,18 +384,22 @@ void _registerHostOperationsAnalyticsTeamTests() {
     tester,
   ) async {
     final photoBytes = _testPngBytes();
-    final actions = _RecordingHostClubEditActions(
+    final actions = _RecordingHostOrganizerEditActions(
       pickedPhotos: [
-        HostPickedClubPhoto(
+        HostPickedOrganizerPhoto(
           id: 'picked-photo',
           image: XFile.fromData(photoBytes, name: 'picked.jpg'),
           bytes: photoBytes,
         ),
       ],
     );
-    final club = buildClub(id: 'media-pick', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(id: 'media-pick', ownerUserId: _hostUid);
 
-    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
     final add = find.byKey(OrderedPhotoPickerKeys.addAction('Add photos'));
     await Scrollable.ensureVisible(tester.element(add));
     await tester.tap(add);
@@ -407,35 +420,44 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
     expect(actions.mediaWrites, hasLength(1));
     expect(actions.mediaWrites.single, hasLength(1));
-    expect(actions.mediaWrites.single.single, isA<HostNewClubPhotoInput>());
+    expect(
+      actions.mediaWrites.single.single,
+      isA<HostNewOrganizerPhotoInput>(),
+    );
   });
 
   testWidgets(
     'Host organizer media summary keeps logo, cover, and gallery in one role-sized row',
     (tester) async {
-      final actions = _RecordingHostClubEditActions();
-      final club = buildClub(
+      final actions = _RecordingHostOrganizerEditActions();
+      final organizer = buildOrganizer(
         id: 'media-summary',
         ownerUserId: _hostUid,
         profileImageUrl: 'https://example.test/logo.png',
         clubPhotos: [
-          _uploadedClubPhoto('one', position: 0),
-          _uploadedClubPhoto('two', position: 1),
+          _uploadedOrganizerPhoto('one', position: 0),
+          _uploadedOrganizerPhoto('two', position: 1),
         ],
       );
 
-      await _pumpHostClubEditTab(tester, club: club, actions: actions);
+      await _pumpHostOrganizerEditTab(
+        tester,
+        organizer: organizer,
+        actions: actions,
+      );
 
-      expect(find.byKey(HostClubMediaKeys.summaryStrip), findsOneWidget);
-      expect(find.byType(CreateClubProfileImagePicker), findsNothing);
-      expect(find.byType(CreateClubPhotosPicker), findsNothing);
+      expect(find.byKey(HostOrganizerMediaKeys.summaryStrip), findsOneWidget);
+      expect(find.byType(CreateOrganizerProfileImagePicker), findsNothing);
+      expect(find.byType(CreateOrganizerPhotosPicker), findsNothing);
       expect(find.text('LOGO'), findsOneWidget);
       expect(find.text('COVER'), findsOneWidget);
       expect(find.text('Manage images'), findsOneWidget);
       expect(find.text('3 photos'), findsOneWidget);
       expect(find.text('Save media'), findsNothing);
 
-      final logoSize = tester.getSize(find.byKey(HostClubMediaKeys.logoTile));
+      final logoSize = tester.getSize(
+        find.byKey(HostOrganizerMediaKeys.logoTile),
+      );
       final coverSize = tester.getSize(
         find.byKey(const ValueKey('host-media-summary-photo-existing-one')),
       );
@@ -453,10 +475,10 @@ void _registerHostOperationsAnalyticsTeamTests() {
         closeTo(CatchAspectRatio.organizerGallery, 0.001),
       );
 
-      await tester.tap(find.byKey(HostClubMediaKeys.logoTile));
+      await tester.tap(find.byKey(HostOrganizerMediaKeys.logoTile));
       await pumpFeatureUi(tester);
       expect(find.byKey(OrderedPhotoPickerKeys.managerScreen), findsOneWidget);
-      expect(find.byType(CreateClubProfileImagePicker), findsOneWidget);
+      expect(find.byType(CreateOrganizerProfileImagePicker), findsOneWidget);
       expect(find.text('Save media'), findsOneWidget);
       expect(find.text('Discard'), findsOneWidget);
     },
@@ -466,18 +488,25 @@ void _registerHostOperationsAnalyticsTeamTests() {
     tester,
   ) async {
     final photoBytes = _testPngBytes();
-    final actions = _RecordingHostClubEditActions(
+    final actions = _RecordingHostOrganizerEditActions(
       pickedPhotos: [
-        HostPickedClubPhoto(
+        HostPickedOrganizerPhoto(
           id: 'discarded-photo',
           image: XFile.fromData(photoBytes, name: 'discarded.jpg'),
           bytes: photoBytes,
         ),
       ],
     );
-    final club = buildClub(id: 'media-discard', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(
+      id: 'media-discard',
+      ownerUserId: _hostUid,
+    );
 
-    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
     final add = find.byKey(OrderedPhotoPickerKeys.addAction('Add photos'));
     await Scrollable.ensureVisible(tester.element(add));
     await tester.tap(add);
@@ -500,12 +529,16 @@ void _registerHostOperationsAnalyticsTeamTests() {
   testWidgets('Host organizer empty media summary stays compact', (
     tester,
   ) async {
-    final actions = _RecordingHostClubEditActions();
-    final club = buildClub(id: 'media-empty', ownerUserId: _hostUid);
+    final actions = _RecordingHostOrganizerEditActions();
+    final organizer = buildOrganizer(id: 'media-empty', ownerUserId: _hostUid);
 
-    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
 
-    final summary = find.byKey(HostClubMediaKeys.summaryStrip);
+    final summary = find.byKey(HostOrganizerMediaKeys.summaryStrip);
     final add = find.byKey(OrderedPhotoPickerKeys.addAction('Add photos'));
     expect(
       tester.getSize(summary).height,
@@ -517,20 +550,24 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await tester.tap(find.byKey(OrderedPhotoPickerKeys.manageAction));
     await pumpFeatureUi(tester);
     expect(find.byKey(OrderedPhotoPickerKeys.managerScreen), findsOneWidget);
-    expect(find.byType(CreateClubProfileImagePicker), findsOneWidget);
+    expect(find.byType(CreateOrganizerProfileImagePicker), findsOneWidget);
   });
 
   testWidgets(
     'Host organizer logo removal remains available in image manager',
     (tester) async {
-      final actions = _RecordingHostClubEditActions();
-      final club = buildClub(
+      final actions = _RecordingHostOrganizerEditActions();
+      final organizer = buildOrganizer(
         id: 'media-logo-remove',
         ownerUserId: _hostUid,
         profileImageUrl: 'https://example.test/logo.png',
       );
 
-      await _pumpHostClubEditTab(tester, club: club, actions: actions);
+      await _pumpHostOrganizerEditTab(
+        tester,
+        organizer: organizer,
+        actions: actions,
+      );
       await tester.tap(find.byKey(OrderedPhotoPickerKeys.manageAction));
       await pumpFeatureUi(tester);
       await tester.tap(find.text('Remove'));
@@ -548,9 +585,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
     tester,
   ) async {
     final photoBytes = _testPngBytes();
-    final actions = _RecordingHostClubEditActions(
+    final actions = _RecordingHostOrganizerEditActions(
       pickedPhotos: [
-        HostPickedClubPhoto(
+        HostPickedOrganizerPhoto(
           id: 'retry-photo',
           image: XFile.fromData(photoBytes, name: 'retry.jpg'),
           bytes: photoBytes,
@@ -558,9 +595,13 @@ void _registerHostOperationsAnalyticsTeamTests() {
       ],
       mediaFailuresRemaining: 1,
     );
-    final club = buildClub(id: 'media-retry', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(id: 'media-retry', ownerUserId: _hostUid);
 
-    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
     final add = find.byKey(OrderedPhotoPickerKeys.addAction('Add photos'));
     await Scrollable.ensureVisible(tester.element(add));
     await tester.tap(add);
@@ -588,14 +629,24 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
     expect(actions.mediaUpdateCalls, 2);
     expect(actions.mediaWrites, hasLength(1));
-    expect(actions.mediaWrites.single.single, isA<HostNewClubPhotoInput>());
+    expect(
+      actions.mediaWrites.single.single,
+      isA<HostNewOrganizerPhotoInput>(),
+    );
   });
 
   testWidgets('Organizer owners can edit the organizer type', (tester) async {
-    final actions = _RecordingHostClubEditActions();
-    final club = buildClub(id: 'typed-organizer', ownerUserId: _hostUid);
+    final actions = _RecordingHostOrganizerEditActions();
+    final organizer = buildOrganizer(
+      id: 'typed-organizer',
+      ownerUserId: _hostUid,
+    );
 
-    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
     final organizerTypeEditor = find.byKey(
       const ValueKey('catch-form-single-choice-organizerType'),
     );
@@ -620,14 +671,14 @@ void _registerHostOperationsAnalyticsTeamTests() {
   testWidgets('Club settings rows push every spoke with the selected club id', (
     tester,
   ) async {
-    final club = buildClub(id: 'spoke-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(id: 'spoke-club', ownerUserId: _hostUid);
     final destinations = <(Routes, String)>[];
     await _pumpHostScreen(
       tester,
       Scaffold(
         body: SingleChildScrollView(
-          child: HostClubEditBody(
-            club: club,
+          child: HostOrganizerEditBody(
+            organizer: organizer,
             currentUid: _hostUid,
             isOwner: true,
             onOpenSettingsRoute: (route, clubId) =>
@@ -635,14 +686,15 @@ void _registerHostOperationsAnalyticsTeamTests() {
           ),
         ),
       ),
-      overrides: _hostClubOverrides(owned: [club]),
+      overrides: _hostOrganizerOverrides(owned: [organizer]),
     );
 
     for (final entry in {
-      'host-club-settings-event-defaults': Routes.hostClubEventDefaultsScreen,
-      'host-club-settings-live-guide': Routes.hostClubLiveGuideScreen,
-      'host-club-settings-payments': Routes.hostClubPaymentsScreen,
-      'host-club-settings-host-team': Routes.hostClubTeamScreen,
+      'host-club-settings-event-defaults':
+          Routes.hostOrganizerEventDefaultsScreen,
+      'host-club-settings-live-guide': Routes.hostOrganizerLiveGuideScreen,
+      'host-club-settings-payments': Routes.hostOrganizerPaymentsScreen,
+      'host-club-settings-host-team': Routes.hostOrganizerTeamScreen,
     }.entries) {
       final field = find.byKey(ValueKey(entry.key));
       await Scrollable.ensureVisible(tester.element(field));
@@ -650,31 +702,31 @@ void _registerHostOperationsAnalyticsTeamTests() {
     }
 
     expect(destinations, [
-      (Routes.hostClubEventDefaultsScreen, club.id),
-      (Routes.hostClubLiveGuideScreen, club.id),
-      (Routes.hostClubPaymentsScreen, club.id),
-      (Routes.hostClubTeamScreen, club.id),
+      (Routes.hostOrganizerEventDefaultsScreen, organizer.id),
+      (Routes.hostOrganizerLiveGuideScreen, organizer.id),
+      (Routes.hostOrganizerPaymentsScreen, organizer.id),
+      (Routes.hostOrganizerTeamScreen, organizer.id),
     ]);
   });
 
   testWidgets('Club settings spokes are read-only for co-hosts', (
     tester,
   ) async {
-    final club = buildClub(
+    final organizer = buildOrganizer(
       id: 'cohost-spoke-club',
       hostUserId: 'owner-2',
       hostUserIds: const [_hostUid],
     );
-    final overrides = _hostClubOverrides(hosted: [club]);
+    final overrides = _hostOrganizerOverrides(hosted: [organizer]);
 
     await _pumpHostScreen(
       tester,
-      HostClubEventDefaultsScreen(clubId: club.id),
+      HostOrganizerEventDefaultsScreen(clubId: organizer.id),
       overrides: overrides,
     );
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, 'Event defaults');
-    expect(topBar.subtitle, club.name);
+    expect(topBar.subtitle, organizer.name);
     expect(topBar.navigation.mode, CatchTopBarNavigationMode.back);
     expect(topBar.emphasis, CatchTopBarEmphasis.plain);
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
@@ -693,7 +745,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
     await _pumpHostScreen(
       tester,
-      HostClubLiveGuideScreen(clubId: club.id),
+      HostOrganizerLiveGuideScreen(clubId: organizer.id),
       overrides: overrides,
     );
     expect(find.byType(CatchToggleInput), findsNothing);
@@ -701,14 +753,14 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
     await _pumpHostScreen(
       tester,
-      HostClubTeamScreen(clubId: club.id),
+      HostOrganizerTeamScreen(clubId: organizer.id),
       overrides: overrides,
     );
     expect(find.text('Add host'), findsNothing);
 
     await _pumpHostScreen(
       tester,
-      HostClubPaymentsScreen(clubId: club.id),
+      HostOrganizerPaymentsScreen(clubId: organizer.id),
       overrides: overrides,
     );
     expect(find.text('Owner'), findsOneWidget);
@@ -718,14 +770,18 @@ void _registerHostOperationsAnalyticsTeamTests() {
   testWidgets('Host club photo removal stays staged until Save media', (
     tester,
   ) async {
-    final actions = _RecordingHostClubEditActions();
-    final club = buildClub(
+    final actions = _RecordingHostOrganizerEditActions();
+    final organizer = buildOrganizer(
       id: 'media-remove',
       ownerUserId: _hostUid,
-      clubPhotos: [_uploadedClubPhoto('one', position: 0)],
+      clubPhotos: [_uploadedOrganizerPhoto('one', position: 0)],
     );
 
-    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
     final manage = find.byKey(OrderedPhotoPickerKeys.manageAction);
     await Scrollable.ensureVisible(tester.element(manage));
     await tester.tap(manage);
@@ -748,17 +804,21 @@ void _registerHostOperationsAnalyticsTeamTests() {
   testWidgets('Host club photo reorder stays staged until Save media', (
     tester,
   ) async {
-    final actions = _RecordingHostClubEditActions();
-    final club = buildClub(
+    final actions = _RecordingHostOrganizerEditActions();
+    final organizer = buildOrganizer(
       id: 'media-reorder',
       ownerUserId: _hostUid,
       clubPhotos: [
-        _uploadedClubPhoto('one', position: 0),
-        _uploadedClubPhoto('two', position: 1),
+        _uploadedOrganizerPhoto('one', position: 0),
+        _uploadedOrganizerPhoto('two', position: 1),
       ],
     );
 
-    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+    await _pumpHostOrganizerEditTab(
+      tester,
+      organizer: organizer,
+      actions: actions,
+    );
     final manage = find.byKey(OrderedPhotoPickerKeys.manageAction);
     await Scrollable.ensureVisible(tester.element(manage));
     await tester.tap(manage);
@@ -774,7 +834,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
     expect(actions.mediaWrites, hasLength(1));
     final reordered = actions.mediaWrites.single
-        .whereType<HostExistingClubPhotoInput>()
+        .whereType<HostExistingOrganizerPhotoInput>()
         .map((input) => input.photo.id)
         .toList();
     expect(reordered, ['two', 'one']);
@@ -788,29 +848,29 @@ void _registerHostOperationsAnalyticsTeamTests() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    final ownedClub = buildClub(
+    final ownedOrganizer = buildOrganizer(
       id: 'offset-club',
       name: 'Offset Club',
       ownerUserId: _hostUid,
       hostProfiles: const [
-        ClubHostProfile(
+        OrganizerHostProfile(
           uid: _hostUid,
           displayName: 'Owner Host',
-          role: ClubHostRole.owner,
+          role: OrganizerHostRole.owner,
         ),
-        ClubHostProfile(uid: 'cohost-1', displayName: 'Co Host One'),
-        ClubHostProfile(uid: 'cohost-2', displayName: 'Co Host Two'),
-        ClubHostProfile(uid: 'cohost-3', displayName: 'Co Host Three'),
+        OrganizerHostProfile(uid: 'cohost-1', displayName: 'Co Host One'),
+        OrganizerHostProfile(uid: 'cohost-2', displayName: 'Co Host Two'),
+        OrganizerHostProfile(uid: 'cohost-3', displayName: 'Co Host Three'),
       ],
     );
 
     await _pumpHostScreen(
       tester,
-      const HostClubsScreen(),
+      const HostOrganizersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [ownedClub]),
-        watchEventsForClubProvider(
-          ownedClub.id,
+        ..._hostOrganizerOverrides(owned: [ownedOrganizer]),
+        watchEventsForOrganizerProvider(
+          ownedOrganizer.id,
         ).overrideWithValue(const AsyncData<List<Event>>([])),
         watchHostPaymentAccountsProvider(
           _hostUid,
@@ -855,7 +915,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     );
     await pumpFeatureUi(tester);
     expect(positionFor(insightsKey).pixels, 0);
-    expect(find.byType(HostClubInsightsSection), findsOneWidget);
+    expect(find.byType(HostOrganizerInsightsSection), findsOneWidget);
 
     final insightsPosition = positionFor(insightsKey);
     expect(insightsPosition.maxScrollExtent, greaterThan(0));

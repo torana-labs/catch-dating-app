@@ -1127,8 +1127,8 @@
       "coverageKind": "matrix",
       "coverageRationale": "Organizer detail is guest-readable only for public consumer supply. It distinguishes authority, hides account data from guests, disables self-actions, and permits the host runtime to preview its own hidden listing.",
       "routeIds": [
-        "clubDetailScreen",
-        "hostClubDetailScreen"
+        "organizerDetailScreen",
+        "hostOrganizerDetailScreen"
       ],
       "screenIds": [
         "screen.club.detail",
@@ -1886,16 +1886,16 @@
       ],
       "evidence": [
         {
-          "path": "test/clubs/club_detail_read_only_preview_test.dart",
+          "path": "test/organizers/organizer_detail_read_only_preview_test.dart",
           "contains": [
             "loaded preview renders canonical content behind one boundary",
             "consumer retry error state"
           ]
         },
         {
-          "path": "test/clubs/club_detail_dock_test.dart",
+          "path": "test/organizers/organizer_detail_dock_test.dart",
           "contains": [
-            "ClubBellButton retains toggle and pending semantics over icon chrome"
+            "OrganizerBellButton retains toggle and pending semantics over icon chrome"
           ]
         }
       ],

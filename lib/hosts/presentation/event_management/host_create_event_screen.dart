@@ -2,8 +2,8 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_loading_screen.dart';
@@ -22,7 +22,7 @@ export 'package:catch_dating_app/hosts/presentation/event_management/host_create
 
 class HostCreateEventRouteArguments {
   const HostCreateEventRouteArguments({
-    this.initialClub,
+    this.initialOrganizer,
     this.initialDraft,
     this.initialPrefill,
     this.initialSavedEventId,
@@ -40,7 +40,7 @@ class HostCreateEventRouteArguments {
          'A saved event cannot also restore a draft or repeat prefill.',
        );
 
-  final Club? initialClub;
+  final Organizer? initialOrganizer;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
   final String? initialSavedEventId;
@@ -54,7 +54,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
   const HostCreateEventRouteScreen({
     super.key,
     required this.clubId,
-    this.initialClub,
+    this.initialOrganizer,
     this.initialDraft,
     this.initialPrefill,
     this.initialSavedEventId,
@@ -73,7 +73,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
        );
 
   final String clubId;
-  final Club? initialClub;
+  final Organizer? initialOrganizer;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
   final String? initialSavedEventId;
@@ -84,10 +84,10 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final initialClub = this.initialClub;
+    final initialOrganizer = this.initialOrganizer;
     final initialDraft = this.initialDraft;
     final initialPrefill = this.initialPrefill;
-    if (initialClub != null && initialClub.id != clubId) {
+    if (initialOrganizer != null && initialOrganizer.id != clubId) {
       return CatchScaffold.stepFlow(
         body: CatchErrorState(
           title:
@@ -122,9 +122,9 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
       );
     }
     final routeState = HostCreateEventRouteState.resolve(
-      initialClub: initialClub,
-      fetchedClub: initialClub == null
-          ? _catchAsyncState(ref.watch(fetchClubProvider(clubId)))
+      initialOrganizer: initialOrganizer,
+      fetchedOrganizer: initialOrganizer == null
+          ? _catchAsyncState(ref.watch(fetchOrganizerProvider(clubId)))
           : null,
       uid: _catchAsyncState(ref.watch(uidProvider)),
     );
@@ -175,11 +175,11 @@ class HostCreateEventRouteBody extends ConsumerWidget {
       HostCreateEventRouteStatus.error => CatchScaffold.stepFlow(
         body: CatchLocalizedErrorState(
           state.error!,
-          context: AppErrorContext.club,
+          context: AppErrorContext.organizer,
           onRetry: () {
             switch (state.retryIntent) {
-              case HostCreateEventRouteRetryIntent.reloadClub:
-                ref.invalidate(fetchClubProvider(clubId));
+              case HostCreateEventRouteRetryIntent.reloadOrganizer:
+                ref.invalidate(fetchOrganizerProvider(clubId));
               case null:
                 break;
             }
@@ -188,20 +188,22 @@ class HostCreateEventRouteBody extends ConsumerWidget {
       ),
       HostCreateEventRouteStatus.notFound => CatchScaffold.stepFlow(
         body: CatchErrorState(
-          title: context.l10n.hostsHostCreateEventScreenTitleClubNotFound,
-          message: context.l10n.hostsHostCreateEventScreenMessageThisClubIsNo,
+          title: context.l10n.hostsHostCreateEventScreenTitleOrganizerNotFound,
+          message:
+              context.l10n.hostsHostCreateEventScreenMessageThisOrganizerIsNo,
           actions: const [CatchErrorBackButton()],
         ),
       ),
       HostCreateEventRouteStatus.forbidden => CatchScaffold.stepFlow(
         body: CatchErrorState(
           title: context.l10n.hostsHostCreateEventScreenTitleHostAccessRequired,
-          message: context.l10n.hostsHostCreateEventScreenMessageOnlyThisClubS,
+          message:
+              context.l10n.hostsHostCreateEventScreenMessageOnlyThisOrganizerS,
           actions: const [CatchErrorBackButton()],
         ),
       ),
       HostCreateEventRouteStatus.ready => PrivateEventCreateScreen(
-        club: state.club!,
+        organizer: state.organizer!,
         initialDraft: initialDraft,
         initialPrefill: initialPrefill,
         initialSavedEventId: initialSavedEventId,

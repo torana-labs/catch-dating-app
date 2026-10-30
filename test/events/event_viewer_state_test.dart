@@ -92,7 +92,7 @@ void main() {
             )
           : null,
       currentViewer: viewer,
-      isClubMember: followed,
+      isOrganizerMember: followed,
       now: now,
       hasInviteCode: false,
       supportsPaidBookings: true,

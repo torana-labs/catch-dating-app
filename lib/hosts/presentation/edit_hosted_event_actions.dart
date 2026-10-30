@@ -55,7 +55,7 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
     final result = await Navigator.of(context).push<LocationPickerResult>(
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(
-          countryIsoCode: countryIsoCodeForCityName(widget.club.location),
+          countryIsoCode: countryIsoCodeForCityName(widget.organizer.location),
           initialLocation: locationState.startingPoint,
           initialCenter: locationState.startingPoint ?? deviceLocation,
           initialLabel: locationState.pickerInitialLabel,
@@ -235,7 +235,7 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
     final result = await Navigator.of(context).push<LocationPickerResult>(
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(
-          countryIsoCode: countryIsoCodeForCityName(widget.club.location),
+          countryIsoCode: countryIsoCodeForCityName(widget.organizer.location),
           initialLocation: current == null
               ? null
               : LocationCoordinate(current.latitude, current.longitude),

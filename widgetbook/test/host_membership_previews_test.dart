@@ -32,7 +32,7 @@ void main() {
     (myMembershipsScreenStates, MyMembershipsScreen, 3),
     (hostMembershipsSectionStates, HostMembershipsSection, 4),
     (hostMembershipsCardStates, HostMembershipsSection, 1),
-    (hostClubMembershipsScreenLoaded, HostMembershipsSection, 1),
+    (hostOrganizerMembershipsScreenLoaded, HostMembershipsSection, 1),
     (hostMembershipPlanEditorSheetStates, HostMembershipPlanEditorSheet, 2),
     (
       hostedEventMembershipRulesEditorStates,

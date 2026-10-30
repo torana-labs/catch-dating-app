@@ -7,7 +7,7 @@ final _hashPattern = RegExp(r'^[a-f0-9]{64}$');
 final _idPattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$');
 final _requestPattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$');
 
-/// Manager-authorized snapshot; private suggestions never enter ClubHostDefaults.
+/// Manager-authorized snapshot; private suggestions never enter OrganizerHostDefaults.
 class ManagerEventSetupDefaults {
   const ManagerEventSetupDefaults({
     required this.organizerId,

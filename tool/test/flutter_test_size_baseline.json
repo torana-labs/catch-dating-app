@@ -11,11 +11,11 @@
     },
     {
       "path": "test/events/event_detail_widgets_test.dart",
-      "maxLines": 1561
+      "maxLines": 1595
     },
     {
       "path": "test/explore/explore_view_model_test.dart",
-      "maxLines": 2276
+      "maxLines": 2320
     }
   ]
 }

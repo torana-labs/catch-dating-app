@@ -2,10 +2,10 @@ import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_membership.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/events/presentation/event_map_center.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
@@ -15,18 +15,20 @@ import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../clubs/clubs_test_helpers.dart' as club_test;
+import '../organizers/organizers_test_helpers.dart' as organizer_test;
 import 'events_test_helpers.dart';
 
-ClubMembership _membership({required String clubId, String uid = 'runner-1'}) =>
-    ClubMembership(
-      id: clubMembershipId(clubId: clubId, uid: uid),
-      clubId: clubId,
-      uid: uid,
-      role: ClubMembershipRole.member,
-      status: ClubMembershipStatus.active,
-      joinedAt: DateTime(2026),
-    );
+OrganizerMembership _membership({
+  required String clubId,
+  String uid = 'runner-1',
+}) => OrganizerMembership(
+  id: organizerMembershipId(clubId: clubId, uid: uid),
+  clubId: clubId,
+  uid: uid,
+  role: OrganizerMembershipRole.member,
+  status: OrganizerMembershipStatus.active,
+  joinedAt: DateTime(2026),
+);
 
 void main() {
   group('buildEventMapViewModel', () {
@@ -217,17 +219,19 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            watchActiveClubMembershipsForUserProvider(user.uid).overrideWith(
+            watchActiveOrganizerMembershipsForUserProvider(
+              user.uid,
+            ).overrideWith(
               (ref) => Stream.value([_membership(clubId: 'club-1')]),
             ),
             eventRepositoryProvider.overrideWith((ref) => repository),
             bookedEventsRepositoryProvider.overrideWith(
               (ref) => FakeBookedEventsRepository(repository),
             ),
-            clubsRepositoryProvider.overrideWith(
+            organizersRepositoryProvider.overrideWith(
               (ref) =>
-                  club_test.FakeClubsRepository()
-                    ..clubsById['club-1'] = buildClub(),
+                  organizer_test.FakeOrganizersRepository()
+                    ..organizersById['club-1'] = buildOrganizer(),
             ),
             savedEventRepositoryProvider.overrideWithValue(
               savedEventRepository,
@@ -245,7 +249,7 @@ void main() {
 
         await container.read(watchUserProfileProvider.future);
         await container.read(
-          watchActiveClubMembershipsForUserProvider(user.uid).future,
+          watchActiveOrganizerMembershipsForUserProvider(user.uid).future,
         );
         await container.read(watchSignedUpEventsProvider(user.uid).future);
         await container.read(
@@ -253,11 +257,13 @@ void main() {
         );
         await container.read(
           recommendedEventsProvider(
-            RecommendedEventsQuery.fromClubIds(const ['club-1']),
+            RecommendedEventsQuery.fromOrganizerIds(const ['club-1']),
           ).future,
         );
         await container.read(
-          clubNameLookupProvider(ClubNameLookupQuery(const ['club-1'])).future,
+          organizerNameLookupProvider(
+            OrganizerNameLookupQuery(const ['club-1']),
+          ).future,
         );
         await container.pump();
 
@@ -272,11 +278,12 @@ void main() {
           EventTileStatus.joined,
           EventTileStatus.recommended,
         ]);
-        expect(viewModel.effectiveItems.map((item) => item.clubName).toSet(), {
-          'Stride Social',
-        });
+        expect(
+          viewModel.effectiveItems.map((item) => item.organizerName).toSet(),
+          {'Stride Social'},
+        );
         expect(viewModel.pinnedEvents.length, 3);
-        expect(repository.recommendedClubIds, ['club-1']);
+        expect(repository.recommendedOrganizerIds, ['club-1']);
       },
     );
   });

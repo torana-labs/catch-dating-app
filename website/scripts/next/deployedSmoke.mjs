@@ -96,6 +96,32 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
   return {sourceSha, base, checks: evidence};
 }
 /**
+ * Waits, within a bound, until a deployment's home page answers as the
+ * selected release, then hands over to the full check. A Hosting release does
+ * not reach every edge at the instant its API call returns, and an edge may
+ * still hold the previous release's page for its one-minute shared lifetime;
+ * run 41075702618's first request came seconds after its channel release.
+ * The wait asks the real path, not a cache-busting one, because that is what
+ * the checks ask next. A deployment that never serves the release still fails,
+ * naming what it served instead.
+ */
+export async function awaitServedRelease(base, sourceSha, {fetchImpl = fetch, attempts = 18, delayMs = 10_000,
+  sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))} = {}) {
+  assert.match(sourceSha ?? "", /^[a-f0-9]{40}$/u);
+  let served;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      const response = await fetchImpl(`${base}/`, {redirect: "manual", signal: AbortSignal.timeout(30_000)});
+      served = {status: response.status, release: response.headers.get("x-catch-release"),
+        age: response.headers.get("age"), cache: response.headers.get("x-cache")};
+      await response.body?.cancel();
+      if (served.status === 200 && served.release === sourceSha) return {attempt, ...served};
+    } catch (error) {served = {error: String(error?.message ?? error)};}
+    if (attempt < attempts) await sleep(delayMs);
+  }
+  assert.fail(`${base}/ did not serve ${sourceSha} after ${attempts} attempts; last answer ${JSON.stringify(served)}`);
+}
+/**
  * The release a deployment must serve. Promotion runs on main's head but
  * releases the accepted preview's source (RELEASE_SHA); a preview releases
  * the commit it runs on. The routes and copy above are this file's source's,
@@ -106,5 +132,7 @@ export function expectedRelease(env) {
   return env.RELEASE_SHA || env.GITHUB_SHA;
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  console.log(JSON.stringify(await verifyDeployedWebsite(process.argv[2], expectedRelease(process.env)), null, 2));
+  const release = expectedRelease(process.env);
+  console.error(JSON.stringify({served: await awaitServedRelease(process.argv[2], release)}));
+  console.log(JSON.stringify(await verifyDeployedWebsite(process.argv[2], release), null, 2));
 }

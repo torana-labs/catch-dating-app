@@ -54,13 +54,13 @@ abstract final class EventInviteShareCopy {
   static String hostPrivateInviteText({
     required Event event,
     required AppLocalizations l10n,
-    required String clubName,
+    required String organizerName,
     required String inviteLink,
   }) {
     return [
       l10n.eventsInviteShareHostPrivateIntro(
         eventTitle: event.title,
-        clubName: clubName,
+        organizerName: organizerName,
       ),
       '',
       _eventLine(event, l10n),

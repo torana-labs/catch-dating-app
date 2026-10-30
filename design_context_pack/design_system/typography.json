@@ -884,7 +884,7 @@
       ],
       "casePolicy": "mixed"
     },
-    "clubMemberSeal": {
+    "organizerMemberSeal": {
       "role": "function",
       "family": "Roboto",
       "size": 12.0,

@@ -132,7 +132,7 @@ test("flags thin feature wrappers around CatchSection field rows", () => {
 
 test("flags feature row groups that manually assign sibling field dividers", () => {
   const findings = scanSourceForSectionDividers({
-    relativePath: "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+    relativePath: "lib/hosts/presentation/host_operations/host_organizer_team_screen.dart",
     source: [
       "class HostTeamClubRows extends StatelessWidget {",
       "  const HostTeamClubRows({required this.clubs});",
@@ -157,7 +157,7 @@ test("flags feature row groups that manually assign sibling field dividers", () 
 
 test("allows CatchSection field rows to own sibling dividers", () => {
   const findings = scanSourceForSectionDividers({
-    relativePath: "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+    relativePath: "lib/hosts/presentation/host_operations/host_organizer_team_screen.dart",
     source: [
       "CatchSection.fieldRows(",
       "  title: 'Clubs you host',",

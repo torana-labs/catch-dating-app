@@ -232,7 +232,7 @@ class _HostCustomerNoteSheetState extends ConsumerState<HostCustomerNoteSheet> {
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {
@@ -431,7 +431,7 @@ class _HostCustomerTagsSheetState extends ConsumerState<HostCustomerTagsSheet> {
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {

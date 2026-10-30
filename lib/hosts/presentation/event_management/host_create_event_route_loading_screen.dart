@@ -22,7 +22,7 @@ class HostCreateEventRouteLoadingScreen extends StatelessWidget {
                 .hostsHostCreateEventRouteLoadingScreenTitleEventBasics,
             subtitle: context
                 .l10n
-                .hostsHostCreateEventRouteLoadingScreenBodyLoadingClub,
+                .hostsHostCreateEventRouteLoadingScreenBodyLoadingOrganizer,
             currentStep: 0,
             totalSteps: 5,
             onClose: () => Navigator.of(context).maybePop(),

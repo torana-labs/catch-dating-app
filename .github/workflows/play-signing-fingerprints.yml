@@ -1,0 +1,144 @@
+name: Firebase Android Fingerprints
+
+# Read-only. Reads the Play App Signing certificate fingerprints for both apps
+# and the live Firebase Android app settings, then prints a complete
+# infra/firebase/terraform.tfvars into the run summary. Commit that file in a
+# PR: Infra Plan then shows the added fingerprints, and Infra Apply registers
+# them after approval. Fingerprints are public certificate hashes.
+# Operator guide: docs/infrastructure_as_code.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      consumer_version_code:
+        description: Play version code of a Consumer bundle (com.catchdates.app)
+        default: "100001"
+        required: true
+      host_version_code:
+        description: Play version code of a Host bundle (com.catchdates.host)
+        default: "457902"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  play:
+    name: Read Play app-signing certificates
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    # The Play publisher identity trusts only prod-mobile (and the
+    # reviewer-gated prod-mobile-release). This job only reads.
+    environment: prod-mobile
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      fingerprints: ${{ steps.read.outputs.fingerprints }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ steps.toolchain.outputs.java-version }}
+      - id: auth
+        name: Authenticate to Google Play without a stored key
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+          create_credentials_file: false
+      - id: read
+        name: Read the certificates Play signs with
+        env:
+          PLAY_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          CONSUMER_VERSION_CODE: ${{ inputs.consumer_version_code }}
+          HOST_VERSION_CODE: ${{ inputs.host_version_code }}
+        run: |
+          set -euo pipefail
+          [[ "$CONSUMER_VERSION_CODE" =~ ^[0-9]+$ && "$HOST_VERSION_CODE" =~ ^[0-9]+$ ]] || {
+            echo "Version codes must be numbers." >&2; exit 1; }
+          infra/scripts/play_signing_fingerprints.sh com.catchdates.app "$CONSUMER_VERSION_CODE" > play.jsonl
+          infra/scripts/play_signing_fingerprints.sh com.catchdates.host "$HOST_VERSION_CODE" >> play.jsonl
+          {
+            echo "### Play app-signing certificates"
+            echo
+            echo "| Package | Version code | SHA-1 | SHA-256 | Read with |"
+            echo "|---|---|---|---|---|"
+            jq -r '"| `\(.package)` | \(.versionCode) | `\(.sha1)` | `\(.sha256)` | \(.reader) |"' play.jsonl
+            echo
+            echo "SHA-256 values match Play's certificateSha256Hash for each bundle."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "fingerprints=$(jq -sc . play.jsonl)" >> "$GITHUB_OUTPUT"
+
+  inventory:
+    name: Print terraform.tfvars
+    needs: play
+    # Runs even when reading Play fails: the live Firebase inventory alone is
+    # a valid terraform.tfvars, and fingerprints registered by hand are
+    # already in it. The run still fails, and the summary says which part.
+    if: ${{ !cancelled() && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: platform-plan
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        run: echo "terraform-version=$(sed -n 's/^TERRAFORM_VERSION=//p' tool/ci/toolchain.env)" >> "$GITHUB_OUTPUT"
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ steps.toolchain.outputs.terraform-version }}
+          terraform_wrapper: false
+      - id: auth
+        name: Authenticate to Google without a stored key
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+          token_format: access_token
+          create_credentials_file: false
+      - name: Read live Firebase apps and write terraform.tfvars
+        env:
+          FIREBASE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          FINGERPRINTS: ${{ needs.play.outputs.fingerprints }}
+          PLAY_RESULT: ${{ needs.play.result }}
+        run: |
+          set -euo pipefail
+          mkdir -p build/infra
+          if [[ "$PLAY_RESULT" == success && -n "$FINGERPRINTS" ]]; then
+            jq -c '.[]' <<<"$FINGERPRINTS" > build/infra/play.jsonl
+            play_note="The Play app-signing fingerprints read above are appended where missing."
+          else
+            : > build/infra/play.jsonl
+            play_note="Reading the Play app-signing certificates failed, so this is the live Firebase inventory only, with nothing appended. Check that the Play fingerprints are already registered before relying on it."
+          fi
+          infra/scripts/firebase_android_inventory.sh --play build/infra/play.jsonl \
+            prod=catch-dating-app-64e51 staging=catchdates-staging dev=catchdates-dev |
+            terraform fmt - > build/infra/terraform.tfvars
+          {
+            echo "### infra/firebase/terraform.tfvars"
+            echo
+            echo "Replace infra/firebase/terraform.tfvars with this file in a PR. Each list keeps the live order. $play_note"
+            echo
+            echo '```hcl'
+            cat build/infra/terraform.tfvars
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: firebase-android-tfvars-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/infra
+          if-no-files-found: error
+          retention-days: 30

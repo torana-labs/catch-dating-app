@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_today_preference_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_layout.dart';
@@ -22,8 +22,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../clubs/clubs_test_helpers.dart' show buildClub;
 import '../../../events/events_test_helpers.dart' show buildEvent;
+import '../../../organizers/organizers_test_helpers.dart' show buildOrganizer;
 import '../../../test_pump_helpers.dart';
 
 void main() {
@@ -77,7 +77,7 @@ void main() {
           name: Routes.hostOrganizerScreen.name,
           builder: (_, state) => Scaffold(
             body: Text(
-              'Organizer ${hostOrganizerScreenForUri(state.uri).initialClubId}',
+              'Organizer ${hostOrganizerScreenForUri(state.uri).initialOrganizerId}',
             ),
           ),
         ),
@@ -94,8 +94,8 @@ void main() {
         retry: (_, _) => null,
         overrides: [
           uidProvider.overrideWithValue(const AsyncData('owner')),
-          hostOperableClubsProvider('owner').overrideWithValue(
-            AsyncData([buildClub(id: 'org', ownerUserId: 'owner')]),
+          hostOperableOrganizersProvider('owner').overrideWithValue(
+            AsyncData([buildOrganizer(id: 'org', ownerUserId: 'owner')]),
           ),
           hostTodayPreferenceRepositoryProvider.overrideWithValue(preferences),
           hostTodayFeedControllerProvider.overrideWith2(

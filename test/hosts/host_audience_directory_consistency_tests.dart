@@ -4,10 +4,13 @@ void _registerAudienceDirectoryConsistencyTests() {
   testWidgets(
     'Groups owns app-bar creation, explicit ordering and clearable filters',
     (tester) async {
-      final club = buildClub(id: 'customers-club', ownerUserId: _hostUid);
+      final organizer = buildOrganizer(
+        id: 'customers-club',
+        ownerUserId: _hostUid,
+      );
       final requests = <HostCustomersDirectoryRequest>[];
       final audience = HostSavedAudience(
-        organizerId: club.id,
+        organizerId: organizer.id,
         audienceId: 'audience-1',
         name: 'Repeat runners',
         status: 'active',
@@ -33,7 +36,7 @@ void _registerAudienceDirectoryConsistencyTests() {
         tester,
         const HostCustomersScreen(initialView: HostAudienceView.audiences),
         overrides: [
-          ..._hostClubOverrides(owned: [club]),
+          ..._hostOrganizerOverrides(owned: [organizer]),
           hostCustomersDirectoryControllerProvider.overrideWith2(
             (_) => _FixedHostCustomersDirectoryController(
               requests,

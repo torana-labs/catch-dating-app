@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_dock.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -376,10 +376,10 @@ Widget catchDockSurfaceContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: ClubDetailDock,
+  type: OrganizerDetailDock,
   path: '[Core primitives]/Product composites',
 )
-Widget clubDetailDockContractStates(BuildContext context) {
+Widget organizerDetailDockContractStates(BuildContext context) {
   return WidgetbookContractFrame(
     title: 'ClubDetailDock',
     contractId: 'catch.club_dock',
@@ -395,8 +395,8 @@ Widget clubDetailDockContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'guest',
         child: _DockFrame(
-          child: ClubDetailDock(
-            state: ClubDetailDockRole.guest,
+          child: OrganizerDetailDock(
+            state: OrganizerDetailDockRole.guest,
             activityKind: ActivityKind.socialRun,
             footnote: 'Sign in to request access.',
             onSignIn: widgetbookNoop,
@@ -406,8 +406,8 @@ Widget clubDetailDockContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'visitor',
         child: _DockFrame(
-          child: ClubDetailDock(
-            state: ClubDetailDockRole.visitor,
+          child: OrganizerDetailDock(
+            state: OrganizerDetailDockRole.visitor,
             activityKind: ActivityKind.pickleball,
             members: 128,
             footnote: 'Requests are approved by the host.',
@@ -418,8 +418,8 @@ Widget clubDetailDockContractStates(BuildContext context) {
       const WidgetbookContractStateCard(
         label: 'visitor-pending',
         child: _DockFrame(
-          child: ClubDetailDock(
-            state: ClubDetailDockRole.visitor,
+          child: OrganizerDetailDock(
+            state: OrganizerDetailDockRole.visitor,
             activityKind: ActivityKind.dinner,
             members: 42,
             isJoinLoading: true,
@@ -429,8 +429,8 @@ Widget clubDetailDockContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'member',
         child: _DockFrame(
-          child: ClubDetailDock(
-            state: ClubDetailDockRole.member,
+          child: OrganizerDetailDock(
+            state: OrganizerDetailDockRole.member,
             activityKind: ActivityKind.yoga,
             members: 76,
             footnote: 'You are a member.',
@@ -442,8 +442,8 @@ Widget clubDetailDockContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'member-bell-pending',
         child: _DockFrame(
-          child: ClubDetailDock(
-            state: ClubDetailDockRole.member,
+          child: OrganizerDetailDock(
+            state: OrganizerDetailDockRole.member,
             activityKind: ActivityKind.socialRun,
             members: 76,
             notificationsEnabled: false,
@@ -456,8 +456,8 @@ Widget clubDetailDockContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'owner',
         child: _DockFrame(
-          child: ClubDetailDock(
-            state: ClubDetailDockRole.owner,
+          child: OrganizerDetailDock(
+            state: OrganizerDetailDockRole.owner,
             activityKind: ActivityKind.pubQuiz,
             onManage: widgetbookNoop,
             onCreate: widgetbookNoop,

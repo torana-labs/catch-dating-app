@@ -4,7 +4,7 @@ void _registerHostOperationsTeamFailuresTests() {
   testWidgets('Host clubs owns profile management without event CTAs', (
     tester,
   ) async {
-    final ownedClub = buildClub(
+    final ownedOrganizer = buildOrganizer(
       id: 'owned-club',
       name: 'Sunday sea-face crew',
       description: 'Dawn runs along the Bandra seafront, every Sunday.',
@@ -14,15 +14,15 @@ void _registerHostOperationsTeamFailuresTests() {
       phoneNumber: '98765 43210',
       email: 'hello@seafacecrew.com',
       hostProfiles: const [
-        ClubHostProfile(
+        OrganizerHostProfile(
           uid: _hostUid,
           displayName: 'Owner Host',
-          role: ClubHostRole.owner,
+          role: OrganizerHostRole.owner,
         ),
-        ClubHostProfile(uid: 'co-host', displayName: 'Co Host'),
+        OrganizerHostProfile(uid: 'co-host', displayName: 'Co Host'),
       ],
     );
-    final cohostClub = buildClub(
+    final cohostOrganizer = buildOrganizer(
       id: 'cohost-club',
       name: 'Co-hosted Club',
       hostUserId: 'owner-2',
@@ -31,14 +31,21 @@ void _registerHostOperationsTeamFailuresTests() {
 
     await _pumpHostScreen(
       tester,
-      const HostClubsScreen(),
+      const HostOrganizersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [ownedClub], hosted: [cohostClub]),
-        clubDetailViewModelProvider(ownedClub.id).overrideWithValue(
-          AsyncData<ClubDetailViewModel?>(_previewViewModel(ownedClub)),
+        ..._hostOrganizerOverrides(
+          owned: [ownedOrganizer],
+          hosted: [cohostOrganizer],
         ),
-        clubDetailViewModelProvider(cohostClub.id).overrideWithValue(
-          AsyncData<ClubDetailViewModel?>(_previewViewModel(cohostClub)),
+        organizerDetailViewModelProvider(ownedOrganizer.id).overrideWithValue(
+          AsyncData<OrganizerDetailViewModel?>(
+            _previewViewModel(ownedOrganizer),
+          ),
+        ),
+        organizerDetailViewModelProvider(cohostOrganizer.id).overrideWithValue(
+          AsyncData<OrganizerDetailViewModel?>(
+            _previewViewModel(cohostOrganizer),
+          ),
         ),
         watchHostPaymentAccountsProvider(
           _hostUid,
@@ -95,11 +102,11 @@ void _registerHostOperationsTeamFailuresTests() {
     expect(find.text('Owned club'), findsNothing);
 
     final container = ProviderScope.containerOf(
-      tester.element(find.byType(HostClubsScaffold)),
+      tester.element(find.byType(HostOrganizersScaffold)),
     );
     container
         .read(hostOrganizerSelectionProvider(_hostUid).notifier)
-        .select(cohostClub.id);
+        .select(cohostOrganizer.id);
     await pumpFeatureUi(tester);
 
     expect(find.text('Co-hosted Club'), findsWidgets);
@@ -166,20 +173,20 @@ void _registerHostOperationsTeamFailuresTests() {
   testWidgets('Default switches auto-save without a Done action', (
     tester,
   ) async {
-    final ownedClub = buildClub(
+    final ownedOrganizer = buildOrganizer(
       id: 'owned-club',
       name: 'Sunday sea-face crew',
       location: 'Mumbai',
       ownerUserId: _hostUid,
     );
-    final repository = FakeClubsRepository();
+    final repository = FakeOrganizersRepository();
 
     await _pumpHostScreen(
       tester,
-      HostClubLiveGuideScreen(clubId: ownedClub.id),
+      HostOrganizerLiveGuideScreen(clubId: ownedOrganizer.id),
       overrides: [
-        ..._hostClubOverrides(owned: [ownedClub]),
-        clubsRepositoryProvider.overrideWith((ref) => repository),
+        ..._hostOrganizerOverrides(owned: [ownedOrganizer]),
+        organizersRepositoryProvider.overrideWith((ref) => repository),
         watchHostPaymentAccountsProvider(
           _hostUid,
         ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
@@ -207,7 +214,7 @@ void _registerHostOperationsTeamFailuresTests() {
 
     expect(find.text('Done'), findsNothing);
     expect(find.text('Cancel'), findsNothing);
-    expect(repository.lastUpdatedClubId, ownedClub.id);
+    expect(repository.lastUpdatedOrganizerId, ownedOrganizer.id);
     final savedDefaults = repository.lastUpdatedFields?['hostDefaults'];
     expect(savedDefaults, isA<Map<String, dynamic>>());
     expect(
@@ -220,21 +227,21 @@ void _registerHostOperationsTeamFailuresTests() {
   testWidgets('Host club fields edit inline without opening edit wizard', (
     tester,
   ) async {
-    final ownedClub = buildClub(
+    final ownedOrganizer = buildOrganizer(
       id: 'owned-club',
       name: 'Sunday sea-face crew',
       description: 'Dawn runs along the Bandra seafront, every Sunday.',
       location: 'Mumbai',
       ownerUserId: _hostUid,
     );
-    final repository = FakeClubsRepository();
+    final repository = FakeOrganizersRepository();
 
     await _pumpHostScreen(
       tester,
-      const HostClubsScreen(),
+      const HostOrganizersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [ownedClub]),
-        clubsRepositoryProvider.overrideWith((ref) => repository),
+        ..._hostOrganizerOverrides(owned: [ownedOrganizer]),
+        organizersRepositoryProvider.overrideWith((ref) => repository),
         watchHostPaymentAccountsProvider(
           _hostUid,
         ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
@@ -275,7 +282,7 @@ void _registerHostOperationsTeamFailuresTests() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Edit owned-club'), findsNothing);
-    expect(repository.lastUpdatedClubId, ownedClub.id);
+    expect(repository.lastUpdatedOrganizerId, ownedOrganizer.id);
     expect(
       repository.lastUpdatedFields,
       containsPair('description', 'Updated dawn loops.'),
@@ -285,10 +292,10 @@ void _registerHostOperationsTeamFailuresTests() {
   testWidgets(
     'Organizer Edit exposes demand-pricing defaults when configured',
     (tester) async {
-      final ownedClub = buildClub(
+      final ownedOrganizer = buildOrganizer(
         id: 'demand-pricing-club',
         ownerUserId: _hostUid,
-        hostDefaults: const ClubHostDefaults(
+        hostDefaults: const OrganizerHostDefaults(
           eventPolicy: EventPolicyDefaults(
             admissionPreset: EventAdmissionDefaultPreset.balancedSingles,
             dynamicPricingEnabled: true,
@@ -300,9 +307,9 @@ void _registerHostOperationsTeamFailuresTests() {
 
       await _pumpHostScreen(
         tester,
-        HostClubEventDefaultsScreen(clubId: ownedClub.id),
+        HostOrganizerEventDefaultsScreen(clubId: ownedOrganizer.id),
         overrides: [
-          ..._hostClubOverrides(owned: [ownedClub]),
+          ..._hostOrganizerOverrides(owned: [ownedOrganizer]),
           watchHostPaymentAccountsProvider(
             _hostUid,
           ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
@@ -324,20 +331,20 @@ void _registerHostOperationsTeamFailuresTests() {
   testWidgets('Host city editor displays labels and persists canonical ids', (
     tester,
   ) async {
-    final ownedClub = buildClub(
+    final ownedOrganizer = buildOrganizer(
       id: 'canonical-city-club',
       name: 'Saket Run Club',
       location: 'in-dl-delhi-ncr',
       ownerUserId: _hostUid,
     );
-    final repository = FakeClubsRepository();
+    final repository = FakeOrganizersRepository();
 
     await _pumpHostScreen(
       tester,
-      const HostClubsScreen(),
+      const HostOrganizersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [ownedClub]),
-        clubsRepositoryProvider.overrideWith((ref) => repository),
+        ..._hostOrganizerOverrides(owned: [ownedOrganizer]),
+        organizersRepositoryProvider.overrideWith((ref) => repository),
         watchHostPaymentAccountsProvider(
           _hostUid,
         ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
@@ -351,7 +358,7 @@ void _registerHostOperationsTeamFailuresTests() {
     await pumpFeatureUi(tester);
     await tester.tap(find.text('City'));
     await pumpFeatureUi(tester);
-    final key = PageStorageKey('host-club-${ownedClub.id}-edit-scroll');
+    final key = PageStorageKey('host-club-${ownedOrganizer.id}-edit-scroll');
     final citySheetScroll = verticalScroll(key);
     await tester.scrollUntilVisible(
       find.text('Mumbai'),
@@ -367,7 +374,7 @@ void _registerHostOperationsTeamFailuresTests() {
     await tester.tap(find.text('Done'));
     await pumpFeatureUi(tester);
 
-    expect(repository.lastUpdatedClubId, ownedClub.id);
+    expect(repository.lastUpdatedOrganizerId, ownedOrganizer.id);
     expect(
       repository.lastUpdatedFields,
       containsPair('location', 'in-mh-mumbai'),
@@ -377,15 +384,15 @@ void _registerHostOperationsTeamFailuresTests() {
   testWidgets(
     'Host team workspace edit loads from club snapshot while profile waits',
     (tester) async {
-      final ownedClub = buildClub(
+      final ownedOrganizer = buildOrganizer(
         id: 'owned-club',
         name: 'Saket Run Club',
         ownerUserId: _hostUid,
         hostProfiles: const [
-          ClubHostProfile(
+          OrganizerHostProfile(
             uid: _hostUid,
             displayName: 'Suvrat',
-            role: ClubHostRole.owner,
+            role: OrganizerHostRole.owner,
           ),
         ],
       );
@@ -393,9 +400,9 @@ void _registerHostOperationsTeamFailuresTests() {
 
       await _pumpHostScreen(
         tester,
-        const HostClubTeamScreen(clubId: 'owned-club'),
+        const HostOrganizerTeamScreen(clubId: 'owned-club'),
         overrides: [
-          ..._hostClubOverrides(owned: [ownedClub]),
+          ..._hostOrganizerOverrides(owned: [ownedOrganizer]),
           watchHostProfileProvider(
             _hostUid,
           ).overrideWithValue(const AsyncLoading<HostProfile?>()),
@@ -426,9 +433,9 @@ void _registerHostOperationsTeamFailuresTests() {
 
     await _pumpHostScreen(
       tester,
-      const HostClubTeamScreen(clubId: 'owned-club'),
+      const HostOrganizerTeamScreen(clubId: 'owned-club'),
       overrides: [
-        ..._hostClubOverrides(owned: [_hostTeamClubWithoutProfile()]),
+        ..._hostOrganizerOverrides(owned: [_hostTeamOrganizerWithoutProfile()]),
         watchHostProfileProvider(
           _hostUid,
         ).overrideWithValue(const AsyncData<HostProfile?>(null)),
@@ -489,9 +496,11 @@ void _registerHostOperationsTeamFailuresTests() {
 
       await _pumpHostScreen(
         tester,
-        const HostClubTeamScreen(clubId: 'owned-club'),
+        const HostOrganizerTeamScreen(clubId: 'owned-club'),
         overrides: [
-          ..._hostClubOverrides(owned: [_hostTeamClubWithoutProfile()]),
+          ..._hostOrganizerOverrides(
+            owned: [_hostTeamOrganizerWithoutProfile()],
+          ),
           watchHostProfileProvider(
             _hostUid,
           ).overrideWithValue(const AsyncData<HostProfile?>(null)),
@@ -526,9 +535,9 @@ void _registerHostOperationsTeamFailuresTests() {
 
     await _pumpHostScreen(
       tester,
-      const HostClubTeamScreen(clubId: 'owned-club'),
+      const HostOrganizerTeamScreen(clubId: 'owned-club'),
       overrides: [
-        ..._hostClubOverrides(owned: [_hostTeamClub()]),
+        ..._hostOrganizerOverrides(owned: [_hostTeamOrganizer()]),
         watchHostProfileProvider(
           _hostUid,
         ).overrideWithValue(AsyncData<HostProfile?>(profile)),
@@ -573,9 +582,9 @@ void _registerHostOperationsTeamFailuresTests() {
 
       await _pumpHostScreen(
         tester,
-        const HostClubTeamScreen(clubId: 'owned-club'),
+        const HostOrganizerTeamScreen(clubId: 'owned-club'),
         overrides: [
-          ..._hostClubOverrides(owned: [_hostTeamClub()]),
+          ..._hostOrganizerOverrides(owned: [_hostTeamOrganizer()]),
           watchHostProfileProvider(
             _hostUid,
           ).overrideWithValue(AsyncData<HostProfile?>(profile)),
@@ -604,8 +613,8 @@ void _registerHostOperationsTeamFailuresTests() {
     (tester) async {
       await _pumpHostScreen(
         tester,
-        const HostClubTeamScreen(clubId: 'owned-club'),
-        overrides: _hostClubOverrides(owned: [_hostTeamClub()]),
+        const HostOrganizerTeamScreen(clubId: 'owned-club'),
+        overrides: _hostOrganizerOverrides(owned: [_hostTeamOrganizer()]),
       );
 
       await tester.tap(find.byIcon(CatchIcons.back));
@@ -618,12 +627,12 @@ void _registerHostOperationsTeamFailuresTests() {
   testWidgets('Host team workspace club rows use section-owned divider roles', (
     tester,
   ) async {
-    final ownedClub = buildClub(
+    final ownedOrganizer = buildOrganizer(
       id: 'owned-club',
       name: 'Owner Club',
       ownerUserId: _hostUid,
     );
-    final hostedClub = buildClub(
+    final hostedOrganizer = buildOrganizer(
       id: 'hosted-club',
       name: 'Hosted Club',
       hostUserId: 'owner-2',
@@ -632,11 +641,14 @@ void _registerHostOperationsTeamFailuresTests() {
 
     await _pumpHostScreen(
       tester,
-      const HostClubTeamScreen(clubId: 'owned-club'),
-      overrides: _hostClubOverrides(owned: [ownedClub], hosted: [hostedClub]),
+      const HostOrganizerTeamScreen(clubId: 'owned-club'),
+      overrides: _hostOrganizerOverrides(
+        owned: [ownedOrganizer],
+        hosted: [hostedOrganizer],
+      ),
     );
 
-    final clubsSection = find.ancestor(
+    final organizersSection = find.ancestor(
       of: find.text('ORGANIZERS YOU HOST'),
       matching: find.byType(CatchSection),
     );
@@ -644,7 +656,7 @@ void _registerHostOperationsTeamFailuresTests() {
       tester
           .widgetList<CatchDivider>(
             find.descendant(
-              of: clubsSection,
+              of: organizersSection,
               matching: find.byType(CatchDivider),
             ),
           )
@@ -655,15 +667,15 @@ void _registerHostOperationsTeamFailuresTests() {
 
   testWidgets('Organizer top bar surfaces sign out failures', (tester) async {
     final authRepository = _FakeHostAuthRepository(throwOnSignOut: true);
-    final club = _hostTeamClub();
+    final organizer = _hostTeamOrganizer();
 
     await _pumpHostScreen(
       tester,
-      const HostClubsScreen(),
+      const HostOrganizersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
-        clubDetailViewModelProvider(club.id).overrideWithValue(
-          AsyncData<ClubDetailViewModel?>(_previewViewModel(club)),
+        ..._hostOrganizerOverrides(owned: [organizer]),
+        organizerDetailViewModelProvider(organizer.id).overrideWithValue(
+          AsyncData<OrganizerDetailViewModel?>(_previewViewModel(organizer)),
         ),
         authRepositoryProvider.overrideWithValue(authRepository),
         watchHostPaymentAccountsProvider(
@@ -683,7 +695,7 @@ void _registerHostOperationsTeamFailuresTests() {
       find.text('Something went wrong. Please try again.'),
       findsOneWidget,
     );
-    expect(find.byType(HostClubsScreen), findsOneWidget);
+    expect(find.byType(HostOrganizersScreen), findsOneWidget);
   });
 
   testWidgets(
@@ -705,9 +717,9 @@ void _registerHostOperationsTeamFailuresTests() {
       );
       await _pumpHostScreen(
         tester,
-        const HostClubTeamScreen(clubId: 'owned-club'),
+        const HostOrganizerTeamScreen(clubId: 'owned-club'),
         overrides: [
-          ..._hostClubOverrides(owned: [_hostTeamClub()]),
+          ..._hostOrganizerOverrides(owned: [_hostTeamOrganizer()]),
           watchHostProfileProvider(
             _hostUid,
           ).overrideWithValue(AsyncData<HostProfile?>(profile)),
@@ -768,9 +780,9 @@ void _registerHostOperationsTeamFailuresTests() {
 
     await _pumpHostScreen(
       tester,
-      const HostClubTeamScreen(clubId: 'owned-club'),
+      const HostOrganizerTeamScreen(clubId: 'owned-club'),
       overrides: [
-        ..._hostClubOverrides(owned: [_hostTeamClub()]),
+        ..._hostOrganizerOverrides(owned: [_hostTeamOrganizer()]),
         watchHostProfileProvider(
           _hostUid,
         ).overrideWithValue(AsyncData<HostProfile?>(profile)),

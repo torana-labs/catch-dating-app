@@ -596,7 +596,7 @@ EventMapViewModel exploreMapViewModelFromFeed(ExploreFeedViewModel feed) {
         EventMapItem(
           event: item.event,
           status: item.status,
-          clubName: item.club.name,
+          organizerName: item.organizer.name,
         ),
   ]..sort((a, b) => a.event.startTime.compareTo(b.event.startTime));
   final externalPinnedItems = [

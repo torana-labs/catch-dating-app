@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.d
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
@@ -41,7 +41,7 @@ void main() {
   final cases = <String, WidgetBuilder>{
     'create-event': (_) => HostEventEntrySheet(
       state: HostEventEntryState.resolve(
-        organizerId: HostOperationsFixtures.primaryClub.id,
+        organizerId: HostOperationsFixtures.primaryOrganizer.id,
         drafts: [HostOperationsFixtures.eventDraft],
         repeatSource: HostOperationsFixtures.upcomingEvent,
       ),
@@ -68,12 +68,12 @@ void main() {
     ),
     'draft-picker': (_) => HostEventEntrySheet(
       state: HostEventEntryState.resolve(
-        organizerId: HostOperationsFixtures.primaryClub.id,
+        organizerId: HostOperationsFixtures.primaryOrganizer.id,
         drafts: [
           HostOperationsFixtures.eventDraft,
           EventDraft(
             id: 'second-review-draft',
-            clubId: HostOperationsFixtures.primaryClub.id,
+            clubId: HostOperationsFixtures.primaryOrganizer.id,
             savedAt: DateTime.now().subtract(const Duration(hours: 3)),
             name: 'Saturday community breakfast',
           ),
@@ -83,11 +83,11 @@ void main() {
       onDeleteDraft: (_) async {},
     ),
     'organizer-picker': (_) => HostOrganizerSwitcherSheet(
-      clubs: [
-        HostOperationsFixtures.primaryClub,
-        HostOperationsFixtures.dinnerClub,
+      organizers: [
+        HostOperationsFixtures.primaryOrganizer,
+        HostOperationsFixtures.dinnerOrganizer,
       ],
-      selectedOrganizerId: HostOperationsFixtures.primaryClub.id,
+      selectedOrganizerId: HostOperationsFixtures.primaryOrganizer.id,
     ),
   };
   for (final entry in cases.entries) {
@@ -136,8 +136,8 @@ void main() {
           includeOverlays: true,
           providerOverrides: [
             uidProvider.overrideWithValue(const AsyncData('host-review')),
-            hostOperableClubsProvider('host-review').overrideWithValue(
-              AsyncData([HostOperationsFixtures.primaryClub]),
+            hostOperableOrganizersProvider('host-review').overrideWithValue(
+              AsyncData([HostOperationsFixtures.primaryOrganizer]),
             ),
             hostFormsDirectoryControllerProvider.overrideWith2(
               (_) => _Forms(withExamples: responses),

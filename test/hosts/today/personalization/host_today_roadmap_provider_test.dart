@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
@@ -14,15 +14,15 @@ import 'package:catch_dating_app/hosts/today/personalization/presentation/host_t
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../clubs/clubs_test_helpers.dart' show buildClub;
+import '../../../organizers/organizers_test_helpers.dart' show buildOrganizer;
 
 void main() {
-  final club = buildClub().copyWith(ownerUserId: 'owner');
+  final organizer = buildOrganizer().copyWith(ownerUserId: 'owner');
 
   group('scoped provider', () {
     final scope = HostTodayPreferenceScope(
       accountId: 'owner',
-      organizerId: club.id,
+      organizerId: organizer.id,
     );
 
     test('a stale account does not subscribe to organizer data', () {
@@ -30,9 +30,9 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           uidProvider.overrideWithValue(const AsyncData('other-owner')),
-          hostOperableClubsProvider('owner').overrideWith((ref) {
+          hostOperableOrganizersProvider('owner').overrideWith((ref) {
             organizerReads++;
-            return AsyncData([club]);
+            return AsyncData([organizer]);
           }),
         ],
       );
@@ -52,9 +52,9 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWithValue(identity),
-            hostOperableClubsProvider('owner').overrideWith((ref) {
+            hostOperableOrganizersProvider('owner').overrideWith((ref) {
               organizerReads++;
-              return AsyncData([club]);
+              return AsyncData([organizer]);
             }),
           ],
         );
@@ -67,22 +67,24 @@ void main() {
     });
 
     test('missing or unavailable membership does not read CRM or payouts', () {
-      for (final membership in <AsyncValue<List<Club>>>[
+      for (final membership in <AsyncValue<List<Organizer>>>[
         const AsyncLoading(),
         AsyncError(StateError('Membership unavailable'), StackTrace.empty),
-        ..._cachedUnavailable<List<Club>>([club]),
+        ..._cachedUnavailable<List<Organizer>>([organizer]),
         const AsyncData([]),
-        AsyncData([club.copyWith(id: 'different-organizer')]),
+        AsyncData([organizer.copyWith(id: 'different-organizer')]),
       ]) {
         var audienceReads = 0;
         var payoutReads = 0;
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWithValue(const AsyncData('owner')),
-            hostOperableClubsProvider('owner').overrideWithValue(membership),
-            hostCrmSummaryProvider(club.id).overrideWith((ref) async {
+            hostOperableOrganizersProvider(
+              'owner',
+            ).overrideWithValue(membership),
+            hostCrmSummaryProvider(organizer.id).overrideWith((ref) async {
               audienceReads++;
-              return _summary(club.id, count: 1);
+              return _summary(organizer.id, count: 1);
             }),
             watchHostPaymentAccountsProvider('owner').overrideWith((ref) {
               payoutReads++;
@@ -106,7 +108,7 @@ void main() {
       () async {
         final cohostScope = HostTodayPreferenceScope(
           accountId: 'cohost',
-          organizerId: club.id,
+          organizerId: organizer.id,
         );
         var payoutReads = 0;
         final container = ProviderContainer(
@@ -115,12 +117,12 @@ void main() {
             hostTodayRehearsalCompletionProvider(
               cohostScope,
             ).overrideWith((ref) async => false),
-            hostOperableClubsProvider(
+            hostOperableOrganizersProvider(
               'cohost',
-            ).overrideWithValue(AsyncData([club])),
+            ).overrideWithValue(AsyncData([organizer])),
             hostCrmSummaryProvider(
-              club.id,
-            ).overrideWith((ref) async => _summary(club.id, count: 1)),
+              organizer.id,
+            ).overrideWith((ref) async => _summary(organizer.id, count: 1)),
             watchHostPaymentAccountsProvider('cohost').overrideWith((ref) {
               payoutReads++;
               return Stream.value([_account('cohost', ready: true)]);
@@ -129,7 +131,7 @@ void main() {
         );
         addTearDown(container.dispose);
         container.listen(hostTodayRoadmapProvider(cohostScope), (_, _) {});
-        await container.read(hostCrmSummaryProvider(club.id).future);
+        await container.read(hostCrmSummaryProvider(organizer.id).future);
 
         final evidence = container.read(hostTodayRoadmapProvider(cohostScope));
 
@@ -152,11 +154,11 @@ void main() {
             hostTodayRehearsalCompletionProvider(
               scope,
             ).overrideWith((ref) async => false),
-            hostOperableClubsProvider(
+            hostOperableOrganizersProvider(
               'owner',
-            ).overrideWithValue(AsyncData([club])),
+            ).overrideWithValue(AsyncData([organizer])),
             hostCrmSummaryProvider(
-              club.id,
+              organizer.id,
             ).overrideWith((ref) => audience.future),
             watchHostPaymentAccountsProvider(
               'owner',
@@ -175,9 +177,9 @@ void main() {
         expect(evidence.audience, HostTodayMilestoneProgress.unknown);
         expect(evidence.payouts, HostTodayMilestoneProgress.unknown);
 
-        audience.complete(_summary(club.id, count: 2));
+        audience.complete(_summary(organizer.id, count: 2));
         accounts.add([_account('owner', ready: true)]);
-        await container.read(hostCrmSummaryProvider(club.id).future);
+        await container.read(hostCrmSummaryProvider(organizer.id).future);
         await container.read(watchHostPaymentAccountsProvider('owner').future);
         evidence = container.read(hostTodayRoadmapProvider(scope));
         expect(evidence.audience, HostTodayMilestoneProgress.complete);
@@ -202,18 +204,18 @@ void main() {
     () async {
       final scope = HostTodayPreferenceScope(
         accountId: 'owner',
-        organizerId: club.id,
+        organizerId: organizer.id,
       );
       for (final result in [true, false, null]) {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWithValue(const AsyncData('owner')),
-            hostOperableClubsProvider(
+            hostOperableOrganizersProvider(
               'owner',
-            ).overrideWithValue(AsyncData([club])),
+            ).overrideWithValue(AsyncData([organizer])),
             hostCrmSummaryProvider(
-              club.id,
-            ).overrideWith((ref) async => _summary(club.id, count: 0)),
+              organizer.id,
+            ).overrideWith((ref) async => _summary(organizer.id, count: 0)),
             watchHostPaymentAccountsProvider(
               'owner',
             ).overrideWith((ref) => Stream.value([])),
@@ -248,7 +250,7 @@ void main() {
 
   test('unknown dependencies are not treated as completed or empty', () {
     final evidence = buildHostTodayRoadmapEvidence(
-      organizer: club,
+      organizer: organizer,
       accountId: 'owner',
       audience: null,
       paymentAccounts: null,
@@ -262,15 +264,15 @@ void main() {
   test('only authoritative customer counts establish audience completion', () {
     for (final data in [
       (
-        summary: _summary(club.id, count: 0),
+        summary: _summary(organizer.id, count: 0),
         expected: HostTodayMilestoneProgress.incomplete,
       ),
       (
-        summary: _summary(club.id, count: 1),
+        summary: _summary(organizer.id, count: 1),
         expected: HostTodayMilestoneProgress.complete,
       ),
       (
-        summary: _summary(club.id, count: 0, truncated: true),
+        summary: _summary(organizer.id, count: 0, truncated: true),
         expected: HostTodayMilestoneProgress.unknown,
       ),
       (
@@ -279,7 +281,7 @@ void main() {
       ),
     ]) {
       final evidence = buildHostTodayRoadmapEvidence(
-        organizer: club,
+        organizer: organizer,
         accountId: 'owner',
         audience: data.summary,
         paymentAccounts: null,
@@ -296,7 +298,7 @@ void main() {
       (status: 'suppressed', path: '/organizers/test', expected: false),
     ]) {
       final evidence = buildHostTodayRoadmapEvidence(
-        organizer: club.copyWith(
+        organizer: organizer.copyWith(
           publicPage: OrganizerPublicPage.fromJson({
             'publishStatus': data.status,
             'canonicalPath': data.path,
@@ -319,7 +321,7 @@ void main() {
     'cohost payment capability is not confused with organizer owner readiness',
     () {
       final evidence = buildHostTodayRoadmapEvidence(
-        organizer: club,
+        organizer: organizer,
         accountId: 'cohost',
         audience: null,
         paymentAccounts: [_account('cohost', ready: true)],
@@ -337,7 +339,7 @@ void main() {
       (accounts: [_account('owner', ready: true)], expected: true),
     ]) {
       final evidence = buildHostTodayRoadmapEvidence(
-        organizer: club,
+        organizer: organizer,
         accountId: 'owner',
         audience: null,
         paymentAccounts: data.accounts,

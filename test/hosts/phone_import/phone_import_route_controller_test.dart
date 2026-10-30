@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/programmes/data/host_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
@@ -69,10 +69,10 @@ Map<String, Object?> _access({
   };
 }
 
-Club _organizer({
+Organizer _organizer({
   String id = _organizerId,
   String name = 'Canonical planner',
-}) => Club(
+}) => Organizer(
   id: id,
   name: name,
   description: '',
@@ -119,11 +119,11 @@ class _Result<T> extends Fake implements HttpsCallableResult<T> {
   final T data;
 }
 
-class _Organizers extends Fake implements ClubsRepository {
+class _Organizers extends Fake implements OrganizersRepository {
   final requestedIds = <String>[];
-  Future<Club?> Function(String) read = (_) async => _organizer();
+  Future<Organizer?> Function(String) read = (_) async => _organizer();
   @override
-  Future<Club?> fetchClub(String id) {
+  Future<Organizer?> fetchOrganizer(String id) {
     requestedIds.add(id);
     return read(id);
   }
@@ -192,7 +192,7 @@ class _Fixture {
       programSetupRepositoryProvider.overrideWithValue(
         ProgramSetupRepository(functions),
       ),
-      clubsRepositoryProvider.overrideWithValue(organizers),
+      organizersRepositoryProvider.overrideWithValue(organizers),
       hostWorkRepositoryProvider.overrideWithValue(assignments),
       commandJournalStorageProvider.overrideWithValue(() async => db),
       organizerProgramDetailProvider(_programId).overrideWith(

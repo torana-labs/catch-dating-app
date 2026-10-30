@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_preferences_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -36,7 +36,7 @@ void main() {
       expect(cleared.paymentInstructions, isNull);
       expect(cleared.reusablePaymentPage, isNull);
       expect(original.reusablePaymentPage!.reusableForEvents, isTrue);
-      final publicOrganizerJson = const ClubHostDefaults(
+      final publicOrganizerJson = const OrganizerHostDefaults(
         timezone: 'Asia/Kolkata',
         revision: 7,
       ).toJson();
@@ -45,7 +45,7 @@ void main() {
       expect(publicOrganizerJson.keys, isNot(contains('reusablePaymentPage')));
       expect(publicOrganizerJson.keys, isNot(contains('timezone')));
       expect(publicOrganizerJson.keys, isNot(contains('revision')));
-      final serverRead = ClubHostDefaults.fromJson({
+      final serverRead = OrganizerHostDefaults.fromJson({
         ...publicOrganizerJson,
         'timezone': 'Asia/Kolkata',
         'revision': 7,

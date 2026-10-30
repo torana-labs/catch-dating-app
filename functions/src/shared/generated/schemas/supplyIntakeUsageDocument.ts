@@ -6,7 +6,7 @@ export const supplyIntakeUsageDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/supply_intake_usage.schema.json",
   "title": "SupplyIntakeUsageDocument",
-  "description": "Durable monthly page-fetch usage for Supply Intake. The worker reserves an intake's allowance here in a transaction before any request leaves the process and releases what it did not use; the monthly cap in acquisition_policy.json is enforced against this count, never against process memory.",
+  "description": "Durable monthly network usage for Supply Intake: page fetches at {monthKey}, handle web searches at web-search-{monthKey}. The worker reserves an intake's allowance here in a transaction before any request leaves the process (and releases unused page fetches); the monthly caps in acquisition_policy.json are enforced against these counts, never against process memory.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "supplyIntakeUsage",

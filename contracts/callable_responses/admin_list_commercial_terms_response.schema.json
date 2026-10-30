@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_commercial_terms_response.schema.json",
+  "title": "AdminListCommercialTermsCallableResponse",
+  "description": "Commercial terms as the Admin console reviews them. platform and organizer are the stored records (null when never saved); effectiveTerms merges them for the requested organizer, or is the platform terms for the platform scope (null while the platform is unconfigured). history holds the newest revisions of the requested scope. Lists are bounded and say when they are incomplete.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["termsId", "organizerId", "organizerName", "platform", "organizer", "effectiveTerms", "history", "historyComplete", "overrides", "overridesComplete", "organizerMatches"],
+  "definitions": {
+    "millis": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "revision": {"type": "integer", "minimum": 1},
+    "reason": {"type": "string", "minLength": 3, "maxLength": 500},
+    "organizerName": {"type": ["string", "null"], "maxLength": 200},
+    "platformRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "terms", "reason", "updatedByUid", "updatedAtMillis"],
+      "properties": {
+        "revision": {"$ref": "#/definitions/revision"},
+        "terms": {"$ref": "../shared/commercial_terms.schema.json#/definitions/terms"},
+        "reason": {"$ref": "#/definitions/reason"},
+        "updatedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "updatedAtMillis": {"$ref": "#/definitions/millis"}
+      }
+    },
+    "organizerRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "terms", "reason", "updatedByUid", "updatedAtMillis"],
+      "properties": {
+        "revision": {"$ref": "#/definitions/revision"},
+        "terms": {"$ref": "../shared/commercial_terms.schema.json#/definitions/termsOverride"},
+        "reason": {"$ref": "#/definitions/reason"},
+        "updatedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "updatedAtMillis": {"$ref": "#/definitions/millis"}
+      }
+    }
+  },
+  "properties": {
+    "termsId": {"type": "string", "pattern": "^(platform|org_[a-f0-9]{64})$"},
+    "organizerId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "organizerName": {"$ref": "#/definitions/organizerName"},
+    "platform": {"anyOf": [{"$ref": "#/definitions/platformRecord"}, {"type": "null"}]},
+    "organizer": {"anyOf": [{"$ref": "#/definitions/organizerRecord"}, {"type": "null"}]},
+    "effectiveTerms": {"anyOf": [{"$ref": "../shared/commercial_terms.schema.json#/definitions/terms"}, {"type": "null"}]},
+    "history": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["revision", "terms", "reason", "actorUid", "createdAtMillis"],
+        "properties": {
+          "revision": {"$ref": "#/definitions/revision"},
+          "terms": {"anyOf": [{"$ref": "../shared/commercial_terms.schema.json#/definitions/terms"}, {"$ref": "../shared/commercial_terms.schema.json#/definitions/termsOverride"}]},
+          "reason": {"$ref": "#/definitions/reason"},
+          "actorUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+          "createdAtMillis": {"$ref": "#/definitions/millis"}
+        }
+      }
+    },
+    "historyComplete": {"type": "boolean"},
+    "overrides": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["organizerId", "organizerName", "revision", "terms", "reason", "updatedAtMillis"],
+        "properties": {
+          "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+          "organizerName": {"$ref": "#/definitions/organizerName"},
+          "revision": {"$ref": "#/definitions/revision"},
+          "terms": {"$ref": "../shared/commercial_terms.schema.json#/definitions/termsOverride"},
+          "reason": {"$ref": "#/definitions/reason"},
+          "updatedAtMillis": {"$ref": "#/definitions/millis"}
+        }
+      }
+    },
+    "overridesComplete": {"type": "boolean"},
+    "organizerMatches": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["organizerId", "organizerName", "cityName"],
+        "properties": {
+          "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+          "organizerName": {"$ref": "#/definitions/organizerName"},
+          "cityName": {"type": ["string", "null"], "maxLength": 200}
+        }
+      }
+    }
+  }
+}

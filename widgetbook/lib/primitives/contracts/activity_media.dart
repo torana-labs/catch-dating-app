@@ -1,14 +1,14 @@
-import 'package:catch_dating_app/clubs/shared/club_cover.dart';
-import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
 import 'package:catch_dating_app/contexts/events/parts/activity_map_pin.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_activity_badge.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_card.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_thumbnail.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/map_preview.dart';
+import 'package:catch_dating_app/organizers/shared/organizer_cover.dart';
+import 'package:catch_dating_app/organizers/shared/organizer_placeholder_cover.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -19,11 +19,11 @@ import '../../preview_layout_contracts.dart';
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: ClubCover,
+  type: OrganizerCover,
   path: '[Core primitives]/Media',
 )
-Widget catchClubCoverContractStates(BuildContext context) {
-  final fallbackClub = Club(
+Widget catchOrganizerCoverContractStates(BuildContext context) {
+  final fallbackOrganizer = Organizer(
     id: 'contract-cover-fallback',
     name: 'Sea Face Social',
     description: 'A social movement club.',
@@ -31,7 +31,7 @@ Widget catchClubCoverContractStates(BuildContext context) {
     area: 'Bandra',
     createdAt: DateTime(2026),
   );
-  final photoClub = fallbackClub.copyWith(
+  final photoOrganizer = fallbackOrganizer.copyWith(
     id: 'contract-cover-photo',
     imageUrl:
         'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=720&q=80',
@@ -44,24 +44,24 @@ Widget catchClubCoverContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'photo',
         child: SizedBox(
-          width: WidgetbookPreviewLayout.clubCoverWidth,
-          height: WidgetbookPreviewLayout.clubCoverHeight,
-          child: ClubCover(club: photoClub),
+          width: WidgetbookPreviewLayout.organizerCoverWidth,
+          height: WidgetbookPreviewLayout.organizerCoverHeight,
+          child: OrganizerCover(organizer: photoOrganizer),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'fallback',
         child: SizedBox(
-          width: WidgetbookPreviewLayout.clubCoverWidth,
-          height: WidgetbookPreviewLayout.clubCoverHeight,
-          child: ClubCover(club: fallbackClub),
+          width: WidgetbookPreviewLayout.organizerCoverWidth,
+          height: WidgetbookPreviewLayout.organizerCoverHeight,
+          child: OrganizerCover(organizer: fallbackOrganizer),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'compact',
         child: SizedBox.square(
-          dimension: WidgetbookPreviewLayout.clubCoverCompactExtent,
-          child: ClubCover(club: fallbackClub, compact: true),
+          dimension: WidgetbookPreviewLayout.organizerCoverCompactExtent,
+          child: OrganizerCover(organizer: fallbackOrganizer, compact: true),
         ),
       ),
     ],
@@ -74,7 +74,7 @@ Widget catchClubCoverContractStates(BuildContext context) {
   path: '[Core primitives]/Media',
 )
 Widget catchOrganizerPosterContractStates(BuildContext context) {
-  final club = Club(
+  final organizer = Organizer(
     id: 'contract-organizer-poster',
     name: 'Sea Face Social',
     description: 'Bombay moves together.',
@@ -87,10 +87,10 @@ Widget catchOrganizerPosterContractStates(BuildContext context) {
     CatchPosterTone tone = CatchPosterTone.paper,
   }) {
     return CatchPoster(
-      media: ClubPlaceholderCover(club: club),
+      media: OrganizerPlaceholderCover(organizer: organizer),
       kicker: 'Run club · Mumbai',
-      title: club.name,
-      tagline: club.description,
+      title: organizer.name,
+      tagline: organizer.description,
       meta: 'Every Saturday · 6:30 AM',
       variant: variant,
       tone: tone,

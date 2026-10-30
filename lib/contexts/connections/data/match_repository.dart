@@ -317,7 +317,7 @@ int totalUnreadCount(Ref ref, String uid) {
   final matches =
       ref.watch(watchMatchesForUserProvider(uid)).asData?.value ?? [];
   final roleMatches = AppConfig.appRole.isHost
-      ? matches.where((match) => match.isClubHostInquiry).toList()
+      ? matches.where((match) => match.isOrganizerHostInquiry).toList()
       : matches;
   return collapseMatchesByOtherUser(roleMatches, uid)
       .where((match) => !match.isBlocked)

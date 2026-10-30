@@ -4,15 +4,15 @@ void _registerHostOperationsStateEventsTests() {
   test(
     'HostTeamWorkspaceState uses club fallback while profile is loading',
     () {
-      final ownedClub = buildClub(
+      final ownedOrganizer = buildOrganizer(
         id: 'owned-club',
         name: 'Saket Run Club',
         ownerUserId: _hostUid,
         hostProfiles: const [
-          ClubHostProfile(
+          OrganizerHostProfile(
             uid: _hostUid,
             displayName: 'Suvrat',
-            role: ClubHostRole.owner,
+            role: OrganizerHostRole.owner,
           ),
         ],
       );
@@ -20,7 +20,7 @@ void _registerHostOperationsStateEventsTests() {
       final state = buildHostTeamWorkspaceState(
         uid: _hostUid,
         profile: const CatchAsyncState<HostProfile?>.loading(),
-        clubs: CatchAsyncState<List<Club>>.data([ownedClub]),
+        organizers: CatchAsyncState<List<Organizer>>.data([ownedOrganizer]),
       );
 
       final profileState = state.profile;
@@ -29,7 +29,7 @@ void _registerHostOperationsStateEventsTests() {
       expect(content.isFallback, isTrue);
       expect(content.profile.displayName, 'Suvrat');
       expect(content.profile.roleTitle, 'Owner');
-      expect(state.clubs, isA<HostTeamHostedClubsContent>());
+      expect(state.organizers, isA<HostTeamHostedOrganizersContent>());
     },
   );
 
@@ -43,12 +43,12 @@ void _registerHostOperationsStateEventsTests() {
         createdAt: DateTime(2026),
         updatedAt: DateTime(2026),
       );
-      final ownedClub = buildClub(
+      final ownedOrganizer = buildOrganizer(
         id: 'owned-club',
         name: 'Owner Club',
         ownerUserId: _hostUid,
       );
-      final cohostClub = buildClub(
+      final cohostOrganizer = buildOrganizer(
         id: 'cohost-club',
         name: 'Co-host Club',
         hostUserId: 'owner-2',
@@ -58,97 +58,110 @@ void _registerHostOperationsStateEventsTests() {
       final editState = buildHostTeamWorkspaceState(
         uid: _hostUid,
         profile: CatchAsyncState<HostProfile?>.data(profile),
-        clubs: CatchAsyncState<List<Club>>.data([ownedClub, cohostClub]),
+        organizers: CatchAsyncState<List<Organizer>>.data([
+          ownedOrganizer,
+          cohostOrganizer,
+        ]),
       );
       expect(editState.actions.canCreateProfile, isFalse);
       expect(editState.actions.canEditProfile, isTrue);
       expect(
-        editState.actions.clubNavigationFor(ownedClub).destination,
-        HostTeamClubDestination.edit,
+        editState.actions.organizerNavigationFor(ownedOrganizer).destination,
+        HostTeamOrganizerDestination.edit,
       );
       expect(
-        editState.actions.clubNavigationFor(cohostClub).destination,
-        HostTeamClubDestination.preview,
+        editState.actions.organizerNavigationFor(cohostOrganizer).destination,
+        HostTeamOrganizerDestination.preview,
       );
       expect(
-        editState.actions.clubNavigationFor(cohostClub).roleLabel,
+        editState.actions.organizerNavigationFor(cohostOrganizer).roleLabel,
         'Host team',
       );
 
       final previewState = buildHostTeamWorkspaceState(
         uid: _hostUid,
         profile: const CatchAsyncState<HostProfile?>.data(null),
-        clubs: const CatchAsyncState<List<Club>>.data([]),
+        organizers: const CatchAsyncState<List<Organizer>>.data([]),
         editMode: false,
       );
       expect(previewState.actions.canCreateProfile, isTrue);
       expect(previewState.actions.canEditProfile, isFalse);
       expect(
-        previewState.actions.clubNavigationFor(ownedClub).destination,
-        HostTeamClubDestination.preview,
+        previewState.actions.organizerNavigationFor(ownedOrganizer).destination,
+        HostTeamOrganizerDestination.preview,
       );
     },
   );
 
-  test('HostClubsScreenState resolves selected club, tab, and owner role', () {
-    final ownedClub = buildClub(
-      id: 'owned-club',
-      name: 'Owner Club',
-      ownerUserId: _hostUid,
-    );
-    final cohostClub = buildClub(
-      id: 'cohost-club',
-      name: 'Co-host Club',
-      hostUserId: 'owner-2',
-      hostUserIds: const [_hostUid],
-    );
+  test(
+    'HostOrganizersScreenState resolves selected club, tab, and owner role',
+    () {
+      final ownedOrganizer = buildOrganizer(
+        id: 'owned-club',
+        name: 'Owner Club',
+        ownerUserId: _hostUid,
+      );
+      final cohostOrganizer = buildOrganizer(
+        id: 'cohost-club',
+        name: 'Co-host Club',
+        hostUserId: 'owner-2',
+        hostUserIds: const [_hostUid],
+      );
 
-    final state = HostClubsScreenState.resolve(
-      clubs: [ownedClub, cohostClub],
-      currentUid: _hostUid,
-      selectedClubId: cohostClub.id,
-      selectedTab: HostClubTab.insights,
-    );
+      final state = HostOrganizersScreenState.resolve(
+        organizers: [ownedOrganizer, cohostOrganizer],
+        currentUid: _hostUid,
+        selectedOrganizerId: cohostOrganizer.id,
+        selectedTab: HostOrganizerTab.insights,
+      );
 
-    expect(state.selectedClub, cohostClub);
-    expect(state.title(AppLocalizationsEn()), 'Co-host Club');
-    expect(state.selectedClubIsOwner, isFalse);
-    expect(state.showClubPicker, isTrue);
-    expect(state.selectedTab, HostClubTab.insights);
+      expect(state.selectedOrganizer, cohostOrganizer);
+      expect(state.title(AppLocalizationsEn()), 'Co-host Club');
+      expect(state.selectedOrganizerIsOwner, isFalse);
+      expect(state.showOrganizerPicker, isTrue);
+      expect(state.selectedTab, HostOrganizerTab.insights);
 
-    final ownerState = state.selectClubIndex(0).selectTab(HostClubTab.preview);
-    expect(ownerState.selectedClub, ownedClub);
-    expect(ownerState.selectedClubIsOwner, isTrue);
-    expect(ownerState.selectedTab, HostClubTab.preview);
+      final ownerState = state
+          .selectOrganizerIndex(0)
+          .selectTab(HostOrganizerTab.preview);
+      expect(ownerState.selectedOrganizer, ownedOrganizer);
+      expect(ownerState.selectedOrganizerIsOwner, isTrue);
+      expect(ownerState.selectedTab, HostOrganizerTab.preview);
 
-    final clampedState = HostClubsScreenState.resolve(
-      clubs: [ownedClub],
-      currentUid: _hostUid,
-      selectedClubIndex: 99,
-    );
-    expect(clampedState.selectedClub, ownedClub);
-    expect(clampedState.selectedTab, HostClubTab.edit);
-  });
+      final clampedState = HostOrganizersScreenState.resolve(
+        organizers: [ownedOrganizer],
+        currentUid: _hostUid,
+        selectedOrganizerIndex: 99,
+      );
+      expect(clampedState.selectedOrganizer, ownedOrganizer);
+      expect(clampedState.selectedTab, HostOrganizerTab.edit);
+    },
+  );
 
-  test('HostClubInsightsState owns only club and narrative range', () {
-    final state = HostClubInsightsState.initial(clubId: 'club-1');
+  test('HostOrganizerInsightsState owns only club and narrative range', () {
+    final state = HostOrganizerInsightsState.initial(clubId: 'club-1');
 
-    expect(state.rangePreset, HostClubInsightsRangePreset.thirtyDays);
+    expect(state.rangePreset, HostOrganizerInsightsRangePreset.thirtyDays);
     expect(state.query.clubId, 'club-1');
 
-    final ranged = state.selectRange(HostClubInsightsRangePreset.twelveMonths);
-    expect(ranged.rangePreset, HostClubInsightsRangePreset.twelveMonths);
+    final ranged = state.selectRange(
+      HostOrganizerInsightsRangePreset.twelveMonths,
+    );
+    expect(ranged.rangePreset, HostOrganizerInsightsRangePreset.twelveMonths);
 
-    final switchedClub = ranged.selectClub('club-2');
-    expect(switchedClub.query.clubId, 'club-2');
-    expect(switchedClub.rangePreset, HostClubInsightsRangePreset.twelveMonths);
+    final switchedOrganizer = ranged.selectOrganizer('club-2');
+    expect(switchedOrganizer.query.clubId, 'club-2');
+    expect(
+      switchedOrganizer.rangePreset,
+      HostOrganizerInsightsRangePreset.twelveMonths,
+    );
   });
 
   test('HostEventsRouteState maps auth and organizer async branches', () {
-    final club = buildClub(id: 'owned-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(id: 'owned-club', ownerUserId: _hostUid);
     final stackTrace = StackTrace.current;
     final authError = StateError('auth failed');
-    final clubsError = StateError('clubs failed');
+    final organizersError = StateError('clubs failed');
 
     expect(
       buildHostEventsRouteState(
@@ -173,33 +186,36 @@ void _registerHostOperationsStateEventsTests() {
     expect(
       buildHostEventsRouteState(
         uid: const CatchAsyncState<String?>.data(_hostUid),
-        organizers: const CatchAsyncState<List<Club>>.loading(),
+        organizers: const CatchAsyncState<List<Organizer>>.loading(),
       ).status,
       HostEventsRouteStatus.loading,
     );
 
-    final clubsErrorState = buildHostEventsRouteState(
+    final organizersErrorState = buildHostEventsRouteState(
       uid: const CatchAsyncState<String?>.data(_hostUid),
-      organizers: CatchAsyncState<List<Club>>.error(clubsError, stackTrace),
+      organizers: CatchAsyncState<List<Organizer>>.error(
+        organizersError,
+        stackTrace,
+      ),
     );
-    expect(clubsErrorState.status, HostEventsRouteStatus.error);
-    expect(clubsErrorState.uid, _hostUid);
-    expect(clubsErrorState.error, clubsError);
-    expect(clubsErrorState.errorContext, AppErrorContext.club);
+    expect(organizersErrorState.status, HostEventsRouteStatus.error);
+    expect(organizersErrorState.uid, _hostUid);
+    expect(organizersErrorState.error, organizersError);
+    expect(organizersErrorState.errorContext, AppErrorContext.organizer);
 
     final emptyState = buildHostEventsRouteState(
       uid: const CatchAsyncState<String?>.data(_hostUid),
-      organizers: const CatchAsyncState<List<Club>>.data([]),
+      organizers: const CatchAsyncState<List<Organizer>>.data([]),
     );
     expect(emptyState.status, HostEventsRouteStatus.empty);
     expect(emptyState.uid, _hostUid);
 
     final loadedState = buildHostEventsRouteState(
       uid: const CatchAsyncState<String?>.data(_hostUid),
-      organizers: CatchAsyncState<List<Club>>.data([club]),
+      organizers: CatchAsyncState<List<Organizer>>.data([organizer]),
     );
     expect(loadedState.status, HostEventsRouteStatus.loaded);
-    expect(loadedState.organizers, [club]);
+    expect(loadedState.organizers, [organizer]);
   });
 
   testWidgets('Host clubs keeps root primary-rail chrome while uid resolves', (
@@ -207,9 +223,9 @@ void _registerHostOperationsStateEventsTests() {
   ) async {
     await _pumpHostScreen(
       tester,
-      const HostClubsScreen(
-        initialTab: HostClubTab.insights,
-        initialExpandedEditField: HostClubEditFieldKeys.description,
+      const HostOrganizersScreen(
+        initialTab: HostOrganizerTab.insights,
+        initialExpandedEditField: HostOrganizerEditFieldKeys.description,
       ),
       overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
       settle: false,
@@ -225,11 +241,11 @@ void _registerHostOperationsStateEventsTests() {
     expect(find.text('Preview'), findsOneWidget);
     expect(
       tester
-          .widget<CatchChoiceInput<HostClubTab>>(
+          .widget<CatchChoiceInput<HostOrganizerTab>>(
             find.byKey(const ValueKey('host-club-tab-rail')),
           )
           .selected,
-      {HostClubTab.edit},
+      {HostOrganizerTab.edit},
     );
     expect(find.text('Sign in required'), findsNothing);
     final tabsBottom = tester
@@ -251,7 +267,7 @@ void _registerHostOperationsStateEventsTests() {
   testWidgets('Host team shows loading while uid resolves', (tester) async {
     await _pumpHostScreen(
       tester,
-      const HostClubTeamScreen(clubId: 'owned-club'),
+      const HostOrganizerTeamScreen(clubId: 'owned-club'),
       overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
       settle: false,
     );
@@ -299,7 +315,7 @@ void _registerHostOperationsStateEventsTests() {
     await _pumpHostScreen(
       tester,
       HostPaymentAccountControllerCard(
-        club: buildClub(id: 'owned-club', ownerUserId: _hostUid),
+        organizer: buildOrganizer(id: 'owned-club', ownerUserId: _hostUid),
       ),
       overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
       settle: false,
@@ -312,7 +328,7 @@ void _registerHostOperationsStateEventsTests() {
   testWidgets('Host payout states each own one canonical field-row section', (
     tester,
   ) async {
-    final club = buildClub(id: 'owned-club', ownerUserId: _hostUid);
+    final organizer = buildOrganizer(id: 'owned-club', ownerUserId: _hostUid);
     HostPaymentAccount account({
       required HostPaymentOnboardingStatus status,
       bool chargesEnabled = false,
@@ -338,25 +354,25 @@ void _registerHostOperationsStateEventsTests() {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              HostPaymentAccountCard(club: club, loading: true),
+              HostPaymentAccountCard(organizer: organizer, loading: true),
               HostPaymentAccountCard(
-                club: club,
+                organizer: organizer,
                 error: StateError('payout query failed'),
               ),
-              HostPaymentAccountCard(club: club),
+              HostPaymentAccountCard(organizer: organizer),
               HostPaymentAccountCard(
-                club: club,
+                organizer: organizer,
                 account: account(status: HostPaymentOnboardingStatus.pending),
               ),
               HostPaymentAccountCard(
-                club: club,
+                organizer: organizer,
                 account: account(
                   status: HostPaymentOnboardingStatus.restricted,
                   disabledReason: 'Identity document required',
                 ),
               ),
               HostPaymentAccountCard(
-                club: club,
+                organizer: organizer,
                 account: account(
                   status: HostPaymentOnboardingStatus.complete,
                   chargesEnabled: true,
@@ -407,7 +423,7 @@ void _registerHostOperationsStateEventsTests() {
   testWidgets('India payout setup recommends Razorpay and exposes Route form', (
     tester,
   ) async {
-    final club = buildClub(
+    final organizer = buildOrganizer(
       id: 'owned-club',
       ownerUserId: _hostUid,
       location: 'mumbai',
@@ -415,7 +431,7 @@ void _registerHostOperationsStateEventsTests() {
 
     await _pumpHostScreen(
       tester,
-      HostPaymentAccountCard(club: club),
+      HostPaymentAccountCard(organizer: organizer),
       settle: false,
     );
     await tester.pump();

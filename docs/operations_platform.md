@@ -120,7 +120,25 @@ only when `acquisition_policy.json` enables `webSearch`, cites an accepted
 `batch_web_search_policy` decision, and freezes positive per-run and monthly
 query caps. It sends only `web_search` queries the frozen plan scheduled, and
 reserves each query against both ledgers before the client runs. No runtime
-injects a client yet, so the channel is off.
+injects a client for planned discovery yet.
+
+The one live use is handle search for a nomination (owner decision, 30 Oct
+2026; SerpApi's free tier). When none of the pages a request names can be
+read, and they include an Instagram, Linktree or Beacons handle,
+`gatherIntakeEvidence` searches the quoted handle once and reads up to three
+result links that are organizer calendar pages with a deterministic adapter
+(Luma, for example). A page counts only if its structured data or text names
+the handle; otherwise it is recorded as `search_result_unconfirmed` and
+contributes nothing. A listing built from a page found this way carries the
+`found_by_search` gap, so it always waits for a person.
+
+The Functions runtime (`functions/src/operations/supplyIntake/linkSearch.ts`)
+runs the search only when `acquisition_policy.json` enables `webSearch` (one
+query per intake, 240 a month), the `batch_web_search_policy` decision is
+accepted, and the environment pins `SERPAPI_KEY_VERSION` to a
+`SERPAPI_API_KEY` secret version. Each query is reserved in
+`supplyIntakeUsage/web-search-<YYYY-MM>` before it leaves the process. A
+provider failure finds nothing, and the nomination carries on without it.
 
 Raw payloads remain in the acquisition result long enough for deterministic
 normalization or approved external-artifact storage. They are never part of an

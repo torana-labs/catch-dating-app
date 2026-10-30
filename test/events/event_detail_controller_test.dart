@@ -4,9 +4,9 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation.da
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/domain/saved_event.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -30,7 +30,7 @@ void main() {
         eventAsync: AsyncData(buildEvent()),
         userProfileAsync: const AsyncData(null),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncData(buildClub()),
+        organizerAsync: AsyncData(buildOrganizer()),
         savedEventAsync: const AsyncData(null),
         participationAsync: const AsyncData(null),
         currentUid: null,
@@ -46,7 +46,7 @@ void main() {
         eventAsync: const AsyncLoading(),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncData(buildClub()),
+        organizerAsync: AsyncData(buildOrganizer()),
         savedEventAsync: const AsyncData(null),
         participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
@@ -65,7 +65,7 @@ void main() {
         eventAsync: AsyncData(event),
         userProfileAsync: AsyncData(user),
         reviewsAsync: AsyncData([review]),
-        clubAsync: AsyncData(buildClub(hostUserId: 'runner-1')),
+        organizerAsync: AsyncData(buildOrganizer(hostUserId: 'runner-1')),
         savedEventAsync: const AsyncData(null),
         participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
@@ -89,7 +89,7 @@ void main() {
         eventAsync: AsyncData(buildEvent()),
         userProfileAsync: AsyncData(buildUser(uid: 'host-1')),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncData(buildClub()),
+        organizerAsync: AsyncData(buildOrganizer()),
         savedEventAsync: const AsyncData(null),
         participationAsync: const AsyncData(null),
         currentUid: 'host-1',
@@ -108,7 +108,7 @@ void main() {
           eventAsync: AsyncData(buildEvent()),
           userProfileAsync: AsyncData(buildUser(uid: 'host-1')),
           reviewsAsync: const AsyncData(<Review>[]),
-          clubAsync: const AsyncLoading(),
+          organizerAsync: const AsyncLoading(),
           savedEventAsync: const AsyncData(null),
           participationAsync: const AsyncData(null),
           currentUid: 'host-1',
@@ -128,7 +128,10 @@ void main() {
           eventAsync: AsyncData(buildEvent()),
           userProfileAsync: AsyncData(buildUser(uid: 'host-1')),
           reviewsAsync: const AsyncData(<Review>[]),
-          clubAsync: AsyncError(StateError('club failed'), StackTrace.empty),
+          organizerAsync: AsyncError(
+            StateError('club failed'),
+            StackTrace.empty,
+          ),
           savedEventAsync: const AsyncData(null),
           participationAsync: const AsyncData(null),
           currentUid: 'host-1',
@@ -145,7 +148,7 @@ void main() {
         eventAsync: AsyncData(buildEvent()),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncError(StateError('club failed'), StackTrace.empty),
+        organizerAsync: AsyncError(StateError('club failed'), StackTrace.empty),
         savedEventAsync: const AsyncData(null),
         participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
@@ -157,19 +160,19 @@ void main() {
     });
 
     test('consumer detail rejects hidden or suppressed organizers', () {
-      final hidden = buildClub().copyWith(
-        appVisibility: ClubAppVisibility.hidden,
+      final hidden = buildOrganizer().copyWith(
+        appVisibility: OrganizerAppVisibility.hidden,
       );
-      final suppressed = buildClub().copyWith(
+      final suppressed = buildOrganizer().copyWith(
         claim: OrganizerClaim.fromJson({'state': 'suppressed'}),
       );
 
-      for (final club in [hidden, suppressed]) {
+      for (final organizer in [hidden, suppressed]) {
         final result = buildEventDetailViewModel(
           eventAsync: AsyncData(buildEvent()),
           userProfileAsync: const AsyncData(null),
           reviewsAsync: const AsyncData(<Review>[]),
-          clubAsync: AsyncData(club),
+          organizerAsync: AsyncData(organizer),
           savedEventAsync: const AsyncData(null),
           participationAsync: const AsyncData(null),
           currentUid: null,
@@ -179,7 +182,7 @@ void main() {
         expect(
           result.value,
           isNull,
-          reason: club.organizerAuthority.trustState.name,
+          reason: organizer.organizerAuthority.trustState.name,
         );
       }
     });
@@ -189,8 +192,10 @@ void main() {
         eventAsync: AsyncData(buildEvent()),
         userProfileAsync: AsyncData(buildUser(uid: 'host-1')),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncData(
-          buildClub().copyWith(appVisibility: ClubAppVisibility.hidden),
+        organizerAsync: AsyncData(
+          buildOrganizer().copyWith(
+            appVisibility: OrganizerAppVisibility.hidden,
+          ),
         ),
         savedEventAsync: const AsyncData(null),
         participationAsync: const AsyncData(null),
@@ -208,7 +213,7 @@ void main() {
         eventAsync: AsyncData(buildEvent()),
         userProfileAsync: AsyncData(buildUser(uid: 'other-host')),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncData(buildClub(hostUserId: 'owner-1')),
+        organizerAsync: AsyncData(buildOrganizer(hostUserId: 'owner-1')),
         savedEventAsync: const AsyncData(null),
         participationAsync: const AsyncData(null),
         currentUid: 'other-host',
@@ -224,7 +229,7 @@ void main() {
         eventAsync: AsyncData(buildEvent()),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncData(buildClub()),
+        organizerAsync: AsyncData(buildOrganizer()),
         savedEventAsync: AsyncData(
           SavedEvent(
             id: savedEventId(uid: 'runner-1', eventId: 'event-1'),
@@ -252,7 +257,7 @@ void main() {
         eventAsync: AsyncData(buildEvent()),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncData(buildClub()),
+        organizerAsync: AsyncData(buildOrganizer()),
         savedEventAsync: const AsyncData(null),
         participationAsync: AsyncData(participation),
         currentUid: 'runner-1',
@@ -267,7 +272,7 @@ void main() {
         eventAsync: const AsyncData(null),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncData(buildClub()),
+        organizerAsync: AsyncData(buildOrganizer()),
         savedEventAsync: const AsyncData(null),
         participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
@@ -283,7 +288,7 @@ void main() {
         eventAsync: AsyncData(buildEvent()),
         userProfileAsync: const AsyncData(null),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncData(buildClub()),
+        organizerAsync: AsyncData(buildOrganizer()),
         savedEventAsync: const AsyncData(null),
         participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
@@ -299,7 +304,7 @@ void main() {
         eventAsync: AsyncError(StateError('event failed'), StackTrace.empty),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncData(buildClub()),
+        organizerAsync: AsyncData(buildOrganizer()),
         savedEventAsync: const AsyncData(null),
         participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
@@ -318,7 +323,7 @@ void main() {
           StackTrace.empty,
         ),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncData(buildClub()),
+        organizerAsync: AsyncData(buildOrganizer()),
         savedEventAsync: const AsyncData(null),
         participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
@@ -337,7 +342,7 @@ void main() {
           StateError('reviews failed'),
           StackTrace.empty,
         ),
-        clubAsync: AsyncData(buildClub()),
+        organizerAsync: AsyncData(buildOrganizer()),
         savedEventAsync: const AsyncData(null),
         participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
@@ -353,7 +358,7 @@ void main() {
         eventAsync: AsyncData(buildEvent()),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncData(buildClub()),
+        organizerAsync: AsyncData(buildOrganizer()),
         savedEventAsync: AsyncError(
           StateError('saved event failed'),
           StackTrace.empty,
@@ -372,7 +377,7 @@ void main() {
         eventAsync: AsyncData(buildEvent()),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
-        clubAsync: AsyncData(buildClub()),
+        organizerAsync: AsyncData(buildOrganizer()),
         savedEventAsync: const AsyncData(null),
         participationAsync: AsyncError(
           StateError('participation failed'),
@@ -399,9 +404,9 @@ void main() {
               event.id,
             ).overrideWith((ref) => Stream.value(event)),
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            fetchClubProvider(
-              event.clubId,
-            ).overrideWith((ref) async => buildClub(hostUserId: 'host-77')),
+            fetchOrganizerProvider(event.clubId).overrideWith(
+              (ref) async => buildOrganizer(hostUserId: 'host-77'),
+            ),
             watchReviewsForEventProvider(
               event.id,
             ).overrideWith((ref) => Stream.value([review])),
@@ -413,7 +418,7 @@ void main() {
               event.id,
               user.uid,
             ).overrideWith((ref) => Stream.value(null)),
-            watchClubMembershipProvider(
+            watchOrganizerMembershipProvider(
               event.clubId,
               user.uid,
             ).overrideWith((ref) => Stream.value(null)),
@@ -437,7 +442,7 @@ void main() {
           watchEventParticipationProvider(event.id, user.uid).future,
         );
         await container.read(
-          watchClubMembershipProvider(event.clubId, user.uid).future,
+          watchOrganizerMembershipProvider(event.clubId, user.uid).future,
         );
         await container.pump();
         await container.pump();

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_flow.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
@@ -44,7 +44,7 @@ class HostEventsScreen extends ConsumerWidget {
     final organizersState = uid == null
         ? null
         : catchAsyncStateFromAsyncValue(
-            ref.watch(hostOperableClubsProvider(uid)),
+            ref.watch(hostOperableOrganizersProvider(uid)),
           );
     final routeState = buildHostEventsRouteState(
       uid: uidState,
@@ -88,7 +88,7 @@ class HostEventsScreen extends ConsumerWidget {
                 ref.invalidate(uidProvider);
                 return;
               }
-              ref.invalidate(hostOperableClubsProvider(currentUid));
+              ref.invalidate(hostOperableOrganizersProvider(currentUid));
             },
           ),
         ],
@@ -117,7 +117,7 @@ class HostEventsRouteScaffold extends ConsumerStatefulWidget {
     this.now,
   });
 
-  final List<Club> organizers;
+  final List<Organizer> organizers;
   final String currentUid;
   final String? initialOrganizerId;
   final String? initialProgramId;
@@ -223,7 +223,7 @@ class _HostEventsRouteScaffoldState
     final selectedOrganizerId = ref.watch(
       hostOrganizerSelectionProvider(widget.currentUid),
     );
-    final selectedClub = resolveSelectedHostOrganizer(
+    final selectedOrganizer = resolveSelectedHostOrganizer(
       widget.organizers,
       selectedOrganizerId: selectedOrganizerId,
       preferredOrganizerId: selectedOrganizerId == null
@@ -231,17 +231,18 @@ class _HostEventsRouteScaffoldState
           : null,
     );
 
-    if (selectedClub != null) {
-      return HostEventsClubCard(
-        club: selectedClub,
+    if (selectedOrganizer != null) {
+      return HostEventsOrganizerCard(
+        organizer: selectedOrganizer,
         initialProgramRow:
             widget.initialProgramAnchor?.accountId == widget.currentUid &&
-                widget.initialProgramAnchor?.organizerId == selectedClub.id &&
+                widget.initialProgramAnchor?.organizerId ==
+                    selectedOrganizer.id &&
                 widget.initialProgramAnchor?.row.programId ==
                     widget.initialProgramId
             ? widget.initialProgramAnchor!.row
             : null,
-        initialProgramId: selectedClub.id == widget.initialOrganizerId
+        initialProgramId: selectedOrganizer.id == widget.initialOrganizerId
             ? widget.initialProgramId
             : null,
         onEventEntrySelected: _handleEventEntrySelected,
@@ -257,15 +258,16 @@ class _HostEventsRouteScaffoldState
       children: [
         CatchSliverEmptyState(
           icon: CatchIcons.people,
-          title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
-          message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+          title:
+              context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstOrganizer,
+          message: context.l10n.hostsHostEventsScaffoldBodyCreateAOrganizerTo,
           actions: [
             CatchButton(
-              label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+              label: context.l10n.hostsHostEventsScaffoldLabelCreateOrganizer,
               leading: Icon(CatchIcons.add, size: CatchIconSize.md),
               size: CatchButtonSize.md,
               onPressed: () =>
-                  context.pushNamed(Routes.hostCreateClubScreen.name),
+                  context.pushNamed(Routes.hostCreateOrganizerScreen.name),
             ),
           ],
         ),
@@ -274,19 +276,19 @@ class _HostEventsRouteScaffoldState
   }
 
   Future<void> _handleEventEntrySelected(
-    Club club,
+    Organizer organizer,
     HostEventEntryState state,
     HostEventEntrySelection selection,
   ) => runHostEventEntryFlow(
     context: context,
     ref: ref,
-    club: club,
+    organizer: organizer,
     state: state,
     selection: selection,
     createdAt: _clockNow,
   );
 
-  void _openEvent(Club club, Event event) {
+  void _openEvent(Organizer organizer, Event event) {
     final isLive =
         !event.startTime.isAfter(_clockNow) && event.endTime.isAfter(_clockNow);
     final section = isLive
@@ -298,7 +300,7 @@ class _HostEventsRouteScaffoldState
       Routes.hostEventsScreen.name,
       queryParameters: {
         ...GoRouterState.of(context).uri.queryParameters,
-        'organizerId': club.id,
+        'organizerId': organizer.id,
         'eventId': event.id,
         'section': section,
       },

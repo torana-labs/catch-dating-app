@@ -16,8 +16,8 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/contexts/messaging/data/host_whatsapp_embedded_signup.dart';
-import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
@@ -134,15 +134,16 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     final uidAsync = ref.watch(uidProvider);
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     final uid = uidState.value;
-    final clubsAsync = uid != null && !uidState.hasError && !uidState.isLoading
-        ? ref.watch(hostOperableClubsProvider(uid))
-        : const AsyncLoading<List<Club>>();
-    final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
+    final organizersAsync =
+        uid != null && !uidState.hasError && !uidState.isLoading
+        ? ref.watch(hostOperableOrganizersProvider(uid))
+        : const AsyncLoading<List<Organizer>>();
+    final organizersState = catchAsyncStateFromAsyncValue(organizersAsync);
     if (uidState.hasError ||
         uidState.isLoading ||
         uid == null ||
-        clubsState.hasError ||
-        clubsState.isLoading) {
+        organizersState.hasError ||
+        organizersState.isLoading) {
       return HostNavigationWorkspace(
         spec: HostDirectoryWorkspace<String>(
           selection: null,
@@ -177,11 +178,12 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                       context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
                   onRetry: () => context.go(Routes.authScreen.path),
                 )
-              else if (clubsState.hasError)
+              else if (organizersState.hasError)
                 CatchLocalizedSliverErrorState(
-                  clubsState.error!,
-                  context: AppErrorContext.club,
-                  onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
+                  organizersState.error!,
+                  context: AppErrorContext.organizer,
+                  onRetry: () =>
+                      ref.invalidate(hostOperableOrganizersProvider(uid)),
                 )
               else
                 const CatchStateViewport.sliverLoading(),
@@ -190,8 +192,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
         ),
       );
     }
-    final clubs = clubsState.value ?? const <Club>[];
-    if (clubs.isEmpty) {
+    final organizers = organizersState.value ?? const <Organizer>[];
+    if (organizers.isEmpty) {
       return HostNavigationWorkspace(
         spec: HostDirectoryWorkspace<String>(
           selection: null,
@@ -205,8 +207,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       );
     }
     final selectedOrganizerId = ref.watch(hostOrganizerSelectionProvider(uid));
-    final selectedClub = resolveSelectedHostOrganizer(
-      clubs,
+    final selectedOrganizer = resolveSelectedHostOrganizer(
+      organizers,
       selectedOrganizerId: selectedOrganizerId,
       preferredOrganizerId: selectedOrganizerId == null
           ? widget.initialOrganizerId
@@ -214,10 +216,10 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     )!;
     final peopleView = _view == HostAudienceView.people;
     final summary = peopleView
-        ? ref.watch(hostCrmSummaryProvider(selectedClub.id))
+        ? ref.watch(hostCrmSummaryProvider(selectedOrganizer.id))
         : const AsyncLoading<HostCrmSummary>();
     final messagingSetup = peopleView
-        ? ref.watch(hostMessagingSetupProvider(selectedClub.id))
+        ? ref.watch(hostMessagingSetupProvider(selectedOrganizer.id))
         : const AsyncLoading<HostMessagingSetup>();
     final summaryState = catchAsyncStateFromAsyncValue(summary);
     final messagingSetupState = catchAsyncStateFromAsyncValue(messagingSetup);
@@ -239,7 +241,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       _manualTags,
     );
     final request = HostCustomersDirectoryRequest(
-      organizerId: selectedClub.id,
+      organizerId: selectedOrganizer.id,
       search: _search,
       filters: effectiveFilters,
       manualTagIds: {for (final tag in _manualTags) tag.tagId},
@@ -278,7 +280,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
               .watch(
                 hostCustomerSegmentCountProvider(
                   HostCustomerSegmentCountRequest(
-                    organizerId: selectedClub.id,
+                    organizerId: selectedOrganizer.id,
                     filter: HostCustomerFilter.newToOrganizer,
                   ),
                 ),
@@ -319,7 +321,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
         final indexPane = CatchRootScreenScaffold.withPrimaryRail(
           header: CatchRootScreenHeader.custom(
             HostAudienceHeader(
-              organizerId: selectedClub.id,
+              organizerId: selectedOrganizer.id,
               primaryAction: peopleView
                   ? CatchTopBarPrimaryButton(
                       key: const ValueKey<String>(
@@ -327,13 +329,13 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                       ),
                       label: context.l10n.hostCustomersAdd,
                       icon: CatchIcons.addPerson,
-                      onPressed: () => _addCustomer(selectedClub, request),
+                      onPressed: () => _addCustomer(selectedOrganizer, request),
                     )
                   : CatchTopBarPrimaryButton(
                       key: const ValueKey('host-saved-audience-create'),
                       label: context.l10n.hostSavedAudienceNew,
                       icon: CatchIcons.add,
-                      onPressed: () => _openAudienceEditor(selectedClub),
+                      onPressed: () => _openAudienceEditor(selectedOrganizer),
                     ),
               menuItems: peopleView
                   ? _hostCustomersHeaderActions(
@@ -344,10 +346,12 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                   : const [],
               onMenuAction: (action) {
                 if (action == HostAudienceMenuAction.reviewDuplicates) {
-                  unawaited(_reviewDuplicates(selectedClub.id));
+                  unawaited(_reviewDuplicates(selectedOrganizer.id));
                 }
                 if (action == HostAudienceMenuAction.export) {
-                  unawaited(_exportCustomers(selectedClub, effectiveFilters));
+                  unawaited(
+                    _exportCustomers(selectedOrganizer, effectiveFilters),
+                  );
                 }
               },
               search: CatchTopBarSearch(
@@ -391,7 +395,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
           actions: HostAudienceTabRail(
             selected: _view,
             selectionPosition: _view.index.toDouble(),
-            onChanged: (view) => _selectAudienceView(view, selectedClub.id),
+            onChanged: (view) =>
+                _selectAudienceView(view, selectedOrganizer.id),
           ),
           body: CatchRootScreenBody.single(
             page: peopleView
@@ -409,8 +414,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                 HostCustomersSummarySection(
                                   summary: summary,
                                   newCustomerCount: newCustomerCount,
-                                  onRetry: () =>
-                                      _refreshPeopleCounts(selectedClub.id),
+                                  onRetry: () => _refreshPeopleCounts(
+                                    selectedOrganizer.id,
+                                  ),
                                   selectedFilter:
                                       _manualTags.isEmpty &&
                                           effectiveFilters.length <= 1 &&
@@ -461,7 +467,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                                   .ready &&
                                           campaignAudienceDefinition != null
                                       ? () => _saveAndMessageCustomers(
-                                          selectedClub,
+                                          selectedOrganizer,
                                           selectionLabel,
                                           campaignAudienceDefinition,
                                         )
@@ -472,7 +478,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                                   .senderSetupRequired &&
                                           canManageWhatsappSender
                                       ? () => _reviewWhatsappSenderSetup(
-                                          selectedClub,
+                                          selectedOrganizer,
                                         )
                                       : null,
                                 ),
@@ -507,7 +513,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                 effectiveFilters.isNotEmpty ||
                                 _manualTags.isNotEmpty,
                             onCustomerSelected: (contact) =>
-                                _openCustomer(selectedClub, contact),
+                                _openCustomer(selectedOrganizer, contact),
                             onLoadMore: state.canLoadMore
                                 ? () => ref
                                       .read(
@@ -518,7 +524,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                       .loadMore()
                                 : null,
                             onRefreshCoverage: () {
-                              _refreshPeopleCounts(selectedClub.id);
+                              _refreshPeopleCounts(selectedOrganizer.id);
                               ref.invalidate(
                                 hostCustomersDirectoryControllerProvider(
                                   request,
@@ -532,11 +538,13 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                   )
                 : CatchRootScreenPageSpec.scroll(
                     page: HostSavedAudiencesWorkspace(
-                      organizerId: selectedClub.id,
+                      organizerId: selectedOrganizer.id,
                       query: _audienceSearch,
 
-                      onOpen: (audience) =>
-                          _openAudienceEditor(selectedClub, audience: audience),
+                      onOpen: (audience) => _openAudienceEditor(
+                        selectedOrganizer,
+                        audience: audience,
+                      ),
                     ),
                   ),
           ),
@@ -563,19 +571,19 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
               ),
               builder: (context) => HostCustomerDetailScreen(
                 key: ValueKey(contactId),
-                organizerId: selectedClub.id,
+                organizerId: selectedOrganizer.id,
                 contactId: contactId,
                 initialDisplayName: _selectedContactDisplayName,
                 embedded: true,
                 onBack: () => context.goNamed(
                   Routes.hostAudienceScreen.name,
-                  queryParameters: {'organizerId': selectedClub.id},
+                  queryParameters: {'organizerId': selectedOrganizer.id},
                 ),
               ),
             ),
             onBack: () => context.goNamed(
               Routes.hostAudienceScreen.name,
-              queryParameters: {'organizerId': selectedClub.id},
+              queryParameters: {'organizerId': selectedOrganizer.id},
             ),
           ),
         );
@@ -641,14 +649,14 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   }
 
   Future<void> _saveAndMessageCustomers(
-    Club club,
+    Organizer organizer,
     String label,
     HostSavedAudienceDefinition definition,
   ) async {
     final audience = await showCatchBottomSheet<HostSavedAudience>(
       context: context,
       builder: (_) => HostSaveAudienceSheet(
-        organizerId: club.id,
+        organizerId: organizer.id,
         suggestedName: label,
         definition: definition,
       ),
@@ -661,28 +669,28 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
         'compose': '1',
         'audienceId': audience.audienceId,
       },
-      extra: club,
+      extra: organizer,
     );
   }
 
-  void _reviewWhatsappSenderSetup(Club club) => context.pushNamed(
+  void _reviewWhatsappSenderSetup(Organizer organizer) => context.pushNamed(
     Routes.hostOrganizerMessagingScreen.name,
-    pathParameters: {'clubId': club.id},
+    pathParameters: {'clubId': organizer.id},
   );
 
   Future<void> _addCustomer(
-    Club club,
+    Organizer organizer,
     HostCustomersDirectoryRequest request,
   ) async {
     final created = await context.pushNamed<HostCreatedCustomer>(
       Routes.hostAddCustomerScreen.name,
-      queryParameters: {'organizerId': club.id},
+      queryParameters: {'organizerId': organizer.id},
     );
     if (!mounted || created == null) return;
-    _refreshPeopleCounts(club.id);
+    _refreshPeopleCounts(organizer.id);
     ref.invalidate(hostCustomersDirectoryControllerProvider(request));
     _openCustomerById(
-      club,
+      organizer,
       created.contactId,
       displayName: created.displayName,
     );
@@ -701,7 +709,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   }
 
   Future<void> _exportCustomers(
-    Club club,
+    Organizer organizer,
     Set<HostCustomerFilter> filters,
   ) async {
     if (_exporting) return;
@@ -710,7 +718,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       final export = await ref
           .read(hostCustomersControllerProvider)
           .exportCustomers(
-            organizerId: club.id,
+            organizerId: organizer.id,
             query: HostAudienceQuery(
               search: _search,
               segments: {
@@ -746,15 +754,17 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     }
   }
 
-  void _openCustomer(Club club, HostCustomerDirectoryContact contact) =>
-      _openCustomerById(
-        club,
-        contact.contactId,
-        displayName: contact.displayName,
-      );
+  void _openCustomer(
+    Organizer organizer,
+    HostCustomerDirectoryContact contact,
+  ) => _openCustomerById(
+    organizer,
+    contact.contactId,
+    displayName: contact.displayName,
+  );
 
   void _openCustomerById(
-    Club club,
+    Organizer organizer,
     String contactId, {
     required String displayName,
   }) {
@@ -764,7 +774,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     });
     context.goNamed(
       Routes.hostAudienceScreen.name,
-      queryParameters: {'organizerId': club.id, 'contactId': contactId},
+      queryParameters: {'organizerId': organizer.id, 'contactId': contactId},
       extra: HostCustomerDetailRouteArguments(displayName: displayName),
     );
   }

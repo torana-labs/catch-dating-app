@@ -439,7 +439,7 @@ class _HostCustomerDetailScreenState
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     }
@@ -495,7 +495,7 @@ class _HostCustomerDetailScreenState
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {

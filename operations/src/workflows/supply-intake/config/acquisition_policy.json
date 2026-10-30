@@ -22,13 +22,13 @@
     "maxRequestsPerMonth": 600
   },
   "webSearch": {
-    "enabled": false,
-    "adapterId": null,
+    "enabled": true,
+    "adapterId": "serp_api",
     "policyGapId": "batch_web_search_policy",
-    "decisionId": null,
+    "decisionId": "policy-batch-web-search-policy",
     "maxResultsPerQuery": 10,
-    "maxQueriesPerRun": 0,
-    "maxQueriesPerMonth": 0
+    "maxQueriesPerRun": 1,
+    "maxQueriesPerMonth": 240
   },
   "budgets": {
     "maxNetworkRequestsPerRun": 0,

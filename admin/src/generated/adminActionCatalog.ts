@@ -1,7 +1,7 @@
 // GENERATED FILE. Run: node tool/admin/generate_admin_action_catalog.mjs
 export const adminActionCatalog = {
   "schemaVersion": 1,
-  "catalogVersion": "1.8.0",
+  "catalogVersion": "1.9.0",
   "actions": [
     {
       "actionId": "overview.get",
@@ -2067,6 +2067,54 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
+      "actionId": "finance.list-commercial-terms",
+      "callable": "adminListCommercialTerms",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance/commercial-terms",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "summary": "Review Catch's platform commercial terms, one scope's recent revisions, every organizer override, and find an organizer to add an override for.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "finance.manage-commercial-terms",
+      "callable": "manageCommercialTerms",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance/commercial-terms",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "summary": "Read or replace the platform commercial terms or one organizer's sparse override against the reviewed revision, with a reason; only new payments freeze the change.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "finance.manage-payment-routing",
+      "callable": "managePaymentRoutingPolicy",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance/payment-routing",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "summary": "Read or replace the app payment routing defaults or one organizer override for event tickets, form fees and host memberships against the reviewed revision; selection never proves provider readiness.",
+      "controlPlane": false
+    },
+    {
       "actionId": "sales.demo.GetSalesDemoPartnerReview",
       "callable": "adminGetSalesDemoPartnerReview",
       "workflowIds": [
@@ -2268,7 +2316,10 @@ export const adminActionCatalog = {
         "finance.decide-event-messaging-budget",
         "finance.stage-event-messaging-budget",
         "finance.grant-organizer-entitlement",
-        "finance.revoke-organizer-entitlement-grant"
+        "finance.revoke-organizer-entitlement-grant",
+        "finance.list-commercial-terms",
+        "finance.manage-commercial-terms",
+        "finance.manage-payment-routing"
       ],
       "blockedCapabilities": [
         "retry_payment",

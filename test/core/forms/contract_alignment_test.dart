@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/organizers/domain/update_club_patch.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../clubs/clubs_test_helpers.dart';
+import '../../organizers/organizers_test_helpers.dart';
 
 void main() {
   final l10n = AppLocalizationsEn();
@@ -48,7 +48,7 @@ void main() {
   testWidgets('host club descriptors stay aligned with patch contracts', (
     tester,
   ) async {
-    final club = buildClub(
+    final organizer = buildOrganizer(
       id: 'club-contract',
       ownerUserId: 'host-contract-user',
       instagramHandle: 'catch.club',
@@ -61,8 +61,8 @@ void main() {
           theme: AppTheme.light,
           home: Scaffold(
             body: SingleChildScrollView(
-              child: HostClubEditBody(
-                club: club,
+              child: HostOrganizerEditBody(
+                organizer: organizer,
                 currentUid: 'host-contract-user',
                 isOwner: true,
               ),
@@ -74,9 +74,9 @@ void main() {
     await tester.pump();
 
     final rows = tester
-        .widgetList<CatchFormList<UpdateClubPatch>>(
+        .widgetList<CatchFormList<UpdateOrganizerPatch>>(
           find.byWidgetPredicate(
-            (widget) => widget is CatchFormList<UpdateClubPatch>,
+            (widget) => widget is CatchFormList<UpdateOrganizerPatch>,
           ),
         )
         .expand((list) => list.rows)

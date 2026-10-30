@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "./lib/repo_paths.mjs";
+import {clubNameFindings} from "./architecture/rename_to_organizer.mjs";
 
 const taxonomy = [
   "club",
@@ -14,11 +15,11 @@ const taxonomy = [
 ];
 
 const requiredMarkers = [
-  ["lib/contexts/organizers/data/clubs_repository.dart", "_collectionPath = 'organizers'"],
-  ["lib/contexts/organizers/data/clubs_repository.dart", "createOrganizer"],
-  ["lib/contexts/organizers/data/club_membership_repository.dart", "organizerFollows"],
-  ["lib/contexts/organizers/data/club_posts_repository.dart", "createOrganizerPost"],
-  ["lib/contexts/organizers/data/clubs_repository.dart", "startOrganizerConversation"],
+  ["lib/contexts/organizers/data/organizers_repository.dart", "_collectionPath = 'organizers'"],
+  ["lib/contexts/organizers/data/organizers_repository.dart", "createOrganizer"],
+  ["lib/contexts/organizers/data/organizer_membership_repository.dart", "organizerFollows"],
+  ["lib/contexts/organizers/data/organizer_posts_repository.dart", "createOrganizerPost"],
+  ["lib/contexts/organizers/data/organizers_repository.dart", "startOrganizerConversation"],
   ["lib/contexts/profiles/data/image_upload_repository.dart", "organizers/"],
   ["lib/routing/route_contract.dart", "/host/organizer"],
   ["website/src/firebase.ts", "requestOrganizerClaim"],
@@ -45,15 +46,15 @@ const forbiddenSourceMarkers = [
   ["admin/src", "Enter a clubs/{id}"],
   ["lib/contexts/organizers/data", "collection('clubs')"],
   ["lib/contexts/organizers/data", "organizer_projection_fallback"],
-  ["lib/contexts/organizers/data/clubs_repository.dart", "_legacyCollectionPath"],
-  ["lib/contexts/organizers/data/clubs_repository.dart", "WithLegacyProjection"],
+  ["lib/contexts/organizers/data/organizers_repository.dart", "_legacyCollectionPath"],
+  ["lib/contexts/organizers/data/organizers_repository.dart", "WithLegacyProjection"],
   ["lib/contexts/organizers/data", "FirebaseFunctions.instance.httpsCallable('createClub')"],
   ["lib/contexts/profiles/data", "'clubs/$"],
   ["lib/contexts/discovery/data/explore_recommendations_repository.dart", "Your club"],
   ["lib/contexts/discovery/data/explore_recommendations_repository.dart", "From your clubs"],
-  ["lib/clubs/presentation/detail/club_membership_controller.dart", "join a club"],
-  ["lib/clubs/presentation/detail/club_membership_controller.dart", "leave a club"],
-  ["lib/clubs/presentation/detail/club_membership_controller.dart", "update club notifications"],
+  ["lib/organizers/presentation/detail/organizer_membership_controller.dart", "join a club"],
+  ["lib/organizers/presentation/detail/organizer_membership_controller.dart", "leave a club"],
+  ["lib/organizers/presentation/detail/organizer_membership_controller.dart", "update club notifications"],
   ["functions/src/index.ts", "createPublicClubReview"],
   ["functions/src/index.ts", "listPublicClubReviews"],
   ["functions/src/index.ts", "adminGetClubClaimRequestDetails"],
@@ -82,11 +83,17 @@ const forbiddenClientAuthorityPatterns = [
   },
 ];
 
+// Flutter code names say organizer. What tool/architecture/
+// rename_to_organizer.mjs would still rename is a finding; it keeps the club
+// subtype and the names the generated schema contracts declare.
+const flutterNameRoots = ["lib", "test", "integration_test", "apps", "widgetbook", "packages", "tool"];
+const skippedDirectories = new Set(["node_modules", ".dart_tool", "build", ".git"]);
+
 const allowedClubCopyKeys = new Set([
   "hostsOrganizerTypeClub",
   "launchAccessLaunchAccessApplicationScreenBodyUsefulIfYouAlready",
-  "clubsClubHeroAppBarTitleClubDetailCollapsedTitle",
-  "clubsClubHeroAppBarTextClubDetailExpandedTitle",
+  "organizersOrganizerHeroAppBarTitleOrganizerDetailCollapsedTitle",
+  "organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle",
 ]);
 
 export function checkOrganizerNomenclature({root = fromRepo()} = {}) {
@@ -116,7 +123,31 @@ export function checkOrganizerNomenclature({root = fromRepo()} = {}) {
   }
   checkClientAuthorityPatterns(root, findings);
   checkProductCopy(root, findings);
+  checkFlutterNames(root, findings);
   return {ok: findings.length === 0, findings};
+}
+
+function checkFlutterNames(root, findings) {
+  const files = flutterNameRoots.flatMap((dir) => flutterNameFiles(root, dir));
+  const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
+  for (const finding of clubNameFindings({files, read})) {
+    findings.push({rule: "clubInFlutterNames", ...finding});
+  }
+}
+
+function flutterNameFiles(root, relativeDir) {
+  const target = path.join(root, relativeDir);
+  if (!fs.existsSync(target)) return [];
+  const files = [];
+  for (const entry of fs.readdirSync(target, {withFileTypes: true})) {
+    const relativePath = `${relativeDir}/${entry.name}`;
+    if (entry.isDirectory()) {
+      if (!skippedDirectories.has(entry.name)) files.push(...flutterNameFiles(root, relativePath));
+    } else if (entry.name.endsWith(".dart") || relativePath === "lib/l10n/app_en.arb") {
+      files.push(relativePath);
+    }
+  }
+  return files;
 }
 
 function checkClientAuthorityPatterns(root, findings) {

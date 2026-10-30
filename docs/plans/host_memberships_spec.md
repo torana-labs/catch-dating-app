@@ -1,6 +1,6 @@
 ---
 doc_id: host_memberships_spec
-version: 0.3.0
+version: 0.3.1
 updated: 2026-10-30
 owner: host_tooling
 status: proposed
@@ -849,18 +849,43 @@ Manual QA, in Razorpay **test mode** only:
    and `definitionVersion` 4 is reached by the daily refresh plus organic
    rebuilds. Hosts with no members are unaffected. To refresh at once,
    `refreshHostMembershipSegments` can be invoked manually for one organizer.
-2. **Configuration (test first).** Nothing is hard-coded; an operator sets:
-   1. Commercial terms: `manageCommercialTerms` `replace` with
-      `organizerId: null` and the owner's terms (5% commission, ₹10,000 cap
-      per 30-day cycle before GST, net of refunds, 30-day trial, ₹5,000
-      tools-only fee, host bears gateway fees, `hostMembership` counting
-      toward commission with no at-source fee).
-   2. The membership route: `managePaymentRoutingPolicy` `replace` on the app
-      policy with `hostMembership: {route: "razorpayOAuth", mode: "test",
-      currency: "INR", merchantCountry: "IN"}`, keeping `formFee` and
-      `eventAdmission` as they are.
+2. **Configuration (test first).** Nothing is hard-coded. A Finance or Admin
+   Owner operator sets it once in Admin, right after the first prod backend
+   deploy that contains `adminListCommercialTerms` and `manageCommercialTerms`.
+   No callable is run by hand.
+   1. Commercial terms: open **Finance → Commercial terms**. While platform
+      terms are unsaved the page says so and offers **Start from the owner's
+      30 Oct decision**: 5% commission net of refunds, ₹10,000 cap per 30-day
+      cycle before GST, 30-day trial, ₹5,000 tools-only fee, host bears gateway
+      fees, and every purpose (tickets, form fees, memberships) counting toward
+      commission with no fee deducted at source. The values are
+      `ownerDecisionCommercialTerms` in
+      `admin/src/shared/domain/commercialTermsDecision.ts`, pinned by a test to
+      the decision record. Choose **Review the change**, check every row, keep
+      or edit the reason, and choose **Save as revision 1**. The save names
+      revision 0, so a second concurrent first save is refused and an exact
+      retry after a lost response is applied once. The page writes through
+      `manageCommercialTerms` (`organizerId: null`).
+   2. The membership route: open **Finance → Payment routing**, choose
+      **Change routing**, set Host memberships to *Host collects* in *Test
+      mode*, leave Event tickets and Form fees as shown, review and save. This
+      is `managePaymentRoutingPolicy` `replace` on the app policy with
+      `hostMembership: {route: "razorpayOAuth", mode: "test", currency: "INR",
+      merchantCountry: "IN"}` and the other purposes unchanged. If the page
+      says no app policy is saved yet, form fees currently follow each
+      organizer's own connection; set Form fees to the route and mode hosts use
+      today before saving, because the first policy replaces that behaviour.
+      Turning a purpose live, onto Route or off needs a typed confirmation.
    3. The partner OAuth configuration ticketing already uses
       (`FORM_RAZORPAY_PARTNER_CONFIG_VERSION`).
+
+   Deploying the backend before these saves stops no host-collected checkout.
+   Route is chosen only by an explicit routing policy and also needs
+   `RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION`. Until the terms are saved,
+   Route payments and memberships fail closed, and host-collected payments
+   carry no terms snapshot. If Admin ships first, both screens say they are
+   unavailable until the backend deploy reaches prod; they never write
+   anything partially.
 3. **Razorpay, per host (test first).** The host connects their Razorpay test
    account in Payments and turns on Subscriptions there. Turning memberships on
    then registers the membership webhook on that account automatically.

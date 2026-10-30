@@ -141,7 +141,7 @@
       "reason": "Covered by screen.explore.discovery as the alias route for Explore Discovery."
     },
     {
-      "routeId": "clubDetailScreen",
+      "routeId": "organizerDetailScreen",
       "status": "contracted",
       "priority": "P1",
       "screenId": "screen.club.detail",
@@ -654,56 +654,56 @@
       "screenId": "screen.host.inbox"
     },
     {
-      "routeId": "hostClubsScreen",
+      "routeId": "hostOrganizersScreen",
       "status": "alias",
       "priority": "P1",
       "canonicalRouteId": "hostOrganizerScreen",
       "reason": "The exact Host organizers index is redirect-only and resolves to the canonical Organizer root; nested child routes remain independently contracted."
     },
     {
-      "routeId": "hostClubEventDefaultsScreen",
+      "routeId": "hostOrganizerEventDefaultsScreen",
       "status": "contracted",
       "priority": "P2",
       "reason": "Covered by screen.host.clubs as the Event defaults spoke reached from Club settings.",
       "screenId": "screen.host.clubs"
     },
     {
-      "routeId": "hostClubLiveGuideScreen",
+      "routeId": "hostOrganizerLiveGuideScreen",
       "status": "contracted",
       "priority": "P2",
       "reason": "Covered by screen.host.clubs as the Live event guide spoke reached from Club settings.",
       "screenId": "screen.host.clubs"
     },
     {
-      "routeId": "hostClubTeamScreen",
+      "routeId": "hostOrganizerTeamScreen",
       "status": "contracted",
       "priority": "P1",
       "reason": "Covered by screen.host.clubs as the canonical Host team workspace for profile, team management, hosted clubs, and sign out.",
       "screenId": "screen.host.clubs"
     },
     {
-      "routeId": "hostClubPaymentsScreen",
+      "routeId": "hostOrganizerPaymentsScreen",
       "status": "contracted",
       "priority": "P2",
       "reason": "Covered by screen.host.clubs as the owner-only Payments spoke reached from Club settings.",
       "screenId": "screen.host.clubs"
     },
     {
-      "routeId": "hostClubMembershipsScreen",
+      "routeId": "hostOrganizerMembershipsScreen",
       "status": "contracted",
       "priority": "P2",
       "reason": "Covered by screen.host.clubs as the Memberships spoke reached from Club settings.",
       "screenId": "screen.host.clubs"
     },
     {
-      "routeId": "hostClubDetailScreen",
+      "routeId": "hostOrganizerDetailScreen",
       "status": "contracted",
       "priority": "P1",
       "reason": "Covered by screen.host.club.detail as the Host app public club preview/detail route.",
       "screenId": "screen.host.club.detail"
     },
     {
-      "routeId": "hostCreateClubScreen",
+      "routeId": "hostCreateOrganizerScreen",
       "status": "contracted",
       "priority": "P2",
       "reason": "Covered by screen.host.club.create as the host create-club wizard route.",

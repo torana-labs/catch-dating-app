@@ -8,7 +8,8 @@ import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../clubs/clubs_test_helpers.dart' show buildClub, buildEvent;
+import '../../organizers/organizers_test_helpers.dart'
+    show buildOrganizer, buildEvent;
 
 final _l10n = AppLocalizationsEn();
 
@@ -47,7 +48,7 @@ void main() {
       organizers: CatchAsyncState.error(organizerError, StackTrace.current),
     );
     expect(failedOrganizers.status, HostTodayRouteStatus.error);
-    expect(failedOrganizers.errorContext, AppErrorContext.club);
+    expect(failedOrganizers.errorContext, AppErrorContext.organizer);
     expect(
       buildHostTodayRouteState(
         uid: const CatchAsyncState<String?>.data('host-1'),
@@ -57,7 +58,7 @@ void main() {
     );
     final loaded = buildHostTodayRouteState(
       uid: const CatchAsyncState<String?>.data('host-1'),
-      organizers: CatchAsyncState.data([buildClub()]),
+      organizers: CatchAsyncState.data([buildOrganizer()]),
     );
     expect(loaded.status, HostTodayRouteStatus.loaded);
     expect(loaded.organizers.single.id, 'club-1');

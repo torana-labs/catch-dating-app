@@ -107,21 +107,21 @@
       "migrationKind": "full_field_section",
       "reachability": "production_embedded",
       "screenIds": ["screen.host.clubs"],
-      "routeIds": ["hostClubsScreen"],
+      "routeIds": ["hostOrganizersScreen"],
       "semanticFieldCount": 8,
       "bindings": [
-        {"file": "lib/hosts/presentation/host_operations/host_club_edit_body.dart", "symbol": "HostClubEditBody"},
-        {"file": "lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart", "symbol": "HostClubEventDefaultsScreen"},
-        {"file": "lib/hosts/presentation/host_operations/host_club_live_guide_screen.dart", "symbol": "HostClubLiveGuideScreen"}
+        {"file": "lib/hosts/presentation/host_operations/host_organizer_edit_body.dart", "symbol": "HostOrganizerEditBody"},
+        {"file": "lib/hosts/presentation/host_operations/host_organizer_event_defaults_screen.dart", "symbol": "HostOrganizerEventDefaultsScreen"},
+        {"file": "lib/hosts/presentation/host_operations/host_organizer_live_guide_screen.dart", "symbol": "HostOrganizerLiveGuideScreen"}
       ],
       "anchors": [
-        {"file": "lib/hosts/presentation/host_operations/host_club_edit_body.dart", "symbol": "CatchFormList<UpdateClubPatch>", "expected": 2},
-        {"file": "lib/hosts/presentation/host_operations/host_club_edit_rows.dart", "symbol": "CatchFormSingleChoiceRow", "expected": 2}
+        {"file": "lib/hosts/presentation/host_operations/host_organizer_edit_body.dart", "symbol": "CatchFormList<UpdateOrganizerPatch>", "expected": 2},
+        {"file": "lib/hosts/presentation/host_operations/host_organizer_edit_rows.dart", "symbol": "CatchFormSingleChoiceRow", "expected": 2}
       ],
       "targetModes": ["CatchFormList", "CatchField.choices"],
-      "preserve": ["inline expansion ownership", "UpdateClubPatch typing", "save and cancel behavior"],
+      "preserve": ["inline expansion ownership", "UpdateOrganizerPatch typing", "save and cancel behavior"],
       "verification": [
-        "Host Club Identity and Contact sections render through two typed CatchFormList<UpdateClubPatch> instances",
+        "Host Club Identity and Contact sections render through two typed CatchFormList<UpdateOrganizerPatch> instances",
         "Contract alignment test covers all eight editable Host Club patch fields, including organizer type",
         "Deleted HostInline editors leave zero production legacy call sites"
       ],
@@ -135,13 +135,13 @@
       "migrationKind": "section_shell",
       "reachability": "production_route",
       "screenIds": ["screen.host.clubs"],
-      "routeIds": ["hostClubTeamScreen"],
+      "routeIds": ["hostOrganizerTeamScreen"],
       "semanticFieldCount": 3,
       "bindings": [
-        {"file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "HostTeamProfileList"}
+        {"file": "lib/hosts/presentation/host_operations/host_organizer_team_screen.dart", "symbol": "HostTeamProfileList"}
       ],
       "anchors": [
-        {"file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "CatchField.inputActions", "expected": 3}
+        {"file": "lib/hosts/presentation/host_operations/host_organizer_team_screen.dart", "symbol": "CatchField.inputActions", "expected": 3}
       ],
       "targetModes": ["CatchSection.fieldRows", "CatchField.inputActions"],
       "preserve": ["profile validation", "controller reuse", "profile save side effects"],
@@ -287,7 +287,7 @@
       "id": "FIELD-SURFACE-EXCLUSION-CREATE-CLUB-PHOTOS",
       "reason": "The create-club photo widgets remain specialized children inside the completed CatchSection migration.",
       "anchors": [
-        {"file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart", "symbol": "CatchFieldLabelText", "expected": 2}
+        {"file": "lib/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart", "symbol": "CatchFieldLabelText", "expected": 2}
       ]
     }
   ]

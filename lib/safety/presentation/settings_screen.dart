@@ -338,7 +338,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context.l10n.safetySettingsScreenTitleCatchHost,
                     valueText: context
                         .l10n
-                        .safetySettingsScreenBodyManageEventsAndClubs,
+                        .safetySettingsScreenBodyManageEventsAndOrganizers,
                     icon: CatchIcons.work,
                     actions:
                         _pendingExternalLink ==
@@ -464,17 +464,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   CatchField.toggle(
                     copy: catchFieldCopy(context.l10n),
-                    key: SettingsKeys.clubUpdatesSwitch,
+                    key: SettingsKeys.organizerUpdatesSwitch,
                     contract: CatchContractConstraints
                         .updateUserProfilePatchPrefsClubUpdates,
-                    title:
-                        context.l10n.safetySettingsScreenTitleClubAnnouncements,
+                    title: context
+                        .l10n
+                        .safetySettingsScreenTitleOrganizerAnnouncements,
                     icon: CatchIcons.notificationsOn,
-                    value: state.preferences.clubUpdates,
+                    value: state.preferences.organizerUpdates,
                     onChanged: preferenceChangesBlocked
                         ? null
                         : (value) => _savePref(
-                            preference: SettingsPreference.clubUpdates,
+                            preference: SettingsPreference.organizerUpdates,
                             value: value,
                           ),
                   ),

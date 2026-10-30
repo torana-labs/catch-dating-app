@@ -1165,6 +1165,33 @@ export const ADMIN_ACTION_CATALOG = {
       "finance"
     ]
   },
+  "finance.list-commercial-terms": {
+    "callable": "adminListCommercialTerms",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "adminOwner",
+      "finance"
+    ]
+  },
+  "finance.manage-commercial-terms": {
+    "callable": "manageCommercialTerms",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner",
+      "finance"
+    ]
+  },
+  "finance.manage-payment-routing": {
+    "callable": "managePaymentRoutingPolicy",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner",
+      "finance"
+    ]
+  },
   "sales.demo.GetSalesDemoPartnerReview": {
     "callable": "adminGetSalesDemoPartnerReview",
     "controlPlane": false,

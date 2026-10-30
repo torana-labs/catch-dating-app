@@ -188,7 +188,7 @@ fi
 
 native_suites=(
   integration_test/app_shell_smoke_test.dart
-  integration_test/app_shell_club_flows_test.dart
+  integration_test/app_shell_organizer_flows_test.dart
   integration_test/app_shell_event_flows_test.dart
   integration_test/app_shell_dashboard_flows_test.dart
   integration_test/app_shell_catches_flows_test.dart
@@ -215,7 +215,7 @@ run_flutter() {
 if [[ "${mode}" == "headless" ]]; then
   headless_suites=(
     test/integration/app_shell_smoke_test.dart
-    test/integration/app_shell_club_flows_test.dart
+    test/integration/app_shell_organizer_flows_test.dart
     test/integration/app_shell_event_flows_test.dart
     test/integration/app_shell_dashboard_flows_test.dart
     test/integration/app_shell_catches_flows_test.dart

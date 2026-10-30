@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-10-20",
+  "updated": "2026-10-30",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -557,6 +557,22 @@
       "priority": "P2",
       "reason": "Compiled Finance Operations contract covers read-only issue derivation, exact detail, partial sources, and reconciliation guidance.",
       "featureContract": "feature.admin_finance_ops"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_commercial_terms",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Commercial Terms contract covers platform defaults with history, the owner-decision first revision, a reasoned field preview before save, exact retry and sparse organizer overrides.",
+      "featureContract": "feature.admin_commercial_terms"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_payment_routing",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Payment Routing contract covers per-purpose route and test/live mode, a preview against the saved revision, and typed confirmation for live, Route and off changes.",
+      "featureContract": "feature.admin_payment_routing"
     },
     {
       "authority": "admin_routes",

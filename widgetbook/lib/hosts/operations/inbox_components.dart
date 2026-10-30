@@ -21,7 +21,7 @@ HostCampaign _campaign({
   Set<String> blockers = const {},
   Map<String, int> delivery = const {},
 }) => HostCampaign(
-  organizerId: HostOperationsFixtures.primaryClub.id,
+  organizerId: HostOperationsFixtures.primaryOrganizer.id,
   campaignId: 'design-campaign-$status',
   savedAudienceId: 'design-audience-regulars',
   status: status,
@@ -45,7 +45,7 @@ HostManualSendTask _task({
   required String name,
   required HostManualSendTaskStatus status,
 }) => HostManualSendTask(
-  organizerId: HostOperationsFixtures.primaryClub.id,
+  organizerId: HostOperationsFixtures.primaryOrganizer.id,
   taskId: id,
   contactId: 'contact-$id',
   displayName: name,
@@ -77,7 +77,7 @@ final _tasks = [
 ];
 
 HostManualSendTaskPage _page({String? nextCursor}) => HostManualSendTaskPage(
-  organizerId: HostOperationsFixtures.primaryClub.id,
+  organizerId: HostOperationsFixtures.primaryOrganizer.id,
   tasks: _tasks,
   nextCursor: nextCursor,
 );
@@ -148,7 +148,7 @@ Widget hostCampaignReportSectionStates(BuildContext context) =>
 
 @widgetbook.UseCase(name: 'Loaded queue', type: HostManualSendList, path: _path)
 Widget hostManualSendListStates(BuildContext context) {
-  final organizerId = HostOperationsFixtures.primaryClub.id;
+  final organizerId = HostOperationsFixtures.primaryOrganizer.id;
   return widgetbookHostComponentStates('HostManualSendList', [
     (
       'tasks waiting',

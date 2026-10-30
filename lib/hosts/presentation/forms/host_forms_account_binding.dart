@@ -14,10 +14,10 @@ extension _HostFormsAccountBinding on _HostFormsScreenState {
     _resetWorkspace();
   }
 
-  void _bindAvailableOrganizer(String accountId, List<Club> clubs) {
+  void _bindAvailableOrganizer(String accountId, List<Organizer> organizers) {
     if (_boundAccountId != accountId) return;
     final organizer = resolveSelectedHostOrganizer(
-      clubs,
+      organizers,
       selectedOrganizerId: ref.read(hostOrganizerSelectionProvider(accountId)),
       preferredOrganizerId: _preferredRouteOrganizerId,
     );
@@ -74,15 +74,15 @@ extension _HostFormsAccountBinding on _HostFormsScreenState {
         ref.read(firebaseAuthProvider).currentUser?.uid != _boundAccountId) {
       return false;
     }
-    final clubs = catchAsyncStateFromAsyncValue(
-      ref.read(hostOperableClubsProvider(_boundAccountId!)),
+    final organizers = catchAsyncStateFromAsyncValue(
+      ref.read(hostOperableOrganizersProvider(_boundAccountId!)),
     );
-    if (!clubs.isSettledData) return false;
+    if (!organizers.isSettledData) return false;
     final selection = ref.read(
       hostOrganizerSelectionProvider(_boundAccountId!),
     );
     return resolveSelectedHostOrganizer(
-          clubs.value ?? const <Club>[],
+          organizers.value ?? const <Organizer>[],
           selectedOrganizerId: selection,
           preferredOrganizerId: _preferredRouteOrganizerId,
         )?.id ==

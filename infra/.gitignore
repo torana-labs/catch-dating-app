@@ -1,0 +1,14 @@
+# Terraform working state. Remote state lives in the GCS bucket that
+# infra/bootstrap/bootstrap.sh creates; nothing here is committed except the
+# provider lockfile.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

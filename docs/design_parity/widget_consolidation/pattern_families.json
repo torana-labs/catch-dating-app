@@ -361,7 +361,7 @@
           "rationale": "Its filled/unfilled notification mapping is useful evidence, but its only production caller can configure the shared counted icon action directly."
         },
         {
-          "symbol": "ClubBellButton",
+          "symbol": "OrganizerBellButton",
           "disposition": "register",
           "preview": "required",
           "rationale": "Keep this feature adapter because it adds toggled and pending semantics while already delegating visual rendering to CatchIconAction."

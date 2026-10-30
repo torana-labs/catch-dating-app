@@ -24,8 +24,8 @@ Widget eventAgendaSliverListState(BuildContext context) {
         EventAgendaSliverList(
           events: widgetbookEventsAgendaEvents(),
           today: DateUtils.dateOnly(widgetbookEventsNow),
-          showClubName: true,
-          clubNameBuilder: (_) => widgetbookEventsClub.name,
+          showOrganizerName: true,
+          organizerNameBuilder: (_) => widgetbookEventsOrganizer.name,
           badgeLabel: 'OPEN',
           onEventSelected: (_) {},
         ),
@@ -49,7 +49,7 @@ Widget eventAgendaDayGroupState(BuildContext context) {
         EventAgendaRow(
           event: widgetbookEvent,
           badgeLabel: 'OPEN',
-          clubName: widgetbookEventsClub.name,
+          organizerName: widgetbookEventsOrganizer.name,
           status: EventTileStatus.saved,
         ),
         EventAgendaRow(
@@ -62,12 +62,12 @@ Widget eventAgendaDayGroupState(BuildContext context) {
             priceInPaise: 180000,
           ),
           badgeLabel: 'OPEN',
-          clubName: widgetbookEventsClub.name,
+          organizerName: widgetbookEventsOrganizer.name,
           status: EventTileStatus.saved,
         ),
       ],
       onEventSelected: (_) {},
-      showClubName: true,
+      showOrganizerName: true,
       dayLabelBottomGap: CatchLayout.agendaDayLabelBottomGap,
     ),
   );
@@ -105,7 +105,7 @@ Widget eventAgendaTileSkeletonState(BuildContext context) {
 Widget eventAgendaTileState(BuildContext context) {
   return EventAgendaTile(
     data: _eventTileData(widgetbookEvent, status: EventTileStatus.joined),
-    showClubName: true,
+    showOrganizerName: true,
     badgeLabel: 'JOINED',
     onTap: widgetbookNoop,
   );
@@ -118,6 +118,6 @@ EventTileData _eventTileData(
   return EventTileData.fromEvent(
     event: event,
     status: status,
-    clubName: widgetbookEventsClub.name,
+    organizerName: widgetbookEventsOrganizer.name,
   );
 }

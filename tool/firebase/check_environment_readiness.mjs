@@ -1022,6 +1022,21 @@ export function classifyForbiddenSecretAccess({serviceAccount, secret, result}) 
     metadata: {serviceAccount, grants, evidenceScope: "secret-policy-only", effectiveAccessVerified: false}});
 }
 
+function classifyFirstDeploySecretVersion({base, consumer, phase, projectId, projectNumber, result}) {
+  const metadata = {consumer, phase, source: "secret-manager"};
+  const failure = classifyCommandFailure(result);
+  if (failure) return readinessResult({...base, metadata, ...failure});
+  const payload = parseJsonOutput(result.stdout);
+  const version = parseSecretReference(payload?.name, projectId, projectNumber);
+  if (!version || version.secret !== base.resource) {
+    return readinessResult({...base, metadata, status: "unknown", reason: "invalid-metadata-response"});
+  }
+  const enabled = payload.state === "ENABLED";
+  return readinessResult({...base, metadata: {...metadata, reference: version.reference},
+    status: enabled ? "ready" : "not-ready",
+    reason: enabled ? "first-deploy-latest-version-enabled" : "first-deploy-latest-version-not-enabled"});
+}
+
 function assessSecretBindings({requirement, targets, projectId, projectNumber,
   functionsResult, candidate, phase, runCommand}) {
   const failure = classifyCommandFailure(functionsResult);
@@ -1051,6 +1066,18 @@ function assessSecretBindings({requirement, targets, projectId, projectNumber,
         requirement.binding?.optional === true) {
       results.push(readinessResult({...base, metadata: {consumer, phase, source: "cloud-functions-v2"},
         status: "inactive", reason: "optional-consumer-not-deployed"}));
+      continue;
+    }
+    // A required SecretParam has no live binding before its first deploy
+    // either. The deploy binds the secret's latest version, so that version
+    // must exist and be enabled; the post-deploy check still requires the
+    // Function.
+    if (phase === "deployed" && !candidate && observed.reason === "function-binding-missing" &&
+        requirement.kind === "secret-version") {
+      results.push(classifyFirstDeploySecretVersion({base, consumer, phase, projectId, projectNumber,
+        result: executeMetadataCommand(metadataOnlyCommand(["secrets", "versions", "describe", "latest",
+          `--secret=${requirement.name}`, `--project=${projectId}`, "--format=json(name,state)", "--quiet"]),
+        runCommand)}));
       continue;
     }
     if (phase === "deployed" && !["ready", "inactive"].includes(observed.status)) {

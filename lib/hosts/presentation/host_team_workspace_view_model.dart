@@ -1,23 +1,23 @@
-import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
 
 HostTeamWorkspaceState buildHostTeamWorkspaceState({
   required String? uid,
   required CatchAsyncState<HostProfile?> profile,
-  required CatchAsyncState<List<Club>> clubs,
+  required CatchAsyncState<List<Organizer>> organizers,
   bool editMode = true,
   bool creatingProfile = false,
 }) {
   final profileState = buildHostTeamProfileState(
     uid: uid,
     profile: profile,
-    clubs: clubs,
+    organizers: organizers,
   );
   return HostTeamWorkspaceState(
     profile: profileState,
-    clubs: buildHostTeamHostedClubsState(clubs),
+    organizers: buildHostTeamHostedOrganizersState(organizers),
     actions: HostTeamWorkspaceActionState.from(
       uid: uid,
       editMode: editMode,
@@ -30,7 +30,7 @@ HostTeamWorkspaceState buildHostTeamWorkspaceState({
 HostTeamProfileState buildHostTeamProfileState({
   required String? uid,
   required CatchAsyncState<HostProfile?> profile,
-  required CatchAsyncState<List<Club>> clubs,
+  required CatchAsyncState<List<Organizer>> organizers,
 }) {
   final loadedProfile = profile.value;
   if (loadedProfile != null) {
@@ -39,7 +39,7 @@ HostTeamProfileState buildHostTeamProfileState({
 
   final fallbackProfile = uid == null
       ? null
-      : _fallbackHostProfileFromClubs(uid, clubs.value);
+      : _fallbackHostProfileFromOrganizers(uid, organizers.value);
   if (fallbackProfile != null) {
     return HostTeamProfileContent(profile: fallbackProfile, isFallback: true);
   }
@@ -49,52 +49,63 @@ HostTeamProfileState buildHostTeamProfileState({
   return const HostTeamProfileMissing();
 }
 
-HostTeamHostedClubsState buildHostTeamHostedClubsState(
-  CatchAsyncState<List<Club>> clubs,
+HostTeamHostedOrganizersState buildHostTeamHostedOrganizersState(
+  CatchAsyncState<List<Organizer>> organizers,
 ) {
-  if (clubs.hasError) return HostTeamHostedClubsError(error: clubs.error!);
-  if (clubs.isLoading) return const HostTeamHostedClubsLoading();
-  final value = clubs.value ?? const <Club>[];
+  if (organizers.hasError) {
+    return HostTeamHostedOrganizersError(error: organizers.error!);
+  }
+  if (organizers.isLoading) return const HostTeamHostedOrganizersLoading();
+  final value = organizers.value ?? const <Organizer>[];
   return value.isEmpty
-      ? const HostTeamHostedClubsEmpty()
-      : HostTeamHostedClubsContent(clubs: value);
+      ? const HostTeamHostedOrganizersEmpty()
+      : HostTeamHostedOrganizersContent(organizers: value);
 }
 
-HostProfile? _fallbackHostProfileFromClubs(String uid, List<Club>? clubs) {
-  if (clubs == null || clubs.isEmpty) return null;
-  final hostedClubs = clubs.where((club) => club.isHostedBy(uid)).toList();
-  if (hostedClubs.isEmpty) return null;
-  final firstClub = hostedClubs.first;
-  ClubHostProfile? clubHostProfile;
-  for (final club in hostedClubs) {
-    for (final profile in club.displayHostProfiles) {
+HostProfile? _fallbackHostProfileFromOrganizers(
+  String uid,
+  List<Organizer>? organizers,
+) {
+  if (organizers == null || organizers.isEmpty) return null;
+  final hostedOrganizers = organizers
+      .where((organizer) => organizer.isHostedBy(uid))
+      .toList();
+  if (hostedOrganizers.isEmpty) return null;
+  final firstOrganizer = hostedOrganizers.first;
+  OrganizerHostProfile? organizerHostProfile;
+  for (final organizer in hostedOrganizers) {
+    for (final profile in organizer.displayHostProfiles) {
       if (profile.uid == uid) {
-        clubHostProfile = profile;
+        organizerHostProfile = profile;
         break;
       }
     }
-    if (clubHostProfile != null) break;
+    if (organizerHostProfile != null) break;
   }
 
   final displayName = _firstNonBlank([
-    clubHostProfile?.displayName,
-    firstClub.hostName,
-    firstClub.displayHostName,
+    organizerHostProfile?.displayName,
+    firstOrganizer.hostName,
+    firstOrganizer.displayHostName,
     'Catch Host',
   ]);
   final avatarUrl = _firstNonBlank([
-    clubHostProfile?.avatarUrl,
-    firstClub.hostAvatarUrl,
+    organizerHostProfile?.avatarUrl,
+    firstOrganizer.hostAvatarUrl,
   ]);
-  final ownsAnyClub = hostedClubs.any((club) => club.isOwnedBy(uid));
+  final ownsAnyOrganizer = hostedOrganizers.any(
+    (organizer) => organizer.isOwnedBy(uid),
+  );
 
   return HostProfile(
     uid: uid,
     displayName: displayName,
     avatarUrl: avatarUrl,
-    roleTitle: ownsAnyClub ? 'Owner' : 'Host team',
+    roleTitle: ownsAnyOrganizer ? 'Owner' : 'Host team',
     status: HostProfileStatus.active,
-    linkedClubIds: [for (final club in hostedClubs) club.id],
+    linkedOrganizerIds: [
+      for (final organizer in hostedOrganizers) organizer.id,
+    ],
     createdAt: null,
     updatedAt: null,
   );

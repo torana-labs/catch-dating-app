@@ -46,9 +46,9 @@ class _ExploreBodySliverPreview extends ConsumerWidget {
         feedState: catchAsyncStateFromAsyncValue(
           ref.watch(exploreFeedViewModelProvider),
         ),
-        clubsViewModel: ExploreViewModel.partition(
-          clubs: widgetbookExploreClubs,
-          joinedClubIds: widgetbookExploreJoinedClubIds,
+        organizersViewModel: ExploreViewModel.partition(
+          organizers: widgetbookExploreOrganizers,
+          joinedOrganizerIds: widgetbookExploreJoinedOrganizerIds,
         ),
         filters: filters,
         searchQuery: ref.watch(exploreSearchQueryProvider).trim(),
@@ -63,8 +63,8 @@ class _ExploreBodySliverPreview extends ConsumerWidget {
             .toggleActivityTag(activityKind.name),
         onEventSelected: (_, _) {},
         onExternalEventOpened: (_) {},
-        includeJoinedClubsRail: true,
-        includeClubDirectory: true,
+        includeJoinedOrganizersRail: true,
+        includeOrganizerDirectory: true,
         pinnedExploreDayHeaders: false,
       ),
     );

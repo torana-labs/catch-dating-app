@@ -63,6 +63,7 @@
     "META_WHATSAPP_GRAPH_VERSION": {"class": "feature-gate"},
     "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION": {"class": "identity"},
     "RAZORPAY_PUBLIC_KEY_ID": {"class": "identity"},
+    "SERPAPI_KEY_VERSION": {"class": "identity"},
     "SUPPLY_MESSAGE_NOMINATIONS_ENABLED": {"class": "feature-gate"},
     "USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER": {"class": "identity"},
     "USE_FIREBASE_EMULATORS": {"class": "identity"},

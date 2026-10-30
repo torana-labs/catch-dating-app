@@ -21,7 +21,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
   @override
   void didUpdateWidget(covariant HostSendsPageBody oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.club.id != widget.club.id) {
+    if (oldWidget.organizer.id != widget.organizer.id) {
       _generation++;
       _flow = const _SendHistory();
       _paginationBaseKey = null;
@@ -36,7 +36,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
   Widget build(BuildContext context) {
     final content = switch (_flow) {
       _SendIntent() => HostSendIntentMenu(
-        club: widget.club,
+        organizer: widget.organizer,
         onBack: _showHistory,
         onOpenInbox: widget.onOpenInbox,
         onStartCampaign: () => setState(() => _flow = const _SendCompose()),
@@ -48,7 +48,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
         now: widget.now ?? DateTime.now(),
       ),
       _SendCompose() => _HostSendsComposer(
-        club: widget.club,
+        organizer: widget.organizer,
         initialSavedAudienceId: widget.initialSavedAudienceId,
         onBusyChanged: _setBusy,
         onBack: _showHistory,
@@ -60,7 +60,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
         onApprove: campaign.canApprove
             ? () => _runCampaignAction(
                 (controller) => controller.approveCampaign(
-                  organizerId: widget.club.id,
+                  organizerId: widget.organizer.id,
                   campaign: campaign,
                 ),
               )
@@ -68,7 +68,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
         onSend: campaign.canDispatch
             ? () => _runCampaignAction(
                 (controller) => controller.dispatchCampaign(
-                  organizerId: widget.club.id,
+                  organizerId: widget.organizer.id,
                   campaign: campaign,
                 ),
               )
@@ -85,7 +85,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
         onBack: _showHistory,
       ),
       _SendHistory() => _HostSendsHistory(
-        organizerId: widget.club.id,
+        organizerId: widget.organizer.id,
         busy: _busy,
         loadingMore: _loadingMore,
         paginationBaseKey: _paginationBaseKey,
@@ -97,7 +97,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
       ),
     };
     final history = _HostSendsHistory(
-      organizerId: widget.club.id,
+      organizerId: widget.organizer.id,
       busy: _busy,
       loadingMore: _loadingMore,
       paginationBaseKey: _paginationBaseKey,
@@ -140,7 +140,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
     if (_busy) return;
     setState(() {
       _flow = const _SendHistory();
-      ref.invalidate(hostSendsProvider(widget.club.id));
+      ref.invalidate(hostSendsProvider(widget.organizer.id));
     });
   }
 
@@ -158,12 +158,12 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
   Future<void> _composeFollowerUpdate(int remainingQuota) async {
     final generation = _generation;
     if (_busy) return;
-    final club = widget.club;
+    final organizer = widget.organizer;
     final sent = await showHostFollowerUpdateComposer(
       context: context,
-      club: club,
+      organizer: organizer,
       remainingQuota: remainingQuota,
-      requestIdFactory: HostClubPostController.generateRequestId,
+      requestIdFactory: HostOrganizerPostController.generateRequestId,
       onSubmitPost: ({required requestId, required text}) async {
         if (!mounted || !_sameScope(generation)) {
           throw StateError('Organizer changed.');
@@ -171,16 +171,22 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
         _setBusy(true);
         try {
           await ref
-              .read(hostClubPostControllerProvider)
-              .createPost(clubId: club.id, requestId: requestId, text: text);
+              .read(hostOrganizerPostControllerProvider)
+              .createPost(
+                clubId: organizer.id,
+                requestId: requestId,
+                text: text,
+              );
         } finally {
           if (mounted && _sameScope(generation)) _setBusy(false);
         }
       },
     );
     if (!mounted || !_sameScope(generation) || !sent) return;
-    ref.invalidate(watchClubPostRemainingWeeklyQuotaProvider(widget.club.id));
-    ref.invalidate(hostSendsProvider(widget.club.id));
+    ref.invalidate(
+      watchOrganizerPostRemainingWeeklyQuotaProvider(widget.organizer.id),
+    );
+    ref.invalidate(hostSendsProvider(widget.organizer.id));
     setState(() => _flow = const _SendHistory());
   }
 
@@ -208,7 +214,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
           ),
         );
     if (!mounted || !_sameScope(generation) || result == null) return;
-    ref.invalidate(hostSendsProvider(widget.club.id));
+    ref.invalidate(hostSendsProvider(widget.organizer.id));
     setState(() => _flow = const _SendHistory());
     final suffix = result.isPartial
         ? context.l10n.hostsHostInboxScreenVisiblecopySomePushAttemptsFailed
@@ -230,7 +236,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
       final campaign = await ref
           .read(hostAudienceControllerProvider)
           .getCampaignReport(
-            organizerId: widget.club.id,
+            organizerId: widget.organizer.id,
             campaignId: campaignId,
           );
       if (mounted && _sameScope(generation)) {
@@ -241,7 +247,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {
@@ -260,7 +266,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
     try {
       final nextPage = await ref
           .read(hostAudienceControllerProvider)
-          .listSends(organizerId: widget.club.id, cursor: cursor);
+          .listSends(organizerId: widget.organizer.id, cursor: cursor);
       if (!mounted || !_sameScope(generation)) return;
       final existingKeys = <String>{
         for (final send in firstPage.sends) '${send.runtimeType}:${send.id}',
@@ -285,7 +291,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {
@@ -307,14 +313,14 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
         setState(() => _flow = _SendCampaign(campaign));
       }
       if (mounted && _sameScope(generation)) {
-        ref.invalidate(hostSendsProvider(widget.club.id));
+        ref.invalidate(hostSendsProvider(widget.organizer.id));
       }
     } on Object catch (error) {
       if (mounted && _sameScope(generation)) {
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {
@@ -399,7 +405,7 @@ class _HostSendsHistory extends ConsumerWidget {
               const CatchFieldLanes.single(child: LinearProgressIndicator()),
           error: (error, _) => CatchLocalizedErrorState(
             error,
-            context: AppErrorContext.club,
+            context: AppErrorContext.organizer,
             mode: CatchErrorStateMode.compact,
             onRetry: () => ref.invalidate(hostSendsProvider(organizerId)),
           ),
@@ -537,13 +543,13 @@ CatchRecordLayout _hostSendLayout(BuildContext context, HostSendSummary send) =>
 
 class _HostSendsComposer extends StatelessWidget {
   const _HostSendsComposer({
-    required this.club,
+    required this.organizer,
     required this.initialSavedAudienceId,
     required this.onBusyChanged,
     required this.onBack,
   });
 
-  final Club club;
+  final Organizer organizer;
   final String? initialSavedAudienceId;
   final ValueChanged<bool> onBusyChanged;
   final VoidCallback onBack;
@@ -555,7 +561,7 @@ class _HostSendsComposer extends StatelessWidget {
       HostSendsBackButton(onPressed: onBack),
       gapH12,
       HostCampaignEditor(
-        club: club,
+        organizer: organizer,
         initialSavedAudienceId: initialSavedAudienceId,
         onBusyChanged: onBusyChanged,
       ),

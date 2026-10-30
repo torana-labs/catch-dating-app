@@ -128,7 +128,7 @@ class _HostCustomerOutreachSheetState
         showCatchNoticeError(
           context,
           error,
-          errorContext: AppErrorContext.club,
+          errorContext: AppErrorContext.organizer,
         );
       }
     } finally {

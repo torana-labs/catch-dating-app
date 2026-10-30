@@ -262,10 +262,12 @@ export function rewritePathMentions(source, moves, folders = []) {
   }
   for (const [from, to] of [...folders].sort((a, b) => b[0].length - a[0].length)) {
     replace(`${repoPathStart}${escapeRegExp(from.slice(0, -1))}(?![\\w.-])`, to.slice(0, -1));
-    replace(
-      escapeRegExp(`${appPackage}${from.slice("lib/".length)}`),
-      `${appPackage}${to.slice("lib/".length)}`,
-    );
+    if (from.startsWith("lib/") && to.startsWith("lib/")) {
+      replace(
+        escapeRegExp(`${appPackage}${from.slice("lib/".length)}`),
+        `${appPackage}${to.slice("lib/".length)}`,
+      );
+    }
   }
   return {source: out, count};
 }
