@@ -1,7 +1,7 @@
 ---
 doc_id: program_operations_rollout_spec
-version: 1.4.0
-updated: 2026-10-06
+version: 1.4.1
+updated: 2026-10-30
 owner: product
 status: active
 ---
@@ -9,8 +9,8 @@ status: active
 # Program Operations Rollout Spec — build state, gaps, decisions
 
 Status: living tracking spec for allocating the remaining wedding/conference
-program-platform work. Companion: `wedding_planner_platform_plan.md` owns the
-product/architecture rationale; this document owns *what exists, what does
+program-platform work. Companion: the [wedding-planner platform plan](https://github.com/torana-labs/catch-knowledge/blob/main/plans/wedding-planner-platform.md)
+in catch-knowledge owns the product/architecture rationale; this document owns *what exists, what does
 not, and what needs a decision*. Measured against `main` at `510220f1f`
 (2026-10-05) plus the CAT152 source where explicitly marked in review.
 "In review" marks an open PR — code exists on a branch, not yet on main.

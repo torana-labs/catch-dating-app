@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 5.9.1
-updated: 2026-10-29
+version: 5.10.0
+updated: 2026-10-30
 owner: agent_operating_model
 status: active
 ---
@@ -81,7 +81,6 @@ impact graph; do not create a parallel dependency graph or tracked run history.
 |---|---|---|
 | Agent execution harness | `../AGENTS.md`, `agent_operating_model.md`, `plans/harness_v2_decision_and_cicd_delivery_plan.md`, `agent_skills/` | `AGENTS.md` is the short router and starting loop; `agent_operating_model.md` is the single detailed owner of planner modes, execution venue, Git/worktree isolation, delegation and completion. The Harness decision records why; exact-artifact delivery is in `release_operations.md`. |
 | Mobile releases through fastlane | `plans/mobile_release_fastlane_migration.md`, `release_operations.md#mobile-releases` | Replacement of the hand-built mobile release pipeline with fastlane lanes run nightly and on demand from GitHub: the line-by-line regression ledger, owner setup, cutover and the delete list for the old pipeline. |
-| Engineering process standard and improvement plan | `plans/process_stack_review.md` | Source-backed comparison of *Continuous Delivery* and *Software Engineering at Google* with Catch's current process, trunk-based policy, AI-first amendments, KPI framework, and executable improvement backlog. |
 | Flutter app architecture | `app_architecture.md`, `../tool/architecture/pattern_adoption.json`, `../tool/architecture/provider_graph_reviews.json`, `plans/ui_system_blueprint_and_conformance_audit.md` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`, plus the live Riverpod topology gate and authored relationship decisions; read before broad app architecture or code-organization work. Architecture rollouts must prototype one reference implementation, copy the exhibit into `app_architecture.md`, and track adopters/variants/exceptions in the JSON tracker. The blueprint plan owns the ratified UI-system delivery program: package extraction, golden-asserted catalog, one identity registry, binding naming grammar, and Migration Protocol v2. |
 | Widget inventory and reusable widget guidance | `widget_catalog.md` | Current catalog of Flutter widgets, primitive APIs, feature ownership notes, and its compact maintenance contract. Git owns catalog history. |
 | Visual identity / design language | `design_language.md` | Locked editorial identity — palette (B&W base + activity color), typography (Archivo/platform system/IBM Plex Mono), photo grading, ticket/polaroid metaphors, exploration log, and the UI elevation roadmap. |
@@ -95,27 +94,42 @@ impact graph; do not create a parallel dependency graph or tracked run history.
 | Web surface architecture | `web_surface_architecture.md` | Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, the agent-activity employee monitor, marketing CI/CD, public website route contracts, and future host-portal placement. |
 | Public viewer and listing authority behavior | `web_surface_architecture.md#public-viewer-and-listing-authority-matrix`, `../design/public_surface_behavior.json` | Executable app/website matrix for auth resolution, profile readiness, app role, listing lifecycle/authority/publication, event capability, claim/review target and runtime capability, action disposition, exact consumer-route ownership, and proof harnesses. |
 | Marketing website architecture | `marketing_website_architecture.md` | Code organization, route-first/page-controller-component boundaries, target feature structure, and refactor order for `website/**`. |
-| Admin and analytics dashboard | `admin_analytics_dashboard_spec.md` | Internal admin console and analytics product spec: safety/access ops, cohort retention, host/event analytics, user value, finance, BigQuery marts, and admin API boundaries. |
 | Admin dashboard user stories and component catalogue | `admin_dashboard_user_stories_and_component_catalogue.md` | Tab-by-tab user stories, current workflow fit, top admin-console weaknesses, inspected-file log, and React admin primitive/component migration catalogue. |
 | Marketing app media pipeline | `marketing_app_media_pipeline.md` | Capture manifest, website screenshot sync, host vertical media slots, and drift-check workflow for app-derived marketing assets. Fed by the UI capture pipeline below. |
 | App listing screenshot production | `store/app_listing_screenshot_production_brief.md`, `store/app_listing_prototypes/README.md` | Approved Catch and Catch Host store-listing narrative, ordered shot matrix, first iPhone visual-review checkpoint, fixture and capture requirements, platform export contract, naming, QA, and upload handoff. |
 | UI capture / visual review pipeline | `plans/ui_capture_pipeline_plan.md` | One deterministic per-screen capture harness with two consumers — raw review PNGs (fast UI review after changes) and curated marketing media (feeds the manifest above). Reuses the golden harness (`matchCatchGolden`); a route-drift check keeps the screen catalog honest. |
 | Marketing landing page research | `marketing_landing_page_research.md` | Reference-site research, production rewrite rationale, guardrails, and residual marketing-site product decisions after the old tracker was folded in. |
-| Organizer/event discovery and claimable listings | `operations_platform.md` | Current Supply Intake workflow and durable Operations ownership. `plans/host_listing_discovery_architecture.md` is preserved historical product/identity research; its retired commands are not operational guidance. |
+| Organizer/event discovery and claimable listings | `operations_platform.md` | Current Supply Intake workflow and durable Operations ownership. |
 | Data contracts and Firestore/Functions ownership | `data_contracts.md` | Firestore document shape, repository query/index discipline, schema tooling, relationship documents, rules-test workflow, migration policy, and data-contract watch items. |
 | Clubs-to-organizers migration | `migrations/clubs_to_organizers.md`, `../contracts/migrations/clubs_to_organizers.json` | Organizer subtype taxonomy, canonical/compatibility authority map, dry-run/apply order, parity evidence, recovery, and legacy retirement boundary. |
 | Backend operation ownership | `backend_operation_catalog.md` | Human-readable catalog of direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points. |
-| Event success | `event_success.md`, `plans/event_dress_rehearsal_runtime_parity_spec.md` | Live event-success architecture, product guardrails, Firestore contracts, manual QA, participant metrics, and the proposed parity-first Dress Rehearsal learning/runtime specification. |
+| Event success | `event_success.md` | Live event-success architecture, product guardrails, Firestore contracts, manual QA, and participant metrics. |
 | Host product and Forms | `../lib/hosts/audience/README.md`, `host_product.md`, `host_forms.md` | Read Audience first for current feature answers and source references. The central contracts own the cross-surface product promise, capability/consent gates, remaining Host tooling decisions, and Forms lifecycle, respondent, distribution, analytics, automation, and conversion requirements. |
 | Host memberships | `plans/host_memberships_spec.md` | Proposed paid monthly/annual host memberships: plans and benefits, checkout entitlement evaluation, Razorpay Subscriptions + Route, membership state machine, CRM segments, surfaces, rules, test plan, MVP/phase-2 split, decisions and open questions. |
 | Wedding/corporate programs and arrivals | `plans/airport_arrivals_prd.md` | Proposed Catch Host private-program architecture, scoped staff workspaces, guest/household identity, Forms/Inbox integration, accommodation, transport and incremental delivery. Update with each reviewed program/transport slice; shared runtime contracts remain in their existing owners. |
 | Cross Paths | `cross_paths.md` | Approved people-in-Explore contract plus implementation receipts for roster privacy and fail-closed global/per-event consent; showcase readiness, sanitized suggestions, invitation, temporary event-plan, capacity, privacy, ranking, analytics, and phased rollout remain owned here. |
 | Location stack | `location_stack_plan.md` | Google Maps/Places, location permissions, run coordinates, check-in geofencing, map navigation, and current map/demo readiness. |
 | Demo data seeding | `demo_data_seeding.md` | Demo seeding scenarios, warm account workflows, demo ops, cleanup/reset commands, and validation workflow. |
-| Sales demo persona cohorts | `sales_demo_persona_cohorts.md` | Cohort scope, NYC and India persona-library decisions, roster reuse policy, and city overlay rules for high-fidelity sales demos. |
-| Sales operator handoff | `sales_operator_runbook.md` | Referral-partner onboarding, lead ownership, reviewed outreach, and daily follow-up operations. Private prospect and commercial records remain outside Git. |
-| Sales demo image generation | `sales_demo_image_generation_runbook.md` | Mechanical ChatGPT-web image generation, review, local organization, UID-owned Storage upload, and post-upload validation workflow. |
 | Enforcement rules | `../tool/policy/rules.json` | Authored recurring rules and their executable enforcement bindings. Historical audit receipts and generated pass/file/metric ledgers remain available only through Git history. |
+
+## Moved To catch-knowledge
+
+Plans, specs for unbuilt work, strategy, research, audits and runbooks that no
+check reads live in
+[torana-labs/catch-knowledge](https://github.com/torana-labs/catch-knowledge)
+(owner decision, 2026-10-29). These moved there from this folder:
+
+| Area | Document |
+|---|---|
+| Engineering process standard and improvement plan | [strategy/engineering-process-review.md](https://github.com/torana-labs/catch-knowledge/blob/main/strategy/engineering-process-review.md) |
+| Admin and analytics dashboard spec (draft) | [plans/admin-analytics-dashboard.md](https://github.com/torana-labs/catch-knowledge/blob/main/plans/admin-analytics-dashboard.md) |
+| Event Dress Rehearsal runtime parity spec (proposed) | [plans/event-dress-rehearsal-runtime-parity.md](https://github.com/torana-labs/catch-knowledge/blob/main/plans/event-dress-rehearsal-runtime-parity.md) |
+| Wedding-planner platform plan | [plans/wedding-planner-platform.md](https://github.com/torana-labs/catch-knowledge/blob/main/plans/wedding-planner-platform.md) |
+| Legacy retirement audit | [audits/legacy-retirement-audit.md](https://github.com/torana-labs/catch-knowledge/blob/main/audits/legacy-retirement-audit.md) |
+| Sales demo persona cohorts | [strategy/sales-demo-persona-cohorts.md](https://github.com/torana-labs/catch-knowledge/blob/main/strategy/sales-demo-persona-cohorts.md) |
+| Sales demo image generation | [runbooks/sales-demo-image-generation.md](https://github.com/torana-labs/catch-knowledge/blob/main/runbooks/sales-demo-image-generation.md) |
+| Sales operator handoff | [runbooks/sales-operator.md](https://github.com/torana-labs/catch-knowledge/blob/main/runbooks/sales-operator.md) |
+| Pilot supply intake findings, 2026-07-24 | [archive/pilot-supply-intake-findings-2026-07-24.md](https://github.com/torana-labs/catch-knowledge/blob/main/archive/pilot-supply-intake-findings-2026-07-24.md) |
 
 ## Contextual READMEs
 
