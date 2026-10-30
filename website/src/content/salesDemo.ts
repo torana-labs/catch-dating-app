@@ -1,3 +1,5 @@
+import {brand} from "./brand.ts";
+
 /** Copy for the private, synthetic host workflow preview. */
 export const salesDemoCopy = {
   continuePreservedSetup: "Continue preserved private setup",
@@ -12,7 +14,7 @@ export const salesDemoCopy = {
   privateExample: "Private example",
   privateWorkflowPreview: "Private workflow preview",
   "phonePlaceholder": "+91…",
-  "catch": "Catch",
+  "catch": brand.name,
   "thisPreviewIsUnavailable": "This preview is unavailable",
   "theInvitationMayHaveExpiredOr": "The invitation may have expired or changed. Ask the inviter for a current link.",
   "tryAgain": "Try again",
@@ -65,8 +67,8 @@ export const salesDemoCopy = {
   "realSetupIsSeparate": "This sample used fictitious data. Review the next steps separately; nothing here sends messages, admits guests, or publishes a form.",
   "reviewSetupOptions": "Review setup options",
   "reviewedTemplate": "Reviewed template",
-  "manualHandoff": "Manual setup with the Catch team",
-  "manualSetupNeeded": "The Catch team will review these requirements with you before a real form is created.",
+  "manualHandoff": `Manual setup with the ${brand.name} team`,
+  "manualSetupNeeded": `The ${brand.name} team will review these requirements with you before a real form is created.`,
   "claimRequiredForDraft": "Claim your organizer and confirm management access before a draft can be prepared.",
   "openClaimSetup": "Open organizer claim",
   "templateDraftNotPublished": "Preparing creates a private draft from this reviewed template. You must finish and review it in Forms; it will not be published.",

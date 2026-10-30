@@ -1,3 +1,5 @@
+import {brand} from "./brand.ts";
+
 export const hostPageCopy = {
   nav: {
     workflow: "How it works",
@@ -10,7 +12,7 @@ export const hostPageCopy = {
   hero: {
     title: "Keep your booking platform. Run a better event.",
     body:
-      "Import your guest list, share one QR code, and give every checked-in guest the live Catch experience—no app download required.",
+      `Import your guest list, share one QR code, and give every checked-in guest the live ${brand.name} experience—no app download required.`,
     primaryAction: "Apply for a supported pilot",
     secondaryAction: "See how it works",
     compatibility:
@@ -19,7 +21,7 @@ export const hostPageCopy = {
   workflow: {
     title: "From your guest list to a coordinated live event.",
     body:
-      "Keep selling tickets or taking RSVPs where you already do. Catch begins with the guest list you export.",
+      `Keep selling tickets or taking RSVPs where you already do. ${brand.name} begins with the guest list you export.`,
     railLabel: "Setup steps",
     mockLabel: "Companion event",
     nextLabel: "Next",
@@ -27,20 +29,20 @@ export const hostPageCopy = {
   },
   live: {
     label: "Live tools",
-    title: "Useful before the Catch network exists.",
+    title: `Useful before the ${brand.name} network exists.`,
     body:
       "Every guest opens the event in a mobile browser after phone verification. The host controls attendance, approvals, and the live flow from the organizer app.",
   },
   comparison: {
     label: "What works now",
-    title: "Use Catch for the part ticketing tools leave unfinished.",
+    title: `Use ${brand.name} for the part ticketing tools leave unfinished.`,
     bookingColumn: "Your booking platform",
-    catchColumn: "Catch alongside it",
+    catchColumn: `${brand.name} alongside it`,
     callout:
       "A QR scanner alone is not the product. One imported guest list unlocks arrival, live facilitation, and post-event learning together.",
     limits:
       "Today: CSV-based setup for up to 250 guests at a time. Very large guest lists and provider-direct sync come later.",
-    tableLabel: "How a booking platform and Catch divide the work",
+    tableLabel: `How a booking platform and ${brand.name} divide the work`,
   },
   captures: {
     label: "What the host sees",
@@ -52,7 +54,7 @@ export const hostPageCopy = {
     report: "Event recap",
   },
   comingSoon: {
-    label: "Coming later with the Catch platform",
+    label: `Coming later with the ${brand.name} platform`,
     title: "What’s next—and not required to start.",
     body:
       "Useful now does not depend on these. They deepen the system when you choose to adopt them.",
@@ -71,7 +73,7 @@ export const hostApplicationCopy = {
     profile: {label: "Host identity", body: "Who you are and what you run."},
     event: {label: "Next event", body: "The real event we can learn from."},
     setup: {label: "Current setup", body: "Booking tool and guest-list size."},
-    success: {label: "Live tools", body: "Where Catch could help most."},
+    success: {label: "Live tools", body: `Where ${brand.name} could help most.`},
     review: {label: "Review", body: "Confirm the pilot application."},
   },
   eventPricing: {
@@ -127,6 +129,6 @@ export const hostApplicationCopy = {
     guestsLabel: "Guests",
     noteTitle: "What happens after you apply",
     noteBody:
-      "We aim to respond within one business day. Catch reviews the event, guest-list setup, and selected live tools before confirming a supported pilot. Selected hosts get a guided import check and a run-through before doors open.",
+      `We aim to respond within one business day. ${brand.name} reviews the event, guest-list setup, and selected live tools before confirming a supported pilot. Selected hosts get a guided import check and a run-through before doors open.`,
   },
 } as const;

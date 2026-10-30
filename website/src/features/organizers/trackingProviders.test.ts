@@ -3,6 +3,7 @@ import {runInNewContext} from "node:vm";
 import {describe, expect, it, vi} from "vitest";
 import {createOrganizerTrackingController, type OrganizerTrackingContext,
   type ProviderSessionConfiguration} from "./trackingProviders";
+import {brand} from "@catch/brand";
 
 const context = (overrides: Partial<OrganizerTrackingContext> = {}): OrganizerTrackingContext => ({
   organizerId: "organizer-a", eventId: "public-event", publicPath: "/events/public-event/",
@@ -120,13 +121,13 @@ function runtime() {
   runInNewContext(readFileSync("public/organizer-tracking-runtime.js", "utf8"), {
     window, document, parent,
   });
-  const message = (data: unknown, source = parent, origin = "https://catchdates.com") => listener({data, source, origin});
+  const message = (data: unknown, source = parent, origin = brand.web.origin) => listener({data, source, origin});
   return {window, scripts, message};
 }
 
 describe("controlled vendor runtime (fake scripts only, no network)", () => {
   const init = {type: "catch:provider-init", channel: "test-channel", publicPath: "/events/public-event/",
-    publicOrigin: "https://catchdates.com"};
+    publicOrigin: brand.web.origin};
   it("routes Google manual views only to the configured measurement ID with no private URL data", () => {
     const {window, scripts, message} = runtime();
     message({...init, provider: "ga4", id: "G-TEST123456"});
@@ -135,7 +136,7 @@ describe("controlled vendor runtime (fake scripts only, no network)", () => {
     const commands = window.dataLayer.map((command: IArguments) => Array.from(command));
     expect(commands[2]).toMatchObject(["config", "G-TEST123456", {send_page_view: false, page_referrer: ""}]);
     expect(commands[3]).toEqual(["event", "page_view", {send_to: "G-TEST123456",
-      page_location: "https://catchdates.com/events/public-event/", page_referrer: "", page_title: "Catch public page"}]);
+      page_location: `${brand.web.origin}/events/public-event/`, page_referrer: "", page_title: "Catch public page"}]);
   });
   it("disables Meta automatic matching and emits only allowlisted single-pixel events", () => {
     const {window, scripts, message} = runtime();

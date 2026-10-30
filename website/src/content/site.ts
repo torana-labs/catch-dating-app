@@ -1,8 +1,9 @@
-import legalDocument from "./legal.json" with {type: "json"};
+import {brand} from "./brand.ts";
+import {publishedLegalContent} from "./legal.ts";
 import type {StoreCtaCopy} from "./types";
 
 export const ownerGatedSiteDestinations = {
-  contactHref: `mailto:${legalDocument.operator.supportEmail}`,
+  contactHref: `mailto:${brand.support.email}`,
 } as const;
 
 export const siteFooterLegalLinks = [
@@ -15,7 +16,7 @@ export const siteFooterLegalLinks = [
 
 // One authored owner for the public header and footer on every route.
 export const publicSiteCopy = {
-  menu: {dialogLabel: "Site menu", openLabel: "Menu", closeLabel: "Close", kicker: "Catch", hint: "Find something worth showing up for.", navLabel: "Mobile"},
+  menu: {dialogLabel: "Site menu", openLabel: "Menu", closeLabel: "Close", kicker: brand.name, hint: "Find something worth showing up for.", navLabel: "Mobile"},
   nav: [{href: "/explore/", label: "Find events"}, {href: "/organizers/", label: "Organisers"}, {href: "/host/", label: "For organisers"}],
-  footerOperator: legalDocument.ui.footerBody,
+  footerOperator: publishedLegalContent.ui.footerBody,
 } as const;

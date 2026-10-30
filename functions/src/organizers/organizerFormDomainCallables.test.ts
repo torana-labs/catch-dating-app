@@ -4,6 +4,7 @@ import type {firestore} from "firebase-admin";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {manageOrganizerFormDomainHandler, parseDomainRequest} from
   "./organizerFormDomainCallables";
+import {BRAND} from "../shared/generated/brand";
 
 describe("organizer form domain management input", () => {
   it("accepts exact action-specific fields", () => {
@@ -25,7 +26,7 @@ describe("organizer form domain management input", () => {
         expectedCname: "attacker.example"},
       {action: "certificateReady", hostname: "apply.client.example",
         organizerId: "organizer-a"},
-      {action: "verify", hostname: "app.catchdates.com",
+      {action: "verify", hostname: `app.${BRAND.web.domain}`,
         organizerId: "organizer-a"},
       {action: "revoke", hostname: "apply.client.example",
         organizerId: "organizer-a", formId: "form-a"},
@@ -48,7 +49,7 @@ describe("organizer form domain management input", () => {
         touched = true;
         return null;
       },
-      target: () => "custom.catchdates.com", now: () => 1,
+      target: () => `custom.${BRAND.web.domain}`, now: () => 1,
     }), {code: "permission-denied"});
     assert.equal(touched, false);
   });
@@ -65,7 +66,7 @@ describe("organizer form domain management input", () => {
         publicFormId: "ABCDEFGHIJKLMNOPQRST",
         ownershipChallenge: "catch-verification=" +
           "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        expectedCname: "custom.catchdates.com", status: "pending",
+        expectedCname: `custom.${BRAND.web.domain}`, status: "pending",
         certificateStatus: "pending", verifiedAtMillis: null,
         generation: 1, reservedAtMillis: 1,
         pendingExpiresAtMillis: 48 * 60 * 60 * 1000}),
@@ -77,7 +78,7 @@ describe("organizer form domain management input", () => {
         touched = true;
         return null;
       },
-      target: () => "custom.catchdates.com", now: () => 1,
+      target: () => `custom.${BRAND.web.domain}`, now: () => 1,
     }), {code: "failed-precondition"});
     assert.equal(touched, false);
   });

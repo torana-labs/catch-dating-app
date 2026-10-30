@@ -4,13 +4,14 @@ import {
   activateFormDomain, resolveCustomFormHost, revokeFormDomain,
   verifyFormDomain, type OrganizerFormDomain,
 } from "./organizerFormDomains";
+import {BRAND} from "../shared/generated/brand";
 
 const now = 1_700_000_000_000;
 const pending: OrganizerFormDomain = {
   hostname: "apply.client.example", organizerId: "organizer-a",
   formId: "form-a", publicFormId: "public-a",
   ownershipChallenge: "catch-verification=random-proof",
-  expectedCname: "custom.catchdates.com", status: "pending",
+  expectedCname: `custom.${BRAND.web.domain}`, status: "pending",
   certificateStatus: "pending", verifiedAtMillis: null, generation: 1,
   reservedAtMillis: now, pendingExpiresAtMillis: now + 48 * 60 * 60 * 1000,
 };
@@ -47,7 +48,7 @@ describe("custom form domain policy", () => {
     assert.equal(resolveCustomFormHost(
       "apply.client.example:443", active, probe, now), null);
     assert.equal(resolveCustomFormHost(
-      "app.catchdates.com", active, probe, now), null);
+      `app.${BRAND.web.domain}`, active, probe, now), null);
     assert.equal(resolveCustomFormHost(
       pending.hostname, revokeFormDomain(active), probe, now), null);
   });

@@ -8,6 +8,7 @@ import {practiceSettingsProjection, preparePracticeSettings,
 import type {PracticeCaseAuthority} from "./assistanceCases";
 import {evaluatePracticeAutomation} from "./assistanceAutomation";
 import {practiceDeparture, practicePlan} from "./assistanceTestFixtures";
+import {BRAND} from "../shared/generated/brand";
 
 test("native settings fixtures bind scope, inheritance and receipts", () => {
   const h = room(); const samples: Record<string, unknown> = {};
@@ -20,7 +21,7 @@ test("native settings fixtures bind scope, inheritance and receipts", () => {
         virtualNowMillis: h.session.virtualNow.toMillis(),
         expiresAtMillis: h.session.expiresAt.toMillis()},
       actors: h.actors, actions, guestUrl:
-        "https://catchdates.com/rehearse/practicepublic1234567890",
+        `${BRAND.web.origin}/rehearse/practicepublic1234567890`,
       canUseInternalFaults: false,
       staffReview: practiceStaffProjection(h.id, h.session, authority),
       settingsReview: practiceSettingsProjection(h.id, h.session, authority),

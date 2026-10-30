@@ -6,6 +6,8 @@ import {HostApplicationPage} from "../features/host/HostApplicationPage";
 import {hostProductCopy} from "@content/hostProduct";
 import {retiredMarketingDestination} from "./retiredMarketingRoutes";
 import {getPageKey, pageMetaForHostPath} from "./pageMeta";
+import {brand} from "@catch/brand";
+
 const redirects = [
   ["overview", "/"], ["platform", "/host/#features"], ["workflows", "/host/#how-it-works"],
   ["planners", "/host/#use-cases"], ["mixers", "/host/#use-cases"], ["clubs", "/host/#use-cases"],
@@ -44,7 +46,7 @@ describe("consolidated public sitemap", () => {
     for (const [slug, destination] of redirects) {
       for (const suffix of ["", "/", "/old-section"]) {
         const result = retiredMarketingDestination({pathname: `/host/${slug}${suffix}`, search: "?listing=real-id&utm_source=partner", hash: "#obsolete"});
-        const target = new URL(destination, "https://catchdates.com");
+        const target = new URL(destination, brand.web.origin);
         expect(result).toBe(`${target.pathname}?listing=real-id&utm_source=partner${target.hash}`);
       }
     }

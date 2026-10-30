@@ -1,3 +1,5 @@
+import {brand} from "./brand.ts";
+
 /** Copy for the account-bound continuation of a reviewed private sample. */
 export const continuationCopy = {
   kicker: "Private Host setup",
@@ -20,16 +22,16 @@ export const continuationCopy = {
   signInPrompt: "Sign in with the account that completed the sample.",
   accessChanged: "This setup has expired or current access changed. Use the original account or ask the inviter to review access.",
   checkAccess: "Check access again",
-  linkPhone: "Link the phone you will use in Catch before continuing. Complete your Catch profile on that phone account; approval requires a completed profile on this same account.",
-  openCatch: "Open Catch to complete your profile",
+  linkPhone: `Link the phone you will use in ${brand.name} before continuing. Complete your ${brand.name} profile on that phone account; approval requires a completed profile on this same account.`,
+  openCatch: `Open ${brand.name} to complete your profile`,
   claimPending: "Organizer ownership is already under review. Check status after the review; no new request is needed.",
   hasOwner: "This organizer has an owner. Ask that owner for the appropriate team invitation before preparing a draft.",
-  manualReview: "This setup needs the Catch team's review.",
+  manualReview: `This setup needs the ${brand.name} team's review.`,
   prepareGuidance: "Prepare a private draft from the reviewed template. Review its questions and consent in Host before publishing.",
   prepareDraft: "Prepare reviewed private draft",
   prepared: "Your private draft is prepared. It has not been published.",
   finishForms: "Finish in Host Forms",
-  openForms: "Open Host Forms in the Catch app to continue.",
+  openForms: `Open Host Forms in the ${brand.name} app to continue.`,
   checkStatus: "Check claim and setup status",
   ownershipGuidance: "The completed demo does not prove ownership. This is a request for organizer ownership, subject to review. Add your ownership authority and evidence. It does not publish your organizer. Non-owner collaborators should ask the organizer owner for a team invitation.",
   submitClaim: "Submit claim for review",

@@ -1,6 +1,8 @@
+import {brand} from "./brand.ts";
+
 export const hostLandingCopy = {
-  navLabel: "Explore Catch Host",
-  nav: [{href: "#how-it-works", label: "How it works"}, {href: "#adoption", label: "Ways to use Catch"}, {href: "#pricing", label: "Pricing & access"}],
+  navLabel: `Explore ${brand.stores.hostAppName}`,
+  nav: [{href: "#how-it-works", label: "How it works"}, {href: "#adoption", label: `Ways to use ${brand.name}`}, {href: "#pricing", label: "Pricing & access"}],
   apply: "Apply for a pilot", seeHow: "See how it works", example: "Illustrative example · fictional data",
   hero: {
     title: "Run great events. Build a business around them.",
@@ -22,7 +24,7 @@ export const hostLandingCopy = {
     note: "A connected workflow is the direction we’re building. We’ll agree the tools available for your event during pilot setup.",
   },
   explorer: {
-    title: "Your event has its own rhythm.", body: "See how Catch brings it together.", label: "Choose an event format",
+    title: "Your event has its own rhythm.", body: `See how ${brand.name} brings it together.`, label: "Choose an event format",
     stages: ["Before", "During", "After"], host: "Host view", guest: "Guest view",
     note: "Illustrative experiences. Your pilot’s tools and setup are agreed with the team.",
   },
@@ -48,12 +50,12 @@ export const hostLandingCopy = {
     note: "Illustrative data and product direction. Link attribution measures recorded activity; it doesn’t reveal private forwards. Private matching choices stay private.",
   },
   adoption: {
-    title: "Start with what you need.", body: "Use Catch alongside your existing setup, bring your bookings onto Catch, or connect with the wider network. Each layer builds on the one inside it. You choose how far to go.",
-    circlesLabel: "Ways to use Catch", circlesHint: "Choose a circle to see what it adds.", layersNote: "Ways to use Catch, not fixed pricing plans. Tools and availability are agreed for your event.",
+    title: "Start with what you need.", body: `Use ${brand.name} alongside your existing setup, bring your bookings onto ${brand.name}, or connect with the wider network. Each layer builds on the one inside it. You choose how far to go.`,
+    circlesLabel: `Ways to use ${brand.name}`, circlesHint: "Choose a circle to see what it adds.", layersNote: `Ways to use ${brand.name}, not fixed pricing plans. Tools and availability are agreed for your event.`,
     layers: [
-      {id: "tools", label: "Catch tools", kicker: "Alongside your existing setup", title: "Keep your tools. Add to the experience.", body: "Bring a guest list from the platform you already use. Add check-in, introductions, groups, and activities that help your event run well and your guests join in.", bullets: ["Your booking platform can stay.", "Guests join supported live experiences in a mobile browser.", "Choose the tools that earn their place in your event."]},
-      {id: "booking", label: "Catch booking", kicker: "Connect more of the workflow", title: "From application to payment to arrival.", body: "Bring registration, approvals, UPI payments, reminders, and attendance together. With booking connected, guest records and tracked links can tell you more about what brings people in.", bullets: ["Forms, approvals, and payments in one flow.", "Guest communication stays connected to the booking.", "Follow promotion through to paid bookings."]},
-      {id: "network", label: "Catch network", kicker: "Connect beyond one event", title: "Give your community somewhere to grow.", body: "Build a public organiser presence so people can discover your events, follow what you do, and find their next reason to return. Optional member experiences can help connections continue after a shared event.", bullets: ["A public home for your club, community, or business.", "Discovery and repeat attendance across events.", "Optional post-event connections, with private, mutual choices." ]},
+      {id: "tools", label: `${brand.name} tools`, kicker: "Alongside your existing setup", title: "Keep your tools. Add to the experience.", body: "Bring a guest list from the platform you already use. Add check-in, introductions, groups, and activities that help your event run well and your guests join in.", bullets: ["Your booking platform can stay.", "Guests join supported live experiences in a mobile browser.", "Choose the tools that earn their place in your event."]},
+      {id: "booking", label: `${brand.name} booking`, kicker: "Connect more of the workflow", title: "From application to payment to arrival.", body: "Bring registration, approvals, UPI payments, reminders, and attendance together. With booking connected, guest records and tracked links can tell you more about what brings people in.", bullets: ["Forms, approvals, and payments in one flow.", "Guest communication stays connected to the booking.", "Follow promotion through to paid bookings."]},
+      {id: "network", label: `${brand.name} network`, kicker: "Connect beyond one event", title: "Give your community somewhere to grow.", body: "Build a public organiser presence so people can discover your events, follow what you do, and find their next reason to return. Optional member experiences can help connections continue after a shared event.", bullets: ["A public home for your club, community, or business.", "Discovery and repeat attendance across events.", "Optional post-event connections, with private, mutual choices." ]},
     ],
     toolsTitle: "Already have tools you like?", toolsBody: "Start with a reviewed CSV or XLSX guest-list import. Keep what works, and agree the handoffs with our team. A file import doesn’t require changing your ticketing platform.",
     toolsSummary: "Booking, payments, messaging, and other tool handoffs",
@@ -62,16 +64,16 @@ export const hostLandingCopy = {
   },
   faqTitle: "A few things you might be wondering.",
   faqs: [
-    {question: "Is Catch only for singles events?", answer: "No. Catch is for independent hosts, clubs, communities, and event teams. Runs, dinners, games, sports, and nights out can all benefit from easier coordination and more opportunities to participate. Social tools are optional."},
-    {question: "Do my guests need to download an app?", answer: "For supported live-event pilots, guests use a phone-verified mobile browser. They don’t need to download the app or create a dating profile. Participation is scoped to your event; the wider Catch member network is separate."},
-    {question: "Do I have to move my bookings to Catch?", answer: "No. You can keep your existing booking or RSVP tool and start with a reviewed CSV or XLSX guest-list import. We’ll confirm the handoff and capacity together. Direct sync with another platform isn’t implied."},
+    {question: `Is ${brand.name} only for singles events?`, answer: `No. ${brand.name} is for independent hosts, clubs, communities, and event teams. Runs, dinners, games, sports, and nights out can all benefit from easier coordination and more opportunities to participate. Social tools are optional.`},
+    {question: "Do my guests need to download an app?", answer: `For supported live-event pilots, guests use a phone-verified mobile browser. They don’t need to download the app or create a dating profile. Participation is scoped to your event; the wider ${brand.name} member network is separate.`},
+    {question: `Do I have to move my bookings to ${brand.name}?`, answer: "No. You can keep your existing booking or RSVP tool and start with a reviewed CSV or XLSX guest-list import. We’ll confirm the handoff and capacity together. Direct sync with another platform isn’t implied."},
     {question: "Can I choose which activities guests see?", answer: "Yes. Agree the tools and format during setup, and use the host controls to adjust groups or override assignments during the live event. Introductions, prompts, and group activities are optional. Guests can choose to skip them."},
     {question: "What guest information can my team see?", answer: "Your team uses booking and application information guests provide for the event, with access appropriate to each person’s role. Private social questionnaire answers and matching choices are not part of the CRM. Introduction requests are shared only with the host who can help. Private feedback is summarised as combined patterns, not individual answers. Application approval, membership, payment, and event admission are separate decisions."},
     {question: "What does the pilot involve?", answer: "Apply with a real upcoming event, your current setup, and the tools you’d like to try. If it’s a fit, we’ll agree the scope, review your guest list, and help you prepare and rehearse. Afterwards, we’ll review what worked and what to improve."},
   ],
   close: {
     title: "Your next event. A stronger foundation.",
-    body: "Whether you run a monthly community gathering or a full calendar of events, explore how Catch can support the way you host.",
+    body: `Whether you run a monthly community gathering or a full calendar of events, explore how ${brand.name} can support the way you host.`,
     priceTitle: "Free during the selected live-event pilot.",
     priceBody: "Hands-on onboarding is included. Broader booking, network, and managed-event scope, capacity, and commercial terms are agreed with the team before you start.",
     steps: [{title: "Tell us about your event", body: "Share your format, current tools, and what you want to improve."}, {title: "Agree the right setup", body: "We review the fit and confirm the tools, support, and terms."}, {title: "Host, learn, and build", body: "Run your event, review the experience, and plan what’s next."}],

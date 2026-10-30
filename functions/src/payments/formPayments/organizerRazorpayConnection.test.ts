@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {OrganizerRazorpayConnectionService} from
   "./organizerRazorpayConnection";
+import {BRAND} from "../../shared/generated/brand";
 
 type Data = Record<string, unknown>;
 interface MemoryQuery {
@@ -98,7 +99,7 @@ function harness() {
     }, disable: async (version) => {
       disabled.push(version);
     }},
-    mode: "test", webhookBaseUrl: "https://api.catchdates.com/formWebhook",
+    mode: "test", webhookBaseUrl: `https://api.${BRAND.web.domain}/formWebhook`,
     now: () => now, randomToken: () => state,
     requireManager: async ({organizerId, actorUid}) => {
       if (!authorized || organizerId !== "org" || actorUid !== "host") {

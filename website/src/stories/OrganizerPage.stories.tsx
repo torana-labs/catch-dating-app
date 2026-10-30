@@ -27,6 +27,7 @@ import {
   organizerPageReadAt,
   organizerStoryListing,
 } from "./fixtures/organizerPages";
+import {brand} from "@catch/brand";
 
 const meta = {
   title: "Marketing Website/Organiser page",
@@ -131,7 +132,7 @@ export const Identity: Story = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getAllByRole("button", {name: "Share"})[0]);
-    await expect(canvas.getByRole("img", {name: "QR code for catchdates.com/organizers/lantern-lane-runners"})).toBeInTheDocument();
+    await expect(canvas.getByRole("img", {name: `QR code for ${brand.web.domain}/organizers/lantern-lane-runners`})).toBeInTheDocument();
   },
 };
 

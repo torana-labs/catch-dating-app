@@ -3,6 +3,7 @@ import {test} from "node:test";
 import {newHostConsentAuthority, type HostMetaDispatchState}
   from "./consentPolicy";
 import {classifyHostMetaResponse, hostMetaLeadPayload} from "./metaPayload";
+import {BRAND} from "../shared/generated/brand";
 
 const now = 1792512000000;
 const consent = newHostConsentAuthority({version: 1,
@@ -19,7 +20,7 @@ test("CAPI projects only reviewed website Lead fields", () => {
   const payload = hostMetaLeadPayload({enabled: true, now, consent, state,
     context: {...context, email: "private@example.com", phone: "private",
       answers: {name: "private"}, uid: "private", ip: "127.0.0.1",
-      url: "https://catchdates.com/private?email=private@example.com"}});
+      url: `${BRAND.web.origin}/private?email=private@example.com`}});
   assert.ok(payload);
   assert.deepEqual(Object.keys(payload).sort(),
     ["event_name", "event_id", "event_time", "action_source",
@@ -29,7 +30,7 @@ test("CAPI projects only reviewed website Lead fields", () => {
   assert.equal(payload.event_id, state.eventId);
   assert.equal(payload.event_time, now / 1000);
   assert.equal(payload.action_source, "website");
-  assert.equal(payload.event_source_url, "https://catchdates.com/host/apply/");
+  assert.equal(payload.event_source_url, `${BRAND.web.origin}/host/apply/`);
   assert.match(payload.user_data.external_id[0], /^[a-f0-9]{64}$/u);
   assert.equal(JSON.stringify(payload).includes("private"), false);
 });

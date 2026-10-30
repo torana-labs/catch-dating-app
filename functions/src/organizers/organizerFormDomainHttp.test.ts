@@ -1,6 +1,7 @@
 import {strict as assert} from "node:assert";
 import {describe, it} from "node:test";
 import {resolvePublicFormDomainRequest} from "./organizerFormDomainHttp";
+import {BRAND} from "../shared/generated/brand";
 
 describe("public custom-domain resolution", () => {
   it("validates the host lookup and returns public routing", async () => {
@@ -19,7 +20,7 @@ describe("public custom-domain resolution", () => {
       status: 404, body: {error: "Form unavailable"},
     });
     assert.deepEqual(await resolvePublicFormDomainRequest(
-      "GET", "app.catchdates.com", resolve), {
+      "GET", `app.${BRAND.web.domain}`, resolve), {
       status: 404, body: {error: "Form unavailable"},
     });
     assert.deepEqual(await resolvePublicFormDomainRequest(

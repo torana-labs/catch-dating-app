@@ -12,6 +12,7 @@ import {grantSecret, GuestLinkSigningKeys, matchesGuestSecret} from
 import {sameMessageContext} from "./messagingPolicy";
 import {GoogleRbmSuggestion, rbmSendBody, rbmTime} from "./googleRbmProtocol";
 import {rcsNativeReplyId} from "./rcsWebhookProtocol";
+import {brandWebUrl} from "../../shared/generated/brand";
 
 export type {RcsConfig};
 export interface RcsContentInput {
@@ -126,7 +127,7 @@ export function prepareEventRcs(input: RcsContentInput): PreparedRcsContent {
   if (!matchesGuestSecret(grant, secret)) {
     throw new Error("RCS guest link key mismatch");
   }
-  const responseUrl = "https://catchdates.com/event-update/" + grant.linkId +
+  const responseUrl = brandWebUrl("/event-update/") + grant.linkId +
     "#" + secret;
   const instruction = intent.kind === "joiningUpdate" ?
     intent.guidance.text : intent.title + "\n" + intent.body;

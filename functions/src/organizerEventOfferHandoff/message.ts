@@ -1,4 +1,8 @@
 import {publicWebhookUrl} from "../organizers/organizerAutomationWebhook";
+import {BRAND_ORIGIN_PATTERN} from "../shared/generated/brand";
+
+const checkoutUrlPattern =
+  new RegExp(`^${BRAND_ORIGIN_PATTERN}/offer#[A-Za-z0-9_-]{43}$`, "u");
 
 /**
  * Pure preparation for one personal-device offer handoff. Inputs must come
@@ -218,9 +222,9 @@ export function prepareOfferHandoff(
       payment.collectionMode === null) {
     mode = "free";
     if (input.recipientCheckoutUrl) {
-      if (!/^https:\/\/catchdates\.com\/offer#[A-Za-z0-9_-]{43}$/u
-        .test(input.recipientCheckoutUrl)) blockers.push("paymentLinkInvalid");
-      else link = input.recipientCheckoutUrl;
+      if (!checkoutUrlPattern.test(input.recipientCheckoutUrl)) {
+        blockers.push("paymentLinkInvalid");
+      } else link = input.recipientCheckoutUrl;
     }
     if (offer.organizerPaymentLink) blockers.push("paymentLinkMismatch");
   } else if (payment.expectedAmountMinor > 0 &&
@@ -250,8 +254,7 @@ export function prepareOfferHandoff(
     if (payment.currency !== "INR" || payment.expectedAmountMinor < 100 ||
         !input.recipientCheckoutUrl) {
       blockers.push("paymentModeUnsupported");
-    } else if (!/^https:\/\/catchdates\.com\/offer#[A-Za-z0-9_-]{43}$/u
-      .test(input.recipientCheckoutUrl)) {
+    } else if (!checkoutUrlPattern.test(input.recipientCheckoutUrl)) {
       blockers.push("paymentLinkInvalid");
     } else {
       mode = "catchCheckout";

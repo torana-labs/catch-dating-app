@@ -3,22 +3,20 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
+import {brand} from "@catch/brand";
+import {publishedLegalContent} from "../src/content/legal.ts";
 import {ownerGatedSiteDestinations, siteFooterLegalLinks} from "../src/content/site.ts";
 
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const publishedLegalContent = JSON.parse(fs.readFileSync(
-  path.join(websiteRoot, "src/content/legal.json"),
-  "utf8"
-));
 
 test("confirmed legal, help, and contact contracts are publication-ready", () => {
   assert.deepEqual(
     Object.values(publishedLegalContent.pages).map((page) => page.path).sort(),
     ["/contact/", "/delete-account/", "/help/", "/privacy/", "/refunds/", "/terms/"]
   );
-  assert.equal(publishedLegalContent.operator.name, "Torana");
-  assert.equal(publishedLegalContent.operator.supportEmail, "suvrat.garg@gmail.com");
-  assert.equal(ownerGatedSiteDestinations.contactHref, "mailto:suvrat.garg@gmail.com");
+  assert.equal(publishedLegalContent.operator.name, brand.operator.legalName);
+  assert.equal(publishedLegalContent.operator.supportEmail, brand.support.email);
+  assert.equal(ownerGatedSiteDestinations.contactHref, `mailto:${brand.support.email}`);
   assert.deepEqual(
     siteFooterLegalLinks.map((link) => link.href).sort(),
     ["/contact/", "/help/", "/privacy/", "/refunds/", "/terms/"]
@@ -26,14 +24,14 @@ test("confirmed legal, help, and contact contracts are publication-ready", () =>
 
   const publishedPaths = new Set(Object.values(publishedLegalContent.pages).map((page) => page.path));
   const serialized = JSON.stringify(publishedLegalContent);
-  assert.doesNotMatch(serialized, /CONFIRM|PLACEHOLDER|\[(?:TODO|TBD)/u);
+  assert.doesNotMatch(serialized, /CONFIRM|PLACEHOLDER|\[(?:TODO|TBD)|\{\{/u);
   for (const page of Object.values(publishedLegalContent.pages)) {
     assert.ok(page.title.trim());
     assert.ok(page.summary.trim());
     assert.ok(page.sections.length >= 6);
     const pageCopy = page.sections.flatMap((section) => section.paragraphs).join("\n");
-    assert.match(pageCopy, /suvrat\.garg@gmail\.com/u, `${page.path} must publish the contact address`);
-    assert.doesNotMatch(pageCopy, /suvrat@catchdates\.com/u, `${page.path} must not publish the inactive address`);
+    assert.ok(pageCopy.includes(brand.support.email), `${page.path} must publish the contact address`);
+    assert.ok(!pageCopy.includes(`suvrat@${brand.web.domain}`), `${page.path} must not publish the inactive address`);
     for (const section of page.sections) {
       assert.ok(section.heading.trim());
       assert.ok(section.paragraphs.every((paragraph) => paragraph.trim().length > 0));
@@ -113,7 +111,7 @@ test("contact page publishes the operator, address, email and phone", () => {
   assert.match(copy, new RegExp(`operated by ${operator.name}`, "u"));
   assert.ok(copy.includes(operator.formalAddress), "the postal address must match the operator record");
   assert.ok(copy.includes(operator.supportEmail));
-  assert.match(copy, /\+91 98931 91829/u);
+  assert.ok(copy.includes(brand.support.phoneDisplay));
   assert.match(copy, /WhatsApp/u);
   assert.ok(copy.includes(operator.grievanceOfficer), "the grievance officer must be named");
 });

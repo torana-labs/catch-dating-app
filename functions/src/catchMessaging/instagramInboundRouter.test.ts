@@ -12,6 +12,7 @@ import {validateOrganizerClaimInstagramMessageDocument} from "../shared/generate
 import {validateSupplyIntakeRequestsDocument} from "../shared/generated/validators/supplyIntakeRequestsDocument";
 import {INSTAGRAM_MESSAGE_RECEIPTS, routeInstagramInbound, type InstagramInboundRouterDeps} from "./instagramInboundRouter";
 import {TestDocStore} from "./testDocStore";
+import {BRAND} from "../shared/generated/brand";
 
 // The build post-step copies the Operations runtime into lib; tests use it.
 execFileSync(process.execPath, [path.join(__dirname, "../../scripts/copy-operations-runtime.cjs")]);
@@ -68,7 +69,8 @@ test("a nominator's links become credited nominations, answered once in the thre
   assert.deepEqual(requests.map((request) => [request.request.origin, request.request.submittedBy.uid]),
     [[{kind: "message_nomination", id: inbound.messageKey}, "associate-1"], [{kind: "message_nomination", id: inbound.messageKey}, "associate-1"]]);
   assert.deepEqual(t.provider.replies.map((reply) => reply.recipientId), [NOMINATOR]);
-  assert.match(t.provider.replies[0].text, /^Got it\. Queued 2 organizers for a Catch listing: @afterfly\.in, luma\.com\/quietclub\. It shows on catchdates\.com/u);
+  assert.ok(t.provider.replies[0].text.startsWith("Got it. Queued 2 organizers for a Catch listing: @afterfly.in, " +
+    `luma.com/quietclub. It shows on ${BRAND.web.domain}`));
   const stored = t.receipt(inbound.messageKey)!;
   assert.equal(stored.nominatorId, "instagram-asha.runs");
   assert.equal(validateOrganizerClaimInstagramMessageDocument({...stored,

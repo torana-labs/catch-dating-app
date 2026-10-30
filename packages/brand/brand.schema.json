@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "packages/brand/brand.schema.json",
+  "title": "Brand record",
+  "description": "The one owner of every user-facing brand value: names, web origins, contact details, operator, social handles, store names and message sender names.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "shortName", "web", "support", "operator", "social", "stores", "adminName", "senders"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "name": {"$ref": "#/$defs/label", "description": "Display name used in copy, page titles and messages."},
+    "shortName": {"$ref": "#/$defs/label", "description": "Name for tight spaces such as home-screen labels and manifests."},
+    "web": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain", "origin", "wwwOrigin", "appOrigin", "adminOrigin"],
+      "properties": {
+        "domain": {"$ref": "#/$defs/hostname", "description": "Registrable primary domain; the public website, deep links and canonical URLs live on it."},
+        "origin": {"$ref": "#/$defs/origin", "description": "Canonical public website origin."},
+        "wwwOrigin": {"$ref": "#/$defs/origin", "description": "www alias of the website, accepted as an origin and redirected."},
+        "appOrigin": {"$ref": "#/$defs/origin", "description": "Flutter web app origin."},
+        "adminOrigin": {"$ref": "#/$defs/origin", "description": "Admin console origin."}
+      }
+    },
+    "support": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["email", "phone", "phoneDisplay", "whatsapp"],
+      "properties": {
+        "email": {"$ref": "#/$defs/email", "description": "Published support and grievance address. config/publicContact may override it at run time on the website."},
+        "phone": {"$ref": "#/$defs/optionalPhone", "description": "E.164 support phone, or null when none is published."},
+        "phoneDisplay": {"type": ["string", "null"], "pattern": "^\\+[0-9 ]{8,20}$", "description": "The support phone as printed in copy."},
+        "whatsapp": {"$ref": "#/$defs/optionalPhone", "description": "E.164 WhatsApp support number, or null."}
+      }
+    },
+    "operator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["legalName", "postalAddress", "governingCourts", "grievanceOfficer"],
+      "properties": {
+        "legalName": {"$ref": "#/$defs/label"},
+        "postalAddress": {"$ref": "#/$defs/label"},
+        "governingCourts": {"$ref": "#/$defs/label"},
+        "grievanceOfficer": {"$ref": "#/$defs/label"}
+      }
+    },
+    "social": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["instagramHandle"],
+      "properties": {
+        "instagramHandle": {"type": "string", "pattern": "^[a-z0-9._]{1,30}$", "description": "Without the @."}
+      }
+    },
+    "stores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["consumerAppName", "hostAppName"],
+      "properties": {
+        "consumerAppName": {"$ref": "#/$defs/label"},
+        "hostAppName": {"$ref": "#/$defs/label"}
+      }
+    },
+    "adminName": {"$ref": "#/$defs/label"},
+    "senders": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["emailDomain", "emailDisplayName", "whatsappDisplayName"],
+      "properties": {
+        "emailDomain": {"$ref": "#/$defs/hostname", "description": "Verified sending domain for transactional email."},
+        "emailDisplayName": {"$ref": "#/$defs/label"},
+        "whatsappDisplayName": {"$ref": "#/$defs/label", "description": "Must match the display name Meta approved for the WhatsApp sender."}
+      }
+    }
+  },
+  "$defs": {
+    "label": {"type": "string", "minLength": 1, "maxLength": 120},
+    "hostname": {"type": "string", "pattern": "^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z]{2,}$"},
+    "origin": {"type": "string", "pattern": "^https://(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z]{2,}$"},
+    "email": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._+-]*@[a-z0-9.-]+\\.[a-z]{2,}$"},
+    "optionalPhone": {"type": ["string", "null"], "pattern": "^\\+[1-9][0-9]{7,14}$"}
+  }
+}

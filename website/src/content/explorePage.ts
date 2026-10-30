@@ -1,10 +1,12 @@
+import {brand} from "./brand.ts";
+
 // Copy for the Website v2 Explore page and its city pages (CAT-261): plans and
 // organisers in one place, from the city's cityPlans read model.
 export const explorePageCopy = {
   eyebrow: "Explore {city}",
   title: "What’s on in {city}",
   lead: "Plans for the next two weeks, and the hosts who run them.",
-  soonTitle: "Catch is coming to {city}",
+  soonTitle: `${brand.name} is coming to {city}`,
   soonLead: "Hosts here are setting up their first plans. Here’s who’s joining, and what’s on in {liveCity} meanwhile.",
   search: {label: "Search plans and organisers", placeholder: "A plan, an organiser or a place", clear: "Clear {query}", close: "Close search"},
   view: {label: "Show", plans: "Plans", organisers: "Organisers"},
@@ -23,8 +25,8 @@ export const explorePageCopy = {
   unavailableBody: "Please try again in a moment. Your filters are kept.",
   liveCityAction: "See what’s on in {city}",
   meta: {
-    title: "What’s on in {city} | Catch",
+    title: `What’s on in {city} | ${brand.name}`,
     description: "Runs, dinners, games and nights out in {city} over the next two weeks, and the hosts who run them.",
-    twitterDescription: "What’s on in {city}: hosted plans on Catch.",
+    twitterDescription: `What’s on in {city}: hosted plans on ${brand.name}.`,
   },
 } as const;

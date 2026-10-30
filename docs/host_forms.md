@@ -1,6 +1,6 @@
 ---
 doc_id: host_forms_product_spec
-version: 1.4.0
+version: 1.4.1
 updated: 2026-10-30
 owner: host_tooling
 status: active
@@ -528,8 +528,14 @@ reference, never the credentials, and rejects cross-project references or
 (`catch.form-razorpay-partner/v1`), `clientId`, `clientSecret`, `mode` (`test` or
 `live`), and `credentialSecretId` (the pre-created merchant credential vault).
 Grant the Functions runtime access to the partner secret and add/access/disable
-version permissions on that vault. The runtime derives the callback and webhook
-URLs from `https://asia-south1-<project>.cloudfunctions.net`, using
+version permissions on that vault. `infra/firebase/form_payments.tf` creates
+both secrets (`FORM_RAZORPAY_PARTNER_CONFIG` and
+`FORM_RAZORPAY_MERCHANT_CREDENTIALS`) and these grants in dev and prod, and
+`infra/scripts/store_razorpay_partner_secret.sh <dev|prod>` stores the partner
+config and pins the version; see
+[`infrastructure_as_code.md`](infrastructure_as_code.md#forms-payment-secrets).
+The runtime derives the callback and webhook URLs from
+`https://asia-south1-<project>.cloudfunctions.net`, using
 `organizerFormPaymentOauthCallback` and `organizerFormPaymentWebhook` respectively.
 Register that exact callback in the partner application. The config loader
 limits credential caching to one minute and sanitizes load failures.

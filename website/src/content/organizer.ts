@@ -1,10 +1,12 @@
+import {brand} from "./brand.ts";
+
 export const organizerListingCopy = {
   badges: {
     crawledUnclaimed: {compact: "Unclaimed", label: "Unclaimed listing"},
     sourceBacked: {compact: "Source-backed", label: "Source-backed listing"},
     claimPending: {compact: "In review", label: "Claim under review"},
     claimedUnverified: {compact: "Claimed", label: "Claimed"},
-    firstParty: {compact: "Catch", label: "Catch organizer"},
+    firstParty: {compact: brand.name, label: `${brand.name} organizer`},
     ownerVerified: {compact: "Verified", label: "Owner verified"},
     suppressed: {compact: "Unavailable", label: "Listing unavailable"},
     unknown: {compact: "Unknown", label: "Status unavailable"},
@@ -16,7 +18,7 @@ export const organizerListingCopy = {
     runtimeUnavailable: "Claim submission needs the website Firebase/App Check config.",
     introEyebrow: "For organisers",
     introTitle: "Help guests find the right details.",
-    introBody: "Catch builds unclaimed profiles from public sources. The organiser can claim this page to manage what appears here.",
+    introBody: `${brand.name} builds unclaimed profiles from public sources. The organiser can claim this page to manage what appears here.`,
   },
   detail: {
     aboutTitle: (name: string) => `About ${name}`,

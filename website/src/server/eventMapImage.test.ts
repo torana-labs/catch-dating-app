@@ -12,6 +12,7 @@ import {
   type EventMapDependencies,
 } from "./eventMapImage";
 import {eventMapImagePath, eventMapsAvailable, eventMapVersion} from "./eventMapLink";
+import {brand} from "@catch/brand";
 
 afterEach(() => {forgetEventMaps(); vi.clearAllMocks();});
 
@@ -21,7 +22,7 @@ const signingSecret = Buffer.from("fake-signing-secret").toString("base64").repl
 const secrets: Record<string, string> = {CATCH_WEBSITE_MAPS_STATIC_KEY: "fake-api-key", CATCH_WEBSITE_MAPS_SIGNING_SECRET: signingSecret};
 const png = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
 const segments = ["events", "salt-air-15k-training", "map.png"];
-const request = (query = "") => new Request(`https://catchdates.com/maps/events/salt-air-15k-training/map.png${query}`);
+const request = (query = "") => new Request(`${brand.web.origin}/maps/events/salt-air-15k-training/map.png${query}`);
 
 /** The fake provider: records each Static API call and answers with a PNG. */
 function fakes(overrides: Partial<EventMapDependencies> = {}) {

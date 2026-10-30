@@ -20,6 +20,7 @@ import type {DemoBlueprint, DemoCapabilityReview, DemoDisposition,
 import type {DemoSetupPlanInput} from "../api/salesDemoManagement";
 import {useSalesDemoManagementController} from
   "../controllers/useSalesDemoManagementController";
+import {brand} from "@catch/brand";
 
 const reviewAreas = [
   ["questionTypes", "Question types"], ["branching", "Branching"],
@@ -61,7 +62,7 @@ function normalizedLines(values: string[]): string[] {
 function validOrigin(): string | null {
   try {
     const url = new URL(import.meta.env.VITE_ADMIN_PUBLIC_SITE_ORIGIN ??
-      "https://catchdates.com");
+      brand.web.origin);
     if (!["http:", "https:"].includes(url.protocol) || url.username ||
         url.password || url.pathname !== "/" || url.search || url.hash) {
       return null;

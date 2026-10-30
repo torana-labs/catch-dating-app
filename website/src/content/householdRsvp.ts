@@ -1,3 +1,5 @@
+import {brand} from "./brand.ts";
+
 /** Deterministic browser/test fixture; never selects a live program or token. */
 export const householdRsvpViewFixture = {
   programId: "fixture-program",
@@ -78,7 +80,7 @@ export const householdRsvpViewFixture = {
 };
 
 export const householdRsvpCopy = {
-  brand: "Catch home", brandWord: "catch", kicker: "You're invited",
+  brand: `${brand.name} home`, brandWord: "catch", kicker: "You're invited",
   loadingTitle: "Getting your invitation",
   loading: "Loading your household's invitation…",
   unavailableTitle: "This invitation link is unavailable",

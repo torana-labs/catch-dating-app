@@ -15,6 +15,7 @@ import {
 import {hostConsentKey} from "./consentPolicy";
 import {drainWithdrawnHostAttribution, expireHostAttribution,
   withdrawHostAttribution} from "./attribution";
+import {BRAND} from "../shared/generated/brand";
 
 // Activation is a separate reviewed source change after end-to-end acceptance.
 export const hostServerMeasurementEnabled = false;
@@ -29,7 +30,7 @@ export function hostConsentAllowedOrigin(
     `https://${projectId}.web.app`,
     `https://${projectId}.firebaseapp.com`,
     ...(projectId === "catch-dating-app-64e51" ?
-      ["https://catchdates.com", "https://www.catchdates.com"] : []),
+      [BRAND.web.origin, BRAND.web.wwwOrigin] : []),
   ]);
   return allowed.has(origin) ? origin : null;
 }

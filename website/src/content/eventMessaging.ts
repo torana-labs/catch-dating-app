@@ -1,8 +1,10 @@
+import {brand} from "./brand.ts";
+
 export const eventMessagingCopy = {
   explanation: "Get joining instructions and event changes by SMS. WhatsApp, RCS and marketing preferences are separate.",
   earlierTitle: "Earlier SMS permissions",
   earlierExplanation: "This permission uses an earlier SMS sender. Turning it off stops that sender’s texts for this event.",
-  senderName: "Catch",
+  senderName: brand.name,
   senderUnavailable: "Sender details unavailable",
   manageEarlier: "Manage earlier senders",
   previousSender: "Previous sender",
@@ -15,7 +17,7 @@ export const eventMessagingCopy = {
     notAdmitted: "Your place on the guest list needs to be confirmed before you can turn on updates.",
     verifyPhone: "A matching verified phone is required to turn on updates. You can still turn off an existing permission.",
   },
-  withdrawalScope: "Turn off Catch text updates for this event. Your registration and event access will stay the same.",
+  withdrawalScope: `Turn off ${brand.name} text updates for this event. Your registration and event access will stay the same.`,
   withdrawalSaved: "Text updates for this event are off.",
   withdrawalChanged: "Text updates are currently on. Your preference changed elsewhere; tap again if you want to turn them off.",
   title: "Event text updates",

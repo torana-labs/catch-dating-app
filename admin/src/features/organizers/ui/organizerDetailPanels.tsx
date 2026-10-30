@@ -92,9 +92,10 @@ import {
 } from "../controllers/organizerPublishingHelpers";
 
 import {organizerLinksPanels} from "./organizerLinksEditor";
+import {brand} from "@catch/brand";
 
 const {OrganizerLinksEditor} = organizerLinksPanels;
-const defaultPublicSiteOrigin = "https://catchdates.com";
+const defaultPublicSiteOrigin = brand.web.origin;
 const publicSiteOrigin = String(
   import.meta.env.VITE_ADMIN_PUBLIC_SITE_ORIGIN ?? defaultPublicSiteOrigin
 ).replace(/\/+$/u, "");

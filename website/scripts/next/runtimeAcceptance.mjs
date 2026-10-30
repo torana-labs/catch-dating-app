@@ -8,6 +8,7 @@ import {organizerFixture} from "./organizerFixture.mjs";
 import {sharedCachePage} from "./deployedSmoke.mjs";
 import {PUBLIC_PAGE_CACHE_CONTROL} from "../../src/app/next/publicPageCache.ts";
 import {explorePageCopy} from "../../src/content/explorePage.ts";
+import {brand} from "@catch/brand";
 
 // Writes are hard-bound to the task's isolated emulator; never a live project.
 if (process.env.FIRESTORE_EMULATOR_HOST !== "127.0.0.1:8765") throw new Error("Isolated emulator required");
@@ -85,8 +86,8 @@ try {
     const {response, text} = await check(`/${family}/private-proof-token/?grant=private-proof-grant`, 200);
     assert(!text.includes("private-proof-token") && !text.includes("private-proof-grant") && !text.includes("self.__next_f"));
     assert.match(response.headers.get("x-robots-tag"), /noindex/);
-    assert(text.includes(`rel="canonical" href="https://catchdates.com/${family}/"`), `Missing generic ${family} canonical`);
-    assert(text.includes('property="og:image" content="https://catchdates.com/assets/og/') && !text.includes("catchdates.com/og/"), `${family} must keep a static card`);
+    assert(text.includes(`rel="canonical" href="${brand.web.origin}/${family}/"`), `Missing generic ${family} canonical`);
+    assert(text.includes(`property="og:image" content="${brand.web.origin}/assets/og/`) && !text.includes(`${brand.web.domain}/og/`), `${family} must keep a static card`);
   }
   await check("/offer/?grant=private-proof-grant", 200);
   for (const asset of ["/form-embed-resize.js", "/organizer-tracking-runtime.js"]) {

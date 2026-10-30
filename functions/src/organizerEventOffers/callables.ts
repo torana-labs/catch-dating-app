@@ -54,6 +54,7 @@ import {validateConfigureEventOfferPreferencesCallablePayload} from
   "../shared/generated/validators/configureEventOfferPreferencesInput";
 import {validateConfigureEventOfferPreferencesCallableResponse} from
   "../shared/generated/validators/configureEventOfferPreferencesOutput";
+import {BRAND} from "../shared/generated/brand";
 
 
 export interface OfferCallableDependencies {
@@ -73,7 +74,7 @@ const defaultDeps: OfferCallableDependencies = {
         offerId: input.offerId, responseId: input.responseId},
       expectedOfferGeneration: input.expectedOfferGeneration,
       expectedOfferRevision: input.expectedOfferRevision});
-    return `https://catchdates.com/offer#${invitation.token}`;
+    return `${BRAND.web.origin}/offer#${invitation.token}`;
   },
 };
 
