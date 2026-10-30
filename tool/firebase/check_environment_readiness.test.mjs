@@ -307,6 +307,23 @@ test("Instagram claim webhook requires its three secrets", () => {
   }
 });
 
+test("Instagram token renewal needs only the token it renews", () => {
+  for (const environment of ["dev", "staging", "prod"]) {
+    const requirements = selectReadinessRequirements({
+      manifest, environment,
+      targets: ["functions:refreshInstagramAccessToken"], capabilities: [],
+    });
+    assert.deepEqual(requirements.map((entry) => entry.name),
+      ["CATCH_INSTAGRAM_ACCESS_TOKEN"]);
+  }
+  // The webhook and the renewal read recorded versions at runtime.
+  const reader = manifest.directReaders.find((entry) =>
+    entry.id === "functions.reference.instagram-access-token");
+  assert.deepEqual(reader.consumers,
+    ["instagramClaimWebhook", "refreshInstagramAccessToken"]);
+  assert.equal(reader.binding.kind, "record");
+});
+
 test("unknown selectors fail closed while exported no-prerequisite targets remain valid", () => {
   const functionTargets = new Set([
     "functions:createEvent",
