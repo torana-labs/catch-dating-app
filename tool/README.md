@@ -1057,6 +1057,14 @@ bash tool/git/bootstrap_worktree.sh --target flutter
 # Explicit --target all only when all three families are required.
 ```
 
+Bootstrap installs with whatever `node` is on PATH. Cloud agent images can ship
+a different major (Claude Code cloud sessions have Node 22), so the cloud
+environment's setup script should run `bash tool/ci/install_pinned_node.sh`
+from the repository first. It installs the latest release of the
+`tool/ci/toolchain.env` `NODE_VERSION` major, verified against nodejs.org's
+`SHASUMS256.txt`, into `~/.local/bin`, does nothing when that major is already
+active, and fails if another Node still comes first on PATH.
+
 The repo-managed hook at `tool/git/hooks/pre-commit` is installed per clone with
 `git config core.hooksPath tool/git/hooks`. Its Node guard consumes
 `component_graph.json#compileCodegen`, regenerates staged localization inputs,
