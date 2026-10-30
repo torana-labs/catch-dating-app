@@ -38,11 +38,14 @@ export async function readBounded(query: PublicQuery, bound: number): Promise<re
   return snapshot.docs;
 }
 
-export async function withinReadDeadline<T>(read: Promise<T>): Promise<T> {
+export const PUBLIC_READ_DEADLINE_MS = 8_000;
+
+export async function withinReadDeadline<T>(read: Promise<T>, milliseconds = PUBLIC_READ_DEADLINE_MS,
+  code = "PUBLIC_READ_TIMEOUT"): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     return await Promise.race([read, new Promise<never>((_, reject) => {
-      timer = setTimeout(() => reject(new Error("PUBLIC_READ_TIMEOUT")), 8_000);
+      timer = setTimeout(() => reject(new Error(code)), milliseconds);
     })]);
   } finally {clearTimeout(timer);}
 }
