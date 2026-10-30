@@ -49,6 +49,12 @@ jobs:
           release="$(jq -er .sourceSha build/next-promote/authorization.json)"
           [[ "$release" =~ ^[a-f0-9]{40}$ ]]
           echo "RELEASE_SHA=$release" >> "$GITHUB_ENV"
+          # The smoke checks run the release's own deployedSmoke.mjs: its routes
+          # and copy are what that source serves and what its preview passed.
+          # Main's copy of the script describes main's routes, not the release's.
+          git worktree add --detach "$RUNNER_TEMP/release-source" "$release"
+          test "$(git -C "$RUNNER_TEMP/release-source" rev-parse HEAD)" = "$release"
+          echo "RELEASE_SOURCE=$RUNNER_TEMP/release-source" >> "$GITHUB_ENV"
       - name: Install the pinned Hosting client before authentication
         env:
           FIREBASE_TOOLS_VERSION: ${{ steps.toolchain.outputs.firebase-tools-version }}
@@ -116,7 +122,7 @@ jobs:
             --only marketing --config firebase.production.json --non-interactive --json > ../../next-promote/candidate.json
           node "$GITHUB_WORKSPACE/website/scripts/next/channelState.mjs" record next-release catch-website-next ../../next-promote/candidate-channel.json
           url="$(jq -er .url ../../next-promote/candidate-channel.json)"
-          node "$GITHUB_WORKSPACE/website/scripts/next/deployedSmoke.mjs" "$url" > ../../next-promote/candidate-checks.json
+          node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" "$url" > ../../next-promote/candidate-checks.json
       - name: Promote only the exact tested Hosting version
         run: |
           set -euo pipefail
@@ -128,7 +134,7 @@ jobs:
           firebase hosting:clone "catch-dating-app-64e51@$version" catch-dating-app-64e51:live \
             --project catch-dating-app-64e51 --non-interactive --json > build/next-promote/promotion.json
           EXPECTED_HOSTING_VERSION="$version" node website/scripts/next/hostingState.mjs verify-next
-          node website/scripts/next/deployedSmoke.mjs https://catchdates.com > build/next-promote/live-checks.json
+          node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" https://catchdates.com > build/next-promote/live-checks.json
       - name: Record the released commit
         run: node website/scripts/next/promoteRelease.mjs record
       - name: Retain exact release and rollback identities

@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.110.0
-updated: 2026-10-29
+version: 1.111.0
+updated: 2026-10-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -239,11 +239,12 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `reviewOrganizerApplication` | Callable | Host Application detail review actions | Atomic application status/note/reviewer update and, on approval, create-or-link organizer contact with source origin and CRM projection | Approval reuses a unique active contact or creates an unverified organizer-only contact; conflicting endpoint matches fail without a partial approval. Exact retries are idempotent. Generic form applications require their current submitted source response; legacy native applications require their exact participant grant. No verified identity, messaging permission or event booking is created. |
 | `requestOrganizerClaim` / `adminDecideOrganizerClaim` | Callable | Website claim flow / admin claim queue | `organizerClaimRequests`, canonical organizer ownership/claim fields, team membership, notifications, legacy shadows | Claim submission never grants access; role-gated admin decision owns transfer. |
 | `getOrganizerClaimVerificationOptions` / `startOrganizerClaimVerification` | Callable | Website claim page | Reads the organizer listing; writes `organizerClaimVerifications/{attemptId}` and reserves `organizerClaimInstagramCodes/{code}` | Signed-in accounts with a name and verified phone only. Shows a 30-minute six-digit code bound to one listing, account and method. Hidden until `CATCH_INSTAGRAM_CLAIMS_ENABLED` is on. Grants nothing by itself. |
-| `instagramClaimWebhook` | HTTPS (Meta webhook) | Instagram direct messages to Catch's account | `organizerClaimInstagramMessages/{messageKey}` receipts, the attempt, then the shared claim approval (`organizerClaimRequests`, organizer ownership, team membership, notification) | Dormant: deploys skip it until the Meta app exists. Verify-token handshake on GET. On POST, an `X-Hub-Signature-256` check, one receipt per message id and a per-sender limit. The Graph API username must match the listing's handle. Replies in the thread. |
+| `instagramClaimWebhook` | HTTPS (Meta webhook) | Instagram direct messages to Catch's account | `organizerClaimInstagramMessages/{messageKey}` receipts, the attempt, then the shared claim approval (`organizerClaimRequests`, organizer ownership, team membership, notification) | Answers only in the environment that names Catch's account id (prod); elsewhere it returns 503. Verify-token handshake on GET. On POST, an `X-Hub-Signature-256` check, one receipt per message id and a per-sender limit. The Graph API username must match the listing's handle. Replies in the thread. |
 | `createPublicOrganizerReview` / `listPublicOrganizerReviews` | Callable | Public website listing | `reviews/{reviewId}` with `organizerId` and compatibility `clubId` | Public review scope is bound to a published canonical organizer route. |
 | `adminGetOrganizerDetails` / `adminListOrganizerDetails` / `adminUpdateOrganizerDetails` | Callable | React admin Organizers workspace | canonical organizer read/update projections plus audited legacy shadow | Organizer-named admin wire contract; internal `AdminClub*` adapters are transitional only. |
 | `adminReviewEventMessagingBudget` | Admin callable | React Finance workspace and guarded Admin CLI | Read-only transaction over the exact event runtime, sender, current channel budget scopes and deterministic current decision | Restricted to Admin Owner or Finance. Returns only the validated setup review and bounded decision summary. It exposes no credential, private RCS agent id or guest roster, writes only an admin audit entry, and grants neither spending nor dispatch authority. |
-| `managePaymentRoutingPolicy` | Admin callable | Finance/Admin Owner | `paymentRoutingPolicies/{policyId}`, `adminAuditLogs/{id}` | Read or expected-revision replacement of independent form-fee/event-admission app defaults and organizer overrides. Exact latest-command replay; no credentials, provider calls, account eligibility or checkout activation. |
+| `managePaymentRoutingPolicy` | Admin callable | Finance/Admin Owner | `paymentRoutingPolicies/{policyId}`, `adminAuditLogs/{id}` | Read or expected-revision replacement of independent form-fee, event-admission and host-membership app defaults and organizer overrides; the route is each purpose's money flow. An omitted `hostMembership` keeps the stored one. Exact latest-command replay; no credentials, provider calls, account eligibility or checkout activation. |
+| `manageCommercialTerms` | Admin callable | Finance/Admin Owner | `commercialTerms/{termsId}`, `commercialTermsRevisions/{revisionId}`, `adminAuditLogs/{id}` | Read or expected-revision replacement of the complete platform commercial terms or one organizer's sparse override, with a required reason. Each write appends an immutable revision and audit entry in the same transaction. Exact latest-command replay. Changes only what new payments freeze; no provider calls or checkout activation. |
 | `adminDecideEventMessagingBudget` | Admin callable | React Finance workspace and guarded Admin CLI | `eventMessagingBudgetDecisions/{decisionId}`, immutable `eventMessagingBudgetDecisionReceipts/{receiptId}`, `adminAuditLogs/{id}`; transactionally reads the event runtime, sender and current channel budget scopes | Restricted to Admin Owner or Finance. Records approve, hold or reject with request-id replay, expected revision and current runtime/sender/budget-source hashes. Approval validates currency, existing charges, service horizon and applicable route selection. Both the stored document and response grant no spending authority, and no channel budget or provider is changed. |
 | `adminApplyEventMessagingBudget` | Admin callable | React Finance workspace and guarded Admin CLI | Both exact channel budget documents, immutable `eventMessagingBudgetApplicationReceipts/{receiptId}`, `adminAuditLogs/{id}`; transactionally rereads the approved decision, runtime, sender and budgets | Restricted to Admin Owner or Finance. Consumes one exact current approved revision, rejects changed setup or charges, preserves conservative charges, advances both budget revisions, and binds the current RCS agent privately. Both ceilings remain paused, so no spending, provider call, outbox, dispatch, runtime configuration or worker activation occurs. |
 | `adminTakedownExternalEvent` | Callable | React Events external-supply workspace | `externalEvents/{eventId}`, `externalEventPublicationReceipts/{receiptId}` | Dry-run/apply takedown; preserves the record and attribution, records takedown metadata, and is idempotent. |
@@ -449,24 +450,43 @@ reads/writes; grants do not publish a profile or disclose private endpoints.
 Paid host memberships ([spec](plans/host_memberships_spec.md)) are entirely
 server-owned; clients write nothing.
 
-- `manageHostMembershipProgram` (manager) snapshots the organizer owner's ready
-  Route account and requires `feeBasisPoints.hostMembership` in the pinned
-  platform config before enabling. Billing pause/resume only records intent;
-  `processHostMembershipBillingPause` pages through members with the provider.
+- The organizer's money flow is the `hostMembership` payment route. The
+  owner's chosen default, `hostCollected` (`razorpayOAuth`, set as the app
+  route), runs plans and subscriptions on the organizer's own Razorpay account
+  through its OAuth connection. With no route, memberships are unavailable.
+  `platformSplit` (`razorpayRoute`) keeps the original Route split and is off
+  unless selected.
+- `manageHostMembershipProgram` (manager) reports the effective mode, account
+  readiness, commercial terms and the first unavailable reason. Enabling
+  `hostCollected` probes Subscriptions on the organizer's account, registers a
+  per-connection membership webhook there, and snapshots the binding
+  (`moneyFlow`, merchant account, connection id, mode, webhook id) on the
+  program. Billing pause/resume only records intent;
+  `processHostMembershipBillingPause` pages through members with the
+  provider for each membership's own binding.
 - `manageHostMembershipPlans` (manager) owns `hostMembershipPlans`; publishing
-  creates one immutable Razorpay plan per interval and price revision.
-- `manageHostMembershipCheckout` (member) reserves cap capacity with an open
-  checkout, creates the Razorpay subscription and returns its hosted
-  authorization link; `refresh` pulls provider state.
-- `hostMembershipRazorpayWebhook` verifies the HMAC, account, project and
-  Catch notes, writes a create-once receipt and is, with checkout refresh,
+  creates one immutable Razorpay plan per interval and price revision on the
+  bound account, recording that account on the price.
+- `manageHostMembershipCheckout` (member) rechecks the mode, connection,
+  commercial terms and price account in its transaction, reserves cap
+  capacity with an open checkout bound to the program's account, creates the
+  subscription there and returns its hosted authorization link; `refresh`
+  pulls provider state from the same account.
+- `hostMembershipRazorpayWebhook` verifies the HMAC with the delivering
+  account's secret (the connection's for a merchant webhook, which carries
+  `connectionId`; the platform's otherwise), the account, project and Catch
+  notes, writes a create-once receipt and is, with checkout refresh,
   self-serve and billing pause, the only path into
   `membershipStore.applySubscriptionSnapshot` — the single writer of
-  `hostMemberships` and member counters. Foreign or unknown payloads write
+  `hostMemberships` and member counters. A snapshot applies only to a
+  checkout bound to the delivering account. Foreign or unknown payloads write
   nothing.
 - Each `subscription.charged` payment is recorded in `hostMembershipCharges`
-  and split with a payment-level Route transfer under a lease;
-  `reconcileHostMembershipCharges` retries with read-before-resend recovery.
+  with its frozen commercial terms. `hostCollected` charges deduct nothing
+  and transfer nothing; `platformSplit` charges are split with a payment-level
+  Route transfer under a lease, and `reconcileHostMembershipCharges` retries
+  with read-before-resend recovery. `listHostMembershipChargesForStatement`
+  is the commission statement's membership source.
 - `manageEventMembershipRules` (manager) owns `eventMembershipRules`, outside
   `eventPolicy`. `getEventViewerState`, `signUpForFreeEvent` and
   `managePublicEventCheckout` evaluate it through

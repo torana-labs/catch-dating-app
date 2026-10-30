@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_commercial_terms_payload.schema.json",
+  "title": "ManageCommercialTermsCallablePayload",
+  "description": "Finance/Admin Owner read or full replacement of the platform commercial terms (organizerId null) or one organizer's sparse override. A write names the revision it reviewed and a reason for the audit trail.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Finance, Admin Owner)",
+  "required": ["action", "organizerId", "expectedRevision", "terms", "reason"],
+  "properties": {
+    "action": {"enum": ["read", "replace"]},
+    "organizerId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+    "expectedRevision": {"type": ["integer", "null"], "minimum": 0},
+    "terms": {"anyOf": [{"$ref": "../shared/commercial_terms.schema.json#/definitions/terms"}, {"$ref": "../shared/commercial_terms.schema.json#/definitions/termsOverride"}, {"type": "null"}]},
+    "reason": {"type": ["string", "null"], "minLength": 3, "maxLength": 500}
+  }
+}

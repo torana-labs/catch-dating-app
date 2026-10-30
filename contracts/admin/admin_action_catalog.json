@@ -1431,7 +1431,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/hosts",
+      "guiPath": "/intake/organizers",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -1459,7 +1459,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/hosts",
+      "guiPath": "/intake/organizers",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [

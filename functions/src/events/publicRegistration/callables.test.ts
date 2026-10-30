@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type {CallableRequest} from "firebase-functions/v2/https";
+import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
 import {managePublicEventCheckoutHandler as handle} from "./callables";
 import {processorFixture} from "./processorTestFixture";
 import {uid, phone, eventId, now} from "./testFixture";
@@ -159,4 +159,53 @@ test("definite order rejection promptly frees capacity for a new attempt",
     assert.equal(next.payment?.status, "checkoutReady");
     assert.equal(h.calls.orders, 2);
     assert.equal(h.store.get(`eventSeatLedgers/${eventId}`)?.checkoutHeld, 1);
+  });
+
+test("an organizer without a ready payment account cannot be quoted",
+  async () => {
+    const h = await processorFixture();
+    let readyChecks = 0;
+    const deps = {...h.deps, collectionReady: async (input: {
+      organizerId: string;
+    }) => {
+      readyChecks++;
+      assert.equal(typeof input.organizerId, "string");
+      return false;
+    }};
+    await assert.rejects(handle(request({action: "quote", eventId}), deps),
+      (error: {code?: string; details?: unknown}) => {
+        assert.equal(error.code, "failed-precondition");
+        assert.deepEqual(error.details, {reason: "organizerPaymentsNotReady"});
+        return true;
+      });
+    assert.equal(readyChecks, 1);
+    assert.equal(h.calls.routes, 0);
+    assert.equal(h.calls.orders, 0);
+  });
+
+test("a routing refusal at prepare reports the same reason, without an order",
+  async () => {
+    const h = await ready();
+    const deps = {...h.deps, prepareRouting: async () => {
+      throw new HttpsError("failed-precondition",
+        "The selected payment collection route is not ready.");
+    }};
+    await assert.rejects(handle(request(h.prepare), deps),
+      (error: {code?: string; details?: unknown}) => {
+        assert.equal(error.code, "failed-precondition");
+        assert.deepEqual(error.details, {reason: "organizerPaymentsNotReady"});
+        return true;
+      });
+    assert.equal(h.calls.orders, 0);
+    assert.equal(h.calls.executions, 0);
+    // A routing change mid-review is not a readiness failure.
+    const changed = {...h.deps, prepareRouting: async () => {
+      throw new HttpsError("aborted", "Payment routing changed.");
+    }};
+    await assert.rejects(handle(request(h.prepare), changed),
+      (error: {code?: string; details?: unknown}) => {
+        assert.equal(error.code, "aborted");
+        assert.equal(error.details, undefined);
+        return true;
+      });
   });

@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/chats/presentation/inbox/chats_search_header_controller.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

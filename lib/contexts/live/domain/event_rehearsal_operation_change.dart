@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operations.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart';
 
 /// One immutable Host decision against an exact rehearsal projection.
 sealed class RehearsalOperationChange {

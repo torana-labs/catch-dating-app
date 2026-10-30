@@ -22,10 +22,10 @@ export const productionProbeContracts = [
     markers: ["Catch reviews each pilot application"],
   },
   {
+    // The directory is Explore's organisers view (CAT-261).
     path: "/organizers/",
-    title: "Organisers, clubs and communities | Catch",
-    canonicalPath: "/organizers/",
-    markers: [],
+    status: 301,
+    location: "/explore/?show=organisers",
   },
   {
     path: "/f/__catch_public_form_route_probe__/",
@@ -91,12 +91,21 @@ export async function probePage({baseUrl, contract, fetchImpl, timeoutMs}) {
       signal: controller.signal,
     });
     const html = await response.text();
-    const expectedCanonical = `${baseUrl}${contract.canonicalPath}`;
+    const expectedStatus = contract.status ?? 200;
     const findings = [];
 
-    if (response.status !== 200) {
-      findings.push(`expected HTTP 200, received ${response.status}`);
+    if (response.status !== expectedStatus) {
+      findings.push(`expected HTTP ${expectedStatus}, received ${response.status}`);
     }
+    if (contract.location) {
+      const expectedLocation = `${baseUrl}${contract.location}`;
+      const location = response.headers.get("location");
+      if (!location || new URL(location, baseUrl).href !== expectedLocation) {
+        findings.push(`expected redirect to ${expectedLocation}, received ${location ?? "none"}`);
+      }
+      return {path: contract.path, status: response.status, durationMs: null, ok: findings.length === 0, findings};
+    }
+    const expectedCanonical = `${baseUrl}${contract.canonicalPath}`;
     if (!html.includes(`<title>${contract.title}</title>`)) {
       findings.push(`missing title: ${contract.title}`);
     }

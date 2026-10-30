@@ -99,6 +99,23 @@ test("production workflow preserves credentials boundary, tested bytes, shared l
   }
 });
 
+test("promotion smoke-checks the release with the release's own routes and copy", () => {
+  // Run 41025078900 checked a pre-#972 release against main's Explore copy.
+  const workflow = fs.readFileSync(new URL("../../../.github/workflows/website-next-promote.yml", import.meta.url), "utf8");
+  const checkout = workflow.indexOf('git worktree add --detach "$RUNNER_TEMP/release-source" "$release"');
+  assert.ok(checkout > workflow.indexOf('echo "RELEASE_SHA=$release"'), "the release source is the authorized preview's");
+  assert.ok(checkout < workflow.indexOf("google-github-actions/auth"), "the release source is checked out before credentials");
+  assert.match(workflow, /test "\$\(git -C "\$RUNNER_TEMP\/release-source" rev-parse HEAD\)" = "\$release"/u);
+  const smokes = workflow.split("\n").filter(line => line.includes("deployedSmoke.mjs") && !line.trim().startsWith("#"));
+  assert.deepEqual(smokes.map(line => line.trim()), [
+    'node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" "$url" > ../../next-promote/candidate-checks.json',
+    'node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" https://catchdates.com > build/next-promote/live-checks.json',
+  ]);
+  // The preview checks the commit it runs on, so its checkout is the release.
+  const previewWorkflow = fs.readFileSync(new URL("../../../.github/workflows/website-next-preview.yml", import.meta.url), "utf8");
+  assert.match(previewWorkflow, /node website\/scripts\/next\/deployedSmoke\.mjs "\$url"/u);
+});
+
 test("production target cannot replace an unrelated or secret-bearing service", () => {
   assertProductionTarget([]);
   const service = {metadata: {name: production.service, labels: {"catch-surface": "website"}}, spec: {template: {spec: {serviceAccountName: preview.runtimeIdentity, containers: [{env: [{name: "CATCH_WEBSITE_STAGE", value: "production"}]}]}}}};
@@ -115,7 +132,7 @@ test("promotion releases the preview's own source and moves the live tag only fo
   assert.match(workflow, /release="\$\(jq -er \.sourceSha build\/next-promote\/authorization\.json\)"/u);
   assert.doesNotMatch(workflow, /CATCH_RELEASE_SHA=\$GITHUB_SHA|source-sha=\$GITHUB_SHA|process\.env\.GITHUB_SHA/u);
   assert.match(workflow, /CATCH_RELEASE_SHA=\$RELEASE_SHA/u);
-  assert.ok(workflow.indexOf("deployedSmoke.mjs https://catchdates.com") < workflow.indexOf("promoteRelease.mjs record"),
+  assert.ok(workflow.indexOf('deployedSmoke.mjs" https://catchdates.com') < workflow.indexOf("promoteRelease.mjs record"),
     "the tag moves only after the live checks pass");
   const live = "c".repeat(40);
   assert.deepEqual(releaseTagUpdate({existing: null, sourceSha, lineage: {sourceSha, liveSha: live}}),

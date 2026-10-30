@@ -154,6 +154,64 @@ export const managePaymentRoutingPolicyCallablePayloadSchema: Record<string, unk
           "type": "null"
         }
       ]
+    },
+    "hostMembership": {
+      "description": "Optional so older operator clients keep working: an omitted value keeps the stored membership route.",
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 } as const;

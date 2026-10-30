@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.44.0
+version: 0.46.0
 updated: 2026-10-30
 owner: web_platform
 status: active
@@ -193,6 +193,12 @@ the expected runtime service, region and pinned tag. Preview runs must pass the
 deployed public-route smoke check. Promotion records the production candidate
 version before smoke checks and rechecks it immediately before cloning that
 exact version; an absent, changed or unrelated release fails closed.
+Both promotion smoke checks, on the `next-release` channel and on live, run the
+released commit's own `deployedSmoke.mjs` from a worktree of that commit,
+checked out before credentials. Its routes and copy are what that source
+serves and what its preview passed; main's copy describes main's routes, which
+may have moved on (run 41025078900 failed checking a pre-#972 release against
+main's Explore). Main's checkout supplies every other promotion script.
 
 ### Release train
 
@@ -497,7 +503,8 @@ The public website reads Firestore only on the server, through these layers:
 
 | Route | Assembler | Reads |
 |---|---|---|
-| `/`, `/explore/`, `/organizers/`, `/claim/`, sitemap | `assemblePublicCatalog` | Published organizers, Catch events and external events, at most 400 each |
+| `/`, `/explore/`, city pages (`/mumbai/`) | `assembleHomeCatalog` (`website/src/server/homeCatalog.ts`) | One `cityPlans` document get per market city; a city without a valid document is built from one `assemblePublicCatalog` read |
+| `/claim/`, sitemap, `/api/public-catalog` | `assemblePublicCatalog` | Published organizers, Catch events and external events, at most 400 each |
 | `/organizers/<slug>/` and legacy aliases | `assembleOrganizerDetailCatalog` | One `organizerPublicPage` read by `path` (a second by `legacyPaths` for an alias) |
 | `/events/<id>/` | `assembleEventDetailCatalog` | One `eventPublicPage` document get |
 
@@ -538,11 +545,41 @@ is not a valid document id, reads nothing further and returns 404.
 `proxy.ts` and the page each resolve the route once; React `cache` does not
 deduplicate between them. An organizer page view therefore makes two sets of
 bounded queries scoped to that organizer (eight each for the acceptance
-fixture), and a discovery page view still makes two full catalog reads. Because detail routes no longer read whole
-collections, a crossed catalog bound returns 503 only on `/`, `/explore/`,
-`/organizers/`, `/claim/` and the sitemap; organizer and event pages keep
-serving. `website/scripts/next/lifecycleAcceptance.mjs` and
+fixture). Home, Explore and the city pages read their `cityPlans` documents in
+the page only, once per view. Because detail routes no longer read whole
+collections, a crossed catalog bound fails `/claim/`, the sitemap and, for a
+city without a `cityPlans` document, home, Explore and that city page;
+organizer and event pages keep serving. `/organizers/` is a 301 to Explore's
+organisers view. `website/scripts/next/lifecycleAcceptance.mjs` and
 `failureAcceptance.mjs` exercise both behaviors against the isolated emulator.
+
+### Unavailable Public Reads
+
+A public page whose data cannot be read never reports success and never enters
+a shared cache:
+
+- Before any read, `publicReader()` checks that the reader's credentials
+  answer, within three seconds; the emulator needs none. Without credentials
+  Firestore retries each read for about eight seconds before failing, so this
+  check is what keeps an unreadable page fast. A missing
+  `CATCH_PUBLIC_FIRESTORE_PROJECT` fails the same way.
+- Organizer, event and claim pages fail in the proxy's preflight: a 503 with
+  `Cache-Control: private, no-store` and `Retry-After: 30`, before anything
+  renders. The sitemap and `/api/public-catalog` answer their own uncached 503.
+- Home, Explore and the city pages read in the page, within one eight-second
+  read deadline. When the chosen city cannot be read they render their own
+  unavailable message (`phase: "unavailable"`), and the page calls
+  `markPublicPageUnavailable()`. The response hook in `instrumentation.ts`
+  then sends that render as a 503 with `private, no-store` and
+  `Retry-After: 30` instead of the 200 that `PUBLIC_PAGE_CACHE_CONTROL` would
+  cache. Without the hook the render fails as Next's uncached 500.
+- A healthy render keeps `PUBLIC_PAGE_CACHE_CONTROL`.
+
+`website/scripts/next/containerSmoke.mjs` runs the release container with no
+credentials and requires these 503s, each page's unavailable message and an
+answer within five seconds. `website/scripts/next/deployedSmoke.mjs` rejects a
+200 discovery page that shows its unavailable message, and
+`website/scripts/probeProduction.mjs` expects 200 on healthy production pages.
 
 There is no server-side cross-request or process cache. Firebase Hosting's CDN
 keeps the rendered HTML of home, Explore, organiser and event pages for up to

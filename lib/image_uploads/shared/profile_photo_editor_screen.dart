@@ -7,12 +7,12 @@ import 'package:catch_dating_app/contexts/profiles/domain/image_upload_job.dart'
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/dialogs/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

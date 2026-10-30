@@ -8,10 +8,10 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operation_
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_settings_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_staff.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_staff_change.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

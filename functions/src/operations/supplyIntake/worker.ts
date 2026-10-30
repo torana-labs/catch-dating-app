@@ -1,5 +1,7 @@
 /* eslint-disable max-len */
 import type {Firestore} from "firebase-admin/firestore";
+import {logger} from "firebase-functions";
+import type {InstagramDiscoveryConfig} from "./instagramDiscovery";
 import {importShadowProjection, type ProjectionImportWriter} from "../projectionImporter";
 import {loadOrganizerInventory, type OrganizerInventory} from "./organizerInventory";
 import {
@@ -30,6 +32,10 @@ export interface SupplyIntakeWorkerDeps {
   projectionWriter: ProjectionImportWriter;
   /** Network transport for live page fetches; only tests replace it. */
   transport?: unknown;
+  /** Catch's Instagram account and token for Business Discovery, or null while it is off. */
+  instagramDiscovery?: () => Promise<InstagramDiscoveryConfig | null>;
+  /** Network transport for Business Discovery calls; only tests replace it. */
+  discoveryTransport?: unknown;
 }
 
 export type SupplyIntakeOutcome = "completed" | "failed" | "retry" | "busy" | "skipped";
@@ -72,9 +78,14 @@ export async function processSupplyIntakeRequest(deps: SupplyIntakeWorkerDeps, r
     // Read before any page fetch is reserved, so a failed read costs no budget.
     const inventory = await loadOrganizerInventory(deps.db, request, runtime.organizerReferenceFromDocument);
     const {source, settle} = await pageSourceFor(deps, policy);
+    const discovery = await instagramDiscovery(deps);
+    // Instagram profiles go to Business Discovery; every other URL to the
+    // page source.
+    const pageSource = discovery ? new runtime.InstagramDiscoveryPageSource({inner: source, policy, ...discovery,
+      clock: deps.now, ...(deps.discoveryTransport ? {transport: deps.discoveryTransport} : {})}) : source;
     let result;
     try {
-      result = await runSupplyIntake({request, pageSource: source, now: deps.now,
+      result = await runSupplyIntake({request, pageSource, now: deps.now,
         existingOrganizers: inventory?.organizers ?? null});
     } finally {
       await settle();
@@ -168,6 +179,20 @@ async function pageSourceFor(deps: SupplyIntakeWorkerDeps, policy: AcquisitionPo
       });
     },
   };
+}
+
+/**
+ * Discovery settings when this environment has them. An unreadable token
+ * leaves Instagram profiles unread, as before, rather than failing the
+ * request.
+ */
+async function instagramDiscovery(deps: SupplyIntakeWorkerDeps): Promise<InstagramDiscoveryConfig | null> {
+  try {
+    return await deps.instagramDiscovery?.() ?? null;
+  } catch (error) {
+    logger.warn("Instagram discovery unavailable.", {code: errorCode(error)});
+    return null;
+  }
 }
 
 /**

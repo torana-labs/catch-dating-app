@@ -3315,7 +3315,7 @@
         "storage.rules",
         "tool/firebase/check_rules_deployment_drift.test.mjs"
       ],
-      "description": "Compares normalized committed Firestore and Storage rules with every applicable active Firebase Rules release, skipping only when no read credential is available.",
+      "description": "Compares normalized committed Firestore and Storage rules with every applicable active Firebase Rules release, skipping only when no read credential is available or the only one is a Claude Code cloud session's proxy gcloud token.",
       "checks": [
         "node --check tool/firebase/check_rules_deployment_drift.mjs",
         "node --test tool/firebase/check_rules_deployment_drift.test.mjs",
@@ -3555,6 +3555,32 @@
         "bash tool/ci/check_toolchain_consistency.sh"
       ],
       "role": "generator"
+    },
+    {
+      "id": "env:pinned-node",
+      "category": "env",
+      "path": "tool/ci/install_pinned_node.sh",
+      "command": "bash tool/ci/install_pinned_node.sh",
+      "safety": "remote-read-local-writes-artifacts",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/install_pinned_node.test.mjs",
+        "tool/ci/toolchain.env"
+      ],
+      "description": "Installs the checksum-verified latest release of the tool/ci/toolchain.env NODE_VERSION major into ~/.local/bin when the node on PATH is another major, for cloud agent setup scripts.",
+      "checks": [
+        "bash -n tool/ci/install_pinned_node.sh",
+        "node --test tool/ci/install_pinned_node.test.mjs",
+        "bash tool/ci/install_pinned_node.sh --help"
+      ],
+      "role": "operator"
     },
     {
       "id": "platform:mobile-package-policy",

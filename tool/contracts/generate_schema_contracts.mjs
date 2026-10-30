@@ -344,6 +344,11 @@ const schemaSpecs = [
   {name: "OrganizerEventOfferPaymentDocument", source: "firestore/organizer_event_offer_payments.schema.json", typeOutput: "functions/src/shared/generated/organizerEventOfferPaymentDocument.ts"},
   {name: "OrganizerEventOfferRecipientDocument", source: "firestore/organizer_event_offer_recipients.schema.json", typeOutput: "functions/src/shared/generated/organizerEventOfferRecipientDocument.ts"},
   {name: "PaymentRoutingSnapshot", source: "embedded/payment_routing_snapshot.schema.json", typeOutput: "functions/src/shared/generated/paymentRoutingSnapshot.ts"},
+  {name: "CommercialTerms", source: "embedded/commercial_terms.schema.json", typeOutput: "functions/src/shared/generated/commercialTerms.ts"},
+  {name: "CommercialTermsOverride", source: "embedded/commercial_terms_override.schema.json", typeOutput: "functions/src/shared/generated/commercialTermsOverride.ts"},
+  {name: "CommercialTermsSnapshot", source: "embedded/commercial_terms_snapshot.schema.json", typeOutput: "functions/src/shared/generated/commercialTermsSnapshot.ts"},
+  {name: "ManageCommercialTermsCallablePayload", source: "callables/manage_commercial_terms_payload.schema.json", typeOutput: "functions/src/shared/generated/manageCommercialTermsCallablePayload.ts"},
+  {name: "ManageCommercialTermsCallableResponse", source: "callable_responses/manage_commercial_terms_response.schema.json", typeOutput: "functions/src/shared/generated/manageCommercialTermsCallableResponse.ts"},
   {name: "ManagePaymentRoutingPolicyCallablePayload", source: "callables/manage_payment_routing_policy_payload.schema.json", typeOutput: "functions/src/shared/generated/managePaymentRoutingPolicyCallablePayload.ts"},
   {name: "ManagePaymentRoutingPolicyCallableResponse", source: "callable_responses/manage_payment_routing_policy_response.schema.json", typeOutput: "functions/src/shared/generated/managePaymentRoutingPolicyCallableResponse.ts"},
   {"name": "ManageEventOfferCheckoutCallablePayload", "source": "callables/manage_event_offer_checkout_payload.schema.json", "typeOutput": "functions/src/shared/generated/manageEventOfferCheckoutCallablePayload.ts"},
@@ -1983,6 +1988,17 @@ const schemaSpecs = [
     name: "PaymentRoutingPolicyDocument",
     source: "firestore/payment_routing_policies.schema.json",
     typeOutput: "functions/src/shared/generated/paymentRoutingPolicyDocument.ts",
+  },
+  {
+    name: "CommercialTermsDocument",
+    source: "firestore/commercial_terms.schema.json",
+    typeOutput: "functions/src/shared/generated/commercialTermsDocument.ts",
+  },
+  {
+    name: "CommercialTermsRevisionDocument",
+    source: "firestore/commercial_terms_revisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/commercialTermsRevisionDocument.ts",
   },
   {
     name: "OrganizerFormPaymentDocument",
@@ -7001,7 +7017,7 @@ async function main() {
       variant.properties.payload?.properties?.[field]?.enum ?? [])
   ))];
   addTextOutput(
-    "lib/core/schema_contracts/generated/event_assistance_kinds.g.dart",
+    "lib/platform/schema_contracts/generated/event_assistance_kinds.g.dart",
     renderDartEventAssistanceCatalog({
       catalog: eventAssistanceCatalog,
       commandBindingCatalog: eventAssistanceCommandBindingCatalog,
@@ -7112,14 +7128,14 @@ async function main() {
     )
   );
   addTextOutput(
-    "lib/core/schema_contracts/generated/" +
+    "lib/platform/schema_contracts/generated/" +
       "event_success_moment_presentations.g.dart",
     renderDartEventSuccessMomentPresentations(
       eventSuccessMomentPresentationCatalog
     )
   );
   addTextOutput(
-    "lib/core/schema_contracts/generated/profile_schema_contracts.g.dart",
+    "lib/platform/schema_contracts/generated/profile_schema_contracts.g.dart",
     renderDartContracts({
       profileCatalog,
       personFieldCatalog,
@@ -7140,7 +7156,7 @@ async function main() {
     schemaMap: bundledSchemas,
   });
   addTextOutput(
-    "lib/core/schema_contracts/generated/schema_contracts.g.dart",
+    "lib/platform/schema_contracts/generated/schema_contracts.g.dart",
     dartSchemaContracts.text
   );
   for (const file of dartSchemaContracts.files) {
@@ -7148,7 +7164,7 @@ async function main() {
   }
 
   addTextOutput(
-    "lib/core/schema_contracts/generated/field_constraints.g.dart",
+    "lib/platform/schema_contracts/generated/field_constraints.g.dart",
     renderDartFieldConstraints({
       schemaSpecs,
       schemaMap: bundledSchemas,
@@ -7161,14 +7177,14 @@ async function main() {
     commonSchema: readContractJson("shared/profile_common.schema.json"),
   });
   addTextOutput(
-    "lib/core/schema_contracts/generated/callable_request_dtos.g.dart",
+    "lib/platform/schema_contracts/generated/callable_request_dtos.g.dart",
     dartCallableRequests.text
   );
   for (const file of dartCallableRequests.files) {
     addTextOutput(file.path, file.content);
   }
   addTextOutput(
-    "lib/core/schema_contracts/generated/INDEX.md",
+    "lib/platform/schema_contracts/generated/INDEX.md",
     renderGeneratedIndex({dartSchemaContracts, dartCallableRequests})
   );
   if (!checkOnly && dartCallableRequests.ungenerable.length > 0) {
@@ -7223,11 +7239,11 @@ export function publishSchemaOutputs({root, files, checkOnly}) {
   }
   if (!checkOnly) {
     fs.rmSync(
-      path.join(root, "lib/core/schema_contracts/generated/callables"),
+      path.join(root, "lib/platform/schema_contracts/generated/callables"),
       {recursive: true, force: true}
     );
     fs.rmSync(
-      path.join(root, "lib/core/schema_contracts/generated/schemas"),
+      path.join(root, "lib/platform/schema_contracts/generated/schemas"),
       {recursive: true, force: true}
     );
   }
@@ -9056,7 +9072,7 @@ const schemaUpdateUserProfileCallablePayloadSchema =
 `;
 }
 
-const DART_SCHEMA_OUTPUT_DIR = "lib/core/schema_contracts/generated/schemas";
+const DART_SCHEMA_OUTPUT_DIR = "lib/platform/schema_contracts/generated/schemas";
 
 function renderDartSchemaContracts({schemaMap}) {
   const files = [];
@@ -9477,12 +9493,12 @@ ${ungenerableRows}
 | \`functions/src/shared/generated/schemaPaths.ts\` | Generated storage/path constants for migrated logical paths. |
 | \`tool/contracts/generated/schema_contract_registry.mjs\` | Node-side schema registry for validation tooling. |
 | \`tool/contracts/generated/schema_contract_validators.mjs\` | Node-side Ajv validators for contract checks. |
-| \`lib/core/schema_contracts/generated/profile_schema_contracts.g.dart\` | Dart profile catalog and storage policy constants. |
-| \`lib/core/schema_contracts/generated/field_constraints.g.dart\` | UI-relevant constraints projected from patch and Firestore document schemas. |
-| \`lib/core/schema_contracts/generated/schema_contracts.g.dart\` | Dart schema contract barrel. |
-| \`lib/core/schema_contracts/generated/schemas/*.g.dart\` | One generated Dart JSON Schema constant file per schema, plus lookup registry files. |
-| \`lib/core/schema_contracts/generated/callable_request_dtos.g.dart\` | Generated Dart callable request and patch helper barrel. |
-| \`lib/core/schema_contracts/generated/callables/*.g.dart\` | One generated Dart callable request or patch helper file per schema-owned class. |
+| \`lib/platform/schema_contracts/generated/profile_schema_contracts.g.dart\` | Dart profile catalog and storage policy constants. |
+| \`lib/platform/schema_contracts/generated/field_constraints.g.dart\` | UI-relevant constraints projected from patch and Firestore document schemas. |
+| \`lib/platform/schema_contracts/generated/schema_contracts.g.dart\` | Dart schema contract barrel. |
+| \`lib/platform/schema_contracts/generated/schemas/*.g.dart\` | One generated Dart JSON Schema constant file per schema, plus lookup registry files. |
+| \`lib/platform/schema_contracts/generated/callable_request_dtos.g.dart\` | Generated Dart callable request and patch helper barrel. |
+| \`lib/platform/schema_contracts/generated/callables/*.g.dart\` | One generated Dart callable request or patch helper file per schema-owned class. |
 `;
 }
 
@@ -9519,7 +9535,7 @@ const DART_CALLABLE_REQUEST_SKIP = new Set([
 ]);
 
 const DART_CALLABLE_REQUEST_OUTPUT_DIR =
-  "lib/core/schema_contracts/generated/callables";
+  "lib/platform/schema_contracts/generated/callables";
 
 const DART_CALLABLE_FIELD_OVERRIDES = new Map([
   [
@@ -9690,7 +9706,7 @@ function renderDartCallableRequestClasses({schemaSpecs, schemaMap, commonSchema}
 // the corresponding JSON Schema by test/core/callable_dto_contracts_test.dart.
 // Patch helper classes are emitted for schemas with x-callable-shape: patch.
 // This file is a stable barrel; individual generated classes live under
-// lib/core/schema_contracts/generated/callables/.
+// lib/platform/schema_contracts/generated/callables/.
 //
 // Hand-written callable request/response helpers may still exist for schemas
 // that need custom normalization or response parsing beyond generated request
@@ -9707,7 +9723,7 @@ function dartCallableRequestOutputPath(className) {
 }
 
 function dartGeneratedExportPath(outputPath) {
-  return outputPath.replace("lib/core/schema_contracts/generated/", "");
+  return outputPath.replace("lib/platform/schema_contracts/generated/", "");
 }
 
 function renderDartCallableRequestClassFile({imports, schemaSource, body}) {
@@ -9715,7 +9731,7 @@ function renderDartCallableRequestClassFile({imports, schemaSource, body}) {
   const normalizedBody = body.trimEnd();
   return `${dartGeneratedHeader()}${importBlock ? `${importBlock}\n\n` : ""}
 // Typed callable request DTO emitted from ${schemaSource}.
-// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
 ${normalizedBody}
 `;
@@ -10549,6 +10565,6 @@ List<String> missingProfileFields(
   return [
     {path: "functions/src/shared/generated/profileRequirements.ts", content: ts},
     {path: "website/src/shared/contracts/generated/profileRequirements.ts", content: ts},
-    {path: "lib/core/schema_contracts/generated/profile_requirements.g.dart", content: dart},
+    {path: "lib/platform/schema_contracts/generated/profile_requirements.g.dart", content: dart},
   ];
 }

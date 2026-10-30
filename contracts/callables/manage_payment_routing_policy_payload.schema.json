@@ -9,6 +9,7 @@
     "organizerId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
     "expectedRevision": {"type": ["integer", "null"], "minimum": 0},
     "formFee": {"anyOf": [{"$ref": "../shared/payment_routing.schema.json#/definitions/selection"}, {"type": "null"}]},
-    "eventAdmission": {"anyOf": [{"$ref": "../shared/payment_routing.schema.json#/definitions/selection"}, {"type": "null"}]}
+    "eventAdmission": {"anyOf": [{"$ref": "../shared/payment_routing.schema.json#/definitions/selection"}, {"type": "null"}]},
+    "hostMembership": {"description": "Optional so older operator clients keep working: an omitted value keeps the stored membership route.", "anyOf": [{"$ref": "../shared/payment_routing.schema.json#/definitions/selection"}, {"type": "null"}]}
   }
 }

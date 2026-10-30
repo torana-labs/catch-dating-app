@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/profiles/domain/profile_validation.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingNameDobState {

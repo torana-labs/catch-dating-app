@@ -1,13 +1,13 @@
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/kernel/country_markets.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/platform/theme/activity_palette.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

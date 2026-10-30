@@ -6,6 +6,8 @@ import type {ManageHostMembershipProgramCallablePayload as Payload} from
   "../shared/generated/manageHostMembershipProgramCallablePayload";
 import type {ManageHostMembershipProgramCallableResponse as Response} from
   "../shared/generated/manageHostMembershipProgramCallableResponse";
+import {validateHostMembershipPlanDocument} from
+  "../shared/generated/validators/hostMembershipPlanDocument";
 import {validateManageHostMembershipProgramCallablePayload} from
   "../shared/generated/validators/manageHostMembershipProgramInput";
 import {validateManageHostMembershipProgramCallableResponse} from
@@ -17,32 +19,79 @@ import {
   defaultHostMembershipCallableDeps,
   type HostMembershipCallableDeps,
 } from "./callableDeps";
+import {HostMembershipProviderError} from "./billingProvider";
+import {maxPlansPerOrganizer} from "./entitlementReader";
 import {collections, readProgram} from "./membershipStore";
-import {hostMembershipFeeBasisPoints} from "./runtime";
-
-async function readiness(deps: HostMembershipCallableDeps,
-  organizerId: string) {
-  const db = deps.db();
-  const account = await deps.readyRouteAccount({db, organizerId})
-    .catch(() => null);
-  const config = await deps.config().catch(() => null);
-  let feeConfigured = false;
-  if (config) {
-    try {
-      hostMembershipFeeBasisPoints(config);
-      feeConfigured = true;
-    } catch {
-      feeConfigured = false;
-    }
-  }
-  return {account, config, feeConfigured};
-}
+import {
+  HostMembershipUnavailableError,
+  membershipReadiness,
+  membershipUnavailable,
+  type MembershipReadiness,
+} from "./paymentMode";
+import {ensureProviderPrices} from "./plans";
+import {
+  bindingOf,
+  providerFor,
+  sameBinding,
+  type MembershipPaymentBinding,
+} from "./runtime";
 
 function view(program: HostMembershipProgramDocument | null):
   Response["program"] {
   return program ? {state: program.state, provider: program.payment.provider,
     mode: program.payment.mode, billingPauseState: program.billingPause.state,
     memberCount: program.memberCount, revision: program.revision} : null;
+}
+
+/**
+ * Proves the account can run memberships before the program is enabled:
+ * hostCollected probes Subscriptions on the organizer's own Razorpay account
+ * and registers the membership webhook there.
+ */
+async function prepareBinding(deps: HostMembershipCallableDeps,
+  organizerId: string, readiness: MembershipReadiness):
+  Promise<HostMembershipProgramDocument["payment"]> {
+  if (readiness.reason || !readiness.binding) {
+    membershipUnavailable(readiness.reason ?? "providerUnavailable");
+  }
+  const binding = readiness.binding;
+  if (binding.moneyFlow === "platformSplit") return {...binding};
+  try {
+    const provider = await providerFor(deps, organizerId, binding);
+    if (await provider.probeSubscriptions() !== "enabled") {
+      membershipUnavailable("subscriptionsNotEnabled");
+    }
+    const {webhookId} = await provider.ensureMerchantWebhook({
+      url: deps.merchantWebhookUrl(binding.bindingId)});
+    return {...binding, webhookId};
+  } catch (error) {
+    if (error instanceof HostMembershipUnavailableError) throw error;
+    if (error instanceof HttpsError) {
+      // The connection's credential is unavailable or being refreshed.
+      membershipUnavailable("razorpayNeedsAttention");
+    }
+    if (error instanceof HostMembershipProviderError &&
+        error.httpStatus === 401) {
+      membershipUnavailable("razorpayNeedsAttention");
+    }
+    membershipUnavailable("providerUnavailable");
+  }
+}
+
+/** Provider prices follow the program onto a newly bound account. */
+async function moveProviderPrices(deps: HostMembershipCallableDeps,
+  organizerId: string): Promise<void> {
+  const plans = await deps.db().collection(collections.plans)
+    .where("organizerId", "==", organizerId)
+    .limit(maxPlansPerOrganizer).get();
+  for (const doc of plans.docs) {
+    const plan = doc.data();
+    if (!validateHostMembershipPlanDocument(plan) ||
+        plan.status !== "published") continue;
+    // Best effort: a failed price leaves that plan unavailable at checkout
+    // until the host publishes it again.
+    await ensureProviderPrices(deps, doc.id).catch(() => undefined);
+  }
 }
 
 /** Organizer managers read and control the paid membership program. */
@@ -58,10 +107,12 @@ export async function manageHostMembershipProgramHandler(
     maxRequests: 30, windowMs: 60 * 1000});
   await deps.requireManager({db, organizerId: data.organizerId,
     actorUid: uid});
-  const {account, config, feeConfigured} =
-    await readiness(deps, data.organizerId);
+  const readiness = await membershipReadiness(deps, data.organizerId);
+  const payment = data.action === "enable" ?
+    await prepareBinding(deps, data.organizerId, readiness) : null;
   const ref = db.collection(collections.programs).doc(data.organizerId);
   const nowMillis = deps.nowMillis();
+  let moved = false;
 
   let program: HostMembershipProgramDocument | null;
   if (data.action === "get") {
@@ -75,23 +126,21 @@ export async function manageHostMembershipProgramHandler(
       let next: HostMembershipProgramDocument;
       switch (data.action) {
       case "enable": {
-        if (!account || !config || !feeConfigured) {
-          throw new HttpsError("failed-precondition",
-            "Finish payout setup before selling memberships.");
-        }
-        const payment = {provider: "razorpay" as const,
-          providerAccountId: account.account.providerAccountId,
-          bindingId: account.bindingId, mode: config.mode};
+        const binding: MembershipPaymentBinding = bindingOf(payment!);
         if (current && current.memberCount > 0 &&
-            current.payment.providerAccountId !== payment.providerAccountId) {
+            !sameBinding(bindingOf(current.payment), binding)) {
+          // Existing subscriptions cannot move between Razorpay accounts.
           throw new HttpsError("failed-precondition",
-            "Your payout account changed while members are active. " +
+            "Your payment account changed while members are active. " +
             "Contact Catch support to move them.");
         }
-        next = current ? bump({...current, state: "enabled", payment}) : {
+        moved = !current || !sameBinding(bindingOf(current.payment), binding);
+        next = current ? bump({...current, state: "enabled",
+          payment: payment!}) : {
           schemaVersion: 1, organizerId: data.organizerId, state: "enabled",
-          payment, billingPause: {state: "active", requestedAtMillis: null,
-            requestedBy: null, processedCount: 0, cursor: null},
+          payment: payment!, billingPause: {state: "active",
+            requestedAtMillis: null, requestedBy: null, processedCount: 0,
+            cursor: null},
           memberCount: 0, revision: 1, createdAtMillis: nowMillis,
           updatedAtMillis: nowMillis};
         break;
@@ -123,9 +172,18 @@ export async function manageHostMembershipProgramHandler(
       return next;
     });
   }
+  if (moved) await moveProviderPrices(deps, data.organizerId);
+  // A program enabled on another binding than today's needs re-enabling
+  // before new members can join; existing members are unaffected.
+  const bindingCurrent = !program || !readiness.binding ||
+    sameBinding(bindingOf(program.payment), readiness.binding);
+  const unavailableReason = readiness.reason ??
+    (program?.state === "enabled" && !bindingCurrent ?
+      "razorpayNeedsAttention" : null);
   const response: Response = {organizerId: data.organizerId,
-    program: view(program), routeAccountReady: account !== null,
-    feeConfigured};
+    program: view(program), routeAccountReady: readiness.accountReady,
+    feeConfigured: readiness.termsConfigured,
+    paymentMode: readiness.moneyFlow, unavailableReason};
   if (!validateManageHostMembershipProgramCallableResponse(response)) {
     throw new HttpsError("internal", "Invalid membership program.");
   }

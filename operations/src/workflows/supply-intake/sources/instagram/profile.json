@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "sourceProfileId": "instagram",
+  "label": "Instagram",
+  "sourceTier": "structured_official_platform",
+  "status": "shadow",
+  "allowedUse": "Read a business or creator account's name, bio, website and recent captions through Meta's Business Discovery API, never by fetching instagram.com. Links in the bio and captions lead to the organizer's own pages.",
+  "acquisition": {
+    "networkEnabled": false,
+    "allowedHosts": [
+      "graph.facebook.com"
+    ],
+    "artifactOnly": true
+  },
+  "extraction": {
+    "strategy": "instagram_business_discovery_v1",
+    "deterministicFirst": true,
+    "modelFallback": true,
+    "templateDriftBehavior": "abstain"
+  },
+  "publication": {
+    "autoEligible": false,
+    "requiresOfficialSource": true,
+    "requiresPolicyApproval": true
+  }
+}

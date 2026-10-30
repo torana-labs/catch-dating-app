@@ -11,6 +11,10 @@ import {RazorpayPlatformPaymentConfigLoader,
   razorpayPlatformPaymentConfigVersion,
   type RazorpayPlatformPaymentConfig} from "./razorpayPlatformPaymentConfig";
 import {formPaymentRuntime} from "./formPayments/formPaymentRuntime";
+import {resolveCommercialTerms, resolveCommercialTermsIfConfigured} from
+  "../commercialTerms/resolver";
+import {atSourceFeeMinor, moneyFlowForRoute, type CommercialTermsSnapshot} from
+  "../commercialTerms/terms";
 import {requireReadyFormPaymentConnection} from
   "./formPayments/formPaymentConnectionPolicy";
 import {readReadyRouteAccount} from
@@ -31,6 +35,8 @@ export interface RazorpayCollectionRoutingDeps {
   platform: (version: string) => Promise<RazorpayPlatformPaymentConfig>;
   verifyDestination: (profile: RazorpayPlatformPaymentConfig,
     accountId: string, productId: string) => Promise<void>;
+  /** Injectable clock for the commercial terms snapshot. */
+  now?: () => number;
 }
 export const razorpayCollectionRoutingDefaults:
   RazorpayCollectionRoutingDeps = {
@@ -88,6 +94,18 @@ export async function prepareRazorpayCollectionRouting(input: {
     connection = requireDoc<Connection>(candidates.docs[0],
       "OrganizerPaymentConnectionDocument");
   }
+  // Terms are frozen with the attempt. A platformSplit route deducts its fee
+  // from them, so it cannot run without them; a hostCollected route only
+  // feeds the later commission statement and proceeds without a snapshot.
+  const moneyFlow = moneyFlowForRoute(selected.selection.route);
+  const termsInput = {db, organizerId, purpose,
+    nowMillis: (deps.now ?? Date.now)()};
+  const commercialTerms: CommercialTermsSnapshot | null =
+    moneyFlow === "platformSplit" ?
+      await resolveCommercialTerms({...termsInput, moneyFlow}) :
+      moneyFlow === "hostCollected" ?
+        await resolveCommercialTermsIfConfigured({...termsInput, moneyFlow}) :
+        null;
   const registry = new PaymentRoutingRegistry<PaymentRoutingSnapshot>({
     razorpayOAuth: {
       prepare: async ({selection}) => {
@@ -114,8 +132,8 @@ export async function prepareRazorpayCollectionRouting(input: {
           organizerId});
         await deps.verifyDestination(profile, account.providerAccountId,
           account.razorpayProductId!);
-        const feeMinor = Math.floor(amountMinor *
-          profile.feeBasisPoints[purpose] / 10000);
+        if (!commercialTerms) unavailable();
+        const feeMinor = atSourceFeeMinor(commercialTerms, amountMinor);
         const transferAmountMinor = amountMinor - feeMinor;
         if (transferAmountMinor < 100) unavailable();
         return {bindingId, merchantAccountId: profile.platformAccountId,
@@ -128,12 +146,53 @@ export async function prepareRazorpayCollectionRouting(input: {
   });
   const prepared = await registry.prepare({organizerId, purpose,
     currency: "INR", amountMinor, selected});
-  return prepared.snapshot;
+  if (!commercialTerms) return prepared.snapshot;
+  const snapshot = {...prepared.snapshot, commercialTerms};
+  assertPaymentRouteSnapshot(snapshot, {organizerId, purpose, currency: "INR"});
+  return snapshot;
 }
 
 function unavailable(): never {
   throw new HttpsError("failed-precondition",
     "The selected payment collection route is not ready.");
+}
+
+/** Read-only answer to "can a new paid event attempt start for this organizer
+ * now?". It applies the same policy and account checks as preparation, but
+ * loads no credentials and calls no provider. False means paid booking is
+ * unavailable: it is never a reason to try another merchant. An OAuth policy
+ * needs exactly one ready connection in its mode, so Catch's own account is
+ * only ever used when the policy explicitly selects `razorpayRoute`.
+ */
+export async function eventAdmissionCollectionReady(input: {
+  db: FirebaseFirestore.Firestore; organizerId: string; nowMillis: number;
+}): Promise<boolean> {
+  const {db, organizerId, nowMillis} = input;
+  try {
+    // No legacy selection: an event with no policy has no collection route.
+    const {selection} = await readPaymentRoute({db, organizerId,
+      purpose: "eventAdmission"});
+    if (selection.currency !== "INR" || selection.merchantCountry !== "IN") {
+      return false;
+    }
+    if (selection.route === "razorpayOAuth") {
+      const candidates = await db.collection("organizerPaymentConnections")
+        .where("organizerId", "==", organizerId).where("status", "==", "ready")
+        .where("mode", "==", selection.mode).limit(2).get();
+      if (candidates.docs.length !== 1) return false;
+      requireReadyFormPaymentConnection(requireDoc<Connection>(
+        candidates.docs[0], "OrganizerPaymentConnectionDocument"),
+      organizerId, nowMillis);
+      return true;
+    }
+    if (selection.route === "razorpayRoute") {
+      await readReadyRouteAccount({db, organizerId});
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
 }
 
 export function loadRazorpayPlatformProfile(configurationVersion: string) {
