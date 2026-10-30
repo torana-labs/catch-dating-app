@@ -86,7 +86,7 @@
       "runtime": "react_admin",
       "authority": {"registry": "admin_routes", "id": "route_organizer_intake"},
       "actionScope": {
-        "included": "Switching review and diagnostics, scrolling the bounded candidate queue independently from review detail, deciding organizer intake, creating fail-closed organizer drafts from reviewed candidates, attaching or curating candidates, deciding policy gaps, classifying pending inputs, and freezing the complete Admin workspace during any organizer-intake write.",
+        "included": "Scrolling the bounded candidate queue independently from review detail, deciding organizer intake, creating fail-closed organizer drafts from reviewed candidates, attaching or curating candidates, deciding policy gaps, classifying pending inputs, and freezing the complete Admin workspace during any organizer-intake write.",
         "excluded": [
           "Decision notes, curation fields, and manual-report acknowledgement remain form data.",
           "Approval creates a publishing handoff; ownership, app visibility, claims, crawling, and canonical publication remain separately gated.",
@@ -144,11 +144,9 @@
         }
       },
       "dimensions": {
-        "view": {"default": "review", "values": ["review", "diagnostics"]},
         "mutation": {"default": "idle", "values": ["idle", "pending", "failed", "success"]}
       },
       "actions": [
-        {"id": "toggle_organizer_intake_diagnostics", "owner": "screen", "codeValue": "setShowDiagnostics", "cardinality": "unbounded", "scopeKeys": ["adminSessionId", "viewVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["default", "workflow-readiness", "publication-packets"]}], "description": "Switches between daily review work and generated diagnostics without losing controller evidence."},
         {"id": "decide_organizer_intake", "owner": "controller", "codeValue": "handleDecision", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "entityId", "decisionVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["default", "publication-packets"]}, {"kind": "side_effect", "id": "admin.organizer_intake_decided"}], "description": "Records approve-public, hold, or suppress with a publication handoff rather than direct visibility."},
         {"id": "attach_organizer_candidate", "owner": "controller", "codeValue": "handleAttachCandidate", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "candidateId", "targetOrganizerId"], "outcomes": [{"kind": "surface_state", "stateIds": ["default"]}, {"kind": "side_effect", "id": "admin.organizer_candidate_attached"}], "description": "Records a candidate-to-organizer attachment curation decision."},
         {"id": "create_organizer_draft_from_candidate", "owner": "controller", "codeValue": "handleCreateOrganizerDraft", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "sourceNormalizedKey"], "outcomes": [{"kind": "surface_state", "stateIds": ["default", "organizer-draft-creation"]}, {"kind": "side_effect", "id": "admin.organizer_draft_created"}], "description": "Creates one deterministic source-backed organizer draft while ownership, publication, indexing, crawling, and app visibility remain disabled."},
@@ -162,9 +160,8 @@
           "stateId": "default",
           "dimensions": {},
           "actionCases": [
-            {"id": "review_queue", "enabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_intake", "attach_organizer_candidate", "create_organizer_draft_from_candidate", "record_organizer_curation"]},
-            {"id": "decision_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_intake", "attach_organizer_candidate", "create_organizer_draft_from_candidate", "record_organizer_curation"]},
-            {"id": "diagnostics", "dimensions": {"view": "diagnostics"}, "enabledActions": ["toggle_organizer_intake_diagnostics"]}
+            {"id": "review_queue", "enabledActions": ["decide_organizer_intake", "attach_organizer_candidate", "create_organizer_draft_from_candidate", "record_organizer_curation"]},
+            {"id": "decision_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["decide_organizer_intake", "attach_organizer_candidate", "create_organizer_draft_from_candidate", "record_organizer_curation"]}
           ]
         },
         {
@@ -172,8 +169,8 @@
           "stateId": "workflow-readiness",
           "dimensions": {},
           "actionCases": [
-            {"id": "readiness_tasks", "enabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_policy_gap", "decide_pending_intake_input"]},
-            {"id": "readiness_mutation_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_policy_gap", "decide_pending_intake_input"]}
+            {"id": "readiness_tasks", "enabledActions": ["decide_organizer_policy_gap", "decide_pending_intake_input"]},
+            {"id": "readiness_mutation_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["decide_organizer_policy_gap", "decide_pending_intake_input"]}
           ]
         },
         {
@@ -181,7 +178,7 @@
           "stateId": "publication-packets",
           "dimensions": {},
           "actionCases": [
-            {"id": "handoff_packets", "enabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_intake", "record_organizer_curation"]}
+            {"id": "handoff_packets", "enabledActions": ["decide_organizer_intake", "record_organizer_curation"]}
           ]
         },
         {
@@ -189,7 +186,7 @@
           "stateId": "scrollable-candidate-queue",
           "dimensions": {},
           "actionCases": [
-            {"id": "long_review_queue", "enabledActions": ["toggle_organizer_intake_diagnostics", "create_organizer_draft_from_candidate"]}
+            {"id": "long_review_queue", "enabledActions": ["create_organizer_draft_from_candidate"]}
           ]
         },
         {
@@ -197,8 +194,8 @@
           "stateId": "organizer-draft-creation",
           "dimensions": {},
           "actionCases": [
-            {"id": "reviewed_candidate", "enabledActions": ["toggle_organizer_intake_diagnostics", "create_organizer_draft_from_candidate"]},
-            {"id": "draft_creation_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["toggle_organizer_intake_diagnostics", "create_organizer_draft_from_candidate"]}
+            {"id": "reviewed_candidate", "enabledActions": ["create_organizer_draft_from_candidate"]},
+            {"id": "draft_creation_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["create_organizer_draft_from_candidate"]}
           ]
         }
       ],

@@ -317,12 +317,10 @@ const organizerIntakeController: OrganizerIntakeController = {
     searchCandidates: true,
     publicationPackets: false,
     canonicalItems: false,
-    diagnostics: false,
     discoveryCandidateCount: organizerPreviewWorkItems.length,
     runIds: organizerSampleOperations.runs.map((run) => run.runId),
   },
   bridge: organizerIntakeBridge,
-  diagnosticsBridge: null,
   source: "sample",
   curationForms: {},
   curationInFlight: {},
@@ -358,32 +356,6 @@ const organizerIntakeController: OrganizerIntakeController = {
   localSalesLinks: {},
   localPolicyDecisions: {},
   manualReportAcknowledgements: {},
-  metrics: [
-    {
-      label: "Host entities",
-      value: organizerIntakeBridge.summary.canonicalHostEntities ?? 0,
-    },
-    {
-      label: "Review packets",
-      value: organizerIntakeBridge.summary.publicationReviewPackets ?? 0,
-    },
-    {
-      label: "Would publish",
-      value: organizerIntakeBridge.summary.publicationImpactWouldPublish ?? 0,
-    },
-    {
-      label: "Review items",
-      value: organizerIntakeBridge.summary.reviewItems ?? "—",
-    },
-    {
-      label: "Policy gaps",
-      value: organizerIntakeBridge.summary.policyGapsDecisionRequired ?? 0,
-    },
-    {
-      label: "Event candidates",
-      value: organizerIntakeBridge.summary.externalEventCandidates ?? 0,
-    },
-  ],
   organizerDraftForms: {},
   organizerDraftInFlight: {},
   salesLinkInFlight: {},

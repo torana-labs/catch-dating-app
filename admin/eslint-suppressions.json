@@ -59,31 +59,6 @@
       "count": 1
     }
   },
-  "src/features/intake/organizer/ui/organizerIntakeDiagnostics.tsx": {
-    "react/forbid-elements": {
-      "count": 2
-    }
-  },
-  "src/features/intake/organizer/ui/organizerIntakeDiscoveryPanels.tsx": {
-    "react/forbid-elements": {
-      "count": 33
-    }
-  },
-  "src/features/intake/organizer/ui/organizerIntakeEventPanels.tsx": {
-    "react/forbid-elements": {
-      "count": 32
-    }
-  },
-  "src/features/intake/organizer/ui/organizerIntakeEvidencePanels.tsx": {
-    "react/forbid-elements": {
-      "count": 42
-    }
-  },
-  "src/features/intake/organizer/ui/organizerIntakeReadinessPanels.tsx": {
-    "react/forbid-elements": {
-      "count": 42
-    }
-  },
   "src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx": {
     "react/forbid-elements": {
       "count": 2
@@ -217,13 +192,13 @@
   },
   "src/shared/ui/AdminPrimitives/intake.tsx": {
     "react/forbid-component-props": {
-      "count": 3
+      "count": 1
     },
     "react/forbid-dom-props": {
-      "count": 28
+      "count": 8
     },
     "react/forbid-elements": {
-      "count": 33
+      "count": 13
     }
   },
   "src/shared/ui/AdminPrimitives/intakeWorkbench.tsx": {
@@ -272,10 +247,10 @@
       "count": 4
     },
     "react/forbid-dom-props": {
-      "count": 11
+      "count": 10
     },
     "react/forbid-elements": {
-      "count": 18
+      "count": 17
     }
   },
   "src/shared/ui/AdminPrimitives/media.tsx": {
@@ -283,10 +258,10 @@
       "count": 1
     },
     "react/forbid-dom-props": {
-      "count": 12
+      "count": 9
     },
     "react/forbid-elements": {
-      "count": 12
+      "count": 9
     }
   },
   "src/shared/ui/AdminPrimitives/metrics.tsx": {
@@ -332,10 +307,10 @@
       "count": 5
     },
     "react/forbid-dom-props": {
-      "count": 14
+      "count": 12
     },
     "react/forbid-elements": {
-      "count": 18
+      "count": 16
     }
   }
 }

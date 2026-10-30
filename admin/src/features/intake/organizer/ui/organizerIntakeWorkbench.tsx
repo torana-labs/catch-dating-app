@@ -65,17 +65,14 @@ const organizerTypeOptions = [
 
 function OrganizerTaskWorkbench({
   controller,
-  onShowDiagnostics,
   nowMs = Date.now(),
 }: {
   controller: OrganizerIntakeController;
-  onShowDiagnostics: () => void;
   nowMs?: number;
 }) {
   const {
     availability,
     bridge,
-    diagnosticsBridge,
     decisionInFlight,
     decisionNotes,
     curationInFlight,
@@ -323,14 +320,6 @@ function OrganizerTaskWorkbench({
             setSelectedEntryId(null);
           }}
         />
-        {diagnosticsBridge ? (
-          <>
-            <AdminButton onClick={onShowDiagnostics}>Diagnostics</AdminButton>
-            <AdminButton variant="primary" onClick={onShowDiagnostics}>
-              Discovery plan
-            </AdminButton>
-          </>
-        ) : null}
     </AdminIntakeTaskToolbar>
   );
   const stageControl = (
