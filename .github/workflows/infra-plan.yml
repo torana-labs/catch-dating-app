@@ -44,6 +44,14 @@ jobs:
       - id: toolchain
         working-directory: .
         run: echo "terraform-version=$(sed -n 's/^TERRAFORM_VERSION=//p' tool/ci/toolchain.env)" >> "$GITHUB_OUTPUT"
+      - id: node-toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.node-toolchain.outputs.node-version }}
+      - name: Test the glue scripts and the owner bootstrap offline
+        working-directory: .
+        run: node --test infra/scripts/scripts.test.mjs
       - uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: ${{ steps.toolchain.outputs.terraform-version }}

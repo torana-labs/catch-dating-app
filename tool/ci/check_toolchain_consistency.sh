@@ -14,7 +14,8 @@ for name in \
   FIREBASE_TOOLS_VERSION \
   COCOAPODS_VERSION \
   APPLE_CI_RUNNER \
-  XCODE_MIN_VERSION; do
+  XCODE_MIN_VERSION \
+  TERRAFORM_VERSION; do
   if [[ -z "${!name:-}" ]]; then
     echo "Missing $name in tool/ci/toolchain.env"
     exit 1
@@ -24,6 +25,15 @@ done
 functions_node_version="$(node -p "require('$repo_root/functions/package.json').engines.node")"
 if [[ "$functions_node_version" != "$NODE_VERSION" ]]; then
   echo "functions/package.json engines.node is $functions_node_version, but tool/ci/toolchain.env NODE_VERSION is $NODE_VERSION."
+  exit 1
+fi
+
+terraform_required_version="$(
+  sed -n 's/^[[:space:]]*required_version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' \
+    "$repo_root/infra/firebase/versions.tf" | head -1
+)"
+if [[ "$terraform_required_version" != "$TERRAFORM_VERSION" ]]; then
+  echo "infra/firebase/versions.tf required_version is ${terraform_required_version:-missing}, but tool/ci/toolchain.env TERRAFORM_VERSION is $TERRAFORM_VERSION."
   exit 1
 fi
 

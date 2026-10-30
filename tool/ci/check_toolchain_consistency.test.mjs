@@ -12,6 +12,7 @@ const inputs = [
   "tool/ci/toolchain.env",
   "tool/app_targets.json",
   "functions/package.json",
+  "infra/firebase/versions.tf",
   "pubspec.yaml",
   ".github/workflows/app-build-matrix.yml",
   ".github/workflows/mobile-beta.yml",
@@ -75,3 +76,13 @@ for (const firebase of [undefined, "not-a-version"]) {
     assert.match(result.stdout + result.stderr, /valid Firebase Apple SDK version/);
   });
 }
+
+test("the Terraform pin must match infra/firebase/versions.tf", (t) => {
+  const root = fixture(t, {firebase: "12.18.0", xcode: "26.2.0"});
+  const pins = path.join(root, "tool/ci/toolchain.env");
+  fs.writeFileSync(pins, fs.readFileSync(pins, "utf8")
+    .replace(/^TERRAFORM_VERSION=.*$/m, "TERRAFORM_VERSION=0.0.1"));
+  const result = check(root);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stdout + result.stderr, /required_version is .*TERRAFORM_VERSION is 0\.0\.1/);
+});
