@@ -4,9 +4,9 @@
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_club_patch.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
-    as schema_contracts;
 import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
+    as schema_contracts;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

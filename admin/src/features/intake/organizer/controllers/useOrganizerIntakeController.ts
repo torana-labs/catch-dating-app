@@ -66,7 +66,6 @@ export function useOrganizerIntakeController({
     staleTime: Infinity,
   });
   const bridge = intake.workbench;
-  const diagnosticsBridge = intake.diagnosticsBridge;
   const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [decisionNotes, setDecisionNotes] = useState<Record<string, string>>(
     {}
@@ -165,49 +164,6 @@ export function useOrganizerIntakeController({
         packet,
       ])
     ), [bridge.publicationReviewPackets.packets]);
-
-  const metrics = useMemo(() => [
-    {label: "Host entities", value: metricValue(bridge.summary.canonicalHostEntities)},
-    {label: "Evidence refs", value: metricValue(bridge.summary.canonicalEvidenceRecords)},
-    {label: "Review packets", value: metricValue(bridge.summary.publicationReviewPackets)},
-    {label: "Would publish", value: metricValue(bridge.summary.publicationImpactWouldPublish)},
-    {label: "Would index", value: metricValue(bridge.summary.publicationImpactWouldIndex)},
-    {label: "Review items", value: metricValue(bridge.summary.reviewItems)},
-    {label: "Promotion", value: metricValue(bridge.summary.promotionReview)},
-    {label: "Evidence", value: metricValue(bridge.summary.evidenceReview)},
-    {label: "Blocked", value: metricValue(bridge.summary.blocked)},
-    {label: "Public", value: metricValue(bridge.summary.approvedPublic)},
-    {label: "App visible", value: metricValue(bridge.summary.appDiscoverable)},
-    {label: "Claim writes", value: metricValue(bridge.summary.claimTargetSyncPreviewWrites)},
-    {label: "Search surfaces", value: bridge.summary.searchResultCandidates ?? 0},
-    {label: "Event candidates", value: bridge.summary.externalEventCandidates ?? 0},
-    {label: "Location tasks", value: bridge.summary.externalEventLocationTasks ?? 0},
-    {
-      label: "Read-only events",
-      value: bridge.summary.externalEventImportProposedReadOnlyEvents ??
-        bridge.summary.externalEventImportProposedCreates ??
-        0,
-    },
-    {
-      label: "Projection errors",
-      value: bridge.summary.externalEventImportExecutionProjectionInvalidCount ??
-        bridge.summary.externalEventImportExecutionPayloadInvalid ??
-        0,
-    },
-    {label: "Crawl surfaces", value: bridge.summary.crawlCapableSurfaces ?? 0},
-    {label: "Crawl runs", value: bridge.summary.crawlRunIntents ?? 0},
-    {label: "Raw payloads", value: bridge.summary.rawProviderPayloads ?? 0},
-    {label: "Curation", value: bridge.summary.curationOperations ?? 0},
-    {label: "Policy gates", value: bridge.summary.readinessPolicyNeeded ?? 0},
-    {label: "Policy gaps", value: bridge.summary.policyGapsDecisionRequired ?? 0},
-    {label: "Policy inputs", value: bridge.summary.policyDecisionUnanswered ?? 0},
-    {label: "Pending inputs", value: bridge.summary.pendingInputRequests ?? 0},
-    {label: "Admin inputs", value: bridge.summary.pendingAdminPublicationInputs ?? 0},
-    {label: "Answer packets", value: bridge.summary.reviewedAnswerPackets ?? 0},
-    {label: "Ready packets", value: bridge.summary.reviewedAnswerPacketsReady ?? 0},
-    {label: "Work covered", value: bridge.summary.pendingWorkCovered ?? 0},
-    {label: "Untriaged work", value: bridge.summary.pendingWorkUntriaged ?? 0},
-  ], [bridge.summary]);
 
   const handleDecision = useCallback(async (
     item: Intake.OrganizerIntakeItem,
@@ -656,7 +612,6 @@ export function useOrganizerIntakeController({
   return {
     availability: intake.availability,
     bridge,
-    diagnosticsBridge,
     source: intake.source,
     curationForms,
     curationInFlight,
@@ -676,7 +631,6 @@ export function useOrganizerIntakeController({
     localSalesLinks,
     localPolicyDecisions,
     manualReportAcknowledgements,
-    metrics,
     organizerDraftForms,
     organizerDraftInFlight,
     salesLinkInFlight,
@@ -703,10 +657,6 @@ function attachCurationPath(organizerId: string,
     .toLowerCase().replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "").slice(0, 140);
   return `organizerIntakeCurationDecisions/${operationId}`;
-}
-
-function metricValue(value: number | null | undefined): number | string {
-  return value ?? "—";
 }
 
 function curationKeyForPayload(payload: AdminRecordOrganizerCurationPayload) {

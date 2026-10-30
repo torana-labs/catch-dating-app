@@ -51,12 +51,10 @@ describe("loadOrganizerIntakeBridge", () => {
     const result = await loadOrganizerIntakeBridge();
 
     expect(result.source).toBe("firestore");
-    expect(result.diagnosticsBridge).toBeNull();
     expect(result.availability).toEqual({
       searchCandidates: true,
       publicationPackets: false,
       canonicalItems: false,
-      diagnostics: false,
       discoveryCandidateCount: 50,
       runIds: ["mumbai-run", "indore-run"],
     });

@@ -758,7 +758,7 @@ bool _isCandidate(
     return false;
   }
   if (relative.startsWith('lib/l10n/') ||
-      relative.startsWith('lib/core/schema_contracts/generated/')) {
+      relative.startsWith('lib/platform/schema_contracts/generated/')) {
     return false;
   }
   return true;

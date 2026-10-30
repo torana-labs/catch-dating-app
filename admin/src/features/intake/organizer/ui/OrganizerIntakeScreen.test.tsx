@@ -19,7 +19,6 @@ describe("OrganizerIntakeWorkspace unavailable inventory", () => {
       bridge: {unavailableRecords: [{documentId: "legacy-packet",
         reason: "invalid_record", issues: [{path: "/adminDecision/currentDecision",
           code: "required"}], issuesTruncated: false}]},
-      diagnosticsBridge: null,
     } as unknown as OrganizerIntakeController;
     render(<OrganizerIntakeWorkspace controller={controller} />);
 
@@ -32,8 +31,7 @@ describe("OrganizerIntakeWorkspace unavailable inventory", () => {
   });
 
   it("supports healthy responses from before diagnostic metadata", () => {
-    const controller = {bridge: {}, diagnosticsBridge: null} as
-      unknown as OrganizerIntakeController;
+    const controller = {bridge: {}} as unknown as OrganizerIntakeController;
     render(<OrganizerIntakeWorkspace controller={controller} />);
     expect(screen.queryByText("Unavailable intake records")).toBeNull();
     expect(screen.getByText("Healthy organizer review queue")).toBeTruthy();

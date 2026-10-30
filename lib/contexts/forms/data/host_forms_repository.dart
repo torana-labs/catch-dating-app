@@ -15,7 +15,6 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment_r
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_share.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
@@ -23,6 +22,7 @@ import 'package:catch_dating_app/platform/firebase/host_summary_reader.dart';
 import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:catch_dating_app/platform/persistence/command_journal_storage.dart';
 import 'package:catch_dating_app/platform/persistence/local_command_journal.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:crypto/crypto.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

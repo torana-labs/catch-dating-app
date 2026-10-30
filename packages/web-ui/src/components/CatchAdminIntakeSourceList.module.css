@@ -1,0 +1,6 @@
+/* Admin T4 source list, moved from admin/src/styles.css (.intake-source-list). */
+.list {
+  display: grid;
+  gap: var(--catch-space-s2);
+  margin-top: var(--catch-space-s3);
+}

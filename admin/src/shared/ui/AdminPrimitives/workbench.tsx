@@ -58,33 +58,7 @@ export function AdminToolbar({
   );
 }
 
-export function AdminCommandStack({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("command-stack", className)}>
-      {children}
-    </div>
-  );
-}
 
-export function AdminCommandRow({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("command-row", className)}>
-      {children}
-    </div>
-  );
-}
 
 export function AdminWorkbenchNote({
   children,

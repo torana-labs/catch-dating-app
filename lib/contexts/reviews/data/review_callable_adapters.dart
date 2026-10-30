@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show CreateEventReviewCallableRequest, UpdateEventReviewCallableRequest;
 
 CreateEventReviewCallableRequest createEventReviewCallableRequestFromReview(
