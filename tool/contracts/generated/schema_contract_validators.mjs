@@ -275,6 +275,8 @@ import {
   commercialTermsSnapshotSchema,
   manageCommercialTermsCallablePayloadSchema,
   manageCommercialTermsCallableResponseSchema,
+  adminListCommercialTermsCallablePayloadSchema,
+  adminListCommercialTermsCallableResponseSchema,
   managePaymentRoutingPolicyCallablePayloadSchema,
   managePaymentRoutingPolicyCallableResponseSchema,
   manageEventOfferCheckoutCallablePayloadSchema,
@@ -1600,6 +1602,8 @@ export const validateCommercialTermsOverride = ajv.compile(commercialTermsOverri
 export const validateCommercialTermsSnapshot = ajv.compile(commercialTermsSnapshotSchema);
 export const validateManageCommercialTermsCallablePayload = ajv.compile(manageCommercialTermsCallablePayloadSchema);
 export const validateManageCommercialTermsCallableResponse = ajv.compile(manageCommercialTermsCallableResponseSchema);
+export const validateAdminListCommercialTermsCallablePayload = ajv.compile(adminListCommercialTermsCallablePayloadSchema);
+export const validateAdminListCommercialTermsCallableResponse = ajv.compile(adminListCommercialTermsCallableResponseSchema);
 export const validateManagePaymentRoutingPolicyCallablePayload = ajv.compile(managePaymentRoutingPolicyCallablePayloadSchema);
 export const validateManagePaymentRoutingPolicyCallableResponse = ajv.compile(managePaymentRoutingPolicyCallableResponseSchema);
 export const validateManageEventOfferCheckoutCallablePayload = ajv.compile(manageEventOfferCheckoutCallablePayloadSchema);

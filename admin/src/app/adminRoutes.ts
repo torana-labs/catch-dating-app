@@ -22,6 +22,7 @@ export type AdminNavId = keyof typeof adminSections;
 type MarketingTab = "posts" | "new" | "events" | "media" | "activity" |
   "diagnostics" | "draft";
 type MarketingStep = "source" | "copy" | "compliance" | "export";
+export type FinanceWorkspace = "issues" | "commercial-terms" | "payment-routing";
 
 interface RouteState {
   nav: AdminNavId | null;
@@ -29,6 +30,7 @@ interface RouteState {
   salesArea?: "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
   organizerWorkspace?: "directory" | "claims";
   eventWorkspace?: "directory" | "external";
+  financeWorkspace?: FinanceWorkspace;
   marketingTab?: MarketingTab;
   composerStep?: MarketingStep;
 }
@@ -59,6 +61,11 @@ export const adminRoutes: AdminRoute[] = [
   route("/events/readiness/*", "events"),
   route("/growth/signals/:growthSignalId", "growth", {title: "Growth signal"}),
   route("/finance/issues/:financeIssueId", "finance", {title: "Finance issue"}),
+  route("/finance/commercial-terms/*", "finance", {financeWorkspace: "commercial-terms", title: "Commercial terms"}),
+  route("/finance/commercial-terms/organizers/:termsOrganizerId", "finance", {
+    financeWorkspace: "commercial-terms", title: "Organizer commercial terms",
+  }),
+  route("/finance/payment-routing/*", "finance", {financeWorkspace: "payment-routing", title: "Payment routing"}),
   route("/quality/signals/:qualitySignalId", "quality", {title: "Data quality signal"}),
   route("/admin-roles/:adminRoleTargetUid", "admin-roles", {title: "Admin role assignment"}),
   ...(["today", "hosts", "pipeline", "research", "pilots", "settings"] as const)
@@ -97,6 +104,7 @@ export function resolveAdminRoute(pathname: string) {
     salesArea: state?.salesArea ?? "today",
     organizerWorkspace: state?.organizerWorkspace ?? "directory",
     eventWorkspace: state?.eventWorkspace ?? "directory",
+    financeWorkspace: state?.financeWorkspace ?? "issues",
     marketingTab: state?.marketingTab ?? "posts",
     composerStep: state?.composerStep ?? "source",
   };
@@ -108,4 +116,13 @@ export function adminPathForNav(nav: AdminNavId): string {
 
 export function marketingPathForTab(tab: Exclude<MarketingTab, "draft">): string {
   return `/marketing/${tab}`;
+}
+
+export function financePathForWorkspace(workspace: FinanceWorkspace): string {
+  return workspace === "issues" ? adminSections.finance.path : `/finance/${workspace}`;
+}
+
+export function commercialTermsPathForOrganizer(organizerId: string | null): string {
+  return organizerId === null ? financePathForWorkspace("commercial-terms") :
+    `/finance/commercial-terms/organizers/${encodeURIComponent(organizerId)}`;
 }

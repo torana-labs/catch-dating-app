@@ -277,6 +277,8 @@ export {validateCommercialTermsOverride} from "./validators/commercialTermsOverr
 export {validateCommercialTermsSnapshot} from "./validators/commercialTermsSnapshot";
 export {validateManageCommercialTermsCallablePayload} from "./validators/manageCommercialTermsInput";
 export {validateManageCommercialTermsCallableResponse} from "./validators/manageCommercialTermsOutput";
+export {validateAdminListCommercialTermsCallablePayload} from "./validators/adminListCommercialTermsInput";
+export {validateAdminListCommercialTermsCallableResponse} from "./validators/adminListCommercialTermsOutput";
 export {validateManagePaymentRoutingPolicyCallablePayload} from "./validators/managePaymentRoutingPolicyInput";
 export {validateManagePaymentRoutingPolicyCallableResponse} from "./validators/managePaymentRoutingPolicyOutput";
 export {validateManageEventOfferCheckoutCallablePayload} from "./validators/manageEventOfferCheckoutInput";

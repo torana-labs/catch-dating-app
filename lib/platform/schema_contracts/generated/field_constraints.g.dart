@@ -7547,6 +7547,752 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminListCommercialTermsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallablePayloadOrganizerQuery = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallablePayload.organizerQuery',
+    maxLength: 80,
+    minLength: 2,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsCurrency = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.currency',
+    required: true,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.eventAdmission.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.formFee.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.formFee.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.hostMembership.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.hostMembership.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const adminListCommercialTermsCallableResponseEffectiveTermsTrialDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.effectiveTerms.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistory = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsActorUid = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsReason = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.reason',
+    maxLength: 500,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsRevision = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.commission.base',
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.commission.cycleAnchor',
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.commission.cycleDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.commission.rateBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.commission.taxTreatment',
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsCurrency = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.currency',
+    required: true,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.purposes.eventAdmission.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.purposes.formFee.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.purposes.formFee.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.purposes.hostMembership.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.purposes.hostMembership.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.toolsOnly.feeMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.trial.anchor',
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryItemsTermsTrialDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.history.items.terms.trial.days',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseHistoryComplete = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.historyComplete',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerReason = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.reason',
+    maxLength: 500,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerRevision = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.commission.base',
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.commission.cycleAnchor',
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.commission.cycleDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.commission.rateBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.commission.taxTreatment',
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.gatewayFeeBearer',
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.purposes.eventAdmission.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.purposes.formFee.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.purposes.formFee.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.purposes.hostMembership.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.purposes.hostMembership.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.toolsOnly.feeMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.trial.anchor',
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerTermsTrialDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.terms.trial.days',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerUpdatedByUid = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizer.updatedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerMatches = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizerMatches',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerMatchesItemsCityName = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizerMatches.items.cityName',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerMatchesItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizerMatches.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerMatchesItemsOrganizerName = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizerMatches.items.organizerName',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOrganizerName = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.organizerName',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverrides = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsOrganizerName = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.organizerName',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsReason = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.reason',
+    maxLength: 500,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsRevision = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.base',
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.cycleAnchor',
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.cycleDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.rateBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.taxTreatment',
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.gatewayFeeBearer',
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.eventAdmission.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.formFee.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.formFee.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.hostMembership.atSourceFeeBasisPoints',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.hostMembership.countsTowardCommission',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.toolsOnly.feeMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.trial.anchor',
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsTermsTrialDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.terms.trial.days',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesItemsUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overrides.items.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminListCommercialTermsCallableResponseOverridesComplete = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.overridesComplete',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformReason = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.reason',
+    maxLength: 500,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformRevision = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCommissionBase = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.commission.base',
+    required: true,
+    enumValues: <String>['netOfRefunds', 'gross'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCommissionCapMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.commission.capMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCommissionCycleAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.commission.cycleAnchor',
+    required: true,
+    enumValues: <String>['trialEnd'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCommissionCycleDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.commission.cycleDays',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCommissionRateBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.commission.rateBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCommissionTaxTreatment = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.commission.taxTreatment',
+    required: true,
+    enumValues: <String>['exclusive', 'inclusive'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsCurrency = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.currency',
+    required: true,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsGatewayFeeBearer = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.gatewayFeeBearer',
+    required: true,
+    enumValues: <String>['host', 'platform'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsPurposesEventAdmissionAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.purposes.eventAdmission.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsPurposesEventAdmissionCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.purposes.eventAdmission.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsPurposesFormFeeAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.purposes.formFee.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsPurposesFormFeeCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.purposes.formFee.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsPurposesHostMembershipAtSourceFeeBasisPoints = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.purposes.hostMembership.atSourceFeeBasisPoints',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9999,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsPurposesHostMembershipCountsTowardCommission = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.purposes.hostMembership.countsTowardCommission',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsToolsOnlyFeeMinor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.toolsOnly.feeMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000000,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsTrialAnchor = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.trial.anchor',
+    required: true,
+    enumValues: <String>['firstEvent'],
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformTermsTrialDays = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.terms.trial.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 366,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminListCommercialTermsCallableResponsePlatformUpdatedByUid = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.platform.updatedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCommercialTermsCallableResponseTermsId = CatchContractFieldConstraints(
+    path: 'adminListCommercialTermsCallableResponse.termsId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^(platform|org_[a-f0-9]{64})\$',
+  );
+
   static const adminListCrossPathsShowcaseCandidatesCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'adminListCrossPathsShowcaseCandidatesCallablePayload.cursor',
     maxLength: 180,
@@ -179517,6 +180263,119 @@ abstract final class CatchContractConstraints {
     'adminListClubDetailsCallablePayload.limit': adminListClubDetailsCallablePayloadLimit,
     'adminListClubDetailsCallablePayload.publishStatus': adminListClubDetailsCallablePayloadPublishStatus,
     'adminListClubDetailsCallablePayload.query': adminListClubDetailsCallablePayloadQuery,
+    'adminListCommercialTermsCallablePayload.organizerId': adminListCommercialTermsCallablePayloadOrganizerId,
+    'adminListCommercialTermsCallablePayload.organizerQuery': adminListCommercialTermsCallablePayloadOrganizerQuery,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.commission.base': adminListCommercialTermsCallableResponseEffectiveTermsCommissionBase,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.commission.capMinor': adminListCommercialTermsCallableResponseEffectiveTermsCommissionCapMinor,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.commission.cycleAnchor': adminListCommercialTermsCallableResponseEffectiveTermsCommissionCycleAnchor,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.commission.cycleDays': adminListCommercialTermsCallableResponseEffectiveTermsCommissionCycleDays,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.commission.rateBasisPoints': adminListCommercialTermsCallableResponseEffectiveTermsCommissionRateBasisPoints,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.commission.taxTreatment': adminListCommercialTermsCallableResponseEffectiveTermsCommissionTaxTreatment,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.currency': adminListCommercialTermsCallableResponseEffectiveTermsCurrency,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.gatewayFeeBearer': adminListCommercialTermsCallableResponseEffectiveTermsGatewayFeeBearer,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.eventAdmission.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseEffectiveTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.eventAdmission.countsTowardCommission': adminListCommercialTermsCallableResponseEffectiveTermsPurposesEventAdmissionCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.formFee.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseEffectiveTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.formFee.countsTowardCommission': adminListCommercialTermsCallableResponseEffectiveTermsPurposesFormFeeCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.hostMembership.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseEffectiveTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.purposes.hostMembership.countsTowardCommission': adminListCommercialTermsCallableResponseEffectiveTermsPurposesHostMembershipCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.toolsOnly.feeMinor': adminListCommercialTermsCallableResponseEffectiveTermsToolsOnlyFeeMinor,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.trial.anchor': adminListCommercialTermsCallableResponseEffectiveTermsTrialAnchor,
+    'adminListCommercialTermsCallableResponse.effectiveTerms.trial.days': adminListCommercialTermsCallableResponseEffectiveTermsTrialDays,
+    'adminListCommercialTermsCallableResponse.history': adminListCommercialTermsCallableResponseHistory,
+    'adminListCommercialTermsCallableResponse.history.items.actorUid': adminListCommercialTermsCallableResponseHistoryItemsActorUid,
+    'adminListCommercialTermsCallableResponse.history.items.createdAtMillis': adminListCommercialTermsCallableResponseHistoryItemsCreatedAtMillis,
+    'adminListCommercialTermsCallableResponse.history.items.reason': adminListCommercialTermsCallableResponseHistoryItemsReason,
+    'adminListCommercialTermsCallableResponse.history.items.revision': adminListCommercialTermsCallableResponseHistoryItemsRevision,
+    'adminListCommercialTermsCallableResponse.history.items.terms.commission.base': adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionBase,
+    'adminListCommercialTermsCallableResponse.history.items.terms.commission.capMinor': adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionCapMinor,
+    'adminListCommercialTermsCallableResponse.history.items.terms.commission.cycleAnchor': adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionCycleAnchor,
+    'adminListCommercialTermsCallableResponse.history.items.terms.commission.cycleDays': adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionCycleDays,
+    'adminListCommercialTermsCallableResponse.history.items.terms.commission.rateBasisPoints': adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionRateBasisPoints,
+    'adminListCommercialTermsCallableResponse.history.items.terms.commission.taxTreatment': adminListCommercialTermsCallableResponseHistoryItemsTermsCommissionTaxTreatment,
+    'adminListCommercialTermsCallableResponse.history.items.terms.currency': adminListCommercialTermsCallableResponseHistoryItemsTermsCurrency,
+    'adminListCommercialTermsCallableResponse.history.items.terms.gatewayFeeBearer': adminListCommercialTermsCallableResponseHistoryItemsTermsGatewayFeeBearer,
+    'adminListCommercialTermsCallableResponse.history.items.terms.purposes.eventAdmission.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.history.items.terms.purposes.eventAdmission.countsTowardCommission': adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesEventAdmissionCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.history.items.terms.purposes.formFee.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.history.items.terms.purposes.formFee.countsTowardCommission': adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesFormFeeCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.history.items.terms.purposes.hostMembership.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.history.items.terms.purposes.hostMembership.countsTowardCommission': adminListCommercialTermsCallableResponseHistoryItemsTermsPurposesHostMembershipCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.history.items.terms.toolsOnly.feeMinor': adminListCommercialTermsCallableResponseHistoryItemsTermsToolsOnlyFeeMinor,
+    'adminListCommercialTermsCallableResponse.history.items.terms.trial.anchor': adminListCommercialTermsCallableResponseHistoryItemsTermsTrialAnchor,
+    'adminListCommercialTermsCallableResponse.history.items.terms.trial.days': adminListCommercialTermsCallableResponseHistoryItemsTermsTrialDays,
+    'adminListCommercialTermsCallableResponse.historyComplete': adminListCommercialTermsCallableResponseHistoryComplete,
+    'adminListCommercialTermsCallableResponse.organizer.reason': adminListCommercialTermsCallableResponseOrganizerReason,
+    'adminListCommercialTermsCallableResponse.organizer.revision': adminListCommercialTermsCallableResponseOrganizerRevision,
+    'adminListCommercialTermsCallableResponse.organizer.terms.commission.base': adminListCommercialTermsCallableResponseOrganizerTermsCommissionBase,
+    'adminListCommercialTermsCallableResponse.organizer.terms.commission.capMinor': adminListCommercialTermsCallableResponseOrganizerTermsCommissionCapMinor,
+    'adminListCommercialTermsCallableResponse.organizer.terms.commission.cycleAnchor': adminListCommercialTermsCallableResponseOrganizerTermsCommissionCycleAnchor,
+    'adminListCommercialTermsCallableResponse.organizer.terms.commission.cycleDays': adminListCommercialTermsCallableResponseOrganizerTermsCommissionCycleDays,
+    'adminListCommercialTermsCallableResponse.organizer.terms.commission.rateBasisPoints': adminListCommercialTermsCallableResponseOrganizerTermsCommissionRateBasisPoints,
+    'adminListCommercialTermsCallableResponse.organizer.terms.commission.taxTreatment': adminListCommercialTermsCallableResponseOrganizerTermsCommissionTaxTreatment,
+    'adminListCommercialTermsCallableResponse.organizer.terms.gatewayFeeBearer': adminListCommercialTermsCallableResponseOrganizerTermsGatewayFeeBearer,
+    'adminListCommercialTermsCallableResponse.organizer.terms.purposes.eventAdmission.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseOrganizerTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.organizer.terms.purposes.eventAdmission.countsTowardCommission': adminListCommercialTermsCallableResponseOrganizerTermsPurposesEventAdmissionCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.organizer.terms.purposes.formFee.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseOrganizerTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.organizer.terms.purposes.formFee.countsTowardCommission': adminListCommercialTermsCallableResponseOrganizerTermsPurposesFormFeeCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.organizer.terms.purposes.hostMembership.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseOrganizerTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.organizer.terms.purposes.hostMembership.countsTowardCommission': adminListCommercialTermsCallableResponseOrganizerTermsPurposesHostMembershipCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.organizer.terms.toolsOnly.feeMinor': adminListCommercialTermsCallableResponseOrganizerTermsToolsOnlyFeeMinor,
+    'adminListCommercialTermsCallableResponse.organizer.terms.trial.anchor': adminListCommercialTermsCallableResponseOrganizerTermsTrialAnchor,
+    'adminListCommercialTermsCallableResponse.organizer.terms.trial.days': adminListCommercialTermsCallableResponseOrganizerTermsTrialDays,
+    'adminListCommercialTermsCallableResponse.organizer.updatedAtMillis': adminListCommercialTermsCallableResponseOrganizerUpdatedAtMillis,
+    'adminListCommercialTermsCallableResponse.organizer.updatedByUid': adminListCommercialTermsCallableResponseOrganizerUpdatedByUid,
+    'adminListCommercialTermsCallableResponse.organizerId': adminListCommercialTermsCallableResponseOrganizerId,
+    'adminListCommercialTermsCallableResponse.organizerMatches': adminListCommercialTermsCallableResponseOrganizerMatches,
+    'adminListCommercialTermsCallableResponse.organizerMatches.items.cityName': adminListCommercialTermsCallableResponseOrganizerMatchesItemsCityName,
+    'adminListCommercialTermsCallableResponse.organizerMatches.items.organizerId': adminListCommercialTermsCallableResponseOrganizerMatchesItemsOrganizerId,
+    'adminListCommercialTermsCallableResponse.organizerMatches.items.organizerName': adminListCommercialTermsCallableResponseOrganizerMatchesItemsOrganizerName,
+    'adminListCommercialTermsCallableResponse.organizerName': adminListCommercialTermsCallableResponseOrganizerName,
+    'adminListCommercialTermsCallableResponse.overrides': adminListCommercialTermsCallableResponseOverrides,
+    'adminListCommercialTermsCallableResponse.overrides.items.organizerId': adminListCommercialTermsCallableResponseOverridesItemsOrganizerId,
+    'adminListCommercialTermsCallableResponse.overrides.items.organizerName': adminListCommercialTermsCallableResponseOverridesItemsOrganizerName,
+    'adminListCommercialTermsCallableResponse.overrides.items.reason': adminListCommercialTermsCallableResponseOverridesItemsReason,
+    'adminListCommercialTermsCallableResponse.overrides.items.revision': adminListCommercialTermsCallableResponseOverridesItemsRevision,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.base': adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionBase,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.capMinor': adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionCapMinor,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.cycleAnchor': adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionCycleAnchor,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.cycleDays': adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionCycleDays,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.rateBasisPoints': adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionRateBasisPoints,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.commission.taxTreatment': adminListCommercialTermsCallableResponseOverridesItemsTermsCommissionTaxTreatment,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.gatewayFeeBearer': adminListCommercialTermsCallableResponseOverridesItemsTermsGatewayFeeBearer,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.eventAdmission.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.eventAdmission.countsTowardCommission': adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesEventAdmissionCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.formFee.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.formFee.countsTowardCommission': adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesFormFeeCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.hostMembership.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.purposes.hostMembership.countsTowardCommission': adminListCommercialTermsCallableResponseOverridesItemsTermsPurposesHostMembershipCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.toolsOnly.feeMinor': adminListCommercialTermsCallableResponseOverridesItemsTermsToolsOnlyFeeMinor,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.trial.anchor': adminListCommercialTermsCallableResponseOverridesItemsTermsTrialAnchor,
+    'adminListCommercialTermsCallableResponse.overrides.items.terms.trial.days': adminListCommercialTermsCallableResponseOverridesItemsTermsTrialDays,
+    'adminListCommercialTermsCallableResponse.overrides.items.updatedAtMillis': adminListCommercialTermsCallableResponseOverridesItemsUpdatedAtMillis,
+    'adminListCommercialTermsCallableResponse.overridesComplete': adminListCommercialTermsCallableResponseOverridesComplete,
+    'adminListCommercialTermsCallableResponse.platform.reason': adminListCommercialTermsCallableResponsePlatformReason,
+    'adminListCommercialTermsCallableResponse.platform.revision': adminListCommercialTermsCallableResponsePlatformRevision,
+    'adminListCommercialTermsCallableResponse.platform.terms.commission.base': adminListCommercialTermsCallableResponsePlatformTermsCommissionBase,
+    'adminListCommercialTermsCallableResponse.platform.terms.commission.capMinor': adminListCommercialTermsCallableResponsePlatformTermsCommissionCapMinor,
+    'adminListCommercialTermsCallableResponse.platform.terms.commission.cycleAnchor': adminListCommercialTermsCallableResponsePlatformTermsCommissionCycleAnchor,
+    'adminListCommercialTermsCallableResponse.platform.terms.commission.cycleDays': adminListCommercialTermsCallableResponsePlatformTermsCommissionCycleDays,
+    'adminListCommercialTermsCallableResponse.platform.terms.commission.rateBasisPoints': adminListCommercialTermsCallableResponsePlatformTermsCommissionRateBasisPoints,
+    'adminListCommercialTermsCallableResponse.platform.terms.commission.taxTreatment': adminListCommercialTermsCallableResponsePlatformTermsCommissionTaxTreatment,
+    'adminListCommercialTermsCallableResponse.platform.terms.currency': adminListCommercialTermsCallableResponsePlatformTermsCurrency,
+    'adminListCommercialTermsCallableResponse.platform.terms.gatewayFeeBearer': adminListCommercialTermsCallableResponsePlatformTermsGatewayFeeBearer,
+    'adminListCommercialTermsCallableResponse.platform.terms.purposes.eventAdmission.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponsePlatformTermsPurposesEventAdmissionAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.platform.terms.purposes.eventAdmission.countsTowardCommission': adminListCommercialTermsCallableResponsePlatformTermsPurposesEventAdmissionCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.platform.terms.purposes.formFee.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponsePlatformTermsPurposesFormFeeAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.platform.terms.purposes.formFee.countsTowardCommission': adminListCommercialTermsCallableResponsePlatformTermsPurposesFormFeeCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.platform.terms.purposes.hostMembership.atSourceFeeBasisPoints': adminListCommercialTermsCallableResponsePlatformTermsPurposesHostMembershipAtSourceFeeBasisPoints,
+    'adminListCommercialTermsCallableResponse.platform.terms.purposes.hostMembership.countsTowardCommission': adminListCommercialTermsCallableResponsePlatformTermsPurposesHostMembershipCountsTowardCommission,
+    'adminListCommercialTermsCallableResponse.platform.terms.toolsOnly.feeMinor': adminListCommercialTermsCallableResponsePlatformTermsToolsOnlyFeeMinor,
+    'adminListCommercialTermsCallableResponse.platform.terms.trial.anchor': adminListCommercialTermsCallableResponsePlatformTermsTrialAnchor,
+    'adminListCommercialTermsCallableResponse.platform.terms.trial.days': adminListCommercialTermsCallableResponsePlatformTermsTrialDays,
+    'adminListCommercialTermsCallableResponse.platform.updatedAtMillis': adminListCommercialTermsCallableResponsePlatformUpdatedAtMillis,
+    'adminListCommercialTermsCallableResponse.platform.updatedByUid': adminListCommercialTermsCallableResponsePlatformUpdatedByUid,
+    'adminListCommercialTermsCallableResponse.termsId': adminListCommercialTermsCallableResponseTermsId,
     'adminListCrossPathsShowcaseCandidatesCallablePayload.cursor': adminListCrossPathsShowcaseCandidatesCallablePayloadCursor,
     'adminListCrossPathsShowcaseCandidatesCallablePayload.limit': adminListCrossPathsShowcaseCandidatesCallablePayloadLimit,
     'adminListCrossPathsShowcaseCandidatesCallablePayload.marketId': adminListCrossPathsShowcaseCandidatesCallablePayloadMarketId,

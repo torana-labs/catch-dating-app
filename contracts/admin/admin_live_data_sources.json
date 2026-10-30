@@ -103,6 +103,20 @@
       "liveReads": ["adminGetOverview", "adminGetHostAnalytics"]
     },
     {
+      "routeId": "finance-commercial-terms",
+      "navId": "finance",
+      "paths": ["/finance/commercial-terms", "/finance/commercial-terms/organizers/{organizerId}"],
+      "liveReads": ["adminListCommercialTerms"],
+      "liveMutations": ["manageCommercialTerms"]
+    },
+    {
+      "routeId": "finance-payment-routing",
+      "navId": "finance",
+      "paths": ["/finance/payment-routing"],
+      "liveReads": ["managePaymentRoutingPolicy"],
+      "liveMutations": ["managePaymentRoutingPolicy"]
+    },
+    {
       "routeId": "data-quality",
       "navId": "quality",
       "paths": ["/quality"],

@@ -1,7 +1,7 @@
 {
   "$schema": "./admin.components.schema.json",
-  "version": 43,
-  "updated": "2026-10-24",
+  "version": 44,
+  "updated": "2026-10-30",
   "owner": "admin_dashboard",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -23,6 +23,10 @@
       "workspace_event_publishing",
       "route_finance_ops",
       "workspace_finance_ops",
+      "route_commercial_terms",
+      "workspace_commercial_terms",
+      "route_payment_routing",
+      "workspace_payment_routing",
       "route_growth_kpi",
       "workspace_growth_kpi",
       "route_intake_workspace",
@@ -394,6 +398,85 @@
         ]
       },
       "notes": "Prop-driven Finance Ops workspace surface used by the route wrapper and deterministic Storybook previews; controller-owned query logic stays in FinanceOpsScreen."
+    },
+    {
+      "id": "route_commercial_terms",
+      "kind": "route",
+      "owner": "features/commercial-terms",
+      "source": "admin/src/features/commercial-terms/ui/CommercialTermsScreen.tsx",
+      "exportName": "CommercialTermsScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminFinanceSettings.stories.tsx",
+        "exportName": "CommercialTermsRouteStory",
+        "states": [
+          "commercial-terms"
+        ]
+      },
+      "notes": "Finance route at /finance/commercial-terms and /finance/commercial-terms/organizers/{organizerId}; the wrapper owns the TanStack Query controller, and the preview renders the registered workspace with deterministic platform, history and override fixtures."
+    },
+    {
+      "id": "workspace_commercial_terms",
+      "kind": "workspace",
+      "owner": "features/commercial-terms",
+      "source": "admin/src/features/commercial-terms/ui/CommercialTermsScreen.tsx",
+      "exportName": "CommercialTermsWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminFinanceSettings.stories.tsx",
+        "exportName": "CommercialTermsWorkspaceStory",
+        "states": [
+          "unsaved-platform",
+          "change-preview",
+          "organizer-override"
+        ]
+      },
+      "notes": "Prop-driven commercial terms workspace: platform defaults with revision history, the owner-decision starting draft, a reasoned field-by-field preview before save, and sparse organizer overrides whose unset terms read as inherited."
+    },
+    {
+      "id": "route_payment_routing",
+      "kind": "route",
+      "owner": "features/payment-routing",
+      "source": "admin/src/features/payment-routing/ui/PaymentRoutingScreen.tsx",
+      "exportName": "PaymentRoutingScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminFinanceSettings.stories.tsx",
+        "exportName": "PaymentRoutingRouteStory",
+        "states": [
+          "payment-routing"
+        ]
+      },
+      "notes": "Finance route at /finance/payment-routing for the app routing policy; the wrapper owns the TanStack Query controller."
+    },
+    {
+      "id": "workspace_payment_routing",
+      "kind": "workspace",
+      "owner": "features/payment-routing",
+      "source": "admin/src/features/payment-routing/ui/PaymentRoutingScreen.tsx",
+      "exportName": "PaymentRoutingWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminFinanceSettings.stories.tsx",
+        "exportName": "PaymentRoutingWorkspaceStory",
+        "states": [
+          "change-preview",
+          "typed-confirmation"
+        ]
+      },
+      "notes": "Prop-driven payment routing workspace: route and test/live mode per purpose, a preview against the saved revision, and typed confirmations before any purpose goes live, switches to the Route split, or turns off."
     },
     {
       "id": "route_growth_kpi",

@@ -57,6 +57,7 @@ import {
   AdminTopbar,
   AdminTopbarActions,
   AdminWorkspace,
+  SegmentedControl,
   StatusBanner,
 } from "../shared/ui/AdminPrimitives";
 import {
@@ -71,9 +72,12 @@ import {
   adminPathForNav,
   adminRoutes,
   adminSections,
+  commercialTermsPathForOrganizer,
+  financePathForWorkspace,
   marketingPathForTab,
   resolveAdminRoute,
   type AdminNavId,
+  type FinanceWorkspace,
 } from "./adminRoutes";
 import {useAdminSession} from "./useAdminSession";
 import {AdminQueryProvider} from "../shared/query/queryClient";
@@ -124,6 +128,16 @@ const GrowthKpiScreen = lazy(() =>
 const FinanceOpsScreen = lazy(() =>
   import("../features/finance/ui/FinanceOpsScreen").then((module) => ({
     default: module.FinanceOpsScreen,
+  }))
+);
+const CommercialTermsScreen = lazy(() =>
+  import("../features/commercial-terms/ui/CommercialTermsScreen").then((module) => ({
+    default: module.CommercialTermsScreen,
+  }))
+);
+const PaymentRoutingScreen = lazy(() =>
+  import("../features/payment-routing/ui/PaymentRoutingScreen").then((module) => ({
+    default: module.PaymentRoutingScreen,
   }))
 );
 const OrganizerPublishingScreen = lazy(() =>
@@ -397,6 +411,23 @@ function AdminRouteApp() {
     visibleNavigation[0]?.id ?? "overview";
   const canResolveNavigation = mode !== "live" ||
     (user !== null && rolesResolved && adminRoles.length > 0);
+  // Commercial terms and payment routing are Finance and Admin Owner only,
+  // even though Analytics viewers can open the rest of Finance.
+  const canManageCommercialTerms = mode === "sample" ||
+    hasAnyAdminRole(adminRoles, ["adminOwner", "finance"]);
+  const financeWorkspaceSwitch = canManageCommercialTerms ? (
+    <SegmentedControl<FinanceWorkspace>
+      ariaLabel="Finance workspaces"
+      mobileLayout="content"
+      options={[
+        {id: "issues", label: "Finance issues"},
+        {id: "commercial-terms", label: "Commercial terms"},
+        {id: "payment-routing", label: "Payment routing"},
+      ]}
+      onChange={(workspace) => navigate(financePathForWorkspace(workspace))}
+      value={route.financeWorkspace}
+    />
+  ) : null;
 
   useEffect(() => {
     if (!canResolveNavigation) return;
@@ -856,6 +887,30 @@ function AdminRouteApp() {
               onNotice={setNotice}
             />
           </Suspense>
+        ) : currentNav === "finance" && route.financeWorkspace === "commercial-terms" ? (
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Commercial terms" />}>
+            <CommercialTermsScreen
+              key={user?.uid ?? "sample"}
+              canManage={canManageCommercialTerms}
+              onError={setError}
+              onNotice={setNotice}
+              onOpenOrganizer={(organizerId) =>
+                navigate(commercialTermsPathForOrganizer(organizerId))}
+              onOpenPlatform={() => navigate(commercialTermsPathForOrganizer(null))}
+              organizerId={route.params.termsOrganizerId ?? null}
+              workspaceSwitch={financeWorkspaceSwitch}
+            />
+          </Suspense>
+        ) : currentNav === "finance" && route.financeWorkspace === "payment-routing" ? (
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Payment routing" />}>
+            <PaymentRoutingScreen
+              key={user?.uid ?? "sample"}
+              canManage={canManageCommercialTerms}
+              onError={setError}
+              onNotice={setNotice}
+              workspaceSwitch={financeWorkspaceSwitch}
+            />
+          </Suspense>
         ) : currentNav === "finance" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Finance" />}>
             <FinanceOpsScreen
@@ -869,6 +924,7 @@ function AdminRouteApp() {
                 navigate(`/finance/issues/${encodeURIComponent(issueId)}`);
               }}
               selectedIssueId={route.params.financeIssueId ?? null}
+              workspaceSwitch={financeWorkspaceSwitch}
             />
           </Suspense>
         ) : currentNav === "quality" ? (

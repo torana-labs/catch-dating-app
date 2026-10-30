@@ -1,6 +1,6 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
-version: 0.3.1
+version: 0.4.0
 updated: 2026-10-30
 owner: admin_console
 status: active
@@ -935,6 +935,35 @@ As an intake operator, I need to edit event title/date/location/source evidence
 and approve, hold, or reject candidates.
 
 Current fit: present. Actual canonical import remains policy-limited.
+
+### Finance: Commercial Terms
+
+As Finance or the Admin Owner, I need to see and change what Catch charges
+hosts without calling callables or pasting values.
+
+Current fit: present at `/finance/commercial-terms` (feature
+`features/commercial-terms`). It shows the platform defaults and their newest
+revisions with what changed, offers the owner's 30 Oct 2026 decision as the
+starting draft while platform terms are unsaved, and saves only after a
+field-by-field preview against the reviewed revision and a reason. Organizer
+overrides are listed, found by name, and edited at
+`/finance/commercial-terms/organizers/{organizerId}`, where every unticked
+term reads as inherited. An unconfirmed save is retried exactly; a conflict
+keeps the draft and asks for a fresh review. Analytics viewers do not see it.
+
+### Finance: Payment Routing
+
+As Finance or the Admin Owner, I need to see who collects event tickets, form
+fees and host memberships, in which mode, and change it safely.
+
+Current fit: present at `/finance/payment-routing` (feature
+`features/payment-routing`) for the app policy. Each purpose shows its route
+(host collects through `razorpayOAuth`, or Catch splits through
+`razorpayRoute`) and a test or live badge. A change is previewed against the
+saved revision, and turning a purpose live, choosing the Route split or turning
+it off needs the phrase typed. Before the first app policy exists, the screen
+says that form fees follow each organizer's own connection and that saving
+replaces that. Organizer overrides are not edited here.
 
 ### Intake: Organizers
 

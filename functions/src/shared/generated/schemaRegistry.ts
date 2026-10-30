@@ -277,6 +277,8 @@ export {commercialTermsOverrideSchema} from "./schemas/commercialTermsOverride";
 export {commercialTermsSnapshotSchema} from "./schemas/commercialTermsSnapshot";
 export {manageCommercialTermsCallablePayloadSchema} from "./schemas/manageCommercialTermsInput";
 export {manageCommercialTermsCallableResponseSchema} from "./schemas/manageCommercialTermsOutput";
+export {adminListCommercialTermsCallablePayloadSchema} from "./schemas/adminListCommercialTermsInput";
+export {adminListCommercialTermsCallableResponseSchema} from "./schemas/adminListCommercialTermsOutput";
 export {managePaymentRoutingPolicyCallablePayloadSchema} from "./schemas/managePaymentRoutingPolicyInput";
 export {managePaymentRoutingPolicyCallableResponseSchema} from "./schemas/managePaymentRoutingPolicyOutput";
 export {manageEventOfferCheckoutCallablePayloadSchema} from "./schemas/manageEventOfferCheckoutInput";

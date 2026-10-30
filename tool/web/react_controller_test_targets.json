@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 20,
-  "updated": "2026-10-19",
+  "version": 21,
+  "updated": "2026-10-30",
   "owner": "web_surface_architecture",
   "statuses": {
     "required": "A behavior test must exist and import the target hook.",
@@ -27,6 +27,11 @@
     {
       "source": "admin/src/features/catch-support/controllers/useCatchWhatsappTrialController.ts",
       "test": "admin/src/features/catch-support/controllers/useCatchWhatsappTrialController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/commercial-terms/controllers/useCommercialTermsController.ts",
+      "test": "admin/src/features/commercial-terms/controllers/useCommercialTermsController.test.tsx",
       "status": "required"
     },
     {
@@ -122,6 +127,11 @@
     {
       "source": "admin/src/features/overview/controllers/useOverviewController.ts",
       "test": "admin/src/features/overview/controllers/useOverviewController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/payment-routing/controllers/usePaymentRoutingController.ts",
+      "test": "admin/src/features/payment-routing/controllers/usePaymentRoutingController.test.tsx",
       "status": "required"
     },
     {
