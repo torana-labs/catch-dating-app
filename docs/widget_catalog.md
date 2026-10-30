@@ -617,9 +617,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>GuestBookDock</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:318</code> | — | — | No class documentation or registry summary. |
 | <code>EventBookingDock</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:30</code> | — | — | Provider-free booking dock renderer for eligible, paid, booked, waitlist, waitlist-offer, attended, past, disabled, pending, and error states. |
 | <code>EventDetailDock</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:90</code> | — | — | No class documentation or registry summary. |
-| <code>EventDockStatusText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:600</code> | — | — | No class documentation or registry summary. |
-| <code>EventPriceText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:518</code> | — | — | No class documentation or registry summary. |
-| <code>WaitlistOfferNotice</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:556</code> | — | — | No class documentation or registry summary. |
+| <code>EventDockStatusText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:605</code> | — | — | No class documentation or registry summary. |
+| <code>EventPriceText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:523</code> | — | — | No class documentation or registry summary. |
+| <code>WaitlistOfferNotice</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:561</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailFactList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:347</code> | — | — | Flat Event Detail fact rows with structural stacked and inline modes. |
 | <code>EventDetailGoodToKnowList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:314</code> | — | — | Good-to-know list for requirements, expectations, booking, cancellation, and settlement rows. |
 | <code>EventDetailHintList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:81</code> | — | — | Why-you-might-click hint list derived from event format and activity context. |
@@ -829,8 +829,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostFormNumberField</code> | <code>lib/hosts/presentation/forms/host_form_number_field.dart:6</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormOverviewSectionList</code> | <code>lib/hosts/presentation/forms/host_form_overview_section_list.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormPaymentDetailSheet</code> | <code>lib/hosts/presentation/forms/host_form_payment_detail_sheet.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormPaymentSection</code> | <code>lib/hosts/presentation/forms/host_form_payment_section.dart:16</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormPaymentSetupSection</code> | <code>lib/hosts/presentation/forms/host_form_payment_section.dart:49</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormPaymentSection</code> | <code>lib/hosts/presentation/forms/host_form_payment_section.dart:17</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormPaymentSetupSection</code> | <code>lib/hosts/presentation/forms/host_form_payment_section.dart:51</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormPaymentSheet</code> | <code>lib/hosts/presentation/forms/host_form_payment_sheet.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormPaymentsSectionList</code> | <code>lib/hosts/presentation/forms/host_form_payments_section_list.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormQuestionSection</code> | <code>lib/hosts/presentation/forms/host_form_question_section.dart:12</code> | — | — | No class documentation or registry summary. |
@@ -938,8 +938,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostPaymentAccountLoadingCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:638</code> | — | — | No class documentation or registry summary. |
 | <code>HostPaymentAccountControllerCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_controller_card.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>HostPaymentAccountSection</code> | <code>lib/hosts/presentation/payments/host_payment_account_section.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostRazorpayConnectionCard</code> | <code>lib/hosts/presentation/payments/host_razorpay_connection_section.dart:15</code> | — | — | Organizer payout setup: the organizer connects their own Razorpay account, so guest payments for events and forms settle there, never with Catch. |
-| <code>HostRazorpayConnectionSection</code> | <code>lib/hosts/presentation/payments/host_razorpay_connection_section.dart:38</code> | — | — | No class documentation or registry summary. |
+| <code>HostRazorpayConnectionCard</code> | <code>lib/hosts/presentation/payments/host_razorpay_connection_section.dart:16</code> | — | — | Organizer payout setup: the organizer connects their own Razorpay account, so guest payments for events, forms and memberships settle there, never with Catch. One connection serves all three. |
+| <code>HostRazorpayConnectionSection</code> | <code>lib/hosts/presentation/payments/host_razorpay_connection_section.dart:59</code> | — | — | No class documentation or registry summary. |
 | <code>HostAnalyticsObservedStagesSection</code> | <code>lib/hosts/presentation/widgets/host_analytics_observed_stages_section.dart:8</code> | — | — | Observed period stage counts with source completeness, without cohort joins. |
 | <code>HostAnalyticsPresenceSection</code> | <code>lib/hosts/presentation/widgets/host_analytics_presence_section.dart:8</code> | — | — | Public presence totals with explicit unavailable-data and measurement limits. |
 | <code>HostAnalyticsReportLoadingIndicator</code> | <code>lib/hosts/presentation/widgets/host_analytics_report_loading_indicator.dart:5</code> | — | — | Analytics recommendations, events, and quality panels depend on the report. |

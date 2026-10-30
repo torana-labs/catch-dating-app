@@ -4,6 +4,7 @@ import 'package:catch_consumer_app/consumer_platform_app.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/contexts/payments/data/organizer_event_checkout.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -332,7 +333,7 @@ void _nativeOwnershipTests() {
     );
 
     test(
-      'account replacement retains native exclusion before a second order request',
+      'account replacement retains native exclusion before a second checkout opens',
       () async {
         debugDefaultTargetPlatformOverride = TargetPlatform.android;
         addTearDown(() => debugDefaultTargetPlatformOverride = null);
@@ -358,14 +359,13 @@ void _nativeOwnershipTests() {
         final factory = container.read(
           catch_payment.razorpayCheckoutFactoryProvider,
         );
-        final paymentA = _pay(repositoryA);
+        final paymentA = _pay(repositoryA, 'order_1');
         final rejectedA = expectLater(
           paymentA,
           throwsA(isA<SignInRequiredException>()),
         );
         await pumpEventQueue();
         expect(calls, hasLength(1));
-        expect(functions.orders, hasLength(1));
 
         auth.add('account-b');
         await pumpEventQueue();
@@ -378,10 +378,9 @@ void _nativeOwnershipTests() {
           same(factory),
         );
         await expectLater(
-          _pay(repositoryB),
+          _pay(repositoryB, 'order_2'),
           throwsA(isA<PaymentFailedException>()),
         );
-        expect(functions.orders, hasLength(1));
         expect(calls, hasLength(1));
 
         // A's terminal native response releases only native exclusion. It
@@ -389,21 +388,28 @@ void _nativeOwnershipTests() {
         nativeResults.single.complete(failure());
         await pumpEventQueue();
         expect(functions.verifications, isEmpty);
-        final paymentB = _pay(repositoryB);
+        final paymentB = _pay(repositoryB, 'order_2');
         await pumpEventQueue();
-        expect(functions.orders, hasLength(2));
         expect(calls, hasLength(2));
-        expect(calls.last.arguments, containsPair('order_id', 'order-2'));
-        nativeResults.last.complete(success('order-2'));
+        expect(calls.last.arguments, containsPair('order_id', 'order_2'));
+        // The order belongs to the organizer's account, keyed by its token.
+        expect(
+          calls.last.arguments,
+          containsPair('key', 'rzp_test_oauth_organizer'),
+        );
+        nativeResults.last.complete(success('order_2'));
         final receipt = await paymentB;
-        expect(receipt.orderId, 'order-2');
-        expect(receipt.paymentId, 'pay-order-2');
+        expect(receipt.orderId, 'order_2');
+        expect(receipt.paymentId, _organizerPaymentId);
         expect(receipt.eventId, 'event');
         expect(functions.verifications, [
           {
-            'paymentId': 'pay-order-2',
-            'orderId': 'order-2',
-            'signature': 'sig-order-2',
+            'action': 'status',
+            'paymentId': _organizerPaymentId,
+            'callback': {
+              'paymentId': 'pay-order_2',
+              'signature': 'sig-order_2',
+            },
           },
         ]);
       },
@@ -411,35 +417,65 @@ void _nativeOwnershipTests() {
   });
 }
 
-Future<PaymentConfirmationData> _pay(PaymentRepository repository) =>
-    repository.processPayment(
-      eventId: 'event',
-      currencyCode: 'INR',
-      description: 'Event',
-      userName: 'Guest',
-      userEmail: 'guest@example.com',
-      userContact: '+919876543210',
-    );
+const _organizerPaymentId = 'pp_0123456789abcdef0123456789abcdef';
+
+/// INR is sold only through the organizer's own Razorpay checkout; this is
+/// the native open the shared attempt lease guards.
+Future<PaymentConfirmationData> _pay(
+  PaymentRepository repository,
+  String orderId,
+) => repository.payOrganizerCheckout(
+  session: OrganizerCheckoutSession(
+    eventId: 'event',
+    admitted: false,
+    payment: OrganizerCheckoutPayment(
+      paymentId: _organizerPaymentId,
+      status: 'checkoutReady',
+      amountPaise: 4200,
+      currency: 'INR',
+      checkout: OrganizerCheckout(
+        publicToken: 'rzp_test_oauth_organizer',
+        orderId: orderId,
+        amountPaise: 4200,
+        currency: 'INR',
+        description: 'Event',
+        expiresAtMillis: DateTime(2100).millisecondsSinceEpoch,
+      ),
+    ),
+  ),
+  method: OrganizerPaymentMethod.card,
+  displayName: 'Guest',
+  description: 'Event',
+  userEmail: 'guest@example.com',
+  userContact: '+919876543210',
+);
 
 class _PaymentFunctions extends Fake implements FirebaseFunctions {
-  final orders = <Object?>[];
   final verifications = <Object?>[];
 
   @override
   HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) =>
       _PaymentCallable((parameters) {
         switch (name) {
-          case 'createRazorpayOrder':
-            orders.add(parameters);
-            return {
-              'orderId': 'order-${orders.length}',
-              'amount': 4200,
-              'currency': 'INR',
-              'keyId': 'rzp_test',
-            };
-          case 'verifyRazorpayPayment':
+          case 'managePublicEventCheckout':
             verifications.add(parameters);
-            return {'verified': true};
+            return {
+              'quote': null,
+              'payment': {
+                'paymentId': _organizerPaymentId,
+                'status': 'admitted',
+                'amountPaise': 4200,
+                'currency': 'INR',
+                'checkout': null,
+                'eventId': 'event',
+              },
+              'admission': {
+                'eventId': 'event',
+                'attendeeId': 'attendee-1',
+                'status': 'registered',
+              },
+              'serverTimeMillis': 1,
+            };
           default:
             throw StateError('Unexpected callable: $name');
         }

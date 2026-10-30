@@ -135,6 +135,9 @@ class EventDetailDock extends ConsumerWidget {
     final supportsPaid = ref.watch(
       eventPaidBookingSupportProvider(event.currency),
     );
+    // INR seats are sold only through the organizer's own Razorpay checkout;
+    // Catch never collects them, so other INR paid seats are unavailable.
+    final inr = event.currency.trim().toUpperCase() == 'INR';
 
     final authState = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
     final uid = authState.isSettledData ? authState.value : null;
@@ -224,6 +227,8 @@ class EventDetailDock extends ConsumerWidget {
       now: referenceNow,
       hasInviteCode: inviteCode?.trim().isNotEmpty ?? false,
       supportsPaidBookings: supportsPaid,
+      paidSeatsSoldInApp: !inr || usesOrganizerCheckout(event),
+      paidOffersSoldInApp: !inr,
       organizerCapabilities: organizerCapabilities,
       mutationState: EventDetailBookingDockMutationState(
         bookPending: bookMutation.isPending,

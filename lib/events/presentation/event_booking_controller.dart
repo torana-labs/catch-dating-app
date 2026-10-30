@@ -2,11 +2,9 @@ import 'package:catch_dating_app/contexts/account/data/authenticated_session.dar
 import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -75,7 +73,6 @@ class EventBookingController extends _$EventBookingController {
     }
     return _startCheckout(
       event: event,
-      user: user,
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
     );
@@ -83,7 +80,6 @@ class EventBookingController extends _$EventBookingController {
 
   Future<PaymentConfirmationData> _startCheckout({
     required Event event,
-    required UserProfile user,
     String? inviteCode,
     String? inviteLinkId,
   }) {
@@ -93,15 +89,11 @@ class EventBookingController extends _$EventBookingController {
         message: 'Paid bookings in ${event.currency} are not available yet.',
       );
     }
+    // INR seats are sold only through the organizer's checkout; this path
+    // refuses them rather than collecting on Catch's account.
     return paymentRepo.processPayment(
       eventId: event.id,
       currencyCode: event.currency,
-      description:
-          // copy:allow-inline(Composes governed event title and date separator copy)
-          '${event.title}${StructuredDomainCopy.eventTitleDateSeparator}${event.shortDateLabel}',
-      userName: user.name,
-      userEmail: user.email,
-      userContact: user.phoneNumber,
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
     );
@@ -179,7 +171,6 @@ class EventBookingController extends _$EventBookingController {
         // cannot turn the accepted paid offer into a free booking command.
         return await _startCheckout(
           event: event,
-          user: user,
           inviteCode: inviteCode,
           inviteLinkId: inviteLinkId,
         );

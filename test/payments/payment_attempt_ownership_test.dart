@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/razorpay_checkout.dart';
-import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,50 +9,25 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 import 'payment_test_fakes.dart';
 
-Map<String, Object?> _order(String id, {int amount = 25000}) => {
-  'orderId': id,
-  'amount': amount,
-  'currency': 'INR',
-  'keyId': 'rzp_test_server_environment',
-};
-
-RazorpaySuccessResponse _success(String id) => RazorpaySuccessResponse(
-  paymentId: 'pay_$id',
-  orderId: id,
-  signature: 'sig_$id',
-);
-
-Future<PaymentConfirmationData> _pay(
-  PaymentRepository repository, [
-  String event = 'event-a',
-]) => repository.processPayment(
-  eventId: event,
-  currencyCode: 'INR',
-  description: 'Event',
-  userName: 'Guest',
-  userEmail: 'guest@example.com',
-  userContact: '+919876543210',
-);
-
 void main() {
   late TestFirebaseFunctions functions;
-  late TestHttpsCallable create;
+  late OrganizerCheckoutFake server;
   late TestHttpsCallable verify;
   late List<FakeRazorpay> checkouts;
   late PaymentRepository repository;
+  Object? nextOpenError;
 
   setUp(() {
     functions = TestFirebaseFunctions();
-    create = TestHttpsCallable('createRazorpayOrder')
-      ..resultData = _order('order-a');
-    verify = TestHttpsCallable('verifyRazorpayPayment')
-      ..resultData = {'verified': true};
-    functions.callables.addAll({create.name: create, verify.name: verify});
+    server = OrganizerCheckoutFake(functions);
+    verify = server.callable;
     checkouts = [];
+    nextOpenError = null;
     repository = PaymentRepository(
       functions,
       razorpayFactory: () {
-        final checkout = FakeRazorpay();
+        final checkout = FakeRazorpay()..openError = nextOpenError;
+        nextOpenError = null;
         checkouts.add(checkout);
         return checkout;
       },
@@ -65,34 +39,35 @@ void main() {
   tearDown(() => repository.dispose());
 
   test('mismatched order cannot consume a current attempt', () async {
-    final payment = _pay(repository);
+    final payment = payOrganizer(repository, server.session('event-a'));
     var settled = false;
     unawaited(payment.then((_) => settled = true));
     await flushTestEventQueue();
-    checkouts.single.emitSuccess(_success('old-order'));
+    checkouts.single.emitSuccess(organizerSuccess('order_old'));
     await flushTestEventQueue();
     expect(verify.calls, isEmpty);
     expect(settled, isFalse);
-    checkouts.single.emitSuccess(_success('order-a'));
-    expect((await payment).orderId, 'order-a');
+    checkouts.single.emitSuccess(organizerSuccess('order_a'));
+    expect((await payment).orderId, 'order_a');
   });
 
   test(
     'duplicate success and failure during verification cannot complete twice',
     () async {
+      final session = server.session('event-a');
       final verification = Completer<Object?>();
       verify.onCall = (_) => verification.future;
-      final payment = _pay(repository);
+      final payment = payOrganizer(repository, session);
       await flushTestEventQueue();
       final checkout = checkouts.single;
       checkout
-        ..emitSuccess(_success('order-a'))
-        ..emitSuccess(_success('order-a'))
+        ..emitSuccess(organizerSuccess('order_a'))
+        ..emitSuccess(organizerSuccess('order_a'))
         ..emitError(const RazorpayFailureResponse(isCancelled: true));
       await flushTestEventQueue();
       expect(verify.calls, hasLength(1));
-      verification.complete({'verified': true});
-      expect((await payment).orderId, 'order-a');
+      verification.complete(server.admittedFor(session));
+      expect((await payment).orderId, 'order_a');
       expect(checkout.clearCalls, 1);
     },
   );
@@ -101,7 +76,7 @@ void main() {
     test(
       'retired callbacks cannot consume retry with ${reuseOrder ? 'same' : 'different'} order',
       () async {
-        final first = _pay(repository);
+        final first = payOrganizer(repository, server.session('event-a'));
         final rejected = expectLater(
           first,
           throwsA(isA<PaymentCancelledException>()),
@@ -112,11 +87,13 @@ void main() {
         final lateFailure = oldCheckout.errorHandler!;
         oldCheckout.emitError(const RazorpayFailureResponse(isCancelled: true));
         await rejected;
-        final nextOrder = reuseOrder ? 'order-a' : 'order-b';
-        create.resultData = _order(nextOrder, amount: 48000);
-        final second = _pay(repository, 'event-b');
+        final nextOrder = reuseOrder ? 'order_a' : 'order_b';
+        final second = payOrganizer(
+          repository,
+          server.session('event-b', orderId: nextOrder, amountPaise: 48000),
+        );
         await flushTestEventQueue();
-        await lateSuccess(_success('order-a'));
+        await lateSuccess(organizerSuccess('order_a'));
         lateFailure(
           const RazorpayFailureResponse(
             isCancelled: false,
@@ -124,7 +101,7 @@ void main() {
           ),
         );
         expect(verify.calls, isEmpty);
-        checkouts.last.emitSuccess(_success(nextOrder));
+        checkouts.last.emitSuccess(organizerSuccess(nextOrder));
         final result = await second;
         expect(result.eventId, 'event-b');
         expect(result.amountInPaise, 48000);
@@ -134,68 +111,68 @@ void main() {
   }
 
   test('startup failure releases only its own reservation for retry', () async {
-    create.error = StateError('order unavailable');
-    await expectLater(_pay(repository), throwsA(isA<PaymentFailedException>()));
+    nextOpenError = StateError('checkout unavailable');
+    await expectLater(
+      payOrganizer(repository, server.session('event-a')),
+      throwsA(isA<PaymentFailedException>()),
+    );
     expect(checkouts.single.cleared, isTrue);
-    create.error = null;
-    final retry = _pay(repository);
+    final retry = payOrganizer(repository, server.session('event-a'));
     await flushTestEventQueue();
-    checkouts.last.emitSuccess(_success('order-a'));
+    checkouts.last.emitSuccess(organizerSuccess('order_a'));
     expect((await retry).eventId, 'event-a');
   });
 
   test('verification failure permits a later independent retry', () async {
     verify.error = StateError('verification unavailable');
-    final payment = _pay(repository);
+    final payment = payOrganizer(repository, server.session('event-a'));
     final failed = expectLater(payment, throwsA(isA<PaymentFailedException>()));
     await flushTestEventQueue();
-    checkouts.single.emitSuccess(_success('order-a'));
+    checkouts.single.emitSuccess(organizerSuccess('order_a'));
     await failed;
     verify.error = null;
-    final retry = _pay(repository);
+    final retry = payOrganizer(repository, server.session('event-a'));
     await flushTestEventQueue();
-    checkouts.last.emitSuccess(_success('order-a'));
-    expect((await retry).orderId, 'order-a');
+    checkouts.last.emitSuccess(organizerSuccess('order_a'));
+    expect((await retry).orderId, 'order_a');
   });
 
-  test(
-    'dispose settles an order wait and never opens its late response',
-    () async {
-      final order = Completer<Object?>();
-      create.onCall = (_) => order.future;
-      final payment = _pay(repository);
-      final failed = expectLater(
-        payment,
-        throwsA(isA<SignInRequiredException>()),
-      );
-      repository.dispose();
-      await failed;
-      order.complete(_order('order-a'));
-      await flushTestEventQueue();
-      expect(checkouts.single.openCalls, isEmpty);
-      expect(checkouts.single.clearCalls, 1);
-      await expectLater(
-        _pay(repository),
-        throwsA(isA<SignInRequiredException>()),
-      );
-      expect(create.calls, hasLength(1));
-    },
-  );
-
-  test('dispose during verification cannot publish a late success', () async {
-    final verification = Completer<Object?>();
-    verify.onCall = (_) => verification.future;
-    final payment = _pay(repository);
+  test('dispose settles an open checkout and refuses new attempts', () async {
+    final payment = payOrganizer(repository, server.session('event-a'));
     final failed = expectLater(
       payment,
       throwsA(isA<SignInRequiredException>()),
     );
     await flushTestEventQueue();
-    checkouts.single.emitSuccess(_success('order-a'));
+    final lateSuccess = checkouts.single.successHandler!;
+    repository.dispose();
+    await failed;
+    await lateSuccess(organizerSuccess('order_a'));
+    await flushTestEventQueue();
+    expect(checkouts.single.clearCalls, 1);
+    expect(verify.calls, isEmpty);
+    await expectLater(
+      payOrganizer(repository, server.session('event-a')),
+      throwsA(isA<SignInRequiredException>()),
+    );
+    expect(checkouts, hasLength(1));
+  });
+
+  test('dispose during verification cannot publish a late success', () async {
+    final session = server.session('event-a');
+    final verification = Completer<Object?>();
+    verify.onCall = (_) => verification.future;
+    final payment = payOrganizer(repository, session);
+    final failed = expectLater(
+      payment,
+      throwsA(isA<SignInRequiredException>()),
+    );
+    await flushTestEventQueue();
+    checkouts.single.emitSuccess(organizerSuccess('order_a'));
     await flushTestEventQueue();
     repository.dispose();
     await failed;
-    verification.complete({'verified': true});
+    verification.complete(server.admittedFor(session));
     await flushTestEventQueue();
     expect(checkouts.single.clearCalls, 1);
     expect(verify.calls, hasLength(1));
@@ -204,29 +181,32 @@ void main() {
   testWidgets(
     'ten-minute caller deadline cannot let old verification clear a retry',
     (tester) async {
+      final first = server.session('event-a');
       final verification = Completer<Object?>();
       verify.onCall = (_) => verification.future;
-      final payment = _pay(repository);
+      final payment = payOrganizer(repository, first);
       final timedOut = expectLater(
         payment,
         throwsA(isA<PaymentFailedException>()),
       );
       await tester.pump();
-      checkouts.single.emitSuccess(_success('order-a'));
+      checkouts.single.emitSuccess(organizerSuccess('order_a'));
       await tester.pump();
       await pumpFeatureUiFor(tester, const Duration(minutes: 10));
       await timedOut;
       final oldCheckout = checkouts.single;
-      verify.onCall = null;
-      create.resultData = _order('order-b');
-      final retry = _pay(repository, 'event-b');
+      verify.onCall = server.admit;
+      final retry = payOrganizer(
+        repository,
+        server.session('event-b', orderId: 'order_b'),
+      );
       await tester.pump();
       final nextCheckout = checkouts.last;
-      verification.complete({'verified': true});
+      verification.complete(server.admittedFor(first));
       await tester.pump();
       expect(nextCheckout.clearCalls, 0);
       expect(oldCheckout.clearCalls, 1);
-      nextCheckout.emitSuccess(_success('order-b'));
+      nextCheckout.emitSuccess(organizerSuccess('order_b'));
       await tester.pump();
       expect((await retry).eventId, 'event-b');
     },

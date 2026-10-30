@@ -72,6 +72,7 @@ class HostFormPaymentConnection {
     required this.mode,
     required this.accountId,
     required this.webhookVerified,
+    this.lastErrorCode,
   });
   factory HostFormPaymentConnection.fromMap(Map<Object?, Object?> map) =>
       HostFormPaymentConnection(
@@ -88,16 +89,42 @@ class HostFormPaymentConnection {
         ),
         accountId: formDefinitionNullableString(map['accountId']),
         webhookVerified: map['webhookVerified'] == true,
+        lastErrorCode: formDefinitionNullableString(map['lastErrorCode']),
       );
   final String connectionId;
   final HostFormPaymentConnectionStatus status;
   final HostFormPaymentMode mode;
   final String? accountId;
   final bool webhookVerified;
+
+  /// Set when Razorpay refused a token refresh or setup failed. The status can
+  /// still read `ready`, but the server will not take payments on it.
+  final String? lastErrorCode;
+
+  /// Matches the server's checkout readiness check.
   bool get ready =>
       status == HostFormPaymentConnectionStatus.ready &&
       webhookVerified &&
-      accountId != null;
+      accountId != null &&
+      lastErrorCode == null;
+
+  bool get live => status != HostFormPaymentConnectionStatus.disconnected;
+}
+
+/// The organizer's single Razorpay connection as payout setup presents it.
+/// Events, forms and memberships all collect through this one account.
+enum HostRazorpayConnectionState {
+  /// No live connection: offer Connect.
+  notConnected,
+
+  /// A connection is waiting for the Razorpay sign-in to finish.
+  connecting,
+
+  /// Exactly the account the server takes payments on.
+  ready,
+
+  /// A live connection can no longer take payments: offer Reconnect.
+  needsReconnect,
 }
 
 @immutable
@@ -146,6 +173,31 @@ class HostFormPaymentSetup {
   final List<HostFormPaymentConnection> connections;
   final Uri? authorizationUri;
   final HostFormPaymentCollection? collection;
+
+  /// Connections that are not disconnected, newest first.
+  List<HostFormPaymentConnection> get liveConnections =>
+      connections.where((connection) => connection.live).toList();
+
+  HostRazorpayConnectionState get razorpayConnectionState {
+    final live = liveConnections;
+    if (live.any((connection) => connection.ready)) {
+      return HostRazorpayConnectionState.ready;
+    }
+    if (live.isEmpty) return HostRazorpayConnectionState.notConnected;
+    return live.every(
+          (connection) =>
+              connection.status == HostFormPaymentConnectionStatus.connecting,
+        )
+        ? HostRazorpayConnectionState.connecting
+        : HostRazorpayConnectionState.needsReconnect;
+  }
+
+  /// Live connections that cannot take payments. Reconnecting disconnects
+  /// these first, so the organizer keeps a single account.
+  List<String> get staleConnectionIds => [
+    for (final connection in liveConnections)
+      if (!connection.ready) connection.connectionId,
+  ];
 }
 
 enum HostFormCollectionRoute {
