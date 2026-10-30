@@ -7,7 +7,6 @@ import {pathToFileURL} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {readFirebaseProjectAliases} from "../lib/firebase_project.mjs";
 import {parseFirebaseWebConfig} from "./storage_rules_firestore_iam.mjs";
-import {brand} from "@catch/brand";
 
 export const accountId = "catch-form-upload";
 export const signerRoleId = "catchFormUploadSigner";
@@ -32,7 +31,7 @@ export function uploadIdentityTarget(environment, projectId, purpose = "upload")
     environment, projectId, purpose, accountId: account, bucket: config.storageBucket,
     storageRole: purpose === "upload" ? "roles/storage.objectCreator" : "roles/storage.objectViewer",
     origins: environment === "prod"
-      ? [brand.web.origin, brand.web.wwwOrigin]
+      ? ["https://catchdates.com", "https://www.catchdates.com"]
       : [`https://${projectId}.web.app`, `https://${projectId}.firebaseapp.com`],
     email: `${account}@${projectId}.iam.gserviceaccount.com`,
     deployer: `github-actions-deploy@${projectId}.iam.gserviceaccount.com`,
