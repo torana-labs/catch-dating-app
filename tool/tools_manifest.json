@@ -3315,7 +3315,7 @@
         "storage.rules",
         "tool/firebase/check_rules_deployment_drift.test.mjs"
       ],
-      "description": "Compares normalized committed Firestore and Storage rules with every applicable active Firebase Rules release, skipping only when no read credential is available.",
+      "description": "Compares normalized committed Firestore and Storage rules with every applicable active Firebase Rules release, skipping only when no read credential is available or the only one is a Claude Code cloud session's proxy gcloud token.",
       "checks": [
         "node --check tool/firebase/check_rules_deployment_drift.mjs",
         "node --test tool/firebase/check_rules_deployment_drift.test.mjs",

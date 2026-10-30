@@ -73,6 +73,16 @@ export function parseArgs(argv) {
   return parsed;
 }
 
+// A Claude Code cloud session sets CLOUDSDK_AUTH_ACCESS_TOKEN for its egress
+// proxy, so gcloud prints a token there that cannot read Catch's Firebase
+// projects. Sending it would only make a rejected request to a live project.
+export function unusableAmbientCredential(environment = process.env) {
+  return environment.CLAUDE_CODE_REMOTE === "true" &&
+    Boolean(environment.CLOUDSDK_AUTH_ACCESS_TOKEN?.trim()) ?
+    "claude-code-cloud-session" :
+    null;
+}
+
 export function resolveRulesAccessToken({
   environment = process.env,
   runCommand = defaultRunCommand,
@@ -81,6 +91,7 @@ export function resolveRulesAccessToken({
     const token = environment[key]?.trim();
     if (token) return {source: key, token};
   }
+  if (unusableAmbientCredential(environment) != null) return null;
   for (const args of [
     ["auth", "application-default", "print-access-token", "--quiet"],
     ["auth", "print-access-token", "--quiet"],
@@ -236,18 +247,21 @@ export async function executeRulesDeploymentDriftCli(argv, dependencies = {}) {
     firebaseRcPath: path.join(repoRoot, ".firebaserc"),
     project: args.project,
   });
+  const environment = dependencies.environment ?? process.env;
   const credentials = Object.hasOwn(dependencies, "credentials")
     ? dependencies.credentials
     : resolveRulesAccessToken({
-      environment: dependencies.environment,
+      environment,
       runCommand: dependencies.runCommand,
     });
   if (credentials == null) {
+    const unusable = unusableAmbientCredential(environment);
     const report = {
       projectId,
-      reason: "missing-credentials",
+      reason: unusable == null ? "missing-credentials" : "unusable-credentials",
       skipped: true,
       status: "skipped",
+      ...(unusable == null ? {} : {credentialSource: unusable}),
     };
     return {exitCode: 0, output: formatReport(report, args.json), report};
   }
@@ -281,6 +295,12 @@ export async function executeRulesDeploymentDriftCli(argv, dependencies = {}) {
 
 function formatReport(report, json) {
   if (json) return `${JSON.stringify(report, null, 2)}\n`;
+  if (report.reason === "unusable-credentials") {
+    return "SKIP Firebase rules deployment drift: this Claude Code cloud session's gcloud " +
+      "token (CLOUDSDK_AUTH_ACCESS_TOKEN) belongs to its egress proxy and cannot read " +
+      "the Firebase Rules API, so it was not sent; no remote comparison ran. " +
+      "Set FIREBASE_RULES_ACCESS_TOKEN to compare from here.\n";
+  }
   if (report.skipped) {
     return "SKIP Firebase rules deployment drift: no OAuth access token is available. " +
       "Set FIREBASE_RULES_ACCESS_TOKEN or authenticate gcloud; no remote comparison ran.\n";
@@ -390,7 +410,8 @@ Options:
 
 Authentication is read-only. Set FIREBASE_RULES_ACCESS_TOKEN or
 GOOGLE_OAUTH_ACCESS_TOKEN, or authenticate gcloud. Missing credentials skip with
-exit 0; API, authorization, missing-release, and content-drift failures exit 1.
+exit 0, as does a Claude Code cloud session's proxy gcloud token, which is never
+sent; API, authorization, missing-release, and content-drift failures exit 1.
 `;
 }
 

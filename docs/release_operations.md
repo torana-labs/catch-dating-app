@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.0.0
+version: 3.0.1
 updated: 2026-10-30
 owner: recursive_audit_loop
 status: active
@@ -173,10 +173,14 @@ hide a meaningful source change.
 Authentication uses `FIREBASE_RULES_ACCESS_TOKEN`,
 `GOOGLE_OAUTH_ACCESS_TOKEN`, or an authenticated `gcloud` session. A machine
 with no credentials prints a clear skip and exits zero so untrusted CI remains
-usable. Once credentials exist, API/authorization errors, missing releases, and
-content drift fail. The authenticated backend promotion runs the same check
-against the exact CI-approved source after its ordered deploy stages, with a
-bounded retry window for Rules release propagation.
+usable. A Claude Code cloud session counts as having none: its `gcloud` token
+comes from `CLOUDSDK_AUTH_ACCESS_TOKEN`, which belongs to the session's egress
+proxy and cannot read Catch's projects, so the check skips without sending it.
+An explicit token still runs the comparison there. Once credentials exist,
+API/authorization errors, missing releases, and content drift fail. The
+authenticated backend promotion runs the same check against the exact
+CI-approved source after its ordered deploy stages, with a bounded retry window
+for Rules release propagation.
 
 ## Storage Rules Cross-Service Readiness
 
