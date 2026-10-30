@@ -185,6 +185,13 @@ test("Dart takes only its strings; identifiers rename with rename_to_organizer",
   assert.equal(renameDartStrings("final clubId = json['clubId'];\n", plan), "final clubId = json['organizerId'];\n");
 });
 
+test("a moved fixture loaded by file name or stem follows the move", () => {
+  const {plan} = fixture({"contracts/fixtures/valid/club_doc.json": "{}\n"});
+  assert.equal(renameDartStrings("final json = load('club_doc.json');\n", plan), "final json = load('organizer_doc.json');\n");
+  assert.equal(renameScript({file: "x.ts", source: "const organizer = fixture(\"club_doc\");\n", plan}),
+    "const organizer = fixture(\"organizer_doc\");\n");
+});
+
 test("the codemods, generated outputs and the migration record are left alone", () => {
   const {plan} = fixture();
   for (const file of ["tool/architecture/rename_wire_to_organizer.mjs", "functions/src/shared/generated/x.ts",

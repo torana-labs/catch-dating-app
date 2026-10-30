@@ -130,6 +130,23 @@ export function scriptIdentifiers(source, file) {
   return names;
 }
 
+// Contract fixtures are loaded by file name or stem; a name two moves share
+// is left to its path.
+export function moveNames(moves) {
+  const names = new Map();
+  const shared = new Set();
+  for (const [from, to] of moves) {
+    if (!from.startsWith("contracts/fixtures/")) continue;
+    for (const [a, b] of [[path.posix.basename(from), path.posix.basename(to)],
+      [path.posix.basename(from, ".json"), path.posix.basename(to, ".json")]]) {
+      if (names.has(a) && names.get(a) !== b) shared.add(a);
+      names.set(a, b);
+    }
+  }
+  for (const name of shared) names.delete(name);
+  return names;
+}
+
 export function buildPlan({files, read}) {
   const wire = new Map();
   for (const file of files) {
@@ -144,7 +161,7 @@ export function buildPlan({files, read}) {
     }
   }
   const {moves, collisions} = planMoves(files);
-  return {wire, identifiers, moves, collisions};
+  return {wire, identifiers, moves, moveNames: moveNames(moves), collisions};
 }
 
 // What this codemod would still rename. The nomenclature gate reports these,
@@ -182,6 +199,9 @@ export function renameWireSegments(value, wire) {
 // A path string follows a moved file, or names a generated output, which
 // follows the source its generator renames.
 export function renamePathString(value, plan) {
+  // A fixture loaded by its file name or stem (fixture("club_doc")).
+  const named = plan.moveNames?.get(value);
+  if (named != null) return named;
   if (!/\/[^/]*\.[a-z]+$/u.test(value) && !/^[^/]+\.[a-z]+$/u.test(value)) return value;
   const bare = value.replace(/^(?:\.\.?\/)+/u, "");
   if (plan.moves.has(bare)) return value.slice(0, value.length - bare.length) + plan.moves.get(bare);
@@ -485,7 +505,10 @@ export function renameDartStrings(source, plan) {
     let end = index;
     while (end < source.length && /\s/u.test(code[end])) end += 1;
     const span = source.slice(index, end);
-    out += /^r?['"]/u.test(span) ? renameWireSegments(span, plan.wire) : span;
+    const literal = /^(r?)(['"])([^'"\\$\n]*)\2$/u.exec(span);
+    const moved = literal == null ? null : renamePathString(literal[3], plan);
+    out += moved != null && moved !== literal[3] ? `${literal[1]}${literal[2]}${moved}${literal[2]}`
+      : /^r?['"]/u.test(span) ? renameWireSegments(span, plan.wire) : span;
     index = end;
   }
   return out;
