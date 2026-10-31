@@ -43,15 +43,15 @@ function fixture(extra = {}) {
   return {sources, plan: buildPlan({files, read: (file) => sources[file]})};
 }
 
-test("contracts declare wire names, and the subtype and warehouse columns stay", () => {
+test("contracts declare wire names, warehouse columns among them, and the subtype stays", () => {
   assert.deepEqual(contractWireNames(JSON.parse(eventSchema)).sort(),
-    ["clubId", "clubUpdate", "compatibilityClubId"]);
+    ["clubId", "clubUpdate", "club_id", "compatibilityClubId"]);
   const {plan} = fixture();
   assert.equal(plan.wire.get("clubId"), "organizerId");
   assert.equal(plan.wire.get("compatibilityClubId"), "canonicalHostId");
   assert.equal(plan.wire.get("clubMemberships"), "organizerMemberships");
   assert.equal(plan.wire.has("club"), false);
-  assert.equal(plan.wire.has("club_id"), false);
+  assert.equal(plan.wire.get("club_id"), "organizer_id");
 });
 
 test("club files move, and a move onto an existing file collides", () => {
@@ -182,7 +182,8 @@ test("JSON keeps its formatting, drops the club twin and keeps one required entr
   assert.ok("canonicalHostId" in parsed.properties);
   assert.deepEqual(parsed.properties.organizerType.enum, ["club", "venue"]);
   assert.deepEqual(parsed.properties.notificationType.enum, ["organizerUpdate", "eventReminder"]);
-  assert.ok("club_id" in parsed.properties);
+  assert.ok("organizer_id" in parsed.properties);
+  assert.equal("club_id" in parsed.properties, false);
   assert.equal(renameJson("{\"a\": 1,  \"clubId\": \"x\"}\n", plan), "{\"a\": 1,  \"organizerId\": \"x\"}\n");
 });
 
