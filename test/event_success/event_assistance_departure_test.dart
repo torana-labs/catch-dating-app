@@ -2,23 +2,21 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/platform/schema_contracts/generated/callables/confirm_event_assistance_departure_callable_request.g.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/confirm_event_assistance_departure_callable_payload.g.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/event_assistance_departure_roster_callable_response.g.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/event_assistance_group_progress_callable_response.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_assistance_departure_fixtures.dart';
 
 void main() {
   final responseSchema = JsonSchema.create(
-    schemaEventAssistanceGroupProgressCallableResponseSchema,
+    contractSchema('EventAssistanceGroupProgressCallableResponse'),
   );
   final commandSchema = JsonSchema.create(
-    schemaConfirmEventAssistanceDepartureCallablePayloadSchema,
+    contractSchema('ConfirmEventAssistanceDepartureCallablePayload'),
   );
   final rosterSchema = JsonSchema.create(
-    schemaEventAssistanceDepartureRosterCallableResponseSchema,
+    contractSchema('EventAssistanceDepartureRosterCallableResponse'),
   );
 
   EventAssistanceDepartureChange prepare(

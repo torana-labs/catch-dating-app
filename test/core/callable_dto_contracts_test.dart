@@ -42,10 +42,10 @@ import 'package:catch_dating_app/platform/schema_contracts/generated/callable_re
         UpdateEventCallableRequest,
         UpdateEventReviewCallableRequest,
         UpdateUserProfilePatch;
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schema_contracts;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
+
+import '../support/contract_schemas.dart';
 
 void main() {
   group('callable request DTO contracts', () {
@@ -566,9 +566,9 @@ void main() {
 }
 
 void _expectValid(String schemaName, Object? payload) {
-  final schema = schema_contracts.schemaContractsByName[schemaName];
-  expect(schema, isNotNull, reason: 'Missing generated schema $schemaName');
-  final result = JsonSchema.create(schema!).validate(payload);
+  final result = JsonSchema.create(
+    contractSchema(schemaName),
+  ).validate(payload);
   expect(
     result.isValid,
     isTrue,

@@ -8,10 +8,10 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_c
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_settings_change.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
+
+import '../support/contract_schemas.dart';
 
 Map<String, Object?> sample(String name) =>
     (jsonDecode(
@@ -28,7 +28,7 @@ Map<String, Object?> review(Map<String, Object?> sample) =>
 
 void main() {
   final schema = JsonSchema.create(
-    schemas.schemaContractsByName['ControlEventRehearsalCallablePayload']!,
+    contractSchema('ControlEventRehearsalCallablePayload'),
   );
   test('practice command and form use the same deadline prerequisite', () {
     for (final name in ['initial', 'configured', 'paused']) {

@@ -6,6 +6,7 @@ import test from "node:test";
 import {
   buildFormContractInventory,
   scanCatchFieldCalls,
+  unreferencedFieldBindings,
 } from "./generate_flutter_form_contract_inventory.mjs";
 
 test("known-bad missing binding is detected", () => {
@@ -164,6 +165,39 @@ test("segmented choices cannot escape the missing-contract inventory", () => {
     assert.equal(result.summary.unboundCallsites, 1);
     assert.equal(result.callsites[0].contractValue, "(value) => value");
     assert.equal(result.callsites[1].contractValue, null);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});
+
+test("declared field bindings must stay referenced by Dart source", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-field-bindings-"));
+  try {
+    write(root, "contracts/forms/field_constraint_bindings.json", JSON.stringify({
+      lookupPrefixes: ["formProfile.profile."],
+      fields: {eventDocument: ["title", "capacity"], formProfile: ["profile.city"]},
+    }));
+    write(root, "lib/platform/schema_contracts/generated/field_constraints.g.dart", `
+      static const eventDocumentTitle = CatchContractFieldConstraints(
+        path: 'eventDocument.title',
+      );
+      static const eventDocumentCapacity = CatchContractFieldConstraints(
+        path: 'eventDocument.capacity',
+      );
+      static const formProfileProfileCity = CatchContractFieldConstraints(
+        path: 'formProfile.profile.city',
+      );
+    `);
+    write(root, "lib/feature/title.dart",
+      "final contract = CatchContractConstraints\n    .eventDocumentTitle;");
+    assert.deepEqual(unreferencedFieldBindings({repoRoot: root}), [
+      "eventDocument.capacity",
+      "formProfile.profile.city",
+    ]);
+    write(root, "widgetbook/lib/capacity.dart",
+      "CatchContractConstraints.eventDocumentCapacity;");
+    assert.deepEqual(unreferencedFieldBindings({repoRoot: root}),
+      ["formProfile.profile.city"]);
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }

@@ -15,10 +15,10 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_staff_change.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
+
+import '../support/contract_schemas.dart';
 
 Map<String, Object?> sample(String name) =>
     (jsonDecode(
@@ -36,7 +36,7 @@ const pacer = 'practice-staff:pacer',
 
 void main() {
   final schema = JsonSchema.create(
-    schemas.schemaContractsByName['ControlEventRehearsalCallablePayload']!,
+    contractSchema('ControlEventRehearsalCallablePayload'),
   );
   test('native reads the backend staff, movement and handover lifecycle', () {
     for (final name in [
@@ -191,7 +191,7 @@ void main() {
     expect(full.staffReview!.operators.length, 50);
     expect(full.membershipReviews!.rows.first.receivingOperatorIds.length, 52);
     final properties =
-        schemas.schemaContractsByName['EventRehearsalBootstrapCallableResponse']!['properties']
+        contractSchema('EventRehearsalBootstrapCallableResponse')['properties']
             as Map;
     final membershipSchema = JsonSchema.create(properties['membershipReviews']);
     expect(membershipSchema.validate(raw['membershipReviews']).isValid, isTrue);

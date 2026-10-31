@@ -77,8 +77,6 @@ echo "==> Running focused Flutter analysis"
 flutter analyze --fatal-infos \
   lib/platform/schema_contracts/generated/callable_request_dtos.g.dart \
   lib/platform/schema_contracts/generated/callables \
-  lib/platform/schema_contracts/generated/schema_contracts.g.dart \
-  lib/platform/schema_contracts/generated/schemas \
   lib/contexts/organizers/data/organizers_repository.dart \
   lib/contexts/organizers/data/organizer_callable_responses.dart \
   lib/contexts/organizers/data/organizer_posts_repository.dart \

@@ -1,14 +1,13 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_assistance_checkpoint_fixtures.dart';
 
 void main() {
   final schema = JsonSchema.create(
-    schemas.schemaContractsByName['EventAssistanceCheckpointCallableResponse']!,
+    contractSchema('EventAssistanceCheckpointCallableResponse'),
   );
   Map body(Map<String, Object?> wire) => checkpointBody(wire);
   Map closeout(Map<String, Object?> wire) => body(wire)['closeout']! as Map;
@@ -18,7 +17,9 @@ void main() {
     'request states and all member evidence reasons have exhaustive enum coverage',
     () {
       final props =
-          schemas.schemaContractsByName['EventAssistanceCheckpointCallableResponse']!['properties']!
+          contractSchema(
+                'EventAssistanceCheckpointCallableResponse',
+              )['properties']!
               as Map;
       final view = (props['view']! as Map)['properties']! as Map;
       final requestVariants =

@@ -1,11 +1,10 @@
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operation_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operations.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_rehearsal_assistance_fixtures.dart';
 
 void main() {
@@ -120,7 +119,7 @@ void main() {
       ),
     ];
     final schema = JsonSchema.create(
-      schemas.schemaContractsByName['ControlEventRehearsalCallablePayload']!,
+      contractSchema('ControlEventRehearsalCallablePayload'),
     );
     for (final change in changes) {
       final validation = schema.validate(change.toJson());

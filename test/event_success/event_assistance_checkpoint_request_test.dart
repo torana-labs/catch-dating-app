@@ -1,10 +1,9 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_request.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/reassign_event_assistance_checkpoint_reporter_callable_payload.g.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/set_event_assistance_checkpoint_closeout_callable_payload.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_assistance_checkpoint_fixtures.dart';
 import 'event_assistance_checkpoint_request_fixtures.dart';
 
@@ -179,8 +178,12 @@ void main() {
         };
         final schema = JsonSchema.create(
           change.isReassignment
-              ? schemaReassignEventAssistanceCheckpointReporterCallablePayloadSchema
-              : schemaSetEventAssistanceCheckpointCloseoutCallablePayloadSchema,
+              ? contractSchema(
+                  'ReassignEventAssistanceCheckpointReporterCallablePayload',
+                )
+              : contractSchema(
+                  'SetEventAssistanceCheckpointCloseoutCallablePayload',
+                ),
         );
         expect(schema.validate(input).isValid, isTrue);
         expect(change.sourceHash, isNot(change.snapshot.sourceHash));

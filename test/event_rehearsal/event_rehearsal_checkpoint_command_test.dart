@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_request.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/control_event_rehearsal_callable_payload.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_rehearsal_checkpoint_management_fixtures.dart';
 import 'event_rehearsal_movement_fixtures.dart';
 
@@ -43,7 +43,7 @@ void main() {
         );
         expect(
           JsonSchema.create(
-            schemaControlEventRehearsalCallablePayloadSchema,
+            contractSchema('ControlEventRehearsalCallablePayload'),
           ).validate(change.toJson()).isValid,
           isTrue,
         );

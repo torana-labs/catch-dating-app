@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership_change.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_assistance_membership_fixtures.dart';
 
 Map<String, Object?> _wire() {
@@ -32,8 +31,7 @@ void main() {
     'the generated contract and native review retain bounded receiver choices',
     () {
       final schema = JsonSchema.create(
-        schemas
-            .schemaContractsByName['EventAssistanceMembershipCallableResponse']!,
+        contractSchema('EventAssistanceMembershipCallableResponse'),
       );
       final wire = _wire();
       expect(schema.validate(wire).isValid, isTrue);

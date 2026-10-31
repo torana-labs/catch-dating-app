@@ -6,10 +6,10 @@ import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schema_contracts;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
+
+import '../support/contract_schemas.dart';
 
 void main() {
   group('UpdateUserProfilePatch schema parity', () {
@@ -66,8 +66,7 @@ void main() {
         prefsCrossPathsInvitations: true,
       );
 
-      final schema = schema_contracts
-          .schemaContractsByName['UpdateUserProfileCallablePayload']!;
+      final schema = contractSchema('UpdateUserProfileCallablePayload');
       final fieldsSchema =
           (schema['properties'] as Map<String, Object?>)['fields']
               as Map<String, Object?>;
@@ -161,8 +160,7 @@ void main() {
       expect(photoJson['updatedAt'], updatedAt.millisecondsSinceEpoch);
 
       final schema = JsonSchema.create(
-        schema_contracts
-            .schemaContractsByName['UpdateUserProfileCallablePayload']!,
+        contractSchema('UpdateUserProfileCallablePayload'),
       );
       expect(schema.validate({'fields': patch.toFieldsJson()}).isValid, isTrue);
     });
@@ -195,8 +193,7 @@ void main() {
         'height': 175,
       });
       final schema = JsonSchema.create(
-        schema_contracts
-            .schemaContractsByName['UpdateUserProfileCallablePayload']!,
+        contractSchema('UpdateUserProfileCallablePayload'),
       );
       expect(schema.validate(patch.toCallableJson()).isValid, isTrue);
     });

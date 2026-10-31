@@ -3,29 +3,29 @@ import 'dart:convert';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_staff.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_staff_change.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_assistance_group_staff_fixtures.dart';
 
 void main() {
   Map<String, Object?> body(Map<String, Object?> wire) =>
       wire['view']! as Map<String, Object?>;
   final responseSchema = JsonSchema.create(
-    schemas.schemaContractsByName['EventAssistanceGroupStaffCallableResponse']!,
+    contractSchema('EventAssistanceGroupStaffCallableResponse'),
   );
   final commandSchema = JsonSchema.create(
-    schemas
-        .schemaContractsByName['SetEventAssistanceGroupStaffCallablePayload']!,
+    contractSchema('SetEventAssistanceGroupStaffCallablePayload'),
   );
 
   test(
     'all canonical duty, status, outcome and decision variants are accounted for',
     () {
       final properties =
-          schemas.schemaContractsByName['EventAssistanceGroupStaffCallableResponse']!['properties']!
+          contractSchema(
+                'EventAssistanceGroupStaffCallableResponse',
+              )['properties']!
               as Map;
       final view = (properties['view']! as Map)['properties']! as Map;
       expect(
@@ -42,7 +42,9 @@ void main() {
         AssistanceGroupStaffOutcome.values.map((v) => v.name).toSet(),
       );
       final command =
-          schemas.schemaContractsByName['SetEventAssistanceGroupStaffCallablePayload']!['properties']!
+          contractSchema(
+                'SetEventAssistanceGroupStaffCallablePayload',
+              )['properties']!
               as Map;
       expect(
         ((command['decision']! as Map)['oneOf']! as List)

@@ -1,0 +1,692 @@
+{
+  "description": "Schema fields that installable-app forms bind to through CatchContractConstraints. The schema generator emits field_constraints.g.dart constants only for these paths. Keys are constraint roots (the lowerCamelCase schema name, or the patch class name for patch payloads); values are dotted field paths under that root, with items for array elements.",
+  "lookupPrefixes": [
+    "claimParticipantFormProfileCallablePayload.profile."
+  ],
+  "fields": {
+    "accessApplicationDocument": [
+      "availabilityWindows",
+      "city",
+      "eventTypes",
+      "instagramHandle",
+      "inviteCode",
+      "referralSource",
+      "role",
+      "wantsToHost",
+      "whyCatch"
+    ],
+    "addOrganizerHostCallablePayload": [
+      "phoneNumber"
+    ],
+    "applyProgramFunctionInvitationsCallablePayload": [
+      "invitationMode"
+    ],
+    "configureEventAssignmentFeaturesCallablePayload": [
+      "rules.items.kind",
+      "rules.items.maximum",
+      "rules.items.minimum",
+      "rules.items.mode",
+      "rules.items.weight"
+    ],
+    "configureEventOfferPreferencesCallablePayload": [
+      "intents.currency.value",
+      "intents.expectedAmountMinor.value",
+      "intents.offerValidityMinutes.value",
+      "intents.paymentInstructions.value",
+      "intents.reusablePaymentPage.value.reusableForEvents",
+      "intents.reusablePaymentPage.value.url"
+    ],
+    "confirmEventAssistanceDepartureCallablePayload": [
+      "command.payload.checkpointRequest.dueAt"
+    ],
+    "controlEventRehearsalCallablePayload": [
+      "staff.decision.duty",
+      "staff.decision.expiresAtMillis",
+      "staff.displayName",
+      "staff.groupId"
+    ],
+    "createChatMessageClientWrite": [
+      "data.text"
+    ],
+    "createEventCallablePayload": [
+      "capacityLimit",
+      "constraints.maxAge",
+      "constraints.maxMen",
+      "constraints.maxWomen",
+      "constraints.minAge",
+      "description",
+      "distanceKm",
+      "eventFormat.activityDetails.publicDetails.accessibility",
+      "eventFormat.activityDetails.publicDetails.included",
+      "eventFormat.activityDetails.routePlan.groupStrategy",
+      "eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode",
+      "eventFormat.activityDetails.routePlan.movementMode",
+      "eventFormat.activityDetails.routePlan.paceGroups",
+      "eventFormat.activityDetails.routePlan.roleKinds",
+      "eventFormat.activityDetails.routePlan.routeShape",
+      "eventFormat.activityDetails.routePlan.stopCadence",
+      "eventFormat.activityDetails.routePlan.stopKinds",
+      "eventFormat.activityKind",
+      "eventFormat.customActivityLabel",
+      "eventFormat.interactionModel",
+      "eventPolicy.admission.crossPathsPairInventory.enabled",
+      "eventPolicy.admission.crossPathsPairInventory.reservedPairCapacity",
+      "eventPolicy.admission.format",
+      "eventPolicy.cancellation.policyId",
+      "eventPolicy.pricing.demandPricingRules.items.maxAdjustmentInPaise",
+      "eventPolicy.pricing.demandPricingRules.items.stepAdjustmentInPaise",
+      "externalOrigin.externalEventId",
+      "externalOrigin.externalEventUrl",
+      "externalOrigin.provider",
+      "itinerary.items.description",
+      "itinerary.items.durationMinutes",
+      "itinerary.items.kind",
+      "itinerary.items.offsetMinutes",
+      "itinerary.items.routeDistanceMeters",
+      "itinerary.items.title",
+      "locationDetails",
+      "meetingPoint",
+      "name",
+      "pace",
+      "priceInPaise",
+      "privateAccess.inviteCode",
+      "runtimeWalkInPolicy"
+    ],
+    "createEventInviteLinkCallablePayload": [
+      "label",
+      "source"
+    ],
+    "createEventRehearsalCallablePayload": [
+      "actorCount"
+    ],
+    "createEventReviewCallablePayload": [
+      "comment"
+    ],
+    "createOrganizerCallablePayload": [
+      "area",
+      "description",
+      "email",
+      "hostDefaults.eventPolicy.admissionPreset",
+      "hostDefaults.eventPolicy.cancellationPolicyId",
+      "hostDefaults.eventPolicy.dynamicPricingEnabled",
+      "hostDefaults.eventPolicy.dynamicPricingMaxInPaise",
+      "hostDefaults.eventPolicy.dynamicPricingStepInPaise",
+      "hostDefaults.eventPolicy.maxAge",
+      "hostDefaults.eventPolicy.maxMen",
+      "hostDefaults.eventPolicy.maxWomen",
+      "hostDefaults.eventPolicy.minAge",
+      "hostDefaults.eventSuccess.enabled",
+      "hostDefaults.primaryActivityKind",
+      "instagramHandle",
+      "location",
+      "name",
+      "organizerType",
+      "phoneNumber"
+    ],
+    "createOrganizerContactCallablePayload": [
+      "displayName",
+      "email",
+      "initialNote",
+      "phoneE164"
+    ],
+    "createOrganizerContactNoteCallablePayload": [
+      "body"
+    ],
+    "createOrganizerFormAutomationCallablePayload": [
+      "actions.items.campaignId",
+      "actions.items.eventId",
+      "actions.items.kind",
+      "actions.items.tagId",
+      "actions.items.webhookUrl",
+      "enabled",
+      "name",
+      "trigger"
+    ],
+    "createOrganizerFormShareLinkCallablePayload": [
+      "label",
+      "source"
+    ],
+    "createOrganizerPostCallablePayload": [
+      "text"
+    ],
+    "createOrganizerProgramCallablePayload": [
+      "kind",
+      "startsAtMillis",
+      "timezone",
+      "title"
+    ],
+    "createProfileDecisionClientWrite": [
+      "data.comment"
+    ],
+    "createProgramWalkInCallablePayload": [
+      "displayName",
+      "partySize"
+    ],
+    "createRazorpayHostPaymentAccountCallablePayload": [
+      "bankAccountNumber",
+      "beneficiaryName",
+      "businessModel",
+      "businessPan",
+      "businessType",
+      "contactName",
+      "email",
+      "ifscCode",
+      "legalBusinessName",
+      "phone",
+      "stakeholderEmail",
+      "stakeholderIsDirector",
+      "stakeholderIsExecutive",
+      "stakeholderName",
+      "stakeholderOwnershipPercent",
+      "stakeholderPan",
+      "stakeholderPhone",
+      "termsAccepted"
+    ],
+    "eventAssistanceLateJoinInput": [
+      "policy.destination.lateEntry",
+      "policy.destination.permittedCheckpointIds",
+      "policy.destination.permittedStopIds",
+      "policy.maxMessagesPerEpisode",
+      "policy.minimumMinutesBetweenMessages",
+      "policy.unanswered"
+    ],
+    "eventDocument": [
+      "itinerary",
+      "itinerary.items.description",
+      "itinerary.items.durationMinutes",
+      "itinerary.items.id",
+      "itinerary.items.offsetMinutes",
+      "itinerary.items.routeDistanceMeters",
+      "itinerary.items.title",
+      "meetingLocation.address",
+      "meetingLocation.latitude",
+      "meetingLocation.longitude",
+      "meetingLocation.name",
+      "meetingLocation.notes",
+      "meetingLocation.placeId"
+    ],
+    "eventSuccessFeedbackDocument": [
+      "privateNote",
+      "safetyConcern"
+    ],
+    "eventSuccessPlanDocument": [
+      "attendeePrompt",
+      "conversationGraphConsentMode",
+      "hostGoal",
+      "questionnaireConfig.customQuestions.items.options.items.label",
+      "questionnaireConfig.customQuestions.items.prompt",
+      "questionnaireConfig.customTitle",
+      "questionnaireConfig.templateId",
+      "structureConfig.balanceActivityAttributes",
+      "structureConfig.clusterActivityAttributes",
+      "structureConfig.maxPairMeetings",
+      "structureConfig.revealCountdownSeconds",
+      "structureConfig.rotationIntervalMinutes",
+      "structureConfig.rotationRepeatStrategy",
+      "structureConfig.unitCount",
+      "structureConfig.unitKind",
+      "structureConfig.unitSize",
+      "targetAttendeeCount"
+    ],
+    "eventSuccessSpatialActionCallablePayload": [
+      "scope"
+    ],
+    "eventSuccessWingmanRequestDocument": [
+      "note"
+    ],
+    "exploreSearchCallablePayload": [
+      "query"
+    ],
+    "grantEventStaffCallablePayload": [
+      "phoneNumber"
+    ],
+    "grantProgramStaffCallablePayload": [
+      "phoneNumber"
+    ],
+    "hostAnalyticsQueryCallablePayload": [
+      "rangePreset"
+    ],
+    "hostProfileDocument": [
+      "bio",
+      "displayName",
+      "roleTitle"
+    ],
+    "importEventAttendeesCallablePayload": [
+      "rows.items.displayName",
+      "rows.items.email",
+      "rows.items.phone"
+    ],
+    "inviteProgramStaffCallablePayload": [
+      "displayName"
+    ],
+    "listOrganizerContactsCallablePayload": [
+      "query"
+    ],
+    "listOrganizerFormResponsesCallablePayload": [
+      "answerFilters",
+      "answerFilters.items.values",
+      "query"
+    ],
+    "listOrganizerFormsCallablePayload": [
+      "query"
+    ],
+    "listOrganizerLumaEventsCallablePayload": [
+      "apiKey"
+    ],
+    "listPrivateEventSetupsCallablePayload": [
+      "scope"
+    ],
+    "manageEventMembershipRulesCallablePayload": [
+      "earlyAccessHours",
+      "memberPriceOverrides.items.percentOff",
+      "membersOnly"
+    ],
+    "manageHostMembershipCheckoutCallablePayload": [
+      "interval"
+    ],
+    "manageHostMembershipPlansCallablePayload": [
+      "plan.benefits.items.percentOff",
+      "plan.benefits.items.type",
+      "plan.description",
+      "plan.limits.maxUpcomingMemberPricedBookings",
+      "plan.memberCap",
+      "plan.name",
+      "plan.perks.items",
+      "plan.prices.annual.amountPaise",
+      "plan.prices.monthly.amountPaise",
+      "plan.trialDays"
+    ],
+    "mobileFormState": [
+      "authOtpCode",
+      "chatsInboxSearchQuery",
+      "eventCohortCapsEnabled",
+      "eventDurationMinutes",
+      "eventDynamicPricingEnabled",
+      "eventSuccessLiveCardIncluded",
+      "eventSuccessModuleSelected",
+      "eventSuccessQuestionnaireMode",
+      "exploreActivityTag",
+      "exploreArea",
+      "exploreDistanceFilter",
+      "exploreHighRatedOnly",
+      "exploreJoinedOnly",
+      "hostBroadcastTemplate",
+      "hostInboxAudienceSegment",
+      "hostRosterFilter",
+      "hostRosterSearchQuery",
+      "onboardingDateOfBirthText",
+      "suvbotTesterPhoneNumber"
+    ],
+    "mutateOrganizerContactCallablePayload": [
+      "displayNameOverride",
+      "email",
+      "manualTags.items",
+      "phoneE164",
+      "whatsappAdminSuppressed"
+    ],
+    "mutateOrganizerContactNoteCallablePayload": [
+      "body"
+    ],
+    "onboardingDraftDocument": [
+      "firstName",
+      "gender",
+      "interestedInGenders",
+      "lastName",
+      "phoneNumber"
+    ],
+    "organizerFormDraftDocument": [
+      "definition.appearance.preset",
+      "definition.completion.actionKind",
+      "definition.identityPolicy",
+      "definition.logicRules.items.action",
+      "definition.logicRules.items.conditions.items.expectedValues.items",
+      "definition.logicRules.items.conditions.items.operator",
+      "definition.logicRules.items.conditions.items.questionId",
+      "definition.logicRules.items.targetQuestionId",
+      "definition.logicRules.items.targetSectionId",
+      "definition.messagingConsent.catchMarketingWhatsapp",
+      "definition.messagingConsent.catchWhatsapp",
+      "definition.messagingConsent.organizerMarketingWhatsapp",
+      "definition.messagingConsent.organizerOperationsWhatsapp",
+      "definition.messagingConsent.organizerWhatsapp",
+      "definition.payment.connectionId",
+      "definition.payment.description",
+      "definition.payment.refundPolicy",
+      "definition.purpose",
+      "definition.sections.items.questions.items.answerDestination",
+      "definition.sections.items.questions.items.hostPresentation",
+      "definition.sections.items.questions.items.kind",
+      "definition.sections.items.questions.items.prefillPolicy",
+      "definition.sections.items.questions.items.privacyClass",
+      "definition.sections.items.questions.items.validation.patternPreset"
+    ],
+    "organizerFormVersionDocument": [
+      "definition.sections.items.questions.items.options"
+    ],
+    "overrideEventSuccessGroupsCallablePayload": [
+      "rounds.items.groups.items.label",
+      "rounds.items.groups.items.participantUids.items"
+    ],
+    "overrideEventSuccessRotationsCallablePayload": [
+      "rounds.items.pairings.items.uidA",
+      "rounds.items.pairings.items.uidB"
+    ],
+    "photoPromptAnswer": [
+      "promptId"
+    ],
+    "placesAutocompleteCallablePayload": [
+      "input"
+    ],
+    "profilePromptAnswer": [
+      "answer",
+      "promptId"
+    ],
+    "programAccessCallableResponse": [
+      "actorRole",
+      "duties.items.duty",
+      "kind",
+      "status",
+      "vehicleClasses.items.capabilities.items"
+    ],
+    "programArrivalsRosterCallableResponse": [
+      "rows.items.curbSource",
+      "rows.items.flightStatus",
+      "rows.items.readiness",
+      "rows.items.unavailableReason"
+    ],
+    "programHotelInboundCallableResponse": [
+      "expectedLegs.items.readiness",
+      "trips.items.manifestSource"
+    ],
+    "programLodgingConfigDocument": [
+      "demand.items.beds",
+      "demand.items.guestId",
+      "demand.items.requiredFeatures.items",
+      "groupParents.items.id",
+      "groupParents.items.parentIds",
+      "inventory.items.availability.items.arrival",
+      "inventory.items.availability.items.departure",
+      "inventory.items.contractId",
+      "inventory.items.id",
+      "labels.items.roomLabel",
+      "parties.items.confirmed",
+      "parties.items.guestIds",
+      "parties.items.id",
+      "parties.items.pin.hotelId",
+      "parties.items.pin.inventoryId",
+      "parties.items.pin.zoneId",
+      "parties.items.priority",
+      "parties.items.requiredRoomType",
+      "rooms.items.beds",
+      "rooms.items.building",
+      "rooms.items.floor",
+      "rooms.items.maxOccupants",
+      "rooms.items.resourceIds",
+      "rooms.items.roomType",
+      "rooms.items.verifiedFeatures.items",
+      "rooms.items.wing",
+      "rooms.items.zoneId"
+    ],
+    "programStaffListCallableResponse": [
+      "members.items.status"
+    ],
+    "programTransportPlanCallableResponse": [
+      "groups.items.readiness",
+      "unassigned.items.reason"
+    ],
+    "programTripListCallableResponse": [
+      "trips.items.manifestSource",
+      "trips.items.status"
+    ],
+    "reassignEventAssistanceCheckpointReporterCallablePayload": [
+      "command.payload.responsibleOperatorId"
+    ],
+    "recordEventAssistanceCheckpointCallablePayload": [
+      "command.payload.correctionReason"
+    ],
+    "recordEventSuccessUnitOutcomesCallablePayload": [
+      "entries.items.rank",
+      "entries.items.score"
+    ],
+    "recordOrganizerContactOutreachCallablePayload": [
+      "note"
+    ],
+    "recordProgramDoorJournalCallablePayload": [
+      "operations.items.partySize"
+    ],
+    "recordProgramFunctionRsvpCallablePayload": [
+      "rsvpStatus"
+    ],
+    "resolveEventAssistanceCaseCallablePayload": [
+      "command.payload.owner"
+    ],
+    "reviewOrganizerApplicationCallablePayload": [
+      "reviewNote"
+    ],
+    "sendEventBroadcastCallablePayload": [
+      "audience",
+      "body"
+    ],
+    "sendEventChatMessageCallablePayload": [
+      "text"
+    ],
+    "sendOrganizerWhatsappReplyCallablePayload": [
+      "body"
+    ],
+    "sendOrganizerWhatsappTestCallablePayload": [
+      "toE164"
+    ],
+    "setCrossPathsEventConsentCallablePayload": [
+      "enabled"
+    ],
+    "setEventAssistanceCheckpointCloseoutCallablePayload": [
+      "command.payload.reason"
+    ],
+    "setEventAssistanceRuntimeConfigCallablePayload": [
+      "command.configuration.options.deliveryPolicy.maxAttempts",
+      "command.configuration.options.deliveryPolicy.maxAttemptsPerRoute",
+      "command.configuration.options.deliveryPolicy.minimumRetrySeconds"
+    ],
+    "setEventSuccessAccountabilityResolutionCallablePayload": [
+      "resolution"
+    ],
+    "setOrganizerTrackingSettingsCallablePayload": [
+      "enabled",
+      "googleMeasurementId",
+      "metaPixelId"
+    ],
+    "setReviewResponseCallablePayload": [
+      "message"
+    ],
+    "transferEventAssistanceGroupCallablePayload": [
+      "command.payload.decision.expiresAtMillis",
+      "command.payload.decision.groupId",
+      "command.payload.decision.receivingOperatorId",
+      "command.payload.decision.to"
+    ],
+    "updateEventCallablePayload": [
+      "fields.capacityLimit",
+      "fields.constraints.maxAge",
+      "fields.constraints.maxMen",
+      "fields.constraints.maxWomen",
+      "fields.constraints.minAge",
+      "fields.description",
+      "fields.distanceKm",
+      "fields.eventPolicy.admission.format",
+      "fields.eventPolicy.cancellation.policyId",
+      "fields.eventPolicy.pricing.demandPricingRules.items.maxAdjustmentInPaise",
+      "fields.eventPolicy.pricing.demandPricingRules.items.stepAdjustmentInPaise",
+      "fields.locationDetails",
+      "fields.meetingPoint",
+      "fields.name",
+      "fields.pace",
+      "fields.priceInPaise",
+      "fields.privateAccess.inviteCode"
+    ],
+    "updateEventRehearsalSetupCallablePayload": [
+      "setup.attendeePrompt",
+      "setup.durationMinutes",
+      "setup.hostGoal",
+      "setup.locationName",
+      "setup.moduleIds",
+      "setup.title"
+    ],
+    "updateOrganizerCallablePayload": [
+      "fields.area",
+      "fields.description",
+      "fields.email",
+      "fields.instagramHandle",
+      "fields.location",
+      "fields.name",
+      "fields.organizerType",
+      "fields.phoneNumber"
+    ],
+    "updatePrivateEventDetailsCallablePayload": [
+      "details.admissionTerms.cancellationPolicyId",
+      "details.admissionTerms.capacityLimit",
+      "details.admissionTerms.currency",
+      "details.admissionTerms.priceInPaise",
+      "details.description",
+      "details.distanceKm",
+      "details.durationMinutes.value",
+      "details.eventFormat.value.customActivityLabel",
+      "details.eventPhotos",
+      "details.pace",
+      "details.venue.value.name",
+      "eventId",
+      "expectedSetupRevision",
+      "requestId",
+      "reviewedDefaultsHash"
+    ],
+    "updateUserProfilePatch": [
+      "activityPreferences.running.paceMaxSecsPerKm",
+      "activityPreferences.running.paceMinSecsPerKm",
+      "activityPreferences.running.preferredDistances",
+      "activityPreferences.running.preferredRunTimes",
+      "activityPreferences.running.runningReasons",
+      "children",
+      "city",
+      "company",
+      "diet",
+      "displayName",
+      "drinking",
+      "education",
+      "email",
+      "height",
+      "instagramHandle",
+      "interestedInGenders",
+      "languages",
+      "maxAgePreference",
+      "minAgePreference",
+      "occupation",
+      "prefsCrossPathsInvitations",
+      "prefsEventReminders",
+      "prefsMessages",
+      "prefsNewCatches",
+      "prefsOrganizerUpdates",
+      "prefsRunStatusUpdates",
+      "prefsShowInCrossPaths",
+      "prefsShowOnMap",
+      "prefsWeeklyDigest",
+      "relationshipGoal",
+      "religion",
+      "smoking",
+      "workout"
+    ],
+    "upsertEventSuccessLayoutCallablePayload": [
+      "label",
+      "units",
+      "units.items.capacity",
+      "units.items.gridX",
+      "units.items.shape"
+    ],
+    "upsertOrganizerCampaignCallablePayload": [
+      "eventId",
+      "inviteDestinationKind",
+      "messageClass",
+      "name",
+      "savedAudienceId",
+      "templateId"
+    ],
+    "upsertOrganizerMomentCallablePayload": [
+      "action.connectionId",
+      "action.duty",
+      "action.kind",
+      "action.notificationType",
+      "action.preferenceKey",
+      "action.severity",
+      "action.templateId",
+      "action.titleTemplate",
+      "audience.duty",
+      "audience.functionId",
+      "audience.householdDedupe",
+      "audience.kind",
+      "audience.rsvp.items",
+      "audience.rsvpPendingOnly",
+      "audience.travelTimeLead",
+      "initiation.anchorId",
+      "initiation.anchorKind",
+      "initiation.functionId",
+      "initiation.kind",
+      "initiation.offsetMinutes",
+      "initiation.triggerKind",
+      "name",
+      "sense"
+    ],
+    "upsertOrganizerSavedAudienceCallablePayload": [
+      "definition.join",
+      "definition.predicates.items.currency",
+      "definition.predicates.items.days",
+      "definition.predicates.items.eventCount",
+      "definition.predicates.items.eventId",
+      "definition.predicates.items.formId",
+      "definition.predicates.items.kind",
+      "definition.predicates.items.manualTagId",
+      "definition.predicates.items.operator",
+      "definition.predicates.items.questionId",
+      "definition.predicates.items.reviewStatus",
+      "definition.predicates.items.segmentId",
+      "name"
+    ],
+    "upsertProgramFunctionCallablePayload": [
+      "name",
+      "status",
+      "venueName",
+      "venueNotes"
+    ],
+    "upsertProgramGuestCallablePayload": [
+      "displayName",
+      "email",
+      "groupIds",
+      "guestId",
+      "phoneE164"
+    ],
+    "upsertProgramGuestGroupCallablePayload": [
+      "dimension",
+      "hotelId",
+      "label"
+    ],
+    "upsertProgramHotelCallablePayload": [
+      "active",
+      "address",
+      "name",
+      "notes",
+      "receptionContact"
+    ],
+    "upsertProgramPickupPointCallablePayload": [
+      "active",
+      "iataCode",
+      "instructions",
+      "kind",
+      "label",
+      "meetingZone",
+      "terminal"
+    ],
+    "upsertProgramStayCallablePayload": [
+      "roomLabel"
+    ],
+    "userAnalyticsQueryCallablePayload": [
+      "rangePreset"
+    ]
+  }
+}
