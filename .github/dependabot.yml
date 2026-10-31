@@ -5,14 +5,43 @@ updates:
   - package-ecosystem: "npm"
     # The root npm workspace owns admin, website, and packages/web-ui. Listing
     # those members separately makes Dependabot resolve @catch/web-ui from the
-    # public registry instead of the checked-in workspace package.
+    # public registry instead of the checked-in workspace package. Functions
+    # has its own monthly entry below.
     directories:
       - "/"
-      - "/functions"
       - "/operations"
     schedule:
       interval: "weekly"
       day: "wednesday"
+      time: "05:30"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 1
+    groups:
+      security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
+      compatible-version-updates:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+
+  - package-ecosystem: "npm"
+    # Every merged Functions lockfile change redeploys each Function that loads
+    # a changed package, and a firebase-admin or firebase-functions bump
+    # redeploys all of them (hours of Cloud Build per environment). Routine
+    # updates therefore arrive once a month; security updates still open as
+    # soon as an advisory is published.
+    directory: "/functions"
+    schedule:
+      interval: "monthly"
       time: "05:30"
       timezone: "Asia/Kolkata"
     open-pull-requests-limit: 1
