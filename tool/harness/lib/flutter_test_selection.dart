@@ -178,9 +178,9 @@ bool _globalTestInput(String name) =>
     _globalInputPaths.contains(name) ||
     _globalInputDirectories.any(name.startsWith);
 
-// Surfaces outside the root package: backend, web, design, docs, tooling and
-// CI sources, other Flutter packages and apps, and golden/integration suites
-// with their own gates. A root test reaches a Dart file here through the
+// Surfaces outside the root package: backend, web, design, docs, tooling,
+// infrastructure and CI sources, the JavaScript-only packages, other Flutter
+// packages and apps, and golden/integration suites with their own gates. A root test reaches a Dart file here through the
 // import graph, or reads a file here from disk as a filesystem probe. Any
 // other path, including test fixtures, assets, native folders and new
 // top-level roots, still needs import proof or keeps the full suite.
@@ -196,10 +196,15 @@ const _probeOnlyDirectories = [
   'design_context_pack/',
   'docs/',
   'extensions/',
+  'fastlane/',
   'firebase/',
   'functions/',
+  'infra/',
   'integration_test/',
   'operations/',
+  'packages/brand/',
+  'packages/web-config/',
+  'packages/web-ui/',
   'test/goldens/',
   'test/integration/',
   'tool/',
@@ -211,6 +216,8 @@ const _probeOnlyFiles = {
   '.env.example',
   '.firebaserc',
   '.gitignore',
+  'Gemfile',
+  'Gemfile.lock',
   'firebase.json',
   'firestore.indexes.json',
   'firestore.rules',
