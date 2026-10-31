@@ -250,8 +250,7 @@
       "write": "server only",
       "exportedFunctions": [
         "manageOrganizerFormPaymentConnection",
-        "organizerFormPaymentOauthCallback",
-        "refreshOrganizerFormPaymentTokens"
+        "organizerFormPaymentOauthCallback"
       ]
     },
     {

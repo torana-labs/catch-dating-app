@@ -47,7 +47,7 @@ AppErrorDescriptor appErrorDescriptor(
   required AppLocalizations l10n,
   AppErrorContext context = AppErrorContext.generic,
 }) {
-  final appException = appExceptionFor(error);
+  final appException = _normalizeForPresentation(error);
   return AppErrorDescriptor(
     title: _titleFor(l10n, error, appException, context),
     message: _messageFor(l10n, error, appException, context),
@@ -64,6 +64,17 @@ String appErrorMessage(
   AppErrorContext context = AppErrorContext.generic,
 }) {
   return appErrorDescriptor(error, l10n: l10n, context: context).message;
+}
+
+AppException? _normalizeForPresentation(Object error) {
+  if (error is AppException) return error;
+  if (error is FirebaseException) {
+    return normalizeBackendError(
+      error,
+      context: backendContextForFirebaseException(error),
+    );
+  }
+  return null;
 }
 
 String _messageFor(

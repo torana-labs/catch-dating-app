@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "b6776d643996d911afaf18d04441e37085b797f3f10f90569e432e2aef2803b1",
+  "sourceDigest": "7473202a71c44a9b084e59b41dd175ba83eb2916de0b9c46548be39b09504843",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "b6776d643996d911afaf18d04441e37085b797f3f10f90569e432e2aef2803b1",
-    "contractDigest": "b6776d643996d911afaf18d04441e37085b797f3f10f90569e432e2aef2803b1"
+    "digest": "7473202a71c44a9b084e59b41dd175ba83eb2916de0b9c46548be39b09504843",
+    "contractDigest": "7473202a71c44a9b084e59b41dd175ba83eb2916de0b9c46548be39b09504843"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "e8a5263aedcdd172bc1a8d1588a1370923f2244a93544e66013dab5db87939d7",
+    "handoffRequestDigest": "ba61817715b2717083c38f124dc6aa3196b3dea57e028b21579a0f2321199159",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -82,16 +82,16 @@
     }
   },
   "metrics": {
-    "contractCount": 71,
-    "publicClassCount": 241,
-    "conceptCount": 58,
-    "memberCount": 159,
-    "membersPerConcept": 2.74,
+    "contractCount": 73,
+    "publicClassCount": 242,
+    "conceptCount": 60,
+    "memberCount": 158,
+    "membersPerConcept": 2.63,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 9,
-      "concept": 58,
-      "member": 159,
+      "concept": 60,
+      "member": 158,
       "screen": 15
     },
     "collisionCount": 31,
@@ -337,7 +337,6 @@
           "CatchScrollView",
           "CatchTabViewportScope",
           "CatchWorkspaceBackScope",
-          "CatchWorkspaceHeader",
           "CatchWorkspaceHeaderLayout",
           "CatchWorkspacePaneScaffold",
           "CatchWorkspacePaneScope"
@@ -443,12 +442,12 @@
       }
     ],
     "naming": {
-      "canonicalConceptNames": 56,
+      "canonicalConceptNames": 58,
       "documentedConceptNameExceptions": 2,
       "undocumentedConceptNameExceptions": 0
     },
     "figmaMappingStates": {
-      "missing": 69,
+      "missing": 71,
       "stale": 2
     },
     "figmaPropertyDriftCount": 2,
@@ -456,12 +455,12 @@
     "figmaReviewSnapshotMappings": 2,
     "figmaPublishedMappings": 0,
     "codeConnectMappingStates": {
-      "planned": 71
+      "planned": 73
     },
-    "claudeAllowed": 71,
+    "claudeAllowed": 73,
     "reactImplementationStates": {
       "headless-control": 6,
-      "styled": 23
+      "styled": 28
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -1512,9 +1511,9 @@
       "conceptId": "catch.top_bar",
       "dartSymbol": "CatchTopBar",
       "dartFile": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchTopBar",
+      "reactFile": "packages/web-ui/src/components/CatchTopBar.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/TopBar",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1530,8 +1529,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 7,
-      "figmaExpectedPropertyDigest": "e4754fd0ca64da2a8313e049a25c197939f3deb2f78046905df29153820d4a69",
+      "figmaExpectedPropertyCount": 9,
+      "figmaExpectedPropertyDigest": "dd08cc9fa4ccc34a81d30910ce2ce0f2a94a7c2a50a07f4c1cd5fc2a133b49cd",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1539,7 +1538,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TopBar",
       "claudeAllowed": true,
-      "contractDigest": "aeed06cb8d86863ea63593c0959322567d502c2171e889ec5c03cd27ddff6299"
+      "contractDigest": "a73cad9f08abde5364960c9e531cc2413cf06d70a322f4e436bbcd3821aff404"
     },
     {
       "contractId": "catch.privacy_badge",
@@ -1679,7 +1678,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "PageBody",
       "claudeAllowed": true,
-      "contractDigest": "cc3c6c60355e12f67d4f95d4ab7dff1b2234fc1461c8b7e8c70402bdd19c43c2"
+      "contractDigest": "7dc537258f3f897b2751c2266479432c5ae2b65be1ca57d56c62b984e9530346"
     },
     {
       "contractId": "catch.section_stack",
@@ -2107,9 +2106,9 @@
       "conceptId": "catch.tab_bar",
       "dartSymbol": "CatchTabBar",
       "dartFile": "packages/catch_ui/lib/src/components/catch_tab_bar.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchTabBar",
+      "reactFile": "packages/web-ui/src/components/CatchTabBar.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/TabDock",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2125,8 +2124,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 1,
-      "figmaExpectedPropertyDigest": "66ce454a910e8cbb9c4957a5b4826ecf4fdd143dd166bfd416aa16ceec781dda",
+      "figmaExpectedPropertyCount": 3,
+      "figmaExpectedPropertyDigest": "8c4520d657e7fd98c81f398b4e457135a4bea082837b5df32dbed35d868d8f28",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2134,7 +2133,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TabDock",
       "claudeAllowed": true,
-      "contractDigest": "240074cb50b40f4409a67db3845509cbaba26245835e89b82ca1435b6363548d"
+      "contractDigest": "cc66ed47e6a9d4510c1350620e516dfacc57e3bb3f10533f611788855268b88b"
     },
     {
       "contractId": "catch.confirm_dialog",
@@ -2947,9 +2946,9 @@
       "conceptId": "catch.viewport",
       "dartSymbol": "CatchViewport",
       "dartFile": "packages/catch_ui/lib/src/patterns/catch_viewport.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchViewport",
+      "reactFile": "packages/web-ui/src/components/CatchViewport.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Viewport",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2965,8 +2964,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 4,
-      "figmaExpectedPropertyDigest": "e42dbe75b37999753019986e118b378b8f10e6f15ec16ef4ff7a4711b631d5de",
+      "figmaExpectedPropertyCount": 6,
+      "figmaExpectedPropertyDigest": "461135c3753472733f0cdf643cb9ff7b221c640b321763d3c1cc52cd64fd6bac",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2974,7 +2973,77 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Viewport",
       "claudeAllowed": true,
-      "contractDigest": "ae1d2fa30af42f3f68b2389954001f129379ac022428c7b445a858bcdf8649a0"
+      "contractDigest": "15354673336c799eb1a19db73d1a3ad375957b256e63942f2380182ad017fc7a"
+    },
+    {
+      "contractId": "catch.workspace_header",
+      "conceptRole": "concept",
+      "conceptId": "catch.workspace_header",
+      "dartSymbol": "CatchWorkspaceHeader",
+      "dartFile": "packages/catch_ui/lib/src/patterns/catch_workspace_header_layout.dart",
+      "reactSymbol": "CatchWorkspaceHeader",
+      "reactFile": "packages/web-ui/src/components/CatchWorkspaceHeader.tsx",
+      "reactApi": "styled",
+      "figmaName": "Catch/PaneHeader",
+      "figmaPropertyProjectionMode": "inferred",
+      "figmaReviewStatePolicy": "variant",
+      "figmaPropertySources": {},
+      "figmaDeclaredStatus": "unmapped",
+      "figmaDeclaredUrl": null,
+      "figmaStatus": "missing",
+      "figmaUrl": null,
+      "figmaNodeId": null,
+      "figmaComponentKey": null,
+      "figmaPublishStatus": null,
+      "figmaSnapshotCaptureMethod": "figma-mcp",
+      "figmaVariableBindingCount": 0,
+      "figmaVariableBindingDigest": null,
+      "figmaReviewSnapshot": null,
+      "figmaExpectedPropertyCount": 4,
+      "figmaExpectedPropertyDigest": "8fa7c1d394b921e7dc51b29e81b75e0d31fce18e4dee1c4627f5928c993f8cc9",
+      "figmaActualPropertyCount": 0,
+      "figmaActualPropertyDigest": null,
+      "figmaDrift": [],
+      "codeConnectStatus": "planned",
+      "codeConnectTemplate": null,
+      "claudeHandoffName": "PaneHeader",
+      "claudeAllowed": true,
+      "contractDigest": "8b162bc95a4c4f0d9fb60bfb82ad38e17bd2080536af1b1bb74272ee7ac8ed00"
+    },
+    {
+      "contractId": "catch.pane_layout",
+      "conceptRole": "concept",
+      "conceptId": "catch.pane_layout",
+      "dartSymbol": "CatchPaneLayout",
+      "dartFile": "packages/catch_ui/lib/src/patterns/catch_pane_layout.dart",
+      "reactSymbol": "CatchPaneLayout",
+      "reactFile": "packages/web-ui/src/components/CatchPaneLayout.tsx",
+      "reactApi": "styled",
+      "figmaName": "Catch/PaneLayout",
+      "figmaPropertyProjectionMode": "inferred",
+      "figmaReviewStatePolicy": "variant",
+      "figmaPropertySources": {},
+      "figmaDeclaredStatus": "unmapped",
+      "figmaDeclaredUrl": null,
+      "figmaStatus": "missing",
+      "figmaUrl": null,
+      "figmaNodeId": null,
+      "figmaComponentKey": null,
+      "figmaPublishStatus": null,
+      "figmaSnapshotCaptureMethod": "figma-mcp",
+      "figmaVariableBindingCount": 0,
+      "figmaVariableBindingDigest": null,
+      "figmaReviewSnapshot": null,
+      "figmaExpectedPropertyCount": 3,
+      "figmaExpectedPropertyDigest": "4a6245e9c899931ec614af67224a408888ffd6fbdefa42b812430995798e7236",
+      "figmaActualPropertyCount": 0,
+      "figmaActualPropertyDigest": null,
+      "figmaDrift": [],
+      "codeConnectStatus": "planned",
+      "codeConnectTemplate": null,
+      "claudeHandoffName": "PaneLayout",
+      "claudeAllowed": true,
+      "contractDigest": "0d8c832a6b442cfb3d7b2204a5ab8900f7914d1c5fd546ab462727983aee03fd"
     },
     {
       "contractId": "catch.table",

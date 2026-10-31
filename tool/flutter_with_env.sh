@@ -230,8 +230,6 @@ run_flutter_with_bounded_ci_retry() {
 
   local retry_log
   retry_log="$(mktemp "${TMPDIR:-/tmp}/catch-ci-dependency.XXXXXX")"
-  # Expand now: retry_log is local and is gone by the time EXIT fires.
-  # shellcheck disable=SC2064
   trap "rm -f '$retry_log'" EXIT
 
   local attempt=1
@@ -301,10 +299,10 @@ if [[ "$config_sources_only" == true ]]; then
   printf 'Configuration sources (wrapper only; values omitted)\n'
   for ((config_index = 0; config_index < ${#config_names[@]}; config_index++)); do
     config_name="${config_names[$config_index]}"
-    config_state="unset"
+    config_state=unset
     if [[ "${!config_name+x}" == x ]]; then
-      config_state="empty"
-      [[ -z "${!config_name}" ]] || config_state="set"
+      config_state=empty
+      [[ -z "${!config_name}" ]] || config_state=set
     fi
     printf '%s source=%s state=%s\n' "$config_name" "${config_sources[$config_index]}" "$config_state"
   done

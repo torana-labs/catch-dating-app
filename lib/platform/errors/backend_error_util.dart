@@ -175,19 +175,6 @@ AppException normalizeBackendError(
   );
 }
 
-/// The [AppException] behind [error]: itself, or a raw Firebase error mapped
-/// for the service that raised it. Null for anything else, such as a bug.
-AppException? appExceptionFor(Object error) {
-  if (error is AppException) return error;
-  if (error is FirebaseException) {
-    return normalizeBackendError(
-      error,
-      context: backendContextForFirebaseException(error),
-    );
-  }
-  return null;
-}
-
 BackendService backendServiceForFirebaseException(FirebaseException error) {
   if (error is FirebaseFunctionsException) return BackendService.functions;
   if (error is FirebaseAuthException) return BackendService.auth;

@@ -118,22 +118,3 @@ test("disconnect during refresh cannot be undone and foreign bindings fail",
     assert.equal(h.store.records.get(h.path)?.status, "disconnected");
     assert.equal(h.store.records.get(h.path)?.revision, 3);
   });
-
-test("checkouts refresh only near expiry; maintenance may refresh earlier",
-  async () => {
-    const h = harness();
-    const token = h.versions.get(h.original)!.token;
-    token.expiresAt = 1000 + 86400_000;
-    const credential = await h.service.access(h.binding);
-    assert.equal(credential.token.accessToken, "access");
-    assert.equal(h.calls(), 0);
-    for (const refreshWithinMillis of [0, 119_999, 1.5, Number.NaN]) {
-      await assert.rejects(h.service.access(h.binding,
-        {refreshWithinMillis}), /being checked/u);
-    }
-    assert.equal(h.calls(), 0);
-    const early = await h.service.access(h.binding,
-      {refreshWithinMillis: 2 * 86400_000});
-    assert.equal(early.token.accessToken, "rotated");
-    assert.equal(h.calls(), 1);
-  });
