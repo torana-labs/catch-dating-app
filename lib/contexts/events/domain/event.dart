@@ -70,7 +70,6 @@ abstract class Event with _$Event {
     @JsonKey(includeToJson: false) required String id,
     @JsonKey(includeToJson: false) @Default(false) bool synthetic,
     @JsonKey(includeToJson: false) String? seedPrefix,
-    @JsonKey(name: 'organizerId', readValue: readEventOrganizerId)
     required String organizerId,
     @JsonKey(includeIfNull: false) String? sourceVenueId,
     @Default('') String name,

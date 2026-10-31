@@ -10,7 +10,7 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   id: json['id'] as String,
   synthetic: json['synthetic'] as bool? ?? false,
   seedPrefix: json['seedPrefix'] as String?,
-  organizerId: readEventOrganizerId(json, 'organizerId') as String,
+  organizerId: json['organizerId'] as String,
   sourceVenueId: json['sourceVenueId'] as String?,
   name: json['name'] as String? ?? '',
   startTime: const TimestampConverter().fromJson(json['startTime']),
