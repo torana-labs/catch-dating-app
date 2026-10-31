@@ -4,7 +4,7 @@
 
 export const adminSetOrganizerIndexStatusCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
+  "$id": "https://catch.app/contracts/callables/admin_set_organizer_index_status_payload.schema.json",
   "title": "AdminSetOrganizerIndexStatusCallablePayload",
   "description": "Callable payload accepted by adminSetOrganizerIndexStatus.",
   "type": "object",

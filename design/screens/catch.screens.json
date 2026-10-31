@@ -3114,7 +3114,7 @@
           "id": "claude.catch-club-detail",
           "kind": "claude",
           "status": "available",
-          "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-club-detail/OrganizerDetailV2.dc.html",
+          "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-club-detail/ClubDetailV2.dc.html",
           "notes": "Claude Design Club Detail V2 template; export canonical PNG refs before enforcing pixel comparison."
         },
         {
@@ -12755,7 +12755,7 @@
           "kind": "claude",
           "status": "available",
           "notes": "Canonical Host Club Detail owner/public-view reference exported, masked, manifest-registered, and wired to the host_club_detail_public capture for advisory comparison. 2026-06-25 public-view passes align the photo fixture, one-line title scale, next-event address, next-run banner, 4-up stats, body section order, activity chips, capture font loading, asset prewarm, floating hero chrome, stat value fit, regular-weight About copy, and split generic-tag wraps. The advisory compare improved from 28.94% mismatch / 44.44 meanDelta to 17.87% / 19.52; hero-edge mask calibration moved the registered comparison within threshold at 15.82% / 15.22. Host controls remain out of this public-preview route unless a future design variant adds them.",
-          "path": "design/source_packs/host-v2/templates/catch-club-detail/OrganizerDetailV2.dc.html"
+          "path": "design/source_packs/host-v2/templates/catch-club-detail/ClubDetailV2.dc.html"
         },
         {
           "id": "generated.host-club-detail-reference",
@@ -23340,7 +23340,7 @@
           "kind": "claude",
           "status": "available",
           "notes": "Canonical Host Create Club basics reference exported, masked, manifest-registered, and wired to the create_club_basics capture for advisory comparison. Remaining wizard steps and mutation/success variants still need canonical references.",
-          "path": "design/source_packs/host-v2/templates/hosts-create-club/HostCreateOrganizer.dc.html"
+          "path": "design/source_packs/host-v2/templates/hosts-create-club/HostCreateClub.dc.html"
         },
         {
           "id": "generated.host-club-create-basics-reference",

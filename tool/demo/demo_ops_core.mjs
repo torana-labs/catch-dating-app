@@ -1183,7 +1183,6 @@ function belongsToKeptSeed(data, docId, keepSeedPrefixes) {
     "targetId",
     "eventId",
     "organizerId",
-    "organizerId",
     "matchId",
   ]) {
     if (hasDemoPrefix(data?.[field], keepSeedPrefixes)) return true;

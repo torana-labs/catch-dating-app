@@ -11,7 +11,6 @@ export function normalizeCreateEventPayload(data: unknown): unknown {
     stringFields: [
       "eventId",
       "organizerId",
-      "organizerId",
       "name",
       "meetingPoint",
       "description",

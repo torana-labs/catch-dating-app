@@ -75,7 +75,7 @@ export function rosterEnrollmentRequests(change: AssistanceSourceChange):
   const collection = change.source.collection;
   let fields: string[];
   switch (collection) {
-  case "eventAttendees": fields = ["eventId", "organizerId", "organizerId",
+  case "eventAttendees": fields = ["eventId", "organizerId",
     "status", "createdAt"]; break;
   case "eventAssistanceGuests": fields = ["context", "attendeeId",
     "episodeId", "sourceGeneration", "attendeeGeneration"]; break;
@@ -183,16 +183,16 @@ function projection(collection: Collection, snapshot: Snapshot) {
   case "eventAssistanceRcsSubscriptions":
   case "organizerContactChannelStates": fields = readinessFields(collection)!;
     break;
-  case "events": fields = ["organizerId", "organizerId", "status",
+  case "events": fields = ["organizerId", "status",
     "eventFormat",
     "startTime", "endTime", "meetingLocation", "itinerary", "eventPolicy",
     "constraints", "capacityLimit", "priceInPaise", "currency",
     "publicRegistrationEnabled"]; break;
-  case "eventAttendees": fields = ["eventId", "organizerId", "organizerId",
+  case "eventAttendees": fields = ["eventId", "organizerId",
     "status", "attendanceRevision", "checkedInAt", "createdAt", "phoneE164",
     "linkedUid"];
     break;
-  case "eventSuccessPlans": fields = ["eventId", "organizerId", "organizerId",
+  case "eventSuccessPlans": fields = ["eventId", "organizerId",
     "status"]; break;
   case "eventStaffGrants": fields = ["eventId", "organizerId", "uid",
     "status", "expiresAt", "groupDuties"]; break;
@@ -215,7 +215,7 @@ function projection(collection: Collection, snapshot: Snapshot) {
 
 function checkpointMemberProjection(snapshot: Snapshot) {
   if (!snapshot) return null;
-  const fields = ["eventId", "organizerId", "organizerId", "status",
+  const fields = ["eventId", "organizerId", "status",
     "createdAt",
     "attendanceRevision", "checkedInAt", "accountabilityRevision",
     "accountabilityResolution", "accountabilityResolvedAt",

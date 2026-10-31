@@ -196,7 +196,6 @@ test("shared screenshot runner validates every React caller with only its requir
 const organizerAuthorityEmulatorPaths = [
   "functions/package.json",
   "functions/src/shared/organizerHosts.ts",
-  "functions/src/shared/organizerHosts.ts",
   "functions/src/shared/organizerHosts.test.ts",
   "functions/src/organizers/manageOrganizerTeam.ts",
   "functions/src/profiles/syncPublicProfile.ts",

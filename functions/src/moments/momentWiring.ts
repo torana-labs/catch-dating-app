@@ -63,7 +63,7 @@ const DEFAULT_DAILY_CAP = 4;
 const ACTIVITY_TYPES: ReadonlySet<string> = new Set([
   "message", "match", "eventReminder", "eventSignup", "waitlistPromotion",
   "waitlistOffer", "waitlistOfferExpiring", "waitlistOfferExpired",
-  "eventCancelled", "eventUpdated", "organizerUpdate", "organizerUpdate",
+  "eventCancelled", "eventUpdated", "organizerUpdate",
   "formResponse", "crossPathsInvitation", "crossPathsInvitationAccepted",
   "crossPathsInvitationDeclined", "crossPathsPlanCancelled",
 ]);

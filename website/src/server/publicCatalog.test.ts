@@ -113,7 +113,6 @@ function catalogWorld(): World {
     },
     events: {
       "alpha-run": catchEvent("alpha"),
-      "alpha-legacy": catchEvent("alpha", {organizerId: undefined}),
       "alpha-draft": catchEvent("alpha", {publicationState: "draft"}),
       "beta-dinner": catchEvent("beta", {eventFormat: {activityKind: "dinner"}}),
     },
@@ -130,7 +129,7 @@ describe("full public catalog", () => {
     const catalog = await assemblePublicCatalog(reader, readAt);
     expect(catalog.listings.map((listing) => listing.id)).toEqual(["alpha", "beta", "delta", "gamma"]);
     const alpha = catalog.listings.find((listing) => listing.id === "alpha")!;
-    expect(alpha.catchEvents?.map((event) => event.id)).toEqual(["alpha-legacy", "alpha-run"]);
+    expect(alpha.catchEvents?.map((event) => event.id)).toEqual(["alpha-run"]);
     expect(alpha.externalEvents?.map((event) => event.id)).toEqual(["ext-alpha-takeoff"]);
   });
 
@@ -152,7 +151,7 @@ describe("per-route reads", () => {
       expect(detail?.route.listing).toEqual(await withPublicReviews(fakeReader(world).reader, listing));
     }
     const records = buildPublicEventDetailRecords(full.listings, readAt);
-    expect(records.length).toBe(4);
+    expect(records.length).toBe(3);
     for (const record of records) {
       const detail = await assembleEventDetailCatalog(fakeReader(world).reader, record.eventId, readAt);
       const perRoute = getEventDetailForPath(record.path, buildPublicEventDetailRecords(detail!.listings, readAt));
@@ -167,7 +166,7 @@ describe("per-route reads", () => {
     expect(detail?.catalog.listings.map((listing) => listing.id)).toEqual(["alpha", "delta", "gamma"]);
     for (const read of reads.filter((entry) => entry.collection !== "organizers")) {
       expect(read.filters.some((filter) =>
-        ["organizerId", "organizerId", "canonicalHostId"].includes(filter.field) && filter.value === "alpha")).toBe(true);
+        ["organizerId", "canonicalHostId"].includes(filter.field) && filter.value === "alpha")).toBe(true);
     }
     expect(reads.filter((entry) => entry.collection === "organizers")
       .every((entry) => entry.filters.length > 1)).toBe(true);

@@ -27,23 +27,17 @@ export async function listPublishedCatchEvents(
   return project(await readBounded(query, listBound), readAt);
 }
 
-/**
- * One organizer's published Catch events. Events that still carry only the
- * legacy `organizerId` match too, as they do in the full catalog read.
- */
+/** One organizer's published Catch events. */
 export async function listPublishedCatchEventsForOrganizer(
   db: PublicReader,
   organizerId: string,
   readAt: number
 ): Promise<LivePublicCatchEvent[]> {
-  const reads = await Promise.all(["organizerId", "organizerId"].map((field) =>
-    readBounded(db.collection("events")
-      .where(field, "==", organizerId)
-      .where("publicationState", "==", "published"), organizerBound)));
-  const byId = new Map<string, PublicDocument>();
-  for (const doc of reads.flat()) byId.set(doc.id, doc);
+  const reads = await readBounded(db.collection("events")
+    .where("organizerId", "==", organizerId)
+    .where("publicationState", "==", "published"), organizerBound);
   // Document-id order, as the full collection read returns them.
-  const docs = [...byId.values()].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  const docs = [...reads].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
   return project(docs, readAt).filter((row) => row.organizerId === organizerId);
 }
 

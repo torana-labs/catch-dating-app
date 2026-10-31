@@ -20,7 +20,7 @@ it("keeps free international events but rejects unsupported paid currency", () =
   expect(project("event", {...base(), priceInPaise: 100, currency: "USD", publicRegistrationMode: "paid"})).toBeNull();
 });
 it("withholds malformed identities, dates, prices, and timezones", () => {
-  for (const change of [{organizerId: "other"}, {capacityLimit: 0}, {bookedCount: -1},
+  for (const change of [{capacityLimit: 0}, {bookedCount: -1},
     {priceInPaise: -1}, {startTime: {toMillis: () => {throw Error();}}},
     {endTime: {toMillis: () => 1}}, {eventTimezone: "invalid"}]) {
     expect(project("event", {...base(), ...change})).toBeNull();

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/club_host_claims.schema.json",
+  "$id": "https://catch.app/contracts/firestore/organizer_host_claims.schema.json",
   "title": "OrganizerHostClaimDocument",
   "description": "Server-owned singleton claim stored at organizerHostClaims/{uid} to enforce one hosted club per user.",
   "type": "object",

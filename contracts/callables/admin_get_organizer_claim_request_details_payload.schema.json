@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/admin_get_club_claim_request_details_payload.schema.json",
+  "$id": "https://catch.app/contracts/callables/admin_get_organizer_claim_request_details_payload.schema.json",
   "title": "AdminGetOrganizerClaimRequestDetailsCallablePayload",
   "type": "object",
   "additionalProperties": false,

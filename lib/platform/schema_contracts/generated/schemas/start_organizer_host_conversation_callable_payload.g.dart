@@ -6,7 +6,7 @@
 
 const schemaStartOrganizerHostConversationCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/start_club_host_conversation_payload.schema.json',
+  '\$id': 'https://catch.app/contracts/callables/start_organizer_host_conversation_payload.schema.json',
   'title': 'StartOrganizerHostConversationCallablePayload',
   'description': 'Callable payload accepted by startOrganizerHostConversation.',
   'type': 'object',

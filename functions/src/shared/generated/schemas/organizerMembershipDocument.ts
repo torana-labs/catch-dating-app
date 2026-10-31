@@ -4,7 +4,7 @@
 
 export const organizerMembershipDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/club_memberships.schema.json",
+  "$id": "https://catch.app/contracts/firestore/organizer_memberships.schema.json",
   "title": "OrganizerMembershipDocument",
   "description": "Canonical club membership edge stored at organizerMemberships/{membershipId}.",
   "type": "object",

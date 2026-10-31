@@ -4,7 +4,7 @@
 
 export const addOrganizerHostCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/add_club_host_payload.schema.json",
+  "$id": "https://catch.app/contracts/callables/add_organizer_host_payload.schema.json",
   "title": "AddOrganizerHostCallablePayload",
   "description": "Callable payload accepted by addOrganizerHost.",
   "type": "object",

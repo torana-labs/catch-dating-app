@@ -191923,7 +191923,7 @@ export const organizerScheduleLockDocumentSchema = {
 
 export const organizerMembershipDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/club_memberships.schema.json",
+  "$id": "https://catch.app/contracts/firestore/organizer_memberships.schema.json",
   "title": "OrganizerMembershipDocument",
   "description": "Canonical club membership edge stored at organizerMemberships/{membershipId}.",
   "type": "object",
@@ -192099,7 +192099,7 @@ export const organizerMembershipDocumentSchema = {
 
 export const organizerHostClaimDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/club_host_claims.schema.json",
+  "$id": "https://catch.app/contracts/firestore/organizer_host_claims.schema.json",
   "title": "OrganizerHostClaimDocument",
   "description": "Server-owned singleton claim stored at organizerHostClaims/{uid} to enforce one hosted club per user.",
   "type": "object",
@@ -262478,7 +262478,7 @@ export const userAnalyticsCallableResponseSchema = {
 
 export const addOrganizerHostCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/add_club_host_payload.schema.json",
+  "$id": "https://catch.app/contracts/callables/add_organizer_host_payload.schema.json",
   "title": "AddOrganizerHostCallablePayload",
   "description": "Callable payload accepted by addOrganizerHost.",
   "type": "object",
@@ -262661,7 +262661,7 @@ export const transferOrganizerOwnershipCallablePayloadSchema = {
 
 export const removeOrganizerHostCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/remove_club_host_payload.schema.json",
+  "$id": "https://catch.app/contracts/callables/remove_organizer_host_payload.schema.json",
   "title": "RemoveOrganizerHostCallablePayload",
   "description": "Callable payload accepted by removeOrganizerHost.",
   "type": "object",
@@ -265467,7 +265467,7 @@ export const adminDecideOrganizerPolicyGapCallablePayloadSchema = {
 
 export const adminSetOrganizerIndexStatusCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
+  "$id": "https://catch.app/contracts/callables/admin_set_organizer_index_status_payload.schema.json",
   "title": "AdminSetOrganizerIndexStatusCallablePayload",
   "description": "Callable payload accepted by adminSetOrganizerIndexStatus.",
   "type": "object",
@@ -268494,7 +268494,7 @@ export const adminTakedownExternalEventCallablePayloadSchema = {
 
 export const startOrganizerHostConversationCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/start_club_host_conversation_payload.schema.json",
+  "$id": "https://catch.app/contracts/callables/start_organizer_host_conversation_payload.schema.json",
   "title": "StartOrganizerHostConversationCallablePayload",
   "description": "Callable payload accepted by startOrganizerHostConversation.",
   "type": "object",
@@ -268579,7 +268579,7 @@ export const startOrganizerContactConversationCallablePayloadSchema = {
 
 export const organizerMembershipCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/club_membership_payload.schema.json",
+  "$id": "https://catch.app/contracts/callables/organizer_membership_payload.schema.json",
   "title": "OrganizerMembershipCallablePayload",
   "description": "Retired legacy membership payload retained only for schema-history decoding.",
   "type": "object",

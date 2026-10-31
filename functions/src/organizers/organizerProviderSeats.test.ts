@@ -395,7 +395,7 @@ test("oversize ready handler records failure without a partial roster",
 
 test("ready provider rejects a matched attendee owned by another tenant",
   async () => {
-    for (const field of ["organizerId", "organizerId"] as const) {
+    for (const field of ["organizerId"] as const) {
       const h = fixture({active: true});
       h.old![field] = "foreignOrg";
       await assert.rejects(prepareProviderSeatChanges({db: h.db, tx: h.tx,
@@ -453,7 +453,7 @@ test("provider failure cannot revoke a concurrently rotated credential",
 
 test("legacy provider sync refuses a foreign-owned matched attendee",
   async () => {
-    for (const field of ["organizerId", "organizerId"] as const) {
+    for (const field of ["organizerId"] as const) {
       const h = reconcileFixture();
       h.docs[`eventAttendees/${attendeeId}`][field] = "foreignOrg";
       await assert.rejects(reconcileFixtureRun(h),
