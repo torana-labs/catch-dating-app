@@ -173,20 +173,35 @@ rename_to_organizer() {
   local table_ref="$project_id:$dataset.$table"
   local old_column="${renames#RENAME COLUMN }"
   old_column="${old_column%% *}"
+  # bq writes the table JSON and its own errors to stdout and CLI warnings to
+  # stderr, so only stdout is parsed. Unreadable metadata stops the script
+  # rather than passing for an already renamed table.
   local metadata
-  if ! metadata="$(bq --project_id="$project_id" --format=json show "$table_ref" 2>&1)"; then
+  if ! metadata="$(bq --project_id="$project_id" --format=json show "$table_ref")"; then
     if [[ "$metadata" == *"Not found"* ]]; then
       return 0
     fi
     echo "$metadata" >&2
     exit 1
   fi
-  if ! node -e '
+  local column_state=0
+  node -e '
     const [column, metadata] = process.argv.slice(1);
-    const fields = JSON.parse(metadata).schema?.fields ?? [];
+    let fields;
+    try {
+      fields = JSON.parse(metadata).schema?.fields;
+    } catch {
+      process.exit(2);
+    }
+    if (!Array.isArray(fields)) process.exit(2);
     process.exit(fields.some((field) => field.name === column) ? 0 : 1);
-  ' "$old_column" "$metadata"; then
+  ' "$old_column" "$metadata" || column_state=$?
+  if [[ "$column_state" == 1 ]]; then
     return 0
+  fi
+  if [[ "$column_state" != 0 ]]; then
+    echo "Unreadable BigQuery metadata for $table_ref." >&2
+    exit 1
   fi
   echo "::group::BigQuery $table organizer columns"
   if [[ -n "$interim_clustering" ]]; then
