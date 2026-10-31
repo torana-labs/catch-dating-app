@@ -77,7 +77,7 @@ jobs:
 
     steps:
       - name: Checkout planner closure
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         timeout-minutes: 3
         with:
           fetch-depth: 0
@@ -104,7 +104,7 @@ jobs:
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
 
@@ -263,7 +263,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Audience documentation advice
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: audience-doc-impact-${{ github.run_number }}-${{ github.run_id }}-${{ steps.plan.outputs.source_sha }}-${{ github.run_attempt }}
           path: build/ci/audience-doc-impact.json
@@ -281,7 +281,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload planner evidence
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: harness-plan-${{ github.run_number }}-${{ github.run_id }}-${{ steps.plan.outputs.source_sha }}-${{ github.run_attempt }}
           path: build/ci/impact-plan.json
@@ -289,7 +289,7 @@ jobs:
           retention-days: 90
 
       - name: Upload selector comparison
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: selector-comparison-${{ github.run_id }}-${{ github.run_attempt }}
           path: build/ci/selector-comparison.json
@@ -303,12 +303,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
       - id: toolchain
         uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
       - name: Derive exact-source route and widget inventories
@@ -337,7 +337,7 @@ jobs:
           node tool/harness/verify_local.mjs "${args[@]}" > build/ci/source-preflight.json
       - name: Retain preflight findings
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: source-preflight-${{ github.run_id }}-${{ github.run_attempt }}
           path: build/ci/source-preflight.json
@@ -492,7 +492,7 @@ jobs:
 
       - name: Checkout ordinary-doc closure
         if: ${{ steps.docs-checkout.outcome == 'success' }}
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         # Supplying sparse-checkout to checkout also enables blob:none. The
         # offline metadata scanner needs current and historical document blobs.
         timeout-minutes: 10
@@ -517,7 +517,7 @@ jobs:
         if: >-
           needs.plan.outputs.policy_docs == 'true' ||
           fromJSON(needs.plan.outputs.docs_checkout).mode == 'full'
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         timeout-minutes: 10
         with:
           fetch-depth: 0
@@ -527,7 +527,7 @@ jobs:
         uses: ./.github/actions/load-toolchain
       - name: Set up Harness Node.js
         if: ${{ needs.plan.outputs.policy_docs == 'true' && needs.plan.outputs.tools != 'true' }}
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.policy-toolchain.outputs.node-version }}
           cache: npm
@@ -564,6 +564,41 @@ jobs:
       web_smoke: ${{ needs.plan.outputs.flutter_web_smoke == 'true' }}
     secrets: inherit
 
+  workflow-lint:
+    name: Lint workflows
+    # Seconds of work, so it runs on every ready PR and queue group rather
+    # than through the planner.
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: .github
+      - name: Install pinned actionlint and zizmor
+        env:
+          ACTIONLINT_VERSION: 1.7.12
+          ACTIONLINT_SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+          ZIZMOR_VERSION: 1.31.1
+          ZIZMOR_SHA256: d185f726bdaf92df78273217dfdd24ebcd6b0ef48cf3ce776ff5762b6e138c99
+        run: |
+          set -euo pipefail
+          bin="$RUNNER_TEMP/workflow-lint"
+          mkdir -p "$bin"
+          curl -fsSL -o "$bin/actionlint.tgz" \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          curl -fsSL -o "$bin/zizmor.tgz" \
+            "https://github.com/zizmorcore/zizmor/releases/download/v${ZIZMOR_VERSION}/zizmor-x86_64-unknown-linux-gnu.tar.gz"
+          echo "$ACTIONLINT_SHA256  $bin/actionlint.tgz" | sha256sum -c -
+          echo "$ZIZMOR_SHA256  $bin/zizmor.tgz" | sha256sum -c -
+          tar -xzf "$bin/actionlint.tgz" -C "$bin" actionlint
+          tar -xzf "$bin/zizmor.tgz" -C "$bin"
+          echo "$bin" >> "$GITHUB_PATH"
+      # Shell and Python inside run steps are not linted yet.
+      - run: actionlint -shellcheck= -pyflakes=
+      - run: zizmor --offline --config .github/zizmor.yml --min-severity high .github
+
   required:
     name: Required CI
     # A draft cannot merge or enter the merge queue; it validates once ready.
@@ -583,6 +618,7 @@ jobs:
       - operations
       - docs-policy
       - app-builds
+      - workflow-lint
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

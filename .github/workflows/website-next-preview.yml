@@ -23,13 +23,13 @@ jobs:
       artifact_id: ${{ steps.upload.outputs.artifact-id }}
       release_sha256: ${{ steps.package.outputs.release_sha256 }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
           persist-credentials: false
       - id: toolchain
         uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
       - id: source
@@ -84,7 +84,7 @@ jobs:
           docker save --output build/next-preview/image.tar catch-website-preview:build
           node website/scripts/next/previewRelease.mjs prepare
       - id: upload
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: next-preview-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: build/next-preview/release.tgz
@@ -102,16 +102,16 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
           persist-credentials: false
       - id: toolchain
         uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           artifact-ids: ${{ needs.build.outputs.artifact_id }}
           path: build/next-preview
@@ -124,12 +124,12 @@ jobs:
         env:
           FIREBASE_TOOLS_VERSION: ${{ steps.toolchain.outputs.firebase-tools-version }}
         run: npm install --global "firebase-tools@$FIREBASE_TOOLS_VERSION"
-      - uses: google-github-actions/setup-gcloud@v3
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
       - name: Recheck current accepted source immediately before authentication
         env:
           GH_TOKEN: ${{ github.token }}
         run: node website/scripts/next/previewRelease.mjs authorize
-      - uses: google-github-actions/auth@v3
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
@@ -199,7 +199,7 @@ jobs:
           node website/scripts/next/deployedSmoke.mjs "$url" > build/next-preview/deployed-checks.json
       - name: Retain runtime and preview identities for acceptance
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: next-preview-serving-${{ github.run_id }}-${{ github.run_attempt }}
           path: |

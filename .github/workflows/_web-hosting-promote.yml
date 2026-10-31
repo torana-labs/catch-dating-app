@@ -55,7 +55,7 @@ jobs:
       # workflow_sha is the immutable, main-bound caller/control-plane SHA.
       # source_sha and artifact contents remain unauthorized until authorize passes.
       - name: Checkout immutable workflow control plane before source authorization
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: ${{ github.workflow_sha }}
           path: .hosting-control
@@ -129,7 +129,7 @@ jobs:
 
       - name: Checkout the exact producing source
         if: ${{ steps.authorize.outputs.superseded != 'true' }}
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: ${{ inputs.source_sha }}
           fetch-depth: 0
@@ -152,7 +152,7 @@ jobs:
         if: ${{ steps.authorize.outputs.superseded != 'true' }}
         uses: ./.github/actions/load-toolchain
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         if: ${{ steps.authorize.outputs.superseded != 'true' }}
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
@@ -271,12 +271,12 @@ jobs:
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
             --provenance-manifest "$provenance"
 
-      - uses: google-github-actions/setup-gcloud@v3
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
         if: ${{ inputs.surface == 'marketing' && steps.authorize.outputs.superseded != 'true' }}
 
       - name: Authenticate to Google Cloud only for final freshness and mutation
         if: ${{ steps.authorize.outputs.superseded != 'true' }}
-        uses: google-github-actions/auth@v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           create_credentials_file: true
           export_environment_variables: true

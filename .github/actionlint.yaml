@@ -1,0 +1,6 @@
+# actionlint configuration. CI runs it in the "Lint workflows" job of ci.yml.
+paths:
+  .github/workflows/**/*.{yml,yaml}:
+    ignore:
+      # GitHub accepts `concurrency.queue: max`; actionlint 1.7.12 predates it.
+      - 'unexpected key "queue" for "concurrency" section'

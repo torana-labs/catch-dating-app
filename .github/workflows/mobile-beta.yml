@@ -54,7 +54,7 @@ jobs:
       ios: ${{ steps.plan.outputs.ios }}
       android: ${{ steps.plan.outputs.android }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -122,7 +122,7 @@ jobs:
       id-token: write
       attestations: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
       - id: toolchain
@@ -134,7 +134,7 @@ jobs:
           current="$(xcodebuild -version | awk 'NR==1 {print $2}')"
           lowest="$(printf '%s\n%s\n' "$XCODE_MIN_VERSION" "$current" | sort -V | head -1)"
           test "$lowest" = "$XCODE_MIN_VERSION" || { echo "Xcode $current is older than $XCODE_MIN_VERSION."; exit 1; }
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
       - uses: ./.github/actions/setup-flutter
@@ -143,7 +143,7 @@ jobs:
         with:
           cocoapods-version: ${{ steps.toolchain.outputs.cocoapods-version }}
           lockfiles: apps/${{ matrix.role }}/ios/Podfile.lock
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: "3.3"
           bundler-cache: true
@@ -161,12 +161,12 @@ jobs:
           LANG: en_US.UTF-8
         run: bundle exec fastlane ios beta role:${{ matrix.role }}
       - name: Record build provenance
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
         with:
           subject-path: build/ios/export/*/*.ipa
       - name: Keep the IPA and verification records
         if: ${{ always() }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ios-${{ matrix.role }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
@@ -199,22 +199,22 @@ jobs:
       CATCH_GRADLE_WRAPPER_MAX_ATTEMPTS: "5"
       CATCH_GRADLE_WRAPPER_RETRY_DELAY_SECONDS: "20"
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
       - id: toolchain
         uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: temurin
           java-version: ${{ steps.toolchain.outputs.java-version }}
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
       - uses: ./.github/actions/setup-flutter
       - run: flutter pub get --enforce-lockfile
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: "3.3"
           bundler-cache: true
@@ -252,7 +252,7 @@ jobs:
           printf '\nGOOGLE_MAPS_ANDROID_API_KEY_PROD=%s\n' "$GOOGLE_MAPS_ANDROID_API_KEY_PROD" >> "$android/local.properties"
           chmod 600 "$android/keystore/upload-keystore.jks" "$android/key.properties" "$android/local.properties"
       - name: Authenticate to Google Play without a stored key
-        uses: google-github-actions/auth@v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL }}
@@ -263,12 +263,12 @@ jobs:
           FASTLANE_HIDE_CHANGELOG: "1"
         run: bundle exec fastlane android beta role:${{ matrix.role }} upload:${{ needs.plan.outputs.android_upload }}
       - name: Record build provenance
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
         with:
           subject-path: apps/${{ matrix.role }}/build/app/outputs/bundle/**/*.aab
       - name: Keep the bundle and verification records
         if: ${{ always() }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: android-${{ matrix.role }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |

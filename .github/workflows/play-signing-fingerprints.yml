@@ -37,18 +37,18 @@ jobs:
     outputs:
       fingerprints: ${{ steps.read.outputs.fingerprints }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
       - id: toolchain
         uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: temurin
           java-version: ${{ steps.toolchain.outputs.java-version }}
       - id: auth
         name: Authenticate to Google Play without a stored key
-        uses: google-github-actions/auth@v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL }}
@@ -92,18 +92,18 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
       - id: toolchain
         run: echo "terraform-version=$(sed -n 's/^TERRAFORM_VERSION=//p' tool/ci/toolchain.env)" >> "$GITHUB_OUTPUT"
-      - uses: hashicorp/setup-terraform@v4
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
         with:
           terraform_version: ${{ steps.toolchain.outputs.terraform-version }}
           terraform_wrapper: false
       - id: auth
         name: Authenticate to Google without a stored key
-        uses: google-github-actions/auth@v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
@@ -140,7 +140,7 @@ jobs:
             cat build/infra/terraform.tfvars
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: firebase-android-tfvars-${{ github.run_id }}-${{ github.run_attempt }}
           path: build/infra
