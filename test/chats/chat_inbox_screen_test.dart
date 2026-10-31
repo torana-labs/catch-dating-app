@@ -391,7 +391,11 @@ void main() {
   testWidgets(
     'chat root header search expands in scroll content and is editable',
     (tester) async {
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        ],
+      );
       addTearDown(container.dispose);
 
       await tester.pumpWidget(

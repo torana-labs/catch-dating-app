@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
@@ -208,10 +211,13 @@ void main() {
     });
 
     test('chat search query survives listener disposal', () async {
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [uidProvider.overrideWith((ref) => Stream.value('uid-a'))],
+      );
       addTearDown(container.dispose);
 
       final subscription = container.listen(chatSearchQueryProvider, (_, _) {});
+      await container.pump();
       container.read(chatSearchQueryProvider.notifier).setQuery('  taylor');
       expect(subscription.read(), 'taylor');
 
@@ -219,6 +225,33 @@ void main() {
       await container.pump();
 
       expect(container.read(chatSearchQueryProvider), 'taylor');
+    });
+
+    test('chat search query starts empty for the next account', () async {
+      final auth = StreamController<String?>();
+      addTearDown(auth.close);
+      final container = ProviderContainer(
+        overrides: [uidProvider.overrideWith((ref) => auth.stream)],
+      );
+      addTearDown(container.dispose);
+      final subscription = container.listen(chatSearchQueryProvider, (_, _) {});
+      addTearDown(subscription.close);
+
+      Future<void> signIn(String? uid) async {
+        auth.add(uid);
+        await container.pump();
+      }
+
+      await signIn('uid-a');
+      container.read(chatSearchQueryProvider.notifier).setQuery('taylor');
+      expect(subscription.read(), 'taylor');
+
+      await signIn(null);
+      expect(subscription.read(), isEmpty);
+
+      container.read(chatSearchQueryProvider.notifier).setQuery('morgan');
+      await signIn('uid-b');
+      expect(subscription.read(), isEmpty);
     });
 
     test('Explore filters survive listener disposal', () async {

@@ -41,7 +41,7 @@ final class ChatSearchQueryProvider
   }
 }
 
-String _$chatSearchQueryHash() => r'f36931c4a7dd09361238bb69679f96e4b174f1bf';
+String _$chatSearchQueryHash() => r'021bf1bff15d3432bb7b620cde16800db246c264';
 
 abstract class _$ChatSearchQuery extends $Notifier<String> {
   String build();
