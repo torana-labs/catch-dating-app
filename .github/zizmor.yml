@@ -1,6 +1,11 @@
 # zizmor configuration. CI runs it in the "Lint workflows" job of ci.yml and
 # fails on high-severity findings.
 rules:
+  dangerous-triggers:
+    ignore:
+      # Its plan job runs only for main pushes, schedules and dispatches,
+      # never for pull-request workflow runs.
+      - website-release.yml
   unpinned-uses:
     ignore:
       # Open work owns these files: codex/deploy-one-cli-run (backend deploy),

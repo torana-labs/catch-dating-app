@@ -12,10 +12,8 @@ name: Website Release
 # merge; the newest pending train waits behind it. Operator guide:
 # docs/web_surface_architecture.md, "Release train".
 
-# The plan job runs only for main pushes, schedules and dispatches, never for
-# pull-request workflow runs, so workflow_run is safe here.
 on:
-  workflow_run: # zizmor: ignore[dangerous-triggers]
+  workflow_run:
     workflows: [CI]
     types: [completed]
     branches: [main]
