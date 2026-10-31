@@ -206,7 +206,8 @@ export function renameWireSegments(value, wire, {camel = true} = {}) {
 
 // The contract generators' strings name contract titles and their own
 // per-contract settings, which follow the contracts, not every camelCase word.
-const titlesOnly = /^tool\/contracts\//u;
+// Other contract tools (the fixture map) name generated exports, which do.
+const titlesOnly = /^tool\/contracts\/generate_/u;
 
 // A path string follows a moved file, or names a generated output, which
 // follows the source its generator renames.
