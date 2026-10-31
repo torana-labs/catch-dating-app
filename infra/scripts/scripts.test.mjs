@@ -358,6 +358,46 @@ for (const [label, change] of [
   });
 }
 
+// --- Firestore recovery -------------------------------------------------------
+
+const recovered = {delete_protection_state: "DELETE_PROTECTION_ENABLED",
+  point_in_time_recovery_enablement: "POINT_IN_TIME_RECOVERY_ENABLED"};
+const databaseAdoption = {
+  address: "google_firestore_database.prod", mode: "managed", type: "google_firestore_database",
+  change: {actions: ["update"], importing: {id: "projects/catch-dating-app-64e51/databases/(default)"},
+    before: {delete_protection_state: "DELETE_PROTECTION_DISABLED",
+      point_in_time_recovery_enablement: "POINT_IN_TIME_RECOVERY_DISABLED"},
+    after: recovered},
+};
+const backupSchedule = {
+  address: "google_firestore_backup_schedule.prod_daily", mode: "managed",
+  type: "google_firestore_backup_schedule",
+  change: {actions: ["create"], before: null, after: {retention: "1209600s"}},
+};
+
+test("plan guard lets Terraform adopt the database, turn on recovery and add a backup schedule", (t) => {
+  const result = guard(t, planWith([databaseAdoption, backupSchedule]));
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /Plan guard: passed/u);
+});
+
+for (const [label, change] of [
+  ["creating a database instead of importing one", {...databaseAdoption,
+    change: {...databaseAdoption.change, actions: ["create"], importing: undefined}}],
+  ["turning delete protection off", {...databaseAdoption, change: {...databaseAdoption.change,
+    after: {...recovered, delete_protection_state: "DELETE_PROTECTION_DISABLED"}}}],
+  ["turning point-in-time recovery off", {...databaseAdoption, change: {...databaseAdoption.change,
+    after: {...recovered, point_in_time_recovery_enablement: "POINT_IN_TIME_RECOVERY_DISABLED"}}}],
+  ["deleting the backup schedule", {...backupSchedule,
+    change: {actions: ["delete"], before: {retention: "1209600s"}, after: null}}],
+]) {
+  test(`plan guard refuses ${label}`, (t) => {
+    const result = guard(t, planWith([change]));
+    assert.equal(result.status, 1, result.stdout);
+    assert.match(result.stdout, /Plan guard: \*\*refused\*\*/u);
+  });
+}
+
 function storePartner(t, args, input) {
   const root = sandbox(t);
   const log = path.join(root, "calls.log");

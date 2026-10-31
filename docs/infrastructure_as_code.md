@@ -1,7 +1,7 @@
 ---
 doc_id: infrastructure_as_code
-version: 1.1.0
-updated: 2026-10-30
+version: 1.2.0
+updated: 2026-10-31
 owner: backend_platform
 status: active
 ---
@@ -28,6 +28,7 @@ staging and prod.
 | `google_firebase_android_app` (google-beta provider) | Consumer and Host in `catchdates-dev`, `catchdates-staging` and `catch-dating-app-64e51` | display name, package name, SHA-1 and SHA-256 certificate fingerprints |
 | `google_firebase_app_check_play_integrity_config` (google provider) | The same six apps | adopted as is; `token_ttl` keeps its live value |
 | `google_secret_manager_secret` and `google_secret_manager_secret_iam_member` (google provider) | `catchdates-dev` and `catch-dating-app-64e51` | Forms payment secret containers and their runtime grants, never values; see [Forms payment secrets](#forms-payment-secrets) |
+| `google_firestore_database` and `google_firestore_backup_schedule` (google provider) | The `(default)` database in `catch-dating-app-64e51` | Point-in-time recovery, delete protection and a daily 14-day backup; see [Firestore recovery](#firestore-recovery) |
 
 The Android inventory lives in `infra/firebase/terraform.tfvars`; the Forms
 payment inputs live in `infra/firebase/form_payments.auto.tfvars`. Everything in it is
@@ -48,7 +49,9 @@ Guards, from first to last:
   it, touch a resource type outside its allowlist (which leaves out
   `google_secret_manager_secret_version`, so no secret value can enter state),
   or grant a secret role other than the two the runtime needs, or to a
-  `github-actions` identity.
+  `github-actions` identity. It also fails any plan that would create a
+  Firestore database instead of importing it, or turn off its delete
+  protection or point-in-time recovery.
   This also covers a resource block deleted from the configuration, which
   takes its `prevent_destroy` with it.
 - The committed inventory has blank display names and fingerprint lists until
@@ -122,9 +125,9 @@ environment claim and is rejected.
 
 | Identity | Trusted by | Roles | Why |
 |---|---|---|---|
-| `github-actions-platform-plan@catch-dating-app-64e51` | `principalSet://…/attribute.repository_environment/1170579691:platform-plan` | Custom `catchPlatformPlanReader` in each of the three projects: `firebase.clients.get`, `firebase.clients.list`, `firebase.projects.get`, `firebaseappcheck.playIntegrityConfig.get` | Read the apps Terraform imports and their Play Integrity configs. `roles/firebase.viewer` was rejected: it includes Firestore data reads (`datastore.entities.get`), and pull-request jobs use this identity. |
+| `github-actions-platform-plan@catch-dating-app-64e51` | `principalSet://…/attribute.repository_environment/1170579691:platform-plan` | Custom `catchPlatformPlanReader` in each of the three projects: `firebase.clients.get`, `firebase.clients.list`, `firebase.projects.get`, `firebaseappcheck.playIntegrityConfig.get`, `datastore.databases.get`, `datastore.databases.getMetadata`, `datastore.backupSchedules.get`, `datastore.backupSchedules.list` | Read the apps Terraform imports, their Play Integrity configs, and Firestore database settings and backup schedules. `roles/firebase.viewer` was rejected: it includes Firestore data reads (`datastore.entities.get`), and pull-request jobs use this identity. No `datastore.entities.*` permission is granted. |
 | | | `roles/storage.objectViewer` on the state bucket only | Read state. Plans run with `-lock=false`, so this identity never writes the bucket. |
-| `github-actions-platform-apply@catch-dating-app-64e51` | `principalSet://…/attribute.repository_environment/1170579691:prod-platform` | Custom `catchPlatformApplier` in each project: the reads above plus `firebase.clients.update` and `firebaseappcheck.playIntegrityConfig.update` | Update an existing app's fingerprints and its Play Integrity config. No `firebase.clients.create` or `delete`, and no `firebaseappcheck.services.update` (enforcement). The narrowest predefined role with `firebase.clients.update` is Firebase Admin. |
+| `github-actions-platform-apply@catch-dating-app-64e51` | `principalSet://…/attribute.repository_environment/1170579691:prod-platform` | Custom `catchPlatformApplier` in each project: the reads above plus `firebase.clients.update`, `firebaseappcheck.playIntegrityConfig.update`, `datastore.databases.update`, `datastore.backupSchedules.create` and `datastore.backupSchedules.update` | Update an existing app's fingerprints and its Play Integrity config; change a Firestore database's recovery settings and add or change its backup schedule. No `firebase.clients.create` or `delete`, no `firebaseappcheck.services.update` (enforcement), no `datastore.databases.create` or `delete` and no `datastore.backupSchedules.delete`. The narrowest predefined role with `firebase.clients.update` is Firebase Admin. |
 | | | `roles/storage.objectUser` on the state bucket only | Write state and take the state lock. No bucket IAM. |
 | Both platform identities, dev and prod only | As above | Custom `catchPlatformSecretsReader` (plan: `secretmanager.secrets.get`, `secretmanager.secrets.getIamPolicy`) and `catchPlatformSecretsAdmin` (apply: those plus `secretmanager.secrets.setIamPolicy`, `secretmanager.secrets.update`), each with the IAM condition `resource.name.startsWith('projects/<number>/secrets/FORM_RAZORPAY_')`; apply also has `catchPlatformSecretCreator` (`secretmanager.secrets.create`) unconditionally, because creation is checked on the project | Manage the Forms payment secret containers and their IAM. Neither identity holds any `secretmanager.versions.*` permission, so neither can read, add or disable a value. |
 | `github-actions-play-publisher@catch-dating-app-64e51` (existing) | `prod-mobile`, `prod-mobile-release` | Unchanged | The fingerprints workflow reads generated APKs with it. |
@@ -166,8 +169,9 @@ that binding; run them, then rerun the script. `PLATFORM_REVIEWER=<login>`
 names a reviewer other than the signed-in gh user.
 
 The script also creates the Secret Manager roles behind
-[Forms payment secrets](#forms-payment-secrets). If you ran it before those
-existed, run it again: it only adds what is missing.
+[Forms payment secrets](#forms-payment-secrets) and grants the Firestore
+permissions behind [Firestore recovery](#firestore-recovery). If you ran it
+before those existed, run it again: it only adds what is missing.
 
 ## First adoption
 
@@ -256,6 +260,36 @@ variable. To rotate, run it again; keep the previous version enabled until
 payments started under it have settled, because their records pin it. Register the
 callback `https://asia-south1-<project>.cloudfunctions.net/organizerFormPaymentOauthCallback`
 in the partner application for each environment.
+
+## Firestore recovery
+
+The production `(default)` database keeps two layers of recovery, both in
+`infra/firebase/firestore_recovery.tf`:
+
+- **Point-in-time recovery** keeps seven days of versions. Any document can be
+  read as it was at any minute in that window, and the database can be
+  restored to a new database from any minute in it.
+- **A daily backup** is kept for 14 days, a restore point older than the
+  point-in-time window.
+
+**Delete protection** stops anyone, with any role, from deleting the database
+until it is turned off again in a reviewed PR. The plan guard refuses that PR,
+so turning it off also means changing the guard.
+
+The database is imported, never created, and `deletion_policy = "ABANDON"`:
+removing the resource block forgets the database instead of deleting it.
+
+Cost: both are billed as storage, at the size of the retained versions and
+backups. With pre-launch data that rounds to cents a month.
+
+To restore, create a new database from a backup or a point in time, check it,
+then point the apps at it or copy documents back:
+
+```sh
+gcloud firestore backups list --project=catch-dating-app-64e51 --location=asia-south1
+gcloud firestore databases restore --project=catch-dating-app-64e51 \
+  --source-backup=<backup name> --destination-database=restore-<date>
+```
 
 ## What stays elsewhere
 

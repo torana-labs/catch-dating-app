@@ -67,14 +67,17 @@ APPLY_ACCOUNT="$APPLY_ACCOUNT_ID@$PROD_PROJECT.iam.gserviceaccount.com"
 
 PLAN_ROLE=catchPlatformPlanReader
 APPLY_ROLE=catchPlatformApplier
-# Read the Firebase Android apps Terraform imports (get, list) and their App
-# Check Play Integrity configs. No Firestore, Storage data, Auth users,
-# secrets or IAM.
-PLAN_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.projects.get,firebaseappcheck.playIntegrityConfig.get
+# Read the Firebase Android apps Terraform imports (get, list), their App
+# Check Play Integrity configs, and Firestore database settings and backup
+# schedules. No Firestore documents (no datastore.entities.*), Storage data,
+# Auth users, secrets or IAM.
+PLAN_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.projects.get,firebaseappcheck.playIntegrityConfig.get,datastore.databases.get,datastore.databases.getMetadata,datastore.backupSchedules.get,datastore.backupSchedules.list
 # The same reads plus updating an existing app's fingerprints and its Play
-# Integrity config. Deliberately no firebase.clients.create/delete and no
-# firebaseappcheck.services.update (App Check enforcement).
-APPLY_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.clients.update,firebase.projects.get,firebaseappcheck.playIntegrityConfig.get,firebaseappcheck.playIntegrityConfig.update
+# Integrity config, updating a Firestore database's settings, and creating
+# or updating its backup schedules. Deliberately no firebase.clients.create/
+# delete, no firebaseappcheck.services.update (App Check enforcement), no
+# datastore.databases.create/delete and no datastore.backupSchedules.delete.
+APPLY_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.clients.update,firebase.projects.get,firebaseappcheck.playIntegrityConfig.get,firebaseappcheck.playIntegrityConfig.update,datastore.databases.get,datastore.databases.getMetadata,datastore.databases.update,datastore.backupSchedules.get,datastore.backupSchedules.list,datastore.backupSchedules.create,datastore.backupSchedules.update
 
 # Forms payment secrets. Secret IAM conditions see secret names with the
 # project number. Custom roles live here, not in Terraform: an identity that
@@ -165,9 +168,9 @@ ensure_role() {
 }
 for project in "${MANAGED_PROJECTS[@]}"; do
   ensure_role "$project" "$PLAN_ROLE" "Catch platform plan reader" \
-    "Read Firebase Android apps and App Check Play Integrity configs for Terraform plans." "$PLAN_PERMISSIONS"
+    "Read Firebase Android apps, App Check Play Integrity configs and Firestore recovery settings for Terraform plans." "$PLAN_PERMISSIONS"
   ensure_role "$project" "$APPLY_ROLE" "Catch platform applier" \
-    "Update existing Firebase Android app fingerprints and App Check Play Integrity configs for Terraform apply." "$APPLY_PERMISSIONS"
+    "Update existing Firebase Android app fingerprints, App Check Play Integrity configs and Firestore recovery settings for Terraform apply." "$APPLY_PERMISSIONS"
   gcloud projects add-iam-policy-binding "$project" --condition=None --quiet \
     --member="serviceAccount:$PLAN_ACCOUNT" --role="projects/$project/roles/$PLAN_ROLE" >/dev/null
   gcloud projects add-iam-policy-binding "$project" --condition=None --quiet \
