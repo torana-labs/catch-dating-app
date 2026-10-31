@@ -25,17 +25,15 @@ import {renameWord} from "./rename_to_organizer.mjs";
 // It leaves alone:
 //
 // - the club subtype: the organizer type value `club`, run clubs;
-// - BigQuery columns (`club_id`): a warehouse table needs a column migration,
-//   not a code rename;
 // - copy and URLs (`/host/clubs/` is the landing page for clubs);
 // - generated outputs, which their generators rewrite.
 //
 // --verify proves a commit is this codemod's output for its parent.
 
 const subtypeName = /(?:[Rr]un|Type)Club/u;
-// The subtype's own values, warehouse columns, and route reservation values
-// a person decides (they name dead legacy collections, not fields).
-const keptWireNames = new Set(["club", "clubs", "club_id", "clubsToOrganizersMigration"]);
+// The subtype's own values and route reservation values a person decides
+// (they name dead legacy collections, not fields).
+const keptWireNames = new Set(["club", "clubs", "clubsToOrganizersMigration"]);
 // Wire names whose organizer twin is not their word-for-word rename.
 export const wireOverrides = new Map([
   // External events always store the organizer id twice.
@@ -48,8 +46,6 @@ const generated = [
   /\.freezed\.dart$/u,
   /^lib\/l10n\/generated\//u,
   /^design\/source_packs\//u,
-  /^analytics\//u,
-  /^tool\/analytics\//u,
 ];
 // The codemods, the nomenclature gate and their tests name club on purpose;
 // the tools' fixtures are synthetic sources.
@@ -72,9 +68,8 @@ const isCliEntrypoint =
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 const matches = (patterns, file) => patterns.some((pattern) => pattern.test(file));
 const isClubWord = (name) => /club/iu.test(name) && !subtypeName.test(name);
-// Wire names keep the subtype's values and the warehouse columns; code
-// identifiers keep snake_case warehouse and SQL names (club_id,
-// clubs_raw_latest) but rename a variable `club`.
+// Wire names keep the subtype's values; code identifiers keep snake_case
+// names (analytics event keys) but rename a variable `club`.
 const isWireName = (name) => isClubWord(name) && !keptWireNames.has(name);
 const isClubIdentifier = (name) => isClubWord(name) && !/^[a-z0-9]+(?:_[a-z0-9]+)+$/u.test(name);
 const wireTarget = (name) => wireOverrides.get(name) ?? renameWord(name);
@@ -84,7 +79,7 @@ const codeWordInComment = /\b[A-Za-z_$][\w$]*\b/gu;
 const isCodeWord = (word) => /[A-Z_]/u.test(word.replace(/^[A-Z]/u, "")) || /[a-z][A-Z]/u.test(word);
 // A camelCase or PascalCase club word in a string (a collection, a schema
 // export, a symbol a test names) is code, so it renames with the code; prose
-// ("club", "Clubs"), snake_case warehouse names and the subtype stay.
+// ("club", "Clubs"), snake_case names and the subtype stay.
 const isCamelClubWord = (word) => /[a-z][A-Z]|^[A-Z][a-z]+[A-Z]|[a-z]Club|Club[A-Z]/u.test(word) &&
   isClubIdentifier(word) && !keptWireNames.has(word);
 

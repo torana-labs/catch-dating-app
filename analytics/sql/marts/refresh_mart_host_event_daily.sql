@@ -7,19 +7,15 @@ DECLARE refresh_end DATE DEFAULT CURRENT_DATE("Asia/Kolkata");
 DECLARE ga4_dataset_exists BOOL DEFAULT FALSE;
 DECLARE ga4_events_exist BOOL DEFAULT FALSE;
 
--- The warehouse keeps club_id as a physical compatibility column. Canonical
--- Firestore organizerId wins; only historical rows need the clubId fallback.
-CREATE TEMP FUNCTION organizer_id(data STRING) AS (
-  COALESCE(
-    NULLIF(JSON_VALUE(data, '$.organizerId'), ''),
-    NULLIF(JSON_VALUE(data, '$.clubId'), '')
-  )
+-- Events and reviews name their organizer in organizerId.
+CREATE TEMP FUNCTION organizer_id_of(data STRING) AS (
+  NULLIF(JSON_VALUE(data, '$.organizerId'), '')
 );
 
 CREATE TEMP TABLE ga4_host_analytics_events (
   event_date DATE NOT NULL,
   event_name STRING NOT NULL,
-  club_id STRING NOT NULL,
+  organizer_id STRING NOT NULL,
   target_event_id STRING
 );
 
@@ -45,13 +41,13 @@ IF ga4_events_exist THEN
   INSERT INTO ga4_host_analytics_events (
     event_date,
     event_name,
-    club_id,
+    organizer_id,
     target_event_id
   )
   SELECT
     event_date,
     event_name,
-    club_id,
+    organizer_id,
     target_event_id
   FROM (
     SELECT
@@ -74,16 +70,9 @@ IF ga4_events_exist THEN
           CAST(value.double_value AS STRING)
         )
         FROM UNNEST(event_params)
-        WHERE key IN ('organizer_id', 'club_id')
-          AND NULLIF(COALESCE(
-            value.string_value,
-            CAST(value.int_value AS STRING),
-            CAST(value.float_value AS STRING),
-            CAST(value.double_value AS STRING)
-          ), '') IS NOT NULL
-        ORDER BY IF(key = 'organizer_id', 0, 1)
+        WHERE key = 'organizer_id'
         LIMIT 1
-      ), '') AS club_id,
+      ), '') AS organizer_id,
       NULLIF((
         SELECT COALESCE(
           value.string_value,
@@ -109,7 +98,7 @@ IF ga4_events_exist THEN
         'organizer_outboundClick'
       )
   )
-  WHERE club_id IS NOT NULL AND event_name IS NOT NULL
+  WHERE organizer_id IS NOT NULL AND event_name IS NOT NULL
   """, analytics_project, ga4_dataset)
   USING refresh_start AS refresh_start, refresh_end AS refresh_end;
 END IF;
@@ -117,27 +106,16 @@ END IF;
 EXECUTE IMMEDIATE FORMAT("""
 CREATE TEMP TABLE refreshed_host_event_daily AS
 WITH
-clubs AS (
+organizers AS (
   SELECT
-    document_id AS club_id,
-    JSON_VALUE(data, '$.name') AS club_name
-  FROM (
-    -- One dimension row per ID: canonical state wins, while retained legacy
-    -- names still describe historical IDs absent from the canonical export.
-    SELECT document_id, data, 0 AS source_priority
-    FROM `%s.%s.organizers_raw_latest`
-    UNION ALL
-    SELECT document_id, data, 1 AS source_priority
-    FROM `%s.%s.clubs_raw_latest`
-  )
-  QUALIFY ROW_NUMBER() OVER (
-    PARTITION BY document_id ORDER BY source_priority
-  ) = 1
+    document_id AS organizer_id,
+    JSON_VALUE(data, '$.name') AS organizer_name
+  FROM `%s.%s.organizers_raw_latest`
 ),
 events AS (
   SELECT
     document_id AS event_id,
-    organizer_id(data) AS club_id,
+    organizer_id_of(data) AS organizer_id,
     COALESCE(
       NULLIF(JSON_VALUE(data, '$.eventFormat.customActivityLabel'), ''),
       NULLIF(JSON_VALUE(data, '$.eventFormat.activityKind'), ''),
@@ -154,13 +132,13 @@ events AS (
     COALESCE(SAFE_CAST(JSON_VALUE(data, '$.waitlistedCount') AS INT64), 0) AS waitlisted_count,
     COALESCE(NULLIF(JSON_VALUE(data, '$.currency'), ''), 'INR') AS currency
   FROM `%s.%s.events_raw_latest`
-  WHERE organizer_id(data) IS NOT NULL
+  WHERE organizer_id_of(data) IS NOT NULL
 ),
 event_dim AS (
   SELECT
     e.event_id,
-    e.club_id,
-    c.club_name,
+    e.organizer_id,
+    o.organizer_name,
     CONCAT(e.event_title_base, ' · ', CAST(DATE(e.event_start_time, "Asia/Kolkata") AS STRING)) AS event_title,
     e.event_start_time,
     e.event_status,
@@ -171,7 +149,7 @@ event_dim AS (
     e.currency,
     DATE(e.event_start_time, "Asia/Kolkata") AS event_date
   FROM events e
-  LEFT JOIN clubs c USING (club_id)
+  LEFT JOIN organizers o USING (organizer_id)
   WHERE DATE(e.event_start_time, "Asia/Kolkata") BETWEEN @refresh_start AND @refresh_end
 ),
 participations AS (
@@ -216,7 +194,7 @@ payments AS (
 ),
 reviews AS (
   SELECT
-    organizer_id(data) AS club_id,
+    organizer_id_of(data) AS organizer_id,
     JSON_VALUE(data, '$.eventId') AS event_id,
     DATE(TIMESTAMP_MICROS(
       SAFE_CAST(JSON_VALUE(data, '$.createdAt._seconds') AS INT64) * 1000000 +
@@ -235,8 +213,8 @@ reviews AS (
     COUNTIF(COALESCE(JSON_VALUE(data, '$.source'), 'catchEvent') = 'publicListing') AS public_review_count,
     COUNTIF(JSON_QUERY(data, '$.ownerResponse') IS NOT NULL) AS owner_response_count
   FROM `%s.%s.reviews_raw_latest`
-  WHERE organizer_id(data) IS NOT NULL
-  GROUP BY club_id, event_id, review_date
+  WHERE organizer_id_of(data) IS NOT NULL
+  GROUP BY organizer_id, event_id, review_date
 ),
 saved_events AS (
   SELECT
@@ -263,8 +241,8 @@ scorecards AS (
 event_rows AS (
   SELECT
     ed.event_date AS date,
-    ed.club_id,
-    ed.club_name,
+    ed.organizer_id,
+    ed.organizer_name,
     ed.event_id,
     ed.event_title,
     ed.event_start_time,
@@ -313,8 +291,8 @@ event_rows AS (
 review_rows AS (
   SELECT
     r.review_date AS date,
-    r.club_id,
-    c.club_name,
+    r.organizer_id,
+    o.organizer_name,
     r.event_id,
     ed.event_title,
     ed.event_start_time,
@@ -352,14 +330,14 @@ review_rows AS (
     0 AS link_clicks
   FROM reviews r
   LEFT JOIN event_dim ed ON ed.event_id = r.event_id
-  LEFT JOIN clubs c ON c.club_id = r.club_id
+  LEFT JOIN organizers o ON o.organizer_id = r.organizer_id
   WHERE r.review_date BETWEEN @refresh_start AND @refresh_end
 ),
 saved_event_rows AS (
   SELECT
     se.saved_date AS date,
-    ed.club_id,
-    ed.club_name,
+    ed.organizer_id,
+    ed.organizer_name,
     se.event_id,
     ed.event_title,
     ed.event_start_time,
@@ -402,7 +380,7 @@ saved_event_rows AS (
 direct_discovery_counts AS (
   SELECT
     event_date AS date,
-    club_id,
+    organizer_id,
     COALESCE(target_event_id, '') AS event_key,
     event_name,
     COUNT(DISTINCT analytics_event_id) AS event_count,
@@ -411,31 +389,31 @@ direct_discovery_counts AS (
       analytics_event_id, NULL)) AS outbound_booking_clicks
   FROM `%s.%s.host_analytics_events`
   WHERE event_date BETWEEN @refresh_start AND @refresh_end
-  GROUP BY date, club_id, event_key, event_name
+  GROUP BY date, organizer_id, event_key, event_name
 ),
 ga4_discovery_counts AS (
   SELECT
     event_date AS date,
-    club_id,
+    organizer_id,
     COALESCE(target_event_id, '') AS event_key,
     event_name,
     COUNT(*) AS event_count
   FROM ga4_host_analytics_events
   WHERE event_date BETWEEN @refresh_start AND @refresh_end
-  GROUP BY date, club_id, event_key, event_name
+  GROUP BY date, organizer_id, event_key, event_name
 ),
 behavior_counts AS (
   -- First-party measurements are independent of optional ad-provider events.
   -- GA4 remains available for historical diagnostics, never a counter fallback.
-  SELECT date, club_id, NULLIF(event_key, '') AS event_id, event_name,
+  SELECT date, organizer_id, NULLIF(event_key, '') AS event_id, event_name,
     event_count, outbound_booking_clicks
   FROM direct_discovery_counts
 ),
 discovery_rows AS (
   SELECT
     date,
-    club_id,
-    CAST(NULL AS STRING) AS club_name,
+    organizer_id,
+    CAST(NULL AS STRING) AS organizer_name,
     event_id,
     CAST(NULL AS STRING) AS event_title,
     CAST(NULL AS TIMESTAMP) AS event_start_time,
@@ -472,7 +450,7 @@ discovery_rows AS (
     SUM(outbound_booking_clicks) AS outbound_booking_clicks,
     SUM(IF(event_name = 'linkClick', event_count, 0)) AS link_clicks
   FROM behavior_counts
-  GROUP BY date, club_id, event_id
+  GROUP BY date, organizer_id, event_id
 ),
 unioned AS (
   SELECT * FROM event_rows
@@ -482,8 +460,8 @@ unioned AS (
 )
 SELECT
   u.date,
-  u.club_id,
-  COALESCE(ANY_VALUE(NULLIF(u.club_name, '')), ANY_VALUE(c.club_name)) AS club_name,
+  u.organizer_id,
+  COALESCE(ANY_VALUE(NULLIF(u.organizer_name, '')), ANY_VALUE(o.organizer_name)) AS organizer_name,
   u.event_id,
   COALESCE(ANY_VALUE(NULLIF(u.event_title, '')), ANY_VALUE(ed.event_title)) AS event_title,
   COALESCE(ANY_VALUE(u.event_start_time), ANY_VALUE(ed.event_start_time)) AS event_start_time,
@@ -521,12 +499,11 @@ SELECT
   SUM(u.link_clicks) AS link_clicks,
   CURRENT_TIMESTAMP() AS refreshed_at
 FROM unioned u
-LEFT JOIN clubs c ON c.club_id = u.club_id
+LEFT JOIN organizers o ON o.organizer_id = u.organizer_id
 LEFT JOIN event_dim ed ON ed.event_id = u.event_id
 WHERE u.date BETWEEN @refresh_start AND @refresh_end
-GROUP BY u.date, u.club_id, u.event_id
+GROUP BY u.date, u.organizer_id, u.event_id
 """,
-analytics_project, analytics_dataset,
 analytics_project, analytics_dataset,
 analytics_project, analytics_dataset,
 analytics_project, analytics_dataset,
@@ -544,7 +521,7 @@ EXECUTE IMMEDIATE FORMAT("""
 CREATE TEMP TABLE refreshed_host_link_daily AS
 SELECT
   event_date AS date,
-  club_id,
+  organizer_id,
   link_id,
   IF(traffic_source IN ('instagram', 'whatsapp', 'facebook', 'google', 'qr',
     'email', 'direct', 'other'), traffic_source, 'other') AS traffic_source,
@@ -572,8 +549,8 @@ USING refresh_start AS refresh_start, refresh_end AS refresh_end;
 EXECUTE IMMEDIATE FORMAT("""
 INSERT INTO `%s.%s.mart_host_event_daily` (
   date,
-  club_id,
-  club_name,
+  organizer_id,
+  organizer_name,
   event_id,
   event_title,
   event_start_time,
@@ -613,8 +590,8 @@ INSERT INTO `%s.%s.mart_host_event_daily` (
 )
 SELECT
   date,
-  club_id,
-  club_name,
+  organizer_id,
+  organizer_name,
   event_id,
   event_title,
   event_start_time,
@@ -663,13 +640,13 @@ USING refresh_start AS refresh_start, refresh_end AS refresh_end;
 EXECUTE IMMEDIATE FORMAT("""
 INSERT INTO `%s.%s.mart_host_link_daily` (
   date,
-  club_id,
+  organizer_id,
   link_id,
   traffic_source,
   link_clicks,
   refreshed_at
 )
-SELECT date, club_id, link_id, traffic_source, link_clicks, refreshed_at
+SELECT date, organizer_id, link_id, traffic_source, link_clicks, refreshed_at
 FROM refreshed_host_link_daily
 """, analytics_project, analytics_dataset);
 

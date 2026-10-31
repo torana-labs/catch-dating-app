@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import {fromRepo} from "../lib/repo_paths.mjs";
-import {hostExports as expectedExtensions, hostExportSource, retainedHostRawViews} from "./host_analytics_contract.mjs";
+import {hostExports as expectedExtensions, hostExportSource} from "./host_analytics_contract.mjs";
 
 const expectedMartColumns = [
   "date",
-  "club_id",
-  "club_name",
+  "organizer_id",
+  "organizer_name",
   "event_id",
   "event_title",
   "event_start_time",
@@ -84,7 +84,7 @@ const publicEvents = readText("functions/src/analytics/organizerAnalyticsEvents.
 
 requireText(ddlEvents, "CREATE TABLE IF NOT EXISTS `%s.%s.host_analytics_events`");
 requireText(ddlEvents, "PARTITION BY event_date");
-requireText(ddlEvents, "CLUSTER BY club_id, target_event_id, event_name");
+requireText(ddlEvents, "CLUSTER BY organizer_id, target_event_id, event_name");
 requireText(ddlEvents, "ADD COLUMN IF NOT EXISTS link_id STRING");
 requireText(ddlEvents, "ADD COLUMN IF NOT EXISTS traffic_source STRING");
 
@@ -92,9 +92,10 @@ requireText(ddlMart, "CREATE TABLE IF NOT EXISTS `%s.%s.mart_host_event_daily`")
 requireText(ddlMart, "ADD COLUMN IF NOT EXISTS checkout_started_count INT64");
 requireText(ddlMart, "ADD COLUMN IF NOT EXISTS checkout_dropoff_count INT64");
 requireText(ddlMart, "PARTITION BY date");
-requireText(ddlMart, "CLUSTER BY club_id, event_id");
+requireText(ddlMart, "CLUSTER BY organizer_id, event_id");
 requireText(ddlMart, "ADD COLUMN IF NOT EXISTS link_clicks INT64");
 requireText(ddlMart, "CREATE TABLE IF NOT EXISTS `%s.%s.mart_host_link_daily`");
+requireText(ddlMart, "CLUSTER BY organizer_id, link_id");
 for (const column of expectedMartColumns) {
   requireText(ddlMart, `${column} `, `mart DDL missing column ${column}`);
 }
@@ -106,9 +107,6 @@ for (const [instanceId, expected] of Object.entries(expectedExtensions)) {
     `${expected.tableId}_raw_latest`,
     `refresh SQL must read ${instanceId} export view ${expected.tableId}_raw_latest`,
   );
-}
-for (const view of retainedHostRawViews) {
-  requireText(refresh, view, `refresh SQL must retain historical dimension ${view}`);
 }
 requireText(refresh, "event_success_scorecards_raw_latest");
 requireText(refresh, "host_analytics_events");
@@ -129,6 +127,14 @@ forbidText(refresh, "FULL OUTER JOIN ga4_discovery_counts", "Ad events must not 
 requireText(deploy, "ddl/host_analytics_events.sql");
 requireText(deploy, "ddl/mart_host_event_daily.sql");
 requireText(deploy, "marts/refresh_mart_host_event_daily.sql");
+// Pre-organizer tables are renamed in place before the DDL runs, and their
+// clustering follows the DDL's CLUSTER BY.
+requireText(deploy, 'rename_to_organizer host_analytics_events "RENAME COLUMN club_id TO organizer_id"');
+requireText(deploy, '"target_event_id,event_name" "organizer_id,target_event_id,event_name"');
+requireText(deploy, '"RENAME COLUMN club_id TO organizer_id, RENAME COLUMN club_name TO organizer_name"');
+requireText(deploy, '"event_id" "organizer_id,event_id"');
+requireText(deploy, 'rename_to_organizer mart_host_link_daily "RENAME COLUMN club_id TO organizer_id"');
+requireText(deploy, '"link_id" "organizer_id,link_id"');
 requireText(deploy, "--service-account <email>");
 requireText(deploy, "--service_account_name=");
 requireText(deploy, "--update_credentials");

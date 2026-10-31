@@ -2412,13 +2412,13 @@ node tool/run.mjs check analytics:check-host-bigquery
 ```
 
 `analytics/sql/README.md` owns installation, refresh, explicit import and the
-existing production instance's organizer cutover. Follow its bounded order:
-verify the existing export and schedules, establish transactional refresh safety,
-reconfigure the existing organizer export, import after the trigger is active,
-prove source/export content parity, and only then publish the canonical dimension
-query to the existing schedule. A view's existence alone does not prove backfill.
-Preserve retained historical tables and the existing schedule identities. Do not
-create a paid dev warehouse solely to rehearse this production cutover.
+organizer column migration. Run the migration in each environment right after
+the Deploy backend run that ships it, in the README's order: each deploy helper
+with `--skip-refresh`, dry run first; then `--refresh-only --create-schedule`
+so the existing schedule runs the organizer SQL; then install
+`bq-host-organizers` before uninstalling `bq-host-clubs`. A view's existence
+alone does not prove backfill. Preserve the existing schedule identities.
+Deleting retired export tables or views is the owner's to run.
 
 Use `--dry-run` when checking the deploy helpers. Their `--create-schedule`
 option updates one existing display-name match, creates a schedule when no match
@@ -2448,8 +2448,8 @@ own export tables. `EXCLUDE_OLD_DATA=no` permits the export schema to retain
 old record data; it does not backfill documents that existed before installation.
 Use the explicit official importer after the relevant trigger and table family
 are ready, then compare the latest export with fresh Firestore source. Follow
-`analytics/sql/README.md` for the existing instance's organizer cutover; that
-migration does not require a broad Extensions deployment.
+`analytics/sql/README.md` for the organizer column migration; it deploys only
+`extensions:bq-host-organizers`, not every extension.
 
 The standard deploy helper performs this sync automatically. Use the direct
 command only for IAM recovery or auditing a previously deployed environment:
@@ -2623,7 +2623,7 @@ A smoke build can also emit a single canary event with
   `owner-link-clicks` data-quality row instead of failing. The mart also reads
   `analytics_526484083.events_*` for `organizer_<eventName>` GA4 exports when
   the dataset/tables exist, using the larger direct-vs-GA4 daily count per
-  club/event/event-name key to avoid double-counting mirrored browser events.
+  organizer/event/event-name key to avoid double-counting mirrored browser events.
   Apply the warehouse layer with
   `tool/analytics/deploy_host_analytics_bigquery.sh <env>` after deploying the
   `bq-host-*` extension instances.

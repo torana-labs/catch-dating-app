@@ -2,11 +2,11 @@
   "extensions": {
     "bq-event-success-feedback": "firebase/firestore-bigquery-export@0.3.2",
     "bq-event-success-scorecards": "firebase/firestore-bigquery-export@0.3.2",
-    "bq-host-clubs": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-event-invite-links": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-event-participations": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-events": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-matches": "firebase/firestore-bigquery-export@0.3.2",
+    "bq-host-organizers": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-payments": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-reviews": "firebase/firestore-bigquery-export@0.3.2",
     "bq-host-saved-events": "firebase/firestore-bigquery-export@0.3.2",

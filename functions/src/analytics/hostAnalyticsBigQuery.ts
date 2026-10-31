@@ -187,8 +187,8 @@ export function hostAnalyticsRowsSql(table: string): string {
   return `
 SELECT
   CAST(date AS STRING) AS date,
-  club_id AS organizerId,
-  ANY_VALUE(club_name) AS organizerName,
+  organizer_id AS organizerId,
+  ANY_VALUE(organizer_name) AS organizerName,
   event_id AS eventId,
   ANY_VALUE(event_title) AS eventTitle,
   CAST(ANY_VALUE(event_start_time) AS STRING) AS eventStartTime,
@@ -229,9 +229,9 @@ SELECT
 FROM \`${table}\` AS martRow
 WHERE date >= @startDate
   AND date <= @endDate
-  AND club_id IN UNNEST(@organizerIds)
+  AND organizer_id IN UNNEST(@organizerIds)
   AND (@eventId IS NULL OR event_id = @eventId)
-GROUP BY date, club_id, event_id
+GROUP BY date, organizer_id, event_id
 ORDER BY date ASC
 LIMIT @limit`;
 }
@@ -239,15 +239,15 @@ LIMIT @limit`;
 export function hostAnalyticsLinkRowsSql(table: string): string {
   return `
 SELECT
-  club_id AS organizerId,
+  organizer_id AS organizerId,
   link_id AS linkId,
   traffic_source AS trafficSource,
   SUM(link_clicks) AS linkClicks
 FROM \`${table}\`
 WHERE date >= @startDate
   AND date <= @endDate
-  AND club_id IN UNNEST(@organizerIds)
-GROUP BY club_id, link_id, traffic_source
+  AND organizer_id IN UNNEST(@organizerIds)
+GROUP BY organizer_id, link_id, traffic_source
 ORDER BY linkClicks DESC
 LIMIT @limit`;
 }

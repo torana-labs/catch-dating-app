@@ -36,6 +36,7 @@ const requiredMarkers = [
   ["functions/src/index.ts", "adminGetOrganizerClaimRequestDetails"],
   ["functions/src/index.ts", "adminListOrganizerClaimRequests"],
   ["functions/src/index.ts", "adminSetOrganizerIndexStatus"],
+  ["lib/platform/analytics/app_analytics.dart", "static const organizerId = 'organizer_id';"],
   ["tool/data/migrate_clubs_to_organizers.mjs", "--confirm-migration"],
   ["docs/migrations/clubs_to_organizers.md", "organizerType"],
 ];
@@ -127,6 +128,7 @@ export function checkOrganizerNomenclature({root = fromRepo()} = {}) {
   checkProductCopy(root, findings);
   checkFlutterNames(root, findings);
   checkWireNames(root, findings);
+  checkWarehouseNames(root, findings);
   return {ok: findings.length === 0, findings};
 }
 
@@ -151,6 +153,38 @@ function checkWireNames(root, findings) {
   const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
   for (const finding of wireNameFindings({files, read})) {
     findings.push({rule: "clubInWireNames", ...finding});
+  }
+}
+
+// The BigQuery warehouse says organizer: its contracts, DDL, refresh SQL,
+// tooling and docs, the export instances that feed it, and the snake_case
+// columns its Functions writers and readers name. The organizer column
+// migration names the columns it renames, and nothing else may.
+const warehouseRoots = ["analytics/", "tool/analytics/", "contracts/bigquery/", "extensions/"];
+const warehouseColumnRoots = ["functions/src/analytics/"];
+const warehouseMigration = /RENAME COLUMN club_(id|name) TO organizer_\1/gu;
+const clubWord = /[\w-]*club[\w-]*/giu;
+const snakeClubWord = /\b[a-z0-9]*(?:club_|_club)[a-z0-9_]*\b/gu;
+
+function checkWarehouseNames(root, findings) {
+  const report = (file, word) => findings.push({rule: "clubInWarehouseNames", path: file,
+    detail: `${word} names club in the warehouse; say organizer.`});
+  const roots = [...warehouseRoots, ...warehouseColumnRoots];
+  const files = trackedFiles(root)?.filter((file) => roots.some((dir) => file.startsWith(dir))) ??
+    roots.flatMap((dir) => walkFiles(root, dir.slice(0, -1), () => true));
+  for (const file of files) {
+    const source = fs.readFileSync(path.join(root, file), "utf8");
+    if (warehouseRoots.some((dir) => file.startsWith(dir))) {
+      if (/club/iu.test(file)) report(file, path.posix.basename(file));
+      for (const word of new Set(source.replace(warehouseMigration, "").match(clubWord))) report(file, word);
+    } else {
+      for (const word of new Set(source.match(snakeClubWord))) report(file, word);
+    }
+  }
+  const firebaseJson = path.join(root, "firebase.json");
+  if (!fs.existsSync(firebaseJson)) return;
+  for (const instance of Object.keys(JSON.parse(fs.readFileSync(firebaseJson, "utf8")).extensions ?? {})) {
+    if (/club/iu.test(instance)) report("firebase.json", instance);
   }
 }
 
