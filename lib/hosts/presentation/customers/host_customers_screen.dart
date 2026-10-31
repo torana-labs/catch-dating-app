@@ -183,7 +183,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                   organizersState.error!,
                   context: AppErrorContext.organizer,
                   onRetry: () =>
-                      ref.invalidate(hostOperableOrganizersProvider(uid)),
+                      hostOperableOrganizerReads(uid).forEach(ref.invalidate),
                 )
               else
                 const CatchStateViewport.sliverLoading(),

@@ -114,7 +114,8 @@ class ProgramCreateScreen extends ConsumerWidget {
         data: (controller) => CatchAsyncBoundary<List<Organizer>>(
           value: ref.watch(hostOperableOrganizersProvider(uid)),
           retainDataOn: const {},
-          onRetry: () => ref.invalidate(hostOperableOrganizersProvider(uid)),
+          onRetry: () =>
+              hostOperableOrganizerReads(uid).forEach(ref.invalidate),
           loadingBuilder: (_) => Column(
             children: [
               CatchStepHeader(

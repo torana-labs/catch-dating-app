@@ -310,7 +310,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     ref.invalidate(uidProvider);
     ref.invalidate(chatsListViewModelProvider);
     if (uid != null) {
-      ref.invalidate(hostOperableOrganizersProvider(uid));
+      hostOperableOrganizerReads(uid).forEach(ref.invalidate);
       ref.invalidate(hostInboxCatchPagesProvider(uid));
     }
     if (_requestedScope?.eventId case final eventId?) {

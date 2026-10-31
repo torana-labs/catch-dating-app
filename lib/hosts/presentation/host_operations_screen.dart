@@ -100,7 +100,6 @@ part 'host_operations/host_organizer_spoke_scaffold.dart';
 part 'host_operations/host_organizer_team_screen.dart';
 part 'host_operations/host_organizers_scaffold.dart';
 part 'host_operations/host_organizers_screen.dart';
-part 'host_operations/host_route_providers.dart';
 part 'host_operations/host_team_hosted_organizers_section.dart';
 part 'host_operations/host_whatsapp_setup_section.dart';
 

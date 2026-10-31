@@ -115,7 +115,7 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
           if (uid.error != null) {
             ref.invalidate(uidProvider);
           } else if (organizers?.error != null) {
-            ref.invalidate(hostOperableOrganizersProvider(accountId!));
+            hostOperableOrganizerReads(accountId!).forEach(ref.invalidate);
           } else if (scope != null) {
             ref.invalidate(hostTodayPreferenceProvider(scope));
           }

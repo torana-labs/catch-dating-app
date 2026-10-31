@@ -92,7 +92,7 @@ class _HostOrganizerTeamScreenState
     }
 
     final hostProfileAsync = ref.watch(watchHostProfileProvider(uid));
-    final organizersAsync = ref.watch(_hostOrganizersForUserProvider(uid));
+    final organizersAsync = ref.watch(hostOperableOrganizersProvider(uid));
     final hostProfileState = catchAsyncStateFromAsyncValue(hostProfileAsync);
     final organizersState = catchAsyncStateFromAsyncValue(organizersAsync);
     if (organizersState.hasError) {
@@ -110,7 +110,8 @@ class _HostOrganizerTeamScreenState
           child: CatchLocalizedErrorState(
             organizersState.error!,
             context: AppErrorContext.organizer,
-            onRetry: () => ref.invalidate(_hostOrganizersForUserProvider(uid)),
+            onRetry: () =>
+                hostOperableOrganizerReads(uid).forEach(ref.invalidate),
           ),
         ),
       );
@@ -137,7 +138,8 @@ class _HostOrganizerTeamScreenState
           child: CatchLocalizedErrorState(
             StateError('Organizer unavailable'),
             context: AppErrorContext.organizer,
-            onRetry: () => ref.invalidate(_hostOrganizersForUserProvider(uid)),
+            onRetry: () =>
+                hostOperableOrganizerReads(uid).forEach(ref.invalidate),
           ),
         ),
       );
@@ -227,7 +229,7 @@ class _HostOrganizerTeamScreenState
                   actions: actions,
                   state: state.organizers,
                   onRetry: () =>
-                      ref.invalidate(_hostOrganizersForUserProvider(uid)),
+                      hostOperableOrganizerReads(uid).forEach(ref.invalidate),
                   onOpenOrganizer: _openHostedOrganizer,
                 ),
               ],

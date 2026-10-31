@@ -69,10 +69,10 @@ class HostOrganizerSpokeAsyncBoundary extends ConsumerWidget {
       );
     }
 
-    final organizersAsync = ref.watch(_hostOrganizersForUserProvider(uid));
+    final organizersAsync = ref.watch(hostOperableOrganizersProvider(uid));
     return CatchAsyncBoundary<List<Organizer>>(
       value: organizersAsync,
-      onRetry: () => ref.invalidate(_hostOrganizersForUserProvider(uid)),
+      onRetry: () => hostOperableOrganizerReads(uid).forEach(ref.invalidate),
       loadingBuilder: (_) => HostLoadingScreen(title: title),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
@@ -112,7 +112,7 @@ class HostOrganizerSpokeAsyncBoundary extends ConsumerWidget {
                 StateError('Organizer unavailable'),
                 context: AppErrorContext.organizer,
                 onRetry: () =>
-                    ref.invalidate(_hostOrganizersForUserProvider(uid)),
+                    hostOperableOrganizerReads(uid).forEach(ref.invalidate),
               ),
             ),
           );

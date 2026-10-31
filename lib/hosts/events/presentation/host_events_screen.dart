@@ -88,7 +88,7 @@ class HostEventsScreen extends ConsumerWidget {
                 ref.invalidate(uidProvider);
                 return;
               }
-              ref.invalidate(hostOperableOrganizersProvider(currentUid));
+              hostOperableOrganizerReads(currentUid).forEach(ref.invalidate);
             },
           ),
         ],
