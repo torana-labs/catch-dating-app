@@ -438,11 +438,14 @@ export function mergeTwins({file, source}) {
         const texts = operands.map((operand) => operand.getText(sourceFile));
         // Only reads the rename made twins repeat safely: an operand that
         // calls, or that does not spell organizer, stays.
-        const unique = texts.filter((text, index) => text.includes("(") || !twinText.test(text) ||
-          texts.indexOf(text) === index);
-        if (unique.length < texts.length) {
-          const operator = ` ${ts.tokenToString(node.operatorToken.kind)} `;
-          edits.push({start: node.getStart(), end: node.getEnd(), text: unique.join(operator)});
+        const repeated = texts.map((text, index) => index > 0 && !text.includes("(") && twinText.test(text) &&
+          texts.indexOf(text) < index);
+        if (repeated.some(Boolean)) {
+          // A repeated operand goes with the operator before it; the rest of
+          // the chain keeps its line breaks.
+          repeated.forEach((isRepeat, index) => {
+            if (isRepeat) edits.push({start: operands[index - 1].getEnd(), end: operands[index].getEnd(), text: ""});
+          });
           return;
         }
       }
