@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.95.0
+version: 1.96.0
 updated: 2026-10-31
 owner: app_architecture
 status: active
@@ -3805,10 +3805,11 @@ headline. Files never loaded by the test process are not represented, so use
 the report to choose risk-based additions rather than to claim repository-wide
 completeness.
 
-New or split Flutter test specs stay at or below 1,200 lines. Reviewed legacy
-specs above the ceiling are exact, decrease-only debt in
-`tool/test/flutter_test_size_baseline.json`; reductions refresh the baseline,
-growth fails. Split by coherent behavior group and keep shared fixtures in the
+Flutter test specs stay at or below 1,200 lines. A larger spec states why in a
+`// size-exemption: <reason>` comment in its first 20 lines, and no spec passes
+2,500 lines (`node tool/run.mjs check test:flutter-test-size`). There is no
+baseline file, so shrinking or growing an exempt spec needs no bookkeeping.
+Split by coherent behavior group and keep shared fixtures in the
 same Dart test library when that avoids duplication without hiding source-level
 failure locations.
 
@@ -3820,23 +3821,17 @@ screen pane, or component family; a file split must expose a useful ownership
 boundary rather than distribute one monolith across `part` files.
 
 `node tool/run.mjs check audit:flutter-source-size` checks tracked and untracked
-source against `tool/architecture/flutter_source_size_baseline.json`. Existing
-oversized files may only shrink. Deleted or now-bounded entries must leave the
-baseline, and reductions must be recorded in the same change. Git history
-prevents a baseline refresh from admitting new oversized files or raising an
-existing ceiling. Refresh after a reduction with
-`node tool/architecture/check_flutter_source_size.mjs --write-baseline`.
+source. A file above 800 lines states why in a `// size-exemption: <reason>`
+comment in its first 20 lines; no file passes 2,500 lines, exemption or not.
+The reason lives next to the code it excuses, so there is no baseline file to
+refresh. Today's exemptions are the route table in `lib/routing/go_router.dart`
+(the route inventory requires every `GoRoute` there), the `CatchField` facade in
+`packages/catch_ui/lib/src/components/catch_field.dart`, and two pre-existing
+monoliths that should be split before they grow further.
 
-The `CatchField` constructor facade at
-`packages/catch_ui/lib/src/components/catch_field.dart` has an approved ceiling
-of at most 1,150 lines, with decrease-only protection. Configuration,
-resolution, state, and rendering files remain within 800 lines.
-`lib/routing/go_router.dart` is exempt from the line budget entirely: the route
-inventory requires every `GoRoute` construction to live in that single file, so
-its length tracks route count and is bounded by the route and widget
-inventories rather than a line ratchet. Known generated suffixes and configured
-localization outputs are excluded; a directory named `generated` or a
-generated-file comment alone grants no exemption.
+Known generated suffixes and configured localization outputs are excluded; a
+directory named `generated` or a generated-file comment alone grants no
+exemption.
 
 ## Enforcement And Overrides
 

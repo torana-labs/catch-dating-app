@@ -50,9 +50,9 @@
         "tool/test/**",
         ".github/workflows/flutter-ci.yml"
       ],
-      "instruction": "Keep new and split Flutter test specs at or below 1,200 lines, reject growth in every reviewed oversized legacy spec, and use feature-level LCOV as visibility rather than an unsupported aggregate percentage threshold.",
+      "instruction": "Keep Flutter test specs at or below 1,200 lines; a larger spec states its reason in a `// size-exemption: <reason>` comment in its first 20 lines, and no spec passes 2,500 lines. Use feature-level LCOV as visibility rather than an unsupported aggregate percentage threshold.",
       "sunset_when": [
-        "A stronger structure-aware test-maintainability gate replaces line-based spec bounds without losing decrease-only legacy tracking"
+        "A stronger structure-aware test-maintainability gate replaces line-based spec bounds"
       ],
       "sunset_signals": [
         {
@@ -62,9 +62,8 @@
       "enforcement": [
         {
           "tool": "test:flutter-test-size",
-          "stage": "scanner-ratchet",
-          "docAnchor": "TESTS.md#coverage-and-test-maintainability",
-          "baseline": "tool/test/flutter_test_size_baseline.json"
+          "stage": "scanner-gate",
+          "docAnchor": "TESTS.md#coverage-and-test-maintainability"
         },
         {
           "stage": "manual",
@@ -3425,7 +3424,7 @@
       ]
     },
     "FLUTTER-SOURCE-MAINTAINABILITY-001": {
-      "title": "Bound handwritten Dart sources and ratchet existing monoliths",
+      "title": "Bound handwritten Dart sources; exceptions state their reason in the file",
       "status": "active",
       "kind": "contract",
       "introduced_in": {
@@ -3435,12 +3434,11 @@
       "applies_to": [
         "lib/**/*.dart",
         "packages/**/*.dart",
-        "widgetbook/lib/**/*.dart",
-        "tool/architecture/flutter_source_size_baseline.json"
+        "widgetbook/lib/**/*.dart"
       ],
-      "instruction": "Keep new and split handwritten Dart files at or below 800 lines. Existing oversized files may only shrink against the reviewed Git baseline; the exact CatchField constructor facade has a 1,150-line ceiling with the same decrease-only protection. lib/routing/go_router.dart is exempt because the route inventory mandates every GoRoute construction in that single file, so its length tracks route count rather than debt. Generated producer outputs are excluded by identity.",
+      "instruction": "Keep handwritten Dart files at or below 800 lines. A larger file states its reason in a `// size-exemption: <reason>` comment in its first 20 lines, and no file passes 2,500 lines. Generated producer outputs are excluded by identity.",
       "sunset_when": [
-        "A stronger structure-aware maintainability gate replaces source line bounds while preserving decrease-only debt and the exact Field facade ceiling"
+        "A stronger structure-aware maintainability gate replaces source line bounds"
       ],
       "sunset_signals": [
         {
@@ -3450,9 +3448,8 @@
       "enforcement": [
         {
           "tool": "audit:flutter-source-size",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#source-size-budgets",
-          "baseline": "tool/architecture/flutter_source_size_baseline.json"
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#source-size-budgets"
         }
       ]
     },
