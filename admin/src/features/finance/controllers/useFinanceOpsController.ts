@@ -117,7 +117,7 @@ export function useFinanceOpsController({
   selectedIssueId?: string | null;
 }): FinanceOpsController {
   const canLoadHostAnalytics = adminRoles === undefined ||
-    adminRoles.some((role) => role === "adminOwner" || role === "analyticsViewer");
+    adminRoles.some((role) => role === "adminOwner");
   const overviewQuery = useQuery({
     queryKey: adminQueryKeys.finance.overview(),
     queryFn: loadFinanceOverview,

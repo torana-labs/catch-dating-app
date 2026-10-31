@@ -56,7 +56,7 @@ const defaults: Dependencies = {db: () => admin.firestore(),
 export async function adminListCommercialTermsHandler(
   request: CallableRequest<unknown>, deps: Dependencies = defaults):
   Promise<Result> {
-  const actor = requireAdminRole(request, ["adminOwner", "finance"]);
+  const actor = requireAdminRole(request, ["adminOwner"]);
   const data = validateCallableWithAjv<Payload>(request,
     validateAdminListCommercialTermsCallablePayload);
   const query = data.organizerQuery?.trim() ?? "";

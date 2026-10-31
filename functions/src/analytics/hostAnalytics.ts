@@ -161,7 +161,7 @@ export async function adminGetHostAnalyticsHandler(
 ): Promise<HostAnalyticsCallableResponse> {
   const adminContext = requireAdminRole(
     request,
-    ["adminOwner", "analyticsViewer"]
+    ["adminOwner"]
   );
   const payload = validateAnalyticsPayload(request);
   const db = deps.firestore();

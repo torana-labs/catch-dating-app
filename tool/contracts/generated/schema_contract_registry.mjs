@@ -342110,8 +342110,6 @@ export const adminSetAdminUserRolesCallablePayloadSchema = {
           "adminOwner",
           "safetyReviewer",
           "support",
-          "finance",
-          "analyticsViewer",
           "salesStaff"
         ]
       }
@@ -342130,8 +342128,6 @@ export const adminSetAdminUserRolesCallablePayloadSchema = {
         "adminOwner",
         "safetyReviewer",
         "support",
-        "finance",
-        "analyticsViewer",
         "salesStaff"
       ]
     }
@@ -342199,8 +342195,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
               "adminOwner",
               "safetyReviewer",
               "support",
-              "finance",
-              "analyticsViewer",
               "salesStaff"
             ]
           }
@@ -342221,8 +342215,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "adminOwner",
           "safetyReviewer",
           "support",
-          "finance",
-          "analyticsViewer",
           "salesStaff"
         ]
       }
@@ -342237,8 +342229,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "adminOwner",
           "safetyReviewer",
           "support",
-          "finance",
-          "analyticsViewer",
           "salesStaff"
         ]
       }
@@ -342252,8 +342242,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
         "adminOwner",
         "safetyReviewer",
         "support",
-        "finance",
-        "analyticsViewer",
         "salesStaff"
       ]
     },
@@ -342267,8 +342255,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "adminOwner",
           "safetyReviewer",
           "support",
-          "finance",
-          "analyticsViewer",
           "salesStaff"
         ]
       }
@@ -342332,8 +342318,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
               "adminOwner",
               "safetyReviewer",
               "support",
-              "finance",
-              "analyticsViewer",
               "salesStaff"
             ]
           }

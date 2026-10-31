@@ -19,10 +19,16 @@ test("Sales staff needs explicit endpoint admission", () => {
 test("adminRolesFromToken returns only enabled admin claims", () => {
   assert.deepEqual(adminRolesFromToken({
     admin: true,
-    finance: true,
     support: false,
     other: true,
-  }), ["admin", "finance"]);
+  }), ["admin"]);
+});
+
+test("retired finance and analytics claims grant no admin role", () => {
+  assert.deepEqual(adminRolesFromToken({
+    finance: true,
+    analyticsViewer: true,
+  }), []);
 });
 
 test("requireAdmin rejects unauthenticated callers", () => {
@@ -55,7 +61,7 @@ test("requireAdmin returns the admin actor context", () => {
 test("requireAdminRole rejects admin roles outside the allowlist", () => {
   assert.throws(
     () => requireAdminRole({
-      auth: {uid: "admin-1", token: {analyticsViewer: true}},
+      auth: {uid: "admin-1", token: {salesStaff: true}},
     } as unknown as Parameters<typeof requireAdminRole>[0], [
       "adminOwner",
       "support",

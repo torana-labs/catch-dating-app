@@ -787,7 +787,7 @@ const adminRoleAssignmentRows: AdminRoleAssignmentRow[] = [
     disabled: false,
     displayName: "Support Ops",
     email: "support@catch.local",
-    roles: ["support", "analyticsViewer"],
+    roles: ["support", "salesStaff"],
     status: "active",
     targetUid: "support-ops",
     updatedAt: "2026-07-03T08:15:00.000Z",

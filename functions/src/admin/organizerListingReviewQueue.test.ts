@@ -145,9 +145,9 @@ test("approved, unfinished and unreadable listings are not offered for review", 
   assert.deepEqual([response.rows, response.unavailableCount], [[], 1]);
 });
 
-test("support can read the queue but not approve; others cannot read it", async () => {
+test("ops (support) and the owner can read and approve; others cannot read it", async () => {
   const h = await harness();
-  assert.equal((await h.call({limit: 5, cursor: null}, {support: true})).canApprove, false);
+  assert.equal((await h.call({limit: 5, cursor: null}, {support: true})).canApprove, true);
   assert.equal((await h.call({limit: 5, cursor: null}, {adminOwner: true})).canApprove, true);
   for (const token of [{salesStaff: true}, {}]) {
     await assert.rejects(h.call({limit: 5, cursor: null}, token), /permission|role|admin/i);

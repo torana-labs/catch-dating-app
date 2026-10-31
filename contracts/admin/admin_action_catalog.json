@@ -23,9 +23,7 @@
         "admin",
         "adminOwner",
         "safetyReviewer",
-        "support",
-        "finance",
-        "analyticsViewer"
+        "support"
       ],
       "requestSchema": "contracts/callables/admin_get_overview_payload.schema.json",
       "summary": "Load the bounded admin overview, queue, and data-quality snapshot.",
@@ -206,8 +204,7 @@
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
-        "adminOwner",
-        "analyticsViewer"
+        "adminOwner"
       ],
       "requestSchema": "contracts/callables/host_analytics_query_payload.schema.json",
       "summary": "Load aggregate host, organizer, or event analytics for a bounded range.",
@@ -226,8 +223,7 @@
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
-        "adminOwner",
-        "analyticsViewer"
+        "adminOwner"
       ],
       "requestSchema": "contracts/callables/user_analytics_query_payload.schema.json",
       "summary": "Load the bounded analytics report for one exact user id.",
@@ -247,8 +243,7 @@
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "requestSchema": "contracts/callables/admin_review_event_messaging_budget_payload.schema.json",
       "summary": "Review one exact messaging runtime, sender, budget scope, and current decision without loading credentials or granting authority.",
@@ -270,8 +265,7 @@
       "kind": "mutation",
       "risk": "critical",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "confirmation": "action-and-target",
       "targetField": "eventId",
@@ -304,8 +298,7 @@
       "kind": "mutation",
       "risk": "critical",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "confirmation": "action-and-target",
       "targetField": "decisionId",
@@ -644,7 +637,8 @@
       "risk": "high",
       "roles": [
         "admin",
-        "adminOwner"
+        "adminOwner",
+        "support"
       ],
       "confirmation": "action-and-target",
       "targetField": "listingWorkItemId",
@@ -841,8 +835,7 @@
       "risk": "critical",
       "roles": [
         "admin",
-        "adminOwner",
-        "support"
+        "adminOwner"
       ],
       "confirmation": "action-and-target",
       "targetField": "requestId",
@@ -1160,9 +1153,7 @@
         "admin",
         "adminOwner",
         "safetyReviewer",
-        "support",
-        "finance",
-        "analyticsViewer"
+        "support"
       ],
       "controlPlane": true,
       "requestSchema": "contracts/callables/admin_record_action_execution_payload.schema.json",
@@ -3157,8 +3148,7 @@
       "kind": "mutation",
       "risk": "high",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "confirmation": "action-and-target",
       "targetField": "organizerId",
@@ -3185,8 +3175,7 @@
       "kind": "mutation",
       "risk": "high",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "confirmation": "action-and-target",
       "targetField": "grantId",
@@ -3209,8 +3198,7 @@
       "kind": "read",
       "risk": "read",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "requestSchema": "contracts/callables/admin_list_commercial_terms_payload.schema.json",
       "responseSchema": "contracts/callable_responses/admin_list_commercial_terms_response.schema.json",
@@ -3230,8 +3218,7 @@
       "kind": "mutation",
       "risk": "high",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "confirmation": "action",
       "requestSchema": "contracts/callables/manage_commercial_terms_payload.schema.json",
@@ -3287,8 +3274,7 @@
       "kind": "mutation",
       "risk": "high",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "confirmation": "action",
       "requestSchema": "contracts/callables/manage_payment_routing_policy_payload.schema.json",

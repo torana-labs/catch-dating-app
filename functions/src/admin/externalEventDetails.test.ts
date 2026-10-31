@@ -423,7 +423,7 @@ test(
 
     await assert.rejects(
       () => adminListExternalEventDetailsHandler(
-        callableRequest("admin-1", {}, {analyticsViewer: true}),
+        callableRequest("admin-1", {}, {salesStaff: true}),
         h.deps
       ),
       (error) => assertHttpsCode(error, "permission-denied")
