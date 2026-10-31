@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptions} from "../../shared/callableOptions";
+import {appCheckCallableOptions, appCheckCallableOptionsWithLimits} from "../../shared/callableOptions";
 import type {AdminListInboxItemsCallablePayload} from "../../shared/generated/adminListInboxItemsCallablePayload";
 import type {AdminListInboxItemsCallableResponse} from "../../shared/generated/adminListInboxItemsCallableResponse";
 import type {AdminGetInboxItemCallablePayload} from "../../shared/generated/adminGetInboxItemCallablePayload";
@@ -286,5 +286,5 @@ export const adminGetInboxItem = onCall(appCheckCallableOptions,
   (request) => adminGetInboxItemHandler(request));
 export const adminUpdateInboxItem = onCall(appCheckCallableOptions,
   (request) => adminUpdateInboxItemHandler(request));
-export const adminRebuildInbox = onCall({...appCheckCallableOptions, timeoutSeconds: 300},
+export const adminRebuildInbox = onCall(appCheckCallableOptionsWithLimits({timeoutSeconds: 300}),
   (request) => adminRebuildInboxHandler(request));
