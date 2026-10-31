@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:35293c827975e6575064672b082d22ac3a189229398c6e7f811c594f381adca1",
+  "sourceDigest": "sha256:2e2358d4733477962e56dd0a2e5a1f0f60b6a8362d9578156aa91c59aabdccfc",
   "resolvedDigest": "sha256:fed4e7bec88dc89c6940e710560678cac909cc5dd76cf3847f561e5f20c03ddf",
   "feature": {
     "id": "feature.event_detail",
@@ -2442,7 +2442,7 @@
         {
           "id": "retry_event_location",
           "owner": "location_map_route",
-          "codeValue": "invalidate",
+          "codeValue": "retryFailedReads",
           "cardinality": "singleton",
           "scopeKeys": [
             "eventId",
