@@ -25,6 +25,18 @@ import type {AdminGrantOrganizerEntitlementCallablePayload} from
   "../../generated/contracts/adminGrantOrganizerEntitlementCallablePayload";
 import type {AdminRevokeOrganizerEntitlementGrantCallablePayload} from
   "../../generated/contracts/adminRevokeOrganizerEntitlementGrantCallablePayload";
+import type {AdminGetOrganizerOverviewCallablePayload} from
+  "../../generated/contracts/adminGetOrganizerOverviewCallablePayload";
+import type {AdminGetOrganizerOverviewCallableResponse} from
+  "../../generated/contracts/adminGetOrganizerOverviewCallableResponse";
+import type {AdminListEventDirectoryCallablePayload} from
+  "../../generated/contracts/adminListEventDirectoryCallablePayload";
+import type {AdminListEventDirectoryCallableResponse} from
+  "../../generated/contracts/adminListEventDirectoryCallableResponse";
+import type {AdminListOrganizerDirectoryCallablePayload} from
+  "../../generated/contracts/adminListOrganizerDirectoryCallablePayload";
+import type {AdminListOrganizerDirectoryCallableResponse} from
+  "../../generated/contracts/adminListOrganizerDirectoryCallableResponse";
 import type {AdminListCommercialTermsCallablePayload} from
   "../../generated/contracts/adminListCommercialTermsCallablePayload";
 import type {AdminListCommercialTermsCallableResponse} from
@@ -42,6 +54,11 @@ import {
   sampleManageCommercialTerms,
   sampleManagePaymentRoutingPolicy,
 } from "./sampleCommercialTerms";
+import {
+  sampleGetOrganizerOverview,
+  sampleListEventDirectory,
+  sampleListOrganizerDirectory,
+} from "./sampleRecords";
 import type {GetOrganizerEntitlementCallablePayload} from
   "../../generated/contracts/getOrganizerEntitlementCallablePayload";
 import type {OrganizerEntitlementCallableResponse} from
@@ -2586,4 +2603,46 @@ export async function managePaymentRoutingPolicy(
     ManagePaymentRoutingPolicyCallablePayload,
     ManagePaymentRoutingPolicyCallableResponse
   >("managePaymentRoutingPolicy", payload)).data;
+}
+
+export async function listOrganizerDirectory(
+  payload: AdminListOrganizerDirectoryCallablePayload
+): Promise<AdminListOrganizerDirectoryCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return sampleListOrganizerDirectory(payload);
+  }
+  const callable = httpsCallable<
+    AdminListOrganizerDirectoryCallablePayload,
+    AdminListOrganizerDirectoryCallableResponse
+  >(functions, "adminListOrganizerDirectory");
+  return (await callable(payload)).data;
+}
+
+export async function listEventDirectory(
+  payload: AdminListEventDirectoryCallablePayload
+): Promise<AdminListEventDirectoryCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return sampleListEventDirectory(payload);
+  }
+  const callable = httpsCallable<
+    AdminListEventDirectoryCallablePayload,
+    AdminListEventDirectoryCallableResponse
+  >(functions, "adminListEventDirectory");
+  return (await callable(payload)).data;
+}
+
+export async function getOrganizerOverview(
+  payload: AdminGetOrganizerOverviewCallablePayload
+): Promise<AdminGetOrganizerOverviewCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return sampleGetOrganizerOverview(payload);
+  }
+  const callable = httpsCallable<
+    AdminGetOrganizerOverviewCallablePayload,
+    AdminGetOrganizerOverviewCallableResponse
+  >(functions, "adminGetOrganizerOverview");
+  return (await callable(payload)).data;
 }
