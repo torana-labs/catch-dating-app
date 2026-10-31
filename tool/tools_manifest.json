@@ -1318,6 +1318,36 @@
       }
     },
     {
+      "id": "architecture:wire-organizer-rename",
+      "category": "generator",
+      "path": "tool/architecture/rename_wire_to_organizer.mjs",
+      "command": "node tool/architecture/rename_wire_to_organizer.mjs --plan",
+      "safety": "local",
+      "status": "active",
+      "description": "Renames the club names the contracts declare (fields, enum values, collections, titles) across contracts, TypeScript, rules, indexes, fixtures and Dart strings, and TypeScript identifiers and file names. A club field beside its organizer twin collapses into the twin. The club subtype, BigQuery columns, copy and URLs stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
+      "checks": [
+        "node --test tool/architecture/rename_wire_to_organizer.test.mjs",
+        "node --check tool/architecture/rename_wire_to_organizer.mjs"
+      ],
+      "role": "generator",
+      "rules": [
+        "ORGANIZER-AUTHORITY-001"
+      ],
+      "impactPaths": [
+        "tool/architecture/rename_wire_to_organizer.mjs",
+        "tool/architecture/rename_wire_to_organizer.test.mjs",
+        "tool/architecture/rename_to_organizer.mjs",
+        "tool/architecture/move_to_contexts.mjs",
+        "tool/lib/dart_source.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
       "id": "architecture:organizer-rename",
       "category": "generator",
       "path": "tool/architecture/rename_to_organizer.mjs",
@@ -6124,7 +6154,7 @@
       "command": "node tool/check_organizer_nomenclature.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Keeps organizers canonical across contracts, Flutter, React, Functions, routes, media, and product copy while club remains a subtype. Flutter Dart file names, identifiers and localization keys must say organizer: what tool/architecture/rename_to_organizer.mjs would still rename fails, apart from the club subtype and names the generated schema contracts declare.",
+      "description": "Keeps organizers canonical across contracts, Flutter, React, Functions, routes, media, and product copy while club remains a subtype. Flutter Dart file names, identifiers and localization keys must say organizer: what tool/architecture/rename_to_organizer.mjs would still rename fails, apart from the club subtype and names the generated schema contracts declare. Contract names, TypeScript identifiers and file names must say organizer too: what tool/architecture/rename_wire_to_organizer.mjs would still rename fails, apart from the club subtype and BigQuery columns.",
       "checks": [
         "node --check tool/check_organizer_nomenclature.mjs",
         "node --test tool/check_organizer_nomenclature.test.mjs",
@@ -6140,7 +6170,8 @@
         "contains": [
           "organizer nomenclature gate rejects legacy authority and generic copy",
           "organizer nomenclature gate passes a canonical fixture",
-          "organizer nomenclature gate rejects club in Flutter names but keeps the subtype and contract names"
+          "organizer nomenclature gate rejects club in Flutter names but keeps the subtype and contract names",
+          "organizer nomenclature gate rejects club in wire names but keeps the subtype and warehouse columns"
         ]
       }
     },
