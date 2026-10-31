@@ -145,6 +145,9 @@
       "minimum": 0,
       "maximum": 10000000
     },
+    "providerFees": {
+      "$ref": "../shared/event_common.schema.json#/definitions/providerFees"
+    },
     "responseId": {
       "anyOf": [
         {

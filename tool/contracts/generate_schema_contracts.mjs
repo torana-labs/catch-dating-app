@@ -225,6 +225,8 @@ const schemaSpecs = [
   {"name": "SupplyIntakeRequestsDocument", "source": "firestore/supply_intake_requests.schema.json", "typeOutput": "functions/src/shared/generated/supplyIntakeRequestsDocument.ts"},
   {"name": "SupplyIntakeUsageDocument", "source": "firestore/supply_intake_usage.schema.json", "typeOutput": "functions/src/shared/generated/supplyIntakeUsageDocument.ts"},
   {"name": "SupplyNominatorDocument", "source": "firestore/supply_nominators.schema.json", "typeOutput": "functions/src/shared/generated/supplyNominatorDocument.ts"},
+  {"name": "OrganizerGrowthFactsDocument", "source": "firestore/organizer_growth_facts.schema.json", "typeOutput": "functions/src/shared/generated/organizerGrowthFactsDocument.ts"},
+  {"name": "OrganizerGrowthEvent", "source": "bigquery/organizer_growth_event.schema.json", "typeOutput": "functions/src/shared/generated/organizerGrowthEvent.ts"},
 
   {"name": "AdminSalesIntelligenceGenerateCallablePayload", "source": "callables/admin_sales_intelligence_generate_payload.schema.json", "typeOutput": "functions/src/shared/generated/adminSalesIntelligenceGenerateCallablePayload.ts"},
   {"name": "SalesOutreachJobsDocument", "source": "firestore/sales_outreach_jobs.schema.json", "typeOutput": "functions/src/shared/generated/salesOutreachJobsDocument.ts"},

@@ -154,6 +154,8 @@ import {
   supplyIntakeRequestsDocumentSchema,
   supplyIntakeUsageDocumentSchema,
   supplyNominatorDocumentSchema,
+  organizerGrowthFactsDocumentSchema,
+  organizerGrowthEventSchema,
   adminSalesIntelligenceGenerateCallablePayloadSchema,
   salesOutreachJobsDocumentSchema,
   outreachDraftSchema,
@@ -1461,6 +1463,8 @@ export const validateSupplyIntakeRequest = ajv.compile(supplyIntakeRequestSchema
 export const validateSupplyIntakeRequestsDocument = ajv.compile(supplyIntakeRequestsDocumentSchema);
 export const validateSupplyIntakeUsageDocument = ajv.compile(supplyIntakeUsageDocumentSchema);
 export const validateSupplyNominatorDocument = ajv.compile(supplyNominatorDocumentSchema);
+export const validateOrganizerGrowthFactsDocument = ajv.compile(organizerGrowthFactsDocumentSchema);
+export const validateOrganizerGrowthEvent = ajv.compile(organizerGrowthEventSchema);
 export const validateAdminSalesIntelligenceGenerateCallablePayload = ajv.compile(adminSalesIntelligenceGenerateCallablePayloadSchema);
 export const validateSalesOutreachJobsDocument = ajv.compile(salesOutreachJobsDocumentSchema);
 export const validateOutreachDraft = ajv.compile(outreachDraftSchema);

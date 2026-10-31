@@ -28,6 +28,8 @@ export interface RazorpayPaymentSnapshot {
   status: string;
   refund_status?: string | null;
   amount_refunded?: number;
+  fee?: number | null;
+  tax?: number | null;
 }
 
 export interface VerifiedPaymentBooking {
@@ -39,6 +41,8 @@ export interface VerifiedPaymentBooking {
   inviteLinkId?: string | null;
   inviteSource?: string | null;
   crossPathsPairHoldId?: string | null;
+  /** Razorpay's fee including tax, and the tax within it, when reported. */
+  providerFees?: {feePaise: number; taxPaise: number};
 }
 
 export interface PaymentRecordInput extends VerifiedPaymentBooking {
@@ -230,7 +234,22 @@ export function verifyPaidEventBooking({
     inviteLinkId,
     inviteSource,
     ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
+    ...paymentProviderFees(payment),
   };
+}
+
+/**
+ * Razorpay's fee and tax from a captured payment entity, when reported.
+ * @param {object} payment Razorpay payment entity.
+ * @return {object} providerFees, or nothing.
+ */
+export function paymentProviderFees(payment: {fee?: unknown; tax?: unknown}):
+  {providerFees?: {feePaise: number; taxPaise: number}} {
+  const minor = (value: unknown) => typeof value === "number" &&
+    Number.isSafeInteger(value) && value >= 0 ? value : null;
+  const fee = minor(payment.fee);
+  return fee === null ? {} :
+    {providerFees: {feePaise: fee, taxPaise: minor(payment.tax) ?? 0}};
 }
 
 /**

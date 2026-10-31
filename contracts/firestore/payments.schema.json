@@ -190,6 +190,10 @@
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
       "x-catch-ownership": "callable-owned"
     },
+    "providerFees": {
+      "$ref": "../shared/event_common.schema.json#/definitions/providerFees",
+      "x-catch-ownership": "callable-owned"
+    },
     "razorpayOwnership": {
       "type": "object",
       "additionalProperties": false,
