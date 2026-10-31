@@ -19563,18 +19563,21 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.workspace_header"
+        "conceptRole": "member",
+        "conceptId": "catch.screen_body",
+        "parentConceptId": "catch.screen_body",
+        "qualifier": "layout",
+        "decisionRef": "contract-family:catch.screen_body"
       },
       "level": "L4",
       "roleNoun": "Header",
       "naming": {
         "useCase": "Workspace",
         "comparedWith": [
-          "catch.top_bar",
+          "catch.step_header",
           "catch.screen_body"
         ],
-        "reason": "One pane's header beside sibling panes, aligned on a shared row; the top bar heads a whole screen with back and screen actions."
+        "reason": "Heads one pane of the screen body beside sibling panes, with views, filters and position as data; the step header heads one step of a flow with its progress."
       }
     },
     {
@@ -19734,18 +19737,20 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.pane_layout"
+        "conceptRole": "member",
+        "conceptId": "catch.screen_body",
+        "parentConceptId": "catch.screen_body",
+        "qualifier": "layout",
+        "decisionRef": "contract-family:catch.screen_body"
       },
       "level": "L4",
       "roleNoun": "Layout",
       "naming": {
         "useCase": "Pane",
         "comparedWith": [
-          "catch.viewport",
           "catch.screen_body"
         ],
-        "reason": "Arranges sibling panes for a named screen pattern inside a body; the viewport owns the whole screen and the page body owns one scrolling column."
+        "reason": "Arranges sibling panes for a named screen pattern inside the screen body it belongs to; the body owns one scrolling column and the viewport the whole screen."
       }
     },
     {
