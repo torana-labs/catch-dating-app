@@ -190,6 +190,11 @@
       "status": "required"
     },
     {
+      "source": "website/src/features/claims/useInstantClaimController.ts",
+      "test": "website/src/features/claims/sections/InstantClaimSection.test.tsx",
+      "status": "required"
+    },
+    {
       "source": "website/src/features/claims/useListingClaimController.ts",
       "test": "website/src/features/claims/useClaimRequestMutation.test.tsx",
       "status": "required"
