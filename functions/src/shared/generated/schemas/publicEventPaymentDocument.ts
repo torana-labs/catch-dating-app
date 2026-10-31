@@ -467,6 +467,27 @@ export const publicEventPaymentDocumentSchema: Record<string, unknown> = {
       "minimum": 0,
       "maximum": 100000000
     },
+    "providerFees": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What the payment provider charged for a captured payment, read from its payment entity: fee is the whole charge including tax, tax is the GST within it. Both in minor units. Absent until the payment is captured or when the provider did not report them.",
+      "required": [
+        "feePaise",
+        "taxPaise"
+      ],
+      "properties": {
+        "feePaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "taxPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        }
+      }
+    },
     "admissionReceiptId": {
       "anyOf": [
         {

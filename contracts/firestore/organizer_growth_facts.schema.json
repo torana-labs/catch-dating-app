@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_growth_facts.schema.json",
+  "title": "OrganizerGrowthFactsDocument",
+  "description": "Server-only growth facts for one organizer: the one acquisition channel set when its listing was made, the first person who nominated it, and the dated steps it reached (listed, claim asked, claimed, first event, first paid booking). Each step is set once, to the earliest time observed, and never edited by hand, so organizer cohorts can be counted from it. Every step is also streamed to BigQuery as an organizer growth event.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerGrowthFacts",
+  "x-firestore-path": "organizerGrowthFacts/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Functions growth facts writers (listing approval and organizer, claim, booking and payment triggers)",
+  "required": ["schemaVersion", "organizerId", "marketId", "channel", "channelSource", "nominator", "milestones",
+    "firstEventId", "createdAt", "updatedAt"],
+  "definitions": {
+    "channel": {
+      "type": "string",
+      "description": "Where the organizer first came from. imported: Catch found it (discovery or an import). sales_associate: a Catch sales associate nominated it. partner, guest, organizer: someone outside Catch nominated it. came_to_us: the organizer applied or set itself up. ads: the organizer applied after a paid campaign.",
+      "enum": ["imported", "sales_associate", "partner", "guest", "organizer", "came_to_us", "ads"]
+    },
+    "milestone": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    }
+  },
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "marketId": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9-]{1,49}$"},
+    "channel": {"$ref": "#/definitions/channel"},
+    "channelSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What decided the channel: the Supply Intake request the listing came from, or, for an organizer created any other way, its provenance.",
+      "required": ["kind", "requestId", "originKind", "campaign"],
+      "properties": {
+        "kind": {"type": "string", "enum": ["supply_intake", "provenance"]},
+        "requestId": {"type": ["string", "null"], "maxLength": 160},
+        "originKind": {"type": ["string", "null"], "maxLength": 60},
+        "campaign": {"type": ["string", "null"], "maxLength": 80}
+      }
+    },
+    "nominator": {
+      "description": "The first person who nominated the organizer, kept for nominator credit (partners, guests and organizers earn it; sales associates do not). Null when nobody nominated it.",
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["uid", "role", "nominatedAt"],
+          "properties": {
+            "uid": {"type": "string", "minLength": 1, "maxLength": 128},
+            "role": {"type": "string", "enum": ["associate", "partner", "guest", "organizer"]},
+            "nominatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+          }
+        }
+      ]
+    },
+    "milestones": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["listedAt", "claimRequestedAt", "claimedAt", "firstEventAt", "firstPaidBookingAt"],
+      "properties": {
+        "listedAt": {"$ref": "#/definitions/milestone", "description": "The day the page was published, claimed or not."},
+        "claimRequestedAt": {"$ref": "#/definitions/milestone", "description": "The first claim request for the page."},
+        "claimedAt": {"$ref": "#/definitions/milestone", "description": "The day an owner was approved (or set the organizer up themselves)."},
+        "firstEventAt": {"$ref": "#/definitions/milestone", "description": "The start of the earliest event on Catch with at least one paid or free booking."},
+        "firstPaidBookingAt": {"$ref": "#/definitions/milestone", "description": "The capture time of the organizer's first paid booking."}
+      }
+    },
+    "firstEventId": {"type": ["string", "null"], "maxLength": 180},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

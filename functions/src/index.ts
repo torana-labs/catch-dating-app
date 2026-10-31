@@ -988,3 +988,11 @@ export {onEventApplicationApprovalNotification,
 export {manageWebsiteAccount} from "./profiles/websiteAccount";
 
 export {onHostPilotCheckIn} from "./acquisition/pilotActivation";
+export {
+  onOrganizerGrowthOrganizerWritten,
+  onOrganizerGrowthClaimRequestCreated,
+  onOrganizerGrowthParticipationWritten,
+  onOrganizerGrowthPublicPaymentWritten,
+  onOrganizerGrowthOfferPaymentWritten,
+  onOrganizerGrowthNativePaymentWritten,
+} from "./growth/organizerGrowthTriggers";

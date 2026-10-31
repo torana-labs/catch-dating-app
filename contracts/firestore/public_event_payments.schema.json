@@ -125,6 +125,9 @@
       "minimum": 0,
       "maximum": 100000000
     },
+    "providerFees": {
+      "$ref": "../shared/event_common.schema.json#/definitions/providerFees"
+    },
     "admissionReceiptId": {
       "anyOf": [
         {
