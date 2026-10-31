@@ -21,7 +21,9 @@ if (args.help) {
 }
 
 const allowedFeatureImports = new Map([
-  ["claims", new Set(["marketing", "organizers"])],
+  // Proving a claim needs an account-ready profile, so the claim page reuses
+  // the shared account step that follow and registration use.
+  ["claims", new Set(["account", "marketing", "organizers"])],
   ["events", new Set(["account", "marketing", "organizers", "reviews", "eventMessaging"])],
   // Verified event text preferences are shared by registration and guest runtime.
   ["eventAssistance", new Set(["eventMessaging"])],
