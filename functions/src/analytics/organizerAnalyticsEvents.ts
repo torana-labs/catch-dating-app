@@ -112,7 +112,7 @@ export async function recordOrganizerAnalyticsEventHandler(
         occurred_at: occurredAt.toISOString(),
         event_date: utcDateKey(occurredAt),
         event_name: payload.eventName,
-        club_id: organizerId,
+        organizer_id: organizerId,
         target_event_id: payload.eventId ?? null,
         page_path: normalizePublicWebsitePath(payload.pagePath),
         source: boundedSource(payload.source),

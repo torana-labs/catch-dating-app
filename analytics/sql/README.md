@@ -16,9 +16,8 @@ separate stage counts are not historical cohort conversions.
   override. Advertising-provider events do not increase first-party counters.
 - `catch_analytics.*_raw_latest`: Firestore-to-BigQuery export views for
   `organizers`, `events`, `eventParticipations`, `payments`, `reviews`,
-  `savedEvents`, `eventInviteLinks`, and `matches`. The retained
-  `clubs_raw_latest` view supplies names for historical IDs absent from the
-  canonical organizer export; it has no second active exporter.
+  `savedEvents`, `eventInviteLinks`, and `matches`, one extension instance per
+  collection.
 - `catch_marketplace_metrics.event_success_scorecards_raw_latest`: existing
   Event Success export, used for post-event connection/chat/repeat metrics.
 
@@ -27,11 +26,10 @@ separate stage counts are not historical cohort conversions.
 - `catch_analytics.mart_host_event_daily`: host-safe daily grain used by
   `getHostAnalytics` and `adminGetHostAnalytics`. It includes discovery,
   demand, booking, checkout-start/drop-off, payment, attendance, review,
-  connection, and chat metrics at organizer/event/date grain. The physical
-  `club_id` and `club_name` column names remain stable for deployed readers;
-  they do not make the legacy Firestore collection authoritative. Event/review
-  JSON prefers nonempty `organizerId` and falls back to historical `clubId`.
-  `link_clicks` counts owner link clicks (CAT-254) on the organizer page.
+  connection, and chat metrics at organizer/event/date grain. Event and review
+  rows name their organizer in a nonempty `organizerId`; a row without one is
+  left out. `link_clicks` counts owner link clicks (CAT-254) on the organizer
+  page.
 - `catch_analytics.mart_host_link_daily`: owner link clicks at
   organizer/link/traffic-source/date grain, so the insights roll-up can show
   each link's clicks and where visitors came from. The traffic source is the
@@ -71,9 +69,9 @@ Deploy order:
    This compatibility uses BigQuery's documented [row range variables](https://docs.cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax#range_variables)
    and [JSON functions](https://docs.cloud.google.com/bigquery/docs/reference/standard-sql/json_functions),
    without a query that directly references the optional column.
-3. For a new warehouse, deploy its planned Firestore-to-BigQuery instances.
-   Existing club exports require the bounded organizer cutover below before
-   running the current host refresh; do not deploy all extensions as a shortcut.
+3. For a new warehouse, deploy its planned Firestore-to-BigQuery instances one
+   by one (`firebase deploy --only extensions:<instance>`); do not deploy all
+   extensions as a shortcut.
 4. Deploy the Functions callables that write/read host analytics.
 5. Explicitly import existing documents for each exported collection, then
    verify source/export document IDs and latest values before refreshing and
@@ -98,56 +96,38 @@ IAM ownership:
 - Firestore-to-BigQuery extension service accounts: write access to the export
   tables owned by their extension instances.
 
-## Organizer Export Cutover
+## Organizer Column Migration
 
-The checked-in `bq-host-clubs` instance now targets `organizers` with
-`TABLE_ID=organizers`. Its historical instance ID is intentionally retained:
-reconfigure that existing deployment instead of adding a paid parallel exporter.
-The host mart prefers canonical names and uses `clubs_raw_latest` only for IDs
-absent from the canonical export. The union is deduplicated by document ID before
-joining metrics. Canonical null/empty names do not resurrect a stale legacy name.
-The physical mart column names remain compatible with existing readers.
+The warehouse names the organizer `organizer_id` and `organizer_name`. Tables
+created before the organizer rename (2026-10-31) named those columns the old
+way and clustered on them. Each deploy script's DDL step first renames such a
+table in place, keeping its rows (`RENAME COLUMN club_id TO organizer_id`, and
+`RENAME COLUMN club_name TO organizer_name` in the event mart). Clustering moves
+off the old column before the rename and onto the DDL's `CLUSTER BY` after it.
+An absent or already renamed table is left alone, so the step is a no-op on a
+new or migrated warehouse. `--dry-run` reads each table and prints the commands
+it would run.
 
-These are desired source settings, not evidence of completed live migration.
-Extension configuration is validation-only in the delivery planner; merging this
-source does not reconfigure an extension or update a BigQuery schedule. The host
-refresh now requires both raw views and must not be published before canonical
-import/parity succeeds. Keep the currently deployed schedule during the cutover;
-if first installing the atomic refresh with its old dimension for rollback,
-preserve that exact reviewed SQL separately before updating to the canonical query.
+Columns renamed live do not move with the code: once Functions write and read
+`organizer_id`, an unmigrated table rejects inserts and mart reads until its
+deploy script runs. For each environment, after the Functions deploy:
 
-1. Read back the existing instance parameters, installed source version, trigger,
-   function locations, table schemas, and schedule. Save the exact prior
-   configuration and query for recovery. Confirm collection/table parameters are
-   mutable in that installed version. Check its task queues in the functions'
-   actual region, which can differ from the BigQuery dataset location.
-2. Reconfigure only `bq-host-clubs` to `COLLECTION_PATH=organizers` and
-   `TABLE_ID=organizers`, preserving other parameters, version, instance ID and
-   both old table/view resources. Drain/reconcile in-flight old-collection work
-   first. A new prefix avoids mixing collection-qualified paths into a latest
-   view that could otherwise contain two rows for one organizer ID.
-3. Once the canonical trigger and tables are ready, explicitly import the whole
-   organizers collection with the official importer. Reconcile latest document
-   IDs, collection-qualified paths, and relevant field values against a fresh
-   Firestore read, including updates/deletions during the reconfiguration gap.
-   Require no duplicate latest IDs or failed batches. Import reconstructs current
-   state; it cannot recreate every missed historical change. Firebase documents
-   [post-update import and temporary parallel-instance alternatives](https://github.com/firebase/extensions/blob/next/firestore-bigquery-export/PREINSTALL.md#mitigating-data-loss-during-extension-updates).
-   Prefer the existing-instance approach here, without adding paid dev analytics
-   infrastructure solely for rehearsal.
-4. Compare the host SELECT before/after the dimension change. Require identical
-   metric keys/totals and historical-window retention. Only current canonical
-   names and name availability for canonical-only IDs should differ. Preserve
-   canonical follower counters; frozen legacy counters are not repair authority.
-5. Update the one existing host schedule to this reviewed source SQL, preserving
-   its identity, credentials and cadence. Read back the exact query, run one
-   refresh, and verify the next scheduled run plus host/admin results. On failure,
-   restore the saved prior query; preserve both table families for diagnosis.
-   Table or extension deletion is outside this cutover.
+1. `tool/analytics/deploy_host_analytics_bigquery.sh <env> --skip-refresh --dry-run`,
+   then the same without `--dry-run`. Repeat with
+   `deploy_user_analytics_bigquery.sh` where `catch_user_analytics` exists.
+2. Where a host schedule exists, `deploy_host_analytics_bigquery.sh <env>
+   --refresh-only --create-schedule` replaces its query with this source SQL;
+   the old query names the old columns and fails until then.
+3. `node tool/analytics/host_analytics_live_status.mjs --env <env>` checks the
+   exports and the schedule. It reports any `bq-host-*` extension instance not
+   in `host_analytics_contract.mjs` as unexpected: install the declared instance
+   before uninstalling the unexpected one, so the organizers export has no gap.
+
+Deleting retired export tables or views is the owner's to run.
 
 `host_analytics_contract.mjs` owns the shared export inventory used by the source
 checker and live-status tool. The live check verifies structured extension
-parameters/version, both dimension views, and a unique enabled schedule whose
+parameters/version, every export's latest view, and a unique enabled schedule whose
 SQL exactly matches this checkout. It intentionally reports incomplete against
 an older deployed configuration. It does not replace source/export content
 parity or prove a refresh is recent merely because rows exist.
@@ -170,8 +150,8 @@ node --test tool/analytics/mart_refresh.test.mjs tool/analytics/host_analytics_c
 
 The same test file can validate the actual SQL in BigQuery using only tiny
 synthetic temporary tables, including failures during computation and insertion,
-canonical/legacy dimension overlap, missing historical IDs, and full metric-row
-parity against the old dimension:
+named, unnamed and missing organizers, rows without an `organizerId`, and GA4
+events that must not reach the first-party counters:
 
 ```sh
 CATCH_ANALYTICS_BQ_TEST_PROJECT=<project-id> node --test tool/analytics/mart_refresh.test.mjs
