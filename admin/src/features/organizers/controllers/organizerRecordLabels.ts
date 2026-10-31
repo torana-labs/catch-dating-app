@@ -42,17 +42,6 @@ export function organizerClaimLabel(
   }
 }
 
-/** "Riya" in the table; the full name sits on the organizer page. */
-export function salesOwnerShortName(
-  owner: OrganizerDirectoryRow["salesOwner"]
-): string {
-  return owner?.name?.split(/\s+/u)[0] ?? "—";
-}
-
-export function upcomingLabel(count: number): string {
-  return count === 0 ? "None" : `${count} upcoming`;
-}
-
 /** "Mumbai · social nights". */
 export function organizerSubtitle(
   row: Pick<OrganizerDirectoryRow, "cityLabel" | "kindLabel">
@@ -70,20 +59,6 @@ export function termsLabel(terms: OrganizerOverview["terms"]): string {
     `, capped at ${formatInr(terms.capMinor)} a month`;
   return `${terms.source === "platform" ? "Platform: " : "Own terms: "}` +
     `${rate}${cap}`;
-}
-
-export function paymentsLabel(
-  payments: OrganizerOverview["payments"]
-): ToneText {
-  switch (payments.state) {
-  case "connected":
-    return payments.webhookVerified ?
-      {text: "Razorpay connected · webhook working", tone: "success"} :
-      {text: "Razorpay connected · webhook not checked", tone: "warning"};
-  case "needsAttention":
-    return {text: "Razorpay needs attention", tone: "danger"};
-  default: return {text: "Razorpay not connected", tone: null};
-  }
 }
 
 const roleLabels: Record<string, string> = {
