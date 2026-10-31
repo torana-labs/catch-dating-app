@@ -542,8 +542,8 @@ Until every environment is backfilled, a page without a valid read model is
 assembled from its sources (`assembleOrganizerDetailFromSources`,
 `assembleEventDetailFromSources`) under the same publication rules, so a
 withdrawn page stays withdrawn either way. Those source reads are one to three
-path reads, that organizer's events (at most 200 per kind, Catch events also
-by legacy `organizerId`), three trust reads for recommendations and bounded reviews
+path reads, that organizer's events (at most 200 per
+kind), three trust reads for recommendations and bounded reviews
 for an organizer page, and two document gets, the organizer plus a
 path-uniqueness read and bounded reviews for an event page.
 `node functions/scripts/backfill-public-pages.cjs --project <id> --check`

@@ -2159,7 +2159,6 @@ service cloud.firestore {
         && !isDeletedUser(request.auth.uid)
         && data.get('publicationState', '') == 'private'
         && data.get('organizerId', '') is string
-        && data.get('organizerId', '') == data.get('organizerId', '')
         && (
           isOrganizerHostForEvent(eventId)
           || hasActiveEventOperatorGrant(eventId, 'viewRoster')
