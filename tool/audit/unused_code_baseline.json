@@ -44,7 +44,6 @@
     "export functions/src/shared/businessRules.ts EVENT_MIN_DURATION_MINUTES",
     "export functions/src/shared/businessRules.ts EVENT_SELF_CHECK_IN_MAX_DISTANCE_METERS",
     "export functions/src/shared/callablePayloadNormalization.ts normalizeNestedPayloadStrings",
-    "export functions/src/shared/clubHosts.ts clubHostProfiles",
     "export functions/src/shared/profileProjection.ts normalizePhotoUrls",
     "export functions/src/shared/programAuthority.ts allowedFunctionIds",
     "export functions/src/shared/programAuthority.ts allowedPickupPointIds",

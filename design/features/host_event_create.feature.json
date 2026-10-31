@@ -49,7 +49,7 @@
         "dataContracts": [
           "contracts/callables/place_details_payload.schema.json",
           "contracts/callables/places_autocomplete_payload.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/event_success_preferences.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/storage/event_photos.schema.json"

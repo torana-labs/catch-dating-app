@@ -727,7 +727,7 @@
           "contracts/client_writes/create_chat_message.schema.json",
           "contracts/client_writes/reset_match_unread_count.schema.json",
           "contracts/firestore/chat_messages.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/firestore/matches.schema.json",
           "contracts/firestore/public_profiles.schema.json",

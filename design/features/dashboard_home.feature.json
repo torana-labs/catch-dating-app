@@ -59,7 +59,6 @@
           "contracts/client_writes/mark_notification_read.schema.json",
           "contracts/firestore/activity_notifications.schema.json",
           "contracts/firestore/club_memberships.schema.json",
-          "contracts/firestore/club_posts.schema.json",
           "contracts/firestore/organizer_posts.schema.json",
           "contracts/firestore/event_participations.schema.json",
           "contracts/firestore/events.schema.json",

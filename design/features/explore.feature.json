@@ -78,10 +78,9 @@
         ],
         "dataContracts": [
           "contracts/firestore/club_memberships.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/firestore/external_events.schema.json",
-          "contracts/firestore/organizers.schema.json",
           "contracts/callables/get_cross_paths_suggestions_payload.schema.json",
           "contracts/callable_responses/get_cross_paths_suggestions_response.schema.json",
           "contracts/firestore/cross_paths_invitations.schema.json",

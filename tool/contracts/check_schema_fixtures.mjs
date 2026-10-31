@@ -46,8 +46,6 @@ export const fixtureSchemaCases = Object.freeze([
   ["valid/config_cities_doc.json", "configCitiesDocumentSchema"],
   ["valid/create_chat_message_client_write.json", "createChatMessageClientWriteSchema"],
   ["valid/create_club_payload.json", "createClubCallablePayloadSchema"],
-  ["valid/create_club_post_payload.json", "createClubPostCallablePayloadSchema"],
-  ["valid/create_club_post_response.json", "createClubPostCallableResponseSchema"],
   ["valid/create_club_response.json", "createClubCallableResponseSchema"],
   ["valid/create_event_invite_link_payload.json", "createEventInviteLinkCallablePayloadSchema"],
   ["valid/create_event_payload.json", "createEventCallablePayloadSchema"],

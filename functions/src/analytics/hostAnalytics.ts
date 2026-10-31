@@ -26,7 +26,7 @@ import {
 import {
   validateHostAnalyticsQueryCallablePayload,
 } from "../shared/generated/validators/hostAnalyticsQueryInput";
-import {isClubHost} from "../shared/clubHosts";
+import {isOrganizerManager} from "../shared/organizerHosts";
 import {loadHostRegistrationAnalytics} from "./hostRegistrationAnalytics";
 import {
   defaultHostAnalyticsBigQuerySource,
@@ -858,7 +858,7 @@ function assertCanReadClub(
   uid: string
 ): void {
   if (scope === "admin") return;
-  if (isClubHost(club.data, uid)) return;
+  if (isOrganizerManager(club.data, uid)) return;
   throw new HttpsError(
     "permission-denied",
     "Only this club's host team can read host analytics."

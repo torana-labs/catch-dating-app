@@ -2,7 +2,7 @@ import type {
   HostProfileDocument,
   UserProfileDocument,
 } from "./generated/firestoreAdminTypes";
-import {ClubHostProfile, ClubHostRole} from "./clubHosts";
+import {OrganizerHostProfile, OrganizerHostRole} from "./organizerHosts";
 import {publicAvatarUrl, publicDisplayName} from "./profileProjection";
 
 export type {HostProfileDocument} from "./generated/firestoreAdminTypes";
@@ -17,15 +17,15 @@ export type {HostProfileDocument} from "./generated/firestoreAdminTypes";
  * Host profile document snapshot.
  * @param {FirebaseFirestore.DocumentSnapshot} params.userSnap Optional user
  * profile document snapshot.
- * @param {ClubHostRole} params.role Host role inside the club.
- * @return {ClubHostProfile} Professional host display snapshot.
+ * @param {OrganizerHostRole} params.role Host role inside the club.
+ * @return {OrganizerHostProfile} Professional host display snapshot.
  */
 export function professionalHostSnapshot(params: {
   uid: string;
   hostProfileSnap: FirebaseFirestore.DocumentSnapshot;
   userSnap?: FirebaseFirestore.DocumentSnapshot;
-  role: ClubHostRole;
-}): ClubHostProfile {
+  role: OrganizerHostRole;
+}): OrganizerHostProfile {
   const hostProfile = params.hostProfileSnap.exists ?
     params.hostProfileSnap.data() as HostProfileDocument :
     null;
@@ -50,12 +50,12 @@ export function professionalHostSnapshot(params: {
 
 /**
  * Builds an owner-owned hostProfiles/{uid} seed from a professional snapshot.
- * @param {ClubHostProfile} snapshot Professional display snapshot.
+ * @param {OrganizerHostProfile} snapshot Professional display snapshot.
  * @param {FirebaseFirestore.FieldValue} timestamp Server timestamp.
  * @return {Record<string, unknown>} Firestore patch.
  */
 export function hostProfileSeedPatch(
-  snapshot: ClubHostProfile,
+  snapshot: OrganizerHostProfile,
   timestamp: FirebaseFirestore.FieldValue
 ): Record<string, unknown> {
   return {

@@ -12,7 +12,6 @@ import {addOrganizerManagerHandler, removeOrganizerManagerHandler,
 import {getOrganizerEventSetupDefaultsHandler} from
   "../organizers/eventSetupDefaults/callables";
 import {isOrganizerManager} from "../shared/organizerHosts";
-import {isClubHost} from "../shared/clubHosts";
 
 // Load the browser rules client at runtime, as the existing CJS rules tests do;
 // its Temporal types exceed the Functions ES2022 compilation target.
@@ -127,7 +126,7 @@ test("removal and transfer fence stale sync and callable/rules access",
         await assertFails(directRead(manager));
         await assert.rejects(view(manager), {code: "permission-denied"});
         assert.equal(isOrganizerManager(organizer as never, manager), false);
-        assert.equal(isClubHost(organizer as never, manager), false);
+        assert.equal(isOrganizerManager(organizer as never, manager), false);
         const profileIds = organizer.hostProfiles
           .map((p: {uid: string}) => p.uid);
         assert.deepEqual(profileIds, [owner]);

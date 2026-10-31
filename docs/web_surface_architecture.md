@@ -1193,7 +1193,7 @@ that follow:
 - `npm --workspace catch-marketing run build`
 - `node --test website/scripts/checkOrganizerBuildOutputs.test.mjs website/scripts/generateOrganizerListings.test.mjs website/scripts/postbuild.test.mjs`
 - `node website/scripts/checkOrganizerBuildOutputs.mjs`
-- `git diff --check -- website package.json packages/web-config firebase.json .github/workflows/marketing-website.yml contracts/callables/request_club_claim_payload.schema.json contracts/callables/create_public_club_review_payload.schema.json contracts/callables/list_public_club_reviews_payload.schema.json contracts/callables/record_organizer_analytics_event_payload.schema.json contracts/firestore/clubs.schema.json functions/src/clubs/clubClaims.ts functions/src/reviews/mutateReview.ts functions/src/analytics/organizerAnalyticsEvents.ts`
+- `git diff --check -- website package.json packages/web-config firebase.json .github/workflows/marketing-website.yml contracts/callables/request_organizer_claim_payload.schema.json contracts/callables/create_public_organizer_review_payload.schema.json contracts/callables/list_public_organizer_reviews_payload.schema.json contracts/callables/record_organizer_analytics_event_payload.schema.json contracts/firestore/organizers.schema.json functions/src/clubs/clubClaims.ts functions/src/reviews/mutateReview.ts functions/src/analytics/organizerAnalyticsEvents.ts`
 
 The original marketing build passed. It reported a single JS bundle of 484.71 KB
 raw, 139.82 KB gzip, a 92.02 KB CSS bundle, and a 2.1 MB public source map. The

@@ -34,7 +34,7 @@
         ],
         "componentContracts": ["catch.badge", "catch.button", "catch.empty_state", "catch.error_state", "catch.surface", "catch.top_bar"],
         "dataContracts": [
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/event_participations.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/firestore/saved_events.schema.json"
@@ -212,7 +212,7 @@
         ],
         "componentContracts": ["catch.empty_state", "catch.error_state", "catch.surface", "catch.top_bar"],
         "dataContracts": [
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/firestore/saved_events.schema.json"
         ]

@@ -165,14 +165,13 @@
           "contracts/callables/transfer_organizer_ownership_payload.schema.json",
           "contracts/callables/update_organizer_payload.schema.json",
           "contracts/callable_responses/get_organizer_crm_summary_response.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/event_attendees.schema.json",
           "contracts/firestore/host_analytics_snapshots.schema.json",
           "contracts/firestore/host_payment_accounts.schema.json",
           "contracts/firestore/host_profiles.schema.json",
           "contracts/firestore/organizer_team_memberships.schema.json",
           "contracts/firestore/organizer_communication_preferences.schema.json",
-          "contracts/firestore/organizers.schema.json",
           "contracts/storage/organizer_logo_images.schema.json",
           "contracts/storage/organizer_photos.schema.json"
         ]

@@ -32,7 +32,7 @@
           "contracts/callables/admin_get_organizer_details_payload.schema.json",
           "contracts/callables/admin_update_organizer_details_payload.schema.json",
           "contracts/callables/admin_set_club_index_status_payload.schema.json",
-          "contracts/callables/admin_decide_club_claim_payload.schema.json",
+          "contracts/callables/admin_decide_organizer_claim_payload.schema.json",
           "contracts/firestore/organizers.schema.json",
           "contracts/firestore/organizer_claim_requests.schema.json"
         ],

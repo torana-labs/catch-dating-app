@@ -46,7 +46,7 @@
           "contracts/callables/create_event_invite_link_payload.schema.json",
           "contracts/callables/disable_event_invite_link_payload.schema.json",
           "contracts/callables/mark_event_attendance_payload.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/event_invite_links.schema.json",
           "contracts/firestore/event_participations.schema.json",
           "contracts/firestore/event_success_assignments.schema.json",
@@ -1071,7 +1071,7 @@
           "contracts/callables/place_details_payload.schema.json",
           "contracts/callables/places_autocomplete_payload.schema.json",
           "contracts/callables/update_event_payload.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/event_private_access.schema.json",
           "contracts/firestore/events.schema.json"
         ]
