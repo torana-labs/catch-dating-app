@@ -302,7 +302,7 @@ test("revoke marks the grant and refuses unknown or repeated revokes",
     );
   });
 
-test("admin roles other than the owner cannot mutate entitlements", async () => {
+test("only the owner can mutate entitlements", async () => {
   const firestore = new FakeFirestore();
   const {deps} = depsFor(firestore);
   await assert.rejects(
