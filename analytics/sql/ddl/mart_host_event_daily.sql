@@ -12,8 +12,8 @@ EXECUTE IMMEDIATE FORMAT(
 EXECUTE IMMEDIATE FORMAT("""
 CREATE TABLE IF NOT EXISTS `%s.%s.mart_host_event_daily` (
   date DATE NOT NULL,
-  club_id STRING NOT NULL,
-  club_name STRING,
+  organizer_id STRING NOT NULL,
+  organizer_name STRING,
   event_id STRING,
   event_title STRING,
   event_start_time TIMESTAMP,
@@ -52,9 +52,9 @@ CREATE TABLE IF NOT EXISTS `%s.%s.mart_host_event_daily` (
   refreshed_at TIMESTAMP NOT NULL
 )
 PARTITION BY date
-CLUSTER BY club_id, event_id
+CLUSTER BY organizer_id, event_id
 OPTIONS(
-  description = 'Host/admin analytics mart at daily club/event grain, derived from BigQuery exports and raw host analytics events.'
+  description = 'Host/admin analytics mart at daily organizer/event grain, derived from BigQuery exports and raw host analytics events.'
 )
 """, analytics_project, analytics_dataset);
 
@@ -83,14 +83,14 @@ ADD COLUMN IF NOT EXISTS link_clicks INT64
 EXECUTE IMMEDIATE FORMAT("""
 CREATE TABLE IF NOT EXISTS `%s.%s.mart_host_link_daily` (
   date DATE NOT NULL,
-  club_id STRING NOT NULL,
+  organizer_id STRING NOT NULL,
   link_id STRING NOT NULL,
   traffic_source STRING NOT NULL,
   link_clicks INT64 NOT NULL,
   refreshed_at TIMESTAMP NOT NULL
 )
 PARTITION BY date
-CLUSTER BY club_id, link_id
+CLUSTER BY organizer_id, link_id
 OPTIONS(
   description = 'Owner link clicks at daily organizer/link/traffic-source grain, derived from host_analytics_events.'
 )

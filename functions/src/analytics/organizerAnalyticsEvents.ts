@@ -112,7 +112,7 @@ export async function recordOrganizerAnalyticsEventHandler(
         occurred_at: occurredAt.toISOString(),
         event_date: utcDateKey(occurredAt),
         event_name: payload.eventName,
-        club_id: organizerId,
+        organizer_id: organizerId,
         target_event_id: payload.eventId ?? null,
         page_path: normalizePublicWebsitePath(payload.pagePath),
         source: boundedSource(payload.source),
@@ -174,12 +174,9 @@ async function assertOrganizerScope(
       throw new HttpsError("not-found", "Event not found.");
     }
     const ownerId = eventSnapshot.exists ?
-      snapshot.get("organizerId") ?? snapshot.get("organizerId") :
+      snapshot.get("organizerId") :
       snapshot.get("canonicalHostId");
-    if (ownerId !== organizerId ||
-        (eventSnapshot.exists && snapshot.get("organizerId") &&
-         snapshot.get("organizerId") &&
-         snapshot.get("organizerId") !== snapshot.get("organizerId"))) {
+    if (ownerId !== organizerId) {
       throw new HttpsError(
         "invalid-argument", "Event does not belong to that organizer."
       );

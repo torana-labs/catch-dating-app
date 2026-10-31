@@ -71,6 +71,7 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
       "adminGetOrganizerDetails", "adminGetOrganizerClaimRequestDetails",
       "adminListOrganizerClaimRequests", "adminSetOrganizerIndexStatus",
     ]],
+    ["lib/platform/analytics/app_analytics.dart", ["static const organizerId = 'organizer_id';"]],
     ["tool/data/migrate_clubs_to_organizers.mjs", ["--confirm-migration"]],
     ["docs/migrations/clubs_to_organizers.md", ["organizerType"]],
   ])) write(root, file, markers.join("\n"));
@@ -113,7 +114,7 @@ test("organizer nomenclature gate rejects club in Flutter names but keeps the su
   assert.match(findings.find((item) => item.path === "lib/l10n/app_en.arb").detail, /clubsTitle$/u);
 });
 
-test("organizer nomenclature gate rejects club in wire names but keeps the subtype and warehouse columns", () => {
+test("organizer nomenclature gate rejects club in wire names but keeps the subtype and snake_case code keys", () => {
   const root = fixtureRoot();
   write(root, "contracts/firestore/events.schema.json", JSON.stringify({
     title: "EventDocument",
@@ -137,8 +138,41 @@ test("organizer nomenclature gate rejects club in wire names but keeps the subty
 
   assert.deepEqual(findings.map((item) => `${item.path}: ${item.detail}`).sort(), [
     "contracts/firestore/events.schema.json: The contract declares clubName; say organizer.",
+    "contracts/firestore/events.schema.json: The contract declares club_id; say organizer.",
     "functions/src/events/clubEvents.ts: The file name says club; it is functions/src/events/organizerEvents.ts.",
     "functions/src/events/clubEvents.ts: loadClub names club in code; say organizer.",
+  ]);
+});
+
+test("organizer nomenclature gate rejects club in the warehouse except the column migration", () => {
+  const root = fixtureRoot();
+  write(root, "analytics/sql/ddl/events.sql", "CREATE TABLE t (club_id STRING)\nCLUSTER BY club_id");
+  write(root, "analytics/sql/marts/refresh.sql", "SELECT organizer_id FROM `%s.%s.clubs_raw_latest`");
+  write(root, "tool/analytics/deploy.sh", [
+    "rename_to_organizer t \"RENAME COLUMN club_id TO organizer_id, RENAME COLUMN club_name TO organizer_name\"",
+    "rename_to_organizer u \"RENAME COLUMN club_id TO organizer_name\"",
+  ].join("\n"));
+  write(root, "contracts/bigquery/event.schema.json", JSON.stringify({properties: {organizer_id: {}}}));
+  write(root, "extensions/bq-host-clubs.env", "COLLECTION_PATH=organizers");
+  write(root, "firebase.json", JSON.stringify({extensions: {
+    "bq-host-clubs": "firebase/firestore-bigquery-export@0.3.2",
+    "bq-host-organizers": "firebase/firestore-bigquery-export@0.3.2",
+  }}));
+  write(root, "functions/src/analytics/writer.ts", [
+    "export const row = {club_id: id, organizer_name: name};",
+    "export const fixture = {organizerId: \"club-1\", name: \"Saket Run Club\"};",
+  ].join("\n"));
+
+  const findings = checkOrganizerNomenclature({root}).findings
+    .filter((item) => item.rule === "clubInWarehouseNames");
+
+  assert.deepEqual(findings.map((item) => `${item.path}: ${item.detail.split(" ")[0]}`).sort(), [
+    "analytics/sql/ddl/events.sql: club_id",
+    "analytics/sql/marts/refresh.sql: clubs_raw_latest",
+    "extensions/bq-host-clubs.env: bq-host-clubs.env",
+    "firebase.json: bq-host-clubs",
+    "functions/src/analytics/writer.ts: club_id",
+    "tool/analytics/deploy.sh: club_id",
   ]);
 });
 

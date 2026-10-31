@@ -1,11 +1,11 @@
-// Shared source and live expectations. The legacy instance ID is retained so
-// the canonical export reuses the existing paid extension deployment.
+// Shared source and live expectations for the host Firestore-to-BigQuery
+// exports.
 import {createHash} from "node:crypto";
 
 export const hostExportSource = "firebase/firestore-bigquery-export@0.3.2";
 
 export const hostExports = {
-  "bq-host-clubs": {
+  "bq-host-organizers": {
     collectionPath: "organizers",
     tableId: "organizers",
     requiredInMart: true,
@@ -47,13 +47,8 @@ export const hostExports = {
   },
 };
 
-// This retained view provides names for historical IDs absent canonically.
-// It has no second active extension and must not be removed during cutover.
-export const retainedHostRawViews = ["clubs_raw_latest"];
-export const hostRawViews = [
-  ...Object.values(hostExports).map(({tableId}) => `${tableId}_raw_latest`),
-  ...retainedHostRawViews,
-].sort();
+export const hostRawViews = Object.values(hostExports)
+  .map(({tableId}) => `${tableId}_raw_latest`).sort();
 
 export function inspectHostExtensions(instances, projectId) {
   const expectedInstances = Object.entries(hostExports).map(([instanceId, expected]) => {
