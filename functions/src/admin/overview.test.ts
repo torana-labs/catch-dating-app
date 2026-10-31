@@ -19,7 +19,7 @@ test("restricted event requests stay hidden from non-safety overview roles",
     assert.deepEqual(
       await loadRestrictedEventAssistanceOverview(
         firestore,
-        ["finance", "analyticsViewer"]
+        ["salesStaff"]
       ),
       {count: 0, items: []}
     );

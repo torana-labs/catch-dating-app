@@ -24,7 +24,7 @@ type RouteId = "catchEventSms" | "catchEventRcs" |
 
 function callableRequest(
   data: FakeData,
-  token: Record<string, unknown> = {finance: true},
+  token: Record<string, unknown> = {adminOwner: true},
   uid = "finance-1"
 ): CallableRequest<unknown> {
   return {
@@ -260,7 +260,7 @@ test("application rejects stale, expired, changed, and unapproved decisions",
     );
   });
 
-test("only finance and admin owner roles can apply an approval", async () => {
+test("only the admin owner role can apply an approval", async () => {
   const support = await setup("catchEventRcs", "support");
   await assert.rejects(
     () => adminApplyEventMessagingBudgetHandler(

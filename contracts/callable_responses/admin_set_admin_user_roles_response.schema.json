@@ -28,8 +28,6 @@
         "adminOwner",
         "safetyReviewer",
         "support",
-        "finance",
-        "analyticsViewer",
         "salesStaff"
       ]
     },

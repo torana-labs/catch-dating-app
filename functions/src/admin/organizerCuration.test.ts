@@ -261,7 +261,7 @@ test("adminRecordOrganizerCurationHandler blocks viewer-only admins",
 
     await assert.rejects(
       () => adminRecordOrganizerCurationHandler(
-        callableRequest("admin-1", attachPayload(), {analyticsViewer: true}),
+        callableRequest("admin-1", attachPayload(), {salesStaff: true}),
         h.deps
       ),
       (error) => assertHttpsCode(error, "permission-denied")

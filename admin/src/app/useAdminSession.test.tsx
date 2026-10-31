@@ -8,7 +8,7 @@ vi.mock("firebase/auth", () => mocks);
 vi.mock("../shared/api/firebase", () => ({auth: {}}));
 
 const owner = {uid: "owner"} as User;
-const finance = {uid: "finance"} as User;
+const support = {uid: "support"} as User;
 let tokenChanged: (user: User | null) => void;
 let listenerFailed: () => void;
 
@@ -48,18 +48,18 @@ describe("Admin session authorization epochs", () => {
   it.each(["success", "failure"])("ignores a stale claim %s after another identity resolves", async (outcome) => {
     const claims = deferred<{claims: Record<string, boolean>}>();
     mocks.getIdTokenResult.mockReturnValueOnce(claims.promise)
-      .mockResolvedValueOnce({claims: {finance: true}});
+      .mockResolvedValueOnce({claims: {support: true}});
     const {result} = renderHook(() => useAdminSession("live"));
     act(() => tokenChanged(owner));
     act(() => tokenChanged(null));
-    act(() => tokenChanged(finance));
-    await waitFor(() => expect(result.current.roles).toEqual(["finance"]));
+    act(() => tokenChanged(support));
+    await waitFor(() => expect(result.current.roles).toEqual(["support"]));
     const current = result.current.epoch;
     await act(async () => {
       if (outcome === "success") claims.resolve({claims: {adminOwner: true}});
       else claims.reject(new Error("old failure"));
     });
-    expect(result.current).toMatchObject({user: finance, roles: ["finance"], epoch: current, error: null});
+    expect(result.current).toMatchObject({user: support, roles: ["support"], epoch: current, error: null});
   });
 
   it("fences a forced claim refresh when sign-out starts before it completes", async () => {
@@ -83,12 +83,12 @@ describe("Admin session authorization epochs", () => {
     await waitFor(() => expect(result.current.roles).toEqual(["adminOwner"]));
     const claims = deferred<{claims: Record<string, boolean>}>();
     mocks.getIdTokenResult.mockReturnValueOnce(claims.promise)
-      .mockResolvedValueOnce({claims: {finance: true}});
+      .mockResolvedValueOnce({claims: {support: true}});
     act(() => { void result.current.refreshClaims(); });
     act(() => tokenChanged(owner));
-    await waitFor(() => expect(result.current.roles).toEqual(["finance"]));
+    await waitFor(() => expect(result.current.roles).toEqual(["support"]));
     await act(async () => claims.resolve({claims: {adminOwner: true}}));
-    expect(result.current.roles).toEqual(["finance"]);
+    expect(result.current.roles).toEqual(["support"]);
     act(() => listenerFailed());
     expect(result.current).toMatchObject({user: null, roles: []});
   });
