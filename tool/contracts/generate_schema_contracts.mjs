@@ -7057,6 +7057,7 @@ async function main() {
     renderDartFieldConstraints({
       schemaSpecs,
       schemaMap: bundledSchemas,
+      bindings: readContractJson("forms/field_constraint_bindings.json"),
     })
   );
 
@@ -9060,8 +9061,8 @@ export 'schemas/schema_registry.g.dart';
   };
 }
 
-function renderDartFieldConstraints({schemaSpecs, schemaMap}) {
-  const constraints = [];
+function renderDartFieldConstraints({schemaSpecs, schemaMap, bindings}) {
+  const projected = [];
   for (const spec of schemaSpecs) {
     const schema = schemaMap.get(spec.name);
     if (!schema) continue;
@@ -9076,12 +9077,15 @@ function renderDartFieldConstraints({schemaSpecs, schemaMap}) {
       schema: rootSchema,
       rootName,
       segments: [],
-      constraints,
+      constraints: projected,
     });
   }
 
-  constraints.sort((a, b) => a.path.localeCompare(b.path));
-  disambiguateFieldConstraintNames(constraints);
+  projected.sort((a, b) => a.path.localeCompare(b.path));
+  // Names are settled against every projected field so a binding keeps the
+  // same constant name however many other fields are declared.
+  disambiguateFieldConstraintNames(projected);
+  const constraints = boundFieldConstraints(projected, bindings);
   const declarations = constraints.map((entry) => {
     const args = [
       `path: ${dartString(entry.path)}`,
@@ -9120,7 +9124,8 @@ function renderDartFieldConstraints({schemaSpecs, schemaMap}) {
   return `${dartGeneratedHeader()}
 import 'package:catch_ui/catch_ui.dart' show CatchContractFieldConstraints;
 
-/// App-owned field constraints projected from every generated JSON Schema.
+/// App-owned field constraints for the schema fields that app forms bind to,
+/// as declared in contracts/forms/field_constraint_bindings.json.
 
 abstract final class CatchContractConstraints {
 ${declarations}
@@ -9130,6 +9135,37 @@ ${allEntries}
   };
 }
 `;
+}
+
+/**
+ * Keeps the projected constraints a form binds to. Bindings are the declared
+ * source of truth, so the generator never reads app code; an undeclared field
+ * fails the app's analyzer, and a binding that names no schema field fails
+ * here.
+ */
+export function boundFieldConstraints(projected, bindings) {
+  const byPath = new Map(projected.map((entry) => [entry.path, entry]));
+  const bound = new Map();
+  const unresolved = [];
+  for (const [root, fieldPaths] of Object.entries(bindings.fields ?? {})) {
+    for (const fieldPath of fieldPaths) {
+      const entry = byPath.get(`${root}.${fieldPath}`);
+      if (entry) bound.set(entry.path, entry);
+      else unresolved.push(`${root}.${fieldPath}`);
+    }
+  }
+  for (const prefix of bindings.lookupPrefixes ?? []) {
+    const matches = projected.filter((entry) => entry.path.startsWith(prefix));
+    if (matches.length === 0) unresolved.push(`${prefix}*`);
+    for (const entry of matches) bound.set(entry.path, entry);
+  }
+  if (unresolved.length > 0) {
+    throw new Error(
+      "contracts/forms/field_constraint_bindings.json names fields no " +
+      `schema projects:\n${unresolved.map((item) => `- ${item}`).join("\n")}`
+    );
+  }
+  return [...bound.values()].sort((a, b) => a.path.localeCompare(b.path));
 }
 
 function disambiguateFieldConstraintNames(constraints) {
@@ -9383,7 +9419,7 @@ ${ungenerableRows}
 | \`tool/contracts/generated/schema_contract_registry.mjs\` | Node-side schema registry for validation tooling. |
 | \`tool/contracts/generated/schema_contract_validators.mjs\` | Node-side Ajv validators for contract checks. |
 | \`lib/platform/schema_contracts/generated/profile_schema_contracts.g.dart\` | Dart profile catalog and storage policy constants. |
-| \`lib/platform/schema_contracts/generated/field_constraints.g.dart\` | UI-relevant constraints projected from patch and Firestore document schemas. |
+| \`lib/platform/schema_contracts/generated/field_constraints.g.dart\` | UI constraints for the schema fields declared in \`contracts/forms/field_constraint_bindings.json\`. |
 | \`lib/platform/schema_contracts/generated/schema_contracts.g.dart\` | Dart schema contract barrel. |
 | \`lib/platform/schema_contracts/generated/schemas/*.g.dart\` | One generated Dart JSON Schema constant file per schema, plus lookup registry files. |
 | \`lib/platform/schema_contracts/generated/callable_request_dtos.g.dart\` | Generated Dart callable request and patch helper barrel. |

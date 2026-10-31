@@ -2344,11 +2344,22 @@ The schema generator also emits
 `lib/platform/schema_contracts/generated/field_constraints.g.dart`. It projects
 UI-relevant requiredness, value and item types, string length, format, pattern,
 enum values, collection bounds, uniqueness, numeric bounds, and `multipleOf`
-steps from every registered schema into typed
-`CatchContractFieldConstraints` constants. The projection includes persisted
-documents, callable payloads, and `contracts/forms/mobile_form_state.schema.json`
-for editable presentation values that are deterministically transformed before
-they are stored.
+steps into typed `CatchContractFieldConstraints` constants. The projection
+covers persisted documents, callable payloads, and
+`contracts/forms/mobile_form_state.schema.json` for editable presentation
+values that are deterministically transformed before they are stored.
+
+Only fields that app forms bind to are emitted. They are declared in
+`contracts/forms/field_constraint_bindings.json`: `fields` lists dotted field
+paths per constraint root (the schema name, or the patch class name for patch
+payloads), and `lookupPrefixes` keeps every field under a prefix for callers
+that build the path at runtime through `CatchContractConstraints.all`. The
+generator never reads app code. To bind a new field, add its path to the
+bindings file and regenerate; the app's analyzer fails on an undeclared
+constant, the generator fails on a path no schema projects, and
+`contracts:flutter-form-inventory` fails on a declared field whose constant no
+Dart source references. Constant names are settled against every projected
+field, so adding or removing a binding never renames another constant.
 
 The presentation-neutral `CatchContractFieldConstraints` value type and
 `CatchContractFieldPolicy` live in `packages/catch_ui/lib/src/components/`.
