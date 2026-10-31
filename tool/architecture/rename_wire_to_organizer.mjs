@@ -382,6 +382,9 @@ function removalOf(list, index) {
   return {start: element.getStart(), end: element.getEnd(), text: ""};
 }
 
+// A twin the rename made spells organizer; other repeats were written on
+// purpose (a test that assigns twice to simulate reattaching).
+const twinText = /organizer/iu;
 const chainOperators = new Set([ts.SyntaxKind.QuestionQuestionToken, ts.SyntaxKind.BarBarToken,
   ts.SyntaxKind.AmpersandAmpersandToken]);
 
@@ -409,6 +412,7 @@ function mergeStatements(statements, sourceFile, edits) {
   const seen = new Set();
   statements.forEach((statement, index) => {
     const text = statement.getText(sourceFile).replace(/\s+/gu, " ");
+    if (!twinText.test(text)) return;
     const previous = index > 0 ? statements[index - 1].getText(sourceFile).replace(/\s+/gu, " ") : null;
     if ((declaration(statement) && seen.has(text)) ||
       (idempotentAssignment(statement, sourceFile) && previous === text)) {
@@ -432,8 +436,10 @@ export function mergeTwins({file, source}) {
         // `a ?? a`, `a && b && b`: a club operand and its twin are one.
         const operands = chainOperands(node, node.operatorToken.kind);
         const texts = operands.map((operand) => operand.getText(sourceFile));
-        // Only reads repeat safely: an operand that calls stays.
-        const unique = texts.filter((text, index) => text.includes("(") || texts.indexOf(text) === index);
+        // Only reads the rename made twins repeat safely: an operand that
+        // calls, or that does not spell organizer, stays.
+        const unique = texts.filter((text, index) => text.includes("(") || !twinText.test(text) ||
+          texts.indexOf(text) === index);
         if (unique.length < texts.length) {
           const operator = ` ${ts.tokenToString(node.operatorToken.kind)} `;
           edits.push({start: node.getStart(), end: node.getEnd(), text: unique.join(operator)});
@@ -675,7 +681,11 @@ export function renameCss(source) {
 export function transformFile({file, source, plan}) {
   if (matches(excluded, file) || !edited.test(file)) return source;
   let out = source;
-  if (scriptFile.test(file)) out = mergeTwins({file, source: renameScript({file, source: out, plan})});
+  if (scriptFile.test(file)) {
+    // Only a file the rename changed can hold twins it made.
+    const renamed = renameScript({file, source: out, plan});
+    out = renamed === out ? out : mergeTwins({file, source: renamed});
+  }
   else if (rulesFile.test(file)) out = renameRules(out, plan);
   else if (file.endsWith(".dart")) out = renameDartStrings(out, plan);
   else if (file.endsWith(".json")) {
