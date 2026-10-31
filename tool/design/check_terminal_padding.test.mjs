@@ -26,7 +26,7 @@ test("flags hand-rolled safe-area bottom padding in product code", () => {
   ]);
 });
 
-test("flags viewPadding bottom but allows keyboard insets", () => {
+test("flags viewPadding bottom but allows keyboard insets and core ownership", () => {
   const root = fixtureRoot();
   write(
     root,
@@ -37,6 +37,11 @@ test("flags viewPadding bottom but allows keyboard insets", () => {
     root,
     "lib/hosts/keyboard.dart",
     "final keyboard = MediaQuery.viewInsetsOf(context).bottom;",
+  );
+  write(
+    root,
+    "lib/core/presentation/shell.dart",
+    "final bottom = MediaQuery.paddingOf(context).bottom;",
   );
 
   const result = checkTerminalPadding({root});

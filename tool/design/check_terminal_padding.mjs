@@ -26,7 +26,9 @@ export function checkTerminalPadding({root = repoRoot} = {}) {
   const libRoot = path.join(root, "lib");
   if (!fs.existsSync(libRoot)) return {fileCount: 0, findings: []};
 
-  const files = dartFilesUnder(libRoot);
+  const files = dartFilesUnder(libRoot).filter(
+    (absolutePath) => !relative(root, absolutePath).startsWith("lib/core/"),
+  );
   const findings = [];
 
   for (const absolutePath of files) {
