@@ -559,7 +559,7 @@
         "tool/firebase/affected_function_targets.test.mjs",
         ".github/workflows/_backend-deploy.yml"
       ],
-      "description": "Selects the authorized Functions affected by exact committed module dependencies, with full snapshot and conservative fallback behavior.",
+      "description": "Selects the authorized Functions affected by exact committed module dependencies and the npm packages they load, with full snapshot and conservative fallback behavior.",
       "checks": [
         "node --check tool/firebase/affected_function_targets.mjs",
         "node --test tool/firebase/affected_function_targets.test.mjs"

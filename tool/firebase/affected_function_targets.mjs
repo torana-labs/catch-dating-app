@@ -1,6 +1,6 @@
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
-import {createRequire} from "node:module";
+import {createRequire, isBuiltin} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {parseArgs} from "node:util";
@@ -96,16 +96,23 @@ function indexExports(ts, tree) {
 }
 
 // A computed import or require cannot be traced, so its module is marked
-// dynamic: every Function that reaches it is treated as affected.
+// dynamic: every Function that reaches it is treated as affected. npm packages
+// are collected by name in `packages`.
 function dependencies(ts, tree, source) {
   const result = new Set();
+  result.packages = new Set();
   const add = (literal) => {
     if (!literal || !ts.isStringLiteralLike(literal)) {
       result.dynamic = true;
       return;
     }
     const resolved = resolveModule(tree, source.fileName, literal.text);
-    if (resolved) result.add(resolved);
+    if (resolved) {
+      result.add(resolved);
+    } else {
+      const name = packageName(literal.text);
+      if (name) result.packages.add(name);
+    }
   };
   const visit = (node) => {
     if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
@@ -146,45 +153,152 @@ function isNonRuntimeFile(name) {
 }
 
 const PACKAGE = "functions/package.json";
+const LOCKFILE = "functions/package-lock.json";
+const QUIET = {stdio: ["ignore", "pipe", "ignore"]};
 // npm runs these scripts while Cloud Build installs the deployed package, and
 // the deploy builds with the build lifecycle. Every other script (tests,
 // emulators, operator tooling) never touches what deploys, unless a
 // firebase.json predeploy hook runs it.
 const DEPLOY_SCRIPTS = ["preinstall", "install", "postinstall", "preprepare", "prepare",
   "postprepare", "gcp-build", "prebuild", "build", "postbuild"];
+// What these fields resolve to is recorded in package-lock.json, which the
+// dependency analysis below compares package by package.
+const DEPENDENCY_FIELDS = ["dependencies", "devDependencies", "optionalDependencies",
+  "peerDependencies", "overrides"];
 
-// Compares functions/package.json without the scripts nothing in a deploy
-// runs, so listing a test or adding an operator script redeploys nothing.
-// Dependency fields still count here, and package-lock.json changes force a
-// full deploy on their own.
-function runtimePackageChanged(root, baseSha, headSha) {
-  const quiet = {stdio: ["ignore", "pipe", "ignore"]};
-  const scripts = new Set(DEPLOY_SCRIPTS);
+function readJson(root, sha, name) {
   try {
-    const config = JSON.parse(git(root, ["show", `${headSha}:firebase.json`], quiet));
-    for (const codebase of [config.functions ?? []].flat()) {
-      for (const command of [codebase.predeploy ?? []].flat()) {
-        const names = [...String(command).matchAll(/\brun(?:-script)?\s+["']?([\w:.-]+)/gu)]
-          .map((match) => match[1]);
-        // A package manager command whose script cannot be named may run any.
-        if (!names.length && /\b(?:npm|yarn|pnpm)\b/u.test(command)) return true;
-        for (const name of names) scripts.add(name).add(`pre${name}`).add(`post${name}`);
+    return JSON.parse(git(root, ["show", `${sha}:${name}`], QUIET));
+  } catch {
+    return undefined; // Missing or unreadable files are treated as changed.
+  }
+}
+
+// The deploy scripts plus every script a firebase.json predeploy hook runs,
+// with the hook commands themselves; undefined when a hook may run any script.
+function deployCommands(root, sha) {
+  const config = readJson(root, sha, "firebase.json");
+  if (!config) return undefined;
+  const scripts = new Set(DEPLOY_SCRIPTS);
+  const hooks = [config.functions ?? []].flat().flatMap((codebase) => [codebase.predeploy ?? []].flat())
+    .map(String);
+  for (const command of hooks) {
+    const names = [...command.matchAll(/\brun(?:-script)?\s+["']?([\w:.-]+)/gu)].map((match) => match[1]);
+    // A package manager command whose script cannot be named may run any.
+    if (!names.length && /\b(?:npm|yarn|pnpm)\b/u.test(command)) return undefined;
+    for (const name of names) scripts.add(name).add(`pre${name}`).add(`post${name}`);
+  }
+  return {scripts, hooks};
+}
+
+// Splits functions/package.json into what a deploy runs and the dependency
+// fields, without the scripts nothing in a deploy runs, so listing a test or
+// adding an operator script redeploys nothing.
+function packageFields(root, sha, scripts) {
+  const json = readJson(root, sha, PACKAGE);
+  if (!json) return undefined;
+  const {scripts: all = {}, ...fields} = json;
+  const dependencies = DEPENDENCY_FIELDS.map((field) => fields[field] ?? null);
+  for (const field of DEPENDENCY_FIELDS) delete fields[field];
+  return {
+    runtime: JSON.stringify({...fields, scripts: Object.entries(all).filter(([name]) => scripts.has(name))}),
+    dependencies: JSON.stringify(dependencies),
+  };
+}
+
+// npm resolves a dependency from the requiring package's own node_modules
+// outward to the top level, as installed from the lockfile.
+function resolvePackage(packages, from, name) {
+  for (let base = from; ;) {
+    const candidate = (base ? base + "/" : "") + "node_modules/" + name;
+    if (packages[candidate]) return candidate;
+    if (!base) return undefined;
+    const cut = base.lastIndexOf("/node_modules/");
+    base = cut < 0 ? "" : base.slice(0, cut);
+  }
+}
+
+// Cloud Build installs exactly the lockfile, so loading a package can only
+// behave differently when an entry it can reach changed: its own, or one its
+// dependencies resolve to. Returns whether a top-level package name changed.
+function lockfileChanges(root, baseSha, headSha) {
+  const read = (sha) => {
+    const lock = readJson(root, sha, LOCKFILE);
+    if (!lock || !(lock.lockfileVersion >= 2) || !lock.packages) throw new Error("Unsupported Functions lockfile");
+    // The root entry mirrors package.json, which is compared separately.
+    const {packages: {"": _root, ...packages}, ...header} = lock;
+    const memo = new Map();
+    const fingerprint = (name) => {
+      if (memo.has(name)) return memo.get(name);
+      const reached = new Map();
+      const visit = (from, dependency) => {
+        const at = resolvePackage(packages, from, dependency);
+        if (!at) return reached.set(`${from}>${dependency}`, null);
+        if (reached.has(at)) return;
+        // Whether an entry is dev-only or optional changes no installed code.
+        const {dev, optional, devOptional, peer, ...entry} = packages[at];
+        if (entry.link) throw new Error(`Linked package ${at}`);
+        reached.set(at, entry);
+        for (const field of ["dependencies", "optionalDependencies", "peerDependencies"]) {
+          for (const next of Object.keys(entry[field] ?? {})) visit(at, next);
+        }
+      };
+      visit("", name);
+      const result = JSON.stringify([...reached].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0));
+      memo.set(name, result);
+      return result;
+    };
+    return {header: JSON.stringify(header), packages, fingerprint};
+  };
+  const before = read(baseSha);
+  const after = read(headSha);
+  if (before.header !== after.header) throw new Error("Functions lockfile format changed");
+  return {
+    changed: (name) => before.fingerprint(name) !== after.fingerprint(name),
+    bins: new Map([before, after].flatMap(({packages}) => Object.entries(packages)
+      .filter(([at]) => /^node_modules\/(?:@[^/]+\/)?[^/]+$/.test(at))
+      .flatMap(([at, entry]) => Object.keys(entry.bin ?? {}).map((bin) => [bin, at.slice("node_modules/".length)])))),
+  };
+}
+
+function packageName(specifier) {
+  if (isBuiltin(specifier)) return null;
+  return specifier.split("/").slice(0, specifier.startsWith("@") ? 2 : 1).join("/");
+}
+
+// Packages whose code produces or installs the deployed bytes: binaries and
+// node_modules paths the deploy commands name, and packages their node scripts
+// import by name (a build script is itself a full-deploy input). ESLint
+// without --fix only reads source, and a failed lint stops every target alike.
+function buildToolchain(root, sha, {scripts, hooks}, bins) {
+  const json = readJson(root, sha, PACKAGE);
+  const commands = [
+    ...[...scripts].filter((name) => json.scripts?.[name]).map((name) => ["functions", json.scripts[name]]),
+    ...hooks.map((command) => ["", command]),
+  ];
+  const tools = new Set();
+  for (const [directory, command] of commands) {
+    for (const segment of command.split(/&&|\|\||[;|]/u)) {
+      if (/\beslint\b/u.test(segment) && !/--fix\b/u.test(segment)) continue;
+      for (const word of segment.trim().split(/\s+/u).map((part) => part.replace(/^["']|["']$/gu, ""))) {
+        const modulePath = word.match(/(?:^|\/)node_modules\/((?:@[^/]+\/)?[^/]+)/u);
+        if (modulePath) {
+          tools.add(modulePath[1]);
+        } else if (bins.has(word)) {
+          tools.add(bins.get(word));
+        } else if (/\.[cm]?js$/u.test(word)) {
+          const script = path.posix.normalize(path.posix.join(directory, word));
+          const text = git(root, ["show", `${sha}:${script}`], QUIET);
+          for (const match of text.matchAll(/\b(?:require|import)\s*\(\s*["']([^"']+)["']|\bfrom\s*["']([^"']+)["']/gu)) {
+            const specifier = match[1] ?? match[2];
+            if (!specifier.startsWith(".")) tools.add(packageName(specifier));
+          }
+        }
       }
     }
-  } catch {
-    return true;
   }
-  const runtime = (sha) => {
-    try {
-      const {scripts: all = {}, ...fields} = JSON.parse(git(root, ["show", `${sha}:${PACKAGE}`], quiet));
-      return JSON.stringify({...fields, scripts: Object.entries(all).filter(([name]) => scripts.has(name))});
-    } catch {
-      return undefined; // Missing or unreadable package metadata is treated as changed.
-    }
-  };
-  const before = runtime(baseSha);
-  const after = runtime(headSha);
-  return before === undefined || after === undefined || before !== after;
+  tools.delete(null);
+  return tools;
 }
 
 // firebase.json also configures Hosting, Flutter and emulators; only the
@@ -223,13 +337,20 @@ export function affectedFunctionTargets({
   const changed = new Set(git(sourceRoot, [
     "diff", "--name-only", "--no-renames", "-z", baseSha, sourceSha,
   ]).split("\0").filter(Boolean));
+  const commands = deployCommands(sourceRoot, sourceSha);
+  const packageBefore = commands && packageFields(sourceRoot, baseSha, commands.scripts);
+  const packageAfter = commands && packageFields(sourceRoot, sourceSha, commands.scripts);
   if (changed.has(".firebaserc") ||
     changed.has("firebase.json") && backendConfigChanged(sourceRoot, baseSha, sourceSha) ||
-    changed.has(PACKAGE) && runtimePackageChanged(sourceRoot, baseSha, sourceSha) ||
+    changed.has(PACKAGE) && (!packageBefore || !packageAfter || packageBefore.runtime !== packageAfter.runtime) ||
     [...changed].some((name) =>
       name.startsWith("functions/") && !name.startsWith("functions/src/") &&
-      name !== PACKAGE && !isNonRuntimeFile(name))) {
-    return all("Functions runtime, dependency, build, or deployment configuration changed");
+      name !== PACKAGE && name !== LOCKFILE && !isNonRuntimeFile(name))) {
+    return all("Functions runtime, build, or deployment configuration changed");
+  }
+  // npm ci refuses a lockfile that disagrees with package.json.
+  if (packageBefore?.dependencies !== packageAfter?.dependencies && !changed.has(LOCKFILE)) {
+    return all("Functions dependencies changed without a lockfile change");
   }
   try {
     // Loaded only by the promotion selector; ordinary package verification has
@@ -251,29 +372,42 @@ export function affectedFunctionTargets({
     if (authorizedTargets.some((name) => !newIndex.exports.has(name))) {
       return all("Authorized export cannot be mapped to its source module");
     }
+    // A dependency bump redeploys only the Functions that load a changed
+    // package, unless it changes the toolchain that builds every Function.
+    const lockfile = changed.has(LOCKFILE) ? lockfileChanges(sourceRoot, baseSha, sourceSha) : undefined;
+    const packageChanged = (name) => lockfile?.changed(name) ?? false;
+    if (lockfile && [...buildToolchain(sourceRoot, sourceSha, commands, lockfile.bins)].some(packageChanged)) {
+      return all("A Functions build toolchain dependency changed");
+    }
     const cache = new Map();
     const closure = (root) => {
       const visited = new Set();
+      const packages = new Set();
       let dynamic = false;
       const walk = (name) => {
         if (visited.has(name)) return;
         visited.add(name);
         if (!cache.has(name)) cache.set(name, dependencies(ts, after, parse(ts, after, name)));
         dynamic ||= cache.get(name).dynamic === true;
+        cache.get(name).packages.forEach((dependency) => packages.add(dependency));
         for (const dependency of cache.get(name)) walk(dependency);
       };
       walk(root);
-      return {modules: visited, dynamic};
+      return {modules: visited, packages, dynamic};
     };
     // Imports used by entrypoint initialization affect every function.
     // Exports are evaluated separately below.
     const bootstrapSource = ts.createSourceFile(INDEX, newIndex.bootstrap, ts.ScriptTarget.Latest, true);
     const bootstrapDependencies = dependencies(ts, after, bootstrapSource);
     if (bootstrapDependencies.dynamic) return all("Global initialization loads modules dynamically");
+    if ([...bootstrapDependencies.packages].some(packageChanged)) {
+      return all("A global initialization package changed");
+    }
     for (const module of bootstrapDependencies) {
       const reachable = closure(module);
       if (reachable.dynamic) return all("Global initialization loads modules dynamically");
-      if ([...reachable.modules].some((name) => changed.has(name))) {
+      if ([...reachable.modules].some((name) => changed.has(name)) ||
+          [...reachable.packages].some(packageChanged)) {
         return all("A global initialization dependency changed");
       }
     }
@@ -281,22 +415,24 @@ export function affectedFunctionTargets({
       name.startsWith("functions/src/") && !name.endsWith(".ts") && !isNonRuntimeFile(name))) {
       return all("Runtime asset changed");
     }
-    // Untraceable loads resolve against Functions source and the Operations
-    // files the build copies into lib (functions/scripts/
+    // Untraceable loads resolve against Functions source, installed packages
+    // and the Operations files the build copies into lib (functions/scripts/
     // copy-operations-runtime.cjs), so only those inputs can change what they load.
     const dynamicInputsChanged = [...changed].some((name) =>
-      name.startsWith("functions/src/") && !isNonRuntimeFile(name) ||
+      name.startsWith("functions/src/") && !isNonRuntimeFile(name) || name === LOCKFILE ||
       name.startsWith("operations/") || name.startsWith("contracts/"));
     const targets = authorizedTargets.filter((target) => {
       const current = newIndex.exports.get(target);
       const previous = oldIndex.exports.get(target);
       const reachable = closure(current.module);
       return !previous || previous.module !== current.module || previous.symbol !== current.symbol ||
-        reachable.dynamic && dynamicInputsChanged || [...reachable.modules].some((name) => changed.has(name));
+        reachable.dynamic && dynamicInputsChanged || [...reachable.modules].some((name) => changed.has(name)) ||
+        [...reachable.packages].some(packageChanged);
     });
     return {
       mode: targets.length ? "affected" : "no-op",
-      reason: "Entrypoint exports and transitive module dependencies",
+      reason: lockfile ? "Entrypoint exports, transitive module dependencies and changed npm packages" :
+        "Entrypoint exports and transitive module dependencies",
       targets,
     };
   } catch (error) {

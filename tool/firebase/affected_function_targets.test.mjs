@@ -119,7 +119,7 @@ test("removing an import selects its changed consumer; cycles terminate", (t) =>
 });
 
 for (const [label, file, content] of [
-  ["dependency lock", "functions/package-lock.json", "{}"],
+  ["unreadable dependency lock", "functions/package-lock.json", "{}"],
   ["runtime", "functions/package.json", '{"engines":{"node":"24"}}'],
   ["compiler settings", "functions/tsconfig.json", "{}"],
   ["unknown Functions script", "functions/scripts/unknown.cjs", "// changed"],
@@ -222,7 +222,109 @@ test("unreadable package metadata or predeploy scripts retain the full authorize
   const lockfile = packageFixture(t);
   lockfile.write("functions/package-lock.json", "{}");
   lockfile.writePackage((next) => { next.scripts["test:rules"] += " lib/new.test.js"; });
-  assert.equal(lockfile.select().mode, "full", "Any lockfile change still forces a full deploy.");
+  assert.equal(lockfile.select().mode, "full", "An unreadable lockfile still forces a full deploy.");
+});
+
+const lockPackages = {
+  "node_modules/firebase-functions": {version: "7.4.0", dependencies: {express: "^4.21.0"}},
+  "node_modules/express": {version: "4.21.0"},
+  "node_modules/razorpay": {version: "2.9.8", dependencies: {axios: "^1.13.0"}},
+  "node_modules/axios": {version: "1.13.0", dependencies: {"follow-redirects": "^1.15.0"}},
+  "node_modules/follow-redirects": {version: "1.15.0"},
+  "node_modules/sharp": {version: "0.35.5", optionalDependencies: {"follow-redirects": "^2.0.0"}},
+  "node_modules/sharp/node_modules/follow-redirects": {version: "2.0.0", optional: true},
+  "node_modules/typescript": {version: "6.0.3", dev: true, bin: {tsc: "bin/tsc"}},
+  "node_modules/eslint": {version: "9.39.5", dev: true, bin: {eslint: "bin/eslint.js"},
+    dependencies: {minimatch: "^3.1.2"}},
+  "node_modules/minimatch": {version: "3.1.2", dev: true},
+};
+
+// alpha loads razorpay, beta loads sharp, and gamma only names axios in types.
+function lockFixture(t, predeploy) {
+  const f = packageFixture(t, predeploy);
+  f.write("functions/scripts/clean-lib.cjs", 'const fs = require("node:fs"); fs.rmSync("lib", {recursive: true, force: true});');
+  f.write("functions/scripts/copy-operations-runtime.cjs", 'const path = require("node:path"); console.log(path.sep);');
+  f.write("functions/src/alpha.ts", 'import Razorpay from "razorpay"; export const alpha = Razorpay;');
+  f.write("functions/src/beta.ts", 'import sharp from "sharp"; import fs from "node:fs"; export const beta = [sharp, fs];');
+  f.write("functions/src/gamma.ts", 'import type {AxiosInstance} from "axios"; export const gamma = 1 as unknown as AxiosInstance;');
+  const writeLock = (edit = () => {}) => {
+    const packages = structuredClone(lockPackages);
+    edit(packages);
+    f.write("functions/package-lock.json", JSON.stringify({
+      name: "functions", lockfileVersion: 3, requires: true,
+      packages: {"": {name: "functions", dependencies: deployPackage.dependencies}, ...packages},
+    }, null, 2));
+  };
+  writeLock();
+  const base = f.commit();
+  return {...f, base, writeLock, select: () => affectedFunctionTargets({
+    sourceRoot: f.root, baseSha: base, sourceSha: f.commit(), authorizedTargets: targets,
+  })};
+}
+
+test("a transitive dependency bump redeploys only the Functions that load it", (t) => {
+  const f = lockFixture(t);
+  f.writeLock((packages) => { packages["node_modules/follow-redirects"].version = "1.15.1"; });
+  const result = f.select();
+  assert.equal(result.mode, "affected");
+  assert.deepEqual(result.targets, ["functions:alpha", "functions:alphaAlias"],
+    "Type-only imports and the nested copy sharp resolves leave gamma and beta deployed.");
+  const nested = lockFixture(t);
+  nested.writeLock((packages) => { packages["node_modules/sharp/node_modules/follow-redirects"].version = "2.0.1"; });
+  assert.deepEqual(nested.select().targets, ["functions:beta"], "Optional dependencies resolve from the nearest copy.");
+});
+
+test("a direct dependency update with its lockfile change redeploys its importers", (t) => {
+  const f = lockFixture(t);
+  f.writePackage((next) => { next.dependencies.razorpay = "^2.9.9"; });
+  f.writeLock((packages) => { packages["node_modules/razorpay"].version = "2.9.9"; });
+  assert.deepEqual(f.select().targets, ["functions:alpha", "functions:alphaAlias"]);
+});
+
+test("lockfile changes that install no different code deploy nothing", (t) => {
+  for (const [label, edit] of [
+    ["dev flag", (packages) => { delete packages["node_modules/typescript"].dev; }],
+    ["optional flag", (packages) => { packages["node_modules/axios"].optional = true; }],
+    ["unused package", (packages) => { packages["node_modules/left-pad"] = {version: "1.3.0"}; }],
+    ["read-only lint tool", (packages) => { packages["node_modules/minimatch"].version = "3.1.3"; }],
+  ]) {
+    const f = lockFixture(t);
+    f.writeLock(edit);
+    const result = f.select();
+    assert.equal(result.mode, "no-op", label);
+    assert.deepEqual(result.targets, [], label);
+  }
+});
+
+test("global initialization and build toolchain packages redeploy every Function", (t) => {
+  for (const [label, reason, edit, predeploy] of [
+    ["entrypoint package", "A global initialization package changed",
+      (packages) => { packages["node_modules/express"].version = "4.21.1"; }],
+    ["compiler", "A Functions build toolchain dependency changed",
+      (packages) => { packages["node_modules/typescript"].version = "6.0.4"; }],
+    ["writing lint tool", "A Functions build toolchain dependency changed",
+      (packages) => { packages["node_modules/minimatch"].version = "3.1.3"; },
+      ['npm --prefix "$RESOURCE_DIR" run build', "node_modules/eslint/bin/eslint.js --fix functions/src"]],
+    ["linked package", "Conservative fallback: Linked package node_modules/express",
+      (packages) => { packages["node_modules/express"].link = true; }],
+  ]) {
+    const f = lockFixture(t, predeploy);
+    f.writeLock(edit);
+    const result = f.select();
+    assert.equal(result.reason, reason, label);
+    assert.equal(result.mode, "full", label);
+    assert.deepEqual(result.targets, targets, label);
+  }
+});
+
+test("dynamic loading redeploys its Functions on any dependency change", (t) => {
+  const f = lockFixture(t);
+  f.write("functions/src/gamma.ts", "export const gamma = require(process.env.MODULE);");
+  const base = f.commit();
+  f.writeLock((packages) => { packages["node_modules/left-pad"] = {version: "1.3.0"}; });
+  const result = affectedFunctionTargets({sourceRoot: f.root, baseSha: base, sourceSha: f.commit(),
+    authorizedTargets: targets});
+  assert.deepEqual(result.targets, ["functions:gamma"]);
 });
 
 test("Functions test files and the strict emulator list are never runtime inputs", (t) => {

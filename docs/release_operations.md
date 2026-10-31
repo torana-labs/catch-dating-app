@@ -595,7 +595,10 @@ to different build targets; both remain required while CocoaPods is in use.
 GitHub-native Dependabot is the sole routine dependency-update service. It
 checks npm, Pub, and GitHub Actions each Wednesday, groups compatible minor and
 patch updates into at most one open pull request per ecosystem, and keeps
-security updates grouped separately. Major versions are deliberately excluded:
+security updates grouped separately. Functions npm updates come on the first of
+each month instead, because a merged Functions lockfile change redeploys every
+Function that loads a changed package; security updates still open
+immediately. Major versions are deliberately excluded:
 each major upgrade needs its own impact review and full selected CI evidence.
 
 Dependabot pull requests merge without a click.
@@ -1326,11 +1329,18 @@ How a run works:
     or Storage-rules stage when its file changed.
   - A Function that loads modules dynamically redeploys whenever Functions
     source or the Operations files copied into its build change.
-  - Dependency, build or backend `firebase.json` changes, or a missing tag,
-    deploy everything. In `functions/package.json` only package fields and the
+  - A `functions/package-lock.json` change redeploys the Functions whose
+    imports reach a changed package, comparing each imported package with
+    everything its dependencies resolve to in the lockfile. A change under a
+    package `index.ts` loads for every Function (`firebase-admin`,
+    `firebase-functions`), or under a package the build runs (TypeScript),
+    deploys everything. ESLint is not a build package: without `--fix` it only
+    reads source. Dependency ranges in `functions/package.json` count only
+    through the lockfile.
+  - Other build or backend `firebase.json` changes, or a missing tag, deploy
+    everything. In `functions/package.json` only package fields and the
     scripts a deploy runs (install and build lifecycle, `firebase.json`
-    predeploy hooks) count; test and tooling scripts deploy nothing. Any
-    `functions/package-lock.json` change deploys everything.
+    predeploy hooks) count; test and tooling scripts deploy nothing.
   - Dormant targets stay excluded.
 - The job builds Functions and materializes non-secret parameters from the
   environment's GitHub variables. It deploys new indexes and waits until they
