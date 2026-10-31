@@ -1,6 +1,6 @@
 // Copy for proving ownership of a listing straight away, by an Instagram
 // message or a Luma calendar code (WebOrgV2 claim band). Handles and the
-// calendar address come from the listing and Catch's account at runtime.
+// calendar address come from the listing and our own account at runtime.
 
 const at = (handle: string) => `@${handle}`;
 

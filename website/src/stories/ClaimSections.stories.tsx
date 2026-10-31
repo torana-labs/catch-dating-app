@@ -1,4 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import {brand} from "@catch/brand";
 import type {Dispatch, FormEvent, SetStateAction} from "react";
 import {
   ClaimHeroSection,
@@ -192,7 +193,7 @@ export const ClaimWorkspaceSubmitted: Story = {
 
 const inHalfAnHour = "2026-10-31T12:30:00.000Z";
 const instagramAttempt = {attemptId: "attempt-1", organizerId: claimableListing.id, method: "instagramMessage" as const,
-  code: "482173", proofText: "482173", proofTarget: "carterroadrunners", catchInstagramHandle: "catch_dates",
+  code: "482173", proofText: "482173", proofTarget: "carterroadrunners", catchInstagramHandle: brand.social.instagramHandle,
   expiresAt: inHalfAnHour};
 const lumaAttempt = {...instagramAttempt, method: "lumaDescription" as const, proofText: "catch-482173",
   proofTarget: "https://lu.ma/carterroadrunners", catchInstagramHandle: null};
@@ -279,7 +280,7 @@ function mockInstantController(overrides: Partial<InstantClaimController>): Inst
   return {
     account: {} as InstantClaimController["account"],
     phase: "choose", methods, chosen: methods[0], attempt: null, expired: false, copied: false, error: "",
-    rejection: null, lumaMissing: false, starting: false, checking: false, catchInstagramHandle: "catch_dates",
+    rejection: null, lumaMissing: false, starting: false, checking: false, catchInstagramHandle: brand.social.instagramHandle,
     setMethod: noop, showCode: async () => undefined, checkLuma: async () => undefined, copyCode: noop, chooseAgain: noop,
     ...overrides,
   };

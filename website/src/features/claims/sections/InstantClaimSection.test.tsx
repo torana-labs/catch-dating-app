@@ -1,4 +1,5 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {brand} from "@catch/brand";
 import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {hostListings} from "../../organizers/data";
@@ -34,7 +35,7 @@ function renderSection() {
 }
 
 function options(instagram: boolean, luma: boolean) {
-  return {organizerId: listing.id, catchInstagramHandle: "catch_dates", methods: [
+  return {organizerId: listing.id, catchInstagramHandle: brand.social.instagramHandle, methods: [
     {method: "instagramMessage", available: instagram, proofTarget: instagram ? "carterroadrunners" : null,
       unavailableReason: instagram ? null : "noSourceOnListing"},
     {method: "lumaDescription", available: luma, proofTarget: luma ? "https://lu.ma/carter" : null,
@@ -61,17 +62,17 @@ describe("InstantClaimPanel", () => {
     firebase.getOrganizerClaimVerificationOptions.mockResolvedValue(options(true, true));
     firebase.startOrganizerClaimVerification.mockResolvedValue({attemptId: "a1", organizerId: listing.id,
       method: "instagramMessage", code: "482173", proofText: "482173", proofTarget: "carterroadrunners",
-      catchInstagramHandle: "catch_dates", expiresAt: inAnHour});
+      catchInstagramHandle: brand.social.instagramHandle, expiresAt: inAnHour});
     let push: (state: unknown) => void = () => undefined;
     firebase.watchOrganizerClaimAttempt.mockImplementation(async (_id, onValue) => {push = onValue; return vi.fn();});
     renderSection();
 
-    expect(await screen.findByText("Send a code we show you from @carterroadrunners to @catch_dates")).toBeTruthy();
+    expect(await screen.findByText(`Send a code we show you from @carterroadrunners to @${brand.social.instagramHandle}`)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", {name: "Show my code"}));
     expect(await screen.findByText("482 173")).toBeTruthy();
     expect(firebase.startOrganizerClaimVerification).toHaveBeenCalledWith({organizerId: listing.id, method: "instagramMessage"});
     expect(screen.getByText("1. Open Instagram as @carterroadrunners.")).toBeTruthy();
-    expect(screen.getByRole("link", {name: "Open Instagram"}).getAttribute("href")).toBe("https://ig.me/m/catch_dates");
+    expect(screen.getByRole("link", {name: "Open Instagram"}).getAttribute("href")).toBe(`https://ig.me/m/${brand.social.instagramHandle}`);
 
     await vi.waitFor(() => expect(firebase.watchOrganizerClaimAttempt).toHaveBeenCalled());
     act(() => push({status: "awaitingProof", expiresAtMillis: Date.parse(inAnHour), rejection: "wrongSender"}));
@@ -109,7 +110,7 @@ describe("InstantClaimPanel", () => {
     firebase.getOrganizerClaimVerificationOptions.mockResolvedValue(options(true, false));
     firebase.startOrganizerClaimVerification.mockResolvedValue({attemptId: "a3", organizerId: listing.id,
       method: "instagramMessage", code: "111222", proofText: "111222", proofTarget: "carterroadrunners",
-      catchInstagramHandle: "catch_dates", expiresAt: new Date(Date.now() - 1000).toISOString()});
+      catchInstagramHandle: brand.social.instagramHandle, expiresAt: new Date(Date.now() - 1000).toISOString()});
     firebase.watchOrganizerClaimAttempt.mockResolvedValue(vi.fn());
     renderSection();
     fireEvent.click(await screen.findByRole("button", {name: "Show my code"}));
