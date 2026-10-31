@@ -46,7 +46,7 @@ interface HandlerDeps {
   collectionSetup: typeof formPaymentCollectionSetup;
   prepareRouting: typeof prepareFormPaymentRouting;
   executionFor: typeof formPaymentExecutionFor;
-  configured: typeof formPaymentsConfigured;
+  configured: () => boolean | ReturnType<typeof formPaymentsConfigured>;
   rateLimit: typeof checkRateLimit;
   requireManager: typeof requireOrganizerManager;
 }
@@ -191,8 +191,9 @@ export async function manageOrganizerFormPaymentConnectionHandler(
     maxRequests: 30, windowMs: 60 * 1000,
   });
   await deps.requireManager({db, organizerId: data.organizerId, actorUid: uid});
+  const available = await deps.configured();
   const result: ManageOrganizerFormPaymentConnectionCallableResponse = {
-    available: deps.configured(), authorizationUrl: null, connectionId: null,
+    available, authorizationUrl: null, connectionId: null,
     expiresAtMillis: null, connections: []};
   if (data.action === "begin") {
     if (data.connectionId !== null) invalidAction();

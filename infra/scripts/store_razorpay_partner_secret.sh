@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Store the Razorpay Platform Partner OAuth application config as a new
-# Secret Manager version, then pin it for Functions deploys.
+# Secret Manager version. The payment Functions read the newest version at
+# runtime, so it takes effect within a minute, with no deploy.
 #
 #   bash infra/scripts/store_razorpay_partner_secret.sh dev
 #   bash infra/scripts/store_razorpay_partner_secret.sh prod --live
@@ -17,13 +18,11 @@
 #   and refuses to run without --live and a typed confirmation.
 # - Sends the JSON to gcloud on stdin: no temporary file, nothing in argv,
 #   nothing echoed. Prints only the new version's resource name.
-# - With gh signed in, sets FORM_RAZORPAY_PARTNER_CONFIG_VERSION in the
-#   matching GitHub environment (dev or prod), which Deploy backend reads.
-#   The new config takes effect at the next Functions deploy.
+# - Records that start a payment keep the exact version they started under, so
+#   keep earlier versions enabled until those payments settle.
 set -euo pipefail
 set +x
 
-REPOSITORY=torana-labs/catch-dating-app
 PARTNER_SECRET_ID=FORM_RAZORPAY_PARTNER_CONFIG
 VAULT_SECRET_ID=FORM_RAZORPAY_MERCHANT_CREDENTIALS
 
@@ -113,10 +112,4 @@ fi
 reference="projects/$project/secrets/$PARTNER_SECRET_ID/versions/${version#"$expected_prefix"}"
 echo "$reference"
 
-if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-  gh variable set FORM_RAZORPAY_PARTNER_CONFIG_VERSION --repo "$REPOSITORY" --env "$environment" --body "$reference"
-  echo "Set FORM_RAZORPAY_PARTNER_CONFIG_VERSION in the $environment GitHub environment. It takes effect at the next Deploy backend run." >&2
-else
-  echo "gh is not signed in. Set it yourself:" >&2
-  echo "  gh variable set FORM_RAZORPAY_PARTNER_CONFIG_VERSION --repo $REPOSITORY --env $environment --body '$reference'" >&2
-fi
+echo "The payment Functions use this version within a minute; no deploy is needed." >&2

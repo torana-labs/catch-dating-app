@@ -1,14 +1,14 @@
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
-import {defineString} from "firebase-functions/params";
 import {HttpsError} from "firebase-functions/v2/https";
 import {RazorpayCredentialVault} from "./razorpayCredentialVault";
 import {RazorpayFormProvider, type RazorpayPartnerConfig} from
   "./razorpayFormProvider";
 
-// Empty by default: deploying forms must not require an unconfigured partner
-// account or expose a fee option before the operator connects one.
-export const formRazorpayPartnerConfigVersion = defineString(
-  "FORM_RAZORPAY_PARTNER_CONFIG_VERSION", {default: ""});
+// The current partner config is this secret's newest version, read at
+// runtime, so storing a new version takes effect without a deploy. Records keep
+// the exact version they were created under and keep reading that one. With no
+// version stored, form payments stay unavailable.
+export const formRazorpayPartnerSecret = "FORM_RAZORPAY_PARTNER_CONFIG";
 
 interface PartnerSecret {
   schema: "catch.form-razorpay-partner/v1";
@@ -19,6 +19,8 @@ interface PartnerSecret {
 }
 
 export interface FormPaymentRuntime {
+  /** The exact version read, in projects/<id>/secrets/<name>/versions/<n>. */
+  version: string;
   provider: RazorpayFormProvider;
   vault: RazorpayCredentialVault;
   mode: "test" | "live";
@@ -26,20 +28,37 @@ export interface FormPaymentRuntime {
   callbackUrl: string;
 }
 
-/** Reads pinned secret versions in the deployment project. */
+interface SecretVersion {name: string; data: string}
+interface LoadedSecret {version: string; config: PartnerSecret}
+
+/**
+ * Reads the newest partner config version, or a version a record pinned, in
+ * the deployment project.
+ */
 export class FormPaymentRuntimeConfig {
-  private cached: {version: string; until: number;
-    config: Promise<PartnerSecret>} | null = null;
+  private readonly cached = new Map<string, {until: number;
+    secret: Promise<LoadedSecret>}>();
 
   constructor(private readonly projectId: string,
-    private readonly readSecret: (version: string) => Promise<string> =
+    private readonly readSecret: (name: string) => Promise<SecretVersion> =
     readGoogleSecret,
     private readonly now: () => number = Date.now) {
     if (!/^[a-z][a-z0-9-]{4,61}[a-z0-9]$/u.test(projectId)) unavailable();
   }
 
-  async load(version: string): Promise<FormPaymentRuntime> {
-    const config = await this.loadSecret(version);
+  /** Whether a usable partner config version is stored. */
+  async configured(): Promise<boolean> {
+    try {
+      await this.loadSecret();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /** Loads the newest version, or exactly `version` when a record pins one. */
+  async load(version?: string): Promise<FormPaymentRuntime> {
+    const {version: resolved, config} = await this.loadSecret(version);
     // These endpoints are owned by this deployment, not supplied by a browser
     // or by the connecting organizer. Production OAuth requires HTTPS.
     const origin = `https://asia-south1-${this.projectId}.cloudfunctions.net`;
@@ -49,29 +68,54 @@ export class FormPaymentRuntimeConfig {
       clientId: config.clientId, clientSecret: config.clientSecret,
       mode: config.mode, redirectUri: callbackUrl,
     };
-    return {provider: new RazorpayFormProvider(providerConfig),
+    return {version: resolved,
+      provider: new RazorpayFormProvider(providerConfig),
       vault: new RazorpayCredentialVault(this.projectId,
         config.credentialSecretId), mode: config.mode,
       webhookBaseUrl, callbackUrl};
   }
 
-  private async loadSecret(version: string): Promise<PartnerSecret> {
-    const prefix = `projects/${this.projectId}/secrets/`;
-    if (!version.startsWith(prefix) ||
-        !/^[A-Za-z0-9_-]{1,255}\/versions\/[1-9][0-9]*$/u
-          .test(version.slice(prefix.length))) unavailable();
-    if (this.cached?.version === version && this.cached.until > this.now()) {
-      return this.cached.config;
-    }
-    const promise = this.readSecret(version).then(parsePartnerSecret)
-      .catch(() => unavailable());
-    this.cached = {version, until: this.now() + 60_000, config: promise};
+  private async loadSecret(version?: string): Promise<LoadedSecret> {
+    if (version !== undefined && !this.pinned(version)) unavailable();
+    const key = version ?? "latest";
+    const hit = this.cached.get(key);
+    if (hit && hit.until > this.now()) return hit.secret;
+    const name = version ?? `projects/${this.projectId}/secrets/` +
+      `${formRazorpayPartnerSecret}/versions/latest`;
+    const secret = this.readSecret(name).then((read) => {
+      const resolved = this.resolvedVersion(read.name);
+      if (resolved !== (version ?? resolved) || version === undefined &&
+          !resolved.includes(`/secrets/${formRazorpayPartnerSecret}/`)) {
+        unavailable();
+      }
+      return {version: resolved, config: parsePartnerSecret(read.data)};
+    }).catch(() => unavailable());
+    this.cached.set(key, {until: this.now() + 60_000, secret});
     try {
-      return await promise;
+      return await secret;
     } catch {
-      if (this.cached?.config === promise) this.cached = null;
+      if (this.cached.get(key)?.secret === secret) this.cached.delete(key);
       unavailable();
     }
+  }
+
+  private pinned(version: string): boolean {
+    const prefix = `projects/${this.projectId}/secrets/`;
+    return version.startsWith(prefix) &&
+      /^[A-Za-z0-9_-]{1,255}\/versions\/[1-9][0-9]*$/u
+        .test(version.slice(prefix.length));
+  }
+
+  // Secret Manager names the version it read with the project number; records
+  // keep the project-id form, so rebuild it from the secret and version.
+  private resolvedVersion(name: string): string {
+    const match = new RegExp("^projects/[a-z0-9-]+/secrets/" +
+      "([A-Za-z0-9_-]{1,255})/versions/([1-9][0-9]*)$", "u").exec(name);
+    if (!match) unavailable();
+    const version =
+      `projects/${this.projectId}/secrets/${match[1]}/versions/${match[2]}`;
+    if (!this.pinned(version)) unavailable();
+    return version;
   }
 }
 
@@ -92,11 +136,12 @@ function parsePartnerSecret(raw: string): PartnerSecret {
   return record as unknown as PartnerSecret;
 }
 
-async function readGoogleSecret(version: string): Promise<string> {
+async function readGoogleSecret(name: string): Promise<SecretVersion> {
   const [value] = await new SecretManagerServiceClient()
-    .accessSecretVersion({name: version});
-  if (!value.payload?.data) unavailable();
-  return Buffer.from(value.payload.data).toString("utf8");
+    .accessSecretVersion({name});
+  if (!value.name || !value.payload?.data) unavailable();
+  return {name: value.name,
+    data: Buffer.from(value.payload.data).toString("utf8")};
 }
 
 function secret(value: unknown): value is string {

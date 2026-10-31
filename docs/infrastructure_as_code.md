@@ -214,8 +214,8 @@ permission for the two apps in Play Console (Users and permissions).
 ## Forms payment secrets
 
 Forms payments use Catch's Razorpay Platform Partner OAuth application
-([`host_forms.md`](host_forms.md), the paragraph on
-`FORM_RAZORPAY_PARTNER_CONFIG_VERSION`). `infra/firebase/form_payments.tf`
+([`host_forms.md`](host_forms.md), the paragraph on the partner config
+secret). `infra/firebase/form_payments.tf`
 owns, in `catchdates-dev` and `catch-dating-app-64e51`:
 
 | Secret | Holds | Functions runtime grant |
@@ -249,12 +249,11 @@ builds exactly `{"schema":"catch.form-razorpay-partner/v1","clientId":…,
 where `mode` is `test` in dev and `live` in prod. Prod refuses to run without
 `--live` and a typed confirmation. The script sends the JSON to `gcloud
 secrets versions add` on stdin, with no temporary file and nothing in a
-process list or on screen, and prints only the new version's name in the
-project-ID form the deploy materializer requires. With gh signed in, it sets
-`FORM_RAZORPAY_PARTNER_CONFIG_VERSION` in the matching `dev` or `prod` GitHub
-environment, which Deploy backend reads; otherwise it prints that command.
-The new config takes effect at the next Functions deploy. To rotate, run it
-again and disable the previous version after the deploy. Register the
+process list or on screen, and prints only the new version's name in
+project-ID form. The payment Functions read the newest version at runtime, so
+the new config takes effect within a minute, with no deploy and no GitHub
+variable. To rotate, run it again; keep the previous version enabled until
+payments started under it have settled, because their records pin it. Register the
 callback `https://asia-south1-<project>.cloudfunctions.net/organizerFormPaymentOauthCallback`
 in the partner application for each environment.
 

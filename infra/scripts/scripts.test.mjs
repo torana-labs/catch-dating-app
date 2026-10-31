@@ -358,7 +358,7 @@ for (const [label, change] of [
   });
 }
 
-function storePartner(t, args, input, {gh = true} = {}) {
+function storePartner(t, args, input) {
   const root = sandbox(t);
   const log = path.join(root, "calls.log");
   const stdin = path.join(root, "stdin.bin");
@@ -371,7 +371,7 @@ function storePartner(t, args, input, {gh = true} = {}) {
     "  *) exit 9;;",
     "esac",
   ].join("\n"));
-  shim(root, "gh", gh ? `echo "gh $*" >> "${log}"` : "exit 127");
+  shim(root, "gh", `echo "gh $*" >> "${log}"`);
   const result = run("scripts/store_razorpay_partner_secret.sh", args, {root, input});
   return {
     result,
@@ -382,7 +382,7 @@ function storePartner(t, args, input, {gh = true} = {}) {
 
 const clientSecret = 'sEcReT-"quoted"\\back-9f8e7d';
 
-test("partner secret for dev is test mode, sent on stdin and pinned in the dev environment", (t) => {
+test("partner secret for dev is test mode, sent on stdin, and needs no deploy setting", (t) => {
   const {result, calls, payload} = storePartner(t, ["dev"], `rzp_client_123\n${clientSecret}\n`);
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stdout, "projects/catchdates-dev/secrets/FORM_RAZORPAY_PARTNER_CONFIG/versions/7\n");
@@ -390,7 +390,8 @@ test("partner secret for dev is test mode, sent on stdin and pinned in the dev e
     clientSecret, mode: "test", credentialSecretId: "FORM_RAZORPAY_MERCHANT_CREDENTIALS"});
   assert.deepEqual(Object.keys(JSON.parse(payload)), ["schema", "clientId", "clientSecret", "mode", "credentialSecretId"]);
   assert.match(calls, /secrets versions add FORM_RAZORPAY_PARTNER_CONFIG --project=catchdates-dev --data-file=-/u);
-  assert.match(calls, /gh variable set FORM_RAZORPAY_PARTNER_CONFIG_VERSION --repo torana-labs\/catch-dating-app --env dev --body projects\/catchdates-dev\/secrets\/FORM_RAZORPAY_PARTNER_CONFIG\/versions\/7/u);
+  assert.doesNotMatch(calls, /^gh /mu);
+  assert.match(result.stderr, /no deploy is needed/u);
   for (const output of [calls, result.stdout, result.stderr]) assert.ok(!output.includes("sEcReT"), "secret leaked");
 });
 
@@ -406,13 +407,13 @@ test("partner secret for prod refuses a wrong confirmation", (t) => {
   assert.equal(payload, null);
 });
 
-test("partner secret for prod is live mode after confirmation and pins the prod environment", (t) => {
+test("partner secret for prod is live mode after confirmation", (t) => {
   const {result, calls, payload} = storePartner(t, ["prod", "--live"],
     `live catch-dating-app-64e51\nrzp_live_client\n${clientSecret}\n`);
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stdout, "projects/catch-dating-app-64e51/secrets/FORM_RAZORPAY_PARTNER_CONFIG/versions/7\n");
   assert.equal(JSON.parse(payload).mode, "live");
-  assert.match(calls, /--env prod /u);
+  assert.match(calls, /secrets versions add FORM_RAZORPAY_PARTNER_CONFIG --project=catch-dating-app-64e51 /u);
 });
 
 test("partner secret refuses --live in dev and values with spaces", (t) => {
@@ -420,13 +421,6 @@ test("partner secret refuses --live in dev and values with spaces", (t) => {
   const spaced = storePartner(t, ["dev"], "id\nhas space\n");
   assert.equal(spaced.result.status, 1);
   assert.equal(spaced.payload, null);
-});
-
-test("partner secret without gh prints the command instead", (t) => {
-  const {result, calls} = storePartner(t, ["dev"], `id\n${clientSecret}\n`, {gh: false});
-  assert.equal(result.status, 0, result.stderr);
-  assert.doesNotMatch(calls, /gh variable set/u);
-  assert.match(result.stderr, /gh variable set FORM_RAZORPAY_PARTNER_CONFIG_VERSION .*--env dev/u);
 });
 
 test("bootstrap scopes platform secret access to FORM_RAZORPAY_ secrets and never to versions", (t) => {

@@ -983,13 +983,11 @@
         "requestAccountDeletion"
       ],
       "binding": {
-        "kind": "parameter",
+        "kind": "record",
         "exactReference": "same-project-numeric",
-        "identity": "observed-function-service-account",
-        "parameter": "FORM_RAZORPAY_PARTNER_CONFIG_VERSION",
-        "optional": true
+        "identity": "observed-function-service-account"
       },
-      "activationPolicy": "blank-current-reference-unconfigured",
+      "activationPolicy": "newest-version-at-runtime-or-unconfigured",
       "rotationCompatibility": "historical-payments",
       "recordReferences": true
     },

@@ -47,7 +47,6 @@
     "FLIGHT_PROVIDER_POLICY": {"class": "feature-gate"},
     "FLIGHT_WEBHOOK_BASE_URL": {"class": "identity"},
     "FORM_DOMAIN_CNAME_TARGET": {"class": "identity"},
-    "FORM_RAZORPAY_PARTNER_CONFIG_VERSION": {"class": "identity"},
     "GCP_SERVICE_ACCOUNT_EMAIL": {"class": "identity"},
     "GCP_WEB_HOSTING_READONLY_SERVICE_ACCOUNT_EMAIL": {"class": "identity"},
     "GCP_WEB_HOSTING_READONLY_WORKLOAD_IDENTITY_PROVIDER": {"class": "identity"},
