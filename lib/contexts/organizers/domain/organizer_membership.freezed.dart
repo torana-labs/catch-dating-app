@@ -37,7 +37,7 @@ int get hashCode => Object.hash(runtimeType,id,organizerId,uid,role,status,pushN
 
 @override
 String toString() {
-  return 'OrganizerMembership(id: $id, clubId: $organizerId, uid: $uid, role: $role, status: $status, pushNotificationsEnabled: $pushNotificationsEnabled, joinedAt: $joinedAt, leftAt: $leftAt, deletedAt: $deletedAt)';
+  return 'OrganizerMembership(id: $id, organizerId: $organizerId, uid: $uid, role: $role, status: $status, pushNotificationsEnabled: $pushNotificationsEnabled, joinedAt: $joinedAt, leftAt: $leftAt, deletedAt: $deletedAt)';
 }
 
 
@@ -252,7 +252,7 @@ int get hashCode => Object.hash(runtimeType,id,organizerId,uid,role,status,pushN
 
 @override
 String toString() {
-  return 'OrganizerMembership(id: $id, clubId: $organizerId, uid: $uid, role: $role, status: $status, pushNotificationsEnabled: $pushNotificationsEnabled, joinedAt: $joinedAt, leftAt: $leftAt, deletedAt: $deletedAt)';
+  return 'OrganizerMembership(id: $id, organizerId: $organizerId, uid: $uid, role: $role, status: $status, pushNotificationsEnabled: $pushNotificationsEnabled, joinedAt: $joinedAt, leftAt: $leftAt, deletedAt: $deletedAt)';
 }
 
 

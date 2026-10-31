@@ -37,7 +37,7 @@ int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,hostUid,label
 
 @override
 String toString() {
-  return 'EventInviteLink(id: $id, eventId: $eventId, clubId: $organizerId, hostUid: $hostUid, label: $label, source: $source, openCount: $openCount, requestCount: $requestCount, confirmedCount: $confirmedCount, paidCount: $paidCount, checkedInCount: $checkedInCount, catcherCount: $catcherCount, matchCount: $matchCount, chatStartedCount: $chatStartedCount, disabledAt: $disabledAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'EventInviteLink(id: $id, eventId: $eventId, organizerId: $organizerId, hostUid: $hostUid, label: $label, source: $source, openCount: $openCount, requestCount: $requestCount, confirmedCount: $confirmedCount, paidCount: $paidCount, checkedInCount: $checkedInCount, catcherCount: $catcherCount, matchCount: $matchCount, chatStartedCount: $chatStartedCount, disabledAt: $disabledAt, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -268,7 +268,7 @@ int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,hostUid,label
 
 @override
 String toString() {
-  return 'EventInviteLink(id: $id, eventId: $eventId, clubId: $organizerId, hostUid: $hostUid, label: $label, source: $source, openCount: $openCount, requestCount: $requestCount, confirmedCount: $confirmedCount, paidCount: $paidCount, checkedInCount: $checkedInCount, catcherCount: $catcherCount, matchCount: $matchCount, chatStartedCount: $chatStartedCount, disabledAt: $disabledAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'EventInviteLink(id: $id, eventId: $eventId, organizerId: $organizerId, hostUid: $hostUid, label: $label, source: $source, openCount: $openCount, requestCount: $requestCount, confirmedCount: $confirmedCount, paidCount: $paidCount, checkedInCount: $checkedInCount, catcherCount: $catcherCount, matchCount: $matchCount, chatStartedCount: $chatStartedCount, disabledAt: $disabledAt, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 

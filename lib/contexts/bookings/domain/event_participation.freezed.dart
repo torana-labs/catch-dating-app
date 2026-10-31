@@ -37,7 +37,7 @@ int get hashCode => Object.hashAll([runtimeType,id,eventId,organizerId,uid,statu
 
 @override
 String toString() {
-  return 'EventParticipation(id: $id, eventId: $eventId, clubId: $organizerId, uid: $uid, status: $status, createdAt: $createdAt, updatedAt: $updatedAt, signedUpAt: $signedUpAt, waitlistedAt: $waitlistedAt, attendedAt: $attendedAt, cancelledAt: $cancelledAt, deletedAt: $deletedAt, genderAtSignup: $genderAtSignup, cohortAtSignup: $cohortAtSignup, paymentId: $paymentId, hostApprovalStatus: $hostApprovalStatus, hostApprovalDecidedAt: $hostApprovalDecidedAt, hostApprovalDecidedBy: $hostApprovalDecidedBy, waitlistOfferStatus: $waitlistOfferStatus, waitlistOfferedAt: $waitlistOfferedAt, waitlistOfferExpiresAt: $waitlistOfferExpiresAt, waitlistOfferAcceptedAt: $waitlistOfferAcceptedAt, waitlistOfferId: $waitlistOfferId, inviteLinkId: $inviteLinkId, inviteSource: $inviteSource, inviteCapturedAt: $inviteCapturedAt)';
+  return 'EventParticipation(id: $id, eventId: $eventId, organizerId: $organizerId, uid: $uid, status: $status, createdAt: $createdAt, updatedAt: $updatedAt, signedUpAt: $signedUpAt, waitlistedAt: $waitlistedAt, attendedAt: $attendedAt, cancelledAt: $cancelledAt, deletedAt: $deletedAt, genderAtSignup: $genderAtSignup, cohortAtSignup: $cohortAtSignup, paymentId: $paymentId, hostApprovalStatus: $hostApprovalStatus, hostApprovalDecidedAt: $hostApprovalDecidedAt, hostApprovalDecidedBy: $hostApprovalDecidedBy, waitlistOfferStatus: $waitlistOfferStatus, waitlistOfferedAt: $waitlistOfferedAt, waitlistOfferExpiresAt: $waitlistOfferExpiresAt, waitlistOfferAcceptedAt: $waitlistOfferAcceptedAt, waitlistOfferId: $waitlistOfferId, inviteLinkId: $inviteLinkId, inviteSource: $inviteSource, inviteCapturedAt: $inviteCapturedAt)';
 }
 
 
@@ -286,7 +286,7 @@ int get hashCode => Object.hashAll([runtimeType,id,eventId,organizerId,uid,statu
 
 @override
 String toString() {
-  return 'EventParticipation(id: $id, eventId: $eventId, clubId: $organizerId, uid: $uid, status: $status, createdAt: $createdAt, updatedAt: $updatedAt, signedUpAt: $signedUpAt, waitlistedAt: $waitlistedAt, attendedAt: $attendedAt, cancelledAt: $cancelledAt, deletedAt: $deletedAt, genderAtSignup: $genderAtSignup, cohortAtSignup: $cohortAtSignup, paymentId: $paymentId, hostApprovalStatus: $hostApprovalStatus, hostApprovalDecidedAt: $hostApprovalDecidedAt, hostApprovalDecidedBy: $hostApprovalDecidedBy, waitlistOfferStatus: $waitlistOfferStatus, waitlistOfferedAt: $waitlistOfferedAt, waitlistOfferExpiresAt: $waitlistOfferExpiresAt, waitlistOfferAcceptedAt: $waitlistOfferAcceptedAt, waitlistOfferId: $waitlistOfferId, inviteLinkId: $inviteLinkId, inviteSource: $inviteSource, inviteCapturedAt: $inviteCapturedAt)';
+  return 'EventParticipation(id: $id, eventId: $eventId, organizerId: $organizerId, uid: $uid, status: $status, createdAt: $createdAt, updatedAt: $updatedAt, signedUpAt: $signedUpAt, waitlistedAt: $waitlistedAt, attendedAt: $attendedAt, cancelledAt: $cancelledAt, deletedAt: $deletedAt, genderAtSignup: $genderAtSignup, cohortAtSignup: $cohortAtSignup, paymentId: $paymentId, hostApprovalStatus: $hostApprovalStatus, hostApprovalDecidedAt: $hostApprovalDecidedAt, hostApprovalDecidedBy: $hostApprovalDecidedBy, waitlistOfferStatus: $waitlistOfferStatus, waitlistOfferedAt: $waitlistOfferedAt, waitlistOfferExpiresAt: $waitlistOfferExpiresAt, waitlistOfferAcceptedAt: $waitlistOfferAcceptedAt, waitlistOfferId: $waitlistOfferId, inviteLinkId: $inviteLinkId, inviteSource: $inviteSource, inviteCapturedAt: $inviteCapturedAt)';
 }
 
 

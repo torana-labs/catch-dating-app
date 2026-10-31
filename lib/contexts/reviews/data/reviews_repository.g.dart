@@ -113,7 +113,7 @@ final class WatchReviewsForOrganizerProvider
 }
 
 String _$watchReviewsForOrganizerHash() =>
-    r'6dbe4402b1c8bc9a07d37706ff821652df0cfb13';
+    r'e04b376ae6913744b25c937c8a65e233651960b5';
 
 final class WatchReviewsForOrganizerFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Review>>, String> {

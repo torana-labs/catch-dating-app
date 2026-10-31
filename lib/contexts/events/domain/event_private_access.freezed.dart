@@ -37,7 +37,7 @@ int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,inviteCode,cr
 
 @override
 String toString() {
-  return 'EventPrivateAccess(id: $id, eventId: $eventId, clubId: $organizerId, inviteCode: $inviteCode, createdAt: $createdAt)';
+  return 'EventPrivateAccess(id: $id, eventId: $eventId, organizerId: $organizerId, inviteCode: $inviteCode, createdAt: $createdAt)';
 }
 
 
@@ -244,7 +244,7 @@ int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,inviteCode,cr
 
 @override
 String toString() {
-  return 'EventPrivateAccess(id: $id, eventId: $eventId, clubId: $organizerId, inviteCode: $inviteCode, createdAt: $createdAt)';
+  return 'EventPrivateAccess(id: $id, eventId: $eventId, organizerId: $organizerId, inviteCode: $inviteCode, createdAt: $createdAt)';
 }
 
 
