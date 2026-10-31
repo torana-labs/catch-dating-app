@@ -1,4 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import {expect} from "storybook/test";
 import {CatchBadge, type CatchBadgeTone} from "./CatchBadge";
 import {CatchGap} from "./CatchGap";
 import {CatchPageBody} from "./CatchPageBody";
@@ -59,12 +60,13 @@ function Badges() {
 }
 
 /**
- * catch.badge on the web: every recipe and tone, in both themes. Flutter's
- * light-mode tone inks miss AA contrast on several recipes (CAT-271).
+ * catch.badge on the web: every recipe and tone, in both themes.
+ * Small labels meet AA on the real composited badge backgrounds (CAT-271).
  */
 export const Contract: Story = {
+  play: checkContrast,
   parameters: {
-    a11y: {test: "todo"},
+    a11y: {test: "error"},
   },
   render: () => (
     <>
@@ -78,4 +80,55 @@ export const Contract: Story = {
       </div>
     </>
   ),
+};
+
+// Canvas resolves browser colour syntax, including color-mix and translucent
+// pigments. Composite every ancestor: a transparent privacy badge must be
+// checked against its actual themed ground, never an assumed white surface.
+async function checkContrast({canvasElement}: {canvasElement: HTMLElement}) {
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 1;
+  const context = canvas.getContext("2d")!;
+  const rgba = (value: string) => {
+    context.clearRect(0, 0, 1, 1);
+    context.fillStyle = value;
+    context.fillRect(0, 0, 1, 1);
+    return [...context.getImageData(0, 0, 1, 1).data].map((n) => n / 255);
+  };
+  const over = (foreground: number[], background: number[]) =>
+    foreground.slice(0, 3).map((c, i) => c * foreground[3] + background[i] * (1 - foreground[3]));
+  const luminance = (rgb: number[]) => rgb.map((v) => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)
+    .reduce((sum, v, i) => sum + v * [0.2126, 0.7152, 0.0722][i], 0);
+  const badges = canvasElement.querySelectorAll<HTMLElement>("[data-recipe]");
+  await expect(badges.length).toBeGreaterThan(50);
+  for (const badge of badges) {
+    const ancestors: HTMLElement[] = [];
+    for (let node: HTMLElement | null = badge; node; node = node.parentElement) ancestors.unshift(node);
+    const background = ancestors.reduce((back, node) => over(rgba(getComputedStyle(node).backgroundColor), back), [1, 1, 1]);
+    const foreground = over(rgba(getComputedStyle(badge).color), background);
+    const [lo, hi] = [luminance(foreground), luminance(background)].sort((a, b) => a - b);
+    await expect((hi + 0.05) / (lo + 0.05), `${badge.dataset.recipe}/${badge.dataset.tone}: ${badge.textContent}`).toBeGreaterThanOrEqual(4.5);
+  }
+}
+
+const activityPigments = ["social-run", "running", "walking", "pickleball", "padel", "tennis", "badminton", "cycling", "spin-class", "yoga", "strength-training", "dinner", "pub-quiz", "bar-crawl", "singles-mixer", "open-activity"];
+const edgePigments = ["#000000", "#ffffff", "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff", "#d65c3480", "transparent"];
+
+/** Every affected recipe on paper, surface, raised and page grounds. */
+export const ContrastMatrix: Story = {
+  parameters: {a11y: {test: "error"}},
+  play: checkContrast,
+  render: () => <>
+    {(["light", "dark"] as const).map((theme) =>
+      (theme === "light" ? ["bg", "surface", "raised", "paper"] : ["bg", "surface", "raised"]).map((ground) =>
+        <div key={`${theme}-${ground}`} data-catch-theme={theme} style={{background: ground === "paper" ? "var(--catch-palette-paper)" : `var(--catch-theme-${ground})`}}>
+          <CatchPageBody constrainToContentWidth>
+            <Badges />
+            <CatchGap size="inline" direction="horizontal" wrap>
+              {[...activityPigments.map((name) => `var(--catch-activity-${name}-accent)`), ...edgePigments].map((pigment, index) =>
+                <CatchBadge key={pigment} recipe="ticketStatus" color={pigment} label={`Pigment ${index + 1}`} />)}
+            </CatchGap>
+          </CatchPageBody>
+        </div>))}
+  </>,
 };

@@ -113,3 +113,28 @@ describe("CatchBadge parity", () => {
     for (const name of constructors) expect(source, `recipe ${name}`).toContain(`"${name}"`);
   });
 });
+
+it("shares text-strength tone inks, quiet inks and pigment derivation with Flutter", () => {
+  for (const [tone, native, web] of [
+    ["success", "positiveText", "positive-text"],
+    ["warning", "attentionText", "attention-text"],
+    ["danger", "dangerText", "danger-text"],
+    ["gold", "goldText", "gold-text"],
+  ]) {
+    expect(badgeDart).toContain(`foreground: t.${native},`);
+    expect(badgeDart).toContain(`CatchBadgeTone.${tone} => t.${native},`);
+    const selector = `.badge[data-tone="${tone}"] {`;
+    const start = badgeCss.indexOf(selector);
+    expect(start).toBeGreaterThanOrEqual(0);
+    const rule = badgeCss.slice(start, badgeCss.indexOf("}", start));
+    expect(rule).toContain(`--catch-badge-ink: var(--catch-theme-${web});`);
+    expect(rule).toContain(`--catch-badge-fill: color-mix(in srgb, var(--catch-theme-${tone})`);
+  }
+  expect(badgeDart).toContain("foreground: error ? t.dangerText : t.ink2,");
+  expect(badgeDart).not.toContain("foreground: t.ink3");
+  expect(badgeCss).not.toContain("--catch-badge-ink: var(--catch-theme-ink3)");
+  expect(badgeDart).toContain("alpha: GeneratedCatchOpacityTokens.badgePigmentInk");
+  const weight = dartNumber(generatedDart, "badgePigmentInk");
+  expect(generatedCss).toContain(`--catch-opacity-badge-pigment-ink: ${weight};`);
+  expect(badgeCss).toContain("calc(var(--catch-opacity-badge-pigment-ink) * 100%)");
+});
