@@ -25,6 +25,11 @@ extension EventX on Event {
   bool get isCancelled => status == EventLifecycleStatus.cancelled;
   bool get isExternalCompanion => eventOrigin?.isExternal ?? false;
   bool get hasWebRuntime => runtimeAccess?.isJoinable ?? false;
+  // The path parameters of the event detail routes.
+  Map<String, String> get detailRouteParameters => {
+    'organizerId': organizerId,
+    'eventId': id,
+  };
   Uri? runtimeJoinUri({String baseUrl = Brand.webOrigin}) {
     final runtimeId = runtimeAccess?.publicRuntimeId;
     if (runtimeId == null || runtimeId.isEmpty) return null;

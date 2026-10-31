@@ -209,10 +209,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           );
       context.pushNamed(
         Routes.eventDetailScreen.name,
-        pathParameters: {
-          'organizerId': item.event.organizerId,
-          'eventId': item.event.id,
-        },
+        pathParameters: item.event.detailRouteParameters,
         extra: EventDetailRouteExtra(
           initialEvent: item.event,
           presentationMode: EventDetailPresentationMode.spotlightDark,
@@ -265,10 +262,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           );
       context.pushNamed(
         Routes.eventDetailScreen.name,
-        pathParameters: {
-          'organizerId': item.event.organizerId,
-          'eventId': item.event.id,
-        },
+        pathParameters: item.event.detailRouteParameters,
         extra: EventDetailRouteExtra(
           initialEvent: item.event,
           transition: EventDetailRouteTransition.ticketCard,
