@@ -1,0 +1,74 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const adminUpdateSupportConversationCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_update_support_conversation_payload.schema.json",
+  "title": "AdminUpdateSupportConversationCallablePayload",
+  "description": "Sets a support conversation's owner, status and links (to a booking, payment or safety case). Links replace the previous set; each linked document must exist.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversationId",
+    "ownerUid",
+    "status",
+    "links"
+  ],
+  "properties": {
+    "conversationId": {
+      "type": "string",
+      "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+    },
+    "ownerUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "waitingOnThem",
+        "closed"
+      ]
+    },
+    "links": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "path",
+          "label"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "booking",
+              "payment",
+              "safetyCase"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^(eventParticipations|eventAttendees|payments|publicEventPayments|reports|moderationFlags|eventSafetyReports|accountSafetyActions)/[A-Za-z0-9_~-]{1,200}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminUpdateSupportConversation"
+  ]
+} as const;

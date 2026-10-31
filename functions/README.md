@@ -301,6 +301,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `blockUser` / `unblockUser` | `src/safety/` | Block/unblock another user |
 | `requestAccountDeletion` | `src/safety/` | Anonymize + delete user data |
 | `reportUser` | `src/safety/` | File a safety report |
+| `adminListSupportConversations` / `adminGetSupportConversation` / `adminUpdateSupportConversation` / `adminRecordSupportMessage` / `adminListSupportSavedReplies` / `adminUpsertSupportSavedReply` | `src/supportInbox/adminSupport.ts` | Support inbox for ops: WhatsApp and Instagram messages that are not nominations, and logged emails, as one conversation per person per channel with owner, waiting time, links and saved replies |
 | `listSuvbotDemoActions` / `requestSuvbotDemoOperation` | `src/demoOps/` | Demo-data operation catalogue and request surface |
 | `adminListCrossPathsShowcaseCandidates` / `adminSetCrossPathsShowcaseEligibility` | `src/admin/crossPathsShowcaseEligibility.ts` | Admin bounded Cross Paths showcase review queue and audited score-free eligibility decision |
 | `adminListActionExecutions` | `src/admin/adminActionExecutions.ts` | Admin bounded execution-receipt register for catalog-driven action monitoring |

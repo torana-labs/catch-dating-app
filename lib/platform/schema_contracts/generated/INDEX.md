@@ -892,6 +892,18 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | BlockUserCallablePayload | `callables/block_user_payload.schema.json` | `functions/src/shared/generated/blockUserCallablePayload.ts` | yes |
 | UnblockUserCallablePayload | `callables/unblock_user_payload.schema.json` | `functions/src/shared/generated/unblockUserCallablePayload.ts` | yes |
 | ReportUserCallablePayload | `callables/report_user_payload.schema.json` | `functions/src/shared/generated/reportUserCallablePayload.ts` | yes |
+| AdminListSupportConversationsCallablePayload | `callables/admin_list_support_conversations_payload.schema.json` | `functions/src/shared/generated/adminListSupportConversationsCallablePayload.ts` | yes |
+| AdminListSupportConversationsCallableResponse | `callable_responses/admin_list_support_conversations_response.schema.json` | `functions/src/shared/generated/adminListSupportConversationsCallableResponse.ts` | no |
+| AdminGetSupportConversationCallablePayload | `callables/admin_get_support_conversation_payload.schema.json` | `functions/src/shared/generated/adminGetSupportConversationCallablePayload.ts` | yes |
+| AdminGetSupportConversationCallableResponse | `callable_responses/admin_get_support_conversation_response.schema.json` | `functions/src/shared/generated/adminGetSupportConversationCallableResponse.ts` | no |
+| AdminUpdateSupportConversationCallablePayload | `callables/admin_update_support_conversation_payload.schema.json` | `functions/src/shared/generated/adminUpdateSupportConversationCallablePayload.ts` | yes |
+| AdminUpdateSupportConversationCallableResponse | `callable_responses/admin_update_support_conversation_response.schema.json` | `functions/src/shared/generated/adminUpdateSupportConversationCallableResponse.ts` | no |
+| AdminRecordSupportMessageCallablePayload | `callables/admin_record_support_message_payload.schema.json` | `functions/src/shared/generated/adminRecordSupportMessageCallablePayload.ts` | yes |
+| AdminRecordSupportMessageCallableResponse | `callable_responses/admin_record_support_message_response.schema.json` | `functions/src/shared/generated/adminRecordSupportMessageCallableResponse.ts` | no |
+| AdminListSupportSavedRepliesCallablePayload | `callables/admin_list_support_saved_replies_payload.schema.json` | `functions/src/shared/generated/adminListSupportSavedRepliesCallablePayload.ts` | yes |
+| AdminListSupportSavedRepliesCallableResponse | `callable_responses/admin_list_support_saved_replies_response.schema.json` | `functions/src/shared/generated/adminListSupportSavedRepliesCallableResponse.ts` | no |
+| AdminUpsertSupportSavedReplyCallablePayload | `callables/admin_upsert_support_saved_reply_payload.schema.json` | `functions/src/shared/generated/adminUpsertSupportSavedReplyCallablePayload.ts` | yes |
+| AdminUpsertSupportSavedReplyCallableResponse | `callable_responses/admin_upsert_support_saved_reply_response.schema.json` | `functions/src/shared/generated/adminUpsertSupportSavedReplyCallableResponse.ts` | no |
 | VerifyRazorpayPaymentCallablePayload | `callables/verify_razorpay_payment_payload.schema.json` | `functions/src/shared/generated/verifyRazorpayPaymentCallablePayload.ts` | yes |
 | EventBookingCallablePayload | `callables/event_booking_payload.schema.json` | `functions/src/shared/generated/eventBookingCallablePayload.ts` | yes |
 | CreateRazorpayOrderCallablePayload | `callables/create_razorpay_order_payload.schema.json` | `functions/src/shared/generated/createRazorpayOrderCallablePayload.ts` | yes |
@@ -1356,6 +1368,11 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | BlockUserCallableRequest | BlockUserCallablePayload | `callables/block_user_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/block_user_callable_request.g.dart` |
 | UnblockUserCallableRequest | UnblockUserCallablePayload | `callables/unblock_user_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/unblock_user_callable_request.g.dart` |
 | ReportUserCallableRequest | ReportUserCallablePayload | `callables/report_user_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/report_user_callable_request.g.dart` |
+| AdminListSupportConversationsCallableRequest | AdminListSupportConversationsCallablePayload | `callables/admin_list_support_conversations_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_support_conversations_callable_request.g.dart` |
+| AdminGetSupportConversationCallableRequest | AdminGetSupportConversationCallablePayload | `callables/admin_get_support_conversation_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_get_support_conversation_callable_request.g.dart` |
+| AdminUpdateSupportConversationCallableRequest | AdminUpdateSupportConversationCallablePayload | `callables/admin_update_support_conversation_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_update_support_conversation_callable_request.g.dart` |
+| AdminRecordSupportMessageCallableRequest | AdminRecordSupportMessageCallablePayload | `callables/admin_record_support_message_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_record_support_message_callable_request.g.dart` |
+| AdminUpsertSupportSavedReplyCallableRequest | AdminUpsertSupportSavedReplyCallablePayload | `callables/admin_upsert_support_saved_reply_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_upsert_support_saved_reply_callable_request.g.dart` |
 | RequestSuvbotDemoOperationCallableRequest | RequestSuvbotDemoOperationCallablePayload | `callables/request_suvbot_demo_operation_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/request_suvbot_demo_operation_callable_request.g.dart` |
 | VerifyRazorpayPaymentCallableRequest | VerifyRazorpayPaymentCallablePayload | `callables/verify_razorpay_payment_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/verify_razorpay_payment_callable_request.g.dart` |
 | CreateStripeCheckoutSessionCallableRequest | CreateStripeCheckoutSessionCallablePayload | `callables/create_stripe_checkout_session_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/create_stripe_checkout_session_callable_request.g.dart` |
@@ -1432,6 +1449,7 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | ManageOrganizerFormDomainCallablePayload | not an object schema |
 | PrepareOrganizerFormPaymentCallablePayload | not an object schema |
 | RecordEventSuccessUnitOutcomesCallablePayload | cannot map field "entries" (type=array) |
+| AdminListSupportSavedRepliesCallablePayload | no properties |
 | RefreshStripeHostPaymentAccountCallablePayload | no properties |
 | RefreshRazorpayHostPaymentAccountCallablePayload | no properties |
 | AdminGetOverviewCallablePayload | not an object schema |

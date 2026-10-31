@@ -32739,6 +32739,477 @@ export const supplyNominatorDocumentSchema = {
   }
 };
 
+export const supportConversationDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/support_conversations.schema.json",
+  "title": "SupportConversationDocument",
+  "description": "One person's support conversation with Catch on one channel (WhatsApp, Instagram or email). Inbound WhatsApp and Instagram messages that are not nominations land here; staff log emails by hand until inbound email exists. It has an owner, a status, how long the person has been waiting for a reply, and links to the booking, money issue or safety case it is about. Admin callables only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "supportConversations",
+  "x-firestore-path": "supportConversations/{conversationId}",
+  "x-document-id-field": "conversationId",
+  "x-owner": "Support inbox service and Admin support callables",
+  "required": [
+    "schemaVersion",
+    "conversationId",
+    "channel",
+    "contactAddress",
+    "contactLabel",
+    "displayName",
+    "uid",
+    "audience",
+    "organizerId",
+    "subject",
+    "status",
+    "ownerUid",
+    "waitingSince",
+    "lastInboundAt",
+    "lastOutboundAt",
+    "lastMessageAt",
+    "lastMessagePreview",
+    "messageCount",
+    "links",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "conversationId": {
+      "type": "string",
+      "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "whatsapp",
+        "instagram",
+        "email"
+      ]
+    },
+    "contactAddress": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 200,
+      "description": "E.164 number, ig:<scoped id> or email address."
+    },
+    "contactLabel": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Masked, for lists."
+    },
+    "displayName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "uid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "audience": {
+      "type": "string",
+      "enum": [
+        "guest",
+        "organizer",
+        "unknown"
+      ]
+    },
+    "organizerId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "waitingOnThem",
+        "closed"
+      ]
+    },
+    "ownerUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "waitingSince": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastInboundAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastOutboundAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastMessageAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "lastMessagePreview": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "messageCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "links": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "path",
+          "label"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "booking",
+              "payment",
+              "safetyCase"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^(eventParticipations|eventAttendees|payments|publicEventPayments|reports|moderationFlags|eventSafetyReports|accountSafetyActions)/[A-Za-z0-9_~-]{1,200}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const supportConversationMessageDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/support_conversation_messages.schema.json",
+  "title": "SupportConversationMessageDocument",
+  "description": "One message in a support conversation: what the person sent, a reply staff recorded, or an internal note only staff see. sourceEventId is the WhatsApp receipt or Instagram message key it came from, which makes inbound recording idempotent.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "supportConversationMessages",
+  "x-firestore-path": "supportConversations/{conversationId}/messages/{messageId}",
+  "x-document-id-field": "messageId",
+  "x-owner": "Support inbox service and Admin support callables",
+  "required": [
+    "schemaVersion",
+    "messageId",
+    "conversationId",
+    "direction",
+    "text",
+    "authorUid",
+    "sourceEventId",
+    "savedReplyId",
+    "deliveryState",
+    "at"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "messageId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 160
+    },
+    "conversationId": {
+      "type": "string",
+      "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound",
+        "note"
+      ]
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "authorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "sourceEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "savedReplyId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "deliveryState": {
+      "type": "string",
+      "enum": [
+        "received",
+        "recorded"
+      ]
+    },
+    "at": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const supportSavedReplyDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/support_saved_replies.schema.json",
+  "title": "SupportSavedReplyDocument",
+  "description": "A saved reply ops can drop into a support conversation.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "supportSavedReplies",
+  "x-firestore-path": "supportSavedReplies/{replyId}",
+  "x-document-id-field": "replyId",
+  "x-owner": "Admin support callables",
+  "required": [
+    "schemaVersion",
+    "replyId",
+    "title",
+    "body",
+    "active",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "replyId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    }
+  }
+};
+
 export const adminSalesIntelligenceGenerateCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_generate_payload.schema.json",
@@ -336568,6 +337039,746 @@ export const reportUserCallablePayloadSchema = {
     "notes": {
       "type": "string",
       "maxLength": 2000
+    }
+  }
+};
+
+export const adminListSupportConversationsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_support_conversations_payload.schema.json",
+  "title": "AdminListSupportConversationsCallablePayload",
+  "description": "Lists support conversations for the Support inbox: open, mine, waiting on them, or closed, optionally only guests or organizers. Open lists the longest-waiting first.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "view",
+    "audience",
+    "limit"
+  ],
+  "properties": {
+    "view": {
+      "type": "string",
+      "enum": [
+        "open",
+        "mine",
+        "waitingOnThem",
+        "closed"
+      ]
+    },
+    "audience": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "guest",
+        "organizer",
+        null
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    }
+  },
+  "x-callable-aliases": [
+    "adminListSupportConversations"
+  ]
+};
+
+export const adminListSupportConversationsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_support_conversations_response.schema.json",
+  "title": "AdminListSupportConversationsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "counts"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "conversationId",
+          "channel",
+          "contactLabel",
+          "displayName",
+          "audience",
+          "subject",
+          "status",
+          "ownerUid",
+          "waitingSinceMillis",
+          "lastMessageAtMillis",
+          "lastMessagePreview",
+          "linkCount"
+        ],
+        "properties": {
+          "conversationId": {
+            "type": "string",
+            "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "whatsapp",
+              "instagram",
+              "email"
+            ]
+          },
+          "contactLabel": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "displayName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "audience": {
+            "type": "string",
+            "enum": [
+              "guest",
+              "organizer",
+              "unknown"
+            ]
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "waitingOnThem",
+              "closed"
+            ]
+          },
+          "ownerUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "waitingSinceMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "lastMessageAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "lastMessagePreview": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "linkCount": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "open",
+        "mine",
+        "waitingOnThem"
+      ],
+      "properties": {
+        "open": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mine": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "waitingOnThem": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+};
+
+export const adminGetSupportConversationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_support_conversation_payload.schema.json",
+  "title": "AdminGetSupportConversationCallablePayload",
+  "description": "Opens one support conversation with its messages, the full contact address and its links. Audited.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversationId"
+  ],
+  "properties": {
+    "conversationId": {
+      "type": "string",
+      "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetSupportConversation"
+  ]
+};
+
+export const adminGetSupportConversationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_support_conversation_response.schema.json",
+  "title": "AdminGetSupportConversationCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversation",
+    "messages"
+  ],
+  "properties": {
+    "conversation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conversationId",
+        "channel",
+        "contactLabel",
+        "displayName",
+        "audience",
+        "subject",
+        "status",
+        "ownerUid",
+        "waitingSinceMillis",
+        "lastMessageAtMillis",
+        "lastMessagePreview",
+        "linkCount",
+        "contactAddress",
+        "uid",
+        "organizerId",
+        "links"
+      ],
+      "properties": {
+        "conversationId": {
+          "type": "string",
+          "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "whatsapp",
+            "instagram",
+            "email"
+          ]
+        },
+        "contactLabel": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "displayName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "audience": {
+          "type": "string",
+          "enum": [
+            "guest",
+            "organizer",
+            "unknown"
+          ]
+        },
+        "subject": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "waitingOnThem",
+            "closed"
+          ]
+        },
+        "ownerUid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "waitingSinceMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "lastMessageAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lastMessagePreview": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "linkCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "contactAddress": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "uid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "organizerId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "links": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "path",
+              "label"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "booking",
+                  "payment",
+                  "safetyCase"
+                ]
+              },
+              "path": {
+                "type": "string",
+                "pattern": "^(eventParticipations|eventAttendees|payments|publicEventPayments|reports|moderationFlags|eventSafetyReports|accountSafetyActions)/[A-Za-z0-9_~-]{1,200}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              }
+            }
+          }
+        }
+      }
+    },
+    "messages": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "messageId",
+          "direction",
+          "text",
+          "authorUid",
+          "atMillis",
+          "deliveryState"
+        ],
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "inbound",
+              "outbound",
+              "note"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "authorUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "atMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "deliveryState": {
+            "type": "string",
+            "enum": [
+              "received",
+              "recorded"
+            ]
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminUpdateSupportConversationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_update_support_conversation_payload.schema.json",
+  "title": "AdminUpdateSupportConversationCallablePayload",
+  "description": "Sets a support conversation's owner, status and links (to a booking, payment or safety case). Links replace the previous set; each linked document must exist.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversationId",
+    "ownerUid",
+    "status",
+    "links"
+  ],
+  "properties": {
+    "conversationId": {
+      "type": "string",
+      "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+    },
+    "ownerUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "waitingOnThem",
+        "closed"
+      ]
+    },
+    "links": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "path",
+          "label"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "booking",
+              "payment",
+              "safetyCase"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^(eventParticipations|eventAttendees|payments|publicEventPayments|reports|moderationFlags|eventSafetyReports|accountSafetyActions)/[A-Za-z0-9_~-]{1,200}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminUpdateSupportConversation"
+  ]
+};
+
+export const adminUpdateSupportConversationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_update_support_conversation_response.schema.json",
+  "title": "AdminUpdateSupportConversationCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversationId",
+    "status",
+    "ownerUid",
+    "linkCount"
+  ],
+  "properties": {
+    "conversationId": {
+      "type": "string",
+      "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "waitingOnThem",
+        "closed"
+      ]
+    },
+    "ownerUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "linkCount": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+};
+
+export const adminRecordSupportMessageCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_record_support_message_payload.schema.json",
+  "title": "AdminRecordSupportMessageCallablePayload",
+  "description": "Records a message in a support conversation: a reply staff sent (outbound; the conversation then waits on them), an email that came in (inbound, starting the conversation when conversationId is null), or an internal note. Replies are recorded, not sent: staff send them from WhatsApp, Instagram or email until replies go out through the provider.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversationId",
+    "channel",
+    "contactAddress",
+    "displayName",
+    "direction",
+    "text",
+    "savedReplyId"
+  ],
+  "properties": {
+    "conversationId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "whatsapp",
+        "instagram",
+        "email"
+      ]
+    },
+    "contactAddress": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 3,
+      "maxLength": 200
+    },
+    "displayName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound",
+        "note"
+      ]
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "savedReplyId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminRecordSupportMessage"
+  ]
+};
+
+export const adminRecordSupportMessageCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_record_support_message_response.schema.json",
+  "title": "AdminRecordSupportMessageCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversationId",
+    "messageId"
+  ],
+  "properties": {
+    "conversationId": {
+      "type": "string",
+      "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+    },
+    "messageId": {
+      "type": "string",
+      "maxLength": 160
+    }
+  }
+};
+
+export const adminListSupportSavedRepliesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_support_saved_replies_payload.schema.json",
+  "title": "AdminListSupportSavedRepliesCallablePayload",
+  "description": "Lists saved replies for the Support inbox.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {},
+  "x-callable-aliases": [
+    "adminListSupportSavedReplies"
+  ]
+};
+
+export const adminListSupportSavedRepliesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_support_saved_replies_response.schema.json",
+  "title": "AdminListSupportSavedRepliesCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "replyId",
+          "title",
+          "body",
+          "active",
+          "updatedAtMillis"
+        ],
+        "properties": {
+          "replyId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{8,128}$"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminUpsertSupportSavedReplyCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_upsert_support_saved_reply_payload.schema.json",
+  "title": "AdminUpsertSupportSavedReplyCallablePayload",
+  "description": "Adds or edits a saved reply; switch one off with active false.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "replyId",
+    "title",
+    "body",
+    "active"
+  ],
+  "properties": {
+    "replyId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "active": {
+      "type": "boolean"
+    }
+  },
+  "x-callable-aliases": [
+    "adminUpsertSupportSavedReply"
+  ]
+};
+
+export const adminUpsertSupportSavedReplyCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_upsert_support_saved_reply_response.schema.json",
+  "title": "AdminUpsertSupportSavedReplyCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "replyId"
+  ],
+  "properties": {
+    "replyId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
     }
   }
 };

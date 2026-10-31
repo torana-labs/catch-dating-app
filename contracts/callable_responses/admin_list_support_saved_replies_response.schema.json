@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_support_saved_replies_response.schema.json",
+  "title": "AdminListSupportSavedRepliesCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "replyId",
+          "title",
+          "body",
+          "active",
+          "updatedAtMillis"
+        ],
+        "properties": {
+          "replyId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{8,128}$"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

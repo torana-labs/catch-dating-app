@@ -2159,6 +2159,114 @@ export const adminActionCatalog = {
       ],
       "summary": "Offer a reviewed organizer lead to an exact active referral partner with a bounded next action, review time and expiry.",
       "controlPlane": true
+    },
+    {
+      "actionId": "support.conversations.list",
+      "callable": "adminListSupportConversations",
+      "workflowIds": [
+        "support"
+      ],
+      "guiPath": "/support",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "List support conversations by view, longest waiting first.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "support.conversations.get",
+      "callable": "adminGetSupportConversation",
+      "workflowIds": [
+        "support"
+      ],
+      "guiPath": "/support",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "Open one support conversation with its messages and links.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "support.conversations.update",
+      "callable": "adminUpdateSupportConversation",
+      "workflowIds": [
+        "support"
+      ],
+      "guiPath": "/support",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "Set a conversation's owner, status and links.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "support.messages.record",
+      "callable": "adminRecordSupportMessage",
+      "workflowIds": [
+        "support"
+      ],
+      "guiPath": "/support",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "Record a reply, a logged email or an internal note in a conversation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "support.replies.list",
+      "callable": "adminListSupportSavedReplies",
+      "workflowIds": [
+        "support"
+      ],
+      "guiPath": "/support",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "List saved replies.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "support.replies.upsert",
+      "callable": "adminUpsertSupportSavedReply",
+      "workflowIds": [
+        "support"
+      ],
+      "guiPath": "/support",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "Add or edit a saved reply.",
+      "controlPlane": false
     }
   ],
   "workflows": [
@@ -2443,6 +2551,19 @@ export const adminActionCatalog = {
         "sales.demo.GetSalesDemoPartnerReview",
         "sales.demo.ShareSalesDemoPartnerReview",
         "sales.partners.offer"
+      ]
+    },
+    {
+      "workflowId": "support",
+      "label": "Support inbox",
+      "guiPath": "/support",
+      "actions": [
+        "support.conversations.list",
+        "support.conversations.get",
+        "support.conversations.update",
+        "support.messages.record",
+        "support.replies.list",
+        "support.replies.upsert"
       ]
     }
   ]

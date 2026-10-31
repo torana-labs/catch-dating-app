@@ -971,6 +971,15 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Support conversations, their messages and saved replies hold contact
+    // details; only the role-gated Admin support callables read or write.
+    match /supportConversations/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /supportSavedReplies/{replyId} {
+      allow read, write: if false;
+    }
+
     // Message nominators are managed through Admin callables only; the
     // registry holds account ids and number hashes.
     match /supplyNominators/{nominatorId} {

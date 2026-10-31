@@ -154,6 +154,9 @@ import {
   supplyIntakeRequestsDocumentSchema,
   supplyIntakeUsageDocumentSchema,
   supplyNominatorDocumentSchema,
+  supportConversationDocumentSchema,
+  supportConversationMessageDocumentSchema,
+  supportSavedReplyDocumentSchema,
   adminSalesIntelligenceGenerateCallablePayloadSchema,
   salesOutreachJobsDocumentSchema,
   outreachDraftSchema,
@@ -1231,6 +1234,18 @@ import {
   blockUserCallablePayloadSchema,
   unblockUserCallablePayloadSchema,
   reportUserCallablePayloadSchema,
+  adminListSupportConversationsCallablePayloadSchema,
+  adminListSupportConversationsCallableResponseSchema,
+  adminGetSupportConversationCallablePayloadSchema,
+  adminGetSupportConversationCallableResponseSchema,
+  adminUpdateSupportConversationCallablePayloadSchema,
+  adminUpdateSupportConversationCallableResponseSchema,
+  adminRecordSupportMessageCallablePayloadSchema,
+  adminRecordSupportMessageCallableResponseSchema,
+  adminListSupportSavedRepliesCallablePayloadSchema,
+  adminListSupportSavedRepliesCallableResponseSchema,
+  adminUpsertSupportSavedReplyCallablePayloadSchema,
+  adminUpsertSupportSavedReplyCallableResponseSchema,
   requestSuvbotDemoOperationCallablePayloadSchema,
   listSuvbotDemoActionsCallableResponseSchema,
   verifyRazorpayPaymentCallablePayloadSchema,
@@ -1461,6 +1476,9 @@ export const validateSupplyIntakeRequest = ajv.compile(supplyIntakeRequestSchema
 export const validateSupplyIntakeRequestsDocument = ajv.compile(supplyIntakeRequestsDocumentSchema);
 export const validateSupplyIntakeUsageDocument = ajv.compile(supplyIntakeUsageDocumentSchema);
 export const validateSupplyNominatorDocument = ajv.compile(supplyNominatorDocumentSchema);
+export const validateSupportConversationDocument = ajv.compile(supportConversationDocumentSchema);
+export const validateSupportConversationMessageDocument = ajv.compile(supportConversationMessageDocumentSchema);
+export const validateSupportSavedReplyDocument = ajv.compile(supportSavedReplyDocumentSchema);
 export const validateAdminSalesIntelligenceGenerateCallablePayload = ajv.compile(adminSalesIntelligenceGenerateCallablePayloadSchema);
 export const validateSalesOutreachJobsDocument = ajv.compile(salesOutreachJobsDocumentSchema);
 export const validateOutreachDraft = ajv.compile(outreachDraftSchema);
@@ -2538,6 +2556,18 @@ export const validateSetReviewResponseCallablePayload = ajv.compile(setReviewRes
 export const validateBlockUserCallablePayload = ajv.compile(blockUserCallablePayloadSchema);
 export const validateUnblockUserCallablePayload = ajv.compile(unblockUserCallablePayloadSchema);
 export const validateReportUserCallablePayload = ajv.compile(reportUserCallablePayloadSchema);
+export const validateAdminListSupportConversationsCallablePayload = ajv.compile(adminListSupportConversationsCallablePayloadSchema);
+export const validateAdminListSupportConversationsCallableResponse = ajv.compile(adminListSupportConversationsCallableResponseSchema);
+export const validateAdminGetSupportConversationCallablePayload = ajv.compile(adminGetSupportConversationCallablePayloadSchema);
+export const validateAdminGetSupportConversationCallableResponse = ajv.compile(adminGetSupportConversationCallableResponseSchema);
+export const validateAdminUpdateSupportConversationCallablePayload = ajv.compile(adminUpdateSupportConversationCallablePayloadSchema);
+export const validateAdminUpdateSupportConversationCallableResponse = ajv.compile(adminUpdateSupportConversationCallableResponseSchema);
+export const validateAdminRecordSupportMessageCallablePayload = ajv.compile(adminRecordSupportMessageCallablePayloadSchema);
+export const validateAdminRecordSupportMessageCallableResponse = ajv.compile(adminRecordSupportMessageCallableResponseSchema);
+export const validateAdminListSupportSavedRepliesCallablePayload = ajv.compile(adminListSupportSavedRepliesCallablePayloadSchema);
+export const validateAdminListSupportSavedRepliesCallableResponse = ajv.compile(adminListSupportSavedRepliesCallableResponseSchema);
+export const validateAdminUpsertSupportSavedReplyCallablePayload = ajv.compile(adminUpsertSupportSavedReplyCallablePayloadSchema);
+export const validateAdminUpsertSupportSavedReplyCallableResponse = ajv.compile(adminUpsertSupportSavedReplyCallableResponseSchema);
 export const validateRequestSuvbotDemoOperationCallablePayload = ajv.compile(requestSuvbotDemoOperationCallablePayloadSchema);
 export const validateListSuvbotDemoActionsCallableResponse = ajv.compile(listSuvbotDemoActionsCallableResponseSchema);
 export const validateVerifyRazorpayPaymentCallablePayload = ajv.compile(verifyRazorpayPaymentCallablePayloadSchema);
