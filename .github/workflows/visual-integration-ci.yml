@@ -4,6 +4,9 @@ on:
   workflow_call:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   headless-journeys:
     name: Headless app journeys
@@ -11,6 +14,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-flutter
       - run: flutter pub get
       - name: Deterministic app-shell integration suites
@@ -23,6 +28,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -265,6 +272,8 @@ jobs:
     # freshness remains required in goldens; neither result can replace it.
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
       - id: toolchain
         uses: ./.github/actions/load-toolchain
       - uses: ./.github/actions/setup-flutter

@@ -149,6 +149,7 @@ jobs:
           bundler-cache: true
       - name: Build, verify and upload to TestFlight
         env:
+          ROLE: ${{ matrix.role }}
           APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
@@ -159,7 +160,7 @@ jobs:
           FASTLANE_HIDE_CHANGELOG: "1"
           LC_ALL: en_US.UTF-8
           LANG: en_US.UTF-8
-        run: bundle exec fastlane ios beta role:${{ matrix.role }}
+        run: bundle exec fastlane ios beta "role:$ROLE"
       - name: Record build provenance
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
         with:
@@ -258,10 +259,12 @@ jobs:
           service_account: ${{ vars.GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL }}
       - name: Build, verify and upload to the Play internal track
         env:
+          ROLE: ${{ matrix.role }}
+          UPLOAD: ${{ needs.plan.outputs.android_upload }}
           GOOGLE_MAPS_ANDROID_API_KEY_PROD: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY_PROD }}
           FASTLANE_SKIP_UPDATE_CHECK: "1"
           FASTLANE_HIDE_CHANGELOG: "1"
-        run: bundle exec fastlane android beta role:${{ matrix.role }} upload:${{ needs.plan.outputs.android_upload }}
+        run: bundle exec fastlane android beta "role:$ROLE" "upload:$UPLOAD"
       - name: Record build provenance
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
         with:

@@ -366,8 +366,8 @@ export function validateReleaseOwnership({
     ["main-only guard", /github\.ref == 'refs\/heads\/main'/u],
     ["beta credentials environment", /environment:\s*prod-mobile\s*$/mu],
     ["serialized uploads", /concurrency:[\s\S]*?cancel-in-progress:\s*false/u],
-    ["iOS beta lane", /bundle exec fastlane ios beta role:/u],
-    ["Android beta lane", /bundle exec fastlane android beta role:/u],
+    ["iOS beta lane", /bundle exec fastlane ios beta "?role:/u],
+    ["Android beta lane", /bundle exec fastlane android beta "?role:/u],
     [
       "reusable iOS development certificate secret",
       /secrets\.IOS_CI_DEVELOPMENT_CERTIFICATE_P12_BASE64/u,

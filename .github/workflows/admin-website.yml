@@ -92,7 +92,6 @@ jobs:
     uses: ./.github/workflows/_web-hosting-build.yml
     with:
       surface: admin
-    secrets: inherit
     permissions:
       actions: read
       contents: read
@@ -110,7 +109,6 @@ jobs:
       source_ci_run_id: ${{ needs.package.outputs.source_ci_run_id }}
       source_sha: ${{ needs.package.outputs.source_sha }}
       surface: admin
-    secrets: inherit
     permissions:
       actions: read
       contents: read
@@ -129,7 +127,6 @@ jobs:
       source_ci_run_id: ${{ inputs.recovery_source_run_id }}
       source_sha: ${{ inputs.recovery_source_sha }}
       surface: admin
-    secrets: inherit
     permissions:
       actions: read
       contents: read

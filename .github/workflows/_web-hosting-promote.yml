@@ -133,6 +133,7 @@ jobs:
         with:
           ref: ${{ inputs.source_sha }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Require the producing source to remain safely ordered on main
         if: ${{ steps.authorize.outputs.superseded != 'true' }}
