@@ -321,6 +321,9 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminGetEventDetails` | `src/admin/eventDetails.ts` | Admin-safe canonical event detail snapshot |
 | `adminUpdateEventDetails` | `src/admin/eventDetails.ts` | Admin audited safe app-facing event field patch |
 | `adminListExternalEventDetails` | `src/admin/externalEventDetails.ts` | Admin read-only external event supply list for `externalEvents/{id}` |
+| `adminListOrganizerDirectory` | `src/admin/organizerDirectory.ts` | Admin Organizers directory: real totals, views, city/kind/claim/mine chips and paging |
+| `adminListEventDirectory` | `src/admin/eventDirectory.ts` | Admin Events directory: Catch and imported events in one table, with source, view totals and chips |
+| `adminGetOrganizerOverview` | `src/admin/organizerOverview.ts` | Admin organizer page Overview: facts, Sales owner, terms, payments, journey and upcoming events |
 | `adminListIntakeOperations` | `src/admin/intakeOperations.ts` | Role-gated read-only Supply Intake projection with authoritative aggregates, server-filtered human exceptions, and lazy ordinary pages |
 | `adminCreateOrganizerDraftFromCandidate` | `src/admin/organizerDraftFromCandidate.ts` | Admin audited, retry-safe creation of a fail-closed organizer draft from reviewed Supply Intake evidence |
 | `adminApproveOrganizerListing` | `src/admin/organizerListingApproval.ts` | Admin or owner approve a Supply Intake listing: one audited, idempotent transaction publishes the organizer page unclaimed and noindex (hidden in the app), records the review decision and receipt, links the enquiry it came from, and opens its Sales account, opportunity, tasks and activity |
