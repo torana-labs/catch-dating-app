@@ -441,6 +441,12 @@ class _BadgePalette {
   final Color foreground;
   final Color border;
 
+  // Premultiplied sRGB mix, matching CSS color-mix even for alpha pigments.
+  static Color _pigmentInk(Color pigment, CatchTokens t) => Color.alphaBlend(
+    t.ink.withValues(alpha: GeneratedCatchOpacityTokens.badgePigmentInk),
+    pigment,
+  );
+
   static _BadgePalette from(
     CatchBadgeTone tone,
     CatchTokens t, {
@@ -453,8 +459,10 @@ class _BadgePalette {
       return _BadgePalette(
         background: strong
             ? t.darkPillFill
-            : accentColor!.withValues(alpha: CatchOpacity.subtleFill),
-        foreground: strong ? t.darkPillInk : accentColor!,
+            : accentColor!.withValues(
+                alpha: accentColor.a * CatchOpacity.subtleFill,
+              ),
+        foreground: strong ? t.darkPillInk : _pigmentInk(accentColor!, t),
         border: Colors.transparent,
       );
     }
@@ -464,7 +472,7 @@ class _BadgePalette {
         background: error
             ? t.danger.withValues(alpha: CatchOpacity.controlOverlayPressed)
             : t.raised,
-        foreground: error ? t.danger : t.ink3,
+        foreground: error ? t.dangerText : t.ink2,
         border: Colors.transparent,
       );
     }
@@ -474,8 +482,8 @@ class _BadgePalette {
         CatchBadgeTone.brand => t.primary,
         CatchBadgeTone.success => t.positiveText,
         CatchBadgeTone.warning => t.attentionText,
-        CatchBadgeTone.danger => t.danger,
-        CatchBadgeTone.gold => t.gold,
+        CatchBadgeTone.danger => t.dangerText,
+        CatchBadgeTone.gold => t.goldText,
         CatchBadgeTone.affinity => t.affinityText,
       };
       return _BadgePalette(
@@ -498,7 +506,7 @@ class _BadgePalette {
     if (recipe == _CatchBadgeRecipe.privacy) {
       return _BadgePalette(
         background: Colors.transparent,
-        foreground: t.ink3,
+        foreground: t.ink2,
         border: t.line2,
       );
     }
@@ -536,17 +544,17 @@ class _BadgePalette {
       ),
       CatchBadgeTone.success => _BadgePalette(
         background: t.success.withValues(alpha: CatchOpacity.subtleFill),
-        foreground: t.success,
+        foreground: t.positiveText,
         border: Colors.transparent,
       ),
       CatchBadgeTone.warning => _BadgePalette(
         background: t.warning.withValues(alpha: CatchOpacity.warningFill),
-        foreground: t.warning,
+        foreground: t.attentionText,
         border: Colors.transparent,
       ),
       CatchBadgeTone.danger => _BadgePalette(
         background: t.danger.withValues(alpha: CatchOpacity.dangerFill),
-        foreground: t.danger,
+        foreground: t.dangerText,
         border: Colors.transparent,
       ),
       CatchBadgeTone.affinity => _BadgePalette(
@@ -556,7 +564,7 @@ class _BadgePalette {
       ),
       CatchBadgeTone.gold => _BadgePalette(
         background: t.gold.withValues(alpha: CatchOpacity.subtleFill),
-        foreground: t.gold,
+        foreground: t.goldText,
         border: t.gold.withValues(alpha: CatchOpacity.subtleBorder),
       ),
     };

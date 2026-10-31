@@ -68,6 +68,8 @@
   --catch-color-light-positive-text: #236B45;
   --catch-color-light-attention-text: #97451C;
   --catch-color-light-affinity-text: #77529D;
+  --catch-color-light-danger-text: #A01F16;
+  --catch-color-light-gold-text: #765719;
   --catch-theme-light-elevation-field-active: 0 6px 18px rgba(22, 20, 15, 0.08);
   --catch-color-dark-bg: #0F0E10;
   --catch-color-dark-surface: #18171A;
@@ -92,6 +94,8 @@
   --catch-color-dark-positive-text: #5BC07C;
   --catch-color-dark-attention-text: #F0AF80;
   --catch-color-dark-affinity-text: #C5A6E7;
+  --catch-color-dark-danger-text: #F08075;
+  --catch-color-dark-gold-text: #E0B45E;
   --catch-theme-dark-elevation-field-active: 0 8px 22px rgba(0, 0, 0, 0.55);
   --catch-activity-social-run-accent: #D85A3C;
   --catch-activity-running-accent: #C9482E;
@@ -246,6 +250,7 @@
   --catch-window-size-expanded-min-width: 840px;
   --catch-window-size-large-min-width: 1200px;
   --catch-window-size-extra-large-min-width: 1600px;
+  --catch-opacity-badge-pigment-ink: 0.75;
   --catch-opacity-activity-map-pin-shadow: 0.3;
   --catch-opacity-control-overlay-hover: 0.04;
   --catch-opacity-activity-artwork-pattern: 0.22;
@@ -668,6 +673,8 @@
   --catch-theme-positive-text: var(--catch-color-light-positive-text);
   --catch-theme-attention-text: var(--catch-color-light-attention-text);
   --catch-theme-affinity-text: var(--catch-color-light-affinity-text);
+  --catch-theme-danger-text: var(--catch-color-light-danger-text);
+  --catch-theme-gold-text: var(--catch-color-light-gold-text);
   --catch-elevation-field-active: var(--catch-theme-light-elevation-field-active);
 }
 
@@ -695,5 +702,7 @@
   --catch-theme-positive-text: var(--catch-color-dark-positive-text);
   --catch-theme-attention-text: var(--catch-color-dark-attention-text);
   --catch-theme-affinity-text: var(--catch-color-dark-affinity-text);
+  --catch-theme-danger-text: var(--catch-color-dark-danger-text);
+  --catch-theme-gold-text: var(--catch-color-dark-gold-text);
   --catch-elevation-field-active: var(--catch-theme-dark-elevation-field-active);
 }

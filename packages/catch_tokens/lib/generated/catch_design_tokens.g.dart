@@ -28,6 +28,8 @@ abstract final class GeneratedCatchColorTokens {
   static const Color lightPositiveText = Color(0xFF236B45);
   static const Color lightAttentionText = Color(0xFF97451C);
   static const Color lightAffinityText = Color(0xFF77529D);
+  static const Color lightDangerText = Color(0xFFA01F16);
+  static const Color lightGoldText = Color(0xFF765719);
   static const Color darkBg = Color(0xFF0F0E10);
   static const Color darkSurface = Color(0xFF18171A);
   static const Color darkRaised = Color(0xFF211F23);
@@ -51,6 +53,8 @@ abstract final class GeneratedCatchColorTokens {
   static const Color darkPositiveText = Color(0xFF5BC07C);
   static const Color darkAttentionText = Color(0xFFF0AF80);
   static const Color darkAffinityText = Color(0xFFC5A6E7);
+  static const Color darkDangerText = Color(0xFFF08075);
+  static const Color darkGoldText = Color(0xFFE0B45E);
 }
 
 abstract final class GeneratedCatchGradientTokens {
@@ -533,6 +537,7 @@ abstract final class GeneratedCatchGapTokens {
 }
 
 abstract final class GeneratedCatchOpacityTokens {
+  static const double badgePigmentInk = 0.75;
   static const double activityMapPinShadow = 0.3;
   static const double controlOverlayHover = 0.04;
   static const double activityArtworkPattern = 0.22;

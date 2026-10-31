@@ -6,11 +6,6 @@
   "policy": "Project default is a11y.test=error. Only the exact stories below may use todo while their existing axe findings await a dedicated visual accessibility pass.",
   "stories": [
     {
-      "file": "packages/web-ui/src/components/CatchBadge.stories.tsx",
-      "export": "Contract",
-      "reason": "CatchBadge mirrors Flutter's light-mode tone inks, which miss AA text contrast on several recipes; CAT-271 fixes the palette in both frameworks."
-    },
-    {
       "file": "website/src/stories/AdapterPrimitives.stories.tsx",
       "export": "OrganizerActivityMarkAdapterStory",
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
