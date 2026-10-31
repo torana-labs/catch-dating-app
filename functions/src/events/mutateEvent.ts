@@ -2040,7 +2040,8 @@ async function notifyOrganizerMembersForNewEvent(params: {
         params.db.collection("users").doc(membership.uid).get()
       )
     );
-    const copy = newOrganizerEventNotificationCopy(params.organizerName, params.event);
+    const copy = newOrganizerEventNotificationCopy(params.organizerName,
+      params.event);
 
     await Promise.all(userSnaps.map(async (snap, index) => {
       const membership = memberEntries[index];

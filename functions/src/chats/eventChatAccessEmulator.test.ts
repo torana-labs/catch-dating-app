@@ -53,10 +53,12 @@ test("Firestore room access follows current authority and explicit choices",
       ...[host, person, imported, stranger].flatMap((uid) =>
         [ref("users", uid), ref("deletedUsers", uid), member(uid)])];
     try {
-      await ref("events", eventId).set({organizerId, name: "Demo event", status: "active"});
+      await ref("events", eventId).set({organizerId, name: "Demo event",
+        status: "active"});
       await ref("organizers", organizerId).set({ownerUserId: host,
         hostUserId: host, hostUserIds: [], hostProfiles: []});
-      await participation.set({eventId, organizerId, uid: person, status: "signedUp"});
+      await participation.set({eventId, organizerId, uid: person,
+        status: "signedUp"});
       assert.equal((await view(person)).room.status, "notCreated");
       const open = change(host, "open", 0);
       const opens = await Promise.all([update(open, deps), update(open, deps)]);

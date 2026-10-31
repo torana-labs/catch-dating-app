@@ -144,18 +144,23 @@ function pendingClaim(overrides: FakeData = {}): FakeData {
   };
 }
 
-test("normalizeOrganizerClaimDetailsPayload accepts only exact request ids", () => {
-  assert.deepEqual(
-    normalizeOrganizerClaimDetailsPayload({requestId: " claim_1 "}),
-    {requestId: "claim_1"}
-  );
-  assert.throws(
-    () => normalizeOrganizerClaimDetailsPayload({requestId: "claims/claim_1"}),
-    (error) => error instanceof HttpsError && error.code === "invalid-argument"
-  );
-});
+test("normalizeOrganizerClaimDetailsPayload accepts only exact request ids",
+  () => {
+    assert.deepEqual(
+      normalizeOrganizerClaimDetailsPayload({requestId: " claim_1 "}),
+      {requestId: "claim_1"}
+    );
+    assert.throws(
+      () => normalizeOrganizerClaimDetailsPayload({
+        requestId: "claims/claim_1",
+      }),
+      (error) =>
+        error instanceof HttpsError && error.code === "invalid-argument"
+    );
+  });
 
-test("adminListOrganizerClaimRequestsHandler returns pending claims newest first",
+test(
+  "adminListOrganizerClaimRequestsHandler returns pending claims newest first",
   async () => {
     const firestore = new FakeFirestore({
       "organizerClaimRequests/claim-1": pendingClaim(),

@@ -239,7 +239,6 @@ test("Firestore departure retries publish once and later stops refresh guests",
     const id = randomUUID();
     const session = practiceSession();
     session.organizerId = "departure-guidance-" + id;
-    session.organizerId = session.organizerId;
     const actors = buildRehearsalActors(id, 2, 1, session.virtualNow);
     const source = practiceMovementSource(id, session, "event:whole");
     const target = source.destinations.find((d) =>

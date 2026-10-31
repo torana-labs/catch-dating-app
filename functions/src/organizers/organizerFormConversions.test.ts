@@ -358,7 +358,8 @@ for (const status of ["completed", "pending", "failed"] as const) {
       const h = conversionFixture("crmContact");
       await h.convert();
       h.records("organizerFormConversionReceipts")[0][1].status = status;
-      h.store.docs["events/event1"] = {organizerId: "org1", status: "published", eventFormat: {activityKind: "singlesMixer"}};
+      h.store.docs["events/event1"] = {organizerId: "org1",
+        status: "published", eventFormat: {activityKind: "singlesMixer"}};
       h.store.beforeCommit = async () => {
         h.withdraw();
       };
@@ -377,7 +378,8 @@ for (const change of ["withdraw", "revoke", "delete", "move"] as const) {
     async () => {
       const h = conversionFixture("crmContact");
       await h.convert();
-      h.store.docs["events/event1"] = {organizerId: "org1", status: "published", eventFormat: {activityKind: "singlesMixer"}};
+      h.store.docs["events/event1"] = {organizerId: "org1",
+        status: "published", eventFormat: {activityKind: "singlesMixer"}};
       h.store.docs["organizers/other"] = {ownerUserId: "manager",
         hostUserIds: [], hostProfiles: []};
       const original = h.store.runTransaction.bind(h.store);

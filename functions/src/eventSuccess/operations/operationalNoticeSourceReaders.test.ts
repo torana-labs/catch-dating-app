@@ -27,7 +27,8 @@ async function setup() {
   const attendeeId = "attendee-source";
   const seeded = await seedJoiningProgress(db, context, start, end);
   const attendee = {...fixture("event_attendee_doc"),
-    eventId: context.eventId, organizerId: context.organizerId, status: "checkedIn",
+    eventId: context.eventId, organizerId: context.organizerId,
+    status: "checkedIn",
     createdAt: stamp(start - 10_000), updatedAt: stamp(start - 1_000),
     registeredAt: stamp(start - 10_000),
     checkedInAt: stamp(start - 1_000)};
@@ -126,7 +127,8 @@ test("trusted plan-change source publishes through the notice boundary",
     const h = await rcsHarness(undefined, "plan-source",
       ["catchEventRcs"], end);
     const attendee = {...fixture("event_attendee_doc"),
-      eventId: h.context.eventId, organizerId: h.context.organizerId, status: "registered",
+      eventId: h.context.eventId, organizerId: h.context.organizerId,
+      status: "registered",
       linkedUid: h.actor.uid, phoneE164: h.actor.phone,
       createdAt: stamp(start), updatedAt: stamp(start),
       registeredAt: stamp(start), checkedInAt: null, checkedInBy: null};

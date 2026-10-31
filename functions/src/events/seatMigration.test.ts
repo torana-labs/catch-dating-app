@@ -114,7 +114,8 @@ test("missing Auth proof, foreign rows, malformed policy and capacity block",
     assert.equal(foreign.state, "blocked");
     if (foreign.state !== "blocked") return;
     assert.ok(foreign.blockers.includes("attendeeSourceConflict"));
-    const policy = planEventSeatMigration(input({event: {organizerId: "other", capacityLimit: 2, status: "active"}}));
+    const policy = planEventSeatMigration(input({event: {organizerId: "other",
+      capacityLimit: 2, status: "active"}}));
     assert.deepEqual(policy, {state: "blocked",
       blockers: ["eventTenantConflict"]});
     const full = planEventSeatMigration(input({event: {organizerId: "org1",

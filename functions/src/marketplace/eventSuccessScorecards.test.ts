@@ -201,7 +201,8 @@ test("buildEventHostFunnelMetrics computes the operating funnel", () => {
       }),
     ] as never,
     waitlistOffers: [
-      {eventId: "event-1", organizerId: "club-1", uid: "runner-2", status: "active"},
+      {eventId: "event-1", organizerId: "club-1", uid: "runner-2",
+        status: "active"},
       {
         eventId: "event-1",
         organizerId: "club-1",

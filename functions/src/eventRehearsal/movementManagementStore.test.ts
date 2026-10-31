@@ -21,7 +21,6 @@ test("checkpoint management uses receipts and current authority", {
   h.session.setup.moduleIds = h.session.setup.moduleIds.filter((m) =>
     m !== "accountability");
   h.session.organizerId = "checkpoint-management-" + h.id;
-  h.session.organizerId = h.session.organizerId;
   const sessionRef = db.collection("eventRehearsals").doc(h.id);
   const orgRef = db.collection("organizers").doc(h.session.organizerId);
   const actorRef = (id: string) => db.collection("eventRehearsalActors")

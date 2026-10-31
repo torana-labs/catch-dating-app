@@ -378,7 +378,8 @@ export async function claimEventRuntimeAccessHandler(
       if (!current || current.eventId !== resolved.eventId ||
           current.uid !== uid ||
           (current.organizerId) !== organizerId ||
-          current.organizerId !== undefined && current.organizerId !== organizerId ||
+          current.organizerId !== undefined &&
+              current.organizerId !== organizerId ||
           current.organizerId !== undefined &&
             current.organizerId !== organizerId ||
           current.status !== "signedUp" &&
@@ -465,7 +466,8 @@ export async function claimEventRuntimeAccessHandler(
         if (!current || current.eventId !== resolved.eventId ||
             current.uid !== uid ||
             (current.organizerId) !== organizerId ||
-            current.organizerId !== undefined && current.organizerId !== organizerId ||
+            current.organizerId !== undefined &&
+                current.organizerId !== organizerId ||
             current.organizerId !== undefined &&
               current.organizerId !== organizerId ||
             current.status !== "signedUp" &&

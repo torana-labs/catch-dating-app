@@ -29,7 +29,8 @@ function timestamp(iso: string) {
  * @param {Partial<OrganizerDocument>} overrides Field overrides.
  * @return {OrganizerDocument} Club document.
  */
-function organizer(overrides: Partial<OrganizerDocument> = {}): OrganizerDocument {
+function organizer(overrides: Partial<OrganizerDocument> =
+{}): OrganizerDocument {
   return {
     name: "Saket Social Runners",
     description: "Run and coffee",

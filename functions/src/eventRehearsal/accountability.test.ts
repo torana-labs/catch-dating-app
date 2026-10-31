@@ -459,7 +459,6 @@ test(
     const session = practiceSession();
     session.setup.moduleIds.push("accountability");
     session.organizerId = "practice-accountability-" + id;
-    session.organizerId = session.organizerId;
     session.publicRehearsalId = "public-" + id;
     session.viewerTokenHash = createHash("sha256")
       .update(session.publicRehearsalId)

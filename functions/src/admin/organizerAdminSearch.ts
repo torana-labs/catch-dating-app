@@ -53,7 +53,8 @@ export function buildOrganizerAdminSearchProjection(
   const sourceText = organizerSearchSourceText(organizerId, organizer);
   return {
     tokens: buildSearchTokens(sourceText, true, maxAdminSearchTokens),
-    sortKey: firstSearchToken(organizer.name) ?? firstSearchToken(organizerId) ?? organizerId,
+    sortKey: firstSearchToken(organizer.name) ?? firstSearchToken(
+      organizerId) ?? organizerId,
     updatedAt,
     updatedBySource,
   };

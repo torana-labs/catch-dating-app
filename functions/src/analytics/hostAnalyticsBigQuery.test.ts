@@ -83,7 +83,8 @@ test("owner link rows come from the link mart for the organizers in scope",
       async insertRows() {},
     }, "project.dataset.mart", "project.dataset.links");
     assert.deepEqual(await source.loadLinkRows(range, ["org"]), [
-      {organizerId: "org", linkId: "tickets", trafficSource: "qr", linkClicks: 3},
+      {organizerId: "org", linkId: "tickets", trafficSource: "qr",
+        linkClicks: 3},
     ]);
     assert.ok(queries[0].sql.includes("FROM `project.dataset.links`"));
     assert.ok(queries[0].sql.includes("club_id IN UNNEST(@organizerIds)"));

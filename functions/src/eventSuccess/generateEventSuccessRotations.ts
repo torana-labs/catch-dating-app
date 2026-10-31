@@ -619,7 +619,8 @@ async function loadRotationEventContext(
     throw new HttpsError("failed-precondition",
       "Event-success plan does not match this event.");
   }
-  if (plan.organizerId !== undefined && plan.organizerId !== event.organizerId) {
+  if (plan.organizerId !== undefined &&
+      plan.organizerId !== event.organizerId) {
     throw new HttpsError("failed-precondition",
       "Event-success plan does not match this club.");
   }

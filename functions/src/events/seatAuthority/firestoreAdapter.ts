@@ -135,7 +135,8 @@ export function deriveEventSeatPolicy(value: unknown): {
     capacity: value.capacityLimit, policyVersion, admissionPolicy,
   }))).digest("hex");
   return {organizerId: typeof value.organizerId === "string" &&
-    value.organizerId.length > 0 ? value.organizerId : String(value.organizerId),
+    value.organizerId.length > 0 ? value.organizerId : String(
+      value.organizerId),
   capacity: value.capacityLimit as number, policyHash, policyVersion,
   status: value.status as "active" | "cancelled"};
 }

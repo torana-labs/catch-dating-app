@@ -280,7 +280,8 @@ export function buildHostAnalyticsFromRecords(
   const previousRows = records.martRows.filter((row) =>
     dailyRowInRange(row, previousRange)
   );
-  const organizerIds = uniqueStrings(records.organizers.map((organizer) => organizer.id));
+  const organizerIds = uniqueStrings(records.organizers.map((
+    organizer) => organizer.id));
   const eventIds = resolveScopeEventIds(records, rows);
   const eventMetrics = eventMetricsFromRows(
     rows,
@@ -545,8 +546,9 @@ async function loadHostAnalytics(
         },
       ),
       loadOperationalAttendees(db, events),
-      loadHostRegistrationAnalytics(db, organizers.map((organizer) => organizer.id),
-        payload.eventId ?? null, range),
+      loadHostRegistrationAnalytics(db, organizers.map((
+        organizer) => organizer.id),
+      payload.eventId ?? null, range),
       // Links belong to the organizer page, so event reports have none.
       payload.eventId ? Promise.resolve([]) : deps.bigQuerySource.loadLinkRows(
         {
@@ -737,7 +739,8 @@ async function resolveOrganizers(
   }
 
   if (scope === "admin") {
-    const snap = await db.collection("organizers").limit(maxAdminOrganizers).get();
+    const snap = await db.collection("organizers").limit(
+      maxAdminOrganizers).get();
     return snap.docs.map((doc) => ({
       id: doc.id,
       data: doc.data() as OrganizerDocument,
@@ -838,11 +841,13 @@ async function getOrganizerRecord(
   db: FirebaseFirestore.Firestore,
   organizerId: string
 ): Promise<OrganizerRecord> {
-  const organizerSnap = await db.collection("organizers").doc(organizerId).get();
+  const organizerSnap = await db.collection("organizers").doc(
+    organizerId).get();
   if (!organizerSnap.exists) {
     throw new HttpsError("not-found", "Club not found.");
   }
-  return {id: organizerSnap.id, data: organizerSnap.data() as OrganizerDocument};
+  return {id: organizerSnap.id,
+    data: organizerSnap.data() as OrganizerDocument};
 }
 
 function assertCanReadOrganizer(
@@ -1160,7 +1165,8 @@ const linkClicksUnavailable:
 /**
  * Owner link clicks (CAT-254): each link's total, most clicked first, with
  * its current label, and the clicks by where visitors came from.
- * @param {OrganizerRecord[]} clubs Organizers in scope, for current link labels.
+ * @param {OrganizerRecord[]} clubs Organizers in scope, for current link
+ *     labels.
  * @param {HostAnalyticsLinkRow[]} rows Clicks by link and traffic source.
  * @return {HostAnalyticsCallableResponse["linkSummary"]} The roll-up.
  */
@@ -1168,10 +1174,12 @@ function summarizeLinks(
   organizers: OrganizerRecord[],
   rows: HostAnalyticsLinkRow[]
 ): HostAnalyticsCallableResponse["linkSummary"] {
-  // Organizers are read as OrganizerDocument here; ownerLinks is organizer-only.
+  // Organizers are read as OrganizerDocument here; ownerLinks is
+  // organizer-only.
   const labels = new Map(organizers.flatMap((organizer) =>
     ((organizer.data as Pick<OrganizerDocument, "ownerLinks">).ownerLinks ?? [])
-      .map((link): [string, string] => [`${organizer.id}/${link.id}`, link.label])));
+      .map((link): [string, string] => [`${organizer.id}/${link.id}`,
+        link.label])));
   const links = new Map<string, {organizerId: string; linkId: string;
     clicks: number}>();
   const sources = new Map<TrafficSource, number>();

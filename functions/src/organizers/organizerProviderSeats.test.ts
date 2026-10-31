@@ -106,7 +106,8 @@ function write(old: ReturnType<typeof fixture>["old"],
   approvalStatus: "approved" | "declined" = "approved"):
   ProviderSeatWrite {
   return {id: attendeeId, old,
-    document: lumaAttendeeDocument({eventId, organizerId, connectionId: "connection1",
+    document: lumaAttendeeDocument({eventId, organizerId,
+      connectionId: "connection1",
       guest: {...guest, approvalStatus}, old, now})};
 }
 
@@ -180,7 +181,8 @@ function reconcileFixture(options: {locked?: boolean; ready?: boolean;
     eventOrigin: {mode: "externalCompanion", provider: "luma"},
     capacityLimit: 2, constraints: {},
     bookedCount: 0, checkedInCount: 1};
-  const old = lumaAttendeeDocument({eventId, organizerId, connectionId: "connection1", guest, now});
+  const old = lumaAttendeeDocument({eventId, organizerId,
+    connectionId: "connection1", guest, now});
   const docs: Record<string, Record<string, unknown>> = {
     [`organizers/${organizerId}`]: {hostUserId: "host1",
       hostUserIds: [], hostProfiles: []},

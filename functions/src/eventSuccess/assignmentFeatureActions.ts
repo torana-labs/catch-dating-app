@@ -109,7 +109,8 @@ export async function listEventAssignmentFeatureChoicesHandler(
       const organizerId = event.organizerId;
       const rules = validateAssignmentFeatureRules(
         plan.assignmentFeatureRules ?? []);
-      if (plan.eventId === data.eventId && plan.organizerId === event.organizerId &&
+      if (plan.eventId === data.eventId &&
+          plan.organizerId === event.organizerId &&
           event.status !== "cancelled") {
         const versionIds = [...new Set(rules.map((rule) =>
           rule.versionId))];
@@ -447,7 +448,8 @@ export async function setEventAssignmentFeatureConsentHandler(
     const response = requireDoc<Response>(responseSnap,
       "OrganizerFormResponseDocument");
     const organizerId = event.organizerId;
-    if (plan.eventId !== data.eventId || plan.organizerId !== event.organizerId ||
+    if (plan.eventId !== data.eventId ||
+        plan.organizerId !== event.organizerId ||
         event.status === "cancelled" || response.respondentUid !== uid ||
         response.identity.phoneE164 !== phone ||
         response.status !== "submitted" || response.withdrawnAt !== null) {

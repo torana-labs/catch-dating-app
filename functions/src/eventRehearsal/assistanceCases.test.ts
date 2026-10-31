@@ -183,7 +183,6 @@ test("Firestore help uses exact Host receipts and reset cleanup", {
   const id = randomUUID();
   const session = practiceSession();
   session.organizerId = "practice-help-" + id;
-  session.organizerId = session.organizerId;
   session.publicRehearsalId = "public-" + id;
   session.viewerTokenHash = createHash("sha256")
     .update(session.publicRehearsalId).digest("hex");

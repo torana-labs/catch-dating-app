@@ -183,7 +183,8 @@ function projection(collection: Collection, snapshot: Snapshot) {
   case "eventAssistanceRcsSubscriptions":
   case "organizerContactChannelStates": fields = readinessFields(collection)!;
     break;
-  case "events": fields = ["organizerId", "organizerId", "status", "eventFormat",
+  case "events": fields = ["organizerId", "organizerId", "status",
+    "eventFormat",
     "startTime", "endTime", "meetingLocation", "itinerary", "eventPolicy",
     "constraints", "capacityLimit", "priceInPaise", "currency",
     "publicRegistrationEnabled"]; break;
@@ -214,7 +215,8 @@ function projection(collection: Collection, snapshot: Snapshot) {
 
 function checkpointMemberProjection(snapshot: Snapshot) {
   if (!snapshot) return null;
-  const fields = ["eventId", "organizerId", "organizerId", "status", "createdAt",
+  const fields = ["eventId", "organizerId", "organizerId", "status",
+    "createdAt",
     "attendanceRevision", "checkedInAt", "accountabilityRevision",
     "accountabilityResolution", "accountabilityResolvedAt",
     "accountabilityResolvedBy", "accountabilityResolvedForCheckInAt"];

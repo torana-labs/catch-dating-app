@@ -121,7 +121,8 @@ export function eventSearchIndexSettings(): Record<string, unknown> {
  * Converts an organizer document into an Algolia organizer record.
  * @param {string} organizerId Firestore organizer id.
  * @param {OrganizerDocument} organizer Organizer document data.
- * @return {AlgoliaOrganizerSearchRecord | null} Algolia record, or null if hidden.
+ * @return {AlgoliaOrganizerSearchRecord | null} Algolia record, or null if
+ *     hidden.
  */
 export function buildOrganizerSearchRecord(
   organizerId: string,

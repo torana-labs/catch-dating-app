@@ -50,12 +50,14 @@ test("message safety actions enforce authority and replay boundaries",
       termsVersion: action === "join" ? "event-chat-v1" : null,
     }), deps);
     try {
-      await put("events", eventId, {organizerId, name: "Demo event", status: "active"});
+      await put("events", eventId, {organizerId, name: "Demo event",
+        status: "active"});
       const organizer = await put("organizers", organizerId,
         {ownerUserId: host, hostUserId: host,
           hostUserIds: [], hostProfiles: []});
       const participation = await put("eventParticipations",
-        `${eventId}_${person}`, {eventId, organizerId, uid: person, status: "signedUp"});
+        `${eventId}_${person}`, {eventId, organizerId, uid: person,
+          status: "signedUp"});
       for (const uid of [host, person]) {
         await put("users", uid, {displayName: uid === host ? "Host" : "Sara",
           profileClaimedAt: now, profileComplete: false});

@@ -1185,7 +1185,8 @@ test("legacy rich mutations cannot edit progressive private basics",
   async () => {
     const h = harness({
       "organizers/club-1": organizer(),
-      "events/event-1": {organizerId: "club-1", name: "Private basics", status: "active", publicationState: "private",
+      "events/event-1": {organizerId: "club-1", name: "Private basics",
+        status: "active", publicationState: "private",
         setupRevision: 1, startTime: ts("2026-05-02T01:30:00.000Z")},
     });
     const changes = [

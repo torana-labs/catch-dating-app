@@ -236,7 +236,6 @@ test("Firestore membership retries, cohosts, reset and guest isolation", {
   const id = randomUUID();
   const h = harness(Date.now(), id);
   h.session.organizerId = "membership-" + id;
-  h.session.organizerId = h.session.organizerId;
   h.session.publicRehearsalId = "public-" + id;
   h.session.viewerTokenHash = createHash("sha256")
     .update(h.session.publicRehearsalId).digest("hex");

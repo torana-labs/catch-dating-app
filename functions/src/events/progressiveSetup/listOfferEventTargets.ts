@@ -144,7 +144,8 @@ export async function listOfferEventTargets(params: {
       tx.get(db.collection("deletedUsers").doc(actorUid)),
     ]);
     authorizeSetupManager(organizer, deleted, actorUid);
-    // organizerId is required on both rich legacy and new private event documents.
+    // organizerId is required on both rich legacy and new private event
+    // documents.
     let query = db.collection("events")
       .where("organizerId", "==", command.organizerId)
       .where("status", "==", "active")

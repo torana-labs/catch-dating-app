@@ -19,7 +19,8 @@ async function harness() {
     organizerId: "organizer-1"};
   const attendeeId = "attendee-1";
   const uid = "guest-1";
-  const event = {...fixture("event_doc"), organizerId: context.organizerId, startTime: stamp(now - 60_000),
+  const event = {...fixture("event_doc"), organizerId: context.organizerId,
+    startTime: stamp(now - 60_000),
     endTime: stamp(now + 3_600_000), status: "active",
     runtimeAccess: {enabled: true,
       publicRuntimeId: "runtime_123456789012345678901234",
@@ -27,7 +28,8 @@ async function harness() {
   const plan = {...fixture("event_success_plan_doc"),
     eventId: context.eventId, organizerId: context.organizerId};
   const attendee = {...fixture("event_attendee_doc"),
-    eventId: context.eventId, organizerId: context.organizerId, status: "registered", linkedUid: uid,
+    eventId: context.eventId, organizerId: context.organizerId,
+    status: "registered", linkedUid: uid,
     checkedInAt: null, checkedInBy: null, linkedAt: stamp(now - 60_000),
     accountabilityResolution: null,
     accountabilityResolvedForCheckInAt: null,

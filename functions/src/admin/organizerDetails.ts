@@ -63,7 +63,8 @@ const defaultDeps: OrganizerDetailsDeps = {
   checkRateLimit: defaultCheckRateLimit,
 };
 
-type OrganizerDetailsPatch = AdminUpdateOrganizerDetailsCallablePayload["fields"];
+type OrganizerDetailsPatch = AdminUpdateOrganizerDetailsCallablePayload[
+    "fields"];
 type OrganizerWithLearningSource = OrganizerDocument &
   Pick<OrganizerDocument, "intakeLearningSource">;
 type OrganizerWithOwnerLinks = OrganizerDocument &
@@ -173,15 +174,17 @@ export async function adminGetOrganizerDetailsHandler(
     normalizeAdminGetOrganizerDetailsPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetOrganizerDetails", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetOrganizerDetails",
+    {
+      maxRequests: 60, windowMs: 60 * 1000,
+    });
   const organizerRef = db.collection("organizers").doc(data.organizerId);
   const organizerSnap = await organizerRef.get();
   if (!organizerSnap.exists) {
     throw new HttpsError("not-found", "Organizer listing not found.");
   }
-  const organizer = requireDoc<OrganizerDocument>(organizerSnap, "OrganizerDocument");
+  const organizer = requireDoc<OrganizerDocument>(organizerSnap,
+    "OrganizerDocument");
   return {organizer: publicOrganizerDetails(data.organizerId, organizer)};
 }
 
@@ -196,15 +199,17 @@ export async function adminListOrganizerDetailsHandler(
   deps: OrganizerDetailsDeps = defaultDeps
 ): Promise<AdminListOrganizerDetailsResponse> {
   const adminContext = requireAdminRole(request, organizerDetailsRoles);
-  const data = validateCallableWithAjv<AdminListOrganizerDetailsCallablePayload>(
-    request,
-    validateAdminListOrganizerDetailsCallablePayload,
-    normalizeAdminListOrganizerDetailsPayload
-  );
+  const data =
+      validateCallableWithAjv<AdminListOrganizerDetailsCallablePayload>(
+        request,
+        validateAdminListOrganizerDetailsCallablePayload,
+        normalizeAdminListOrganizerDetailsPayload
+      );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminListOrganizerDetails", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
+  await deps.checkRateLimit?.(db, adminContext.uid,
+    "adminListOrganizerDetails", {
+      maxRequests: 60, windowMs: 60 * 1000,
+    });
 
   const limit = clampLimit(data.limit);
   const queryText = normalizeSearchText(data.query);
@@ -235,7 +240,8 @@ export async function adminListOrganizerDetailsHandler(
     .get();
   const rows = snapshot.docs
     .map((doc) =>
-      publicOrganizerListRow(doc.id, requireDoc<OrganizerDocument>(doc, "OrganizerDocument")))
+      publicOrganizerListRow(doc.id, requireDoc<OrganizerDocument>(doc,
+        "OrganizerDocument")))
     .filter((row) => organizerListRowMatchesQuery(row, queryText))
     .sort((a, b) => a.name.localeCompare(b.name))
     .slice(0, limit);
@@ -288,9 +294,10 @@ export async function adminUpdateOrganizerDetailsHandler(
   }, "This organizer edit");
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateOrganizerDetails", {
-    maxRequests: 30, windowMs: 60 * 1000,
-  });
+  await deps.checkRateLimit?.(db, adminContext.uid,
+    "adminUpdateOrganizerDetails", {
+      maxRequests: 30, windowMs: 60 * 1000,
+    });
   const organizerRef = db.collection("organizers").doc(data.organizerId);
   await db.runTransaction(async (tx) => {
     const organizerSnap = await tx.get(organizerRef);

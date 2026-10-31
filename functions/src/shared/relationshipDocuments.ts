@@ -23,7 +23,8 @@ export interface EventParticipationSnapshot {
  * @param {string} uid User id.
  * @return {string} Membership document id.
  */
-export function organizerMembershipId(organizerId: string, uid: string): string {
+export function organizerMembershipId(organizerId: string,
+  uid: string): string {
   return `${organizerId}_${uid}`;
 }
 

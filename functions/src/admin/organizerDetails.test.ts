@@ -499,54 +499,55 @@ test(
   }
 );
 
-test("adminUpdateOrganizerDetailsHandler saves allowed cleanup fields", async () => {
-  const h = harness({
-    "organizers/afterfly-run-club-indore": organizerDoc(),
+test("adminUpdateOrganizerDetailsHandler saves allowed cleanup fields",
+  async () => {
+    const h = harness({
+      "organizers/afterfly-run-club-indore": organizerDoc(),
+    });
+
+    const result = await adminUpdateOrganizerDetailsHandler(
+      callableRequest("admin-1", {
+        organizerId: "afterfly-run-club-indore",
+        fields: {
+          name: " Afterfly Run Club ",
+          tags: [" social run ", "social run", ""],
+          email: "hello@afterfly.in ",
+          publicPage: {
+            seoTitle: "Afterfly Run Club | Indore organizer profile",
+          },
+          provenance: {
+            sourceConfidence: "high",
+            verificationStatus: "sourceBacked",
+          },
+          publicProfile: {
+            headline: "Afterfly Run Club in Indore",
+          },
+        },
+        reviewNote: "Cleaned up naming and owner contact.",
+      }, {admin: true}),
+      h.deps
+    );
+
+    assert.equal(result.organizerId, "afterfly-run-club-indore");
+    assert.equal(result.updatedFieldCount, 8);
+    const organizer = h.firestore.get("organizers/afterfly-run-club-indore");
+    assert.equal(organizer?.name, "Afterfly Run Club");
+    assert.deepEqual(organizer?.tags, ["social run"]);
+    assert.equal(organizer?.email, "hello@afterfly.in");
+    assert.equal(
+      (organizer?.publicPage as FakeData).seoTitle,
+      "Afterfly Run Club | Indore organizer profile"
+    );
+    assert.equal(
+      (organizer?.provenance as FakeData).lastVerifiedAt,
+      "SERVER_TIMESTAMP"
+    );
+    assert.equal((organizer?.adminSearch as FakeData).updatedBySource,
+      "adminUpdateOrganizerDetails");
+    assert.ok(((organizer?.adminSearch as FakeData).tokens as string[])
+      .includes("afterfly"));
+    assert.equal(h.firestore.auditLogs().length, 1);
   });
-
-  const result = await adminUpdateOrganizerDetailsHandler(
-    callableRequest("admin-1", {
-      organizerId: "afterfly-run-club-indore",
-      fields: {
-        name: " Afterfly Run Club ",
-        tags: [" social run ", "social run", ""],
-        email: "hello@afterfly.in ",
-        publicPage: {
-          seoTitle: "Afterfly Run Club | Indore organizer profile",
-        },
-        provenance: {
-          sourceConfidence: "high",
-          verificationStatus: "sourceBacked",
-        },
-        publicProfile: {
-          headline: "Afterfly Run Club in Indore",
-        },
-      },
-      reviewNote: "Cleaned up naming and owner contact.",
-    }, {admin: true}),
-    h.deps
-  );
-
-  assert.equal(result.organizerId, "afterfly-run-club-indore");
-  assert.equal(result.updatedFieldCount, 8);
-  const organizer = h.firestore.get("organizers/afterfly-run-club-indore");
-  assert.equal(organizer?.name, "Afterfly Run Club");
-  assert.deepEqual(organizer?.tags, ["social run"]);
-  assert.equal(organizer?.email, "hello@afterfly.in");
-  assert.equal(
-    (organizer?.publicPage as FakeData).seoTitle,
-    "Afterfly Run Club | Indore organizer profile"
-  );
-  assert.equal(
-    (organizer?.provenance as FakeData).lastVerifiedAt,
-    "SERVER_TIMESTAMP"
-  );
-  assert.equal((organizer?.adminSearch as FakeData).updatedBySource,
-    "adminUpdateOrganizerDetails");
-  assert.ok(((organizer?.adminSearch as FakeData).tokens as string[])
-    .includes("afterfly"));
-  assert.equal(h.firestore.auditLogs().length, 1);
-});
 
 test("adminUpdateOrganizerDetailsHandler replaces the organizer page links",
   async () => {
@@ -737,7 +738,8 @@ test("adminUpdateOrganizerDetailsHandler reserves changed canonical routes",
       "afterfly",
     ]);
     assert.equal(newReservation?.lastVerifiedByUid, "admin-1");
-    assert.equal(newReservation?.lastVerifiedSource, "adminUpdateOrganizerDetails");
+    assert.equal(newReservation?.lastVerifiedSource,
+      "adminUpdateOrganizerDetails");
     const previousReservation = h.firestore.get(
       "publicRouteReservations/organizers__indore__afterfly-run-club"
     );
@@ -881,7 +883,8 @@ test("adminUpdateOrganizerDetailsHandler rejects protected index fields",
   }
 );
 
-test("adminUpdateOrganizerDetailsHandler keeps operator text out of public fields",
+test(
+  "adminUpdateOrganizerDetailsHandler keeps operator text out of public fields",
   async () => {
     const before = organizerDoc();
     const h = harness({"organizers/afterfly-run-club-indore": before});
@@ -1003,19 +1006,20 @@ test("adminUpdateOrganizerDetailsHandler requires review notes", async () => {
   );
 });
 
-test("adminUpdateOrganizerDetailsHandler blocks viewer-only admins", async () => {
-  const h = harness({
-    "organizers/afterfly-run-club-indore": organizerDoc(),
-  });
+test("adminUpdateOrganizerDetailsHandler blocks viewer-only admins",
+  async () => {
+    const h = harness({
+      "organizers/afterfly-run-club-indore": organizerDoc(),
+    });
 
-  await assert.rejects(
-    () => adminUpdateOrganizerDetailsHandler(
-      callableRequest("admin-1", {
-        organizerId: "afterfly-run-club-indore",
-        fields: {name: "Afterfly"},
-      }, {analyticsViewer: true}),
-      h.deps
-    ),
-    (error) => assertHttpsCode(error, "permission-denied")
-  );
-});
+    await assert.rejects(
+      () => adminUpdateOrganizerDetailsHandler(
+        callableRequest("admin-1", {
+          organizerId: "afterfly-run-club-indore",
+          fields: {name: "Afterfly"},
+        }, {analyticsViewer: true}),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "permission-denied")
+    );
+  });

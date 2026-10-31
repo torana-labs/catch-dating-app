@@ -15,7 +15,8 @@ function fixture() {
       ownership: {state: "userCreated"}, claim: {state: "verified"},
       publicPage: {publishStatus: "published", indexStatus: "index",
         robots: "index, follow", canonicalPath: "/organizers/org-1/"}},
-    "events/event-1": {organizerId: "org-1", publicationState: "published", status: "active",
+    "events/event-1": {organizerId: "org-1", publicationState: "published",
+      status: "active",
       eventFormat: {version: 1, activityKind: "running",
         interactionModel: "pacePods"}},
   };

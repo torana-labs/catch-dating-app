@@ -591,7 +591,8 @@ test("follower posts cannot link a private setup event", async () => {
       name: "Sunday Social", hostUserId: "host-1",
       ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: [],
     },
-    "events/private-1": {organizerId: "organizer-1", status: "active", publicationState: "private", setupRevision: 1},
+    "events/private-1": {organizerId: "organizer-1", status: "active",
+      publicationState: "private", setupRevision: 1},
   });
   type CreateDeps = NonNullable<
     Parameters<typeof createOrganizerPostHandler>[1]

@@ -736,7 +736,8 @@ function normalizeEventSafetyDetail(
     ],
     evidence: [
       evidence("Event", eventId, eventId ? `events/${eventId}` : null, false),
-      evidence("Club", organizerId, organizerId ? `clubs/${organizerId}` : null, false),
+      evidence("Club", organizerId, organizerId ? `clubs/${organizerId}` :
+        null, false),
       evidence("Reporter", reporterUserId, userPath(reporterUserId), false),
       evidence("Feedback", feedbackId, sourcePathFromValue(feedbackId), false),
       evidence("Note preview", notePreview, null, true),

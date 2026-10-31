@@ -20,7 +20,6 @@ test("practice staff controls retain receipts, current Host " +
   if (!admin.apps.length) admin.initializeApp({projectId: "demo-catch-rules"});
   const db = getEmulatorFirestore(); const h = harness();
   h.session.organizerId = "practice-staff-" + h.id;
-  h.session.organizerId = h.session.organizerId;
   h.group(); h.arrive(); h.arrive(1); h.place(); h.place(1);
   const sessionRef = db.collection("eventRehearsals").doc(h.id);
   const orgRef = db.collection("organizers").doc(h.session.organizerId);

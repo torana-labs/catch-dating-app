@@ -45,7 +45,8 @@ export async function seedJoiningProgress(db: Firestore,
         longitude: 75.8}}))};
   const schema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
-  const organizer = {...Object.fromEntries(Object.entries(fixture("organizer_doc"))
+  const organizer = {...Object.fromEntries(Object.entries(fixture(
+    "organizer_doc"))
     .filter(([key]) => key in schema.properties)), followerCount: 12,
   organizerPhotos: [], organizerType: "community"};
   const plan = {...fixture("event_success_plan_doc"),

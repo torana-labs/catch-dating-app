@@ -102,7 +102,8 @@ function listingFromFirestoreOrganizer(
   const path = `organizers/${id}`;
   const readiness = organizerListingReadiness(id, path, organizer);
   if (!readiness.documentValid || organizer.archived ||
-      organizer.status === "archived" || organizer.claim?.state === "suppressed") {
+      organizer.status === "archived" ||
+          organizer.claim?.state === "suppressed") {
     return null;
   }
   const listing = listingFromOrganizerDocument(path, organizer);
@@ -137,8 +138,10 @@ function listingFromOrganizerDocument(
     return null;
   }
   const id = firestorePath.split("/").pop() || organizer.publicPage.slug;
-  const city = organizer.cityName || organizer.area || organizer.location || "Unknown";
-  const citySlug = organizer.publicPage.citySlug || organizer.location || "unknown";
+  const city = organizer.cityName || organizer.area || organizer.location ||
+      "Unknown";
+  const citySlug = organizer.publicPage.citySlug || organizer.location ||
+      "unknown";
   const publicProfile = organizer.publicProfile ?? {};
   const claimState = organizer.claim?.state ?? "unclaimed";
   const claimHref = claimState === "unclaimed" ?

@@ -57,7 +57,8 @@ for (const {status, attendedAt, attendance} of [
       organizerLocationMarketId: "in-mh-mumbai", bookedCount: 0}));
     assert.ok(validateEventDocument(h.event),
       JSON.stringify(validateEventDocument.errors));
-    const participation = {eventId, organizerId: h.event.organizerId, uid, status,
+    const participation = {eventId, organizerId: h.event.organizerId, uid,
+      status,
       createdAt: Timestamp.fromMillis(now - 2000),
       updatedAt: Timestamp.fromMillis(now - 1000),
       signedUpAt: Timestamp.fromMillis(now - 2000), waitlistedAt: null,

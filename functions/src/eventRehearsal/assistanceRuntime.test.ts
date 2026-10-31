@@ -336,7 +336,6 @@ test("Firestore serializes Host rehearsal commands, guest replies and reset", {
   const id = randomUUID();
   const session = practiceSession();
   session.organizerId = "practice-owner-" + id;
-  session.organizerId = session.organizerId;
   session.publicRehearsalId = "public-" + id;
   const fixture = JSON.parse(readFileSync(
     "../contracts/fixtures/valid/organizer_doc.json", "utf8"));
@@ -651,7 +650,6 @@ test("Firestore automates a 50-guest rehearsal in the existing callables", {
   const id = randomUUID();
   const session = {...practiceSession(), actorCount: 50};
   session.organizerId = "practice-owner-" + id;
-  session.organizerId = session.organizerId;
   session.publicRehearsalId = "public-" + id;
   const fixture = JSON.parse(readFileSync(
     "../contracts/fixtures/valid/organizer_doc.json", "utf8"));

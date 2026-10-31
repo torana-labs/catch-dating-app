@@ -163,7 +163,8 @@ test("verified imported guest keeps its source and existing seat", async () => {
   store.get(`organizerContacts/${contactId}`)!.phoneE164 = phone;
   store.get(`eventSeatLedgers/${eventId}`)!.occupied = 1;
   store.get(`events/${eventId}`)!.bookedCount = 1;
-  store.put(`eventAttendees/${guestId}`, {eventId, organizerId: org, source: "hostImport", status: "registered",
+  store.put(`eventAttendees/${guestId}`, {eventId, organizerId: org,
+    source: "hostImport", status: "registered",
     linkedUid: null, phoneE164: phone, externalReference: null,
     displayName: "Imported Ada"});
   store.alias("attendee", guestId, guestKey);
@@ -293,7 +294,8 @@ test("attested manual payment lands on a linked imported attendee",
     store.get(`organizerContacts/${contactId}`)!.phoneE164 = phone;
     store.get(`eventSeatLedgers/${eventId}`)!.occupied = 1;
     store.get(`events/${eventId}`)!.bookedCount = 1;
-    store.put(`eventAttendees/${guestId}`, {eventId, organizerId: org, source: "hostImport", status: "registered",
+    store.put(`eventAttendees/${guestId}`, {eventId, organizerId: org,
+      source: "hostImport", status: "registered",
       linkedUid: null, phoneE164: phone, externalReference: null,
       displayName: "Imported Ada"});
     store.alias("attendee", guestId, guestKey);

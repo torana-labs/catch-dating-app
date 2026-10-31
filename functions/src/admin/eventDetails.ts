@@ -415,7 +415,8 @@ export async function adminUpdateEventDetailsHandler(
       targetPath: eventRef.path,
       request,
       before: {
-        event: publicEventDetails(data.eventId, before, organizer?.name ?? null),
+        event: publicEventDetails(data.eventId, before, organizer?.name ??
+            null),
       },
       after: {
         eventId: data.eventId,
@@ -643,7 +644,8 @@ async function loadOrganizer(
   organizerId: string
 ): Promise<OrganizerDocument | null> {
   const snap = await db.collection("organizers").doc(organizerId).get();
-  return snap.exists ? requireDoc<OrganizerDocument>(snap, "OrganizerDocument") : null;
+  return snap.exists ? requireDoc<OrganizerDocument>(snap,
+    "OrganizerDocument") : null;
 }
 
 /**
@@ -656,7 +658,8 @@ async function loadOrganizerNames(
   db: FirebaseFirestore.Firestore,
   organizerIds: string[]
 ): Promise<Map<string, string>> {
-  const uniqueIds = Array.from(new Set(organizerIds.filter(Boolean))).slice(0, 100);
+  const uniqueIds = Array.from(new Set(organizerIds.filter(Boolean))).slice(0,
+    100);
   const entries = await Promise.all(uniqueIds.map(async (organizerId) => {
     const organizer = await loadOrganizer(db, organizerId);
     return [organizerId, organizer?.name ?? null] as const;

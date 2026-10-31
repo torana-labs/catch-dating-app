@@ -155,19 +155,20 @@ test("normalizeQueueItem builds live restricted event request rows", () => {
 
 test("normalizeQueueItem builds readable club claim request rows", () => {
   assert.deepEqual(
-    normalizeQueueItem("organizerClaimRequest", "organizerClaimRequests/request-1", {
-      organizerId: "afterfly-run-club-indore",
-      requesterUid: "user-1",
-      requesterName: "Afterfly Ops",
-      requesterRole: "founder",
-      businessEmail: "hello@afterfly.example",
-      proofUrls: [
-        "https://example.com/afterfly",
-        "https://instagram.com/afterfly",
-      ],
-      status: "pending",
-      createdAt: new Date("2026-06-01T11:30:00.000Z"),
-    }),
+    normalizeQueueItem("organizerClaimRequest",
+      "organizerClaimRequests/request-1", {
+        organizerId: "afterfly-run-club-indore",
+        requesterUid: "user-1",
+        requesterName: "Afterfly Ops",
+        requesterRole: "founder",
+        businessEmail: "hello@afterfly.example",
+        proofUrls: [
+          "https://example.com/afterfly",
+          "https://instagram.com/afterfly",
+        ],
+        status: "pending",
+        createdAt: new Date("2026-06-01T11:30:00.000Z"),
+      }),
     {
       id: "organizerClaimRequests/request-1",
       title: "Afterfly Ops",
@@ -183,18 +184,19 @@ test("normalizeQueueItem builds readable club claim request rows", () => {
 
 test("normalizeQueueItem builds readable club index review rows", () => {
   assert.deepEqual(
-    normalizeQueueItem("organizerIndexReview", "clubs/afterfly-run-club-indore", {
-      name: "AFTER FLY",
-      publicPage: {
-        canonicalPath: "/organizers/indore/afterfly-run-club/",
-        indexStatus: "noindex",
-      },
-      provenance: {
-        sourceConfidence: "high",
-        verificationStatus: "sourceBacked",
-        lastVerifiedAt: new Date("2026-06-01T12:00:00.000Z"),
-      },
-    }),
+    normalizeQueueItem("organizerIndexReview",
+      "clubs/afterfly-run-club-indore", {
+        name: "AFTER FLY",
+        publicPage: {
+          canonicalPath: "/organizers/indore/afterfly-run-club/",
+          indexStatus: "noindex",
+        },
+        provenance: {
+          sourceConfidence: "high",
+          verificationStatus: "sourceBacked",
+          lastVerifiedAt: new Date("2026-06-01T12:00:00.000Z"),
+        },
+      }),
     {
       id: "clubs/afterfly-run-club-indore",
       title: "AFTER FLY",

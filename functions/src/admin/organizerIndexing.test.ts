@@ -283,69 +283,74 @@ function assertHttpsCode(error: unknown, code: string): boolean {
   return true;
 }
 
-test("adminSetOrganizerIndexStatusHandler marks a page index-ready", async () => {
-  const h = harness({
-    "organizers/afterfly-run-club-indore": organizerDoc(),
-  });
+test("adminSetOrganizerIndexStatusHandler marks a page index-ready",
+  async () => {
+    const h = harness({
+      "organizers/afterfly-run-club-indore": organizerDoc(),
+    });
 
-  const result = await adminSetOrganizerIndexStatusHandler(
-    callableRequest("admin-1", {
-      organizerId: "afterfly-run-club-indore",
-      indexStatus: "indexReady",
-      checklist: completeChecklist(),
-      reviewNote: "Sources, cadence, media rights, and owner contact checked.",
-    }, {support: true}),
-    h.deps
-  );
-
-  assert.deepEqual(result, {
-    organizerId: "afterfly-run-club-indore",
-    indexStatus: "indexReady",
-    publishStatus: "published",
-    robots: "index, follow",
-  });
-  assert.deepEqual(
-    h.firestore.get("organizers/afterfly-run-club-indore")?.publicPage,
-    {
-      slug: "afterfly-run-club",
-      citySlug: "indore",
-      canonicalPath: "/organizers/indore/afterfly-run-club/",
-      publishStatus: "published",
-      indexStatus: "indexReady",
-      robots: "index, follow",
-      seoTitle: "AFTER FLY",
-      seoDescription: "Indore organizer profile.",
-      lastRenderedAt: null,
-      indexReview: {
-        reviewedAt: "SERVER_TIMESTAMP",
-        reviewedByUid: "admin-1",
+    const result = await adminSetOrganizerIndexStatusHandler(
+      callableRequest("admin-1", {
+        organizerId: "afterfly-run-club-indore",
         indexStatus: "indexReady",
         checklist: completeChecklist(),
         reviewNote:
           "Sources, cadence, media rights, and owner contact checked.",
-      },
-    }
-  );
-  const reservation = h.firestore.get(
-    "publicRouteReservations/organizers__indore__afterfly-run-club"
-  );
-  assert.equal(reservation?.status, "active");
-  assert.equal(
-    reservation?.targetPath,
-    "organizers/afterfly-run-club-indore"
-  );
-  assert.equal(
-    reservation?.routePath,
-    "/organizers/indore/afterfly-run-club/"
-  );
-  assert.equal(reservation?.lastVerifiedByUid, "admin-1");
-  assert.equal(reservation?.lastVerifiedSource, "adminSetOrganizerIndexStatus");
-  const search = h.firestore.get("organizers/afterfly-run-club-indore")
-    ?.adminSearch as FakeData | undefined;
-  assert.equal(search?.updatedBySource, "adminSetOrganizerIndexStatus");
-  assert.ok((search?.tokens as string[]).includes("afterfly"));
-  assert.equal(h.firestore.auditLogs().length, 1);
-});
+      }, {support: true}),
+      h.deps
+    );
+
+    assert.deepEqual(result, {
+      organizerId: "afterfly-run-club-indore",
+      indexStatus: "indexReady",
+      publishStatus: "published",
+      robots: "index, follow",
+    });
+    assert.deepEqual(
+      h.firestore.get("organizers/afterfly-run-club-indore")?.publicPage,
+      {
+        slug: "afterfly-run-club",
+        citySlug: "indore",
+        canonicalPath: "/organizers/indore/afterfly-run-club/",
+        publishStatus: "published",
+        indexStatus: "indexReady",
+        robots: "index, follow",
+        seoTitle: "AFTER FLY",
+        seoDescription: "Indore organizer profile.",
+        lastRenderedAt: null,
+        indexReview: {
+          reviewedAt: "SERVER_TIMESTAMP",
+          reviewedByUid: "admin-1",
+          indexStatus: "indexReady",
+          checklist: completeChecklist(),
+          reviewNote:
+          "Sources, cadence, media rights, and owner contact checked.",
+        },
+      }
+    );
+    const reservation = h.firestore.get(
+      "publicRouteReservations/organizers__indore__afterfly-run-club"
+    );
+    assert.equal(reservation?.status, "active");
+    assert.equal(
+      reservation?.targetPath,
+      "organizers/afterfly-run-club-indore"
+    );
+    assert.equal(
+      reservation?.routePath,
+      "/organizers/indore/afterfly-run-club/"
+    );
+    assert.equal(reservation?.lastVerifiedByUid, "admin-1");
+    assert.equal(
+      reservation?.lastVerifiedSource,
+      "adminSetOrganizerIndexStatus"
+    );
+    const search = h.firestore.get("organizers/afterfly-run-club-indore")
+      ?.adminSearch as FakeData | undefined;
+    assert.equal(search?.updatedBySource, "adminSetOrganizerIndexStatus");
+    assert.ok((search?.tokens as string[]).includes("afterfly"));
+    assert.equal(h.firestore.auditLogs().length, 1);
+  });
 
 test("adminSetOrganizerIndexStatusHandler rejects reserved route conflicts",
   async () => {
@@ -443,23 +448,24 @@ test("adminSetOrganizerIndexStatusHandler refuses to publish operator content",
     );
   });
 
-test("adminSetOrganizerIndexStatusHandler blocks viewer-only admins", async () => {
-  const h = harness({
-    "organizers/afterfly-run-club-indore": organizerDoc(),
-  });
+test("adminSetOrganizerIndexStatusHandler blocks viewer-only admins",
+  async () => {
+    const h = harness({
+      "organizers/afterfly-run-club-indore": organizerDoc(),
+    });
 
-  await assert.rejects(
-    () => adminSetOrganizerIndexStatusHandler(
-      callableRequest("admin-1", {
-        organizerId: "afterfly-run-club-indore",
-        indexStatus: "noindex",
-        checklist: completeChecklist(),
-      }, {analyticsViewer: true}),
-      h.deps
-    ),
-    (error) => assertHttpsCode(error, "permission-denied")
-  );
-});
+    await assert.rejects(
+      () => adminSetOrganizerIndexStatusHandler(
+        callableRequest("admin-1", {
+          organizerId: "afterfly-run-club-indore",
+          indexStatus: "noindex",
+          checklist: completeChecklist(),
+        }, {analyticsViewer: true}),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "permission-denied")
+    );
+  });
 
 test("adminSetOrganizerIndexStatusHandler requires review notes", async () => {
   const h = harness({
@@ -479,7 +485,8 @@ test("adminSetOrganizerIndexStatusHandler requires review notes", async () => {
   );
 });
 
-test("adminSetOrganizerIndexStatusHandler enforces the rate limit before writing",
+test(
+  "adminSetOrganizerIndexStatusHandler enforces the rate limit before writing",
   async () => {
     const h = harness({
       "organizers/afterfly-run-club-indore": organizerDoc(),

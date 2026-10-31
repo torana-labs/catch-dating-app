@@ -163,7 +163,8 @@ function harness({
       unreadCounts: {"runner-1": 0, "runner-2": 1},
       status: "active",
       ...(conversationType == null ? {} : {conversationType}),
-      ...(conversationType === "organizerHostInquiry" ? {organizerId: "org-1"} : {}),
+      ...(conversationType === "organizerHostInquiry" ? {
+        organizerId: "org-1"} : {}),
     },
     "publicProfiles/runner-1": {name: "Runner One"},
     "users/runner-2": {fcmToken: "token-2"},

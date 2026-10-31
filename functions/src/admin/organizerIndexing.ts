@@ -72,9 +72,10 @@ export async function adminSetOrganizerIndexStatusHandler(
   }
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminSetOrganizerIndexStatus", {
-    maxRequests: 30, windowMs: 60 * 1000,
-  });
+  await deps.checkRateLimit?.(db, adminContext.uid,
+    "adminSetOrganizerIndexStatus", {
+      maxRequests: 30, windowMs: 60 * 1000,
+    });
   const organizerRef = db.collection("organizers").doc(data.organizerId);
   const timestamp = deps.serverTimestamp();
   const publishStatus = data.indexStatus === "noindex" ? "qa" : "published";
@@ -87,7 +88,8 @@ export async function adminSetOrganizerIndexStatusHandler(
     if (!organizerSnap.exists) {
       throw new HttpsError("not-found", "Organizer listing not found.");
     }
-    const before = requireDoc<OrganizerDocument>(organizerSnap, "OrganizerDocument");
+    const before = requireDoc<OrganizerDocument>(organizerSnap,
+      "OrganizerDocument");
     if (data.indexStatus !== "noindex") {
       assertOrganizerPublicContent(before, "Publishing this organizer");
       await reserveOrganizerCanonicalRoute(tx, db, {

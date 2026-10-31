@@ -98,7 +98,8 @@ test("one approval applies once and a lost response replays its receipt",
 test("roster document conversion retains authority and reported revenue",
   () => {
     const now = admin.firestore.Timestamp.fromMillis(1234);
-    const source = {eventId: "event-1", organizerId: "organizer-1", displayName: "Asha Shah",
+    const source = {eventId: "event-1", organizerId: "organizer-1",
+      displayName: "Asha Shah",
       searchName: "asha shah", source: "catchBooking" as const,
       status: "registered" as const, linkedUid: null, phoneE164: null,
       email: null, externalReference: "booking-1", arrivalGroup: null,

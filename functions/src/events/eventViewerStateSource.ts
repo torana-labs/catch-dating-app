@@ -130,7 +130,8 @@ export async function readEventViewerStateSource(params: {
       EventParticipationDocument | undefined;
     if (participation && (!validateEventParticipationDocument(participation) ||
         participation.eventId !== eventId ||
-        participation.uid !== uid || participation.organizerId !== event.organizerId ||
+        participation.uid !== uid ||
+            participation.organizerId !== event.organizerId ||
         participation.organizerId !== undefined &&
           participation.organizerId !== (event.organizerId))) {
       return null;
@@ -138,7 +139,8 @@ export async function readEventViewerStateSource(params: {
     const offer = offerSnap.data();
     if (offer && (!validateEventWaitlistOfferDocument(offer) ||
         offer.uid !== uid || offer.eventId !== eventId ||
-        offer.organizerId !== event.organizerId || offer.organizerId !== undefined &&
+        offer.organizerId !== event.organizerId ||
+            offer.organizerId !== undefined &&
           offer.organizerId !== (event.organizerId))) {
       return null;
     }

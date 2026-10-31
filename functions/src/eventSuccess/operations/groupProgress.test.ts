@@ -52,7 +52,8 @@ async function harness(realDb?: Firestore, id = "fixture") {
         longitude: 75.8, notes: "Meet at the entrance."}}))};
   const organizerSchema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
-  const organizer = {...Object.fromEntries(Object.entries(fixture("organizer_doc"))
+  const organizer = {...Object.fromEntries(Object.entries(fixture(
+    "organizer_doc"))
     .filter(([key]) => key in organizerSchema.properties)), followerCount: 12,
   organizerPhotos: [], organizerType: "community"};
   const plan = {...fixture("event_success_plan_doc"),

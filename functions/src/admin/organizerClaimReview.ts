@@ -36,7 +36,8 @@ export interface AdminGetOrganizerClaimRequestDetailsPayload {
   requestId: string;
 }
 
-export interface AdminOrganizerClaimRequestDetails extends AdminOrganizerClaimListRow {
+export interface AdminOrganizerClaimRequestDetails
+  extends AdminOrganizerClaimListRow {
   businessEmail: string | null;
   businessPhone: string | null;
   proofUrls: string[];
@@ -128,7 +129,8 @@ export async function adminGetOrganizerClaimRequestDetailsHandler(
     requireDoc<UserProfileDocument>(requesterSnapshot, "UserProfileDocument") :
     null;
   return {
-    request: claimDetails(payload.requestId, claimRequest, organizer, requester),
+    request: claimDetails(payload.requestId, claimRequest, organizer,
+      requester),
   };
 }
 

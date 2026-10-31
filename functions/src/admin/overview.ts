@@ -463,7 +463,8 @@ async function listOrganizerIndexReviewItems(
     .limit(5)
     .get();
   return snapshot.docs.map((doc) =>
-    normalizeQueueItem("organizerIndexReview", `organizers/${doc.id}`, doc.data())
+    normalizeQueueItem("organizerIndexReview", `organizers/${doc.id}`,
+      doc.data())
   );
 }
 

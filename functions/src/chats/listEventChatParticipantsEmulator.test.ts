@@ -46,7 +46,8 @@ test("Firestore room participants are current, bounded and private",
       organizerId, status, revision: 1, termsVersion: "event-chat-v1",
       joinedAt: now, leftAt: null, createdAt: now, updatedAt: now});
     try {
-      await put("events", eventId, {organizerId, name: "Private event", status: "active"});
+      await put("events", eventId, {organizerId, name: "Private event",
+        status: "active"});
       await put("organizers", organizerId, {ownerUserId: host, hostUserId: host,
         hostUserIds: [], hostProfiles: []});
       const room = await put("eventChatRooms", eventId, {eventId, organizerId,

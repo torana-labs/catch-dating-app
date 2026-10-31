@@ -54,7 +54,8 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
           previews.push(preview);
         }});
     try {
-      await ref("events", eventId).set({organizerId, name: "Room", status: "active"});
+      await ref("events", eventId).set({organizerId, name: "Room",
+        status: "active"});
       await ref("organizers", organizerId).set({ownerUserId: host,
         hostUserId: host, hostUserIds: [], hostProfiles: []});
       await ref("users", host).set({displayName: "Host",

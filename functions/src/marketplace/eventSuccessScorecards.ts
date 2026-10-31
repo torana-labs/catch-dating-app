@@ -175,7 +175,8 @@ export async function refreshEventSuccessScorecard(
   // Host inquiries may carry event provenance, but they are support threads,
   // not attendee-to-attendee connections. Keep legacy dating matches whose
   // conversationType predates the discriminator while excluding every
-  // organizerHostInquiry before the shared scorecard, funnel, and invite-link paths.
+  // organizerHostInquiry before the shared scorecard, funnel, and
+  // invite-link paths.
   const matches = matchesSnap.docs
     .map((doc) => doc.data() as MatchDocument)
     .filter(isDatingMatch);

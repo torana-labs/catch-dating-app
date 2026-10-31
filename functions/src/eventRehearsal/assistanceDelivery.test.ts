@@ -324,7 +324,6 @@ test("Firestore fences practice handoffs, retries, replies and reset", {
   const db = getEmulatorFirestore(); const id = randomUUID();
   const session = practiceSession();
   session.organizerId = "practice-delivery-" + id;
-  session.organizerId = session.organizerId;
   session.publicRehearsalId = "public-" + id;
   const sessionRef = db.collection("eventRehearsals").doc(id);
   const actors = buildRehearsalActors(id, 2, 1, session.virtualNow);
