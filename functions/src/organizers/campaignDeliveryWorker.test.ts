@@ -21,6 +21,8 @@ import {whatsappStatusCorrelation} from
 import {whatsappEndpointHash} from
   "../eventSuccess/operations/whatsappReplyProtocol";
 import {MetaProviderError} from "./organizerWhatsappProvider";
+import {dispatchCampaign, dispatchScheduledOrganizerCampaignsHandler} from
+  "./organizerCampaignDispatcher";
 import {
   hashCanonical, hashEndpoint, organizerContactChannelStateId,
 } from "./organizerCampaignModel";
@@ -479,6 +481,39 @@ test("a disputed older attempt keeps latest unknown held beyond intent expiry",
       assert.equal(recordOf(db).attempts[1].state.kind, "unknown");
     }
     assert.equal(sends, 2, "discovery must not authorize another send");
+    // Compose that actual disputed outbox with bounded scheduler discovery.
+    // The first recovery page contains99 held leases plus this conflict.
+    db.updateDoc("organizerCampaigns/camp-1", {
+      status: "blocked", leaseOwner: null, leaseExpiresAt: null,
+    });
+    for (let i = 0; i < 99; i++) {
+      db.setDoc(`organizerCampaignRecipients/rec-${String(i).padStart(3, "0")}`,
+        {organizerId: "org-1", campaignId: "camp-1", status: "sending",
+          leaseOwner: "held", leaseExpiresAt:
+            admin.firestore.Timestamp.fromMillis(now + 600_000)});
+    }
+    db.setDoc("organizerCampaignRecipients/rec-z", {
+      organizerId: "org-1", campaignId: "camp-1", status: "sending",
+      leaseOwner: "legacy", leaseExpiresAt: NOW,
+    });
+    const deps = {firestore: () => db as unknown as Firestore,
+      runtimeProjectId: () => "demo-catch-rules",
+      now: () => admin.firestore.Timestamp.fromMillis(now),
+      checkRateLimit: async () => {},
+      tokenStore: {accessBound: async () => "test-token"},
+      provider: () => ({sendTemplate: async () => {
+        sends++;
+        throw new Error("Recovery must never send");
+      }})};
+    await dispatchScheduledOrganizerCampaignsHandler(deps);
+    assert.equal(db.getDoc("organizerCampaignRecipients/rec-z")?.status,
+      "sending");
+    await dispatchScheduledOrganizerCampaignsHandler(deps);
+    assert.equal(db.getDoc("organizerCampaignRecipients/rec-z")?.status,
+      "failed", "later legacy recovery is discovered without resending");
+    assert.equal(recipientOf(db).status, "sending");
+    assert.equal(recordOf(db).attempts[1].state.kind, "unknown");
+    assert.equal(sends, 2);
   });
 
 test("ordinary credential withholding expires without permanent starvation",
@@ -504,3 +539,61 @@ test("ordinary credential withholding expires without permanent starvation",
     assert.equal(recipientOf(db).status, "failed");
     assert.equal(sends, 0);
   });
+
+for (const replace of [false, true]) {
+  test(`paused campaign executor cannot renew or wrap after ${
+    replace ? "owner replacement" : "lease expiry"}`, async () => {
+    const db = new FakeFirestore(seedCrm());
+    db.updateDoc("organizerCampaigns/camp-1", {
+      status: "blocked", leaseOwner: null, leaseExpiresAt: null,
+    });
+    db.setDoc("organizerCampaignRecipients/rec-2", {...recipientOf(db)});
+    let now = NOW_MS;
+    let started!: () => void;
+    const entered = new Promise<void>((resolve) => {
+      started = resolve;
+    });
+    let resume!: () => void;
+    const held = new Promise<void>((resolve) => {
+      resume = resolve;
+    });
+    let sends = 0;
+    const run = dispatchCampaign({db: db as unknown as Firestore,
+      organizerId: "org-1", campaignId: "camp-1", expectedRevision: null,
+      deps: {firestore: () => db as unknown as Firestore,
+        runtimeProjectId: () => "demo-catch-rules",
+        checkRateLimit: async () => {},
+        tokenStore: {accessBound: async () => "test-token"},
+        now: () => admin.firestore.Timestamp.fromMillis(now),
+        provider: () => ({sendTemplate: async () => {
+          sends++;
+          started();
+          await held;
+          return {providerMessageId: "wamid-paused"};
+        }})}});
+    await entered;
+    now += 180_000;
+    if (replace) {
+      db.updateDoc("organizerCampaigns/camp-1", {
+        leaseOwner: "replacement-owner",
+        leaseExpiresAt: admin.firestore.Timestamp.fromMillis(now + 100_000),
+      });
+    }
+    const before = campaignOf(db).leaseExpiresAt;
+    resume();
+    await assert.rejects(run, /lease is no longer current/);
+    assert.equal(campaignOf(db).leaseExpiresAt, before);
+    assert.equal(campaignOf(db).status, "sending");
+    if (replace) assert.equal(campaignOf(db).leaseOwner, "replacement-owner");
+    assert.equal(recipientOf(db).status, "accepted",
+      "receipt truth is preserved despite discovery lease loss");
+    assert.equal(db.getDoc("organizerCampaignRecipients/rec-2")?.status,
+      "pending");
+    const cursor = [...db.docs.entries()].find(([key, value]) =>
+      key.startsWith("organizerCampaignDiscoveryCursors/") &&
+      value.queueKind === "pendingRecipients");
+    assert.equal(cursor?.[1].cursor, "rec-2",
+      "interrupted page keeps its checkpoint instead of wrapping");
+    assert.equal(sends, 1);
+  });
+}

@@ -337,6 +337,7 @@ test(
 
 function dispatcherDeps(db: FakeFirestore) {
   return {
+    runtimeProjectId: () => "demo-catch-rules",
     firestore: () => db as unknown as FirebaseFirestore.Firestore,
     checkRateLimit: async () => undefined,
     tokenStore: {accessBound: async () => "test-token"} as never,
@@ -471,6 +472,7 @@ test(
           .programRecipient?.recipientKey === "guest:g-3")!;
     let sends = 0;
     const deps = (now: FirebaseFirestore.Timestamp) => ({
+      runtimeProjectId: () => "demo-catch-rules",
       firestore: () => db as unknown as FirebaseFirestore.Firestore,
       checkRateLimit: async () => undefined,
       tokenStore: {accessBound: async () => "test-token"} as never,

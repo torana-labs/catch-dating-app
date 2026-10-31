@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_campaign_discovery_cursor.schema.json",
+  "title": "OrganizerCampaignDiscoveryCursorDocument",
+  "description": "Server-only bounded campaign discovery progress. Position grants no delivery authority; revision CAS and current campaign lease fence recipient discovery.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["stateId", "schema", "projectId", "queueKind", "organizerId", "campaignId", "revision", "cursor", "updatedAtMillis"],
+  "properties": {
+    "stateId": {"type": "string", "minLength": 1, "maxLength": 160, "x-catch-ownership": "server-only"},
+    "schema": {"type": "string", "const": "1", "x-catch-ownership": "server-only"},
+    "projectId": {"type": "string", "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$", "x-catch-ownership": "server-only"},
+    "queueKind": {"type": "string", "enum": ["blockedCampaigns", "pendingRecipients", "sendingRecipients"], "x-catch-ownership": "server-only"},
+    "organizerId": {"type": ["string", "null"], "minLength": 1, "maxLength": 1500, "x-catch-ownership": "server-only"},
+    "campaignId": {"type": ["string", "null"], "minLength": 1, "maxLength": 1500, "x-catch-ownership": "server-only"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "server-only"},
+    "cursor": {"type": ["string", "null"], "minLength": 1, "maxLength": 1500, "description": "Exclusive document-ID position; null starts at the head on the next pass.", "x-catch-ownership": "server-only"},
+    "updatedAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991, "x-catch-ownership": "server-only"}
+  },
+  "allOf": [{
+    "if": {"properties": {"queueKind": {"const": "blockedCampaigns"}}},
+    "then": {"properties": {"organizerId": {"type": "null"}, "campaignId": {"type": "null"}}},
+    "else": {"properties": {"organizerId": {"type": "string"}, "campaignId": {"type": "string"}}}
+  }],
+  "x-firestore-collection": "organizerCampaignDiscoveryCursors",
+  "x-firestore-path": "organizerCampaignDiscoveryCursors/{stateId}",
+  "x-document-id-field": "stateId",
+  "x-owner": "organizer campaign dispatcher"
+}
