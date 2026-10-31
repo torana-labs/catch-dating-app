@@ -6,8 +6,8 @@
 #
 # Prints a Markdown summary on stdout. Exits 1 when the plan would delete or
 # replace anything, create a resource type that may only be imported,
-# touch a resource type outside the allowlist, or turn off Firestore delete
-# protection or point-in-time recovery. Terraform's own
+# touch a resource type outside the allowlist, turn off Firestore delete
+# protection or point-in-time recovery, or disable an alert policy. Terraform's own
 # prevent_destroy and preconditions are the first line; this guard also
 # covers a resource block deleted from the configuration, which takes its
 # prevent_destroy with it.
@@ -18,10 +18,10 @@ plan_json="${1:?usage: plan_guard.sh <plan.json>}"
 # Resource types under management. Extending IaC to a new type is a reviewed
 # change to these lists and to docs/infrastructure_as_code.md. Secret
 # versions are deliberately absent: a secret value must never enter state.
-allowed_types='["google_firebase_android_app","google_firebase_app_check_play_integrity_config","google_secret_manager_secret","google_secret_manager_secret_iam_member","google_firestore_database","google_firestore_backup_schedule"]'
+allowed_types='["google_firebase_android_app","google_firebase_app_check_play_integrity_config","google_secret_manager_secret","google_secret_manager_secret_iam_member","google_firestore_database","google_firestore_backup_schedule","google_monitoring_alert_policy","google_monitoring_uptime_check_config"]'
 # Types Terraform may create. Firebase apps, their App Check configs and
 # Firestore databases are only ever imported.
-creatable_types='["google_secret_manager_secret","google_secret_manager_secret_iam_member","google_firestore_backup_schedule"]'
+creatable_types='["google_secret_manager_secret","google_secret_manager_secret_iam_member","google_firestore_backup_schedule","google_monitoring_alert_policy","google_monitoring_uptime_check_config"]'
 
 jq -r --argjson allowed "$allowed_types" --argjson creatable "$creatable_types" '
   def changes: [.resource_changes[]? | select(.mode == "managed")];
@@ -50,6 +50,8 @@ jq -r --argjson allowed "$allowed_types" --argjson creatable "$creatable_types" 
     c.type == "google_firestore_database" and (c.change.after != null) and
     ((c.change.after.delete_protection_state // "") != "DELETE_PROTECTION_ENABLED"
      or (c.change.after.point_in_time_recovery_enablement // "") != "POINT_IN_TIME_RECOVERY_ENABLED");
+  def muted_alert(c):
+    c.type == "google_monitoring_alert_policy" and (c.change.after != null) and (c.change.after.enabled != true);
   def problems:
     changes | map(
       if (.type as $t | $allowed | index($t)) == null then "\(.address): resource type \(.type) is outside the allowlist"
@@ -57,6 +59,7 @@ jq -r --argjson allowed "$allowed_types" --argjson creatable "$creatable_types" 
       elif (.change.actions | index("create")) and ((.type as $t | $creatable | index($t)) == null) then "\(.address): plan would create it; this type is only ever imported"
       elif bad_secret_grant(.) then "\(.address): secret IAM may grant only roles/secretmanager.secretAccessor or catchFormCredentialVault, and never to a github-actions identity"
       elif weakened_recovery(.) then "\(.address): delete protection and point-in-time recovery must stay enabled"
+      elif muted_alert(.) then "\(.address): an alert policy must stay enabled"
       else empty end);
 
   (changes | map(select(act(.) != "no-op"))) as $shown
@@ -83,12 +86,15 @@ problem_count="$(jq --argjson allowed "$allowed_types" --argjson creatable "$cre
     c.type == "google_firestore_database" and (c.change.after != null) and
     ((c.change.after.delete_protection_state // "") != "DELETE_PROTECTION_ENABLED"
      or (c.change.after.point_in_time_recovery_enablement // "") != "POINT_IN_TIME_RECOVERY_ENABLED");
+  def muted_alert(c):
+    c.type == "google_monitoring_alert_policy" and (c.change.after != null) and (c.change.after.enabled != true);
   [.resource_changes[]? | select(.mode == "managed")
    | select(((.type as $t | $allowed | index($t)) == null)
             or (.change.actions | index("delete"))
             or ((.change.actions | index("create")) and ((.type as $t | $creatable | index($t)) == null))
             or bad_secret_grant(.)
-            or weakened_recovery(.))] | length
+            or weakened_recovery(.)
+            or muted_alert(.))] | length
 ' "$plan_json")"
 
 if [[ "$problem_count" != "0" ]]; then

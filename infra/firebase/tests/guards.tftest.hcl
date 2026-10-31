@@ -39,6 +39,14 @@ override_resource {
   }
 }
 
+override_resource {
+  target = google_monitoring_alert_policy.functions_oom
+}
+
+override_resource {
+  target = google_monitoring_alert_policy.functions_errors
+}
+
 variables {
   android_apps = {
     "prod-consumer" = {
@@ -274,5 +282,25 @@ run "production_firestore_keeps_recovery_on" {
   assert {
     condition     = google_firestore_backup_schedule.prod_daily.retention == "1209600s" && length(google_firestore_backup_schedule.prod_daily.daily_recurrence) == 1
     error_message = "The production database keeps a daily backup for 14 days."
+  }
+}
+
+run "production_alerts_stay_on_and_email_the_alerts_channel" {
+  command = plan
+
+  assert {
+    condition = alltrue([
+      for policy in [
+        google_monitoring_alert_policy.functions_oom,
+        google_monitoring_alert_policy.functions_errors,
+        google_monitoring_alert_policy.website_origin_down,
+      ] : policy.enabled && length(policy.notification_channels) == 1
+    ])
+    error_message = "Every production alert must be enabled and notify the alerts channel."
+  }
+
+  assert {
+    condition     = google_monitoring_uptime_check_config.website_origin.monitored_resource[0].labels.host == "catch-dating-app-64e51.web.app"
+    error_message = "The uptime check reads the Hosting origin, which Cloudflare's bot protection does not front."
   }
 }
