@@ -85,6 +85,13 @@ export interface PaymentDocument {
     _nanoseconds: number;
   };
   /**
+   * What the payment provider charged for a captured payment, read from its payment entity: fee is the whole charge including tax, tax is the GST within it. Both in minor units. Absent until the payment is captured or when the provider did not report them.
+   */
+  providerFees?: {
+    feePaise: number;
+    taxPaise: number;
+  };
+  /**
    * Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.
    */
   razorpayOwnership?: {

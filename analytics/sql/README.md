@@ -183,6 +183,26 @@ CI. A script-level `bq --dry_run` does not execute or fully validate
 [dynamic statements](https://docs.cloud.google.com/bigquery/docs/multi-statement-queries#dry-run), so it is not a substitute for these fixtures or
 source/export parity checks before a live cutover.
 
+## Organizer Growth
+
+- `catch_analytics.organizer_growth_events`: one row per dated organizer fact,
+  streamed by the `onOrganizerGrowth*` triggers. Steps (`listed`,
+  `claim_requested`, `claimed`, `first_event`, `first_paid_booking`) appear
+  once per organizer and mirror Firestore `organizerGrowthFacts/{organizerId}`;
+  `paid_booking` and `refund` appear once per payment, with Razorpay's fee and
+  tax when reported. Every row carries the organizer's one acquisition channel
+  (imported, sales_associate, partner, guest, organizer, came_to_us, ads), set
+  when its listing was made. Growth cohorts, channels and ticket sales per
+  organizer count from this table.
+
+Readers count `DISTINCT growth_event_id` and take `MIN(occurred_at)` per id.
+Firestore holds every step, so a failed streaming insert is logged rather than
+failing the trigger, and can be replayed from the facts documents.
+
+Deploy order: run `ddl/organizer_growth_events.sql` once per project, then
+deploy Functions. The Functions runtime already has insert access to
+`catch_analytics`; no new credential or extension is needed.
+
 ## User Inputs
 
 - `catch_marketplace_metrics.participant_signal_facts_raw_latest`: existing

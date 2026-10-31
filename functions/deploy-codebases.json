@@ -7,7 +7,7 @@
     "offers": ["organizerEventOffers", "organizerEventOfferRecipients", "organizerFormAdmission", "organizerResponseQuery", "acquisition"],
     "organizers": ["organizers"],
     "payments": ["payments", "hostMemberships", "commercialTerms", "memberships", "entitlements"],
-    "platform": ["analytics", "operations", "demoOps"],
+    "platform": ["analytics", "growth", "operations", "demoOps"],
     "programs": ["programs", "transport", "programRsvp"],
     "rehearsal": ["eventRehearsal", "doorJournal"],
     "sales": ["salesDemo", "partners", "salesAssistant"],

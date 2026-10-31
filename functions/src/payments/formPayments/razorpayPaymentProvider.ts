@@ -16,6 +16,9 @@ export interface FormProviderPayment {
   status: "created" | "authorized" | "captured" | "refunded" | "failed";
   captured: boolean;
   amountRefunded: number;
+  /** Razorpay's fee including tax, and the tax within it; null until known. */
+  fee?: number | null;
+  tax?: number | null;
 }
 
 export interface FormProviderRefund {
@@ -278,7 +281,26 @@ function parsePayment(body: Record<string, unknown>): FormProviderPayment {
     amount: body.amount,
     currency: body.currency,
     status: body.status as FormProviderPayment["status"],
-    captured: body.captured, amountRefunded: body.amount_refunded};
+    captured: body.captured, amountRefunded: body.amount_refunded,
+    fee: minorUnits(body.fee), tax: minorUnits(body.tax)};
+}
+
+function minorUnits(value: unknown): number | null {
+  return typeof value === "number" && Number.isSafeInteger(value) &&
+    value >= 0 && value <= 100_000_000 ? value : null;
+}
+
+/**
+ * The provider fees to store on a captured payment, once Razorpay reports
+ * them and the record has none yet.
+ * @param {FormProviderPayment} payment Observed provider payment.
+ * @param {unknown} stored The record's current providerFees.
+ * @return {object} A providerFees update, or nothing.
+ */
+export function providerFeesUpdate(payment: FormProviderPayment,
+  stored: unknown): {providerFees?: {feePaise: number; taxPaise: number}} {
+  if (stored || !payment.captured || payment.fee == null) return {};
+  return {providerFees: {feePaise: payment.fee, taxPaise: payment.tax ?? 0}};
 }
 
 function parseRefund(body: Record<string, unknown>): FormProviderRefund {

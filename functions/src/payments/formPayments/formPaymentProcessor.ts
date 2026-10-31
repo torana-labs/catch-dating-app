@@ -11,7 +11,8 @@ import {paymentRoutingSnapshotsMatch, assertPaymentRouteSnapshot,
 import type {RazorpayCredentialVault} from "./razorpayCredentialVault";
 import type {FormPaymentCredentials} from "./formPaymentCredentials";
 import {FormPaymentProviderError, type FormProviderPayment,
-  type RazorpayPaymentProvider} from "./razorpayPaymentProvider";
+  providerFeesUpdate, type RazorpayPaymentProvider} from
+  "./razorpayPaymentProvider";
 import {requireReadyFormPaymentConnection} from "./formPaymentConnectionPolicy";
 import {decideFormPaymentObservation} from "./formPaymentState";
 import {expireFormPaymentReservation, finalizeCapturedFormPayment} from
@@ -257,6 +258,7 @@ export class FormPaymentProcessor {
       tx.update(ref, {...decision, updatedAt: now,
         capturedAt: ledger.capturedAt ??
           (observation.captured ? now : null),
+        ...providerFeesUpdate(observation, ledger.providerFees),
         lastErrorCode: action === "review" ? "paymentNeedsReview" :
           ledger.lastErrorCode});
     });
