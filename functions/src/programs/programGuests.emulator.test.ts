@@ -4,8 +4,6 @@ import {planImportedMembership} from
   "../workspaces/programMembershipPersistence";
 import {validateWorkspaceMembershipAssertionDocument} from
   "../shared/generated/validators/workspaceMembershipAssertionDocument";
-import {validateWorkspaceMembershipDecisionDocument} from
-  "../shared/generated/validators/workspaceMembershipDecisionDocument";
 import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
@@ -24,6 +22,10 @@ import {ProgramLodgingStore} from "./programLodgingStore";
 import {canonicalLodgingSource, saveCanonicalLodgingConfig} from
   "./programLodgingConfig";
 import {manageProgramLodgingHandler} from "./programLodgingApi";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateWorkspaceMembershipDecisionDocument =
+  contractValidator("WorkspaceMembershipDecisionDocument");
 
 const enabled = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
 

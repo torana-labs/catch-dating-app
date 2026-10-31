@@ -8,13 +8,6 @@ import type {CallableRequest} from "firebase-functions/v2/https";
 import type {OperationRun, OperationWorkItem} from "../models";
 import {importShadowProjection, type ProjectionImportWriter} from "../projectionImporter";
 import {FakeFirestore} from "../testFirestore";
-import {
-  schemaErrorMessages,
-  validateAdminListListingEventImportsCallableResponse,
-  validateAdminPublishListingEventsCallableResponse,
-  validateExternalEventDocument,
-  validateExternalEventPublicationReceiptDocument,
-} from "../../shared/generated/schemaValidators";
 import {adminApproveOrganizerListingHandler} from "../../admin/organizerListingApproval";
 import {
   adminListListingEventImportsHandler,
@@ -25,6 +18,32 @@ import {publishApprovedListingEvents} from "./eventPublicationTrigger";
 import {packagedEventPublication, publishListingEvents, type EventPublicationPolicy} from "./eventPublication";
 import {adminRefreshOrganizerEventsHandler} from "./organizerEventRefresh";
 import {supplyIntakeCollections} from "./worker";
+import type {AdminListListingEventImportsCallableResponse} from
+  "../../shared/generated/adminListListingEventImportsCallableResponse";
+import type {AdminPublishListingEventsCallableResponse} from
+  "../../shared/generated/adminPublishListingEventsCallableResponse";
+import type {ExternalEventDocument} from
+  "../../shared/generated/externalEventDocument";
+import type {ExternalEventPublicationReceiptDocument} from
+  "../../shared/generated/externalEventPublicationReceiptDocument";
+import {schemaErrorMessages} from
+  "../../shared/generated/schemaValidationRuntime";
+import {contractValidator} from "../../shared/contractTestValidators";
+
+const validateAdminListListingEventImportsCallableResponse =
+  contractValidator<AdminListListingEventImportsCallableResponse>(
+    "AdminListListingEventImportsCallableResponse"
+  );
+const validateAdminPublishListingEventsCallableResponse =
+  contractValidator<AdminPublishListingEventsCallableResponse>(
+    "AdminPublishListingEventsCallableResponse"
+  );
+const validateExternalEventDocument =
+  contractValidator<ExternalEventDocument>("ExternalEventDocument");
+const validateExternalEventPublicationReceiptDocument =
+  contractValidator<ExternalEventPublicationReceiptDocument>(
+    "ExternalEventPublicationReceiptDocument"
+  );
 
 // The build post-step copies the Operations runtime into lib; the publisher uses it.
 execFileSync(process.execPath, [path.join(__dirname, "../../../scripts/copy-operations-runtime.cjs")]);

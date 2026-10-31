@@ -8,12 +8,16 @@ import type {CallableRequest} from "firebase-functions/v2/https";
 import {eventChatMembershipId, getEventChatAccessHandler as get,
   updateEventChatAccessHandler as update, requireEventChatMember} from
   "./eventChatAccess";
-import {validateGetEventChatAccessCallableResponse as validView} from
-  "../shared/generated/validators/getEventChatAccessOutput";
-import {validateEventChatRoomDocument as validRoom} from
-  "../shared/generated/validators/eventChatRoomDocument";
-import {validateEventChatMembershipDocument as validMember} from
-  "../shared/generated/validators/eventChatMembershipDocument";
+import type {GetEventChatAccessCallableResponse} from
+  "../shared/generated/getEventChatAccessCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validView =
+  contractValidator<GetEventChatAccessCallableResponse>(
+    "GetEventChatAccessCallableResponse"
+  );
+const validRoom = contractValidator("EventChatRoomDocument");
+const validMember = contractValidator("EventChatMembershipDocument");
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 test("Firestore room access follows current authority and explicit choices",

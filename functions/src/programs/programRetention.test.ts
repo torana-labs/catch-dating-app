@@ -21,36 +21,36 @@ import {listProgramGuestsHandler, upsertProgramGuestHandler} from
 import {getProgramAttendanceReportHandler} from "./attendanceReportView";
 import {validateProgramGuestDocument} from
   "../shared/generated/validators/programGuestDocument";
-import {validateProgramHouseholdDocument} from
-  "../shared/generated/validators/programHouseholdDocument";
-import {validateProgramStaffGrantDocument} from
-  "../shared/generated/validators/programStaffGrantDocument";
-import {validateProgramStaffInviteDocument} from
-  "../shared/generated/validators/programStaffInviteDocument";
-import {validateProgramFunctionGuestDocument} from
-  "../shared/generated/validators/programFunctionGuestDocument";
-import {validateProgramStayDocument} from
-  "../shared/generated/validators/programStayDocument";
-import {validateProgramDoorJournalDocument} from
-  "../shared/generated/validators/programDoorJournalDocument";
-import {validateProgramTravelLegDocument} from
-  "../shared/generated/validators/programTravelLegDocument";
-import {validateOrganizerProgramDocument} from
-  "../shared/generated/validators/organizerProgramDocument";
-import {validateProgramRetentionRunDocument} from
-  "../shared/generated/validators/programRetentionRunDocument";
-import {validateProgramGuestGroupDocument} from
-  "../shared/generated/validators/programGuestGroupDocument";
-import {validateProgramTravelPartyDocument} from
-  "../shared/generated/validators/programTravelPartyDocument";
-import {validateProgramHotelDocument} from
-  "../shared/generated/validators/programHotelDocument";
-import {validateProgramRoomBlockDocument} from
-  "../shared/generated/validators/programRoomBlockDocument";
-import {validateProgramFunctionDocument} from
-  "../shared/generated/validators/programFunctionDocument";
-import {validateTransportTripDocument} from
-  "../shared/generated/validators/transportTripDocument";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateProgramHouseholdDocument =
+  contractValidator("ProgramHouseholdDocument");
+const validateProgramStaffGrantDocument =
+  contractValidator("ProgramStaffGrantDocument");
+const validateProgramStaffInviteDocument =
+  contractValidator("ProgramStaffInviteDocument");
+const validateProgramFunctionGuestDocument =
+  contractValidator("ProgramFunctionGuestDocument");
+const validateProgramStayDocument = contractValidator("ProgramStayDocument");
+const validateProgramDoorJournalDocument =
+  contractValidator("ProgramDoorJournalDocument");
+const validateProgramTravelLegDocument =
+  contractValidator("ProgramTravelLegDocument");
+const validateOrganizerProgramDocument =
+  contractValidator("OrganizerProgramDocument");
+const validateProgramRetentionRunDocument =
+  contractValidator("ProgramRetentionRunDocument");
+const validateProgramGuestGroupDocument =
+  contractValidator("ProgramGuestGroupDocument");
+const validateProgramTravelPartyDocument =
+  contractValidator("ProgramTravelPartyDocument");
+const validateProgramHotelDocument = contractValidator("ProgramHotelDocument");
+const validateProgramRoomBlockDocument =
+  contractValidator("ProgramRoomBlockDocument");
+const validateProgramFunctionDocument =
+  contractValidator("ProgramFunctionDocument");
+const validateTransportTripDocument =
+  contractValidator("TransportTripDocument");
 
 const T0 = 1_800_000_000_000;
 const T_GRACE = T0 + archiveGraceMillis;

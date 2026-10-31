@@ -13,15 +13,22 @@ import {normalizeFormMessagingDecision} from
 import {listParticipantMessagingPreferencesHandler as list,
   withdrawParticipantMessagingPermissionHandler as withdraw} from
   "./participantMessagingPreferences";
-import {validateListParticipantMessagingPreferencesCallableResponse as
-validPage} from
-  "../shared/generated/validators/listParticipantMessagingPreferencesOutput";
-import {validateWithdrawParticipantMessagingPermissionCallableResponse as
-validResult} from
-  "../shared/generated/validators/withdrawParticipantMessagingPermissionOutput";
-import {validateCatchCommunicationPermissionReceiptDocument as
-validCatchReceipt} from
-  "../shared/generated/validators/catchCommunicationPermissionReceiptDocument";
+import type {ListParticipantMessagingPreferencesCallableResponse} from
+  "../shared/generated/listParticipantMessagingPreferencesCallableResponse";
+import type {WithdrawParticipantMessagingPermissionCallableResponse} from
+  "../shared/generated/withdrawParticipantMessagingPermissionCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validPage =
+  contractValidator<ListParticipantMessagingPreferencesCallableResponse>(
+    "ListParticipantMessagingPreferencesCallableResponse"
+  );
+const validResult =
+  contractValidator<WithdrawParticipantMessagingPermissionCallableResponse>(
+    "WithdrawParticipantMessagingPermissionCallableResponse"
+  );
+const validCatchReceipt =
+  contractValidator("CatchCommunicationPermissionReceiptDocument");
 
 const now = Timestamp.fromMillis(1000);
 const request = (data: unknown, uid = "person") =>

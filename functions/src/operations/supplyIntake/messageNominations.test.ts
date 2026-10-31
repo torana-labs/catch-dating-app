@@ -5,7 +5,6 @@ import path from "node:path";
 import test from "node:test";
 import type {Firestore} from "firebase-admin/firestore";
 import {catchEndpointHash} from "../../catchMessaging/whatsappReply";
-import {validateSupplyIntakeRequestsDocument} from "../../shared/generated/validators/supplyIntakeRequestsDocument";
 import {FakeFirestore} from "../testFirestore";
 import {
   type MessageNominationDeps,
@@ -15,6 +14,10 @@ import {
 import {SUPPLY_NOMINATORS, whatsappNominatorId} from "./nominators";
 import {supplyIntakeRequestId} from "./requests";
 import {packagedMessageParser} from "./runtime";
+import {contractValidator} from "../../shared/contractTestValidators";
+
+const validateSupplyIntakeRequestsDocument =
+  contractValidator("SupplyIntakeRequestsDocument");
 
 // The build post-step copies the Operations runtime into lib; tests use it.
 execFileSync(process.execPath, [path.join(__dirname, "../../../scripts/copy-operations-runtime.cjs")]);

@@ -7,11 +7,14 @@ import type {Firestore} from "firebase-admin/firestore";
 import type {OperationRun, OperationWorkItem} from "../models";
 import type {ProjectionImportWriter} from "../projectionImporter";
 import {FakeFirestore} from "../testFirestore";
-import {validateSupplyIntakeRequestsDocument} from "../../shared/generated/validators/supplyIntakeRequestsDocument";
 import {acceptPageFetch, notFoundTransport} from "./testPageFetch";
 import {loadOrganizerInventory, ORGANIZER_INVENTORY_FIELDS, ORGANIZER_INVENTORY_LIMIT} from "./organizerInventory";
 import {packagedIntake, runSupplyIntake, type SupplyIntakeRequest} from "./runtime";
 import {processSupplyIntakeRequest, supplyIntakeCollections} from "./worker";
+import {contractValidator} from "../../shared/contractTestValidators";
+
+const validateSupplyIntakeRequestsDocument =
+  contractValidator("SupplyIntakeRequestsDocument");
 
 // The build post-step copies the Operations runtime into lib; tests use it.
 execFileSync(process.execPath, [path.join(__dirname, "../../../scripts/copy-operations-runtime.cjs")]);

@@ -4,10 +4,14 @@ import test from "node:test";
 import type {Firestore} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {FakeFirestore} from "../testFirestore";
-import {validateSupplyIntakeRequestsDocument} from "../../shared/generated/validators/supplyIntakeRequestsDocument";
-import {validateSupplyIntakeRequest} from "../../shared/generated/validators/supplyIntakeRequest";
+import {validateSupplyIntakeRequest} from
+  "../../shared/generated/validators/supplyIntakeRequest";
 import {adminRefreshOrganizerEventsHandler, eventPageLinks} from "./organizerEventRefresh";
 import {supplyIntakeRequestId} from "./requests";
+import {contractValidator} from "../../shared/contractTestValidators";
+
+const validateSupplyIntakeRequestsDocument =
+  contractValidator("SupplyIntakeRequestsDocument");
 
 const NOW = new Date("2026-10-25T08:00:00.000Z");
 

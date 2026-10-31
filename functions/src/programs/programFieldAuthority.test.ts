@@ -1,5 +1,4 @@
-import {validateWorkspaceFieldDecisionDocument} from
-  "../shared/generated/validators/workspaceFieldDecisionDocument";
+
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
@@ -15,6 +14,10 @@ import {
   upsertProgramHouseholdHandler,
 } from "./programGuests";
 import {importProgramManifestHandler} from "./programManifestImport";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateWorkspaceFieldDecisionDocument =
+  contractValidator("WorkspaceFieldDecisionDocument");
 
 const seed = () =>
   Object.fromEntries(

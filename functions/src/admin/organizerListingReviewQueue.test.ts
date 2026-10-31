@@ -10,8 +10,16 @@ import type {ProjectionImportWriter} from "../operations/projectionImporter";
 import {FakeFirestore} from "../operations/testFirestore";
 import {acceptPageFetch, notFoundTransport} from "../operations/supplyIntake/testPageFetch";
 import {processSupplyIntakeRequest, supplyIntakeCollections} from "../operations/supplyIntake/worker";
-import {schemaErrorMessages, validateAdminListOrganizerListingReviewsCallableResponse} from "../shared/generated/schemaValidators";
 import {adminListOrganizerListingReviewsHandler, publicSlugFor} from "./organizerListingReviewQueue";
+import type {AdminListOrganizerListingReviewsCallableResponse} from
+  "../shared/generated/adminListOrganizerListingReviewsCallableResponse";
+import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateAdminListOrganizerListingReviewsCallableResponse =
+  contractValidator<AdminListOrganizerListingReviewsCallableResponse>(
+    "AdminListOrganizerListingReviewsCallableResponse"
+  );
 
 // The build post-step copies the Operations runtime into lib; the worker uses it.
 execFileSync(process.execPath, [path.join(__dirname, "../../scripts/copy-operations-runtime.cjs")]);

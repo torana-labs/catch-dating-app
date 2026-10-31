@@ -10,11 +10,13 @@ import {programActivityIntent, recoverProgramActivityJournals} from
   "./programActivityDelivery";
 import {newProgramDeliveryRecord} from
   "./programDelivery";
-import {validateOrganizerMomentSendDocument} from
-  "../shared/generated/validators/organizerMomentSendDocument";
 import {ACTIVITY_NOW, ACTIVITY_WINDOW, activityFirestore, activityHarness,
   activityItems, activityRecord, activityRequest} from
   "./programActivityFixture";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateOrganizerMomentSendDocument =
+  contractValidator("OrganizerMomentSendDocument");
 
 function runnerHarness(request = activityRequest) {
   const h = activityHarness(activityFirestore(request), request);

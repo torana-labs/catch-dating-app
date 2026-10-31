@@ -11,8 +11,10 @@ import {GROUP_DUTY_PERMISSIONS} from
   "../eventSuccess/operations/groupStaffAuthority";
 import {validateControlEventRehearsalCallablePayload as validate} from
   "../shared/generated/validators/controlEventRehearsalInput";
-import {validateEventRehearsalDocument} from
-  "../shared/generated/validators/eventRehearsalDocument";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateEventRehearsalDocument =
+  contractValidator("EventRehearsalDocument");
 
 test("practice duties use the live role map without granting real " +
   "access", () => {

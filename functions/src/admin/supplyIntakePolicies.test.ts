@@ -5,8 +5,16 @@ import path from "node:path";
 import test from "node:test";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {FakeFirestore} from "../operations/testFirestore";
-import {schemaErrorMessages, validateAdminListSupplyIntakePoliciesCallableResponse} from "../shared/generated/schemaValidators";
 import {adminListSupplyIntakePoliciesHandler} from "./supplyIntakePolicies";
+import type {AdminListSupplyIntakePoliciesCallableResponse} from
+  "../shared/generated/adminListSupplyIntakePoliciesCallableResponse";
+import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateAdminListSupplyIntakePoliciesCallableResponse =
+  contractValidator<AdminListSupplyIntakePoliciesCallableResponse>(
+    "AdminListSupplyIntakePoliciesCallableResponse"
+  );
 
 // The build post-step copies the Operations runtime (and its policy files) into lib.
 execFileSync(process.execPath, [path.join(__dirname, "../../scripts/copy-operations-runtime.cjs")]);

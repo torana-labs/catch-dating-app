@@ -7,8 +7,14 @@ import {createFormPaymentFixture} from
 import {beginOrganizerFormResponseHandler as begin,
   saveOrganizerFormResponseDraftHandler as save,
   submitOrganizerFormResponseHandler as submit} from "./organizerFormResponses";
-import {validateBeginOrganizerFormResponseCallableResponse} from
-  "../shared/generated/validators/beginOrganizerFormResponseOutput";
+import type {BeginOrganizerFormResponseCallableResponse} from
+  "../shared/generated/beginOrganizerFormResponseCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateBeginOrganizerFormResponseCallableResponse =
+  contractValidator<BeginOrganizerFormResponseCallableResponse>(
+    "BeginOrganizerFormResponseCallableResponse"
+  );
 
 const request = (data: unknown, uid = "person") => ({data,
   auth: {uid, token: {}}}) as unknown as CallableRequest<unknown>;

@@ -7,8 +7,6 @@ import * as admin from "firebase-admin";
 import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
 import {validateControlEventRehearsalCallablePayload} from
   "../shared/generated/validators/controlEventRehearsalInput";
-import {validateEventRehearsalBootstrapCallableResponse} from
-  "../shared/generated/validators/eventRehearsalBootstrapOutput";
 import type {Decision} from
   "../eventSuccess/operations/membershipDecisions";
 import {practiceMembershipView as view, practiceMembershipProjection,
@@ -16,6 +14,14 @@ import {practiceMembershipView as view, practiceMembershipProjection,
 import {practiceSession} from "./assistanceTestFixtures";
 import {buildRehearsalActors, applyRehearsalBehavior as behavior,
   applyRehearsalSpatialAction} from "./engine";
+import type {EventRehearsalBootstrapCallableResponse} from
+  "../shared/generated/eventRehearsalBootstrapCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateEventRehearsalBootstrapCallableResponse =
+  contractValidator<EventRehearsalBootstrapCallableResponse>(
+    "EventRehearsalBootstrapCallableResponse"
+  );
 
 function organizer(): OrganizerDocument {
   const fixture = JSON.parse(readFileSync(
