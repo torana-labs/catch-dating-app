@@ -6,7 +6,7 @@ name: Deploy backend
 # environment has no required reviewer since 30 Oct 2026), and only when the
 # commit changes something prod has not received. Staging refreshes on the
 # first of each month. Run it manually for prod, dev or staging, optionally as
-# a full deploy. Operator guide: docs/release_operations.md, "Deploy backend".
+# a full deploy, or for named Functions only. Operator guide: docs/release_operations.md, "Deploy backend".
 
 on:
   push:
@@ -38,6 +38,12 @@ on:
         description: Deploy every stage and Function, not only what changed
         type: boolean
         default: false
+      functions:
+        description: >-
+          Only these Functions, comma-separated (a configuration change such as a
+          feature switch). Nothing else deploys and the deployed commit stays.
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -51,6 +57,7 @@ jobs:
     with:
       environment: dev
       full: ${{ inputs.full == true }}
+      functions: ${{ inputs.functions || '' }}
 
   prod:
     needs: dev
@@ -62,6 +69,7 @@ jobs:
     with:
       environment: prod
       full: ${{ inputs.full == true }}
+      functions: ${{ inputs.functions || '' }}
 
   staging:
     if: >-
@@ -71,3 +79,4 @@ jobs:
     with:
       environment: staging
       full: ${{ inputs.full == true }}
+      functions: ${{ inputs.functions || '' }}
