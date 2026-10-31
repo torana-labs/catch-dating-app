@@ -24,11 +24,12 @@ const items: CatchTabBarItem[] = [
 ];
 
 function Shell({register, size}: {register: "app" | "quiet"; size: "compact" | "expanded"}) {
+  const label = `${register} ${size}`;
   return (
     <div style={{border: "var(--catch-stroke-hairline) solid var(--catch-theme-line2)", height: size === "compact" ? 640 : 560, width: size === "compact" ? 390 : "100%"}}>
       <CatchViewport
         fill="parent"
-        navigation={<CatchTabBar active="inbox" footer={{title: "Suvrat", note: "Owner"}} header={{title: "Catch Admin"}} items={items} />}
+        navigation={<CatchTabBar active="inbox" footer={{title: "Suvrat", note: "Owner"}} header={{title: "Catch Admin"}} items={items} label={label} />}
         register={register}
         sizeClass={size}
       >

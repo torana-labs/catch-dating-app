@@ -70,7 +70,7 @@ function Identity({identity, compact}: {identity: CatchTabBarIdentity; compact: 
   const inner = (
     <>
       <span aria-hidden="true" className={styles.mark}>{initial}</span>
-      {compact ? null : (
+      {compact ? <span className={styles.hiddenLabel}>{identity.title}</span> : (
         <span className={styles.identityText}>
           <span className={styles.identityTitle}>{identity.title}</span>
           {identity.note ? <span className={styles.identityNote}>{identity.note}</span> : null}
@@ -79,8 +79,8 @@ function Identity({identity, compact}: {identity: CatchTabBarIdentity; compact: 
     </>
   );
   return identity.href
-    ? <a aria-label={compact ? identity.title : undefined} className={styles.identity} href={identity.href}>{inner}</a>
-    : <span aria-label={compact ? identity.title : undefined} className={styles.identity}>{inner}</span>;
+    ? <a className={styles.identity} href={identity.href}>{inner}</a>
+    : <span className={styles.identity}>{inner}</span>;
 }
 
 function countLabel(count: number) {

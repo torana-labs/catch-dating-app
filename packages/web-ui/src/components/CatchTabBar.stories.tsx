@@ -28,10 +28,10 @@ function Frame({children, height = 420, width}: {children: ReactNode; height?: n
 export const Contract: Story = {
   render: (args) => (
     <div style={{alignItems: "start", display: "flex", flexWrap: "wrap", gap: 24}}>
-      <Frame><CatchTabBar {...args} header={{title: "Catch Admin", note: "Owner"}} layout="sidebar" primaryAction={{label: "New event", onPressed: () => undefined}} /></Frame>
-      <Frame><CatchViewport fill="parent" navigation={<CatchTabBar {...args} footer={{title: "Suvrat"}} header={{title: "Catch Admin"}} layout="sidebar" />} register="quiet" sizeClass="expanded" /></Frame>
-      <Frame><CatchTabBar {...args} header={{title: "Catch Admin"}} layout="rail" /></Frame>
-      <Frame height={80} width={390}><CatchTabBar {...args} active="system" layout="bottom" more={{onPressed: () => undefined}} /></Frame>
+      <Frame><CatchTabBar {...args} header={{title: "Catch Admin", note: "Owner"}} label="Sidebar" layout="sidebar" primaryAction={{label: "New event", onPressed: () => undefined}} /></Frame>
+      <Frame><CatchViewport fill="parent" navigation={<CatchTabBar {...args} footer={{title: "Suvrat"}} header={{title: "Catch Admin"}} label="Quiet sidebar" layout="sidebar" />} register="quiet" sizeClass="expanded" /></Frame>
+      <Frame><CatchTabBar {...args} header={{title: "Catch Admin"}} label="Rail" layout="rail" /></Frame>
+      <Frame height={80} width={390}><CatchTabBar {...args} active="system" label="Phone bar" layout="bottom" more={{onPressed: () => undefined}} /></Frame>
     </div>
   ),
 };

@@ -146,7 +146,7 @@
   display: inline-flex;
   flex: none;
   align-items: center;
-  gap: var(--catch-space-micro6);
+  gap: var(--catch-space-micro2);
   box-sizing: border-box;
   height: 32px;
   padding: 0 var(--catch-space-s3);

@@ -89,7 +89,7 @@ export function CatchWorkspaceHeader({title, kicker, count, note, back, position
   const hasActions = position || views || actions;
   return (
     <>
-      <header className={styles.bar} data-catch-workspace-header="" data-filtered={filters ? "" : undefined}>
+      <div className={styles.bar} data-catch-workspace-header="" data-filtered={filters ? "" : undefined}>
         {back && !beside ? <IconAction action={back} icon={back.close ? "close" : "back"} /> : null}
         <span className={styles.title}>
           {kicker && !beside ? <span className={styles.kicker}>{kicker}</span> : null}
@@ -120,15 +120,15 @@ export function CatchWorkspaceHeader({title, kicker, count, note, back, position
             {actions}
           </span>
         ) : null}
-      </header>
+      </div>
       {filters ? (
         <div className={styles.filters}>
           {filters.chips && filters.chips.length > 0 ? (
             <div aria-label="Filters" className={styles.chips} role="group">
               {filters.chips.map((chip) => (
-                <button aria-label={chip.count != null ? `${chip.label} ${chip.count}` : undefined} aria-pressed={chip.selected ?? false} className={styles.chip} key={chip.label} onClick={chip.onPressed} type="button">
+                <button aria-pressed={chip.selected ?? false} className={styles.chip} key={chip.label} onClick={chip.onPressed} type="button">
                   {chip.label}
-                  {chip.count != null ? <span className={styles.chipCount}>{chip.count}</span> : null}
+                  {chip.count != null ? <>{" "}<span className={styles.chipCount}>{chip.count}</span></> : null}
                 </button>
               ))}
             </div>
