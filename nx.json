@@ -1,0 +1,60 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "neverConnectToCloud": true,
+  "analytics": false,
+  "defaultBase": "main",
+  "namedInputs": {
+    "sharedGlobals": [],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "production": [
+      "default",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)",
+      "!{projectRoot}/**/?(*.)+(spec|test).?(c|m)[jt]s",
+      "!{projectRoot}/**/*.stories.[jt]s?(x)",
+      "!{projectRoot}/.storybook/**/*",
+      "!{projectRoot}/test/**/*",
+      "!{projectRoot}/tests/**/*",
+      "!{projectRoot}/vitest.config.*"
+    ]
+  },
+  "targetDefaults": {
+    "analyze": {"cache": true, "inputs": ["default", "^production"]},
+    "check": {"cache": true, "inputs": ["default"]},
+    "lint": {"cache": true, "inputs": ["default", "^production"]},
+    "test": {"cache": true, "inputs": ["default", "^production"]},
+    "build": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "outputs": ["{projectRoot}/dist", "{projectRoot}/.next", "{projectRoot}/lib"]
+    }
+  },
+  "plugins": [
+    {
+      "plugin": "./tool/nx/catch_projects.mjs",
+      "options": {
+        "sourceProjects": [
+          {
+            "name": "contracts",
+            "root": "contracts",
+            "check": "node tool/contracts/generate_schema_contracts.mjs --check"
+          },
+          {
+            "name": "design-tokens",
+            "root": "design/tokens",
+            "check": "dart run tool/design_tokens.dart --check"
+          }
+        ],
+        "implicitDependencies": {
+          "catch_dating_app": ["contracts", "@catch/brand"],
+          "functions": ["contracts", "@catch/brand"],
+          "catch-admin": ["contracts"],
+          "catch-marketing": ["contracts"],
+          "@catch/operations": ["contracts", "@catch/brand"],
+          "catch_tokens": ["design-tokens"],
+          "@catch/web-config": ["design-tokens"]
+        }
+      }
+    }
+  ]
+}

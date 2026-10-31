@@ -32,6 +32,29 @@
   },
   "tools": [
     {
+      "id": "meta:nx-project-graph",
+      "category": "meta",
+      "path": "tool/nx/catch_projects.mjs",
+      "command": "node --test tool/nx/catch_projects.test.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Nx plugin that turns every pubspec.yaml and independently locked npm package into an Nx project, adds path and declared cross-language edges, and gives source projects a generator check target.",
+      "checks": [
+        "node --check tool/nx/catch_projects.mjs",
+        "node --test tool/nx/catch_projects.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/nx/catch_projects.test.mjs",
+        "nx.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
       "id": "tool:runner",
       "category": "meta",
       "path": "tool/run.mjs",
