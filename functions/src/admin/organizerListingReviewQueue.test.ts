@@ -106,14 +106,14 @@ test("each row shows how its listing compares with the organizers Catch already 
   assert.ok(afterfly.listing.gaps.includes("possible_duplicate_organizer"));
   assert.equal(afterfly.duplicateCheck?.verdict, "match");
   assert.deepEqual([afterfly.duplicateCheck?.citySlug, afterfly.duplicateCheck?.truncated,
-    afterfly.duplicateCheck?.organizersCompared], ["mumbai", false, 1]);
+    afterfly.duplicateCheck?.organizersCompared], [null, false, 1]);
   assert.deepEqual(afterfly.duplicateCheck?.candidates.map((candidate) => [candidate.organizerId, candidate.name, candidate.band]),
     [["org-afterfly", "Afterfly", "match"]]);
   assert.match(afterfly.duplicateCheck?.candidates[0].rationale ?? "", /exact_name/);
   assert.equal(bhag.duplicateCheck?.verdict, "none");
   assert.ok(!bhag.listing.gaps.includes("possible_duplicate_organizer"));
-  // Bengaluru lists no organizer, so its listing was compared with none.
-  assert.deepEqual([sketchers.duplicateCheck?.verdict, sketchers.duplicateCheck?.organizersCompared], ["none", 0]);
+  // Every city is compared: the Bengaluru listing meets Afterfly in Mumbai and is not alike.
+  assert.deepEqual([sketchers.duplicateCheck?.verdict, sketchers.duplicateCheck?.organizersCompared], ["none", 1]);
 
   // A check recorded for another build of the listing, or before listings
   // were compared, is not shown.
