@@ -647,7 +647,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           Positioned(
             left: 0,
             right: 0,
-            bottom: _mapLauncherBottomOffset(context),
+            bottom: exploreMapLauncherBottomOffset(context),
             child: SafeArea(
               top: false,
               child: Center(
@@ -790,17 +790,4 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           : null,
     );
   }
-}
-
-@visibleForTesting
-bool exploreShowsAccountControls({
-  required bool authResolved,
-  required String? uid,
-}) => authResolved && uid != null;
-
-double _mapLauncherBottomOffset(BuildContext context) {
-  return CatchTabViewportScope.bottomOverlayClearanceOf(
-    context,
-    minimum: CatchSpacing.s5,
-  );
 }

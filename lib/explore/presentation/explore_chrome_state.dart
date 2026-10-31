@@ -173,3 +173,15 @@ class ExploreChromeState {
   final bool searchExpanded;
   final bool searchAutofocus;
 }
+
+bool exploreShowsAccountControls({
+  required bool authResolved,
+  required String? uid,
+}) => authResolved && uid != null;
+
+double exploreMapLauncherBottomOffset(BuildContext context) {
+  return CatchTabViewportScope.bottomOverlayClearanceOf(
+    context,
+    minimum: CatchSpacing.s5,
+  );
+}

@@ -310,9 +310,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventChatDirectorySection</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart:15</code> | — | — | No class documentation or registry summary. |
 | <code>ChatConversationsList</code> | <code>lib/chats/presentation/inbox/widgets/chat_conversations_list.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>ChatsEmptyState</code> | <code>lib/chats/presentation/inbox/widgets/chats_empty_state.dart:5</code> | — | — | No class documentation or registry summary. |
-| <code>ChatPersonRowSkeleton</code> | <code>lib/chats/presentation/inbox/widgets/chats_list.dart:122</code> | — | — | No class documentation or registry summary. |
-| <code>ChatsList</code> | <code>lib/chats/presentation/inbox/widgets/chats_list.dart:20</code> | — | — | No class documentation or registry summary. |
-| <code>ChatsListSkeleton</code> | <code>lib/chats/presentation/inbox/widgets/chats_list.dart:98</code> | — | — | No class documentation or registry summary. |
+| <code>ChatPersonRowSkeleton</code> | <code>lib/chats/presentation/inbox/widgets/chats_list.dart:126</code> | — | — | No class documentation or registry summary. |
+| <code>ChatsList</code> | <code>lib/chats/presentation/inbox/widgets/chats_list.dart:21</code> | — | — | No class documentation or registry summary. |
+| <code>ChatsListSkeleton</code> | <code>lib/chats/presentation/inbox/widgets/chats_list.dart:102</code> | — | — | No class documentation or registry summary. |
 | <code>ChatsListBody</code> | <code>lib/chats/presentation/inbox/widgets/chats_list_body.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>ChatsBrowseHeader</code> | <code>lib/chats/presentation/inbox/widgets/chats_sliver_header.dart:33</code> | — | — | No class documentation or registry summary. |
 | <code>ChatEventContextHeader</code> | <code>lib/chats/presentation/widgets/chat_event_context_header.dart:18</code> | — | — | No class documentation or registry summary. |
@@ -601,10 +601,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CalendarWeekRow</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:612</code> | — | — | No class documentation or registry summary. |
 | <code>CalendarWeekRowSkeleton</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:500</code> | — | — | No class documentation or registry summary. |
 | <code>CalendarStatsHeader</code> | <code>lib/events/presentation/calendar/calendar_stats_header.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>ChromelessMapScaffold</code> | <code>lib/events/presentation/event_location_map_screen.dart:179</code> | — | — | No class documentation or registry summary. |
-| <code>EventLocationMapLoadingBody</code> | <code>lib/events/presentation/event_location_map_screen.dart:114</code> | — | — | No class documentation or registry summary. |
-| <code>EventMap</code> | <code>lib/events/presentation/event_map_screen.dart:22</code> | — | — | No class documentation or registry summary. |
-| <code>EventMapLoadingBody</code> | <code>lib/events/presentation/event_map_screen.dart:197</code> | — | — | No class documentation or registry summary. |
+| <code>ChromelessMapScaffold</code> | <code>lib/events/presentation/event_location_map_screen.dart:183</code> | — | — | No class documentation or registry summary. |
+| <code>EventLocationMapLoadingBody</code> | <code>lib/events/presentation/event_location_map_screen.dart:118</code> | — | — | No class documentation or registry summary. |
+| <code>EventMap</code> | <code>lib/events/presentation/event_map_screen.dart:23</code> | — | — | No class documentation or registry summary. |
+| <code>EventMapLoadingBody</code> | <code>lib/events/presentation/event_map_screen.dart:201</code> | — | — | No class documentation or registry summary. |
 | <code>MapPickerSearchRow</code> | <code>lib/events/presentation/location_picker_screen.dart:385</code> | — | — | No class documentation or registry summary. |
 | <code>PlaceSearchSection</code> | <code>lib/events/presentation/location_picker_screen.dart:417</code> | — | — | No class documentation or registry summary. |
 | <code>PlaceSuggestionRow</code> | <code>lib/events/presentation/location_picker_screen.dart:504</code> | — | — | No class documentation or registry summary. |
@@ -1042,7 +1042,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>WelcomeRevealTransition</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart:615</code> | — | — | No class documentation or registry summary. |
 | <code>WelcomeSceneLayout</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart:222</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingStepLayout</code> | <code>lib/onboarding/shared/onboarding_step_layout.dart:5</code> | — | — | No class documentation or registry summary. |
-| <code>OrganizerDetailReadOnlyPreview</code> | <code>lib/organizers/presentation/detail/organizer_detail_read_only_preview.dart:15</code> | — | — | Live, consumer-facing Club Detail composition for an owner-facing read-only preview. The selected [initialOrganizer] renders immediately while live detail data hydrates, matching the consumer route's initial-club fallback policy. |
+| <code>OrganizerDetailReadOnlyPreview</code> | <code>lib/organizers/presentation/detail/organizer_detail_read_only_preview.dart:16</code> | — | — | Live, consumer-facing Club Detail composition for an owner-facing read-only preview. The selected [initialOrganizer] renders immediately while live detail data hydrates, matching the consumer route's initial-club fallback policy. |
 | <code>OrganizerContactSection</code> | <code>lib/organizers/presentation/detail/widgets/organizer_contact_section.dart:13</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerActivitySection</code> | <code>lib/organizers/presentation/detail/widgets/organizer_detail_body.dart:334</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerDetailBody</code> | <code>lib/organizers/presentation/detail/widgets/organizer_detail_body.dart:28</code> | — | — | No class documentation or registry summary. |
@@ -1292,17 +1292,17 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventSuccessCompanionRouteScreen</code> | <code>lib/event_success/presentation/event_success_companion_screen.dart:201</code> | — | — | No class documentation or registry summary. |
 | <code>CalendarLoadingScreen</code> | <code>lib/events/presentation/calendar/calendar_loading_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>CalendarScreen</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:25</code> | — | — | No class documentation or registry summary. |
-| <code>EventDetailScreen</code> | <code>lib/events/presentation/event_detail_screen.dart:55</code> | — | — | No class documentation or registry summary. |
+| <code>EventDetailScreen</code> | <code>lib/events/presentation/event_detail_screen.dart:56</code> | — | — | No class documentation or registry summary. |
 | <code>EventLocationMapScreen</code> | <code>lib/events/presentation/event_location_map_body_screen.dart:11</code> | — | — | No class documentation or registry summary. |
-| <code>EventLocationMapRouteScreen</code> | <code>lib/events/presentation/event_location_map_screen.dart:21</code> | — | — | No class documentation or registry summary. |
+| <code>EventLocationMapRouteScreen</code> | <code>lib/events/presentation/event_location_map_screen.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>LocationPickerScreen</code> | <code>lib/events/presentation/location_picker_screen.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>SavedEventsScreen</code> | <code>lib/events/presentation/saved_events_screen.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailBody</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:25</code> | <code>Body</code> | — | Event Detail screen-section contract that groups the event-specific hero, ticket facts, overview primitives, host/social sections, consent-safe Cross Paths control, companion prompt, and booking dock under one Catch-owned handoff boundary. Also called: <code>EventDetailScreenBody</code>, <code>EventDetailContent</code>, <code>EventDetailsBody</code>. |
 | <code>EventDetailLoadingScreen</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>EventCheckInCelebrationScreen</code> | <code>lib/events/shared/event_check_in_celebration_screen.dart:9</code> | — | — | No class documentation or registry summary. |
 | <code>EventJoinedCelebrationScreen</code> | <code>lib/events/shared/event_joined_celebration_screen.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>ExploreMapScreen</code> | <code>lib/explore/presentation/explore_map_screen.dart:41</code> | — | — | Full-screen event map opened from the Explore feed's map pill. |
-| <code>ExploreScreen</code> | <code>lib/explore/presentation/explore_screen.dart:54</code> | — | — | Explore — the supply-side feed (design-system Explore). |
+| <code>ExploreMapScreen</code> | <code>lib/explore/presentation/explore_map_screen.dart:42</code> | — | — | Full-screen event map opened from the Explore feed's map pill. |
+| <code>ExploreScreen</code> | <code>lib/explore/presentation/explore_screen.dart:55</code> | — | — | Explore — the supply-side feed (design-system Explore). |
 | <code>UpdateRequiredScreen</code> | <code>lib/force_update/presentation/update_required_screen.dart:15</code> | — | — | Blocking screen shown when the running app version is below [minVersion]. |
 | <code>MyMembershipsScreen</code> | <code>lib/host_memberships/presentation/my_memberships_screen.dart:19</code> | — | — | Consumer "My memberships": every paid membership, its savings and the self-serve pause, resume and cancel actions. |
 | <code>PhoneImportReviewScreen</code> | <code>lib/hosts/audience/phone_import/presentation/phone_import_review_screen.dart:15</code> | — | — | Shared review view. Without a canonical submission controller this remains an explicitly labelled demo with sharing permanently disabled. |
@@ -1362,7 +1362,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>LaunchAccessApplicationScreen</code> | <code>lib/launch_access/presentation/launch_access_application_screen.dart:17</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingScreen</code> | <code>lib/onboarding/presentation/onboarding_screen.dart:20</code> | — | — | No class documentation or registry summary. |
 | <code>StartWelcomeRouteScreen</code> | <code>lib/onboarding/presentation/start_welcome_route_screen.dart:9</code> | — | — | Route-level surface owner for the logged-out Welcome experience. |
-| <code>OrganizerDetailScreen</code> | <code>lib/organizers/presentation/detail/organizer_detail_screen.dart:31</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerDetailScreen</code> | <code>lib/organizers/presentation/detail/organizer_detail_screen.dart:32</code> | — | — | No class documentation or registry summary. |
 | <code>CelebrationScreen</code> | <code>lib/pages/celebration/celebration_screen.dart:41</code> | — | — | No class documentation or registry summary. |
 | <code>SplashScreen</code> | <code>lib/pages/startup/splash_screen.dart:9</code> | — | <code>catch.startup_loading_screen</code> | Branded app-start composition with the Catch logo and a delayed bounded loading indicator. Also called: <code>LaunchScreen</code>, <code>StartupScreen</code>, <code>StartupLoadingScreen</code>, <code>AppLoadingScreen</code>. |
 | <code>PaymentConfirmationLoadingScreen</code> | <code>lib/payments/presentation/payment_confirmation_loading_screen.dart:5</code> | — | — | No class documentation or registry summary. |
