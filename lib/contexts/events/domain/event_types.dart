@@ -90,3 +90,6 @@ enum EventSignUpStatus {
   /// The user does not meet the event's eligibility constraints (age or gender cap).
   ineligible,
 }
+
+Object? readEventOrganizerId(Map<dynamic, dynamic> json, String key) =>
+    json[key] ?? json['organizerId'];
