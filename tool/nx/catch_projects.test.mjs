@@ -47,7 +47,9 @@ test("independently locked npm packages and source projects become projects", as
   const projects = await projectsByRoot();
   assert.equal(projects.functions.name, "functions");
   assert.deepEqual(projects.functions.targets.build, {executor: "nx:run-script", options: {script: "build"}});
-  assert.equal(projects.operations.name, "@catch/operations");
+  // Read the name: the Operations boundary keeps its package name out of tool/ code.
+  const operationsPackage = JSON.parse(fs.readFileSync(path.join(workspaceRoot, "operations/package.json"), "utf8"));
+  assert.equal(projects.operations.name, operationsPackage.name);
   assert.equal(projects.contracts.name, "contracts");
   assert.match(projects.contracts.targets.check.options.command, /generate_schema_contracts\.mjs --check$/);
   assert.equal(projects["design/tokens"].name, "design-tokens");
