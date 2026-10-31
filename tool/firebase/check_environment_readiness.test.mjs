@@ -801,6 +801,21 @@ test("Deploy backend requires manual dispatch to bootstrap an untagged environme
       assert.equal(result.status, 0, result.stderr);
       assert.equal(fs.readFileSync(output, "utf8"), event === "workflow_dispatch" ? "planner reached\n" : "mode=no-op\n");
     }
+    // Named Functions skip the planner and become exact targets.
+    const named = path.join(cwd, `${index}-named.txt`);
+    const run = (functions, full = "false") => spawnSync("bash", ["-c", `
+      gh() { return 0; }
+      git() { if [[ "$1" == "rev-parse" ]]; then return 1; fi; }
+      node() { printf 'planner reached\n' >> "$GITHUB_OUTPUT"; }
+      ${block[1].replace(/^          /gmu, "")}
+    `], {cwd, encoding: "utf8", env: {...process.env, GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_OUTPUT: named,
+      GITHUB_STEP_SUMMARY: path.join(cwd, "summary.md"), GITHUB_REPOSITORY: "o/r", DEPLOY_ENVIRONMENT: "prod",
+      GITHUB_SHA: "a".repeat(40), FULL: full, FUNCTIONS: functions}});
+    assert.equal(run("instagramClaimWebhook, startOrganizerClaimVerification").status, 0);
+    assert.equal(fs.readFileSync(named, "utf8"),
+      "mode=named\ntargets=functions:instagramClaimWebhook,functions:startOrganizerClaimVerification\n");
+    assert.notEqual(run("bad;name").status, 0);
+    assert.notEqual(run("instagramClaimWebhook", "true").status, 0);
   }
 });
 

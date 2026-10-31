@@ -1373,6 +1373,13 @@ When it runs:
 - **Manual runs:** use Actions → Deploy backend → Run workflow for `prod`, `dev`
   or `staging`. Tick `full` to redeploy every stage and Function, for example
   after a manual or partial deploy you are unsure about.
+- **Configuration changes:** a changed GitHub variable or switch alters no
+  source, so the plan deploys nothing for it. Run the workflow with
+  `functions` set to the comma-separated Functions that read the parameter
+  (`grep` its `define*` name and the exports that import it). Only those deploy,
+  each from the run's commit, with the environment's current variables. Rules
+  are not checked and the record does not move, so the next normal run still
+  deploys everything changed since the recorded commit.
 
 A manual `./tool/deploy_firebase_targets.sh` deploy leaves the tag unchanged.
 The next run redeploys whatever changed since the tag, which is safe. Recovery
@@ -1485,7 +1492,8 @@ After a prod deploy that includes the webhook:
 5. From an Instagram account with a role on the Meta app, send a message to
    @catch_dates. The webhook acknowledges it and logs nothing on success.
 6. Set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` in `prod` and `prod-backend`,
-   then deploy prod again.
+   then run Deploy backend for `prod` with `functions` set to
+   `instagramClaimWebhook,getOrganizerClaimVerificationOptions,startOrganizerClaimVerification,confirmOrganizerClaimVerification`.
 
 Access level. Meta's App Review table says an app serving only a business you
 own needs Standard Access. Its webhook setup page lists Advanced Access for
