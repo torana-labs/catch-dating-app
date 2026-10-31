@@ -1,4 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import {brand} from "@catch/brand";
 import type {Dispatch, FormEvent, SetStateAction} from "react";
 import {
   ClaimHeroSection,
@@ -12,6 +13,8 @@ import {
   type ClaimVerificationMethodId,
 } from "../features/claims/claimModel";
 import type {ClaimFlowController} from "../features/claims/useClaimFlowController";
+import {InstantClaimPanel} from "../features/claims/sections/InstantClaimSection";
+import type {InstantClaimController} from "../features/claims/useInstantClaimController";
 import {hostListings} from "./fixtures/hostListings";
 import {isUnclaimedListing, isVerifiedListing} from "../features/organizers/selectors";
 import type {HostListing} from "../features/organizers/types";
@@ -187,6 +190,101 @@ export const ClaimWorkspaceSubmitted: Story = {
     />
   ),
 };
+
+const inHalfAnHour = "2026-10-31T12:30:00.000Z";
+const instagramAttempt = {attemptId: "attempt-1", organizerId: claimableListing.id, method: "instagramMessage" as const,
+  code: "482173", proofText: "482173", proofTarget: "carterroadrunners", catchInstagramHandle: brand.social.instagramHandle,
+  expiresAt: inHalfAnHour};
+const lumaAttempt = {...instagramAttempt, method: "lumaDescription" as const, proofText: "catch-482173",
+  proofTarget: "https://lu.ma/carterroadrunners", catchInstagramHandle: null};
+
+export const InstantClaimChoose: Story = {
+  name: "Instant check · choose",
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["choose"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({})} listing={claimableListing} />,
+};
+
+export const InstantClaimInstagram: Story = {
+  name: "Instant check · Instagram code",
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["instagram-code"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({phase: "code", attempt: instagramAttempt})} listing={claimableListing} />,
+};
+
+export const InstantClaimWrongSender: Story = {
+  name: "Instant check · wrong sender",
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["instagram-wrong-sender"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({phase: "code", attempt: instagramAttempt, rejection: "wrongSender"})} listing={claimableListing} />,
+};
+
+export const InstantClaimLuma: Story = {
+  name: "Instant check · Luma code",
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["luma-code"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({phase: "code", attempt: lumaAttempt})} listing={claimableListing} />,
+};
+
+export const InstantClaimExpired: Story = {
+  name: "Instant check · expired",
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["expired"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({phase: "code", attempt: instagramAttempt, expired: true})} listing={claimableListing} />,
+};
+
+export const InstantClaimDone: Story = {
+  name: "Instant check · verified",
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["verified"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({phase: "done"})} listing={claimableListing} />,
+};
+
+function mockInstantController(overrides: Partial<InstantClaimController>): InstantClaimController {
+  const methods = [
+    {method: "instagramMessage" as const, available: true, proofTarget: "carterroadrunners", unavailableReason: null},
+    {method: "lumaDescription" as const, available: true, proofTarget: "https://lu.ma/carterroadrunners",
+      unavailableReason: null},
+  ];
+  const noop = () => undefined;
+  return {
+    account: {} as InstantClaimController["account"],
+    phase: "choose", methods, chosen: methods[0], attempt: null, expired: false, copied: false, error: "",
+    rejection: null, lumaMissing: false, starting: false, checking: false, catchInstagramHandle: brand.social.instagramHandle,
+    setMethod: noop, showCode: async () => undefined, checkLuma: async () => undefined, copyCode: noop, chooseAgain: noop,
+    ...overrides,
+  };
+}
 
 function mockClaimController(overrides: Partial<ClaimFlowController> = {}): ClaimFlowController {
   const listing = claimableListing;

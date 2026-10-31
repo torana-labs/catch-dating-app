@@ -1101,6 +1101,37 @@
       "notes": "Claim route form workspace section; Storybook uses a mock controller so auth and Firebase side effects stay route-owned."
     },
     {
+      "id": "claim_instant_check_panel",
+      "kind": "section",
+      "routeIds": [
+        "claim",
+        "claim_lookup"
+      ],
+      "owner": "features/claims/sections",
+      "source": "website/src/features/claims/sections/InstantClaimSection.tsx",
+      "exportName": "InstantClaimPanel",
+      "css": [
+        "packages/web-ui/src/components/CatchGap.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "website/src/styles/flows.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/ClaimSections.stories.tsx",
+        "exportName": "InstantClaimChoose",
+        "states": [
+          "choose",
+          "instagram-code",
+          "instagram-wrong-sender",
+          "luma-code",
+          "expired",
+          "verified"
+        ]
+      },
+      "notes": "Proves ownership straight away: a code sent from the listing's Instagram account to Catch's, or pasted into its Luma calendar (WebOrgV2 claim band, CAT-256). It sits above the review workspace and outside its form, because the account step is a form of its own. Storybook uses a mock controller; the route wraps it with useInstantClaimController."
+    },
+    {
       "id": "shared_claim_flow_shell",
       "kind": "supporting-component",
       "routeIds": [
