@@ -160,7 +160,7 @@ void main() {
     final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'review-run-1',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().subtract(const Duration(hours: 2)),
       endTime: DateTime.now().subtract(const Duration(hours: 1)),
       meetingPoint: 'Carter Road Amphitheatre',
@@ -219,7 +219,7 @@ void main() {
     );
     final review = event_helpers.buildReview(
       id: '${run.id}~${user.uid}',
-      clubId: run.clubId,
+      organizerId: run.organizerId,
       eventId: run.id,
       reviewerUserId: user.uid,
       reviewerName: user.name,

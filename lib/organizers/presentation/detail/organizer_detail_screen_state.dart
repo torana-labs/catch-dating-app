@@ -15,9 +15,9 @@ enum OrganizerContactActionKind { instagram, phone, email }
 enum OrganizerDetailEventRouteTarget { consumerEventDetail, hostEventDetail }
 
 Organizer? organizerDetailInitialOrganizerForRoute({
-  required String clubId,
+  required String organizerId,
   required Organizer? initialOrganizer,
-}) => initialOrganizer?.id == clubId ? initialOrganizer : null;
+}) => initialOrganizer?.id == organizerId ? initialOrganizer : null;
 
 class OrganizerContactAction {
   const OrganizerContactAction._({

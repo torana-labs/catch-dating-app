@@ -81,7 +81,7 @@ class OrganizerIndexRow extends StatelessWidget {
               ),
             ),
             gapW12,
-            OrganizerJoinAction(clubId: organizer.id, isJoined: isJoined),
+            OrganizerJoinAction(organizerId: organizer.id, isJoined: isJoined),
           ],
         ),
       ),
@@ -104,11 +104,11 @@ String _organizerIndexMetaLabel(Organizer organizer) {
 class OrganizerJoinAction extends ConsumerWidget {
   const OrganizerJoinAction({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     required this.isJoined,
   });
 
-  final String clubId;
+  final String organizerId;
   final bool isJoined;
 
   @override
@@ -132,9 +132,9 @@ class OrganizerJoinAction extends ConsumerWidget {
       );
     }
 
-    // Key by clubId so each tile observes only its own join state; an unkeyed
+    // Key by organizerId so each tile observes only its own join state; an unkeyed
     // shared mutation would spin/disable every visible Join button at once.
-    final joinMutation = OrganizerMembershipController.joinMutation(clubId);
+    final joinMutation = OrganizerMembershipController.joinMutation(organizerId);
     final joinMutationState = ref.watch(joinMutation);
     void joinOrganizer() {
       unawaited(
@@ -142,7 +142,7 @@ class OrganizerJoinAction extends ConsumerWidget {
             .run(ref, (transaction) async {
               await transaction
                   .get(organizerMembershipControllerProvider.notifier)
-                  .join(clubId);
+                  .join(organizerId);
             })
             .catchError((Object error, StackTrace stackTrace) {
               ref
@@ -170,7 +170,7 @@ class OrganizerJoinAction extends ConsumerWidget {
           context.go(
             Uri(
               path: Routes.authScreen.path,
-              queryParameters: {'from': '/organizers/$clubId'},
+              queryParameters: {'from': '/organizers/$organizerId'},
             ).toString(),
           );
           return;

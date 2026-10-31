@@ -757,12 +757,12 @@
           "routes": [
             {
               "id": "hostEventRehearsalStartScreen",
-              "path": "/host/organizers/:clubId/rehearsals/new",
+              "path": "/host/organizers/:organizerId/rehearsals/new",
               "role": "host"
             },
             {
               "id": "hostEventRehearsalScreen",
-              "path": "/host/organizers/:clubId/rehearsals/:sessionId",
+              "path": "/host/organizers/:organizerId/rehearsals/:sessionId",
               "role": "host"
             }
           ]

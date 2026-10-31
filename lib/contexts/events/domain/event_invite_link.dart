@@ -11,7 +11,7 @@ abstract class EventInviteLink with _$EventInviteLink {
   const factory EventInviteLink({
     @JsonKey(includeToJson: false) required String id,
     required String eventId,
-    required String clubId,
+    required String organizerId,
     required String hostUid,
     required String label,
     String? source,

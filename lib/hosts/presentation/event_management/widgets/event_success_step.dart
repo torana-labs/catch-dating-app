@@ -97,7 +97,7 @@ class _EventSuccessStepState extends ConsumerState<EventSuccessStep> {
                 copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsEventSuccessStepTitleLiveEventGuide,
                 contract: CatchContractConstraints
-                    .createClubCallablePayloadHostDefaultsEventSuccessEnabled,
+                    .createOrganizerCallablePayloadHostDefaultsEventSuccessEnabled,
                 body: eventSuccessDefaults.enabled
                     ? context.l10n.hostsCreateEventGuideReady(
                         format:

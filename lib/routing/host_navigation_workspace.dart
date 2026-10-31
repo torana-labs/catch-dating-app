@@ -387,8 +387,8 @@ Uri hostWorkspaceIndexUri(Uri uri) => uri.replace(
 void openHostOrganizerSetting(
   BuildContext context,
   Routes setting,
-  String clubId,
-) => context.pushNamed(setting.name, queryParameters: {'organizerId': clubId});
+  String organizerId,
+) => context.pushNamed(setting.name, queryParameters: {'organizerId': organizerId});
 
 /// A route can be loaded directly, without a Navigator page for its parent.
 /// Prefer the owning workspace's Back policy; otherwise preserve the URI context.

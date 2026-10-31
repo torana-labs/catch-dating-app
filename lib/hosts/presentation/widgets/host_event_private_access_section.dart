@@ -91,7 +91,7 @@ class HostPrivateAccessAsyncBoundary extends StatelessWidget {
           access: access,
           inviteLinksState: catchAsyncStateFromAsyncValue(inviteLinksAsync),
           inviteLink: hostEventInviteUrl(
-            clubId: organizer.id,
+            organizerId: organizer.id,
             eventId: event.id,
             inviteCode: access?.inviteCode,
           ),
@@ -394,7 +394,7 @@ class HostInviteLinkRow extends StatelessWidget {
     final rowState = HostInviteLinkRowDisplayState.resolve(
       link: link,
       url: hostEventInviteUrl(
-        clubId: event.clubId,
+        organizerId: event.organizerId,
         eventId: event.id,
         inviteCode: inviteCode,
         inviteLinkId: link.id,
@@ -563,7 +563,7 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) {
 }
 
 String? hostEventInviteUrl({
-  required String clubId,
+  required String organizerId,
   required String eventId,
   required String? inviteCode,
   String? inviteLinkId,
@@ -573,7 +573,7 @@ String? hostEventInviteUrl({
     return null;
   }
   return AppDeepLinks.event(
-    clubId: clubId,
+    organizerId: organizerId,
     eventId: eventId,
     inviteCode: normalizedInviteCode,
     inviteLinkId: inviteLinkId,

@@ -11,7 +11,7 @@ _EventSuccessPlan _$EventSuccessPlanFromJson(
 ) => _EventSuccessPlan(
   id: json['id'] as String,
   eventId: json['eventId'] as String,
-  clubId: json['clubId'] as String,
+  organizerId: json['clubId'] as String,
   layoutId: json['layoutId'] as String?,
   playbookId: json['playbookId'] as String,
   selectedModuleIds: (json['selectedModuleIds'] as List<dynamic>)
@@ -71,7 +71,7 @@ _EventSuccessPlan _$EventSuccessPlanFromJson(
 Map<String, dynamic> _$EventSuccessPlanToJson(_EventSuccessPlan instance) =>
     <String, dynamic>{
       'eventId': instance.eventId,
-      'clubId': instance.clubId,
+      'clubId': instance.organizerId,
       'layoutId': instance.layoutId,
       'playbookId': instance.playbookId,
       'selectedModuleIds': instance.selectedModuleIds,
@@ -127,7 +127,7 @@ _EventSuccessFeedback _$EventSuccessFeedbackFromJson(
 ) => _EventSuccessFeedback(
   id: json['id'] as String,
   eventId: json['eventId'] as String,
-  clubId: json['clubId'] as String,
+  organizerId: json['clubId'] as String,
   uid: json['uid'] as String,
   welcomeRating: (json['welcomeRating'] as num).toInt(),
   structureRating: (json['structureRating'] as num).toInt(),
@@ -142,7 +142,7 @@ Map<String, dynamic> _$EventSuccessFeedbackToJson(
   _EventSuccessFeedback instance,
 ) => <String, dynamic>{
   'eventId': instance.eventId,
-  'clubId': instance.clubId,
+  'clubId': instance.organizerId,
   'uid': instance.uid,
   'welcomeRating': instance.welcomeRating,
   'structureRating': instance.structureRating,

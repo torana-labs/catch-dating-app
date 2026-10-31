@@ -42,7 +42,7 @@ void _registerCreateEventSavedVenueTests() {
 
     final draftRepository = EventDraftRepository(ErrorLogger());
     final drafts = await draftRepository.loadDrafts(
-      clubId: 'club-1',
+      organizerId: 'club-1',
       userId: 'runner-1',
     );
     expect(drafts.single.id, now.millisecondsSinceEpoch.toString());

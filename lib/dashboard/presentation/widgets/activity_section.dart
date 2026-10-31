@@ -369,7 +369,7 @@ class _NotificationVisual {
         icon: CatchIcons.history,
         accent: t.ink2,
       ),
-      ActivityNotificationType.clubUpdate => visual(
+      ActivityNotificationType.organizerUpdate => visual(
         icon: CatchIcons.people,
         accent: t.ink2,
       ),

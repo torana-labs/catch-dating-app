@@ -228,7 +228,7 @@ Match buildMatch({
   Map<String, int> unreadCounts = const {},
   MatchStatus status = MatchStatus.active,
   MatchConversationType conversationType = MatchConversationType.match,
-  String? clubId,
+  String? organizerId,
   DateTime? eventPlanExpiresAt,
 }) {
   return Match(
@@ -243,7 +243,7 @@ Match buildMatch({
     unreadCounts: unreadCounts,
     status: status,
     conversationType: conversationType,
-    clubId: clubId,
+    organizerId: organizerId,
     eventPlanExpiresAt: eventPlanExpiresAt,
   );
 }
@@ -496,7 +496,7 @@ void main() {
             id: 'host-inquiry-1',
             user1Id: 'guest-1',
             user2Id: 'host-1',
-            conversationType: MatchConversationType.clubHostInquiry,
+            conversationType: MatchConversationType.organizerHostInquiry,
           ),
         ),
         messagesAsync: _emptyMessagesAsync,
@@ -672,8 +672,8 @@ void main() {
           id: 'host-inquiry-1',
           user1Id: 'guest-1',
           user2Id: 'host-1',
-          conversationType: MatchConversationType.clubHostInquiry,
-          clubId: 'club-1',
+          conversationType: MatchConversationType.organizerHostInquiry,
+          organizerId: 'club-1',
         );
         final organizer = Organizer(
           id: 'club-1',
@@ -715,8 +715,8 @@ void main() {
         id: 'host-inquiry-1',
         user1Id: 'guest-1',
         user2Id: 'host-1',
-        conversationType: MatchConversationType.clubHostInquiry,
-        clubId: 'club-1',
+        conversationType: MatchConversationType.organizerHostInquiry,
+        organizerId: 'club-1',
       );
       final organizer = Organizer(
         id: 'club-1',
@@ -777,8 +777,8 @@ void main() {
       final match = buildMatch(
         user1Id: 'guest-1',
         user2Id: 'host-1',
-        conversationType: MatchConversationType.clubHostInquiry,
-        clubId: 'club-1',
+        conversationType: MatchConversationType.organizerHostInquiry,
+        organizerId: 'club-1',
       );
       final profile = buildPublicProfile(uid: 'guest-1', name: 'Aarav');
 
@@ -815,8 +815,8 @@ void main() {
       final hostInquiry = buildMatch(
         user1Id: 'guest-1',
         user2Id: 'host-1',
-        conversationType: MatchConversationType.clubHostInquiry,
-        clubId: 'club-1',
+        conversationType: MatchConversationType.organizerHostInquiry,
+        organizerId: 'club-1',
       );
 
       final fallback = _hostChatState(
@@ -882,8 +882,8 @@ void main() {
       final match = buildMatch(
         user1Id: 'guest-1',
         user2Id: 'host-1',
-        conversationType: MatchConversationType.clubHostInquiry,
-        clubId: 'club-1',
+        conversationType: MatchConversationType.organizerHostInquiry,
+        organizerId: 'club-1',
       );
 
       final state = _hostChatState(
@@ -957,8 +957,8 @@ void main() {
           id: 'host-inquiry-1',
           user1Id: 'guest-1',
           user2Id: 'host-1',
-          conversationType: MatchConversationType.clubHostInquiry,
-          clubId: 'club-1',
+          conversationType: MatchConversationType.organizerHostInquiry,
+          organizerId: 'club-1',
         );
         final suvbotMatch = buildMatch(
           id: 'suvbot_runner-1',
@@ -1122,8 +1122,8 @@ void main() {
         id: 'host-inquiry-1',
         user1Id: 'guest-1',
         user2Id: 'host-1',
-        conversationType: MatchConversationType.clubHostInquiry,
-        clubId: 'club-1',
+        conversationType: MatchConversationType.organizerHostInquiry,
+        organizerId: 'club-1',
       );
       final organizer = Organizer(
         id: 'club-1',
@@ -1693,8 +1693,8 @@ void main() {
           id: 'host-inquiry-1',
           user1Id: 'guest-1',
           user2Id: 'host-1',
-          conversationType: MatchConversationType.clubHostInquiry,
-          clubId: 'club-1',
+          conversationType: MatchConversationType.organizerHostInquiry,
+          organizerId: 'club-1',
         );
         final matchRepository = FakeMatchRepository(match: match);
         final conversationRepository = FakeConversationRepository();
@@ -1832,9 +1832,9 @@ void main() {
           id: 'host-inquiry-1',
           user1Id: 'guest-1',
           user2Id: 'host-1',
-          conversationType: MatchConversationType.clubHostInquiry,
+          conversationType: MatchConversationType.organizerHostInquiry,
           status: MatchStatus.blocked,
-          clubId: 'club-1',
+          organizerId: 'club-1',
         ),
       );
       final conversationRepository = FakeConversationRepository();
@@ -1894,8 +1894,8 @@ void main() {
         id: 'host-inquiry-1',
         user1Id: 'guest-1',
         user2Id: 'host-1',
-        conversationType: MatchConversationType.clubHostInquiry,
-        clubId: 'club-1',
+        conversationType: MatchConversationType.organizerHostInquiry,
+        organizerId: 'club-1',
       );
       final matchRepository = FakeMatchRepository(match: match);
       final conversationRepository = FakeConversationRepository();
@@ -1961,8 +1961,8 @@ void main() {
         id: 'host-inquiry-1',
         user1Id: 'guest-1',
         user2Id: 'host-1',
-        conversationType: MatchConversationType.clubHostInquiry,
-        clubId: 'club-1',
+        conversationType: MatchConversationType.organizerHostInquiry,
+        organizerId: 'club-1',
       );
       final matchRepository = FakeMatchRepository(match: match);
       final conversationRepository = FakeConversationRepository();

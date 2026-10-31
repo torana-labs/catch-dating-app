@@ -6,7 +6,7 @@ part 'match.g.dart';
 
 enum MatchStatus { active, blocked, closed }
 
-enum MatchConversationType { match, clubHostInquiry, crossPathsEventPlan }
+enum MatchConversationType { match, organizerHostInquiry, crossPathsEventPlan }
 
 @freezed
 abstract class Match with _$Match {
@@ -30,7 +30,7 @@ abstract class Match with _$Match {
     @JsonKey(unknownEnumValue: MatchConversationType.match)
     @Default(MatchConversationType.match)
     MatchConversationType conversationType,
-    String? clubId,
+    String? organizerId,
     String? organizerId,
     String? crossPathsInvitationId,
     @NullableTimestampConverter() DateTime? eventPlanExpiresAt,
@@ -49,7 +49,7 @@ abstract class Match with _$Match {
   bool get isClosed => status == MatchStatus.closed;
 
   bool get isOrganizerHostInquiry =>
-      conversationType == MatchConversationType.clubHostInquiry;
+      conversationType == MatchConversationType.organizerHostInquiry;
 
   bool get isCrossPathsEventPlan =>
       conversationType == MatchConversationType.crossPathsEventPlan;

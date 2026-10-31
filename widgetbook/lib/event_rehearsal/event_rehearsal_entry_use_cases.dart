@@ -40,7 +40,7 @@ Widget rehearsalSampleEntry(BuildContext context) =>
 Widget rehearsalStartSheet(BuildContext context) => EventRehearsalStartSheet(
   event: Event(
     id: 'preview-event',
-    clubId: 'preview-organizer',
+    organizerId: 'preview-organizer',
     name: 'Wednesday Trivia Night',
     startTime: DateTime(2026, 9, 9, 19),
     endTime: DateTime(2026, 9, 9, 21),
@@ -69,7 +69,7 @@ class _EntryPreviewState extends State<_EntryPreview> {
   );
   late final event = Event(
     id: 'preview-event',
-    clubId: 'preview-organizer',
+    organizerId: 'preview-organizer',
     name: 'Saturday singles mixer',
     startTime: DateTime(2026, 9, 5, 19),
     endTime: DateTime(2026, 9, 5, 20, 30),

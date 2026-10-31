@@ -359,7 +359,7 @@
           "scopeKeys": [
             "viewerUid",
             "routeInstanceId",
-            "clubId"
+            "organizerId"
           ],
           "outcomes": [
             {
@@ -381,7 +381,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "tabSelectionVersion"
           ],
           "outcomes": [
@@ -404,7 +404,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "fieldId",
             "organizerVersion"
           ],
@@ -432,7 +432,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "mediaRevision"
           ],
           "outcomes": [
@@ -459,7 +459,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "settingsRoute"
           ],
           "outcomes": [
@@ -483,7 +483,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "retryTarget",
             "failureStateVersion"
           ],
@@ -507,7 +507,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "defaultsRevision"
           ],
           "outcomes": [
@@ -534,7 +534,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "analyticsQuery",
             "failureStateVersion"
           ],
@@ -558,7 +558,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "analyticsQuery",
             "refreshAttemptId"
           ],
@@ -582,7 +582,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "rangePreset"
           ],
           "outcomes": [
@@ -605,7 +605,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "eventId"
           ],
           "outcomes": [
@@ -627,7 +627,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "tapAttemptId"
           ],
           "outcomes": [
@@ -799,7 +799,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "phoneNumber",
             "teamVersion"
           ],
@@ -826,7 +826,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "hostUid",
             "teamVersion"
           ],
@@ -853,7 +853,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "hostUid",
             "teamVersion"
           ],
@@ -902,7 +902,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "role"
           ],
           "outcomes": [
@@ -931,7 +931,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "tabSelectionVersion"
           ],
           "outcomes": [
@@ -953,7 +953,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "navigationStackVersion"
           ],
           "outcomes": [

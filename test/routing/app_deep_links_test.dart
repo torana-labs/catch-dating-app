@@ -16,7 +16,7 @@ void main() {
 
     test('builds a nested event detail URL from the router path contract', () {
       expect(
-        AppDeepLinks.event(clubId: 'club-1', eventId: 'event-1').toString(),
+        AppDeepLinks.event(organizerId: 'club-1', eventId: 'event-1').toString(),
         '${Brand.webOrigin}/organizers/club-1/events/event-1',
       );
     });
@@ -34,7 +34,7 @@ void main() {
 
     test('builds consumer in-app event paths by default', () {
       expect(
-        AppDeepLinks.inAppEventPath(clubId: 'club-1', eventId: 'event-1'),
+        AppDeepLinks.inAppEventPath(organizerId: 'club-1', eventId: 'event-1'),
         '/organizers/club-1/events/event-1',
       );
     });
@@ -43,7 +43,7 @@ void main() {
       AppConfig.configureEntrypointRole(AppRole.host);
 
       expect(
-        AppDeepLinks.inAppEventPath(clubId: 'club-1', eventId: 'event-1'),
+        AppDeepLinks.inAppEventPath(organizerId: 'club-1', eventId: 'event-1'),
         '/host/organizers/club-1/events/event-1',
       );
     });

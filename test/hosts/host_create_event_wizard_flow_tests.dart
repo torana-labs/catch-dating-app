@@ -12,7 +12,7 @@ void _registerCreateEventWizardFlowTests() {
       initialStep: 2,
       initialDraft: EventDraft(
         id: 'custom-optional',
-        clubId: 'club-1',
+        organizerId: 'club-1',
         savedAt: now,
         name: 'Meet the neighborhood',
         accessibility: 'Step-free entrance',
@@ -62,7 +62,7 @@ void _registerCreateEventWizardFlowTests() {
         initialStep: 2,
         initialDraft: EventDraft(
           id: 'runtime-draft',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: now,
           name: 'Friday supper',
           activityKind: 'dinner',

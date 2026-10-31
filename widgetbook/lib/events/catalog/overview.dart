@@ -158,7 +158,7 @@ Widget eventDetailInitialEventLoadingBodyStates(BuildContext context) {
             child: EventDetailBody(
               event: widgetbookEvent,
               userProfile: null,
-              clubId: widgetbookEventsOrganizerId,
+              organizerId: widgetbookEventsOrganizerId,
               reviews: const [],
               isAuthenticated: false,
               sectionVisibility: eventDetailSectionVisibilityStateFrom(
@@ -211,7 +211,7 @@ Widget eventDetailInitialEventLoadingBodyStates(BuildContext context) {
                   child: EventDetailBody(
                     event: widgetbookEvent,
                     userProfile: null,
-                    clubId: widgetbookEventsOrganizerId,
+                    organizerId: widgetbookEventsOrganizerId,
                     reviews: const [],
                     isAuthenticated: false,
                     sectionVisibility: eventDetailSectionVisibilityStateFrom(

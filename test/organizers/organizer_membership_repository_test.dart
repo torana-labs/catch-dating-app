@@ -15,13 +15,13 @@ void main() {
 
     test('watchMembership emits null when the edge is absent', () async {
       await expectLater(
-        repository.watchMembership(clubId: 'club-1', uid: 'runner-1'),
+        repository.watchMembership(organizerId: 'club-1', uid: 'runner-1'),
         emits(isNull),
       );
     });
 
     test('watchMembership emits the matching membership edge', () async {
-      final id = organizerMembershipId(clubId: 'club-1', uid: 'runner-1');
+      final id = organizerMembershipId(organizerId: 'club-1', uid: 'runner-1');
       await firestore.collection('organizerFollows').doc(id).set({
         'organizerId': 'club-1',
         'uid': 'runner-1',
@@ -32,11 +32,11 @@ void main() {
       });
 
       await expectLater(
-        repository.watchMembership(clubId: 'club-1', uid: 'runner-1'),
+        repository.watchMembership(organizerId: 'club-1', uid: 'runner-1'),
         emits(
           isA<OrganizerMembership>()
               .having((membership) => membership.id, 'id', id)
-              .having((membership) => membership.clubId, 'organizerId', 'club-1')
+              .having((membership) => membership.organizerId, 'organizerId', 'club-1')
               .having((membership) => membership.uid, 'uid', 'runner-1'),
         ),
       );

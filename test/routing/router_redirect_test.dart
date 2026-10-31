@@ -470,7 +470,7 @@ void main() {
     test('consumer in-app event deep links stay on consumer event routes', () {
       expect(
         AppDeepLinks.inAppEventPath(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           eventId: 'event-1',
           appRole: AppRole.consumer,
         ),
@@ -478,7 +478,7 @@ void main() {
       );
       expect(
         AppDeepLinks.inAppEventPath(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           eventId: 'event-1',
           appRole: AppRole.host,
         ),

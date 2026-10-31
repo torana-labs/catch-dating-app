@@ -33,7 +33,7 @@ final class UtilitySurfaceFixtures {
     profileComplete: true,
     city: 'Mumbai',
     interestedInGenders: const [Gender.man],
-    prefsClubUpdates: false,
+    prefsOrganizerUpdates: false,
     prefsWeeklyDigest: true,
   );
 
@@ -119,11 +119,11 @@ final class UtilitySurfaceFixtures {
     ActivityNotification(
       id: 'notification-club',
       uid: viewerUid,
-      type: ActivityNotificationType.clubUpdate,
+      type: ActivityNotificationType.organizerUpdate,
       title: 'Sea Face Social added a new route',
       body:
           'The host posted a slower loop for members returning after a break.',
-      clubId: 'design-club',
+      organizerId: 'design-club',
       createdAt: now.subtract(const Duration(days: 1, hours: 2)),
     ),
     ActivityNotification(
@@ -171,7 +171,7 @@ final class UtilitySurfaceFixtures {
     final start = DateTime(2026, 6, 24, 18, 30);
     return Event(
       id: id,
-      clubId: 'design-club',
+      organizerId: 'design-club',
       startTime: start,
       endTime: start.add(const Duration(hours: 1, minutes: 30)),
       meetingPoint: meetingPoint,

@@ -63,7 +63,7 @@ Widget hostEventAnnouncementFieldStates(BuildContext context) =>
             child: _HostSendIntentFixture(
               available: available,
               child: HostEventAnnouncementField(
-                organizerId: HostInboxSurfaceFixtures.clubId,
+                organizerId: HostInboxSurfaceFixtures.organizerId,
                 preferredEventId: HostInboxSurfaceFixtures.eventId,
                 initialSegment: HostInboxAudienceSegment.booked,
                 sendingEnabled: available,
@@ -105,9 +105,9 @@ class _HostSendIntentFixture extends StatelessWidget {
   @override
   Widget build(BuildContext context) => WidgetbookFixtureScope(
     overrides: [
-      hostMessagingSetupProvider(HostInboxSurfaceFixtures.clubId).overrideWith(
+      hostMessagingSetupProvider(HostInboxSurfaceFixtures.organizerId).overrideWith(
         (ref) async => HostMessagingSetup(
-          organizerId: HostInboxSurfaceFixtures.clubId,
+          organizerId: HostInboxSurfaceFixtures.organizerId,
           providerConfigured: available,
           embeddedSignup: const HostWhatsappEmbeddedSignupConfig(
             appId: null,
@@ -143,10 +143,10 @@ class _HostSendIntentFixture extends StatelessWidget {
         ),
       ),
       watchOrganizerPostRemainingWeeklyQuotaProvider(
-        HostInboxSurfaceFixtures.clubId,
+        HostInboxSurfaceFixtures.organizerId,
       ).overrideWith((ref) => Stream.value(available ? 3 : 0)),
       watchEventsForOrganizerProvider(
-        HostInboxSurfaceFixtures.clubId,
+        HostInboxSurfaceFixtures.organizerId,
       ).overrideWith((ref) => Stream.value([HostInboxSurfaceFixtures.event])),
       watchEventParticipationsForEventProvider(
         HostInboxSurfaceFixtures.eventId,

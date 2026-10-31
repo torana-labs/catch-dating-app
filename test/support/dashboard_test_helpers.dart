@@ -39,12 +39,12 @@ ExploreEventRecommendationCandidate recommendationCandidate(
 );
 
 OrganizerMembership membership({
-  required String clubId,
+  required String organizerId,
   String uid = 'runner-1',
 }) {
   return OrganizerMembership(
-    id: organizerMembershipId(clubId: clubId, uid: uid),
-    clubId: clubId,
+    id: organizerMembershipId(organizerId: organizerId, uid: uid),
+    organizerId: organizerId,
     uid: uid,
     role: OrganizerMembershipRole.member,
     status: OrganizerMembershipStatus.active,
@@ -56,7 +56,7 @@ dynamic membershipsOverride(UserProfile user, List<String> organizerIds) =>
     watchActiveOrganizerMembershipsForUserProvider(user.uid).overrideWith(
       (ref) => Stream.value(
         organizerIds
-            .map((clubId) => membership(clubId: clubId, uid: user.uid))
+            .map((organizerId) => membership(organizerId: organizerId, uid: user.uid))
             .toList(),
       ),
     );

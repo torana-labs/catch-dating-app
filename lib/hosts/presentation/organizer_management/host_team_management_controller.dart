@@ -15,29 +15,29 @@ class HostTeamManagementController extends _$HostTeamManagementController {
   void build() {}
 
   Future<void> addHostByPhone({
-    required String clubId,
+    required String organizerId,
     required String phoneNumber,
   }) async {
     requireSignedInUid(ref, action: 'add an organizer manager');
     await ref
         .read(organizersRepositoryProvider)
-        .addOrganizerHost(clubId: clubId, phoneNumber: phoneNumber);
+        .addOrganizerHost(organizerId: organizerId, phoneNumber: phoneNumber);
   }
 
-  Future<void> removeHost({required String clubId, required String uid}) async {
+  Future<void> removeHost({required String organizerId, required String uid}) async {
     requireSignedInUid(ref, action: 'remove an organizer manager');
     await ref
         .read(organizersRepositoryProvider)
-        .removeOrganizerHost(clubId: clubId, uid: uid);
+        .removeOrganizerHost(organizerId: organizerId, uid: uid);
   }
 
   Future<void> transferOwnership({
-    required String clubId,
+    required String organizerId,
     required String uid,
   }) async {
     requireSignedInUid(ref, action: 'transfer organizer ownership');
     await ref
         .read(organizersRepositoryProvider)
-        .transferOrganizerOwnership(clubId: clubId, uid: uid);
+        .transferOrganizerOwnership(organizerId: organizerId, uid: uid);
   }
 }

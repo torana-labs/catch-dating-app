@@ -50,7 +50,7 @@ void main() {
     test('exposes spots remaining and requirement presence', () {
       final event = Event(
         id: 'event-1',
-        clubId: 'club-1',
+        organizerId: 'club-1',
         startTime: DateTime.now().add(const Duration(hours: 1)),
         endTime: DateTime.now().add(const Duration(hours: 2)),
         meetingPoint: 'Carter Road',

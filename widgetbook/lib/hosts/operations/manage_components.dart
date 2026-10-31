@@ -57,7 +57,7 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
   final profiles = _hostAttendeeProfiles();
   final inviteCode = HostOperationsFixtures.privateAccess.inviteCode;
   final inviteLink = AppDeepLinks.event(
-    clubId: organizer.id,
+    organizerId: organizer.id,
     eventId: event.id,
     inviteCode: inviteCode,
   ).toString();

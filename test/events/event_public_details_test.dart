@@ -77,7 +77,7 @@ void main() {
     expect(format.toJson().containsKey('activityDetails'), isFalse);
     final draft = EventDraft(
       id: 'draft',
-      clubId: 'host',
+      organizerId: 'host',
       savedAt: DateTime(2026),
     );
     expect(draft.toJson().containsKey('accessibility'), isFalse);

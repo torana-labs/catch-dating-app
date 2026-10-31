@@ -410,7 +410,7 @@ void main() {
           container: container,
           child: MaterialApp(
             theme: AppTheme.light,
-            home: const HostCreateEventRouteScreen(clubId: 'club-1'),
+            home: const HostCreateEventRouteScreen(organizerId: 'club-1'),
           ),
         ),
       );

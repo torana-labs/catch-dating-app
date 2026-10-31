@@ -22,7 +22,7 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
   const factory EventSuccessPlan({
     @JsonKey(includeToJson: false) required String id,
     required String eventId,
-    required String clubId,
+    required String organizerId,
     String? layoutId,
     required String playbookId,
     required List<String> selectedModuleIds,
@@ -68,7 +68,7 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
     return EventSuccessPlan.fromDraft(
       id: event.id,
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       draft: draft,
       createdAt: now,
       updatedAt: now,
@@ -91,7 +91,7 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
     return EventSuccessPlan.fromDraft(
       id: event.id,
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       layoutId: normalized.layoutId,
       draft: normalized.toDraft(targetAttendeeCount: targetAttendeeCount),
       createdAt: now,
@@ -105,7 +105,7 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
   factory EventSuccessPlan.fromDraft({
     required String id,
     required String eventId,
-    required String clubId,
+    required String organizerId,
     String? layoutId,
     required EventSuccessHostDraft draft,
     required DateTime createdAt,
@@ -122,7 +122,7 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
     return EventSuccessPlan(
       id: id,
       eventId: eventId,
-      clubId: clubId,
+      organizerId: organizerId,
       layoutId: layoutId,
       playbookId: draft.playbook.id,
       selectedModuleIds: _stableModuleIds(selectedModuleIds),
@@ -343,7 +343,7 @@ abstract class EventSuccessFeedback with _$EventSuccessFeedback {
   const factory EventSuccessFeedback({
     @JsonKey(includeToJson: false) required String id,
     required String eventId,
-    required String clubId,
+    required String organizerId,
     required String uid,
     required int welcomeRating,
     required int structureRating,

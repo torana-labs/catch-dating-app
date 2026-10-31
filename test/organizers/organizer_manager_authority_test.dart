@@ -97,7 +97,7 @@ void main() {
 
   test('stale display profile cannot open the event edit route', () {
     final organizer = _revokedOrganizer();
-    final event = buildEvent(clubId: organizer.id);
+    final event = buildEvent(organizerId: organizer.id);
     final state = HostEventEditState.resolve(
       uid: const CatchAsyncState<String?>.data(_removed),
       organizer: CatchAsyncState<Organizer?>.data(organizer),

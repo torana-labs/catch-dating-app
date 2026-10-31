@@ -652,7 +652,7 @@ Widget _app({
   bool whatsappProviderConfigured = true,
 }) {
   final organizer = organizer_test.buildOrganizer(
-    id: event?.clubId ?? 'club-1',
+    id: event?.organizerId ?? 'club-1',
   );
   final inbox = ChatsListViewModel(
     newMatches: const [],
@@ -948,8 +948,8 @@ ChatThreadPreview _preview({
     lastMessageAt: DateTime(2026, 7, 10, 17),
     lastMessagePreview: 'Can you help?',
     lastMessageSenderId: uid,
-    conversationType: MatchConversationType.clubHostInquiry,
-    clubId: 'club-1',
+    conversationType: MatchConversationType.organizerHostInquiry,
+    organizerId: 'club-1',
   );
   return ChatThreadPreview(
     match: match,

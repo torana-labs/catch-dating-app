@@ -13,7 +13,7 @@ abstract class EventRuntimeClaimRequest with _$EventRuntimeClaimRequest {
   const factory EventRuntimeClaimRequest({
     @JsonKey(includeToJson: false) required String id,
     required String eventId,
-    required String clubId,
+    required String organizerId,
     required String organizerId,
     required String uid,
     required String displayName,

@@ -59,7 +59,7 @@ class WidgetbookOrganizerOrganizerScreenPreview extends StatelessWidget {
         ).overrideWith((ref) => viewModel),
       ],
       child: OrganizerDetailScreen(
-        clubId: widgetbookOrganizerOrganizer.id,
+        organizerId: widgetbookOrganizerOrganizer.id,
         initialOrganizer: useInitialOrganizer
             ? widgetbookOrganizerOrganizer
             : null,

@@ -53,7 +53,7 @@ final class DashboardSurfaceFixtures {
   static final memberships = <OrganizerMembership>[
     OrganizerMembership(
       id: 'design-dashboard-club-$viewerUid',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       uid: viewerUid,
       role: OrganizerMembershipRole.member,
       status: OrganizerMembershipStatus.active,
@@ -69,7 +69,7 @@ final class DashboardSurfaceFixtures {
         latitude: 19.0676,
         longitude: 72.8227,
       ).copyWith(
-        clubId: organizer.id,
+        organizerId: organizer.id,
         startTime: DateTime(2030, 6, 24, 18, 30),
         endTime: DateTime(2030, 6, 24, 20),
         bookedCount: 7,
@@ -84,7 +84,7 @@ final class DashboardSurfaceFixtures {
         latitude: 18.993,
         longitude: 72.824,
       ).copyWith(
-        clubId: organizer.id,
+        organizerId: organizer.id,
         startTime: DateTime(2030, 6, 26, 7),
         endTime: DateTime(2030, 6, 26, 8, 20),
         distanceKm: 10,
@@ -102,7 +102,7 @@ final class DashboardSurfaceFixtures {
         latitude: 19.059,
         longitude: 72.822,
       ).copyWith(
-        clubId: organizer.id,
+        organizerId: organizer.id,
         startTime: now.subtract(const Duration(days: 2, hours: 2)),
         endTime: now.subtract(const Duration(days: 2, hours: 1)),
         checkedInCount: 6,

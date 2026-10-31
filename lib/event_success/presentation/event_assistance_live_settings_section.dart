@@ -22,7 +22,7 @@ class EventAssistanceLiveSettingsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final runtimeScope = EventAssistanceRuntimeScope(
-      organizerId: event.clubId,
+      organizerId: event.organizerId,
       eventId: event.id,
     );
     final runtimeState = ref.watch(
@@ -40,14 +40,14 @@ class EventAssistanceLiveSettingsSection extends ConsumerWidget {
         : const <RoutePaceGroup>[];
     final pending = ref
         .watch(eventAssistancePendingSettingsProvider)
-        .where((s) => s.eventId == event.id && s.organizerId == event.clubId);
+        .where((s) => s.eventId == event.id && s.organizerId == event.organizerId);
     String groupLabel(String id) => id == 'event:whole'
         ? l10n.eventAssistanceLateJoinEveryone
         : groups.where((g) => g.id == id).firstOrNull?.label ??
               l10n.eventAssistanceLateJoinPreviousGroup;
     void open(String groupId) {
       final scope = EventAssistanceGroupScope(
-        organizerId: event.clubId,
+        organizerId: event.organizerId,
         eventId: event.id,
         groupId: groupId,
       );

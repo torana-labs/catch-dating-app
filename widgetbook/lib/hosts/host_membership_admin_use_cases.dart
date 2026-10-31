@@ -103,7 +103,7 @@ Widget hostOrganizerMembershipsScreenLoaded(BuildContext context) =>
               ],
               child: WidgetbookUtilityDeviceFrame(
                 child: HostOrganizerMembershipsScreen(
-                  clubId: HostOperationsFixtures.primaryOrganizer.id,
+                  organizerId: HostOperationsFixtures.primaryOrganizer.id,
                 ),
               ),
             ),

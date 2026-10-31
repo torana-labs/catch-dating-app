@@ -284,7 +284,7 @@ Widget hostPublicationRoute(BuildContext context) =>
     WidgetbookHostManageRouteScope(
       uid: null,
       child: HostEventPublicationRouteScreen(
-        clubId: HostOperationsFixtures.primaryOrganizer.id,
+        organizerId: HostOperationsFixtures.primaryOrganizer.id,
         eventId: HostOperationsFixtures.privateEvent.id,
       ),
     );

@@ -103,7 +103,7 @@ class _DeparturePreviewState extends State<_DeparturePreview> {
       final surface = switch (widget.surface) {
         _Surface.liveSheet => EventAssistanceDepartureSheet(
           scope: EventAssistanceGroupScope(
-            organizerId: event.clubId,
+            organizerId: event.organizerId,
             eventId: event.id,
             groupId: 'event:whole',
           ),

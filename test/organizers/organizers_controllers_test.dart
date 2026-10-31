@@ -31,12 +31,12 @@ import 'organizers_test_helpers.dart';
 part 'organizers_controller_media_reliability_tests.dart';
 
 OrganizerMembership _membership({
-  String clubId = 'club-1',
+  String organizerId = 'club-1',
   String uid = 'runner-1',
   OrganizerMembershipStatus status = OrganizerMembershipStatus.active,
 }) => OrganizerMembership(
-  id: organizerMembershipId(clubId: clubId, uid: uid),
-  clubId: clubId,
+  id: organizerMembershipId(organizerId: organizerId, uid: uid),
+  organizerId: organizerId,
   uid: uid,
   role: OrganizerMembershipRole.member,
   status: status,
@@ -132,7 +132,7 @@ void main() {
       await container.pump();
       await container
           .read(organizerMembershipControllerProvider.notifier)
-          .setPushNotifications(clubId: 'club-10', enabled: true);
+          .setPushNotifications(organizerId: 'club-10', enabled: true);
 
       expect(fakeRepository.notificationsOrganizerId, 'club-10');
       expect(fakeRepository.notificationsEnabled, isTrue);
@@ -161,7 +161,7 @@ void main() {
         organizerHostContactControllerProvider.notifier,
       );
       final matchId = await controller.startConversation(
-        clubId: 'club-1',
+        organizerId: 'club-1',
         hostUid: 'host-2',
         eventId: 'event-7',
       );
@@ -440,7 +440,7 @@ void main() {
     test('rejects an optimistic organizer for a different route id', () {
       expect(
         organizerDetailInitialOrganizerForRoute(
-          clubId: 'expected-club',
+          organizerId: 'expected-club',
           initialOrganizer: buildOrganizer(id: 'different-club'),
         ),
         isNull,
@@ -813,7 +813,7 @@ void main() {
 
         expect(fakeRepository.lastCreateCall, isNotNull);
         expect(
-          fakeRepository.lastCreateCall!.clubId,
+          fakeRepository.lastCreateCall!.organizerId,
           fakeRepository.generatedId,
         );
         expect(fakeRepository.lastCreateCall!.imageUrl, isNull);
@@ -874,7 +874,7 @@ void main() {
       expect(fakeImageUploadRepository.lastUploadOrganizerId, 'club-42');
       expect(fakeImageUploadRepository.lastUploadUid, 'host-1');
       expect(fakeRepository.lastCreateCall, isNotNull);
-      expect(fakeRepository.lastCreateCall!.clubId, 'club-42');
+      expect(fakeRepository.lastCreateCall!.organizerId, 'club-42');
       expect(fakeRepository.lastCreateCall!.imageUrl, isNull);
       expect(fakeRepository.lastUpdatedOrganizerId, 'club-42');
       expect(
@@ -923,10 +923,10 @@ void main() {
       expect(fakeImageUploadRepository.uploadedOrganizerPhotoImages, photos);
       final fields = fakeRepository.lastUpdatedFields!;
       expect(fields['imageUrl'], fakeImageUploadRepository.uploadResult);
-      final clubPhotos = fields['organizerPhotos'] as List<Object?>;
-      expect(clubPhotos, hasLength(2));
+      final organizerPhotos = fields['organizerPhotos'] as List<Object?>;
+      expect(organizerPhotos, hasLength(2));
       expect(
-        clubPhotos.cast<Map<String, Object?>>().map(
+        organizerPhotos.cast<Map<String, Object?>>().map(
           (photo) => photo['position'],
         ),
         [0, 1],
@@ -1009,7 +1009,7 @@ void main() {
           );
 
       expect(fakeRepository.lastCreateCall, isNotNull);
-      expect(fakeRepository.lastCreateCall!.clubId, fakeRepository.generatedId);
+      expect(fakeRepository.lastCreateCall!.organizerId, fakeRepository.generatedId);
     });
 
     test('co-host media edits update only media fields', () async {

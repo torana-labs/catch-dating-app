@@ -56,7 +56,7 @@ void _registerEventSuccessCompanionFlowTests() {
                         uid: 'runner-2',
                       ),
                       eventId: event.id,
-                      clubId: event.clubId,
+                      organizerId: event.organizerId,
                       uid: 'runner-2',
                       microPodsOptedOut: false,
                       guidedRotationsOptedOut: true,
@@ -274,7 +274,7 @@ void _registerEventSuccessCompanionFlowTests() {
     final completedArrivalMission = EventSuccessArrivalMission(
       id: eventSuccessArrivalMissionId(eventId: event.id, uid: 'runner-1'),
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       observerUid: 'runner-1',
       targetUid: 'runner-2',
       targetDisplayName: 'Rhea',
@@ -351,7 +351,7 @@ void _registerEventSuccessCompanionFlowTests() {
     final mission = EventSuccessArrivalMission(
       id: eventSuccessArrivalMissionId(eventId: event.id, uid: 'runner-1'),
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       observerUid: 'runner-1',
       targetUid: 'runner-2',
       targetDisplayName: 'Arjun',
@@ -607,7 +607,7 @@ void _registerEventSuccessCompanionFlowTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: EventSuccessCompanionRouteScreen(
-            clubId: event.clubId,
+            organizerId: event.organizerId,
             eventId: event.id,
             initialEvent: event,
           ),
@@ -671,7 +671,7 @@ void _registerEventSuccessCompanionFlowTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: EventSuccessCompanionRouteScreen(
-            clubId: event.clubId,
+            organizerId: event.organizerId,
             eventId: event.id,
             initialEvent: event,
           ),
@@ -725,7 +725,7 @@ void _registerEventSuccessCompanionFlowTests() {
           child: MaterialApp(
             theme: AppTheme.light,
             home: EventSuccessCompanionRouteScreen(
-              clubId: event.clubId,
+              organizerId: event.organizerId,
               eventId: event.id,
             ),
           ),
@@ -763,7 +763,7 @@ void _registerEventSuccessCompanionFlowTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: EventSuccessCompanionRouteScreen(
-            clubId: event.clubId,
+            organizerId: event.organizerId,
             eventId: event.id,
           ),
         ),
@@ -800,7 +800,7 @@ void _registerEventSuccessCompanionFlowTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: EventSuccessCompanionRouteScreen(
-            clubId: event.clubId,
+            organizerId: event.organizerId,
             eventId: event.id,
           ),
         ),

@@ -9,7 +9,7 @@ abstract final class EventInviteShareCopy {
     String? inviteCode,
     String? inviteLinkId,
   }) => AppDeepLinks.event(
-    clubId: event.clubId,
+    organizerId: event.organizerId,
     eventId: event.id,
     inviteCode: inviteCode,
     inviteLinkId: inviteLinkId,

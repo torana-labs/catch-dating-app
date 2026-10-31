@@ -107,10 +107,10 @@ void _registerCreateEventDraftSignatureTests() {
     expect(
       photoChanged.toDraft(
         id: 'draft-1',
-        clubId: 'club-1',
+        organizerId: 'club-1',
         savedAt: DateTime(2026, 7),
       ),
-      base.toDraft(id: 'draft-1', clubId: 'club-1', savedAt: DateTime(2026, 7)),
+      base.toDraft(id: 'draft-1', organizerId: 'club-1', savedAt: DateTime(2026, 7)),
     );
   });
 }

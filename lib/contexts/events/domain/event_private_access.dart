@@ -9,7 +9,7 @@ abstract class EventPrivateAccess with _$EventPrivateAccess {
   const factory EventPrivateAccess({
     @JsonKey(includeToJson: false) required String id,
     required String eventId,
-    required String clubId,
+    required String organizerId,
     required String inviteCode,
     @TimestampConverter() required DateTime createdAt,
   }) = _EventPrivateAccess;

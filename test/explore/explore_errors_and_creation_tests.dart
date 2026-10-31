@@ -10,7 +10,7 @@ void _registerExploreErrorsAndCreationTests() {
     );
     final event = event_test.buildEvent(
       id: 'event-map-location-denied',
-      clubId: organizer.id,
+      organizerId: organizer.id,
     );
     await tester.pumpWidget(
       ProviderScope(
@@ -68,7 +68,7 @@ void _registerExploreErrorsAndCreationTests() {
     );
     final event = event_test.buildEvent(
       id: 'event-map-nav',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       meetingPoint: 'Race Course Road main gate',
       startTime: DateTime.now().add(const Duration(days: 1)),
     );
@@ -210,7 +210,7 @@ void _registerExploreErrorsAndCreationTests() {
     );
     final event = event_test.buildEvent(
       id: 'event-map-clear',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       meetingPoint: 'Clearable Pin Point',
       startTime: DateTime.now().add(const Duration(days: 1)),
     );
@@ -262,7 +262,7 @@ void _registerExploreErrorsAndCreationTests() {
       );
       final event = event_test.buildEvent(
         id: 'event-map-refresh',
-        clubId: organizer.id,
+        organizerId: organizer.id,
         meetingPoint: 'Refresh Pin Point',
         startTime: DateTime.now().add(const Duration(days: 1)),
       );
@@ -322,7 +322,7 @@ void _registerExploreErrorsAndCreationTests() {
       );
       final pinnedEvent = event_test.buildEvent(
         id: 'event-map-pin-loss',
-        clubId: organizer.id,
+        organizerId: organizer.id,
         meetingPoint: 'Pin Loss Point',
         startTime: DateTime.now().add(const Duration(days: 1)),
       );
@@ -521,7 +521,7 @@ void _registerExploreErrorsAndCreationTests() {
           child: MaterialApp(
             theme: AppTheme.light,
             home: OrganizerDetailScreen(
-              clubId: organizer.id,
+              organizerId: organizer.id,
               initialOrganizer: organizer,
             ),
           ),
@@ -548,7 +548,7 @@ void _registerExploreErrorsAndCreationTests() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const OrganizerDetailScreen(clubId: 'club-err'),
+          home: const OrganizerDetailScreen(organizerId: 'club-err'),
         ),
       ),
     );
@@ -572,7 +572,7 @@ void _registerExploreErrorsAndCreationTests() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const OrganizerDetailScreen(clubId: 'club-missing'),
+          home: const OrganizerDetailScreen(organizerId: 'club-missing'),
         ),
       ),
     );
@@ -618,7 +618,7 @@ void _registerExploreErrorsAndCreationTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           builder: catchNoticeOverlayBuilder,
-          home: const OrganizerDetailScreen(clubId: 'club-1'),
+          home: const OrganizerDetailScreen(organizerId: 'club-1'),
         ),
       ),
     );
@@ -679,7 +679,7 @@ void _registerExploreErrorsAndCreationTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           builder: catchNoticeOverlayBuilder,
-          home: const OrganizerDetailScreen(clubId: 'club-1'),
+          home: const OrganizerDetailScreen(organizerId: 'club-1'),
         ),
       ),
     );

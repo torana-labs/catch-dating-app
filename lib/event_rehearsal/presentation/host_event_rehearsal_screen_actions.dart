@@ -243,7 +243,7 @@ mixin _HostEventRehearsalScreenActions
       context.goNamed(
         Routes.hostEventRehearsalScreen.name,
         pathParameters: {
-          'organizerId': widget.clubId,
+          'organizerId': widget.organizerId,
           'sessionId': created.sessionId,
         },
       );

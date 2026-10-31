@@ -330,7 +330,7 @@ void main() {
       callable.resultData = {'organizerId': 'club-42'};
 
       final createdId = await repository.createOrganizer(
-        clubId: 'club-42',
+        organizerId: 'club-42',
         name: 'Sunset Striders',
         description: 'Easy city loops',
         location: 'in-mh-mumbai',
@@ -358,7 +358,7 @@ void main() {
       callable.resultData = {'organizerId': 'club-42'};
 
       await repository.createOrganizer(
-        clubId: 'club-42',
+        organizerId: 'club-42',
         name: 'Contact Club',
         description: 'A club with contact info.',
         location: 'in-mh-mumbai',
@@ -384,7 +384,7 @@ void main() {
 
     test('updateOrganizer delegates field patches to the callable', () async {
       await repository.updateOrganizer(
-        clubId: 'club-1',
+        organizerId: 'club-1',
         patch: UpdateOrganizerPatch(name: 'New Name', area: 'New Area'),
       );
 
@@ -402,7 +402,7 @@ void main() {
       'updateOrganizer delegates nullable media fields to the callable',
       () async {
         await repository.updateOrganizer(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           patch: UpdateOrganizerPatch(
             imageUrl: 'https://example.com/updated.jpg',
           ),

@@ -100,7 +100,7 @@ class HostEventsOrganizerCard extends ConsumerWidget {
       pastStackTrace: timeline?.pastStackTrace,
     );
     final draftsAsync = ref.watch(
-      organizerEventDraftsProvider(clubId: organizer.id),
+      organizerEventDraftsProvider(organizerId: organizer.id),
     );
     final drafts = switch (draftsAsync) {
       AsyncData<List<EventDraft>>(:final value) => value,

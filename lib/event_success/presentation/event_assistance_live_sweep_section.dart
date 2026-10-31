@@ -47,7 +47,7 @@ class EventAssistanceLiveSweepSection extends ConsumerWidget {
         );
         final scope = EventAssistanceAccountabilityScope(
           group: EventAssistanceGroupScope(
-            organizerId: event.clubId,
+            organizerId: event.organizerId,
             eventId: event.id,
             groupId: 'event:whole',
           ),

@@ -44,11 +44,11 @@ CityData _city(String name) => cityOptionByName(name)!.toCityData();
 String get _mumbaiMarketId => _city('mumbai').effectiveMarketId;
 
 OrganizerMembership _membership({
-  required String clubId,
+  required String organizerId,
   String uid = 'runner-1',
 }) => OrganizerMembership(
-  id: organizerMembershipId(clubId: clubId, uid: uid),
-  clubId: clubId,
+  id: organizerMembershipId(organizerId: organizerId, uid: uid),
+  organizerId: organizerId,
   uid: uid,
   role: OrganizerMembershipRole.member,
   status: OrganizerMembershipStatus.active,
@@ -70,7 +70,7 @@ ExploreEventItem _exploreItem({
 }) {
   final event = buildEvent(
     id: id,
-    clubId: organizer.id,
+    organizerId: organizer.id,
     startTime: startTime,
     bookedCount: bookedCount,
     priceInPaise: priceInPaise,
@@ -1665,8 +1665,8 @@ void main() {
               'runner-1',
             ).overrideWith(
               (ref) => Stream.value([
-                _membership(clubId: 'member-club'),
-                _membership(clubId: 'followed-club'),
+                _membership(organizerId: 'member-club'),
+                _membership(organizerId: 'followed-club'),
               ]),
             ),
             watchOrganizersByLocationProvider(_mumbaiMarketId).overrideWith(
@@ -1783,7 +1783,7 @@ void main() {
         final organizer = buildOrganizer(id: 'club-distance');
         final near = event_test.buildEvent(
           id: 'near-event',
-          clubId: organizer.id,
+          organizerId: organizer.id,
           meetingPoint: 'Near plaza',
           startTime: DateTime.now().add(const Duration(days: 1)),
           startingPointLat: 19.0,
@@ -1791,7 +1791,7 @@ void main() {
         );
         final far = event_test.buildEvent(
           id: 'far-event',
-          clubId: organizer.id,
+          organizerId: organizer.id,
           meetingPoint: 'Far park',
           startTime: DateTime.now().add(const Duration(days: 2)),
           startingPointLat: 19.0,
@@ -1858,17 +1858,17 @@ void main() {
         final organizer = buildOrganizer(id: 'club-date-strip');
         final tonight = event_test.buildEvent(
           id: 'date-strip-tonight',
-          clubId: organizer.id,
+          organizerId: organizer.id,
           startTime: DateTime(2026, 5, 26, 20),
         );
         final tomorrow = event_test.buildEvent(
           id: 'date-strip-tomorrow',
-          clubId: organizer.id,
+          organizerId: organizer.id,
           startTime: DateTime(2026, 5, 27, 8),
         );
         final dayTwo = event_test.buildEvent(
           id: 'date-strip-day-two',
-          clubId: organizer.id,
+          organizerId: organizer.id,
           startTime: DateTime(2026, 5, 28, 12),
         );
         final container = ProviderContainer(
@@ -1978,17 +1978,17 @@ void main() {
         final organizer = buildOrganizer(id: 'club-availability');
         final joinedEvent = event_test.buildEvent(
           id: 'joined-event',
-          clubId: organizer.id,
+          organizerId: organizer.id,
           startTime: DateTime.now().add(const Duration(days: 1)),
         );
         final savedEvent = event_test.buildEvent(
           id: 'saved-event',
-          clubId: organizer.id,
+          organizerId: organizer.id,
           startTime: DateTime.now().add(const Duration(days: 2)),
         );
         final requestEvent = event_test.buildEvent(
           id: 'request-event',
-          clubId: organizer.id,
+          organizerId: organizer.id,
           startTime: DateTime.now().add(const Duration(days: 3)),
           eventPolicy: EventPolicyBundle.requestToJoinEvent(
             capacityLimit: 12,
@@ -2090,12 +2090,12 @@ void main() {
         final organizer = buildOrganizer(id: 'club-enrichment');
         final joinedEvent = event_test.buildEvent(
           id: 'joined-enrichment',
-          clubId: organizer.id,
+          organizerId: organizer.id,
           startTime: DateTime.now().add(const Duration(days: 1)),
         );
         final discoverableEvent = event_test.buildEvent(
           id: 'discoverable-enrichment',
-          clubId: organizer.id,
+          organizerId: organizer.id,
           startTime: DateTime.now().add(const Duration(days: 2)),
         );
         final personalEvents = StreamController<List<Event>>();

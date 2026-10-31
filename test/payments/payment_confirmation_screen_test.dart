@@ -286,7 +286,7 @@ Future<void> _pumpPaymentConfirmation(
           data.eventId,
         ).overrideWith((ref) => Stream.value(event)),
         watchOrganizerProvider(
-          event.clubId,
+          event.organizerId,
         ).overrideWith((ref) => Stream.value(organizer)),
         attendeeEventShareActionsProvider.overrideWithValue(
           const _TestAttendeeEventShareActions(),

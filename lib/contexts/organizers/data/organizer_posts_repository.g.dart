@@ -123,9 +123,9 @@ final class WatchOrganizerPostRemainingWeeklyQuotaFamily extends $Family
         isAutoDispose: true,
       );
 
-  WatchOrganizerPostRemainingWeeklyQuotaProvider call(String clubId) =>
+  WatchOrganizerPostRemainingWeeklyQuotaProvider call(String organizerId) =>
       WatchOrganizerPostRemainingWeeklyQuotaProvider._(
-        argument: clubId,
+        argument: organizerId,
         from: this,
       );
 

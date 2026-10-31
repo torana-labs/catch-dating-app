@@ -33,7 +33,7 @@ _Organizer _$OrganizerFromJson(Map<String, dynamic> json) => _Organizer(
   createdAt: const TimestampConverter().fromJson(json['createdAt']),
   imageUrl: json['imageUrl'] as String?,
   profileImageUrl: json['profileImageUrl'] as String?,
-  clubPhotos:
+  organizerPhotos:
       (json['organizerPhotos'] as List<dynamic>?)
           ?.map((e) => UploadedPhoto.fromJson(e as Map<String, dynamic>))
           .toList() ??
@@ -116,7 +116,7 @@ Map<String, dynamic> _$OrganizerToJson(
   'createdAt': const TimestampConverter().toJson(instance.createdAt),
   'imageUrl': instance.imageUrl,
   'profileImageUrl': instance.profileImageUrl,
-  'organizerPhotos': instance.clubPhotos.map((e) => e.toJson()).toList(),
+  'organizerPhotos': instance.organizerPhotos.map((e) => e.toJson()).toList(),
   'logoPhoto': instance.logoPhoto?.toJson(),
   'tags': instance.tags,
   'followerCount': instance.memberCount,

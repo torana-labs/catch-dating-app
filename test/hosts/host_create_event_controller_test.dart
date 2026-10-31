@@ -130,7 +130,7 @@ void main() {
             .read(createEventControllerProvider.notifier)
             .submit(
               name: 'Test event',
-              clubId: '  club-7  ',
+              organizerId: '  club-7  ',
               startTime: DateTime(2025, 3, 1, 6),
               endTime: DateTime(2025, 3, 1, 7, 15),
               meetingLocation: _meetingLocation(name: '  Marine Drive  '),
@@ -162,7 +162,7 @@ void main() {
         expect(fakeImageUploadRepository.uploadedEventId, 'generated-7');
         expect(fakeImageUploadRepository.uploadedPosition, 0);
         expect(fakeImageUploadRepository.uploadedImage, photo);
-        expect(createdEvent.clubId, 'club-7');
+        expect(createdEvent.organizerId, 'club-7');
         expect(createdEvent.startTime, DateTime(2025, 3, 1, 6));
         expect(createdEvent.endTime, DateTime(2025, 3, 1, 7, 15));
         expect(createdEvent.meetingPoint, 'Marine Drive');
@@ -232,7 +232,7 @@ void main() {
           .read(createEventControllerProvider.notifier)
           .submit(
             name: 'Test event',
-            clubId: 'club-7',
+            organizerId: 'club-7',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingLocation: _meetingLocation(),
@@ -290,7 +290,7 @@ void main() {
           .read(createEventControllerProvider.notifier)
           .submit(
             name: 'Test event',
-            clubId: 'club-7',
+            organizerId: 'club-7',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingLocation: _meetingLocation(),
@@ -338,7 +338,7 @@ void main() {
           .read(createEventControllerProvider.notifier)
           .submit(
             name: 'Test event',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             startTime: DateTime(2025, 3, 1, 18),
             endTime: DateTime(2025, 3, 1, 20),
             meetingLocation: _meetingLocation(name: 'Dinner table'),
@@ -385,7 +385,7 @@ void main() {
           .read(createEventControllerProvider.notifier)
           .submit(
             name: 'Test event',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             startTime: DateTime(2026, 8, 20, 18),
             endTime: DateTime(2026, 8, 20, 20),
             meetingLocation: _meetingLocation(name: 'Outside venue'),
@@ -444,7 +444,7 @@ void main() {
             .read(createEventControllerProvider.notifier)
             .submit(
               name: 'Test event',
-              clubId: 'club-1',
+              organizerId: 'club-1',
               startTime: DateTime(2025, 3, 1, 18),
               endTime: DateTime(2025, 3, 1, 20),
               meetingLocation: _meetingLocation(name: 'Quiz venue'),
@@ -494,7 +494,7 @@ void main() {
           .read(createEventControllerProvider.notifier)
           .submit(
             name: 'Test event',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             startTime: DateTime(2025, 3, 1, 18),
             endTime: DateTime(2025, 3, 1, 20),
             meetingLocation: _meetingLocation(name: 'Dinner table'),
@@ -535,7 +535,7 @@ void main() {
           .read(createEventControllerProvider.notifier)
           .submit(
             name: 'Test event',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             startTime: DateTime(2025, 3, 1, 18),
             endTime: DateTime(2025, 3, 1, 20),
             meetingLocation: _meetingLocation(name: 'Private route'),
@@ -585,7 +585,7 @@ void main() {
         await expectLater(
           () => controller.submit(
             name: 'Test event',
-            clubId: '',
+            organizerId: '',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingLocation: _meetingLocation(),
@@ -603,7 +603,7 @@ void main() {
         await expectLater(
           () => controller.submit(
             name: 'Test event',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingLocation: _meetingLocation(latitude: 91),
@@ -621,7 +621,7 @@ void main() {
         await expectLater(
           () => controller.submit(
             name: 'Test event',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 6),
             meetingLocation: _meetingLocation(),
@@ -639,7 +639,7 @@ void main() {
         await expectLater(
           () => controller.submit(
             name: 'Test event',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingLocation: _meetingLocation(name: '   '),
@@ -657,7 +657,7 @@ void main() {
         await expectLater(
           () => controller.submit(
             name: 'Test event',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingLocation: _meetingLocation(),
@@ -675,7 +675,7 @@ void main() {
         await expectLater(
           () => controller.submit(
             name: 'Test event',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingLocation: _meetingLocation(),
@@ -693,7 +693,7 @@ void main() {
         await expectLater(
           () => controller.submit(
             name: 'Test event',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingLocation: _meetingLocation(),
@@ -711,7 +711,7 @@ void main() {
         await expectLater(
           () => controller.submit(
             name: 'Test event',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingLocation: _meetingLocation(longitude: 181),
@@ -729,7 +729,7 @@ void main() {
         await expectLater(
           () => controller.submit(
             name: 'Test event',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingLocation: _meetingLocation(),

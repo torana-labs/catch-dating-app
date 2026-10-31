@@ -411,7 +411,7 @@ HostAnalyticsEventRow _event(
 }) {
   return HostAnalyticsEventRow(
     eventId: eventId,
-    clubId: 'club-1',
+    organizerId: 'club-1',
     title: title,
     startTime: DateTime.utc(2026, 6, 12),
     status: 'completed',

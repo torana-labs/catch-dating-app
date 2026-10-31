@@ -136,7 +136,7 @@ void _registerHostManageFromCreateEventTests() {
           hostEventRosterInsightsProvider(event.id).overrideWith(
             (ref) async => HostEventRosterInsights(
               eventId: event.id,
-              organizerId: event.clubId,
+              organizerId: event.organizerId,
               cutoffAt: event.startTime,
               sourceCoverage: HostRosterInsightCoverage.exact,
               spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
@@ -268,7 +268,7 @@ void _registerHostManageFromCreateEventTests() {
     fakeEventRepository.privateAccessByEventId[event.id] = EventPrivateAccess(
       id: event.id,
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       inviteCode: 'CATCH-DELHI',
       createdAt: DateTime(2026, 5),
     );

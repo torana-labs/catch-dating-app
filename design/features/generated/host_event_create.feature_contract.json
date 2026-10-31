@@ -233,7 +233,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "failureStateVersion"
           ],
           "outcomes": [
@@ -327,7 +327,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "remainingPhotoSlots"
           ],
           "outcomes": [
@@ -452,7 +452,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "locationSelectionVersion"
           ],
           "outcomes": [
@@ -725,7 +725,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "draftId",
             "draftSignature"
           ],
@@ -748,7 +748,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "draftId"
           ],
           "outcomes": [
@@ -769,7 +769,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "pickerInstanceId"
           ],
           "outcomes": [
@@ -790,7 +790,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "draftId"
           ],
           "outcomes": [
@@ -831,7 +831,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "routeInstanceId",
             "draftSignature"
           ],
@@ -869,7 +869,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "draftSignature"
           ],
           "outcomes": [
@@ -893,7 +893,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "eventId"
           ],
           "outcomes": [
@@ -915,7 +915,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "eventId"
           ],
           "outcomes": [
@@ -4463,7 +4463,7 @@
           "routes": [
             {
               "id": "hostCreateEventScreen",
-              "path": "/host/organizers/:clubId/create-event",
+              "path": "/host/organizers/:organizerId/create-event",
               "role": "primary"
             }
           ]

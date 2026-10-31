@@ -28,7 +28,7 @@ void main() {
         tester,
         EventDetailScreen(
           enableMapNetworkTiles: false,
-          clubId: event.clubId,
+          organizerId: event.organizerId,
           eventId: event.id,
         ),
         overrides: [
@@ -80,7 +80,7 @@ void main() {
         tester,
         EventDetailScreen(
           enableMapNetworkTiles: false,
-          clubId: event.clubId,
+          organizerId: event.organizerId,
           eventId: event.id,
         ),
         overrides: [
@@ -155,7 +155,7 @@ EventParticipation _participation({
   return EventParticipation(
     id: eventParticipationId(eventId: eventId, uid: uid),
     eventId: eventId,
-    clubId: 'club-1',
+    organizerId: 'club-1',
     uid: uid,
     status: EventParticipationStatus.signedUp,
     createdAt: now,

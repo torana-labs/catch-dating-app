@@ -20,11 +20,11 @@ import 'package:go_router/go_router.dart';
 class HostEventRehearsalStartScreen extends ConsumerStatefulWidget {
   const HostEventRehearsalStartScreen({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     this.sourceEventId,
     this.startFromOrganizerDefaults = false,
   });
-  final String clubId;
+  final String organizerId;
   final String? sourceEventId;
   final bool startFromOrganizerDefaults;
 
@@ -41,7 +41,7 @@ class _HostEventRehearsalStartScreenState
   @override
   Widget build(BuildContext context) {
     final provider = eventRehearsalEntryProvider(
-      widget.clubId,
+      widget.organizerId,
       widget.sourceEventId,
     );
     final mutation = ref.watch(EventRehearsalController.createMutation);
@@ -177,7 +177,7 @@ class _HostEventRehearsalStartScreenState
         (tx) => tx
             .get(eventRehearsalControllerProvider.notifier)
             .create(
-              organizerId: widget.clubId,
+              organizerId: widget.organizerId,
               sourceEventId: configuration.sourceEvent?.id,
               scenario: configuration.scenario,
               actorCount: configuration.actorCount,
@@ -194,7 +194,7 @@ class _HostEventRehearsalStartScreenState
     if (!mounted) return;
     context.goNamed(
       Routes.hostEventRehearsalScreen.name,
-      pathParameters: {'organizerId': widget.clubId, 'sessionId': created.sessionId},
+      pathParameters: {'organizerId': widget.organizerId, 'sessionId': created.sessionId},
     );
   }
 }

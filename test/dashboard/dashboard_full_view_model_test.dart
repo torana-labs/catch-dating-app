@@ -166,7 +166,7 @@ void main() {
             user.uid,
           ).overrideWithValue(
             AsyncData<List<OrganizerMembership>>([
-              membership(clubId: 'club-a', uid: user.uid),
+              membership(organizerId: 'club-a', uid: user.uid),
             ]),
           ),
           watchSignedUpEventsProvider(
@@ -328,7 +328,7 @@ void main() {
       final posts = organizerPostNotificationsFromActivity([
         _activityNotification(
           id: 'old-post',
-          type: ActivityNotificationType.clubUpdate,
+          type: ActivityNotificationType.organizerUpdate,
           postId: 'post-old',
           createdAt: now.subtract(const Duration(hours: 3)),
         ),
@@ -340,13 +340,13 @@ void main() {
         ),
         _activityNotification(
           id: 'read-post',
-          type: ActivityNotificationType.clubUpdate,
+          type: ActivityNotificationType.organizerUpdate,
           postId: 'post-read',
           readAt: now,
         ),
         _activityNotification(
           id: 'club-without-post',
-          type: ActivityNotificationType.clubUpdate,
+          type: ActivityNotificationType.organizerUpdate,
         ),
         _activityNotification(id: 'match'),
       ]);
@@ -411,7 +411,7 @@ ActivityNotification _activityNotification({
     type: type,
     title: 'Club update',
     body: 'Meet ten minutes early.',
-    clubId: type == ActivityNotificationType.clubUpdate ? 'club-1' : null,
+    organizerId: type == ActivityNotificationType.organizerUpdate ? 'club-1' : null,
     organizerId: type == ActivityNotificationType.organizerUpdate
         ? 'organizer-1'
         : null,

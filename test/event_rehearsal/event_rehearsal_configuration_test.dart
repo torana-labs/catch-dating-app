@@ -134,7 +134,7 @@ void main() {
 
 Event rehearsalSourceEvent() => Event(
   id: 'event-1',
-  clubId: 'club-1',
+  organizerId: 'club-1',
   name: 'Saturday singles mixer',
   startTime: DateTime(2026, 9, 5, 19),
   endTime: DateTime(2026, 9, 5, 20, 30),

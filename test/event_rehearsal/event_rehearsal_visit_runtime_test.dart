@@ -85,7 +85,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: HostEventRehearsalScreen(
-            clubId: repository.snapshot.session.organizerId,
+            organizerId: repository.snapshot.session.organizerId,
             sessionId: repository.snapshot.session.id,
           ),
         ),

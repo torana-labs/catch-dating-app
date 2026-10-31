@@ -27,7 +27,7 @@ void main() {
         bottomNavigationBar: EventDetailDock(
           event: buildEvent(),
           userProfile: buildUser(),
-          clubId: 'club-1',
+          organizerId: 'club-1',
           participation: null,
           isOrganizerMember: true,
         ),
@@ -72,7 +72,7 @@ void main() {
         bottomNavigationBar: EventDetailDock(
           event: buildEvent(),
           userProfile: buildUser(),
-          clubId: 'club-1',
+          organizerId: 'club-1',
           participation: null,
         ),
       ),
@@ -97,7 +97,7 @@ void main() {
         bottomNavigationBar: EventDetailDock(
           event: buildEvent(),
           userProfile: buildUser(),
-          clubId: 'club-1',
+          organizerId: 'club-1',
           participation: null,
         ),
       ),
@@ -130,7 +130,7 @@ void main() {
         bottomNavigationBar: EventDetailDock(
           event: buildEvent(),
           userProfile: buildUser(),
-          clubId: 'club-1',
+          organizerId: 'club-1',
           participation: null,
         ),
       ),
@@ -184,7 +184,7 @@ void main() {
           builder: (context, user, child) => EventDetailDock(
             event: buildEvent(),
             userProfile: user,
-            clubId: 'club-1',
+            organizerId: 'club-1',
             participation: null,
           ),
         ),
@@ -232,7 +232,7 @@ void main() {
         bottomNavigationBar: EventDetailDock(
           event: event,
           userProfile: buildUser(),
-          clubId: 'club-1',
+          organizerId: 'club-1',
           participation: buildEventParticipation(event: event, uid: 'runner-1'),
         ),
       ),
@@ -271,7 +271,7 @@ void main() {
         bottomNavigationBar: EventDetailDock(
           event: buildEvent(),
           userProfile: buildUser(),
-          clubId: 'club-1',
+          organizerId: 'club-1',
           participation: null,
           organizerCapabilities:
               const OrganizerSupplyCapabilities.unclaimedReadOnly(),

@@ -17,7 +17,7 @@ final class EventSuccessWingmanRequest {
   const EventSuccessWingmanRequest({
     required this.id,
     required this.eventId,
-    required this.clubId,
+    required this.organizerId,
     required this.requesterUid,
     required this.targetUid,
     required this.status,
@@ -31,7 +31,7 @@ final class EventSuccessWingmanRequest {
     return EventSuccessWingmanRequest(
       id: json['id'] as String,
       eventId: json['eventId'] as String,
-      clubId: json['organizerId'] as String,
+      organizerId: json['organizerId'] as String,
       requesterUid: json['requesterUid'] as String,
       targetUid: json['targetUid'] as String,
       status: EventSuccessWingmanRequestStatus.fromJson(json['status']),
@@ -50,7 +50,7 @@ final class EventSuccessWingmanRequest {
 
   final String id;
   final String eventId;
-  final String clubId;
+  final String organizerId;
   final String requesterUid;
   final String targetUid;
   final EventSuccessWingmanRequestStatus status;
@@ -64,7 +64,7 @@ final class EventSuccessWingmanRequest {
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
-    'organizerId': clubId,
+    'organizerId': organizerId,
     'requesterUid': requesterUid,
     'targetUid': targetUid,
     'status': status.name,

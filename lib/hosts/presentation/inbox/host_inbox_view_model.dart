@@ -143,7 +143,7 @@ class HostInboxViewModel {
       const HostInboxScope.general(),
     ];
     final allThreads = [...inbox.newMatches, ...inbox.conversations]
-        .where((preview) => preview.match.clubId == selectedOrganizerId)
+        .where((preview) => preview.match.organizerId == selectedOrganizerId)
         .toList(growable: false);
 
     if (effectiveScope.isProgram) {

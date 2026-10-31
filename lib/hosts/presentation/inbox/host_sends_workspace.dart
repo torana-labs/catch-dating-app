@@ -173,7 +173,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
           await ref
               .read(hostOrganizerPostControllerProvider)
               .createPost(
-                clubId: organizer.id,
+                organizerId: organizer.id,
                 requestId: requestId,
                 text: text,
               );

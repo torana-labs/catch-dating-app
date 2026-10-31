@@ -174,7 +174,7 @@ class _HostOrganizerDetailScope extends StatelessWidget {
         child: WidgetbookThemedHostPreview(
           themeMode: themeMode ?? ThemeMode.light,
           child: OrganizerDetailScreen(
-            clubId: widgetbookOrganizer.id,
+            organizerId: widgetbookOrganizer.id,
             initialOrganizer: useInitialOrganizer ? widgetbookOrganizer : null,
           ),
         ),

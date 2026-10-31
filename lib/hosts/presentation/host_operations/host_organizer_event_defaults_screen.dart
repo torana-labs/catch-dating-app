@@ -3,12 +3,12 @@ part of '../host_operations_screen.dart';
 class HostOrganizerEventDefaultsScreen extends ConsumerStatefulWidget {
   const HostOrganizerEventDefaultsScreen({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     this.managerEventSetupPreferences,
     this.onManagerEventSetupPreferencesChanged,
   });
 
-  final String clubId;
+  final String organizerId;
 
   /// Supplied only by a manager-authorized preferences read.
   final ManagerEventSetupPreferences? managerEventSetupPreferences;
@@ -29,10 +29,10 @@ class _HostOrganizerEventDefaultsScreenState
   @override
   Widget build(BuildContext context) {
     return HostOrganizerSpokeAsyncBoundary._(
-      clubId: widget.clubId,
+      organizerId: widget.organizerId,
       title: context.l10n.hostsHostOrganizerEditTabLabelEventDefaults,
       builder: (context, organizer, uid, isOwner) {
-        final scope = (userId: uid, organizerId: widget.clubId);
+        final scope = (userId: uid, organizerId: widget.organizerId);
         final managerEnabled =
             isOwner && widget.managerEventSetupPreferences == null;
         if (!managerEnabled) _loadedScope = null;

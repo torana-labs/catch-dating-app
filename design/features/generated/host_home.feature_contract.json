@@ -245,7 +245,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "failureStateVersion"
           ],
           "outcomes": [
@@ -291,7 +291,7 @@
           "scopeKeys": [
             "viewerUid",
             "routeInstanceId",
-            "clubId"
+            "organizerId"
           ],
           "outcomes": [
             {
@@ -314,7 +314,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "sessionBoundary",
             "activeCursor"
           ],
@@ -337,7 +337,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "sessionBoundary",
             "pastCursor"
           ],
@@ -361,7 +361,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "sessionBoundary",
             "failureStateVersion"
           ],
@@ -384,7 +384,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "tapAttemptId"
           ],
           "outcomes": [
@@ -406,7 +406,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "eventId",
             "tapAttemptId"
           ],
@@ -429,7 +429,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "eventId",
             "tapAttemptId"
           ],
@@ -452,7 +452,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "eventId",
             "eventClockState"
           ],
@@ -475,7 +475,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "eventId",
             "taskDestination"
           ],
@@ -540,7 +540,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "tapAttemptId"
           ],
           "outcomes": [
@@ -562,7 +562,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "tapAttemptId"
           ],
           "outcomes": [

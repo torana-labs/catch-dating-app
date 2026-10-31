@@ -214,7 +214,7 @@ OrganizerDetailViewModel _viewModel({
 OrganizerMembership _membership({bool pushNotificationsEnabled = false}) {
   return OrganizerMembership(
     id: '${widgetbookOrganizerOrganizer.id}_$widgetbookOrganizerViewerUid',
-    clubId: widgetbookOrganizerOrganizer.id,
+    organizerId: widgetbookOrganizerOrganizer.id,
     uid: widgetbookOrganizerViewerUid,
     role: OrganizerMembershipRole.member,
     status: OrganizerMembershipStatus.active,

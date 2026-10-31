@@ -3421,7 +3421,7 @@
           "routes": [
             {
               "id": "hostAppEventManageScreen",
-              "path": "/host/organizers/:clubId/events/:eventId/manage",
+              "path": "/host/organizers/:organizerId/events/:eventId/manage",
               "role": "primary"
             },
             {
@@ -3431,12 +3431,12 @@
             },
             {
               "id": "hostAppAttendanceSheet",
-              "path": "/host/organizers/:clubId/events/:eventId/attendance",
+              "path": "/host/organizers/:organizerId/events/:eventId/attendance",
               "role": "host"
             },
             {
               "id": "hostAppEventSuccessScreen",
-              "path": "/host/organizers/:clubId/events/:eventId/success",
+              "path": "/host/organizers/:organizerId/events/:eventId/success",
               "role": "host"
             }
           ]
@@ -3715,7 +3715,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "eventId",
             "failureStateVersion"
           ],
@@ -5298,7 +5298,7 @@
           "routes": [
             {
               "id": "hostAppEditEventScreen",
-              "path": "/host/organizers/:clubId/events/:eventId/edit",
+              "path": "/host/organizers/:organizerId/events/:eventId/edit",
               "role": "primary"
             }
           ]

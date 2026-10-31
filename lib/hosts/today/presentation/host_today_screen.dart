@@ -491,7 +491,7 @@ class HostTodayLoadedRoute extends ConsumerWidget {
       ref.watch(hostTodayFeedControllerProvider(request)),
     );
     final draftsAsync = ref.watch(
-      organizerEventDraftsProvider(clubId: organizer.id),
+      organizerEventDraftsProvider(organizerId: organizer.id),
     );
     final drafts = switch (draftsAsync) {
       AsyncData<List<EventDraft>>(:final value) => value,

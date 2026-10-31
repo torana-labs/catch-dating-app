@@ -73,7 +73,7 @@ void main() {
           HostOperationsFixtures.eventDraft,
           EventDraft(
             id: 'second-review-draft',
-            clubId: HostOperationsFixtures.primaryOrganizer.id,
+            organizerId: HostOperationsFixtures.primaryOrganizer.id,
             savedAt: DateTime.now().subtract(const Duration(hours: 3)),
             name: 'Saturday community breakfast',
           ),

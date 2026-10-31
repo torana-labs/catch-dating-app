@@ -335,7 +335,7 @@ Widget notificationRowContractStates(BuildContext context) {
         label: 'read',
         child: _MessageFrame(
           child: NotificationRow(
-            type: ActivityNotificationType.clubUpdate,
+            type: ActivityNotificationType.organizerUpdate,
             title: 'Run club posted an update',
             time: '2h',
             body: 'Sunday route changed to the waterfront.',

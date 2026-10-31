@@ -53,7 +53,7 @@ class HostCreateEventRouteArguments {
 class HostCreateEventRouteScreen extends ConsumerWidget {
   const HostCreateEventRouteScreen({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     this.initialOrganizer,
     this.initialDraft,
     this.initialPrefill,
@@ -72,7 +72,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
          'A saved event cannot also restore a draft or repeat prefill.',
        );
 
-  final String clubId;
+  final String organizerId;
   final Organizer? initialOrganizer;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
@@ -87,7 +87,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     final initialOrganizer = this.initialOrganizer;
     final initialDraft = this.initialDraft;
     final initialPrefill = this.initialPrefill;
-    if (initialOrganizer != null && initialOrganizer.id != clubId) {
+    if (initialOrganizer != null && initialOrganizer.id != organizerId) {
       return CatchScaffold.stepFlow(
         body: CatchErrorState(
           title:
@@ -99,7 +99,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
         ),
       );
     }
-    if (initialPrefill != null && initialPrefill.values.clubId != clubId) {
+    if (initialPrefill != null && initialPrefill.values.organizerId != organizerId) {
       return CatchScaffold.stepFlow(
         body: CatchErrorState(
           title: context.l10n.hostsHostCreateEventScreenTitleRepeatUnavailable,
@@ -109,7 +109,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
         ),
       );
     }
-    if (initialDraft != null && initialDraft.clubId != clubId) {
+    if (initialDraft != null && initialDraft.organizerId != organizerId) {
       return CatchScaffold.stepFlow(
         body: CatchErrorState(
           title:
@@ -124,12 +124,12 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     final routeState = HostCreateEventRouteState.resolve(
       initialOrganizer: initialOrganizer,
       fetchedOrganizer: initialOrganizer == null
-          ? _catchAsyncState(ref.watch(fetchOrganizerProvider(clubId)))
+          ? _catchAsyncState(ref.watch(fetchOrganizerProvider(organizerId)))
           : null,
       uid: _catchAsyncState(ref.watch(uidProvider)),
     );
     return HostCreateEventRouteBody(
-      clubId: clubId,
+      organizerId: organizerId,
       state: routeState,
       initialDraft: initialDraft,
       initialPrefill: initialPrefill,
@@ -146,7 +146,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
 class HostCreateEventRouteBody extends ConsumerWidget {
   const HostCreateEventRouteBody({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     required this.state,
     this.initialDraft,
     this.initialPrefill,
@@ -157,7 +157,7 @@ class HostCreateEventRouteBody extends ConsumerWidget {
     this.returnToResponsesOnSave = false,
   });
 
-  final String clubId;
+  final String organizerId;
   final HostCreateEventRouteState state;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
@@ -179,7 +179,7 @@ class HostCreateEventRouteBody extends ConsumerWidget {
           onRetry: () {
             switch (state.retryIntent) {
               case HostCreateEventRouteRetryIntent.reloadOrganizer:
-                ref.invalidate(fetchOrganizerProvider(clubId));
+                ref.invalidate(fetchOrganizerProvider(organizerId));
               case null:
                 break;
             }

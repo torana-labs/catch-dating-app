@@ -15,7 +15,7 @@ List<EventAttendee> buildOperationalAttendees({
   EventAttendee(
     id: 'external-1',
     eventId: event.id,
-    clubId: event.clubId,
+    organizerId: event.organizerId,
     organizerId: 'host-1',
     displayName: 'External guest 1',
     searchName: 'external guest 1',
@@ -28,7 +28,7 @@ List<EventAttendee> buildOperationalAttendees({
   EventAttendee(
     id: 'external-2',
     eventId: event.id,
-    clubId: event.clubId,
+    organizerId: event.organizerId,
     organizerId: 'host-1',
     displayName: 'External guest 2',
     searchName: 'external guest 2',

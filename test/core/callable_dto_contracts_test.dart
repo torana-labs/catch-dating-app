@@ -24,18 +24,18 @@ import 'package:catch_dating_app/platform/schema_contracts/generated/callable_re
     show
         BlockUserCallableRequest,
         CancelEventCallableRequest,
-        ClubMembershipCallableRequest,
-        CreateClubCallableRequest,
+        OrganizerMembershipCallableRequest,
+        CreateOrganizerCallableRequest,
         CreateEventCallableRequest,
         CreateEventPrivateAccess,
         CreateEventReviewCallableRequest,
-        DeleteClubCallableRequest,
+        DeleteOrganizerCallableRequest,
         DeleteEventReviewCallableRequest,
         EventIdCallableRequest,
         MarkEventAttendanceCallableRequest,
         ReportUserCallableRequest,
         RequestSuvbotDemoOperationCallableRequest,
-        SetClubNotificationPreferenceCallableRequest,
+        SetOrganizerNotificationPreferenceCallableRequest,
         SelfCheckInAttendanceCallableRequest,
         StartOrganizerConversationCallableRequest,
         UnblockUserCallableRequest,
@@ -69,7 +69,7 @@ void main() {
           name: 'Cubbon Morning Social',
           eventId: 'event-1',
           organizerId: 'club-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           startTimeMillis: startTime.millisecondsSinceEpoch,
           endTimeMillis: endTime.millisecondsSinceEpoch,
           meetingPoint: meetingLocation.name,
@@ -153,8 +153,8 @@ void main() {
     test('organizer and legacy club request DTOs match schemas', () {
       _expectValid(
         'CreateOrganizerCallablePayload',
-        const CreateClubCallableRequest(
-          clubId: 'AbCdEfGhIjKlMnOpQrSt',
+        const CreateOrganizerCallableRequest(
+          organizerId: 'AbCdEfGhIjKlMnOpQrSt',
           name: 'Cubbon Runners',
           description: 'Weekly social runs.',
           location: 'in-ka-bengaluru',
@@ -169,20 +169,20 @@ void main() {
         UpdateOrganizerPatch.raw({
           'name': 'Cubbon Morning Runners',
           'tags': ['social', 'beginner'],
-        }).toCallableJson(clubId: 'club-1'),
+        }).toCallableJson(organizerId: 'club-1'),
       );
       _expectValid(
         'OrganizerMembershipCallablePayload',
-        const ClubMembershipCallableRequest(clubId: 'club-1').toJson(),
+        const OrganizerMembershipCallableRequest(organizerId: 'club-1').toJson(),
       );
       _expectValid(
         'DeleteOrganizerCallablePayload',
-        const DeleteClubCallableRequest(clubId: 'club-1').toJson(),
+        const DeleteOrganizerCallableRequest(organizerId: 'club-1').toJson(),
       );
       _expectValid(
         'SetOrganizerNotificationPreferenceCallablePayload',
-        const SetClubNotificationPreferenceCallableRequest(
-          clubId: 'club-1',
+        const SetOrganizerNotificationPreferenceCallableRequest(
+          organizerId: 'club-1',
           enabled: true,
         ).toJson(),
       );

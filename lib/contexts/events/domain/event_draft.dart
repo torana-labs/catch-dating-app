@@ -14,7 +14,7 @@ part 'event_draft.g.dart';
 abstract class EventDraft with _$EventDraft {
   const factory EventDraft({
     required String id,
-    required String clubId,
+    required String organizerId,
     required DateTime savedAt,
     // Event Details step
     String? name,

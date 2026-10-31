@@ -33,7 +33,7 @@ void main() {
       final samePlan = await repository.ensurePlanForEvent(event);
 
       expect(plan.eventId, 'event-1');
-      expect(plan.clubId, event.clubId);
+      expect(plan.organizerId, event.organizerId);
       expect(plan.targetAttendeeCount, 28);
       expect(plan.playbookId, EventSuccessPlaybookLibrary.socialRun.id);
       expect(
@@ -60,7 +60,7 @@ void main() {
       final fetched = await repository.fetchPlan(event.id);
 
       expect(fetched?.eventId, plan.eventId);
-      expect(fetched?.clubId, plan.clubId);
+      expect(fetched?.organizerId, plan.organizerId);
       expect(fetched?.playbookId, plan.playbookId);
     });
 
@@ -277,7 +277,7 @@ void main() {
       final feedback = EventSuccessFeedback(
         id: eventSuccessFeedbackId(eventId: event.id, uid: 'runner-1'),
         eventId: event.id,
-        clubId: event.clubId,
+        organizerId: event.organizerId,
         uid: 'runner-1',
         welcomeRating: 5,
         structureRating: 4,
@@ -308,7 +308,7 @@ void main() {
           .watchPreferenceForUser(eventId: event.id, uid: 'runner-1')
           .first;
       expect(saved?.id, 'event-1_runner-1');
-      expect(saved?.clubId, 'club-1');
+      expect(saved?.organizerId, 'club-1');
       expect(saved?.microPodsOptedOut, isTrue);
 
       await repository.setMicroPodsOptOut(
@@ -379,7 +379,7 @@ void main() {
         saved?.id,
         eventSuccessCompatibilityResponseId(eventId: event.id, uid: 'runner-1'),
       );
-      expect(saved?.clubId, 'club-1');
+      expect(saved?.organizerId, 'club-1');
       expect(saved?.answerIds, [
         'event_energy_new_people',
         'first_conversation_activity',
@@ -438,7 +438,7 @@ void main() {
             uid: 'runner-1',
           ),
           eventId: 'event-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           uid: 'runner-1',
           moduleId: EventSuccessModuleCatalog.microPods.id,
           label: 'Pod A',
@@ -487,7 +487,7 @@ void main() {
             uid: 'runner-1',
           ),
           eventId: 'event-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           uid: 'runner-1',
           moduleId: EventSuccessModuleCatalog.guidedRotations.id,
           label: 'Guided rotations',

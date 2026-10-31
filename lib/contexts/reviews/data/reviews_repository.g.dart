@@ -126,8 +126,8 @@ final class WatchReviewsForOrganizerFamily extends $Family
         isAutoDispose: true,
       );
 
-  WatchReviewsForOrganizerProvider call(String clubId) =>
-      WatchReviewsForOrganizerProvider._(argument: clubId, from: this);
+  WatchReviewsForOrganizerProvider call(String organizerId) =>
+      WatchReviewsForOrganizerProvider._(argument: organizerId, from: this);
 
   @override
   String toString() => r'watchReviewsForOrganizerProvider';

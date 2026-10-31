@@ -31,16 +31,16 @@ import 'package:go_router/go_router.dart';
 class OrganizerDetailScreen extends ConsumerWidget {
   const OrganizerDetailScreen({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     this.initialOrganizer,
   });
 
-  final String clubId;
+  final String organizerId;
   final Organizer? initialOrganizer;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final vmAsync = ref.watch(organizerDetailViewModelProvider(clubId));
+    final vmAsync = ref.watch(organizerDetailViewModelProvider(organizerId));
 
     final currentUidAsync = ref.watch(uidProvider);
     final currentUidState = catchAsyncStateFromAsyncValue(currentUidAsync);
@@ -55,7 +55,7 @@ class OrganizerDetailScreen extends ConsumerWidget {
     OrganizerMembership? currentMembership;
     if (currentUid != null) {
       final membershipAsync = ref.watch(
-        watchOrganizerMembershipProvider(clubId, currentUid),
+        watchOrganizerMembershipProvider(organizerId, currentUid),
       );
       final membershipState = catchAsyncStateFromAsyncValue(membershipAsync);
       currentMembership = membershipState.value;
@@ -93,7 +93,7 @@ class OrganizerDetailScreen extends ConsumerWidget {
     final screenState = HostOrganizerDetailScreenState.fromState(
       viewModel: _catchAsyncState(vmAsync),
       initialOrganizer: organizerDetailInitialOrganizerForRoute(
-        clubId: clubId,
+        organizerId: organizerId,
         initialOrganizer: initialOrganizer,
       ),
       currentUid: currentUid,
@@ -133,7 +133,7 @@ class OrganizerDetailScreen extends ConsumerWidget {
               ref,
               (tx) => tx
                   .get(organizerHostContactControllerProvider.notifier)
-                  .startConversation(clubId: organizer.id, hostUid: host.uid),
+                  .startConversation(organizerId: organizer.id, hostUid: host.uid),
             );
         if (!buttonContext.mounted) return;
         unawaited(
@@ -208,7 +208,7 @@ class OrganizerDetailScreen extends ConsumerWidget {
             onRetry: () {
               switch (retryIntent) {
                 case HostOrganizerDetailRetryIntent.reloadDetail:
-                  ref.invalidate(organizerDetailViewModelProvider(clubId));
+                  ref.invalidate(organizerDetailViewModelProvider(organizerId));
               }
             },
           ),

@@ -86,7 +86,7 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
 
     final drafts = await ref
         .read(createEventDraftControllerProvider.notifier)
-        .loadDrafts(clubId: widget.organizer.id);
+        .loadDrafts(organizerId: widget.organizer.id);
     if (!mounted || !sideEffectState.shouldShowDraftPicker(drafts)) return;
 
     final picked = await showHostEventEntrySheet(
@@ -225,7 +225,7 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
       ref,
       (tx) async => tx
           .get(createEventDraftControllerProvider.notifier)
-          .deleteDraft(clubId: widget.organizer.id, draftId: intent.draftId),
+          .deleteDraft(organizerId: widget.organizer.id, draftId: intent.draftId),
     );
   }
 
@@ -234,7 +234,7 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
     final now = widget.now();
     final draft = _currentDraftSnapshot.toDraft(
       id: draftAction.draftIdForSave(now: now),
-      clubId: widget.organizer.id,
+      organizerId: widget.organizer.id,
       savedAt: now,
     );
 

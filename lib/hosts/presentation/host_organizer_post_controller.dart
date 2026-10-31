@@ -33,18 +33,18 @@ class HostOrganizerPostController {
   }
 
   Future<CreateOrganizerPostCallableResponse> createPost({
-    required String clubId,
+    required String organizerId,
     required String requestId,
     required String text,
   }) async {
     final response = await _postsRepository.createPost(
-      clubId: clubId,
+      organizerId: organizerId,
       requestId: requestId,
       text: text,
     );
     _analytics.logEvent(
       AnalyticsEvents.organizerPostCreated,
-      parameters: {AnalyticsParameters.clubId: clubId},
+      parameters: {AnalyticsParameters.organizerId: organizerId},
     );
     return response;
   }

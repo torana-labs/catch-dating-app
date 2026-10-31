@@ -72,7 +72,7 @@ class EventSuccessDefaultsSection extends StatelessWidget {
                 copy: catchFieldCopy(context.l10n),
                 title: title,
                 contract: CatchContractConstraints
-                    .createClubCallablePayloadHostDefaultsEventSuccessEnabled,
+                    .createOrganizerCallablePayloadHostDefaultsEventSuccessEnabled,
                 body: subtitle,
                 bodyMaxLines: 5,
                 value: normalized.enabled,

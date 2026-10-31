@@ -11,7 +11,7 @@ final class HostInboxSurfaceFixtures {
   const HostInboxSurfaceFixtures._();
 
   static const hostUid = 'host-inbox-host';
-  static const clubId = 'host-inbox-club';
+  static const organizerId = 'host-inbox-club';
   static const eventId = 'host-inbox-trivia';
   static const bookedOneUid = 'host-inbox-booked-1';
   static const bookedTwoUid = 'host-inbox-booked-2';
@@ -23,7 +23,7 @@ final class HostInboxSurfaceFixtures {
   static final now = DateTime(2026, 7, 14, 18);
 
   static final organizer = Organizer(
-    id: clubId,
+    id: organizerId,
     name: 'Quiz House Social',
     description: 'Small-team trivia nights for curious people.',
     location: 'Mumbai',
@@ -48,7 +48,7 @@ final class HostInboxSurfaceFixtures {
 
   static final event = Event(
     id: eventId,
-    clubId: clubId,
+    organizerId: organizerId,
     startTime: DateTime(2026, 7, 14, 20),
     endTime: DateTime(2026, 7, 14, 22),
     meetingPoint: 'The Reading Room, Bandra',
@@ -185,8 +185,8 @@ final class HostInboxSurfaceFixtures {
       lastMessagePreview: hasConversation ? preview : null,
       lastMessageSenderId: hasConversation ? uid : null,
       unreadCounts: unreadCount == 0 ? const {} : {hostUid: unreadCount},
-      conversationType: MatchConversationType.clubHostInquiry,
-      clubId: clubId,
+      conversationType: MatchConversationType.organizerHostInquiry,
+      organizerId: organizerId,
     );
     return ChatThreadPreview(
       match: match,
@@ -209,7 +209,7 @@ final class HostInboxSurfaceFixtures {
   }) => EventParticipation(
     id: '${eventId}_$uid',
     eventId: eventId,
-    clubId: clubId,
+    organizerId: organizerId,
     uid: uid,
     status: status,
     createdAt: now.subtract(const Duration(days: 3)),

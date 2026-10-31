@@ -131,7 +131,7 @@ launchEventSuccessCompanionIfAvailable({
     final organizersRepository = ref.read(organizersRepositoryProvider);
     final eventSuccessRepository = ref.read(eventSuccessRepositoryProvider);
     final registry = ref.read(eventSuccessCompanionLaunchRegistryProvider);
-    final organizer = await organizersRepository.fetchOrganizer(event.clubId);
+    final organizer = await organizersRepository.fetchOrganizer(event.organizerId);
     if (organizer == null || organizer.isHostedBy(uid)) {
       return EventSuccessCompanionLaunchResult.unavailable;
     }
@@ -160,7 +160,7 @@ launchEventSuccessCompanionIfAvailable({
     unawaited(
       context.pushNamed(
         Routes.eventSuccessCompanionScreen.name,
-        pathParameters: {'organizerId': event.clubId, 'eventId': event.id},
+        pathParameters: {'organizerId': event.organizerId, 'eventId': event.id},
         extra: event,
       ),
     );

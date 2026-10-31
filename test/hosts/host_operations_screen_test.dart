@@ -267,7 +267,7 @@ Future<void> _pumpHostScreen(
         path: Routes.hostOrganizerTeamScreen.path,
         name: Routes.hostOrganizerTeamScreen.name,
         builder: (_, state) => HostOrganizerTeamScreen(
-          clubId: state.uri.queryParameters['organizerId'] ?? '',
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
         ),
       ),
       GoRoute(
@@ -293,21 +293,21 @@ Future<void> _pumpHostScreen(
         path: Routes.hostOrganizerEventDefaultsScreen.path,
         name: Routes.hostOrganizerEventDefaultsScreen.name,
         builder: (_, state) => HostOrganizerEventDefaultsScreen(
-          clubId: state.uri.queryParameters['organizerId'] ?? '',
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
         ),
       ),
       GoRoute(
         path: Routes.hostOrganizerLiveGuideScreen.path,
         name: Routes.hostOrganizerLiveGuideScreen.name,
         builder: (_, state) => HostOrganizerLiveGuideScreen(
-          clubId: state.uri.queryParameters['organizerId'] ?? '',
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
         ),
       ),
       GoRoute(
         path: Routes.hostOrganizerPaymentsScreen.path,
         name: Routes.hostOrganizerPaymentsScreen.name,
         builder: (_, state) => HostOrganizerPaymentsScreen(
-          clubId: state.uri.queryParameters['organizerId'] ?? '',
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
         ),
       ),
       GoRoute(

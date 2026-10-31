@@ -347,8 +347,8 @@ final class WatchEventsForOrganizerFamily extends $Family
         isAutoDispose: true,
       );
 
-  WatchEventsForOrganizerProvider call(String clubId) =>
-      WatchEventsForOrganizerProvider._(argument: clubId, from: this);
+  WatchEventsForOrganizerProvider call(String organizerId) =>
+      WatchEventsForOrganizerProvider._(argument: organizerId, from: this);
 
   @override
   String toString() => r'watchEventsForOrganizerProvider';

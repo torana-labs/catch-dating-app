@@ -153,7 +153,7 @@ Widget notificationRowStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'long copy',
         child: const NotificationRow(
-          type: ActivityNotificationType.clubUpdate,
+          type: ActivityNotificationType.organizerUpdate,
           title: 'Sea Face Social added a new slower return-to-running loop',
           time: 'yesterday',
           body:

@@ -5,7 +5,7 @@ final class EventSuccessAssignment {
   const EventSuccessAssignment({
     required this.id,
     required this.eventId,
-    required this.clubId,
+    required this.organizerId,
     required this.uid,
     required this.moduleId,
     required this.label,
@@ -32,7 +32,7 @@ final class EventSuccessAssignment {
     return EventSuccessAssignment(
       id: json['id'] as String,
       eventId: json['eventId'] as String,
-      clubId: json['organizerId'] as String,
+      organizerId: json['organizerId'] as String,
       uid: json['uid'] as String,
       moduleId: json['moduleId'] as String,
       label: json['label'] as String,
@@ -94,7 +94,7 @@ final class EventSuccessAssignment {
 
   final String id;
   final String eventId;
-  final String clubId;
+  final String organizerId;
   final String uid;
   final String moduleId;
   final String label;
@@ -127,7 +127,7 @@ final class EventSuccessAssignment {
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
-    'organizerId': clubId,
+    'organizerId': organizerId,
     'uid': uid,
     'moduleId': moduleId,
     'label': label,

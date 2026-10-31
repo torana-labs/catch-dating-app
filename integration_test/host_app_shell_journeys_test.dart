@@ -247,7 +247,7 @@ void main() {
     final now = DateTime.now();
     final event = event_helpers.buildEvent(
       id: 'host-journey-live-event',
-      clubId: _saketRunClub.id,
+      organizerId: _saketRunClub.id,
       name: 'Sunset social run',
       startTime: now.subtract(const Duration(minutes: 10)),
       endTime: now.add(const Duration(hours: 2)),
@@ -261,7 +261,7 @@ void main() {
         EventAttendee(
           id: id,
           eventId: event.id,
-          clubId: _saketRunClub.id,
+          organizerId: _saketRunClub.id,
           organizerId: _saketRunClub.id,
           displayName: name,
           searchName: name.toLowerCase(),

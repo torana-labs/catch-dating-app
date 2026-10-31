@@ -38,7 +38,7 @@ _Match _$MatchFromJson(Map<String, dynamic> json) => _Match(
         unknownValue: MatchConversationType.match,
       ) ??
       MatchConversationType.match,
-  clubId: json['clubId'] as String?,
+  organizerId: json['clubId'] as String?,
   organizerId: json['organizerId'] as String?,
   crossPathsInvitationId: json['crossPathsInvitationId'] as String?,
   eventPlanExpiresAt: const NullableTimestampConverter().fromJson(
@@ -63,7 +63,7 @@ Map<String, dynamic> _$MatchToJson(_Match instance) => <String, dynamic>{
   'blockedAt': const NullableTimestampConverter().toJson(instance.blockedAt),
   'conversationType':
       _$MatchConversationTypeEnumMap[instance.conversationType]!,
-  'clubId': instance.clubId,
+  'clubId': instance.organizerId,
   'organizerId': instance.organizerId,
   'crossPathsInvitationId': instance.crossPathsInvitationId,
   'eventPlanExpiresAt': const NullableTimestampConverter().toJson(
@@ -80,6 +80,6 @@ const _$MatchStatusEnumMap = {
 
 const _$MatchConversationTypeEnumMap = {
   MatchConversationType.match: 'match',
-  MatchConversationType.clubHostInquiry: 'clubHostInquiry',
+  MatchConversationType.organizerHostInquiry: 'clubHostInquiry',
   MatchConversationType.crossPathsEventPlan: 'crossPathsEventPlan',
 };

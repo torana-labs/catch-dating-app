@@ -218,9 +218,9 @@ final class WatchActiveOrganizerMembershipsForOrganizerFamily extends $Family
         isAutoDispose: true,
       );
 
-  WatchActiveOrganizerMembershipsForOrganizerProvider call(String clubId) =>
+  WatchActiveOrganizerMembershipsForOrganizerProvider call(String organizerId) =>
       WatchActiveOrganizerMembershipsForOrganizerProvider._(
-        argument: clubId,
+        argument: organizerId,
         from: this,
       );
 
@@ -304,8 +304,8 @@ final class WatchOrganizerMembershipFamily extends $Family
         isAutoDispose: true,
       );
 
-  WatchOrganizerMembershipProvider call(String clubId, String uid) =>
-      WatchOrganizerMembershipProvider._(argument: (clubId, uid), from: this);
+  WatchOrganizerMembershipProvider call(String organizerId, String uid) =>
+      WatchOrganizerMembershipProvider._(argument: (organizerId, uid), from: this);
 
   @override
   String toString() => r'watchOrganizerMembershipProvider';

@@ -145,7 +145,7 @@ void main() {
 EventSuccessStandings _standings(DateTime now) => EventSuccessStandings(
   id: 'event-1',
   eventId: 'event-1',
-  clubId: 'club-1',
+  organizerId: 'club-1',
   unitOutcome: EventSuccessUnitOutcome.score,
   revision: 1,
   latestRoundIndex: 0,

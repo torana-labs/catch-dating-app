@@ -28,7 +28,7 @@ class RecommendCard extends StatelessWidget {
   RecommendCard.loading({super.key, this.width})
     : event = Event(
         id: 'loading',
-        clubId: 'loading',
+        organizerId: 'loading',
         name: CatchSkeleton.sampleRecommendationTitle,
         startTime: DateTime.now().add(const Duration(days: 1)),
         endTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
@@ -92,7 +92,7 @@ class RecommendCard extends StatelessWidget {
       clockTime: TimeOfDay.fromDateTime(event.startTime),
       onTap: () => context.pushNamed(
         Routes.dashboardEventDetailScreen.name,
-        pathParameters: {'organizerId': event.clubId, 'eventId': event.id},
+        pathParameters: {'organizerId': event.organizerId, 'eventId': event.id},
         extra: event,
       ),
     );

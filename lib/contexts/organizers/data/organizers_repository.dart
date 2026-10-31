@@ -192,7 +192,7 @@ class OrganizersRepository {
   String generateId() => _organizerRef().id;
 
   Future<String> createOrganizer({
-    String? clubId,
+    String? organizerId,
     required String name,
     required String description,
     required String location,
@@ -210,7 +210,7 @@ class OrganizersRepository {
           .httpsCallable('createOrganizer')
           .call<Object?>(
             CreateOrganizerCallableRequest(
-              organizerId: clubId,
+              organizerId: organizerId,
               name: name,
               description: description,
               location: location,
@@ -237,12 +237,12 @@ class OrganizersRepository {
 
   /// Updates only fields present in [patch] via `updateOrganizer`.
   Future<void> updateOrganizer({
-    required String clubId,
+    required String organizerId,
     required UpdateOrganizerPatch patch,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('updateOrganizer')
-        .call(patch.toCallableJson(clubId: clubId)),
+        .call(patch.toCallableJson(organizerId: organizerId)),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'update organizer',
@@ -252,15 +252,15 @@ class OrganizersRepository {
 
   // ── Members ────────────────────────────────────────────────────────────────
 
-  /// Follows [clubId] through the canonical organizer relationship.
+  /// Follows [organizerId] through the canonical organizer relationship.
   ///
   /// Following touches `organizerFollows` plus denormalized user state, so the
   /// server owns this mutation and Firestore rules can keep membership fields
   /// read-only to direct client writes.
-  Future<void> joinOrganizer(String clubId) => withBackendErrorContext(
+  Future<void> joinOrganizer(String organizerId) => withBackendErrorContext(
     () => _functions
         .httpsCallable('followOrganizer')
-        .call(OrganizerFollowCallableRequest(organizerId: clubId).toJson()),
+        .call(OrganizerFollowCallableRequest(organizerId: organizerId).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'follow organizer',
@@ -268,11 +268,11 @@ class OrganizersRepository {
     ),
   );
 
-  /// Unfollows [clubId] through the canonical organizer relationship.
-  Future<void> leaveOrganizer(String clubId) => withBackendErrorContext(
+  /// Unfollows [organizerId] through the canonical organizer relationship.
+  Future<void> leaveOrganizer(String organizerId) => withBackendErrorContext(
     () => _functions
         .httpsCallable('unfollowOrganizer')
-        .call(OrganizerFollowCallableRequest(organizerId: clubId).toJson()),
+        .call(OrganizerFollowCallableRequest(organizerId: organizerId).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'unfollow organizer',
@@ -282,14 +282,14 @@ class OrganizersRepository {
 
   /// Updates the signed-in user's per-club push notification opt-in.
   Future<void> setOrganizerPushNotifications({
-    required String clubId,
+    required String organizerId,
     required bool enabled,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('setOrganizerNotificationPreference')
         .call(
           SetOrganizerNotificationPreferenceCallableRequest(
-            organizerId: clubId,
+            organizerId: organizerId,
             enabled: enabled,
           ).toJson(),
         ),
@@ -301,7 +301,7 @@ class OrganizersRepository {
   );
 
   Future<void> addOrganizerHost({
-    required String clubId,
+    required String organizerId,
     String? uid,
     String? phoneNumber,
   }) => withBackendErrorContext(
@@ -309,7 +309,7 @@ class OrganizersRepository {
         .httpsCallable('addOrganizerManager')
         .call(
           AddOrganizerManagerCallableRequest(
-            organizerId: clubId,
+            organizerId: organizerId,
             uid: uid,
             phoneNumber: phoneNumber,
           ).toJson(),
@@ -322,14 +322,14 @@ class OrganizersRepository {
   );
 
   Future<void> removeOrganizerHost({
-    required String clubId,
+    required String organizerId,
     required String uid,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('removeOrganizerManager')
         .call(
           RemoveOrganizerManagerCallableRequest(
-            organizerId: clubId,
+            organizerId: organizerId,
             uid: uid,
           ).toJson(),
         ),
@@ -341,14 +341,14 @@ class OrganizersRepository {
   );
 
   Future<void> transferOrganizerOwnership({
-    required String clubId,
+    required String organizerId,
     required String uid,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('transferOrganizerOwnership')
         .call(
           TransferOrganizerOwnershipCallableRequest(
-            organizerId: clubId,
+            organizerId: organizerId,
             uid: uid,
           ).toJson(),
         ),

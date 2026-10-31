@@ -42,7 +42,7 @@ class _HostOrganizerInsightsSectionState
   @override
   void initState() {
     super.initState();
-    _state = HostOrganizerInsightsState.initial(clubId: widget.organizer.id);
+    _state = HostOrganizerInsightsState.initial(organizerId: widget.organizer.id);
     widget.refreshController?._attach(_refresh);
   }
 
@@ -251,7 +251,7 @@ HostAnalyticsQuery _hostAnalyticsQueryFor(
   required String timezone,
 }) {
   return HostAnalyticsQuery(
-    clubId: state.clubId,
+    organizerId: state.organizerId,
     rangePreset: switch (state.rangePreset) {
       HostOrganizerInsightsRangePreset.thirtyDays =>
         HostAnalyticsRangePreset.thirtyDays,

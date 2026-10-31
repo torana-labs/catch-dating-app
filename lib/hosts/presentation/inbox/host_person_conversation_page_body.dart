@@ -127,7 +127,7 @@ class _HostPersonConversationPageBodyState
       final valid =
           uid != null &&
           match != null &&
-          match.clubId == person.organizerId &&
+          match.organizerId == person.organizerId &&
           (match.user1Id == uid || match.user2Id == uid) &&
           match.isOrganizerHostInquiry &&
           match.otherId(uid) == person.linkedUid;

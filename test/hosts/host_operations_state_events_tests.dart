@@ -139,10 +139,10 @@ void _registerHostOperationsStateEventsTests() {
   );
 
   test('HostOrganizerInsightsState owns only club and narrative range', () {
-    final state = HostOrganizerInsightsState.initial(clubId: 'club-1');
+    final state = HostOrganizerInsightsState.initial(organizerId: 'club-1');
 
     expect(state.rangePreset, HostOrganizerInsightsRangePreset.thirtyDays);
-    expect(state.query.clubId, 'club-1');
+    expect(state.query.organizerId, 'club-1');
 
     final ranged = state.selectRange(
       HostOrganizerInsightsRangePreset.twelveMonths,
@@ -150,7 +150,7 @@ void _registerHostOperationsStateEventsTests() {
     expect(ranged.rangePreset, HostOrganizerInsightsRangePreset.twelveMonths);
 
     final switchedOrganizer = ranged.selectOrganizer('club-2');
-    expect(switchedOrganizer.query.clubId, 'club-2');
+    expect(switchedOrganizer.query.organizerId, 'club-2');
     expect(
       switchedOrganizer.rangePreset,
       HostOrganizerInsightsRangePreset.twelveMonths,
@@ -267,7 +267,7 @@ void _registerHostOperationsStateEventsTests() {
   testWidgets('Host team shows loading while uid resolves', (tester) async {
     await _pumpHostScreen(
       tester,
-      const HostOrganizerTeamScreen(clubId: 'owned-club'),
+      const HostOrganizerTeamScreen(organizerId: 'owned-club'),
       overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
       settle: false,
     );

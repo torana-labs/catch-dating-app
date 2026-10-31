@@ -580,7 +580,7 @@ class _Fixture {
               ]),
             ),
           for (final org in ['org-a', 'org-b']) ...[
-            organizerEventDraftsProvider(clubId: org).overrideWith((_) async {
+            organizerEventDraftsProvider(organizerId: org).overrideWith((_) async {
               draftReads.add(org);
               return [];
             }),
@@ -643,7 +643,7 @@ class _Fixture {
   Future<void> retainDraftScopes(WidgetTester tester) async {
     for (final org in ['org-a', 'org-b']) {
       final subscription = container.listen(
-        organizerEventDraftsProvider(clubId: org),
+        organizerEventDraftsProvider(organizerId: org),
         (_, _) {},
       );
       addTearDown(subscription.close);
@@ -704,7 +704,7 @@ class _Events extends Fake implements EventRepository {
 
   Event event(String organizerId, String id) => buildEvent(
     id: id,
-    clubId: organizerId,
+    organizerId: organizerId,
     name: id,
     startTime: DateTime.now().add(const Duration(hours: 2)),
     endTime: DateTime.now().add(const Duration(hours: 4)),

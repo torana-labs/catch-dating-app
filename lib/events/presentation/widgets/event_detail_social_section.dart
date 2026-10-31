@@ -15,7 +15,7 @@ class EventDetailSocialSection extends StatelessWidget {
   const EventDetailSocialSection({
     super.key,
     required this.event,
-    required this.clubId,
+    required this.organizerId,
     required this.reviews,
     required this.userProfile,
     required this.state,
@@ -24,7 +24,7 @@ class EventDetailSocialSection extends StatelessWidget {
   });
 
   final Event event;
-  final String clubId;
+  final String organizerId;
   final List<Review> reviews;
   final UserProfile? userProfile;
   final EventDetailSocialState state;
@@ -67,7 +67,7 @@ class EventDetailSocialSection extends StatelessWidget {
             dividerColor: surfaceStyle?.dividerColor,
             titleColor: surfaceStyle?.headingColor,
             child: EventReviewsSection(
-              clubId: clubId,
+              organizerId: organizerId,
               eventId: event.id,
               reviews: reviews,
               currentUid: profile.uid,

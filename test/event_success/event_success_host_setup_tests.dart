@@ -887,7 +887,7 @@ void _registerEventSuccessHostSetupTests() {
                         uid: 'runner-5',
                       ),
                       eventId: event.id,
-                      clubId: event.clubId,
+                      organizerId: event.organizerId,
                       uid: 'runner-5',
                       microPodsOptedOut: false,
                       guidedRotationsOptedOut: true,

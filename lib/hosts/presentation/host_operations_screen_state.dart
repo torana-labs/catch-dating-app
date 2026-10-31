@@ -91,36 +91,36 @@ class HostOrganizersScreenState {
 @immutable
 class HostOrganizerInsightsQueryState {
   const HostOrganizerInsightsQueryState({
-    required this.clubId,
+    required this.organizerId,
     required this.rangePreset,
   });
 
-  final String clubId;
+  final String organizerId;
   final HostOrganizerInsightsRangePreset rangePreset;
 }
 
 @immutable
 class HostOrganizerInsightsState {
   const HostOrganizerInsightsState._({
-    required this.clubId,
+    required this.organizerId,
     required this.rangePreset,
   });
 
-  factory HostOrganizerInsightsState.initial({required String clubId}) =>
+  factory HostOrganizerInsightsState.initial({required String organizerId}) =>
       HostOrganizerInsightsState._(
-        clubId: clubId,
+        organizerId: organizerId,
         rangePreset: HostOrganizerInsightsRangePreset.thirtyDays,
       );
 
-  final String clubId;
+  final String organizerId;
   final HostOrganizerInsightsRangePreset rangePreset;
 
   HostOrganizerInsightsQueryState get query =>
-      HostOrganizerInsightsQueryState(clubId: clubId, rangePreset: rangePreset);
+      HostOrganizerInsightsQueryState(organizerId: organizerId, rangePreset: rangePreset);
 
-  HostOrganizerInsightsState selectOrganizer(String clubId) {
-    if (clubId == this.clubId) return this;
-    return _copyWith(clubId: clubId);
+  HostOrganizerInsightsState selectOrganizer(String organizerId) {
+    if (organizerId == this.organizerId) return this;
+    return _copyWith(organizerId: organizerId);
   }
 
   HostOrganizerInsightsState selectRange(
@@ -130,11 +130,11 @@ class HostOrganizerInsightsState {
   }
 
   HostOrganizerInsightsState _copyWith({
-    String? clubId,
+    String? organizerId,
     HostOrganizerInsightsRangePreset? rangePreset,
   }) {
     return HostOrganizerInsightsState._(
-      clubId: clubId ?? this.clubId,
+      organizerId: organizerId ?? this.organizerId,
       rangePreset: rangePreset ?? this.rangePreset,
     );
   }

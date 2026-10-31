@@ -8,7 +8,7 @@ part of 'event_draft.dart';
 
 _EventDraft _$EventDraftFromJson(Map<String, dynamic> json) => _EventDraft(
   id: json['id'] as String,
-  clubId: json['clubId'] as String,
+  organizerId: json['clubId'] as String,
   savedAt: DateTime.parse(json['savedAt'] as String),
   name: json['name'] as String?,
   eventCityId: json['eventCityId'] as String?,
@@ -86,7 +86,7 @@ _EventDraft _$EventDraftFromJson(Map<String, dynamic> json) => _EventDraft(
 Map<String, dynamic> _$EventDraftToJson(_EventDraft instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'clubId': instance.clubId,
+      'clubId': instance.organizerId,
       'savedAt': instance.savedAt.toIso8601String(),
       'name': instance.name,
       'eventCityId': instance.eventCityId,

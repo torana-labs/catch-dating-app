@@ -24,7 +24,7 @@ abstract class EventParticipation with _$EventParticipation {
   const factory EventParticipation({
     @JsonKey(includeToJson: false) required String id,
     required String eventId,
-    required String clubId,
+    required String organizerId,
     required String uid,
     required EventParticipationStatus status,
     @TimestampConverter() required DateTime createdAt,

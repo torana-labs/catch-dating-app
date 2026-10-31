@@ -568,7 +568,7 @@ void main() {
       );
 
       expect(state.status, EventDetailHostStatus.content);
-      expect(state.clubId, 'host-club');
+      expect(state.organizerId, 'host-club');
       expect(state.hostUid, 'host-1');
       expect(state.hostName, 'Mira');
       expect(state.photoUrl, 'https://example.com/mira.jpg');

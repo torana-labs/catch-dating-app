@@ -6,7 +6,7 @@ class EventSuccessArrivalMission {
   const EventSuccessArrivalMission({
     required this.id,
     required this.eventId,
-    required this.clubId,
+    required this.organizerId,
     required this.observerUid,
     required this.targetUid,
     required this.targetDisplayName,
@@ -24,7 +24,7 @@ class EventSuccessArrivalMission {
     return EventSuccessArrivalMission(
       id: json['id'] as String,
       eventId: json['eventId'] as String,
-      clubId: json['organizerId'] as String,
+      organizerId: json['organizerId'] as String,
       observerUid: json['observerUid'] as String,
       targetUid: json['targetUid'] as String,
       targetDisplayName: json['targetDisplayName'] as String,
@@ -53,7 +53,7 @@ class EventSuccessArrivalMission {
 
   final String id;
   final String eventId;
-  final String clubId;
+  final String organizerId;
   final String observerUid;
   final String targetUid;
   final String targetDisplayName;
@@ -70,7 +70,7 @@ class EventSuccessArrivalMission {
 
   Map<String, dynamic> toJson() => {
     'eventId': eventId,
-    'organizerId': clubId,
+    'organizerId': organizerId,
     'observerUid': observerUid,
     'targetUid': targetUid,
     'targetDisplayName': targetDisplayName,

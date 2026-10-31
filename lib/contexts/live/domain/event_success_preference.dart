@@ -4,7 +4,7 @@ final class EventSuccessPreference {
   const EventSuccessPreference({
     required this.id,
     required this.eventId,
-    required this.clubId,
+    required this.organizerId,
     required this.uid,
     required this.microPodsOptedOut,
     required this.guidedRotationsOptedOut,
@@ -16,7 +16,7 @@ final class EventSuccessPreference {
     return EventSuccessPreference(
       id: json['id'] as String,
       eventId: json['eventId'] as String,
-      clubId: json['organizerId'] as String,
+      organizerId: json['organizerId'] as String,
       uid: json['uid'] as String,
       microPodsOptedOut: json['microPodsOptedOut'] as bool? ?? false,
       guidedRotationsOptedOut:
@@ -34,7 +34,7 @@ final class EventSuccessPreference {
 
   final String id;
   final String eventId;
-  final String clubId;
+  final String organizerId;
   final String uid;
   final bool microPodsOptedOut;
   final bool guidedRotationsOptedOut;
@@ -43,7 +43,7 @@ final class EventSuccessPreference {
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
-    'organizerId': clubId,
+    'organizerId': organizerId,
     'uid': uid,
     'microPodsOptedOut': microPodsOptedOut,
     'guidedRotationsOptedOut': guidedRotationsOptedOut,

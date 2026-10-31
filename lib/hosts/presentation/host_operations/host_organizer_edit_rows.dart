@@ -60,7 +60,7 @@ extension _HostOrganizerEditRows on _HostOrganizerEditBodyState {
         values: organizerTypeOptions,
         value: selectedOrganizerType,
         allowEmptySelection: false,
-        contract: CatchContractConstraints.updateClubPatchOrganizerType,
+        contract: CatchContractConstraints.updateOrganizerPatchOrganizerType,
         contractValue: (option) => option.value.name,
         patchForValue: (value) =>
             UpdateOrganizerPatch(organizerType: value!.value),
@@ -74,7 +74,7 @@ extension _HostOrganizerEditRows on _HostOrganizerEditBodyState {
         currentFieldValue: organizer.name,
         placeholder: organizer.name,
         normalizeInput: _normalizeSingleLineInput,
-        contract: CatchContractConstraints.updateClubPatchName,
+        contract: CatchContractConstraints.updateOrganizerPatchName,
         patchForValue: (value) => UpdateOrganizerPatch(name: value as String),
       ),
       CatchFormSingleChoiceRow<UpdateOrganizerPatch, _HostOrganizerCityOption>(
@@ -87,7 +87,7 @@ extension _HostOrganizerEditRows on _HostOrganizerEditBodyState {
           (city) => city.value == organizer.location,
         ),
         allowEmptySelection: false,
-        contract: CatchContractConstraints.updateClubPatchLocation,
+        contract: CatchContractConstraints.updateOrganizerPatchLocation,
         contractValue: (option) => option.value,
         patchForValue: (value) => UpdateOrganizerPatch(location: value!.value),
       ),
@@ -100,7 +100,7 @@ extension _HostOrganizerEditRows on _HostOrganizerEditBodyState {
         currentFieldValue: organizer.area,
         placeholder: _valueOrDash(organizer.area),
         normalizeInput: _normalizeSingleLineInput,
-        contract: CatchContractConstraints.updateClubPatchArea,
+        contract: CatchContractConstraints.updateOrganizerPatchArea,
         patchForValue: (value) => UpdateOrganizerPatch(area: value as String),
       ),
       CatchFormTextRow<UpdateOrganizerPatch>(
@@ -115,7 +115,7 @@ extension _HostOrganizerEditRows on _HostOrganizerEditBodyState {
         maxLines: 3,
         minLines: 2,
         normalizeInput: _normalizeMultilineInput,
-        contract: CatchContractConstraints.updateClubPatchDescription,
+        contract: CatchContractConstraints.updateOrganizerPatchDescription,
         patchForValue: (value) =>
             UpdateOrganizerPatch(description: value as String),
       ),
@@ -164,7 +164,7 @@ extension _HostOrganizerEditRows on _HostOrganizerEditBodyState {
         normalizeInput: (value) =>
             _normalizeSingleLineInput(value).replaceFirst(RegExp(r'^@'), ''),
         toFieldValue: _optionalStringFieldValue,
-        contract: CatchContractConstraints.updateClubPatchInstagramHandle,
+        contract: CatchContractConstraints.updateOrganizerPatchInstagramHandle,
         patchForValue: (value) => UpdateOrganizerPatch(instagramHandle: value),
       ),
       CatchFormTextRow<UpdateOrganizerPatch>(
@@ -178,7 +178,7 @@ extension _HostOrganizerEditRows on _HostOrganizerEditBodyState {
         keyboardType: TextInputType.phone,
         normalizeInput: _normalizeSingleLineInput,
         toFieldValue: _optionalStringFieldValue,
-        contract: CatchContractConstraints.updateClubPatchPhoneNumber,
+        contract: CatchContractConstraints.updateOrganizerPatchPhoneNumber,
         patchForValue: (value) => UpdateOrganizerPatch(phoneNumber: value),
       ),
       CatchFormTextRow<UpdateOrganizerPatch>(
@@ -195,7 +195,7 @@ extension _HostOrganizerEditRows on _HostOrganizerEditBodyState {
         normalizeInput: _normalizeSingleLineInput,
         validator: (value) => _optionalEmailValidator(value, context.l10n),
         toFieldValue: _optionalStringFieldValue,
-        contract: CatchContractConstraints.updateClubPatchEmail,
+        contract: CatchContractConstraints.updateOrganizerPatchEmail,
         patchForValue: (value) => UpdateOrganizerPatch(email: value),
       ),
     ];

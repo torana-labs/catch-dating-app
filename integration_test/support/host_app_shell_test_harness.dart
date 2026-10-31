@@ -87,7 +87,7 @@ class HostShellBackend {
   /// Writes a published event as the backend's publication command leaves it;
   /// `publicationState` is backend-owned and absent from [Event.toJson].
   Future<void> seedPublishedEvent(Event event) {
-    _eventOrganizers[event.id] = event.clubId;
+    _eventOrganizers[event.id] = event.organizerId;
     return firestore.collection('events').doc(event.id).set({
       ...event.toJson(),
       'publicationState': 'published',

@@ -407,11 +407,11 @@ void _registerExploreMapTests() {
   ) async {
     final organizer = buildOrganizer(id: 'filter-count-club');
     final first = ExploreEventItem(
-      event: event_test.buildEvent(id: 'filter-count-1', clubId: organizer.id),
+      event: event_test.buildEvent(id: 'filter-count-1', organizerId: organizer.id),
       organizer: organizer,
     );
     final second = ExploreEventItem(
-      event: event_test.buildEvent(id: 'filter-count-2', clubId: organizer.id),
+      event: event_test.buildEvent(id: 'filter-count-2', organizerId: organizer.id),
       organizer: organizer,
     );
 
@@ -494,7 +494,7 @@ void _registerExploreMapTests() {
     final item = ExploreEventItem(
       event: event_test.buildEvent(
         id: 'ineligible-event',
-        clubId: organizer.id,
+        organizerId: organizer.id,
       ),
       organizer: organizer,
       availability: const ViewerEventAvailability(
@@ -525,7 +525,7 @@ void _registerExploreMapTests() {
     );
     final event = event_test.buildEvent(
       id: 'event-map-pill',
-      clubId: organizer.id,
+      organizerId: organizer.id,
     );
     final router = GoRouter(
       initialLocation: '/',
@@ -596,7 +596,7 @@ void _registerExploreMapTests() {
     );
     final event = event_test.buildEvent(
       id: 'event-map-clearance',
-      clubId: organizer.id,
+      organizerId: organizer.id,
     );
 
     await tester.pumpWidget(
@@ -660,7 +660,7 @@ void _registerExploreMapTests() {
     );
     final selectedEvent = event_test.buildEvent(
       id: 'event-map-selected',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       meetingPoint: 'Selected Pin Point',
       startTime: DateTime.now().add(const Duration(days: 1)),
     );
@@ -715,7 +715,7 @@ void _registerExploreMapTests() {
     );
     final event = event_test.buildEvent(
       id: 'event-map-default',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       meetingPoint: 'Default Pin Point',
       startTime: DateTime.now().add(const Duration(days: 1)),
     );
@@ -760,7 +760,7 @@ void _registerExploreMapTests() {
     );
     final event = event_test.buildEvent(
       id: 'event-map-ring',
-      clubId: organizer.id,
+      organizerId: organizer.id,
     );
     await tester.pumpWidget(
       ProviderScope(
@@ -899,7 +899,7 @@ void _registerExploreMapTests() {
       );
       final event = event_test.buildEvent(
         id: 'event-map-recovery',
-        clubId: organizer.id,
+        organizerId: organizer.id,
         meetingPoint: 'Recovery Pin Point',
       );
 

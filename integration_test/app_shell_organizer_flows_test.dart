@@ -102,7 +102,7 @@ void main() {
     final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'run-1',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 2,

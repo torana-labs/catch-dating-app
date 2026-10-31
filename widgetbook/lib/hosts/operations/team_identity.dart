@@ -55,7 +55,7 @@ Widget hostTeamRouteStates(BuildContext context) {
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
             uid: null,
-            child: HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
+            child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
           ),
         ),
       ),
@@ -66,7 +66,7 @@ Widget hostTeamRouteStates(BuildContext context) {
             hostProfileStream:
                 HostOperationsFixtures.loadingStream<HostProfile?>(),
             child: const HostOrganizerTeamScreen(
-              clubId: 'design-host-sea-face',
+              organizerId: 'design-host-sea-face',
             ),
           ),
         ),
@@ -75,7 +75,7 @@ Widget hostTeamRouteStates(BuildContext context) {
         label: 'active profile and clubs',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
-            child: HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
+            child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
           ),
         ),
       ),
@@ -86,7 +86,7 @@ Widget hostTeamRouteStates(BuildContext context) {
             hostedOrganizersStream:
                 HostOperationsFixtures.loadingStream<List<Organizer>>(),
             child: const HostOrganizerTeamScreen(
-              clubId: 'design-host-sea-face',
+              organizerId: 'design-host-sea-face',
             ),
           ),
         ),
@@ -100,7 +100,7 @@ Widget hostTeamRouteStates(BuildContext context) {
                   'Hosted clubs failed',
                 ),
             child: const HostOrganizerTeamScreen(
-              clubId: 'design-host-sea-face',
+              organizerId: 'design-host-sea-face',
             ),
           ),
         ),
@@ -111,7 +111,7 @@ Widget hostTeamRouteStates(BuildContext context) {
           child: WidgetbookMediaOverride(
             textScaler: TextScaler.linear(2),
             child: WidgetbookHostShellScope(
-              child: HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
+              child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
             ),
           ),
         ),
@@ -122,7 +122,7 @@ Widget hostTeamRouteStates(BuildContext context) {
           child: WidgetbookMediaOverride(
             disableAnimations: true,
             child: WidgetbookHostShellScope(
-              child: HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
+              child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
             ),
           ),
         ),
@@ -132,7 +132,7 @@ Widget hostTeamRouteStates(BuildContext context) {
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
             themeMode: ThemeMode.dark,
-            child: HostOrganizerTeamScreen(clubId: 'design-host-sea-face'),
+            child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
           ),
         ),
       ),

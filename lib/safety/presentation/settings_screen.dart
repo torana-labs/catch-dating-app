@@ -466,7 +466,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     copy: catchFieldCopy(context.l10n),
                     key: SettingsKeys.organizerUpdatesSwitch,
                     contract: CatchContractConstraints
-                        .updateUserProfilePatchPrefsClubUpdates,
+                        .updateUserProfilePatchPrefsOrganizerUpdates,
                     title: context
                         .l10n
                         .safetySettingsScreenTitleOrganizerAnnouncements,

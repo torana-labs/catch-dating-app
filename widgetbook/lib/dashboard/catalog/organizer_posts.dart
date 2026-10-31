@@ -111,11 +111,11 @@ ActivityNotification _organizerPostNotification({
   return ActivityNotification(
     id: id,
     uid: widgetbookDashboardViewer.uid,
-    type: ActivityNotificationType.clubUpdate,
+    type: ActivityNotificationType.organizerUpdate,
     title: 'New update from ${widgetbookDashboardOrganizer.name}',
     body: body,
     createdAt: DashboardSurfaceFixtures.now.subtract(const Duration(hours: 1)),
-    clubId: widgetbookDashboardOrganizer.id,
+    organizerId: widgetbookDashboardOrganizer.id,
     postId: postId,
     eventId: eventId,
     actorName: widgetbookDashboardOrganizer.name,

@@ -56,7 +56,7 @@ Future<List<ExploreEventRecommendationCandidate>> exploreRecommendedEvents(
   if (events.isEmpty) return const [];
 
   final organizersRepository = ref.watch(organizersRepositoryProvider);
-  final organizerIds = events.map((event) => event.clubId).toSet().toList()
+  final organizerIds = events.map((event) => event.organizerId).toSet().toList()
     ..sort();
   final organizers = await Future.wait(
     organizerIds.map(organizersRepository.fetchOrganizer),
@@ -72,8 +72,8 @@ Future<List<ExploreEventRecommendationCandidate>> exploreRecommendedEvents(
     for (final event in events)
       ExploreEventRecommendationCandidate(
         event: event,
-        organizerName: organizersById[event.clubId]?.name ?? 'Your organizer',
-        organizerLocation: organizersById[event.clubId]?.location,
+        organizerName: organizersById[event.organizerId]?.name ?? 'Your organizer',
+        organizerLocation: organizersById[event.organizerId]?.location,
       ),
   ];
 }

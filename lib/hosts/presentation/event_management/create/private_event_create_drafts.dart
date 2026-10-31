@@ -5,7 +5,7 @@ extension _PrivateEventCreateDrafts on _PrivateEventCreateScreenState {
     try {
       final drafts = await ref
           .read(createEventDraftControllerProvider.notifier)
-          .loadDrafts(clubId: widget.organizer.id);
+          .loadDrafts(organizerId: widget.organizer.id);
       if (!mounted || drafts.isEmpty) {
         return;
       }
@@ -26,7 +26,7 @@ extension _PrivateEventCreateDrafts on _PrivateEventCreateScreenState {
       }
       if (picked.draft == null) return;
       final draft = picked.draft!;
-      if (draft.clubId != widget.organizer.id) {
+      if (draft.organizerId != widget.organizer.id) {
         return;
       }
       _mutateScreenState(() => _restorePickedDraft(draft));

@@ -21,13 +21,13 @@ class OrganizerPostsRepository {
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
 
-  CollectionReference<Map<String, dynamic>> _postsRef(String clubId) => _db
+  CollectionReference<Map<String, dynamic>> _postsRef(String organizerId) => _db
       .collection(_organizersCollectionPath)
-      .doc(clubId)
+      .doc(organizerId)
       .collection(_postsCollectionPath);
 
   Stream<int> watchRemainingWeeklyQuota({
-    required String clubId,
+    required String organizerId,
     DateTime? now,
   }) {
     final referenceNow = now ?? DateTime.now();
@@ -36,7 +36,7 @@ class OrganizerPostsRepository {
     );
 
     return withBackendErrorStream(
-      () => _postsRef(clubId)
+      () => _postsRef(organizerId)
           .where('createdAt', isGreaterThanOrEqualTo: windowStart)
           .limit(ReadLimitPolicy.boundedWorkingSet)
           .snapshots()
@@ -55,7 +55,7 @@ class OrganizerPostsRepository {
   }
 
   Future<CreateOrganizerPostCallableResponse> createPost({
-    required String clubId,
+    required String organizerId,
     required String requestId,
     required String text,
     String? eventId,
@@ -66,7 +66,7 @@ class OrganizerPostsRepository {
           .httpsCallable('createOrganizerPost')
           .call<Object?>(
             CreateOrganizerPostCallableRequest(
-              organizerId: clubId,
+              organizerId: organizerId,
               requestId: requestId,
               text: text,
               eventId: eventId,
@@ -93,8 +93,8 @@ OrganizerPostsRepository organizerPostsRepository(Ref ref) =>
     );
 
 @riverpod
-Stream<int> watchOrganizerPostRemainingWeeklyQuota(Ref ref, String clubId) {
+Stream<int> watchOrganizerPostRemainingWeeklyQuota(Ref ref, String organizerId) {
   return ref
       .watch(organizerPostsRepositoryProvider)
-      .watchRemainingWeeklyQuota(clubId: clubId);
+      .watchRemainingWeeklyQuota(organizerId: organizerId);
 }

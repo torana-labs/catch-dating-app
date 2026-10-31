@@ -3,19 +3,19 @@ part of 'edit_hosted_event_screen.dart';
 class EditHostedEventRouteScreen extends ConsumerWidget {
   const EditHostedEventRouteScreen({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     required this.eventId,
     this.initialEvent,
   });
 
-  final String clubId;
+  final String organizerId;
   final String eventId;
   final Event? initialEvent;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final organizerAsync = ref.watch(fetchOrganizerProvider(clubId));
+    final organizerAsync = ref.watch(fetchOrganizerProvider(organizerId));
     final eventAsync = ref.watch(watchEventProvider(eventId));
 
     final state = HostEventEditState.resolve(
@@ -52,7 +52,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
             state.error!,
             context: AppErrorContext.event,
             onRetry: () {
-              ref.invalidate(fetchOrganizerProvider(clubId));
+              ref.invalidate(fetchOrganizerProvider(organizerId));
               ref.invalidate(watchEventProvider(eventId));
             },
           ),

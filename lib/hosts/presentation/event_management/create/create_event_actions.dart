@@ -369,7 +369,7 @@ extension _CreateEventActions on _CreateEventScreenState {
       final createdEvent = await tx
           .get(createEventControllerProvider.notifier)
           .submit(
-            clubId: widget.organizer.id,
+            organizerId: widget.organizer.id,
             name: _nameController.text,
             startTime: startTime,
             endTime: endTime,

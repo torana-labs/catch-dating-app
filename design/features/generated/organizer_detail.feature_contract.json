@@ -149,7 +149,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "failureStateVersion"
           ],
           "outcomes": [
@@ -174,7 +174,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "viewerSessionId"
           ],
           "outcomes": [
@@ -196,7 +196,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "membershipVersion"
           ],
           "outcomes": [
@@ -223,7 +223,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "membershipVersion"
           ],
           "outcomes": [
@@ -250,7 +250,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "notificationPreferenceVersion"
           ],
           "outcomes": [
@@ -269,7 +269,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "shareAttemptId"
           ],
           "outcomes": [
@@ -288,7 +288,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "eventId"
           ],
           "outcomes": [
@@ -310,7 +310,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "hostUid"
           ],
           "outcomes": [
@@ -332,7 +332,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "hostUid"
           ],
           "outcomes": [
@@ -358,7 +358,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "contactKind"
           ],
           "outcomes": [
@@ -1130,7 +1130,7 @@
           "routes": [
             {
               "id": "organizerDetailScreen",
-              "path": "/organizers/:clubId",
+              "path": "/organizers/:organizerId",
               "role": "primary"
             }
           ]
@@ -1336,7 +1336,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "failureStateVersion"
           ],
           "outcomes": [
@@ -1359,7 +1359,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "shareAttemptId"
           ],
           "outcomes": [
@@ -1378,7 +1378,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "eventId"
           ],
           "outcomes": [
@@ -1400,7 +1400,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "hostUid"
           ],
           "outcomes": [
@@ -1422,7 +1422,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "contactKind"
           ],
           "outcomes": [
@@ -2409,7 +2409,7 @@
           "routes": [
             {
               "id": "hostOrganizerDetailScreen",
-              "path": "/host/organizers/:clubId",
+              "path": "/host/organizers/:organizerId",
               "role": "primary"
             }
           ]

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EventInviteLink {
 
-@JsonKey(includeToJson: false) String get id; String get eventId; String get clubId; String get hostUid; String get label; String? get source; int get openCount; int get requestCount; int get confirmedCount; int get paidCount; int get checkedInCount; int get catcherCount; int get matchCount; int get chatStartedCount;@NullableTimestampConverter() DateTime? get disabledAt;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;
+@JsonKey(includeToJson: false) String get id; String get eventId; String get organizerId; String get hostUid; String get label; String? get source; int get openCount; int get requestCount; int get confirmedCount; int get paidCount; int get checkedInCount; int get catcherCount; int get matchCount; int get chatStartedCount;@NullableTimestampConverter() DateTime? get disabledAt;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;
 /// Create a copy of EventInviteLink
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $EventInviteLinkCopyWith<EventInviteLink> get copyWith => _$EventInviteLinkCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventInviteLink&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.hostUid, hostUid) || other.hostUid == hostUid)&&(identical(other.label, label) || other.label == label)&&(identical(other.source, source) || other.source == source)&&(identical(other.openCount, openCount) || other.openCount == openCount)&&(identical(other.requestCount, requestCount) || other.requestCount == requestCount)&&(identical(other.confirmedCount, confirmedCount) || other.confirmedCount == confirmedCount)&&(identical(other.paidCount, paidCount) || other.paidCount == paidCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.catcherCount, catcherCount) || other.catcherCount == catcherCount)&&(identical(other.matchCount, matchCount) || other.matchCount == matchCount)&&(identical(other.chatStartedCount, chatStartedCount) || other.chatStartedCount == chatStartedCount)&&(identical(other.disabledAt, disabledAt) || other.disabledAt == disabledAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventInviteLink&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.hostUid, hostUid) || other.hostUid == hostUid)&&(identical(other.label, label) || other.label == label)&&(identical(other.source, source) || other.source == source)&&(identical(other.openCount, openCount) || other.openCount == openCount)&&(identical(other.requestCount, requestCount) || other.requestCount == requestCount)&&(identical(other.confirmedCount, confirmedCount) || other.confirmedCount == confirmedCount)&&(identical(other.paidCount, paidCount) || other.paidCount == paidCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.catcherCount, catcherCount) || other.catcherCount == catcherCount)&&(identical(other.matchCount, matchCount) || other.matchCount == matchCount)&&(identical(other.chatStartedCount, chatStartedCount) || other.chatStartedCount == chatStartedCount)&&(identical(other.disabledAt, disabledAt) || other.disabledAt == disabledAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,clubId,hostUid,label,source,openCount,requestCount,confirmedCount,paidCount,checkedInCount,catcherCount,matchCount,chatStartedCount,disabledAt,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,hostUid,label,source,openCount,requestCount,confirmedCount,paidCount,checkedInCount,catcherCount,matchCount,chatStartedCount,disabledAt,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'EventInviteLink(id: $id, eventId: $eventId, clubId: $clubId, hostUid: $hostUid, label: $label, source: $source, openCount: $openCount, requestCount: $requestCount, confirmedCount: $confirmedCount, paidCount: $paidCount, checkedInCount: $checkedInCount, catcherCount: $catcherCount, matchCount: $matchCount, chatStartedCount: $chatStartedCount, disabledAt: $disabledAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'EventInviteLink(id: $id, eventId: $eventId, clubId: $organizerId, hostUid: $hostUid, label: $label, source: $source, openCount: $openCount, requestCount: $requestCount, confirmedCount: $confirmedCount, paidCount: $paidCount, checkedInCount: $checkedInCount, catcherCount: $catcherCount, matchCount: $matchCount, chatStartedCount: $chatStartedCount, disabledAt: $disabledAt, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $EventInviteLinkCopyWith<$Res>  {
   factory $EventInviteLinkCopyWith(EventInviteLink value, $Res Function(EventInviteLink) _then) = _$EventInviteLinkCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String clubId, String hostUid, String label, String? source, int openCount, int requestCount, int confirmedCount, int paidCount, int checkedInCount, int catcherCount, int matchCount, int chatStartedCount,@NullableTimestampConverter() DateTime? disabledAt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt
+@JsonKey(includeToJson: false) String id, String eventId, String organizerId, String hostUid, String label, String? source, int openCount, int requestCount, int confirmedCount, int paidCount, int checkedInCount, int catcherCount, int matchCount, int chatStartedCount,@NullableTimestampConverter() DateTime? disabledAt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt
 });
 
 
@@ -65,11 +65,11 @@ class _$EventInviteLinkCopyWithImpl<$Res>
 
 /// Create a copy of EventInviteLink
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? hostUid = null,Object? label = null,Object? source = freezed,Object? openCount = null,Object? requestCount = null,Object? confirmedCount = null,Object? paidCount = null,Object? checkedInCount = null,Object? catcherCount = null,Object? matchCount = null,Object? chatStartedCount = null,Object? disabledAt = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? organizerId = null,Object? hostUid = null,Object? label = null,Object? source = freezed,Object? openCount = null,Object? requestCount = null,Object? confirmedCount = null,Object? paidCount = null,Object? checkedInCount = null,Object? catcherCount = null,Object? matchCount = null,Object? chatStartedCount = null,Object? disabledAt = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
-as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
+as String,organizerId: null == organizerId ? _self.organizerId : organizerId // ignore: cast_nullable_to_non_nullable
 as String,hostUid: null == hostUid ? _self.hostUid : hostUid // ignore: cast_nullable_to_non_nullable
 as String,label: null == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
 as String,source: freezed == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
@@ -169,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String hostUid,  String label,  String? source,  int openCount,  int requestCount,  int confirmedCount,  int paidCount,  int checkedInCount,  int catcherCount,  int matchCount,  int chatStartedCount, @NullableTimestampConverter()  DateTime? disabledAt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String organizerId,  String hostUid,  String label,  String? source,  int openCount,  int requestCount,  int confirmedCount,  int paidCount,  int checkedInCount,  int catcherCount,  int matchCount,  int chatStartedCount, @NullableTimestampConverter()  DateTime? disabledAt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EventInviteLink() when $default != null:
-return $default(_that.id,_that.eventId,_that.clubId,_that.hostUid,_that.label,_that.source,_that.openCount,_that.requestCount,_that.confirmedCount,_that.paidCount,_that.checkedInCount,_that.catcherCount,_that.matchCount,_that.chatStartedCount,_that.disabledAt,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.eventId,_that.organizerId,_that.hostUid,_that.label,_that.source,_that.openCount,_that.requestCount,_that.confirmedCount,_that.paidCount,_that.checkedInCount,_that.catcherCount,_that.matchCount,_that.chatStartedCount,_that.disabledAt,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -190,10 +190,10 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.hostUid,_that.label,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String hostUid,  String label,  String? source,  int openCount,  int requestCount,  int confirmedCount,  int paidCount,  int checkedInCount,  int catcherCount,  int matchCount,  int chatStartedCount, @NullableTimestampConverter()  DateTime? disabledAt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String organizerId,  String hostUid,  String label,  String? source,  int openCount,  int requestCount,  int confirmedCount,  int paidCount,  int checkedInCount,  int catcherCount,  int matchCount,  int chatStartedCount, @NullableTimestampConverter()  DateTime? disabledAt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _EventInviteLink():
-return $default(_that.id,_that.eventId,_that.clubId,_that.hostUid,_that.label,_that.source,_that.openCount,_that.requestCount,_that.confirmedCount,_that.paidCount,_that.checkedInCount,_that.catcherCount,_that.matchCount,_that.chatStartedCount,_that.disabledAt,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.eventId,_that.organizerId,_that.hostUid,_that.label,_that.source,_that.openCount,_that.requestCount,_that.confirmedCount,_that.paidCount,_that.checkedInCount,_that.catcherCount,_that.matchCount,_that.chatStartedCount,_that.disabledAt,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -210,10 +210,10 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.hostUid,_that.label,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String hostUid,  String label,  String? source,  int openCount,  int requestCount,  int confirmedCount,  int paidCount,  int checkedInCount,  int catcherCount,  int matchCount,  int chatStartedCount, @NullableTimestampConverter()  DateTime? disabledAt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String organizerId,  String hostUid,  String label,  String? source,  int openCount,  int requestCount,  int confirmedCount,  int paidCount,  int checkedInCount,  int catcherCount,  int matchCount,  int chatStartedCount, @NullableTimestampConverter()  DateTime? disabledAt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _EventInviteLink() when $default != null:
-return $default(_that.id,_that.eventId,_that.clubId,_that.hostUid,_that.label,_that.source,_that.openCount,_that.requestCount,_that.confirmedCount,_that.paidCount,_that.checkedInCount,_that.catcherCount,_that.matchCount,_that.chatStartedCount,_that.disabledAt,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.eventId,_that.organizerId,_that.hostUid,_that.label,_that.source,_that.openCount,_that.requestCount,_that.confirmedCount,_that.paidCount,_that.checkedInCount,_that.catcherCount,_that.matchCount,_that.chatStartedCount,_that.disabledAt,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -225,12 +225,12 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.hostUid,_that.label,_t
 @JsonSerializable()
 
 class _EventInviteLink extends EventInviteLink {
-  const _EventInviteLink({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.clubId, required this.hostUid, required this.label, this.source, this.openCount = 0, this.requestCount = 0, this.confirmedCount = 0, this.paidCount = 0, this.checkedInCount = 0, this.catcherCount = 0, this.matchCount = 0, this.chatStartedCount = 0, @NullableTimestampConverter() this.disabledAt, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt}): super._();
+  const _EventInviteLink({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.organizerId, required this.hostUid, required this.label, this.source, this.openCount = 0, this.requestCount = 0, this.confirmedCount = 0, this.paidCount = 0, this.checkedInCount = 0, this.catcherCount = 0, this.matchCount = 0, this.chatStartedCount = 0, @NullableTimestampConverter() this.disabledAt, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt}): super._();
   factory _EventInviteLink.fromJson(Map<String, dynamic> json) => _$EventInviteLinkFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
 @override final  String eventId;
-@override final  String clubId;
+@override final  String organizerId;
 @override final  String hostUid;
 @override final  String label;
 @override final  String? source;
@@ -259,16 +259,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventInviteLink&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.hostUid, hostUid) || other.hostUid == hostUid)&&(identical(other.label, label) || other.label == label)&&(identical(other.source, source) || other.source == source)&&(identical(other.openCount, openCount) || other.openCount == openCount)&&(identical(other.requestCount, requestCount) || other.requestCount == requestCount)&&(identical(other.confirmedCount, confirmedCount) || other.confirmedCount == confirmedCount)&&(identical(other.paidCount, paidCount) || other.paidCount == paidCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.catcherCount, catcherCount) || other.catcherCount == catcherCount)&&(identical(other.matchCount, matchCount) || other.matchCount == matchCount)&&(identical(other.chatStartedCount, chatStartedCount) || other.chatStartedCount == chatStartedCount)&&(identical(other.disabledAt, disabledAt) || other.disabledAt == disabledAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventInviteLink&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.hostUid, hostUid) || other.hostUid == hostUid)&&(identical(other.label, label) || other.label == label)&&(identical(other.source, source) || other.source == source)&&(identical(other.openCount, openCount) || other.openCount == openCount)&&(identical(other.requestCount, requestCount) || other.requestCount == requestCount)&&(identical(other.confirmedCount, confirmedCount) || other.confirmedCount == confirmedCount)&&(identical(other.paidCount, paidCount) || other.paidCount == paidCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.catcherCount, catcherCount) || other.catcherCount == catcherCount)&&(identical(other.matchCount, matchCount) || other.matchCount == matchCount)&&(identical(other.chatStartedCount, chatStartedCount) || other.chatStartedCount == chatStartedCount)&&(identical(other.disabledAt, disabledAt) || other.disabledAt == disabledAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,clubId,hostUid,label,source,openCount,requestCount,confirmedCount,paidCount,checkedInCount,catcherCount,matchCount,chatStartedCount,disabledAt,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,hostUid,label,source,openCount,requestCount,confirmedCount,paidCount,checkedInCount,catcherCount,matchCount,chatStartedCount,disabledAt,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'EventInviteLink(id: $id, eventId: $eventId, clubId: $clubId, hostUid: $hostUid, label: $label, source: $source, openCount: $openCount, requestCount: $requestCount, confirmedCount: $confirmedCount, paidCount: $paidCount, checkedInCount: $checkedInCount, catcherCount: $catcherCount, matchCount: $matchCount, chatStartedCount: $chatStartedCount, disabledAt: $disabledAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'EventInviteLink(id: $id, eventId: $eventId, clubId: $organizerId, hostUid: $hostUid, label: $label, source: $source, openCount: $openCount, requestCount: $requestCount, confirmedCount: $confirmedCount, paidCount: $paidCount, checkedInCount: $checkedInCount, catcherCount: $catcherCount, matchCount: $matchCount, chatStartedCount: $chatStartedCount, disabledAt: $disabledAt, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -279,7 +279,7 @@ abstract mixin class _$EventInviteLinkCopyWith<$Res> implements $EventInviteLink
   factory _$EventInviteLinkCopyWith(_EventInviteLink value, $Res Function(_EventInviteLink) _then) = __$EventInviteLinkCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String clubId, String hostUid, String label, String? source, int openCount, int requestCount, int confirmedCount, int paidCount, int checkedInCount, int catcherCount, int matchCount, int chatStartedCount,@NullableTimestampConverter() DateTime? disabledAt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt
+@JsonKey(includeToJson: false) String id, String eventId, String organizerId, String hostUid, String label, String? source, int openCount, int requestCount, int confirmedCount, int paidCount, int checkedInCount, int catcherCount, int matchCount, int chatStartedCount,@NullableTimestampConverter() DateTime? disabledAt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt
 });
 
 
@@ -296,11 +296,11 @@ class __$EventInviteLinkCopyWithImpl<$Res>
 
 /// Create a copy of EventInviteLink
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? hostUid = null,Object? label = null,Object? source = freezed,Object? openCount = null,Object? requestCount = null,Object? confirmedCount = null,Object? paidCount = null,Object? checkedInCount = null,Object? catcherCount = null,Object? matchCount = null,Object? chatStartedCount = null,Object? disabledAt = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? organizerId = null,Object? hostUid = null,Object? label = null,Object? source = freezed,Object? openCount = null,Object? requestCount = null,Object? confirmedCount = null,Object? paidCount = null,Object? checkedInCount = null,Object? catcherCount = null,Object? matchCount = null,Object? chatStartedCount = null,Object? disabledAt = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
   return _then(_EventInviteLink(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
-as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
+as String,organizerId: null == organizerId ? _self.organizerId : organizerId // ignore: cast_nullable_to_non_nullable
 as String,hostUid: null == hostUid ? _self.hostUid : hostUid // ignore: cast_nullable_to_non_nullable
 as String,label: null == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
 as String,source: freezed == source ? _self.source : source // ignore: cast_nullable_to_non_nullable

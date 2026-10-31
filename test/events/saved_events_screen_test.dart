@@ -53,10 +53,10 @@ void main() {
       ]);
       expect(state.today, DateUtils.dateOnly(now));
       expect(state.organizerIds, [
-        nextUpcoming.clubId,
-        laterUpcoming.clubId,
-        recentPast.clubId,
-        olderPast.clubId,
+        nextUpcoming.organizerId,
+        laterUpcoming.organizerId,
+        recentPast.organizerId,
+        olderPast.organizerId,
       ]);
       expect(state.badgeLabelFor(nextUpcoming), 'SAVED');
       expect(state.badgeLabelFor(recentPast), 'PAST');
@@ -207,10 +207,10 @@ Future<void> _pumpSavedEvents(
           'runner-1',
         ).overrideWithValue(AsyncData<List<Event>>(savedEvents)),
         organizerNameLookupProvider(
-          OrganizerNameLookupQuery(savedEvents.map((event) => event.clubId)),
+          OrganizerNameLookupQuery(savedEvents.map((event) => event.organizerId)),
         ).overrideWithValue(
           AsyncData({
-            for (final event in savedEvents) event.clubId: 'Stride Social',
+            for (final event in savedEvents) event.organizerId: 'Stride Social',
           }),
         ),
       ],

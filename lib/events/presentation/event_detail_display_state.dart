@@ -33,7 +33,7 @@ class EventDetailHostState {
   const EventDetailHostState._({
     required this.status,
     this.error,
-    this.clubId,
+    this.organizerId,
     this.hostUid,
     this.hostName,
     this.photoUrl,
@@ -52,7 +52,7 @@ class EventDetailHostState {
     : this._(status: EventDetailHostStatus.error, error: error);
 
   const EventDetailHostState.content({
-    required String clubId,
+    required String organizerId,
     required String hostName,
     String? hostUid,
     String? photoUrl,
@@ -61,7 +61,7 @@ class EventDetailHostState {
     bool canMessage = false,
   }) : this._(
          status: EventDetailHostStatus.content,
-         clubId: clubId,
+         organizerId: organizerId,
          hostUid: hostUid,
          hostName: hostName,
          photoUrl: photoUrl,
@@ -72,7 +72,7 @@ class EventDetailHostState {
 
   final EventDetailHostStatus status;
   final Object? error;
-  final String? clubId;
+  final String? organizerId;
   final String? hostUid;
   final String? hostName;
   final String? photoUrl;

@@ -34,7 +34,7 @@ class CalendarHomeState {
 
   bool get hasEvents => summary.events.isNotEmpty;
   Iterable<String> get organizerIds =>
-      summary.events.map((event) => event.clubId);
+      summary.events.map((event) => event.organizerId);
 
   CalendarAgendaSectionState agendaSection({
     required CalendarOrganizerNameLookupState organizerNames,
@@ -86,7 +86,7 @@ sealed class CalendarAgendaSectionState {
           for (final event in summary.agendaEvents)
             CalendarAgendaEventRowState(
               event: event,
-              organizerName: organizerNames.names[event.clubId],
+              organizerName: organizerNames.names[event.organizerId],
               status: event.isCancelled
                   ? CalendarAgendaEventStatus.cancelled
                   : summary.isSavedOnly(event)

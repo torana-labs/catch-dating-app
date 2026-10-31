@@ -64,7 +64,7 @@ void main() {
             returnToResponsesOnSave: true,
             initialDraft: EventDraft(
               id: 'inline-draft',
-              clubId: 'club-1',
+              organizerId: 'club-1',
               savedAt: DateTime.now(),
               name: 'Saturday mixer',
               eventCityId: 'in-mh-mumbai',
@@ -197,7 +197,7 @@ void main() {
   test('restores canonical and legacy local draft times', () {
     final canonical = EventDraft(
       id: 'canonical',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       savedAt: DateTime(2026, 9, 24),
       eventLocalDate: '2090-10-03',
       eventLocalStartTime: '19:30',
@@ -240,7 +240,7 @@ void main() {
     final hash = List.filled(64, 'b').join();
     final draft = EventDraft(
       id: 'inherited-draft',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       savedAt: DateTime.now(),
       name: 'Saturday mixer',
       eventCityId: 'in-mh-mumbai',
@@ -342,7 +342,7 @@ void main() {
         '${date.day.toString().padLeft(2, '0')}';
     final draft = EventDraft(
       id: 'local-draft',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       savedAt: DateTime.now(),
       name: 'Saturday mixer',
       eventCityId: 'in-mh-mumbai',
@@ -437,7 +437,7 @@ void main() {
         '${date.day.toString().padLeft(2, '0')}';
     final initial = EventDraft(
       id: 'local-draft',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       savedAt: DateTime.now(),
       name: 'Saturday mixer',
       eventCityId: 'in-mh-mumbai',

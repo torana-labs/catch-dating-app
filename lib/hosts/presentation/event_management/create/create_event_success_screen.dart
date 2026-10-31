@@ -80,7 +80,7 @@ class _CreateEventSuccessScreenState
         normalizedInviteCode == null || normalizedInviteCode.isEmpty
         ? null
         : AppDeepLinks.event(
-            clubId: organizer.id,
+            organizerId: organizer.id,
             eventId: event.id,
             inviteCode: normalizedInviteCode,
           ).toString();

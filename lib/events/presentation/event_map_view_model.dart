@@ -207,7 +207,7 @@ EventMapViewModel buildEventMapViewModel({
         EventMapItem(
           event: event,
           status: statusById[event.id]!,
-          organizerName: organizerNamesById[event.clubId],
+          organizerName: organizerNamesById[event.organizerId],
         ),
   ];
   final pinnedItems = List<EventMapItem>.unmodifiable(items);
@@ -292,7 +292,7 @@ AsyncValue<EventMapViewModel> eventMapViewModel(Ref ref) {
   final membershipsState = catchAsyncStateFromAsyncValue(membershipsAsync);
   final followedOrganizerIds =
       membershipsState.value
-          ?.map((membership) => membership.clubId)
+          ?.map((membership) => membership.organizerId)
           .toList(growable: false) ??
       const <String>[];
   final recommendedAsync = ref.watch(
@@ -340,7 +340,7 @@ AsyncValue<EventMapViewModel> eventMapViewModel(Ref ref) {
   ];
   final organizerNamesAsync = ref.watch(
     organizerNameLookupProvider(
-      OrganizerNameLookupQuery(allEvents.map((event) => event.clubId)),
+      OrganizerNameLookupQuery(allEvents.map((event) => event.organizerId)),
     ),
   );
   final organizerNamesState = catchAsyncStateFromAsyncValue(

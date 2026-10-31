@@ -70,7 +70,7 @@ final class SettingsPreferenceValues {
       messages: profile.prefsMessages,
       eventReminders: profile.prefsEventReminders,
       eventStatusUpdates: profile.prefsRunStatusUpdates,
-      organizerUpdates: profile.prefsClubUpdates,
+      organizerUpdates: profile.prefsOrganizerUpdates,
       weeklyDigest: profile.prefsWeeklyDigest,
     );
   }

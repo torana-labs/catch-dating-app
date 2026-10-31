@@ -427,7 +427,7 @@ void main() {
       final plan = EventSuccessPlan.fromDraft(
         id: 'event-1',
         eventId: 'event-1',
-        clubId: 'club-1',
+        organizerId: 'club-1',
         draft: draft,
         createdAt: DateTime(2026, 7, 17),
         updatedAt: DateTime(2026, 7, 17),

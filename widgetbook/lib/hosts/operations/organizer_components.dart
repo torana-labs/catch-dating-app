@@ -141,7 +141,7 @@ Widget hostStrictHostPaymentAccountSectionCatalogStates(BuildContext context) =>
 Widget hostOrganizerEventDefaultsScreenLoaded(BuildContext context) =>
     WidgetbookHostShellScope(
       child: HostOrganizerEventDefaultsScreen(
-        clubId: HostOperationsFixtures.primaryOrganizer.id,
+        organizerId: HostOperationsFixtures.primaryOrganizer.id,
       ),
     );
 
@@ -153,7 +153,7 @@ Widget hostOrganizerEventDefaultsScreenLoaded(BuildContext context) =>
 Widget hostOrganizerLiveGuideScreenLoaded(BuildContext context) =>
     WidgetbookHostShellScope(
       child: HostOrganizerLiveGuideScreen(
-        clubId: HostOperationsFixtures.primaryOrganizer.id,
+        organizerId: HostOperationsFixtures.primaryOrganizer.id,
       ),
     );
 
@@ -165,7 +165,7 @@ Widget hostOrganizerLiveGuideScreenLoaded(BuildContext context) =>
 Widget hostOrganizerTeamScreenLoaded(BuildContext context) =>
     WidgetbookHostShellScope(
       child: HostOrganizerTeamScreen(
-        clubId: HostOperationsFixtures.primaryOrganizer.id,
+        organizerId: HostOperationsFixtures.primaryOrganizer.id,
       ),
     );
 
@@ -177,7 +177,7 @@ Widget hostOrganizerTeamScreenLoaded(BuildContext context) =>
 Widget hostOrganizerPaymentsScreenLoaded(BuildContext context) =>
     WidgetbookHostShellScope(
       child: HostOrganizerPaymentsScreen(
-        clubId: HostOperationsFixtures.primaryOrganizer.id,
+        organizerId: HostOperationsFixtures.primaryOrganizer.id,
       ),
     );
 

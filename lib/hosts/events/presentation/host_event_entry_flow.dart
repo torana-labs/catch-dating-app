@@ -22,7 +22,7 @@ Future<void> runHostEventEntryFlow({
   switch (selection.intent) {
     case HostEventEntryIntent.resumeDraft:
       final draft = selection.draft;
-      if (draft == null || draft.clubId != organizer.id || !context.mounted) {
+      if (draft == null || draft.organizerId != organizer.id || !context.mounted) {
         return;
       }
       await _openCreateEvent(
@@ -89,7 +89,7 @@ Future<void> _openCreateEvent({
     ),
   );
   if (!context.mounted || isCurrent?.call() == false) return;
-  ref.invalidate(organizerEventDraftsProvider(clubId: organizer.id));
+  ref.invalidate(organizerEventDraftsProvider(organizerId: organizer.id));
 }
 
 Future<void> _openRepeatEvent({
@@ -111,5 +111,5 @@ Future<void> _openRepeatEvent({
     ),
   );
   if (!context.mounted || isCurrent?.call() == false) return;
-  ref.invalidate(organizerEventDraftsProvider(clubId: organizer.id));
+  ref.invalidate(organizerEventDraftsProvider(organizerId: organizer.id));
 }

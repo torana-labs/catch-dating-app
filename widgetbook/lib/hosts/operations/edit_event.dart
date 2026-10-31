@@ -74,7 +74,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
             organizerValue: const AsyncLoading<Organizer?>(),
             eventValue: const AsyncLoading<Event?>(),
             child: EditHostedEventRouteScreen(
-              clubId: widgetbookOrganizer.id,
+              organizerId: widgetbookOrganizer.id,
               eventId: widgetbookEditableEvent.id,
             ),
           ),
@@ -89,7 +89,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
               StackTrace.empty,
             ),
             child: EditHostedEventRouteScreen(
-              clubId: widgetbookOrganizer.id,
+              organizerId: widgetbookOrganizer.id,
               eventId: widgetbookEditableEvent.id,
             ),
           ),
@@ -104,7 +104,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
               StackTrace.empty,
             ),
             child: EditHostedEventRouteScreen(
-              clubId: widgetbookOrganizer.id,
+              organizerId: widgetbookOrganizer.id,
               eventId: widgetbookEditableEvent.id,
             ),
           ),
@@ -116,7 +116,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           child: _HostEditEventScope(
             eventValue: const AsyncData<Event?>(null),
             child: EditHostedEventRouteScreen(
-              clubId: widgetbookOrganizer.id,
+              organizerId: widgetbookOrganizer.id,
               eventId: widgetbookEditableEvent.id,
             ),
           ),
@@ -128,7 +128,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           child: _HostEditEventScope(
             uid: HostOperationsFixtures.guestUid,
             child: EditHostedEventRouteScreen(
-              clubId: widgetbookOrganizer.id,
+              organizerId: widgetbookOrganizer.id,
               eventId: widgetbookEditableEvent.id,
             ),
           ),

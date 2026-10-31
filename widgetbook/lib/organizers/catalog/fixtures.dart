@@ -42,7 +42,7 @@ final widgetbookOrganizerOrganizer = Organizer(
   createdAt: DateTime(2025, 9, 12),
   imageUrl:
       'https://images.unsplash.com/photo-1502904550040-7534597429ae?w=1200&q=80',
-  clubPhotos: [
+  organizerPhotos: [
     widgetbookOrganizerPhoto('club-photo-cafe', 0),
     widgetbookOrganizerPhoto('club-photo-bandstand', 1),
     widgetbookOrganizerPhoto('club-photo-post-run', 2),
@@ -68,7 +68,7 @@ final widgetbookOrganizerMinimalOrganizer = widgetbookOrganizerOrganizer.copyWit
   description:
       'A small supper club for regulars who want familiar faces and low-key evenings.',
   imageUrl: null,
-  clubPhotos: const [],
+  organizerPhotos: const [],
   hostProfiles: const [
     OrganizerHostProfile(
       uid: 'host-ana',
@@ -152,7 +152,7 @@ Event widgetbookOrganizerEvent({
 }) {
   return Event(
     id: id,
-    clubId: widgetbookOrganizerOrganizer.id,
+    organizerId: widgetbookOrganizerOrganizer.id,
     startTime: startTime,
     endTime: startTime.add(const Duration(hours: 1, minutes: 30)),
     meetingPoint: meetingPoint,

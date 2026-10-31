@@ -29,7 +29,7 @@ class EventAssistanceLiveGroupsSection extends ConsumerWidget {
         onReload: () => ref.invalidate(watchEventAttendeesProvider(event.id)),
         onReview: (id) {
           final scope = EventAssistanceGuestScope(
-            organizerId: event.clubId,
+            organizerId: event.organizerId,
             eventId: event.id,
             attendeeId: id,
           );

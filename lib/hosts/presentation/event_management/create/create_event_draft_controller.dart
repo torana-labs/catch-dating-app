@@ -21,11 +21,11 @@ class CreateEventDraftController extends _$CreateEventDraftController {
   @override
   void build() {}
 
-  Future<List<EventDraft>> loadDrafts({required String clubId}) {
+  Future<List<EventDraft>> loadDrafts({required String organizerId}) {
     final uid = requireSignedInUid(ref, action: 'load drafts');
     return ref
         .read(eventDraftRepositoryProvider)
-        .loadDrafts(clubId: clubId, userId: uid);
+        .loadDrafts(organizerId: organizerId, userId: uid);
   }
 
   Future<EventDraft?> saveDraft(EventDraft draft) async {
@@ -38,11 +38,11 @@ class CreateEventDraftController extends _$CreateEventDraftController {
     return draft;
   }
 
-  Future<void> deleteDraft({required String clubId, required String draftId}) {
+  Future<void> deleteDraft({required String organizerId, required String draftId}) {
     final uid = requireSignedInUid(ref, action: 'delete draft');
     return ref
         .read(eventDraftRepositoryProvider)
-        .deleteDraft(clubId: clubId, userId: uid, draftId: draftId);
+        .deleteDraft(organizerId: organizerId, userId: uid, draftId: draftId);
   }
 
   Future<PrivateEventCreateReceipt> createPrivateEvent({

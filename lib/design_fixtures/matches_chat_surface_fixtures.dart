@@ -28,13 +28,13 @@ final class MatchesChatSurfaceFixtures {
   static const morganUid = 'design-chat-morgan';
   static const hostUid = 'design-chat-host';
   static const guestUid = 'design-chat-guest';
-  static const clubId = 'design-chat-club';
+  static const organizerId = 'design-chat-club';
   static const eventId = 'design-chat-event';
   static final now = DateTime(2026, 6, 22, 18);
 
   static final event = Event(
     id: eventId,
-    clubId: clubId,
+    organizerId: organizerId,
     startTime: DateTime(2026, 6, 24, 18, 30),
     endTime: DateTime(2026, 6, 24, 20),
     meetingPoint: 'Carter Road Jetty',
@@ -55,7 +55,7 @@ final class MatchesChatSurfaceFixtures {
   );
 
   static final organizer = Organizer(
-    id: clubId,
+    id: organizerId,
     name: 'Sea Face Social',
     description: 'Small social runs and conversation-led evenings.',
     location: 'Bandra',
@@ -332,8 +332,8 @@ final class MatchesChatSurfaceFixtures {
       lastMessagePreview: preview,
       lastMessageSenderId: guestUid,
       unreadCounts: unread ? const {hostUid: 1} : const {},
-      conversationType: MatchConversationType.clubHostInquiry,
-      clubId: clubId,
+      conversationType: MatchConversationType.organizerHostInquiry,
+      organizerId: organizerId,
     );
   }
 

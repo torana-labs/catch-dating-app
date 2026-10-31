@@ -378,7 +378,7 @@ void main() {
       final repository = ImageUploadRepository(storage);
 
       await repository.uploadOrganizerPhoto(
-        clubId: 'club-1',
+        organizerId: 'club-1',
         position: 24,
         mediaId: 'abcdefghijklmnopqrstuvwx',
         image: _xFile(
@@ -420,7 +420,7 @@ final _uploadCases = <UploadCase>[
     expectedPathPrefix: 'organizers/club-1/media/',
     invoke: (repository, image) => repository.uploadOrganizerCover(
       uid: 'user-1',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       image: image,
     ),
   ),
@@ -430,7 +430,7 @@ final _uploadCases = <UploadCase>[
     expectedPathPrefix: 'organizers/club-1/logo/',
     invoke: (repository, image) => repository.uploadOrganizerProfileImage(
       uid: 'user-1',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       image: image,
     ),
   ),
@@ -440,7 +440,7 @@ final _uploadCases = <UploadCase>[
     expectedPathPrefix: 'events/event-1/media/',
     invoke: (repository, image) => repository.uploadEventPhoto(
       uid: 'user-1',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       eventId: 'event-1',
       image: image,
     ),

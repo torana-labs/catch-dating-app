@@ -286,7 +286,7 @@ List<Object> appShellTestOverrides({
     for (final organizer in organizers) organizer.id: organizer,
   };
   final knownOrganizerIds = knownEventsById.values
-      .map((event) => event.clubId)
+      .map((event) => event.organizerId)
       .toSet();
   final resolvedOrganizersRepository =
       organizersRepository ??
@@ -433,8 +433,8 @@ List<Object> appShellTestOverrides({
           (ref) => Stream.value(
             joinedOrganizerIds.contains(organizer.id)
                 ? OrganizerMembership(
-                    id: organizerMembershipId(clubId: organizer.id, uid: uid),
-                    clubId: organizer.id,
+                    id: organizerMembershipId(organizerId: organizer.id, uid: uid),
+                    organizerId: organizer.id,
                     uid: uid,
                     role: OrganizerMembershipRole.member,
                     status: OrganizerMembershipStatus.active,
@@ -444,10 +444,10 @@ List<Object> appShellTestOverrides({
           ),
         ),
     ],
-    for (final clubId in knownOrganizerIds)
+    for (final organizerId in knownOrganizerIds)
       fetchOrganizerProvider(
-        clubId,
-      ).overrideWith((ref) async => _organizerById(organizers, clubId)),
+        organizerId,
+      ).overrideWith((ref) async => _organizerById(organizers, organizerId)),
     for (final event in knownEventsById.values) ...[
       watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
       watchReviewsForEventProvider(event.id).overrideWithValue(
@@ -530,10 +530,10 @@ List<Object> appShellTestOverrides({
       ).overrideWith((ref) => Stream.value(reviewsByUser)),
       watchActiveOrganizerMembershipsForUserProvider(uid).overrideWith(
         (ref) => Stream.value([
-          for (final clubId in joinedOrganizerIds)
+          for (final organizerId in joinedOrganizerIds)
             OrganizerMembership(
-              id: organizerMembershipId(clubId: clubId, uid: uid),
-              clubId: clubId,
+              id: organizerMembershipId(organizerId: organizerId, uid: uid),
+              organizerId: organizerId,
               uid: uid,
               role: OrganizerMembershipRole.member,
               status: OrganizerMembershipStatus.active,
@@ -830,8 +830,8 @@ class FakeShellReviewsRepository implements ReviewsRepository {
   String? deletedReviewId;
 
   @override
-  Stream<List<Review>> watchReviewsForOrganizer(String clubId) {
-    return Stream.value(organizerReviews[clubId] ?? const []);
+  Stream<List<Review>> watchReviewsForOrganizer(String organizerId) {
+    return Stream.value(organizerReviews[organizerId] ?? const []);
   }
 
   @override
@@ -896,7 +896,7 @@ class FakeShellPublicProfileRepository implements PublicProfileRepository {
 class FakeShellEventDraftRepository implements EventDraftRepository {
   @override
   Future<List<EventDraft>> loadDrafts({
-    required String clubId,
+    required String organizerId,
     required String userId,
   }) async {
     return const [];
@@ -910,14 +910,14 @@ class FakeShellEventDraftRepository implements EventDraftRepository {
 
   @override
   Future<void> deleteDraft({
-    required String clubId,
+    required String organizerId,
     required String userId,
     required String draftId,
   }) async {}
 
   @override
   Future<void> deleteAllDrafts({
-    required String clubId,
+    required String organizerId,
     required String userId,
   }) async {}
 

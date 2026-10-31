@@ -381,7 +381,7 @@ void _registerHostOperationsPresenceTests() {
           ),
           hostAnalyticsProvider(
             const HostAnalyticsQuery(
-              clubId: 'denied-analytics',
+              organizerId: 'denied-analytics',
               granularity: HostAnalyticsGranularity.week,
               timezone: 'UTC',
             ),

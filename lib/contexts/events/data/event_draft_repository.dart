@@ -24,14 +24,14 @@ class EventDraftRepository {
     return _prefsInstance!;
   }
 
-  String _key(String clubId, String userId) => 'event_drafts_${clubId}_$userId';
+  String _key(String organizerId, String userId) => 'event_drafts_${organizerId}_$userId';
 
   Future<List<EventDraft>> loadDrafts({
-    required String clubId,
+    required String organizerId,
     required String userId,
   }) async {
     final prefs = await _prefs;
-    final jsonString = prefs.getString(_key(clubId, userId));
+    final jsonString = prefs.getString(_key(organizerId, userId));
     if (jsonString == null) return [];
 
     try {
@@ -44,7 +44,7 @@ class EventDraftRepository {
           .toList();
       if (fresh.length != allDrafts.length) {
         await _writeDrafts(
-          clubId: clubId,
+          organizerId: organizerId,
           userId: userId,
           drafts: fresh,
           prefs: prefs,
@@ -73,7 +73,7 @@ class EventDraftRepository {
     required EventDraft draft,
   }) async {
     final prefs = await _prefs;
-    final jsonString = prefs.getString(_key(draft.clubId, userId));
+    final jsonString = prefs.getString(_key(draft.organizerId, userId));
     final drafts = jsonString != null
         ? EventDraft.listFromJson(jsonString)
         : <EventDraft>[];
@@ -90,24 +90,24 @@ class EventDraftRepository {
     }
 
     await prefs.setString(
-      _key(draft.clubId, userId),
+      _key(draft.organizerId, userId),
       EventDraft.listToJson(drafts),
     );
   }
 
   Future<void> deleteDraft({
-    required String clubId,
+    required String organizerId,
     required String userId,
     required String draftId,
   }) async {
     final prefs = await _prefs;
-    final jsonString = prefs.getString(_key(clubId, userId));
+    final jsonString = prefs.getString(_key(organizerId, userId));
     if (jsonString == null) return;
 
     final drafts = EventDraft.listFromJson(jsonString);
     drafts.removeWhere((d) => d.id == draftId);
     await _writeDrafts(
-      clubId: clubId,
+      organizerId: organizerId,
       userId: userId,
       drafts: drafts,
       prefs: prefs,
@@ -115,24 +115,24 @@ class EventDraftRepository {
   }
 
   Future<void> deleteAllDrafts({
-    required String clubId,
+    required String organizerId,
     required String userId,
   }) async {
     final prefs = await _prefs;
-    await prefs.remove(_key(clubId, userId));
+    await prefs.remove(_key(organizerId, userId));
   }
 
   Future<void> _writeDrafts({
-    required String clubId,
+    required String organizerId,
     required String userId,
     required List<EventDraft> drafts,
     required SharedPreferences prefs,
   }) async {
     if (drafts.isEmpty) {
-      await prefs.remove(_key(clubId, userId));
+      await prefs.remove(_key(organizerId, userId));
     } else {
       await prefs.setString(
-        _key(clubId, userId),
+        _key(organizerId, userId),
         EventDraft.listToJson(drafts),
       );
     }
@@ -146,10 +146,10 @@ EventDraftRepository eventDraftRepository(Ref ref) =>
 @riverpod
 Future<List<EventDraft>> organizerEventDrafts(
   Ref ref, {
-  required String clubId,
+  required String organizerId,
 }) async {
   final uid = requireSignedInUid(ref, action: 'load drafts');
   return ref
       .read(eventDraftRepositoryProvider)
-      .loadDrafts(clubId: clubId, userId: uid);
+      .loadDrafts(organizerId: organizerId, userId: uid);
 }

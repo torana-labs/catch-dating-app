@@ -9,7 +9,7 @@ void main() {
       test('roundtrip preserves all fields', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime(2026, 5, 1, 15, 45),
           distance: '5',
           capacity: '20',
@@ -56,7 +56,7 @@ void main() {
         final restored = EventDraft.fromJson(json);
 
         expect(restored.id, 'draft-1');
-        expect(restored.clubId, 'club-1');
+        expect(restored.organizerId, 'club-1');
         expect(restored.savedAt, DateTime(2026, 5, 1, 15, 45));
         expect(restored.distance, '5');
         expect(restored.capacity, '20');
@@ -99,7 +99,7 @@ void main() {
       test('roundtrip with only required fields', () {
         final draft = EventDraft(
           id: 'draft-2',
-          clubId: 'club-2',
+          organizerId: 'club-2',
           savedAt: DateTime(2026, 5),
         );
 
@@ -107,7 +107,7 @@ void main() {
         final restored = EventDraft.fromJson(json);
 
         expect(restored.id, 'draft-2');
-        expect(restored.clubId, 'club-2');
+        expect(restored.organizerId, 'club-2');
         expect(restored.distance, isNull);
         expect(restored.capacity, isNull);
         expect(restored.price, isNull);
@@ -136,7 +136,7 @@ void main() {
         });
 
         expect(restored.id, 'draft-3');
-        expect(restored.clubId, 'club-3');
+        expect(restored.organizerId, 'club-3');
         expect(restored.durationMinutes, 60); // default
         expect(restored.distance, isNull);
       });
@@ -146,7 +146,7 @@ void main() {
       test('returns true when no content fields are set', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
         );
         expect(draft.isEmpty, isTrue);
@@ -155,7 +155,7 @@ void main() {
       test('returns false when at least one field is populated', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           distance: '5',
         );
@@ -165,7 +165,7 @@ void main() {
       test('returns false when only external roster metadata is set', () {
         final draft = EventDraft(
           id: 'draft-roster',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           externalBookingMode: true,
           rosterFileFingerprint: 'sha256',
@@ -176,7 +176,7 @@ void main() {
       test('treats the default social run activity as empty', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           activityKind: 'socialRun',
         );
@@ -186,7 +186,7 @@ void main() {
       test('treats the default social run route plan as empty', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           activityKind: 'socialRun',
           routePlan: RouteEventPlan.socialRun.toJson(),
@@ -197,7 +197,7 @@ void main() {
       test('returns false when a non-default activity is selected', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           activityKind: 'dinner',
         );
@@ -207,7 +207,7 @@ void main() {
       test('returns false when a custom event format is set', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           activityKind: 'openActivity',
           customActivityLabel: 'Salsa night',
@@ -219,7 +219,7 @@ void main() {
       test('returns false when route operations are configured', () {
         final draft = EventDraft(
           id: 'draft-route',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           routePlan: RouteEventPlan.socialWalk.toJson(),
         );
@@ -229,7 +229,7 @@ void main() {
       test('returns false when meetingPoint is populated', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           meetingPoint: 'Park',
         );
@@ -239,7 +239,7 @@ void main() {
       test('returns false when date is populated', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           selectedDateMillis: 1234567890000,
         );
@@ -252,7 +252,7 @@ void main() {
           expect(
             EventDraft(
               id: 'draft-1',
-              clubId: 'club-1',
+              organizerId: 'club-1',
               savedAt: DateTime.now(),
               startingPointLng: 72.8,
             ).isEmpty,
@@ -261,7 +261,7 @@ void main() {
           expect(
             EventDraft(
               id: 'draft-2',
-              clubId: 'club-1',
+              organizerId: 'club-1',
               savedAt: DateTime.now(),
               selectedStartHour: 7,
             ).isEmpty,
@@ -270,7 +270,7 @@ void main() {
           expect(
             EventDraft(
               id: 'draft-3',
-              clubId: 'club-1',
+              organizerId: 'club-1',
               savedAt: DateTime.now(),
               selectedStartMinute: 30,
             ).isEmpty,
@@ -279,7 +279,7 @@ void main() {
           expect(
             EventDraft(
               id: 'draft-4',
-              clubId: 'club-1',
+              organizerId: 'club-1',
               savedAt: DateTime.now(),
               durationMinutes: 90,
             ).isEmpty,
@@ -293,7 +293,7 @@ void main() {
       test('returns "Empty draft" when no content fields are set', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
         );
         expect(draft.summary, 'Empty draft');
@@ -302,7 +302,7 @@ void main() {
       test('includes distance, pace, and meeting point', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           distance: '5',
           paceName: 'easy',
@@ -314,7 +314,7 @@ void main() {
       test('includes distance and date', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           distance: '10',
           selectedDateMillis: DateTime(2026, 12, 15).millisecondsSinceEpoch,
@@ -325,7 +325,7 @@ void main() {
       test('handles only meeting point', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           meetingPoint: 'Gateway of India',
         );
@@ -335,7 +335,7 @@ void main() {
       test('includes non-default activity type', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           activityKind: 'dinner',
         );
@@ -345,7 +345,7 @@ void main() {
       test('prefers custom event format labels', () {
         final draft = EventDraft(
           id: 'draft-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now(),
           activityKind: 'openActivity',
           customActivityLabel: 'Salsa night',
@@ -359,13 +359,13 @@ void main() {
         final drafts = [
           EventDraft(
             id: 'draft-1',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             savedAt: DateTime(2026, 5),
             distance: '5',
           ),
           EventDraft(
             id: 'draft-2',
-            clubId: 'club-1',
+            organizerId: 'club-1',
             savedAt: DateTime(2026, 5, 2),
             meetingPoint: 'Park',
           ),

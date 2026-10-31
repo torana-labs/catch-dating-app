@@ -70,13 +70,13 @@ void main() {
       HostEventEntrySelection? selection;
       final older = EventDraft(
         id: 'older',
-        clubId: 'club',
+        organizerId: 'club',
         name: 'Older breakfast',
         savedAt: DateTime(2026, 9, 20),
       );
       final newer = EventDraft(
         id: 'newer',
-        clubId: 'club',
+        organizerId: 'club',
         name: 'Newer run',
         savedAt: DateTime(2026, 9, 21),
       );
@@ -123,7 +123,7 @@ void main() {
       var fail = true;
       final draft = EventDraft(
         id: 'only',
-        clubId: 'club',
+        organizerId: 'club',
         name: 'Saved breakfast',
         savedAt: DateTime(2026, 9, 20),
       );
@@ -177,7 +177,7 @@ void main() {
           var deleted = 0;
           final draft = EventDraft(
             id: 'review',
-            clubId: 'club',
+            organizerId: 'club',
             savedAt: DateTime.now(),
             name: 'Sunday community breakfast and garden walk',
           );

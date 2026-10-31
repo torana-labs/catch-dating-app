@@ -751,7 +751,7 @@ void _registerExploreOrganizerDetailTests() {
             body: OrganizerDetailBody(
               state: OrganizerDetailBodyState.fromDomain(
                 organizer: organizer,
-                upcomingEvents: [buildEvent(clubId: organizer.id)],
+                upcomingEvents: [buildEvent(organizerId: organizer.id)],
                 userProfile: buildUser(uid: 'host-1'),
                 uid: 'host-1',
                 isHost: true,

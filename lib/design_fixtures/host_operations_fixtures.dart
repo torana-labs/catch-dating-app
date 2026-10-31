@@ -265,7 +265,7 @@ final class HostOperationsFixtures {
   static final privateAccess = EventPrivateAccess(
     id: 'design-host-private-access',
     eventId: privateEvent.id,
-    clubId: primaryOrganizer.id,
+    organizerId: primaryOrganizer.id,
     inviteCode: 'SEAFACE',
     createdAt: now.subtract(const Duration(days: 2)),
   );
@@ -274,7 +274,7 @@ final class HostOperationsFixtures {
     EventInviteLink(
       id: 'design-host-link-instagram',
       eventId: privateEvent.id,
-      clubId: primaryOrganizer.id,
+      organizerId: primaryOrganizer.id,
       hostUid: hostUid,
       label: 'Instagram bio',
       source: 'instagram',
@@ -290,7 +290,7 @@ final class HostOperationsFixtures {
     EventInviteLink(
       id: 'design-host-link-alumni',
       eventId: privateEvent.id,
-      clubId: primaryOrganizer.id,
+      organizerId: primaryOrganizer.id,
       hostUid: hostUid,
       label: 'Alumni WhatsApp',
       source: 'whatsapp',
@@ -348,7 +348,7 @@ final class HostOperationsFixtures {
 
   static final eventDraft = EventDraft(
     id: 'design-host-event-draft',
-    clubId: primaryOrganizer.id,
+    organizerId: primaryOrganizer.id,
     savedAt: now.subtract(const Duration(hours: 2)),
     distance: '5',
     capacity: '12',
@@ -497,7 +497,7 @@ final class HostOperationsFixtures {
     topEvents: [
       HostAnalyticsEventRow(
         eventId: privateEvent.id,
-        clubId: privateEvent.clubId,
+        organizerId: privateEvent.organizerId,
         title: 'Private Sundowner 5K',
         startTime: privateEvent.startTime,
         status: 'upcoming',
@@ -523,7 +523,7 @@ final class HostOperationsFixtures {
       ),
       HostAnalyticsEventRow(
         eventId: fullEvent.id,
-        clubId: fullEvent.clubId,
+        organizerId: fullEvent.organizerId,
         title: 'Long Table Dinner',
         startTime: fullEvent.startTime,
         status: 'full',
@@ -595,7 +595,7 @@ final class HostOperationsFixtures {
   }) {
     return Event(
       id: id,
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: start,
       endTime: start.add(const Duration(hours: 1, minutes: 30)),
       meetingPoint: meetingPoint,
@@ -636,7 +636,7 @@ final class HostOperationsFixtures {
     return EventParticipation(
       id: eventParticipationId(eventId: event.id, uid: uid),
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       uid: uid,
       status: status,
       genderAtSignup: gender,
@@ -683,10 +683,10 @@ final class HostFixtureEventDraftRepository implements EventDraftRepository {
 
   @override
   Future<List<EventDraft>> loadDrafts({
-    required String clubId,
+    required String organizerId,
     required String userId,
   }) async {
-    return drafts.where((draft) => draft.clubId == clubId).toList();
+    return drafts.where((draft) => draft.organizerId == organizerId).toList();
   }
 
   @override
@@ -697,14 +697,14 @@ final class HostFixtureEventDraftRepository implements EventDraftRepository {
 
   @override
   Future<void> deleteDraft({
-    required String clubId,
+    required String organizerId,
     required String userId,
     required String draftId,
   }) async {}
 
   @override
   Future<void> deleteAllDrafts({
-    required String clubId,
+    required String organizerId,
     required String userId,
   }) async {}
 }

@@ -137,7 +137,7 @@ GoRouter _router({bool custom = false}) => GoRouter(
     GoRoute(
       path: '/start',
       builder: (_, state) => HostEventRehearsalStartScreen(
-        clubId: 'club-1',
+        organizerId: 'club-1',
         startFromOrganizerDefaults: custom,
       ),
     ),

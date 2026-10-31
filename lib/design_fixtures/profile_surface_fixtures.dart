@@ -69,7 +69,7 @@ final class ProfileSurfaceFixtures {
         version: currentRunPreferencesVersion,
       ),
     ),
-    prefsClubUpdates: false,
+    prefsOrganizerUpdates: false,
     prefsWeeklyDigest: true,
   );
 

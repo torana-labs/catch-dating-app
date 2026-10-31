@@ -77,7 +77,7 @@ mixin _EventSuccessPreferenceRepository on _EventSuccessRepositoryCore {
     final preference = EventSuccessPreference(
       id: eventSuccessPreferenceId(eventId: event.id, uid: uid),
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       uid: uid,
       microPodsOptedOut:
           microPodsOptedOut ?? existing?.microPodsOptedOut ?? false,

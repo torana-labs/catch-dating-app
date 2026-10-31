@@ -461,7 +461,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
     catchSelectionHaptic();
     context.pushNamed(
       Routes.eventDetailScreen.name,
-      pathParameters: {'organizerId': event.clubId, 'eventId': event.id},
+      pathParameters: {'organizerId': event.organizerId, 'eventId': event.id},
       extra: EventDetailRouteExtra(
         initialEvent: event,
         transition: EventDetailRouteTransition.mapSelectedCard,

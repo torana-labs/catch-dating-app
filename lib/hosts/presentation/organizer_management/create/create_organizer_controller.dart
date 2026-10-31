@@ -163,7 +163,7 @@ class CreateOrganizerController extends _$CreateOrganizerController {
         .read(appAnalyticsProvider)
         .hostEventCompletion(AnalyticsEvents.hostOrganizerCreated);
     final createdOrganizerId = await organizersRepo.createOrganizer(
-      clubId: reservedOrganizerId,
+      organizerId: reservedOrganizerId,
       name: name,
       description: description,
       location: location,
@@ -180,23 +180,23 @@ class CreateOrganizerController extends _$CreateOrganizerController {
     try {
       String? uploadedPrimaryPhoto;
       String? uploadedProfile;
-      var clubPhotos = <UploadedPhoto>[];
+      var organizerPhotos = <UploadedPhoto>[];
       UploadedPhoto? logoPhoto;
       if (selectedOrganizerPhotoInputs.isNotEmpty) {
-        clubPhotos = await _resolveOrganizerPhotoInputs(
+        organizerPhotos = await _resolveOrganizerPhotoInputs(
           uid: uid,
-          clubId: createdOrganizerId,
+          organizerId: createdOrganizerId,
           inputs: selectedOrganizerPhotoInputs,
           newStoragePaths: newStoragePaths,
         );
-        uploadedPrimaryPhoto = _primaryPhotoUrl(clubPhotos);
+        uploadedPrimaryPhoto = _primaryPhotoUrl(organizerPhotos);
       }
       if (profileImage != null) {
         final upload = await ref
             .read(imageUploadRepositoryProvider)
             .uploadOrganizerLogo(
               uid: uid,
-              clubId: createdOrganizerId,
+              organizerId: createdOrganizerId,
               image: profileImage,
             );
         newStoragePaths.add(upload.storagePath);
@@ -211,7 +211,7 @@ class CreateOrganizerController extends _$CreateOrganizerController {
         final patch = <String, Object?>{};
         if (uploadedPrimaryPhoto != null) {
           patch['imageUrl'] = uploadedPrimaryPhoto;
-          patch['organizerPhotos'] = clubPhotos
+          patch['organizerPhotos'] = organizerPhotos
               .map((photo) => photo.toJson())
               .toList(growable: false);
         }
@@ -220,7 +220,7 @@ class CreateOrganizerController extends _$CreateOrganizerController {
           patch['logoPhoto'] = logoPhoto?.toJson();
         }
         await organizersRepo.updateOrganizer(
-          clubId: createdOrganizerId,
+          organizerId: createdOrganizerId,
           patch: UpdateOrganizerPatch.raw(patch),
         );
       }
@@ -238,7 +238,7 @@ class CreateOrganizerController extends _$CreateOrganizerController {
 
   Future<List<UploadedPhoto>> _resolveOrganizerPhotoInputs({
     required String uid,
-    required String clubId,
+    required String organizerId,
     required List<OrganizerPhotoInput> inputs,
     required List<String> newStoragePaths,
   }) async {
@@ -255,7 +255,7 @@ class CreateOrganizerController extends _$CreateOrganizerController {
               .read(imageUploadRepositoryProvider)
               .uploadOrganizerPhoto(
                 uid: uid,
-                clubId: clubId,
+                organizerId: organizerId,
                 position: position,
                 image: image,
               );

@@ -53,7 +53,7 @@ enum SettingsPreference {
         prefsRunStatusUpdates: value,
       ),
       SettingsPreference.organizerUpdates => UpdateUserProfilePatch(
-        prefsClubUpdates: value,
+        prefsOrganizerUpdates: value,
       ),
       SettingsPreference.weeklyDigest => UpdateUserProfilePatch(
         prefsWeeklyDigest: value,

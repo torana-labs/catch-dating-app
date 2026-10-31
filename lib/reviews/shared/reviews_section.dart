@@ -48,7 +48,7 @@ class OrganizerReviewsSection extends StatelessWidget {
 class EventReviewsSection extends StatelessWidget {
   const EventReviewsSection({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     required this.eventId,
     required this.reviews,
     required this.currentUid,
@@ -57,7 +57,7 @@ class EventReviewsSection extends StatelessWidget {
     this.canRespond = false,
   });
 
-  final String clubId;
+  final String organizerId;
   final String eventId;
   final List<Review> reviews;
   final String? currentUid;
@@ -93,7 +93,7 @@ class EventReviewsSection extends StatelessWidget {
                   label: context.l10n.reviewsReviewsSectionLabelWriteAReview,
                   onPressed: () => showWriteReviewSheet(
                     context: context,
-                    clubId: clubId,
+                    organizerId: organizerId,
                     eventId: eventId,
                     reviewer: userProfile!,
                     existingReview: existingReview,
@@ -103,7 +103,7 @@ class EventReviewsSection extends StatelessWidget {
           onEditReview: canWriteEventReview
               ? (review) => showWriteReviewSheet(
                   context: context,
-                  clubId: clubId,
+                  organizerId: organizerId,
                   eventId: eventId,
                   reviewer: userProfile!,
                   existingReview: review,
@@ -125,7 +125,7 @@ class EventReviewsSection extends StatelessWidget {
                 : context.l10n.reviewsReviewsSectionLabelWriteAReview,
             onPressed: () => showWriteReviewSheet(
               context: context,
-              clubId: clubId,
+              organizerId: organizerId,
               eventId: eventId,
               reviewer: userProfile!,
               existingReview: existingReview,

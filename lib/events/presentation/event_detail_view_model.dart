@@ -58,7 +58,7 @@ AsyncValue<EventDetailViewModel?> eventDetailViewModel(
   final event = catchAsyncStateFromAsyncValue(eventAsync).value;
   final organizerAsync = event == null
       ? const AsyncData<Organizer?>(null)
-      : ref.watch(fetchOrganizerProvider(event.clubId));
+      : ref.watch(fetchOrganizerProvider(event.organizerId));
   final savedEventAsync = uid == null
       ? const AsyncData<SavedEvent?>(null)
       : ref.watch(watchSavedEventProvider(uid, eventId));
@@ -67,7 +67,7 @@ AsyncValue<EventDetailViewModel?> eventDetailViewModel(
       : ref.watch(watchEventParticipationProvider(eventId, uid));
   final membershipAsync = uid == null || event == null
       ? const AsyncData<OrganizerMembership?>(null)
-      : ref.watch(watchOrganizerMembershipProvider(event.clubId, uid));
+      : ref.watch(watchOrganizerMembershipProvider(event.organizerId, uid));
 
   return buildEventDetailViewModel(
     eventAsync: eventAsync,

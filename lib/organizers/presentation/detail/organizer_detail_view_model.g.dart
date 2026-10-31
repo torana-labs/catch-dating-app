@@ -140,8 +140,8 @@ final class OrganizerDetailViewModelFamily extends $Family
   /// they hydrate the detail screen when available without hiding newly-created
   /// events behind the route's placeholder body.
 
-  OrganizerDetailViewModelProvider call(String clubId) =>
-      OrganizerDetailViewModelProvider._(argument: clubId, from: this);
+  OrganizerDetailViewModelProvider call(String organizerId) =>
+      OrganizerDetailViewModelProvider._(argument: organizerId, from: this);
 
   @override
   String toString() => r'organizerDetailViewModelProvider';

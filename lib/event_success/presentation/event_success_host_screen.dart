@@ -169,7 +169,7 @@ class _EventSuccessHostSectionState
         showTabs || initialTab == EventSuccessHostTab.setup;
     final AsyncValue<List<EventSuccessLayout>> organizerLayoutsAsync =
         shouldLoadSetupResources
-        ? ref.watch(watchOrganizerEventSuccessLayoutsProvider(event.clubId))
+        ? ref.watch(watchOrganizerEventSuccessLayoutsProvider(event.organizerId))
         : const AsyncData(<EventSuccessLayout>[]);
     final eventEnded = !event.endTime.isAfter(referenceNow);
     final shouldLoadLiveResources =
@@ -437,7 +437,7 @@ class _EventSuccessHostSectionState
         ref,
         (tx) => tx
             .get(eventSuccessControllerProvider.notifier)
-            .upsertLayout(organizerId: event.clubId, layout: layout),
+            .upsertLayout(organizerId: event.organizerId, layout: layout),
       ),
       roster: state.roster,
       scorecard: state.scorecard,
@@ -518,11 +518,11 @@ class _EventSuccessHostSectionState
                 ),
       ),
       deliverySection: EventAssistanceLiveDeliverySection(
-        organizerId: event.clubId,
+        organizerId: event.organizerId,
         eventId: event.id,
       ),
       helpSection: EventAssistanceLiveHelpSection(
-        organizerId: event.clubId,
+        organizerId: event.organizerId,
         eventId: event.id,
       ),
       accountabilitySection: EventAssistanceLiveSweepSection(

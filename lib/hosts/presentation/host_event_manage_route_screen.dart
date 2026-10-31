@@ -9,7 +9,7 @@ typedef _HostEventManageRouteData = ({
 class HostEventManageRouteScreen extends ConsumerWidget {
   const HostEventManageRouteScreen({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     required this.eventId,
     this.initialEvent,
     this.initialSection = HostEventManageSection.setup,
@@ -17,7 +17,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
     this.referenceNow,
   });
 
-  final String clubId;
+  final String organizerId;
   final String eventId;
   final Event? initialEvent;
   final HostEventManageSection initialSection;
@@ -27,7 +27,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final organizerAsync = ref.watch(fetchOrganizerProvider(clubId));
+    final organizerAsync = ref.watch(fetchOrganizerProvider(organizerId));
     final eventAsync = ref.watch(watchEventProvider(eventId));
     final routeDataAsync = _hostEventManageRouteData(
       uid: catchAsyncStateFromAsyncValue(uidAsync),
@@ -40,7 +40,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
       value: routeDataAsync,
       onRetry: () {
         ref.invalidate(uidProvider);
-        ref.invalidate(fetchOrganizerProvider(clubId));
+        ref.invalidate(fetchOrganizerProvider(organizerId));
         ref.invalidate(watchEventProvider(eventId));
       },
       loadingBuilder: (_) => CatchRouteScaffold(

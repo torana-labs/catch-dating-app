@@ -109,7 +109,7 @@ void main() {
     final assignment = EventSuccessAssignment(
       id: 'assignment-1',
       eventId: 'event-1',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       uid: 'guest-1',
       moduleId: 'micro_pods',
       label: 'Pod A',
@@ -143,7 +143,7 @@ void main() {
     final assignment = EventSuccessAssignment(
       id: 'assignment-1',
       eventId: 'event-1',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       uid: 'guest-1',
       moduleId: 'micro_pods',
       label: 'Pod A',
@@ -263,7 +263,7 @@ EventSuccessAssignment _timedAssignment({
   return EventSuccessAssignment(
     id: 'assignment-$uid',
     eventId: 'event-1',
-    clubId: 'club-1',
+    organizerId: 'club-1',
     uid: uid,
     moduleId: 'guided_rotations',
     label: 'Guided rotations',

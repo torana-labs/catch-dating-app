@@ -534,7 +534,7 @@ class _CalendarScope extends StatelessWidget {
       ...?savedEvents.asData?.value,
     ];
     final organizerQuery = OrganizerNameLookupQuery(
-      lookupEvents.map((event) => event.clubId),
+      lookupEvents.map((event) => event.organizerId),
     );
 
     return WidgetbookFixtureScope(

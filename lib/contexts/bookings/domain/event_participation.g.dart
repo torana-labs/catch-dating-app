@@ -11,7 +11,7 @@ _EventParticipation _$EventParticipationFromJson(
 ) => _EventParticipation(
   id: json['id'] as String,
   eventId: json['eventId'] as String,
-  clubId: json['clubId'] as String,
+  organizerId: json['clubId'] as String,
   uid: json['uid'] as String,
   status: $enumDecode(_$EventParticipationStatusEnumMap, json['status']),
   createdAt: const TimestampConverter().fromJson(json['createdAt']),
@@ -59,7 +59,7 @@ Map<String, dynamic> _$EventParticipationToJson(
   _EventParticipation instance,
 ) => <String, dynamic>{
   'eventId': instance.eventId,
-  'clubId': instance.clubId,
+  'clubId': instance.organizerId,
   'uid': instance.uid,
   'status': _$EventParticipationStatusEnumMap[instance.status]!,
   'createdAt': const TimestampConverter().toJson(instance.createdAt),

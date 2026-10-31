@@ -4,7 +4,7 @@ mixin _EventDetailScreenActions on ConsumerState<EventDetailScreen> {
   void _toggleSavedEvent(
     BuildContext context, {
     required Event event,
-    required String clubId,
+    required String organizerId,
     required UserProfile? userProfile,
     required bool isAuthenticated,
     required bool isSaved,
@@ -13,9 +13,9 @@ mixin _EventDetailScreenActions on ConsumerState<EventDetailScreen> {
     if (!isAuthenticated ||
         !eventDetailHasBookingReadyProfile(userProfile, now: now)) {
       if (!isAuthenticated) {
-        _openEventSignIn(context, clubId: clubId, eventId: event.id);
+        _openEventSignIn(context, organizerId: organizerId, eventId: event.id);
       } else {
-        _openEventProfileCompletion(context, clubId: clubId, eventId: event.id);
+        _openEventProfileCompletion(context, organizerId: organizerId, eventId: event.id);
       }
       return;
     }
@@ -54,7 +54,7 @@ mixin _EventDetailScreenActions on ConsumerState<EventDetailScreen> {
 
   Future<void> _messageHost(
     BuildContext context, {
-    required String clubId,
+    required String organizerId,
     required String hostUid,
     required String eventId,
   }) async {
@@ -65,7 +65,7 @@ mixin _EventDetailScreenActions on ConsumerState<EventDetailScreen> {
           (tx) => tx
               .get(organizerHostContactControllerProvider.notifier)
               .startConversation(
-                clubId: clubId,
+                organizerId: organizerId,
                 hostUid: hostUid,
                 eventId: eventId,
               ),
@@ -133,7 +133,7 @@ bool _showsEventDetailBottomNavigation({
 
 void _openEventSignIn(
   BuildContext context, {
-  required String clubId,
+  required String organizerId,
   required String eventId,
   String? inviteCode,
   String? inviteLinkId,
@@ -143,7 +143,7 @@ void _openEventSignIn(
       path: Routes.authScreen.path,
       queryParameters: {
         'from': AppDeepLinks.inAppEventPath(
-          clubId: clubId,
+          organizerId: organizerId,
           eventId: eventId,
           inviteCode: inviteCode,
           inviteLinkId: inviteLinkId,
@@ -155,7 +155,7 @@ void _openEventSignIn(
 
 void _openEventProfileCompletion(
   BuildContext context, {
-  required String clubId,
+  required String organizerId,
   required String eventId,
   Event? event,
 }) {
@@ -166,7 +166,7 @@ void _openEventProfileCompletion(
           if (event?.requiresAgeDetails == true) 'ageRestricted',
           if (event?.requiresCohortDetails == true) 'cohortRestricted',
         ],
-        from: AppDeepLinks.inAppEventPath(clubId: clubId, eventId: eventId),
+        from: AppDeepLinks.inAppEventPath(organizerId: organizerId, eventId: eventId),
       ),
     ),
   );

@@ -53,7 +53,7 @@ class HostTeamManagementSection extends ConsumerWidget {
       final added = await showCatchBottomSheet<bool>(
         context: context,
         builder: (_) => HostTeamAddHostSheet(
-          clubId: organizer.id,
+          organizerId: organizer.id,
           actionState: HostTeamAddHostActionState(
             isSaving: addMutation.isPending,
             errorMessage: addMutation.hasError
@@ -70,7 +70,7 @@ class HostTeamManagementSection extends ConsumerWidget {
                 ref,
                 (tx) => tx
                     .get(hostTeamManagementControllerProvider.notifier)
-                    .addHostByPhone(clubId: organizer.id, phoneNumber: phone),
+                    .addHostByPhone(organizerId: organizer.id, phoneNumber: phone),
               );
             } catch (error, stackTrace) {
               ref
@@ -113,14 +113,14 @@ class HostTeamManagementSection extends ConsumerWidget {
               ref,
               (tx) => tx
                   .get(hostTeamManagementControllerProvider.notifier)
-                  .removeHost(clubId: organizer.id, uid: host.uid),
+                  .removeHost(organizerId: organizer.id, uid: host.uid),
             );
           case HostTeamHostAction.transferOwnership:
             await HostTeamManagementController.transferOwnershipMutation.run(
               ref,
               (tx) => tx
                   .get(hostTeamManagementControllerProvider.notifier)
-                  .transferOwnership(clubId: organizer.id, uid: host.uid),
+                  .transferOwnership(organizerId: organizer.id, uid: host.uid),
             );
         }
       } catch (error, stackTrace) {
@@ -350,12 +350,12 @@ Future<void> _noopAddHost(String phoneNumber) async {}
 class HostTeamAddHostSheet extends StatefulWidget {
   const HostTeamAddHostSheet({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     this.actionState = const HostTeamAddHostActionState(),
     this.onAddHost,
   });
 
-  final String clubId;
+  final String organizerId;
   final HostTeamAddHostActionState actionState;
   final Future<void> Function(String phoneNumber)? onAddHost;
 
@@ -434,7 +434,7 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
               title:
                   context.l10n.hostsHostTeamManagementSectionTitlePhoneNumber,
               contract: CatchContractConstraints
-                  .addClubHostCallablePayloadPhoneNumber,
+                  .addOrganizerHostCallablePayloadPhoneNumber,
               controller: _controller,
               leading: Icon(CatchIcons.phone),
               keyboardType: TextInputType.phone,

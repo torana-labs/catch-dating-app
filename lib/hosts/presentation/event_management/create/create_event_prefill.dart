@@ -44,7 +44,7 @@ class CreateEventPrefill {
       sourceEventId: event.id,
       values: EventDraft(
         id: 'repeat-template-${event.id}',
-        clubId: event.clubId,
+        organizerId: event.organizerId,
         savedAt: createdAt,
         name: event.name,
         externalBookingMode: event.isExternalCompanion,

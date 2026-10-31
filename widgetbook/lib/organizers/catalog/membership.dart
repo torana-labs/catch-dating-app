@@ -20,7 +20,7 @@ Widget membershipTrailingControllerStates(BuildContext context) {
         label: 'joinable controller',
         child: WidgetbookOrganizerOrganizerDirectoryPreviewScope(
           child: OrganizerJoinAction(
-            clubId: widgetbookOrganizerOrganizer.id,
+            organizerId: widgetbookOrganizerOrganizer.id,
             isJoined: false,
           ),
         ),
@@ -28,7 +28,7 @@ Widget membershipTrailingControllerStates(BuildContext context) {
       const WidgetbookPageStateCard(
         label: 'joined controller',
         child: OrganizerJoinAction(
-          clubId: widgetbookOrganizerOrganizerId,
+          organizerId: widgetbookOrganizerOrganizerId,
           isJoined: true,
         ),
       ),

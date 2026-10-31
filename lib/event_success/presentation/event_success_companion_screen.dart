@@ -201,12 +201,12 @@ Future<String?> showEventVenueSessionScanner({
 class EventSuccessCompanionRouteScreen extends ConsumerWidget {
   const EventSuccessCompanionRouteScreen({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     required this.eventId,
     this.initialEvent,
   });
 
-  final String clubId;
+  final String organizerId;
   final String eventId;
   final Event? initialEvent;
 

@@ -65,7 +65,7 @@ final widgetbookEventsViewer = UserProfile(
 final widgetbookEventsSignedUp = EventParticipation(
   id: '${widgetbookEvent.id}_$widgetbookEventsViewerUid',
   eventId: widgetbookEvent.id,
-  clubId: widgetbookEventsOrganizerId,
+  organizerId: widgetbookEventsOrganizerId,
   uid: widgetbookEventsViewerUid,
   status: EventParticipationStatus.signedUp,
   createdAt: widgetbookEventsNow.subtract(const Duration(days: 3)),
@@ -165,7 +165,7 @@ Event widgetbookEventDetailFixture({
   final start = startTime ?? DateTime(2026, 6, 24, 6, 30);
   return Event(
     id: id,
-    clubId: widgetbookEventsOrganizerId,
+    organizerId: widgetbookEventsOrganizerId,
     startTime: start,
     endTime: start.add(const Duration(hours: 1, minutes: 45)),
     meetingPoint: 'Carter Road Jetty',
@@ -230,4 +230,4 @@ const widgetbookEventsAvatarItems = [
 
 void widgetbookEventsNoopContext(BuildContext context) {}
 
-void widgetbookEventsNoopMessageHost(String clubId, String hostUid) {}
+void widgetbookEventsNoopMessageHost(String organizerId, String hostUid) {}

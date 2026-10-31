@@ -18,7 +18,7 @@ ExploreEventItem _item({
 }) {
   final event = events.buildEvent(
     id: id,
-    clubId: organizer.id,
+    organizerId: organizer.id,
     startTime: startTime,
     crossPathsDiscoveryEnabled: true,
   );

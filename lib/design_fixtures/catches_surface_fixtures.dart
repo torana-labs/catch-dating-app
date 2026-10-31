@@ -47,7 +47,7 @@ final class CatchesSurfaceFixtures {
       latitude: 19.0706,
       longitude: 72.8223,
     ).copyWith(
-      clubId: 'design-catches-club',
+      organizerId: 'design-catches-club',
       startTime: end.subtract(const Duration(hours: 1, minutes: 10)),
       endTime: end,
       distanceKm: 5,
@@ -103,7 +103,7 @@ final class CatchesSurfaceFixtures {
     return EventParticipation(
       id: eventParticipationId(eventId: resolvedEvent.id, uid: viewerUid),
       eventId: resolvedEvent.id,
-      clubId: resolvedEvent.clubId,
+      organizerId: resolvedEvent.organizerId,
       uid: viewerUid,
       status: EventParticipationStatus.attended,
       createdAt: resolvedEvent.startTime.subtract(const Duration(days: 2)),
@@ -119,7 +119,7 @@ final class CatchesSurfaceFixtures {
     return EventParticipation(
       id: eventParticipationId(eventId: resolvedEvent.id, uid: viewerUid),
       eventId: resolvedEvent.id,
-      clubId: resolvedEvent.clubId,
+      organizerId: resolvedEvent.organizerId,
       uid: viewerUid,
       status: EventParticipationStatus.signedUp,
       createdAt: resolvedEvent.startTime.subtract(const Duration(days: 2)),

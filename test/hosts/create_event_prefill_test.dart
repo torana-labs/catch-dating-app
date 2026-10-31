@@ -14,7 +14,7 @@ void main() {
     final event = buildEvent(
       id: 'trivia-42',
       name: 'Friday trivia',
-      clubId: 'club-7',
+      organizerId: 'club-7',
       startTime: DateTime(2026, 7, 3, 20, 15),
       endTime: DateTime(2026, 7, 3, 22),
       eventFormat: EventFormatSnapshot.custom(
@@ -53,7 +53,7 @@ void main() {
     final values = prefill.values;
 
     expect(prefill.sourceEventId, event.id);
-    expect(values.clubId, event.clubId);
+    expect(values.organizerId, event.organizerId);
     expect(values.name, 'Friday trivia');
     expect(values.savedAt, createdAt);
     expect(values.activityKind, ActivityKind.openActivity.name);

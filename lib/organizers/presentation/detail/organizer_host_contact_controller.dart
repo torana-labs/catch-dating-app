@@ -13,7 +13,7 @@ class OrganizerHostContactController extends _$OrganizerHostContactController {
   void build() {}
 
   Future<String> startConversation({
-    required String clubId,
+    required String organizerId,
     required String hostUid,
     String? eventId,
   }) async {
@@ -21,7 +21,7 @@ class OrganizerHostContactController extends _$OrganizerHostContactController {
     return ref
         .read(organizersRepositoryProvider)
         .startOrganizerConversation(
-          organizerId: clubId,
+          organizerId: organizerId,
           hostUid: hostUid,
           eventId: eventId,
         );

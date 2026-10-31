@@ -490,7 +490,7 @@ void _registerExploreAsyncPhaseTests() {
     final organizer = buildOrganizer(id: 'phase-club');
     final event = event_test.buildEvent(
       id: 'phase-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
     );
     final feed = ExploreFeedViewModel(
       items: [
@@ -585,7 +585,7 @@ void _registerExploreAsyncPhaseTests() {
     final recommendation = ExploreEventRecommendation(
       event: event_test.buildEvent(
         id: 'phase-recommendation',
-        clubId: 'phase-club',
+        organizerId: 'phase-club',
       ),
       organizerName: 'Phase club',
       reasonLabel: 'For this test',

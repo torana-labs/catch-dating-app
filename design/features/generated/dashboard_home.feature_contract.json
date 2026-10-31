@@ -251,7 +251,7 @@
               "id": "dashboard.club_post_opened_and_marked_read"
             }
           ],
-          "description": "Marks the selected legacy club or organizer follower-post notification read and routes through organizerId with clubId fallback, including an optional linked event.",
+          "description": "Marks the selected legacy club or organizer follower-post notification read and routes through organizerId with organizerId fallback, including an optional linked event.",
           "implementationStatus": "implemented"
         },
         {

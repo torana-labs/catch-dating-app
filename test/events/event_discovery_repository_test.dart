@@ -43,7 +43,7 @@ void main() {
         final now = DateTime(2026, 5, 26, 10);
         final matchingEvent = buildEvent(
           id: 'event-matching',
-          clubId: 'club-a',
+          organizerId: 'club-a',
           startTime: now.add(const Duration(days: 1)),
           startingPointLat: 19.001,
           startingPointLng: 72.001,
@@ -51,7 +51,7 @@ void main() {
         );
         final farEvent = buildEvent(
           id: 'event-far',
-          clubId: 'club-a',
+          organizerId: 'club-a',
           startTime: now.add(const Duration(days: 1)),
           startingPointLat: 19.2,
           startingPointLng: 72.2,
@@ -59,7 +59,7 @@ void main() {
         );
         final otherCityEvent = buildEvent(
           id: 'event-other-city',
-          clubId: 'club-b',
+          organizerId: 'club-b',
           startTime: now.add(const Duration(days: 1)),
           startingPointLat: 19.001,
           startingPointLng: 72.001,
@@ -67,7 +67,7 @@ void main() {
         );
         final wrongActivityEvent = buildEvent(
           id: 'event-wrong-activity',
-          clubId: 'club-a',
+          organizerId: 'club-a',
           startTime: now.add(const Duration(days: 1)),
           startingPointLat: 19.001,
           startingPointLng: 72.001,
@@ -77,7 +77,7 @@ void main() {
         );
         final fullEvent = buildEvent(
           id: 'event-full',
-          clubId: 'club-a',
+          organizerId: 'club-a',
           startTime: now.add(const Duration(days: 1)),
           startingPointLat: 19.001,
           startingPointLng: 72.001,
@@ -173,7 +173,7 @@ void main() {
       final firestore = FakeFirebaseFirestore();
       final event = buildEvent(
         id: 'event-provider',
-        clubId: 'club-provider',
+        organizerId: 'club-provider',
         startTime: DateTime(2026, 5, 27, 10),
         startingPointLat: 19.001,
         startingPointLng: 72.001,
@@ -203,12 +203,12 @@ void main() {
       final now = DateTime(2026, 5, 26, 10);
       final matchingEvent = buildEvent(
         id: 'event-open-for-men',
-        clubId: 'club-a',
+        organizerId: 'club-a',
         startTime: now.add(const Duration(days: 1)),
       );
       final blockedEvent = buildEvent(
         id: 'event-open-for-women',
-        clubId: 'club-a',
+        organizerId: 'club-a',
         startTime: now.add(const Duration(days: 1)),
       );
       await _seedDiscoverableEvent(
@@ -240,7 +240,7 @@ void main() {
       final now = DateTime(2026, 5, 26, 10);
       final event = buildEvent(
         id: 'event-visible-in-general-feed',
-        clubId: 'club-a',
+        organizerId: 'club-a',
         startTime: now.add(const Duration(days: 1)),
       );
       await _seedDiscoverableEvent(
@@ -271,7 +271,7 @@ void main() {
           firestore,
           buildEvent(
             id: 'event-$day',
-            clubId: 'club-a',
+            organizerId: 'club-a',
             startTime: now.add(Duration(days: day)),
           ),
         );

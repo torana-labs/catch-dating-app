@@ -2247,7 +2247,7 @@
           "routes": [
             {
               "id": "eventSuccessCompanionScreen",
-              "path": "/organizers/:clubId/events/:eventId/companion",
+              "path": "/organizers/:organizerId/events/:eventId/companion",
               "role": "primary"
             }
           ]

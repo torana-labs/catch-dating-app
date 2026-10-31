@@ -175,7 +175,7 @@ class OrganizerDetailSliverBody extends StatelessWidget {
                       tags: tags,
                     ),
                   ),
-                if (organizer.clubPhotos.isNotEmpty)
+                if (organizer.organizerPhotos.isNotEmpty)
                   CatchSection.divided(
                     title: context
                         .l10n

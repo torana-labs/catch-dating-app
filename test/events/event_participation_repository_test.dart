@@ -109,7 +109,7 @@ void main() {
         EventParticipation(
           id: 'event-1_runner-1',
           eventId: 'event-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           uid: 'runner-1',
           status: EventParticipationStatus.attended,
           createdAt: createdAt,

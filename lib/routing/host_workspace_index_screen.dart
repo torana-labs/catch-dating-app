@@ -70,7 +70,7 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
             ),
             builder: (context) => HostEventManageRouteScreen(
               key: ValueKey('${selection.organizerId}/${selection.eventId}'),
-              clubId: selection.organizerId,
+              organizerId: selection.organizerId,
               eventId: selection.eventId,
               initialEvent: initialEvent,
               initialSection: switch (uri.queryParameters['section']) {

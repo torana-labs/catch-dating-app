@@ -54,7 +54,7 @@ class WidgetbookDashboardScope extends StatelessWidget {
       widgetbookDashboardOrganizer.id: widgetbookDashboardOrganizer.name,
     };
     final focusOrganizerQuery = OrganizerNameLookupQuery(
-      effectiveSignedUpEvents.map((event) => event.clubId),
+      effectiveSignedUpEvents.map((event) => event.organizerId),
     );
     final organizersByIdQuery = OrganizersByIdQuery([
       widgetbookDashboardOrganizer.id,

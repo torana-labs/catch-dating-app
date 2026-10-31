@@ -279,7 +279,7 @@ abstract class UserProfile with _$UserProfile {
     @Default(true) bool prefsMessages,
     @Default(true) bool prefsEventReminders,
     @Default(true) bool prefsRunStatusUpdates,
-    @Default(true) bool prefsClubUpdates,
+    @Default(true) bool prefsOrganizerUpdates,
     @Default(false) bool prefsWeeklyDigest,
     @Default(true) bool prefsShowOnMap,
     @Default(false) bool prefsShowInCrossPaths,

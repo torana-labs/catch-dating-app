@@ -1580,27 +1580,27 @@
           "routes": [
             {
               "id": "eventDetailScreen",
-              "path": "/organizers/:clubId/events/:eventId",
+              "path": "/organizers/:organizerId/events/:eventId",
               "role": "primary"
             },
             {
               "id": "calendarEventDetailScreen",
-              "path": "/calendar/organizers/:clubId/events/:eventId",
+              "path": "/calendar/organizers/:organizerId/events/:eventId",
               "role": "alias"
             },
             {
               "id": "savedEventDetailScreen",
-              "path": "/saved-events/organizers/:clubId/events/:eventId",
+              "path": "/saved-events/organizers/:organizerId/events/:eventId",
               "role": "alias"
             },
             {
               "id": "dashboardEventDetailScreen",
-              "path": "/dashboard/organizers/:clubId/events/:eventId",
+              "path": "/dashboard/organizers/:organizerId/events/:eventId",
               "role": "alias"
             },
             {
               "id": "hostAppEventDetailScreen",
-              "path": "/host/organizers/:clubId/events/:eventId",
+              "path": "/host/organizers/:organizerId/events/:eventId",
               "role": "host"
             }
           ]

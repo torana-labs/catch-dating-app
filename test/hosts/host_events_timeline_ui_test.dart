@@ -165,7 +165,7 @@ class _Harness {
     uidProvider.overrideWithValue(AsyncData(uid)),
     eventRepositoryProvider.overrideWithValue(repository),
     privateEventSetupTimelineRepositoryProvider.overrideWithValue(setups),
-    organizerEventDraftsProvider.overrideWith((ref, clubId) async => []),
+    organizerEventDraftsProvider.overrideWith((ref, organizerId) async => []),
     programEventsControllerProvider.overrideWith((ref, request) {
       final controller = ProgramEventsController(
         isActorCurrent: () => true,

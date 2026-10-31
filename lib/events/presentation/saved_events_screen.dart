@@ -137,7 +137,7 @@ class SavedEventsScreen extends ConsumerWidget {
   void _openEventDetail(BuildContext context, Event event) {
     context.pushNamed(
       Routes.savedEventDetailScreen.name,
-      pathParameters: {'organizerId': event.clubId, 'eventId': event.id},
+      pathParameters: {'organizerId': event.organizerId, 'eventId': event.id},
       extra: event,
     );
   }
@@ -162,7 +162,7 @@ class SavedEventsAgendaList extends StatelessWidget {
     return EventAgendaSliverList(
       events: state.orderedEvents,
       showOrganizerName: true,
-      organizerNameBuilder: (event) => organizerNames[event.clubId],
+      organizerNameBuilder: (event) => organizerNames[event.organizerId],
       today: state.today,
       preserveInputOrder: true,
       badgeLabelBuilder: state.badgeLabelFor,
