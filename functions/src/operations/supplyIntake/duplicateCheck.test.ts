@@ -62,9 +62,10 @@ function request(overrides: Record<string, unknown> = {}) {
 
 /** An organizer document with the identity fields and the private ones the read must not return. */
 function organizer(name: string, {citySlug = "mumbai", publishStatus = "published", slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-  hrefs = [] as string[]} = {}) {
+  hrefs = [] as string[], instagramHandle = null as string | null, extra = {} as Record<string, unknown>} = {}) {
   return {
-    name, instagramHandle: null, phoneNumber: "+910000000000", email: "owner@example.com", hostUserIds: ["host-1"],
+    ...extra,
+    name, instagramHandle, phoneNumber: "+910000000000", email: "owner@example.com", hostUserIds: ["host-1"],
     claim: {state: "unclaimed", claimHref: null, lastClaimRequestId: null},
     publicPage: {slug, citySlug, canonicalPath: `/organizers/${slug}/`, publishStatus, indexStatus: "noindex",
       robots: "noindex, follow", seoTitle: null, seoDescription: null, lastRenderedAt: null},
@@ -107,7 +108,7 @@ test("a nominated organizer Catch already lists is flagged for the reviewer", as
   const check = result.duplicateCheck!;
   assert.equal(check.verdict, "match");
   assert.equal(check.organizersCompared, 2);
-  assert.deepEqual(check.inventory, {citySlug: "mumbai", limit: ORGANIZER_INVENTORY_LIMIT, truncated: false});
+  assert.deepEqual(check.inventory, {citySlug: null, limit: ORGANIZER_INVENTORY_LIMIT, truncated: false});
   assert.equal(check.candidates[0].organizerId, "org-afterfly");
   assert.equal(check.candidates[0].name, "Afterfly");
   assert.equal(check.candidates[0].band, "match");
@@ -125,11 +126,30 @@ test("a new organizer is compared but not flagged", async () => {
   assert.equal(result.duplicateCheck?.organizersCompared, 2);
 });
 
-test("only published organizers in the request's city are compared, from a bounded projected read", async () => {
+test("a nominated organizer still in QA, under another name for its city, is flagged", async () => {
+  // Bhag Club in prod: a QA page in "delhi", a record in "in-dl-delhi-ncr" and
+  // a nomination filed under "delhi-ncr" are all the same city.
+  const {db, run} = setup({request: request({market: "delhi-ncr"})});
+  db.write("organizers/org-afterfly-qa", organizer("Afterfly", {citySlug: "delhi", publishStatus: "qa",
+    hrefs: ["https://lu.ma/afterfly"], extra: {location: "in-dl-delhi-ncr"}}));
+  const {result} = await run();
+  const check = result.duplicateCheck!;
+  assert.equal(check.verdict, "match");
+  assert.equal(check.candidates[0].organizerId, "org-afterfly-qa");
+  const candidate = check.candidates[0] as unknown as {signals: string[]; conflicts: string[]};
+  assert.ok(candidate.signals.includes("same_market"), candidate.signals.join(","));
+  assert.ok(!candidate.conflicts.includes("different_market"), candidate.conflicts.join(","));
+});
+
+test("every organizer Catch keeps is compared, in every city, from a bounded projected read", async () => {
   const db = new FakeFirestore();
   for (let index = 0; index < 4; index += 1) db.write(`organizers/org-mumbai-${index}`, organizer(`Mumbai Club ${index}`));
   db.write("organizers/org-pune", organizer("Afterfly", {citySlug: "pune"}));
   db.write("organizers/org-draft", organizer("Afterfly", {publishStatus: "draft"}));
+  db.write("organizers/org-app", {name: "Saket Run Club", instagramHandle: "Saketruns", location: "in-mp-indore",
+    phoneNumber: "+910000000000", ownerUserId: "owner-1"});
+  db.write("organizers/org-retired", organizer("Afterfly", {extra: {archived: true}}));
+  db.write("organizers/org-retired-status", organizer("Afterfly", {extra: {status: "archived"}}));
   const calls: unknown[][] = [];
   const recording = (target: object): object => new Proxy(target, {
     get(object, property) {
@@ -147,29 +167,29 @@ test("only published organizers in the request's city are compared, from a bound
     (organizerId, document) => {
       read.push(document as Record<string, unknown>);
       return runtime.organizerReferenceFromDocument(organizerId, document);
-    }, 3);
+    });
   assert.deepEqual(calls, [
     ["collection", "organizers"],
-    ["where", "publicPage.publishStatus", "==", "published"],
-    ["where", "publicPage.citySlug", "==", "mumbai"],
     ["select", ...ORGANIZER_INVENTORY_FIELDS],
-    ["limit", 4],
+    ["limit", ORGANIZER_INVENTORY_LIMIT + 1],
   ]);
-  assert.deepEqual(inventory?.organizers.map((entry) => entry.organizerId), ["org-mumbai-0", "org-mumbai-1", "org-mumbai-2"]);
-  assert.deepEqual([inventory?.citySlug, inventory?.limit, inventory?.truncated], ["mumbai", 3, true]);
-  assert.deepEqual(inventory?.organizers[0].markets, ["mumbai"]);
+  assert.deepEqual(inventory?.organizers.map((entry) => entry.organizerId),
+    ["org-app", "org-draft", "org-mumbai-0", "org-mumbai-1", "org-mumbai-2", "org-mumbai-3", "org-pune"]);
+  assert.deepEqual([inventory?.citySlug, inventory?.truncated], [null, false]);
+  const markets = Object.fromEntries((inventory?.organizers ?? []).map((entry) => [entry.organizerId, entry.markets]));
+  assert.deepEqual([markets["org-app"], markets["org-mumbai-0"], markets["org-pune"]], [["indore"], ["mumbai"], ["pune"]]);
   // Contact, ownership and claim fields never leave Firestore.
   for (const document of read) {
-    assert.deepEqual(Object.keys(document).sort(), ["instagramHandle", "name", "publicPage", "publicSources"]);
-    assert.deepEqual(Object.keys(document.publicPage as object).sort(), ["citySlug", "slug"]);
+    assert.ok(Object.keys(document).every((key) => (ORGANIZER_INVENTORY_FIELDS as readonly string[])
+      .some((field) => field === key || field.startsWith(`${key}.`))), Object.keys(document).join(","));
+    assert.ok(Object.keys(document.publicPage as object ?? {}).every((key) => ["citySlug", "slug"].includes(key)));
   }
 
-  // A city the front door could not place compares every published organizer.
-  const unplaced = await loadOrganizerInventory(db as unknown as Firestore,
-    request({market: "unassigned"}) as SupplyIntakeRequest, runtime.organizerReferenceFromDocument);
-  assert.deepEqual(unplaced?.organizers.map((entry) => entry.organizerId).sort(),
-    ["org-mumbai-0", "org-mumbai-1", "org-mumbai-2", "org-mumbai-3", "org-pune"]);
-  assert.deepEqual([unplaced?.citySlug, unplaced?.truncated], [null, false]);
+  // The cap is one read; reaching it marks the inventory truncated.
+  const capped = await loadOrganizerInventory(db as unknown as Firestore, request() as SupplyIntakeRequest,
+    runtime.organizerReferenceFromDocument, 3);
+  assert.deepEqual(capped?.organizers.map((entry) => entry.organizerId), ["org-app", "org-draft", "org-mumbai-0"]);
+  assert.deepEqual([capped?.limit, capped?.truncated], [3, true]);
 });
 
 test("an empty inventory leaves the listing as it was without one", async () => {
