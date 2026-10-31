@@ -15,8 +15,10 @@ import {eventSetupDefaultsDependencies} from
 import {setEventPublication} from "./publication";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
-import {validateEventSetupReceiptDocument} from
-  "../../shared/generated/validators/eventSetupReceiptDocument";
+import {contractValidator} from "../../shared/contractTestValidators";
+
+const validateEventSetupReceiptDocument =
+  contractValidator("EventSetupReceiptDocument");
 
 function setup() {
   const store = new Store();

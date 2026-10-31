@@ -2151,9 +2151,21 @@ Each validator imports its own schema and the small shared
 `schemaValidationRuntime.ts` engine. The engine owns Ajv options, formats,
 lazy per-schema compilation, caching, and error messages.
 
-Production Functions import these modules directly. `schemaRegistry.ts` and
-`schemaValidators.ts` are aggregate inventories for tests and tools, and must
-not be imported or re-exported by runtime modules. Admin SDK projections in
+Only the contracts that runtime code uses get modules. They are declared in
+`contracts/functions/runtime_modules.json`: `validators` emits the type, schema
+and validator modules, and `types` emits only the TypeScript type. The
+generator adds the types those modules and `firestoreAdminTypes.ts` depend on,
+and never reads Functions code. To use a new contract at runtime, add its spec
+name and regenerate; the Functions build fails on an undeclared module, the
+generator fails on an unknown name, and `tool/contracts/schema_modules.test.mjs`
+fails on a declared name that no runtime source (Functions, Functions
+scripts, the website, or Admin shared contracts) imports. Tests reach every other contract
+through `functions/src/shared/contractTestValidators.ts`, which compiles
+validators at test time from the canonical bundles in
+`tool/contracts/generated/schema_contract_registry.mjs` with the same Ajv
+options.
+
+Production Functions import these modules directly. Admin SDK projections in
 `firestoreAdminTypes.ts` are compile-time types and consumers use explicit
 `import type` or `export type`. The schema/type boundary check enforces these
 rules; fixture and lazy-loading tests verify unchanged data validation.

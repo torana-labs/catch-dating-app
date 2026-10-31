@@ -10,19 +10,29 @@ import {CATCH_RECEIPTS} from "../../catchMessaging/whatsappEndpointStops";
 import type {OperationRun, OperationWorkItem} from "../models";
 import type {ProjectionImportWriter} from "../projectionImporter";
 import {FakeFirestore} from "../testFirestore";
-import {
-  schemaErrorMessages,
-  validateOrganizerDocument,
-  validateOrganizerIntakeReviewDecisionDocument,
-  validateSalesActivityDocument,
-  validateSupplyIntakeRequestsDocument,
-} from "../../shared/generated/schemaValidators";
 import {listingApprovalId} from "../../admin/organizerListingApproval";
 import {AUTO_PUBLISH_ACTOR, autoPublishNominatedListing} from "./autoPublish";
 import {INSTAGRAM_MESSAGE_RECEIPTS} from "../../catchMessaging/instagramInboundRouter";
 import {SUPPLY_NOMINATORS, instagramNominatorId, whatsappNominatorId} from "./nominators";
 import {acceptPageFetch, notFoundTransport} from "./testPageFetch";
 import {processSupplyIntakeRequest, supplyIntakeCollections} from "./worker";
+import type {OrganizerDocument} from "../../shared/generated/organizerDocument";
+import type {OrganizerIntakeReviewDecisionDocument} from
+  "../../shared/generated/organizerIntakeReviewDecisionDocument";
+import {schemaErrorMessages} from
+  "../../shared/generated/schemaValidationRuntime";
+import {contractValidator} from "../../shared/contractTestValidators";
+
+const validateOrganizerDocument =
+  contractValidator<OrganizerDocument>("OrganizerDocument");
+const validateOrganizerIntakeReviewDecisionDocument =
+  contractValidator<OrganizerIntakeReviewDecisionDocument>(
+    "OrganizerIntakeReviewDecisionDocument"
+  );
+const validateSalesActivityDocument =
+  contractValidator("SalesActivityDocument");
+const validateSupplyIntakeRequestsDocument =
+  contractValidator("SupplyIntakeRequestsDocument");
 
 // The build post-step copies the Operations runtime into lib; the worker uses it.
 execFileSync(process.execPath, [path.join(__dirname, "../../../scripts/copy-operations-runtime.cjs")]);

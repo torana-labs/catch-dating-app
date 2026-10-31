@@ -130,3 +130,6 @@ tool/catch_ui_lints_probe
 /fastlane/report.xml
 /fastlane/README.md
 /fastlane/test_output
+
+# Nx local cache and workspace data
+.nx

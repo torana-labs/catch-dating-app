@@ -1,8 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
-import {validatePreviewEventAssignmentFeaturesCallableResponse} from
-  "../shared/generated/validators/previewEventAssignmentFeaturesOutput";
 import {AudienceTestStore} from
   "../organizers/organizerAudienceTestStore";
 import {assignmentFeatureConsentId} from
@@ -12,6 +10,14 @@ import {configureEventAssignmentFeaturesHandler,
   previewEventAssignmentFeaturesHandler,
   setEventAssignmentFeatureConsentHandler} from
   "./assignmentFeatureActions";
+import type {PreviewEventAssignmentFeaturesCallableResponse} from
+  "../shared/generated/previewEventAssignmentFeaturesCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validatePreviewEventAssignmentFeaturesCallableResponse =
+  contractValidator<PreviewEventAssignmentFeaturesCallableResponse>(
+    "PreviewEventAssignmentFeaturesCallableResponse"
+  );
 
 const stamp = {_seconds: 1, _nanoseconds: 0};
 const rule = {featureId: "feature-1", formId: "form-1",

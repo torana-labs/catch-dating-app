@@ -11,8 +11,6 @@ import {validateControlEventRehearsalCallablePayload} from
   "../shared/generated/validators/controlEventRehearsalInput";
 import {validateEventRehearsalMessageDocument} from
   "../shared/generated/validators/eventRehearsalMessageDocument";
-import {validateEventRehearsalBootstrapCallableResponse} from
-  "../shared/generated/validators/eventRehearsalBootstrapOutput";
 import {FakeFirestore} from "../operations/testFirestore";
 import {buildRehearsalActors} from "./engine";
 import {practiceSession, practicePlan, practiceDeparture,
@@ -25,6 +23,14 @@ import {practiceMessageDocumentId, practiceMessageView, practiceDeliveryView,
   readPracticeMessage,
   rehearsalMessages, PracticeMessage} from "./assistanceRuntime";
 import {BRAND} from "../shared/generated/brand";
+import type {EventRehearsalBootstrapCallableResponse} from
+  "../shared/generated/eventRehearsalBootstrapCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateEventRehearsalBootstrapCallableResponse =
+  contractValidator<EventRehearsalBootstrapCallableResponse>(
+    "EventRehearsalBootstrapCallableResponse"
+  );
 
 function organizer(): OrganizerDocument {
   const fixture = JSON.parse(readFileSync(

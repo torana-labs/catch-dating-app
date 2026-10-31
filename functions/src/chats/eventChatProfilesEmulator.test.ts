@@ -7,12 +7,6 @@ import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import type {UpdateEventChatProfileSharingCallablePayload as Payload} from
   "../shared/generated/updateEventChatProfileSharingCallablePayload";
-import {validateGetEventChatProfileCallableResponse as validProfile} from
-  "../shared/generated/validators/getEventChatProfileOutput";
-import {
-  validateGetEventChatProfileSharingCallableResponse as validSettings,
-} from
-  "../shared/generated/validators/getEventChatProfileSharingOutput";
 import {
   getEventChatProfileSharingHandler as settings,
   updateEventChatProfileSharingHandler as update,
@@ -23,6 +17,20 @@ import {
   updateEventChatAccessHandler as access,
 } from "./eventChatAccess";
 import {blockDocId} from "../safety/blocking";
+import type {GetEventChatProfileCallableResponse} from
+  "../shared/generated/getEventChatProfileCallableResponse";
+import type {GetEventChatProfileSharingCallableResponse} from
+  "../shared/generated/getEventChatProfileSharingCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validProfile =
+  contractValidator<GetEventChatProfileCallableResponse>(
+    "GetEventChatProfileCallableResponse"
+  );
+const validSettings =
+  contractValidator<GetEventChatProfileSharingCallableResponse>(
+    "GetEventChatProfileSharingCallableResponse"
+  );
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 test(

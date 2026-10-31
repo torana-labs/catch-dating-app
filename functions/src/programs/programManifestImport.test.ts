@@ -1,17 +1,6 @@
-import {validateWorkspaceFieldAssertionDocument} from
-  "../shared/generated/validators/workspaceFieldAssertionDocument";
+
 import {validateProgramGuestDocument} from
   "../shared/generated/validators/programGuestDocument";
-import {validateProgramTravelLegDocument} from
-  "../shared/generated/validators/programTravelLegDocument";
-import {validateProgramHouseholdDocument} from
-  "../shared/generated/validators/programHouseholdDocument";
-import {validateProgramTravelPartyDocument} from
-  "../shared/generated/validators/programTravelPartyDocument";
-import {validateProgramGuestGroupDocument} from
-  "../shared/generated/validators/programGuestGroupDocument";
-import {validateTransportOperationReceiptDocument} from
-  "../shared/generated/validators/transportOperationReceiptDocument";
 import type {ValidateFunction} from "ajv";
 
 
@@ -22,8 +11,6 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {upsertProgramGuestHandler} from "./programGuests";
 import {validateWorkspaceMembershipAssertionDocument} from
   "../shared/generated/validators/workspaceMembershipAssertionDocument";
-import {validateWorkspaceMembershipDecisionDocument} from
-  "../shared/generated/validators/workspaceMembershipDecisionDocument";
 import {importProgramManifestHandler, importWeddingPhoneContactsHandler} from
   "./programManifestImport";
 import {ProgramTravelLegDocument} from
@@ -32,6 +19,22 @@ import {ProgramTravelLegDocument} from
 import {seed, request, deps, row, ts, NOW} from "./programManifestFixture";
 import {FakeFirestore as MiniFirestore} from
   "../shared/testing/programFirestore";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateWorkspaceFieldAssertionDocument =
+  contractValidator("WorkspaceFieldAssertionDocument");
+const validateProgramTravelLegDocument =
+  contractValidator("ProgramTravelLegDocument");
+const validateProgramHouseholdDocument =
+  contractValidator("ProgramHouseholdDocument");
+const validateProgramTravelPartyDocument =
+  contractValidator("ProgramTravelPartyDocument");
+const validateProgramGuestGroupDocument =
+  contractValidator("ProgramGuestGroupDocument");
+const validateTransportOperationReceiptDocument =
+  contractValidator("TransportOperationReceiptDocument");
+const validateWorkspaceMembershipDecisionDocument =
+  contractValidator("WorkspaceMembershipDecisionDocument");
 
 const validators: Record<string, ValidateFunction> = {
   workspaceFieldAssertions: validateWorkspaceFieldAssertionDocument,

@@ -121,7 +121,8 @@ export function renderCatalogInventory(rows) {
       "| Widget | Source | Role | Canonical concept | Purpose |",
       "|---|---|---|---|---|");
     for (const entry of entries) {
-      output.push(`| ${code(entry.name)} | ${code(`${entry.file}:${entry.line}`)} | ` +
+      // File only: a line number would churn this region on every unrelated edit.
+      output.push(`| ${code(entry.name)} | ${code(entry.file)} | ` +
         `${entry.roleNoun ? code(entry.roleNoun) : "—"} | ` +
         `${entry.conceptId ? code(entry.conceptId) : "—"} | ` +
         `${cell(entry.purpose ?? "No class documentation or registry summary.")}` +

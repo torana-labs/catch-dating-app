@@ -934,7 +934,7 @@ export function observeFunctionBinding({requirement, consumer, functions, projec
   return {status: active ? "ready" : "inactive", reason: active ? "binding-observed" : "consumer-disabled", serviceAccount, reference, active};
 }
 
-// firebase-tools 15.20 resolves SecretParam bindings through latest metadata,
+// firebase-tools 15.34 resolves SecretParam bindings through latest metadata,
 // then deploys the returned numeric version. This is resolution, not an SDK pin.
 export function buildCandidateBindings({environment, projectId, projectNumber, sourceSha,
   requirements, targets, intent, paramsProvenance, runCommand = defaultRunCommand}) {

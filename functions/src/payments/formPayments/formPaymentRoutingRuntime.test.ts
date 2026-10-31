@@ -8,14 +8,20 @@ import {prepareFormPaymentRouting, formPaymentExecutionFor,
 import {reserveFormPayment} from "./formPaymentSubmission";
 import {formPaymentId} from "./formPaymentIdentity";
 import {projectFormPayment} from "./formPaymentProjection";
-import {validateGetOrganizerFormPaymentCallableResponse} from
-  "../../shared/generated/validators/getOrganizerFormPaymentOutput";
 import type {RazorpayPlatformPaymentConfig} from
   "../razorpayPlatformPaymentConfig";
 import {prepareRazorpayCollectionRouting} from "../razorpayCollectionRouting";
 import {organizerPaymentPolicyId} from "../paymentRouting";
 import {commercialTermsRecords, platformTermsDocument, testCommercialTerms} from
   "../../commercialTerms/testFixture";
+import type {GetOrganizerFormPaymentCallableResponse} from
+  "../../shared/generated/getOrganizerFormPaymentCallableResponse";
+import {contractValidator} from "../../shared/contractTestValidators";
+
+const validateGetOrganizerFormPaymentCallableResponse =
+  contractValidator<GetOrganizerFormPaymentCallableResponse>(
+    "GetOrganizerFormPaymentCallableResponse"
+  );
 
 const now = Timestamp.fromMillis(1000);
 const profile: RazorpayPlatformPaymentConfig = {

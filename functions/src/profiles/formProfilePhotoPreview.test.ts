@@ -7,8 +7,14 @@ import {createFormPaymentFixture} from
   "../payments/formPayments/formPaymentTestStore";
 import {getParticipantFormPhotoHandler as preview} from
   "./formProfilePhotoPreview";
-import {validateGetParticipantFormPhotoCallableResponse} from
-  "../shared/generated/validators/getParticipantFormPhotoOutput";
+import type {GetParticipantFormPhotoCallableResponse} from
+  "../shared/generated/getParticipantFormPhotoCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateGetParticipantFormPhotoCallableResponse =
+  contractValidator<GetParticipantFormPhotoCallableResponse>(
+    "GetParticipantFormPhotoCallableResponse"
+  );
 
 async function fixture() {
   const h = createFormPaymentFixture();

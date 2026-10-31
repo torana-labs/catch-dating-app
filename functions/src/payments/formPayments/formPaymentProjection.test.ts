@@ -2,8 +2,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {createFormPaymentFixture} from "./formPaymentTestStore";
 import {projectFormPayment} from "./formPaymentProjection";
-import {validateGetOrganizerFormPaymentCallableResponse} from
-  "../../shared/generated/validators/getOrganizerFormPaymentOutput";
+import type {GetOrganizerFormPaymentCallableResponse} from
+  "../../shared/generated/getOrganizerFormPaymentCallableResponse";
+import {contractValidator} from "../../shared/contractTestValidators";
+
+const validateGetOrganizerFormPaymentCallableResponse =
+  contractValidator<GetOrganizerFormPaymentCallableResponse>(
+    "GetOrganizerFormPaymentCallableResponse"
+  );
 
 test("checkout projection is owner-bound, closed on expiry and secret-free",
   async () => {

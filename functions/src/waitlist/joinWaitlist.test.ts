@@ -15,10 +15,16 @@ import {
 } from "./joinWaitlist";
 import {hostConsentKey, newHostConsentAuthority} from
   "../acquisition/consentPolicy";
-import {
-  validateJoinWaitlistHTTPRequest,
-  validateJoinWaitlistHTTPResponse,
-} from "../shared/generated/schemaValidators";
+import type {JoinWaitlistHTTPRequest} from
+  "../shared/generated/joinWaitlistHttpRequest";
+import type {JoinWaitlistHTTPResponse} from
+  "../shared/generated/joinWaitlistHttpResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateJoinWaitlistHTTPRequest =
+  contractValidator<JoinWaitlistHTTPRequest>("JoinWaitlistHTTPRequest");
+const validateJoinWaitlistHTTPResponse =
+  contractValidator<JoinWaitlistHTTPResponse>("JoinWaitlistHTTPResponse");
 
 const contractRoot = fs.existsSync(path.resolve(process.cwd(), "contracts")) ?
   path.resolve(process.cwd(), "contracts") :

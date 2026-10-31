@@ -11,6 +11,8 @@
   ],
   "scripts": {
     "agent:context": "node tool/agent/context_pack.mjs",
+    "nx:projects": "nx show projects",
+    "nx:graph": "nx graph",
     "repo:hygiene": "node tool/repository_hygiene.mjs --json",
     "repo:hygiene:check": "node tool/check_repository_root_hygiene.mjs",
     "web:admin:dev": "npm --workspace catch-admin run dev",
@@ -66,11 +68,13 @@
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "knip": "6.43.0",
+    "nx": "24.0.3",
     "picomatch": "^4.0.7",
     "pngjs": "^7.0.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "yaml": "2.9.1"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.65.0"

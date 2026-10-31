@@ -10,8 +10,10 @@ import {listProgramGuestsHandler, listProgramHouseholdsHandler,
   upsertProgramGuestHandler,
   upsertProgramHouseholdHandler} from "./programGuests";
 import {importProgramManifestHandler} from "./programManifestImport";
-import {validateProgramHouseholdDocument} from
-  "../shared/generated/validators/programHouseholdDocument";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateProgramHouseholdDocument =
+  contractValidator("ProgramHouseholdDocument");
 
 const household = (members: string[]): FakeData => ({
   programId: "program-1", organizerId: "org-1", label: "Family",

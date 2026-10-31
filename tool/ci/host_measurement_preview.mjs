@@ -82,7 +82,7 @@ export function verifyPostDeployPackage(destination, sourceSha) {
   if (!hasCache) return;
 
   assert.ok(fs.lstatSync(cacheDirectory).isDirectory(), 'Firebase cache must be a directory, not a link');
-  // Pinned firebase-tools 15.20.0 writes this hash cache at the config root after uploading the two public files.
+  // The pinned firebase-tools (tool/ci/toolchain.env) writes this hash cache at the config root after uploading the two public files.
   const cacheName = `hosting.${Buffer.from('measurement-runtime').toString('base64').replace(/=+$/u, '')}.cache`;
   assert.deepEqual(fs.readdirSync(cacheDirectory), [cacheName], 'Unexpected Firebase cache contents');
   const cacheFile = path.join(cacheDirectory, cacheName);
@@ -102,7 +102,7 @@ export function verifyPostDeployPackage(destination, sourceSha) {
     assert.equal(Number(mtime), fs.statSync(path.join(destination, 'measurement-runtime', name)).mtime.getTime(),
       `Stale Firebase cache timestamp: ${name}`);
     assert.match(hash, /^[a-f0-9]{64}$/u, 'Invalid Firebase cache hash');
-    // firebase-tools 15.20.0 Uploader.hashHandler hashes zipStream(): gzip(level 9) bytes.
+    // firebase-tools Uploader.hashHandler hashes zipStream(): gzip(level 9) bytes.
     assert.equal(hash, digest(gzipSync(fs.readFileSync(path.join(destination, 'measurement-runtime', name)), {level: 9})),
       `Stale Firebase cache hash: ${name}`);
     names.push(name);

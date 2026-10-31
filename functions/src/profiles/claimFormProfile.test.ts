@@ -8,12 +8,18 @@ import {claimParticipantFormProfileHandler as claim,
   getParticipantFormProfileHandler as review, reviewedUserProfile} from
   "./claimFormProfile";
 import {listParticipantFormProfilesHandler as list} from "./listFormProfiles";
-import {validateGetParticipantFormProfileCallableResponse} from
-  "../shared/generated/validators/getParticipantFormProfileOutput";
 import {updateUserProfileHandler} from "./updateUserProfile";
 import type {ClaimParticipantFormProfileCallablePayload as Payload} from
   "../shared/generated/claimParticipantFormProfileCallablePayload";
 import type {ProfilePhoto} from "../shared/generated/firestoreAdminTypes";
+import type {GetParticipantFormProfileCallableResponse} from
+  "../shared/generated/getParticipantFormProfileCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateGetParticipantFormProfileCallableResponse =
+  contractValidator<GetParticipantFormProfileCallableResponse>(
+    "GetParticipantFormProfileCallableResponse"
+  );
 
 const now = Timestamp.fromDate(new Date("2026-09-23T12:00:00Z"));
 const profile: Payload["profile"] = {displayName: "Sara Demo",

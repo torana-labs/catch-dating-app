@@ -365,7 +365,7 @@
         "The manifest makes the manual console dependency explicit for future automation.",
         "Host Android Firebase apps were registered on 2026-06-10 and mirror the matching consumer app SHA fingerprints for dev, staging, and prod.",
         "Host App Check provider registrations were verified in Firebase Console on 2026-06-10 for dev, staging, and prod: Android uses Play Integrity, iOS uses App Attest, and web uses reCAPTCHA Enterprise.",
-        "Firebase CLI 15.20.0 and gcloud 566.0.0 do not expose App Check app-management commands in this local toolchain."
+        "Firebase CLI 15.34.2 manages only App Check debug tokens, and gcloud 566.0.0 exposes no App Check app-management commands."
       ]
     },
     {

@@ -9,9 +9,15 @@ import {
   accountBirthDate,
   newAccountProfile,
 } from "./websiteAccount";
-import {validateManageWebsiteAccountCallableResponse} from
-  "../shared/generated/validators/manageWebsiteAccountOutput";
 import {isSocialReadyUserProfile} from "../shared/profileReadiness";
+import type {ManageWebsiteAccountCallableResponse} from
+  "../shared/generated/manageWebsiteAccountCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateManageWebsiteAccountCallableResponse =
+  contractValidator<ManageWebsiteAccountCallableResponse>(
+    "ManageWebsiteAccountCallableResponse"
+  );
 
 const today = new Date("2026-10-18T12:00:00.000Z");
 const phone = "+919876543210";

@@ -9,9 +9,10 @@ import {eventSetupDefaultsDependencies} from
 import {updatePrivateEventDetails, UpdatePrivateEventDetailsCommand} from
   "./details";
 import {ProgressiveSetupDependencies} from "./service";
+import {contractValidator} from "../../shared/contractTestValidators";
 
-import {validateEventSetupReceiptDocument} from
-  "../../shared/generated/validators/eventSetupReceiptDocument";
+const validateEventSetupReceiptDocument =
+  contractValidator("EventSetupReceiptDocument");
 
 type Row = Record<string, unknown>;
 

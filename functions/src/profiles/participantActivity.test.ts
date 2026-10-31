@@ -8,10 +8,20 @@ import {submitOrganizerFormResponseHandler} from
   "../organizers/organizerFormResponses";
 import {getParticipantActivityHandler as detail,
   listParticipantActivityHandler as list} from "./participantActivity";
-import {validateListParticipantActivityCallableResponse} from
-  "../shared/generated/validators/listParticipantActivityOutput";
-import {validateGetParticipantActivityCallableResponse} from
-  "../shared/generated/validators/getParticipantActivityOutput";
+import type {ListParticipantActivityCallableResponse} from
+  "../shared/generated/listParticipantActivityCallableResponse";
+import type {GetParticipantActivityCallableResponse} from
+  "../shared/generated/getParticipantActivityCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateListParticipantActivityCallableResponse =
+  contractValidator<ListParticipantActivityCallableResponse>(
+    "ListParticipantActivityCallableResponse"
+  );
+const validateGetParticipantActivityCallableResponse =
+  contractValidator<GetParticipantActivityCallableResponse>(
+    "GetParticipantActivityCallableResponse"
+  );
 
 const request = (data: unknown, uid = "person") => ({data,
   auth: {uid, token: {}}}) as unknown as CallableRequest<unknown>;

@@ -10,20 +10,42 @@ import type {ProjectionImportWriter} from "../operations/projectionImporter";
 import {FakeFirestore} from "../operations/testFirestore";
 import {acceptPageFetch, notFoundTransport} from "../operations/supplyIntake/testPageFetch";
 import {processSupplyIntakeRequest, supplyIntakeCollections} from "../operations/supplyIntake/worker";
-import {
-  schemaErrorMessages,
-  validateAdminApproveOrganizerListingCallableResponse,
-  validateOrganizerDocument,
-  validateOrganizerIntakeCurationDecisionDocument,
-  validateOrganizerIntakeReviewDecisionDocument,
-  validateOrganizerSalesAccountDocument,
-  validateSalesActivityDocument,
-  validateSalesInboundIntentsDocument,
-  validateSalesOpportunityDocument,
-  validateSalesTaskDocument,
-  validateSupplyIntakeRequestsDocument,
-} from "../shared/generated/schemaValidators";
 import {adminApproveOrganizerListingHandler, listingApprovalId} from "./organizerListingApproval";
+import type {AdminApproveOrganizerListingCallableResponse} from
+  "../shared/generated/adminApproveOrganizerListingCallableResponse";
+import type {OrganizerDocument} from "../shared/generated/organizerDocument";
+import type {OrganizerIntakeCurationDecisionDocument} from
+  "../shared/generated/organizerIntakeCurationDecisionDocument";
+import type {OrganizerIntakeReviewDecisionDocument} from
+  "../shared/generated/organizerIntakeReviewDecisionDocument";
+import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateAdminApproveOrganizerListingCallableResponse =
+  contractValidator<AdminApproveOrganizerListingCallableResponse>(
+    "AdminApproveOrganizerListingCallableResponse"
+  );
+const validateOrganizerDocument =
+  contractValidator<OrganizerDocument>("OrganizerDocument");
+const validateOrganizerIntakeCurationDecisionDocument =
+  contractValidator<OrganizerIntakeCurationDecisionDocument>(
+    "OrganizerIntakeCurationDecisionDocument"
+  );
+const validateOrganizerIntakeReviewDecisionDocument =
+  contractValidator<OrganizerIntakeReviewDecisionDocument>(
+    "OrganizerIntakeReviewDecisionDocument"
+  );
+const validateOrganizerSalesAccountDocument =
+  contractValidator("OrganizerSalesAccountDocument");
+const validateSalesActivityDocument =
+  contractValidator("SalesActivityDocument");
+const validateSalesInboundIntentsDocument =
+  contractValidator("SalesInboundIntentsDocument");
+const validateSalesOpportunityDocument =
+  contractValidator("SalesOpportunityDocument");
+const validateSalesTaskDocument = contractValidator("SalesTaskDocument");
+const validateSupplyIntakeRequestsDocument =
+  contractValidator("SupplyIntakeRequestsDocument");
 
 // The build post-step copies the Operations runtime into lib; the worker uses it.
 execFileSync(process.execPath, [path.join(__dirname, "../../scripts/copy-operations-runtime.cjs")]);

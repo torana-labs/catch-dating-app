@@ -12,9 +12,6 @@ import {
 import {
   validateEventAssistanceCommand,
 } from "../../shared/generated/validators/eventAssistanceCommand";
-import {
-  validateEventAssistanceLateJoinDecision,
-} from "../../shared/generated/validators/eventAssistanceLateJoinDecision";
 import {evaluateLateJoin, parseLateJoinInput} from "./lateJoin";
 import {
   assertCommandContext,
@@ -26,6 +23,14 @@ import {
   isApplicable,
   OperatingCapabilities,
 } from "./catalog";
+import type {EventAssistanceLateJoinDecision} from
+  "../../shared/generated/eventAssistanceLateJoinDecision";
+import {contractValidator} from "../../shared/contractTestValidators";
+
+const validateEventAssistanceLateJoinDecision =
+  contractValidator<EventAssistanceLateJoinDecision>(
+    "EventAssistanceLateJoinDecision"
+  );
 
 function input(): EventAssistanceLateJoinInput {
   return {

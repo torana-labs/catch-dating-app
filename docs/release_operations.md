@@ -1317,85 +1317,92 @@ How a run works:
 - Each environment records the commit it last received as a successful GitHub
   deployment with task `deploy:backend`. To see the newest, run
   `gh api 'repos/torana-labs/catch-dating-app/deployments?environment=prod&task=deploy:backend&per_page=1' -q '.[0].sha'`.
-  It used to be the Git tag `deployed/<environment>`. GitHub refuses
-  `GITHUB_TOKEN` a tag on any commit whose history changes workflow files, so
-  the record moved to deployments on 31 October 2026. The plan still reads the
-  tag on origin while an environment has no `deploy:backend` deployment, and
-  it writes the base to a local `deployed/<environment>` tag for the planner.
-- A run deploys its own exact commit.
-  `tool/firebase/affected_function_targets.mjs --environment <env>` plans the run
-  from the recorded commit:
-  - Functions whose transitive imports changed, plus the index, Firestore-rules
-    or Storage-rules stage when its file changed.
-  - A Function that loads modules dynamically redeploys whenever Functions
-    source or the Operations files copied into its build change.
-  - A `functions/package-lock.json` change redeploys the Functions whose
-    imports reach a changed package, comparing each imported package with
-    everything its dependencies resolve to in the lockfile. A change under a
-    package `index.ts` loads for every Function (`firebase-admin`,
-    `firebase-functions`), or under a package the build runs (TypeScript),
-    deploys everything. ESLint is not a build package: without `--fix` it only
-    reads source. Dependency ranges in `functions/package.json` count only
-    through the lockfile.
-  - Other build or backend `firebase.json` changes, or a missing tag, deploy
-    everything. In `functions/package.json` only package fields and the
-    scripts a deploy runs (install and build lifecycle, `firebase.json`
-    predeploy hooks) count; test and tooling scripts deploy nothing.
-  - Dormant targets stay excluded.
-- The job builds Functions and materializes non-secret parameters from the
-  environment's GitHub variables. It deploys new indexes and waits until they
-  are `READY`. It then deploys the rest through `tool/deploy_firebase_targets.sh`,
-  which handles batches, retries, callable-invoker sync and the parity check.
-  Firebase predeploy test hooks are skipped because required CI already ran them
-  on that commit.
-- After a successful deploy a new deployment records that commit. A run whose
-  commit doesn't contain the recorded one deploys nothing, so the record never
-  moves backwards, and a failed run leaves it unchanged.
-- Automatic runs never start a first deploy. An environment with neither a
-  record nor a tag is skipped until someone runs the workflow manually, which
-  deploys everything. An environment can also be seeded by pushing its
-  `deployed/<environment>` tag at a commit it verifiably matches, from an
-  account with the `workflow` scope. Functions changed after that commit then
-  deploy on the next run.
+  A run whose commit doesn't contain the recorded one deploys nothing, so a
+  re-run of an older commit never replaces a newer one. A failed run leaves the
+  record unchanged.
+- A run deploys its own exact commit. The job builds Functions, materializes
+  non-secret parameters from the environment's GitHub variables, and packages
+  Functions as Firebase codebases with
+  `functions/scripts/build-deploy-codebases.cjs`. It splits the exports of
+  `functions/src/index.ts` by top-level source folder into the codebases listed
+  in `functions/deploy-codebases.json`. Each codebase holds:
+  - the setup statements of `index.ts` (global options, Admin SDK start-up);
+  - an entry whose exports each load their module on first read, so a cold
+    instance loads only the Function Cloud Run calls;
+  - only the compiled files its Functions load, traced by esbuild, plus the
+    Operations runtime when one of them reads files beside itself;
+  - `package.json` and `package-lock.json` cut down to the packages that code
+    imports and their dependencies;
+  - only the `.env` lines whose keys that code names.
+
+  Every exported folder must belong to exactly one codebase; the script fails
+  on a new or stale folder, or on code that reads `process.env[...]` by a
+  computed name. Dormant Functions are left out.
+- The Firebase CLI hashes each codebase's files, its parameters and each
+  Function's secret versions, stores the hash on the Function, and skips every
+  Function whose hash matches. So a change redeploys only the codebases whose
+  files changed. A change to shared code redeploys every codebase that loads
+  it. A dependency bump redeploys the codebases that import the package. A
+  changed variable redeploys the codebases that read it. The CLI runs up to 40
+  updates at once and retries Google's rate limits itself.
+- Order: readiness check, Firestore indexes (then wait until `READY`),
+  Functions, callable-invoker sync and the parity check
+  (`tool/deploy_firebase_targets.sh --functions-postconditions-only`),
+  Firestore and Storage rules, then the rules drift check. Indexes and rules
+  deploy every run; the CLI leaves them unchanged when they match.
+- If the Functions deploy fails, the job retries once with plain `functions`.
+  Everything that deployed the first time now matches its hash and is skipped,
+  so only the failed Functions rebuild.
+- Firebase predeploy test hooks are skipped because required CI already ran
+  them on that commit.
 
 When it runs:
 
 - **Dev:** every merge to `main` that touches backend inputs deploys to dev
   automatically.
-- **Prod:** deploys the same commit automatically once dev succeeds, but only
-  when prod has something to receive.
-- **Staging:** refreshes on the first of each month at 02:17 UTC. Like a push,
-  a scheduled run skips an environment without a deployed tag; only a manual
-  dispatch may bootstrap it.
+- **Prod:** deploys the same commit automatically once dev succeeds.
+- **Staging:** refreshes on the first of each month at 02:17 UTC.
 - **One deploy per environment at a time.** Newer runs wait, and GitHub keeps
-  only the newest waiting run. Each run deploys everything since the tag, so
-  skipping intermediate commits loses nothing.
+  only the newest waiting run. Skipping intermediate commits loses nothing,
+  because the CLI compares against what is live.
 - **Manual runs:** use Actions → Deploy backend → Run workflow for `prod`, `dev`
-  or `staging`. Tick `full` to redeploy every stage and Function, for example
-  after a manual or partial deploy you are unsure about.
-- **Configuration changes:** a changed GitHub variable or switch alters no
-  source, so the plan deploys nothing for it. Run the workflow with
-  `functions` set to the comma-separated Functions that read the parameter
-  (`grep` its `define*` name and the exports that import it). Only those deploy,
-  each from the run's commit, with the environment's current variables. Rules
-  are not checked and the record does not move, so the next normal run still
-  deploys everything changed since the recorded commit.
+  or `staging`. Tick `full` to redeploy every Function even when unchanged, for
+  example after a manual deploy you are unsure about. It names every codebase,
+  which turns off the CLI's skip.
+- **Configuration changes:** a changed GitHub variable reaches the codebases
+  that read it on the next run. To apply it now without deploying the rest of
+  the commit, run the workflow with `functions` set to the comma-separated
+  Functions that read the parameter (`grep` its `define*` name and the exports
+  that import it). Only those deploy, each from the run's commit, with the
+  environment's current variables. Indexes and rules are skipped and the
+  record does not move, so the next normal run still deploys everything changed
+  since the recorded commit.
 
-A manual `./tool/deploy_firebase_targets.sh` deploy leaves the tag unchanged.
-The next run redeploys whatever changed since the tag, which is safe. Recovery
-is fix-forward: merge the fix or re-run the workflow. Rollback follows the
-target-specific steps in this document; the job never reverses remote state.
+Secrets:
 
-Function selection works at module granularity:
-- Each exported Function redeploys when any module it transitively imports
-  changes. Several Functions defined in one file therefore move together.
-- Whole-declaration `import type`/`export type` edges are ignored, because
-  TypeScript erases them; inline type specifiers stay conservative.
-- Generated validators import individual schema modules, so a schema change
-  selects only its consumers.
-- Changes to runtime dependencies, build configuration, global initialization or
-  runtime assets, and any analysis the planner cannot complete, select every
-  Function.
+- Rotating a secret a Function declares with `defineSecret` takes effect at the
+  next deploy: the CLI reads the newest version and rebuilds only the Functions
+  that declare it.
+- Secrets a Function reads itself at runtime, such as the Razorpay partner
+  config, need no deploy.
+
+When the CLI refuses:
+
+- **A Function removed from source.** The deploy stops and prints a
+  `firebase functions:delete` command for each Function it would delete.
+  Delete them, or redeploy the commit after restoring the export, then re-run.
+- **A Function that newly retries on failure.** Firebase deploys it only with
+  `--force`. Run the workflow with `functions` naming it; named runs pass
+  `--force`, which reaches only those exact Functions. A broad run never does,
+  because `--force` would also delete Functions missing from source.
+- **A new Functions folder.** Packaging fails until the folder is added to a
+  codebase in `functions/deploy-codebases.json`. Keep codebases grouped by
+  shared code: a codebase redeploys whenever any file it loads changes.
+
+A manual `./tool/deploy_firebase_targets.sh` deploy leaves the record
+unchanged. Recovery is fix-forward: merge the fix or re-run the workflow.
+Rollback follows the target-specific steps in this document; the job never
+reverses remote state.
 
 Index deploys never receive `--force`, so live composite indexes that are not in
 `firestore.indexes.json` are never deleted. Prod keeps 28 such earlier indexes.
@@ -2324,8 +2331,10 @@ its durable retry scheduler is new and must be proved explicitly:
    postconditions pass. The request id is intentionally required; there is no
    legacy-client fallback or duplicate compatibility path.
 
-`./tool/deploy_firebase_targets.sh` is the bounded stage executor beneath
-`Deploy backend` and an operator-only recovery helper. It plans selected targets in the
+`./tool/deploy_firebase_targets.sh` deploys indexes and rules for
+`Deploy backend` and runs its Functions postconditions; `Deploy backend`
+deploys Functions itself, as codebases. For Functions the script is an
+operator-only recovery helper. It plans selected targets in the
 same index → Functions → Firestore-rules → Storage-rules order regardless of
 the caller's CSV order. The logical `functions` target expands
 deployment-eligible exports from `functions/src/index.ts` into explicit
@@ -2950,7 +2959,7 @@ dumps to Git, reports, or CI logs.
 Readiness has two distinct phases. Candidate preflight parses the approved
 Functions source without executing it, validates names-only parameter provenance,
 and checks the intended runtime identity. For SDK `SecretParam` bindings,
-Firebase CLI 15.20 resolves `latest` and deploys that numeric version; the SDK has
+Firebase CLI 15.34 resolves `latest` and deploys that numeric version; the SDK has
 no supported numeric version option. Preflight uses the same metadata-only
 resolution. Direct-reader contracts still require same-project positive numeric
 references and reject aliases. A disabled selected version fails even when some

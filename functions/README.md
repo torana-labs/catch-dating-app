@@ -527,13 +527,15 @@ enforcement.
 
 ## Request validation
 
-Callable functions that accept structured user input should use a generated
-Ajv validator from `src/shared/generated/schemaValidators.ts` with
-`validateCallableWithAjv(request, validator)` from `src/shared/validation.ts`:
+Callable functions that accept structured user input should use the generated
+Ajv validator module for their payload with
+`validateCallableWithAjv(request, validator)` from `src/shared/validation.ts`.
+A contract gets runtime modules only when its spec name is listed in
+`contracts/functions/runtime_modules.json`; add it there and regenerate.
 
 ```ts
 import {CreateEventCallablePayload} from "../shared/generated/createEventCallablePayload";
-import {validateCreateEventCallablePayload} from "../shared/generated/schemaValidators";
+import {validateCreateEventCallablePayload} from "../shared/generated/validators/createEventInput";
 import {validateCallableWithAjv} from "../shared/validation";
 
 const data = validateCallableWithAjv<CreateEventCallablePayload>(

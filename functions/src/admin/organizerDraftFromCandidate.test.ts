@@ -5,15 +5,27 @@ import {
   adminCreateOrganizerDraftFromCandidateHandler,
 } from "./organizerDraftFromCandidate";
 import {
-  validateAdminCreateOrganizerDraftFromCandidateCallableResponse,
-  validateOrganizerDocument,
-  validateOrganizerIntakeCurationDecisionDocument,
-  schemaErrorMessages,
-} from "../shared/generated/schemaValidators";
-import {
   organizerPublicContentIssues,
   type OrganizerPublicContent,
 } from "../organizers/organizerPublicContent";
+import type {AdminCreateOrganizerDraftFromCandidateCallableResponse} from
+  "../shared/generated/adminCreateOrganizerDraftFromCandidateCallableResponse";
+import type {OrganizerDocument} from "../shared/generated/organizerDocument";
+import type {OrganizerIntakeCurationDecisionDocument} from
+  "../shared/generated/organizerIntakeCurationDecisionDocument";
+import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateAdminCreateOrganizerDraftFromCandidateCallableResponse =
+  contractValidator<AdminCreateOrganizerDraftFromCandidateCallableResponse>(
+    "AdminCreateOrganizerDraftFromCandidateCallableResponse"
+  );
+const validateOrganizerDocument =
+  contractValidator<OrganizerDocument>("OrganizerDocument");
+const validateOrganizerIntakeCurationDecisionDocument =
+  contractValidator<OrganizerIntakeCurationDecisionDocument>(
+    "OrganizerIntakeCurationDecisionDocument"
+  );
 
 type FakeData = Record<string, unknown>;
 

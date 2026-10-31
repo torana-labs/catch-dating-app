@@ -3,12 +3,13 @@ import test from "node:test";
 import type {
   UserProfileDocument,
 } from "./generated/firestoreAdminTypes";
-import {profilePromptCatalog} from "./generated/schemaRegistry";
 import {
   publicDisplayName,
   publicAvatarUrl,
   publicProfileFromUserProfileDoc,
 } from "./profileProjection";
+import {profilePromptCatalog} from "./generated/catalogs/profilePromptCatalog";
+
 
 function timestamp(date: Date) {
   return {toDate: () => date} as FirebaseFirestore.Timestamp;

@@ -31,8 +31,14 @@ import type {
   OrganizerWhatsappMessageDocument,
   PaymentDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {validateCreateOrganizerContactCallablePayload} from
-  "../shared/generated/schemaValidators";
+import type {CreateOrganizerContactCallablePayload} from
+  "../shared/generated/createOrganizerContactCallablePayload";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateCreateOrganizerContactCallablePayload =
+  contractValidator<CreateOrganizerContactCallablePayload>(
+    "CreateOrganizerContactCallablePayload"
+  );
 
 test("customer timeline joins sources newest-first without overstating handoff",
   () => {

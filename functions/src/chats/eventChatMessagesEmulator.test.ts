@@ -10,18 +10,25 @@ import {sendEventChatMessageHandler as send,
   setEventChatReactionHandler as react, setEventChatTypingHandler as typing}
   from "./eventChatMessages";
 import {listEventChatMessagesHandler as list} from "./listEventChatMessages";
-import {validateListEventChatMessagesCallableResponse as validList} from
-  "../shared/generated/validators/listEventChatMessagesOutput";
-import {validateSendEventChatMessageCallableResponse as validSend} from
-  "../shared/generated/validators/sendEventChatMessageOutput";
-import {validateEventChatMessageDocument as validMessage} from
-  "../shared/generated/validators/eventChatMessageDocument";
-import {validateEventChatReactionDocument as validReaction} from
-  "../shared/generated/validators/eventChatReactionDocument";
-import {validateEventChatPresenceDocument as validPresence} from
-  "../shared/generated/validators/eventChatPresenceDocument";
 import {blockDocId} from "../safety/blocking";
 import {chatHash} from "./eventChatMessageShared";
+import type {ListEventChatMessagesCallableResponse} from
+  "../shared/generated/listEventChatMessagesCallableResponse";
+import type {SendEventChatMessageCallableResponse} from
+  "../shared/generated/sendEventChatMessageCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validList =
+  contractValidator<ListEventChatMessagesCallableResponse>(
+    "ListEventChatMessagesCallableResponse"
+  );
+const validSend =
+  contractValidator<SendEventChatMessageCallableResponse>(
+    "SendEventChatMessageCallableResponse"
+  );
+const validMessage = contractValidator("EventChatMessageDocument");
+const validReaction = contractValidator("EventChatReactionDocument");
+const validPresence = contractValidator("EventChatPresenceDocument");
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 test("event messages fence retries, protect replies and expire typing",

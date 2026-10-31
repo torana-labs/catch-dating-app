@@ -10,8 +10,14 @@ import {sendEventChatMessageHandler as send} from "./eventChatMessages";
 import {actOnEventChatMessageHandler as act} from "./eventChatMessageActions";
 import {listEventChatMessagesHandler as list} from "./listEventChatMessages";
 import {blockDocId} from "../safety/blocking";
-import {validateActOnEventChatMessageCallableResponse as valid} from
-  "../shared/generated/validators/actOnEventChatMessageOutput";
+import type {ActOnEventChatMessageCallableResponse} from
+  "../shared/generated/actOnEventChatMessageCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const valid =
+  contractValidator<ActOnEventChatMessageCallableResponse>(
+    "ActOnEventChatMessageCallableResponse"
+  );
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 test("message safety actions enforce authority and replay boundaries",
