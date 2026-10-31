@@ -941,7 +941,7 @@ export function buildCandidateBindings({environment, projectId, projectNumber, s
   const invalid = () => { throw new ReadinessUsageError("Invalid source intent or names-only parameter provenance."); };
   const exactKeys = (value, keys) => value && typeof value === "object" && !Array.isArray(value) &&
     Object.keys(value).sort().join(",") === [...keys].sort().join(",");
-  const refs = ["FORM_RAZORPAY_PARTNER_CONFIG_VERSION", "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
+  const refs = ["RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
     "FLIGHT_PROVIDER_CONFIG_VERSION", "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
     "EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION"];
   const flags = ["CATCH_WHATSAPP_REPLIES_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED", "FLIGHT_PROVIDER_POLICY"];

@@ -18,7 +18,6 @@ export const materializedNonSecretParams = [
   "CATCH_HOST_OPERATOR_ALERTS_SINCE",
   "ALGOLIA_APPLICATION_ID",
   "RAZORPAY_PUBLIC_KEY_ID",
-  "FORM_RAZORPAY_PARTNER_CONFIG_VERSION",
   "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
   "META_WHATSAPP_APP_ID",
   "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID",
@@ -75,13 +74,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
     "ALGOLIA_APPLICATION_ID must be a 10-character application identifier");
   assert(/^rzp_(test|live)_[A-Za-z0-9]+$/.test(razorpayPublicKeyId),
     "RAZORPAY_PUBLIC_KEY_ID must be a Razorpay test or live public key id");
-  const formPartnerVersion = environment.FORM_RAZORPAY_PARTNER_CONFIG_VERSION
-    ?.trim() || "";
   const secretPrefix = `projects/${projectId}/secrets/`;
-  assert(!formPartnerVersion || (formPartnerVersion.startsWith(secretPrefix) &&
-    /^[A-Za-z0-9_-]{1,255}\/versions\/[1-9][0-9]*$/.test(
-      formPartnerVersion.slice(secretPrefix.length))),
-  "FORM_RAZORPAY_PARTNER_CONFIG_VERSION must pin a secret in this project");
   const platformVersion = environment.RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION
     ?.trim() || "";
   assert(!platformVersion || (platformVersion.startsWith(secretPrefix) &&
@@ -275,7 +268,6 @@ function normalizedProviderParams(environment = process.env, projectId) {
     // Distinct names coexist with the SecretParams in immutable older packages.
     ALGOLIA_APPLICATION_ID: algoliaApplicationId,
     RAZORPAY_PUBLIC_KEY_ID: razorpayPublicKeyId,
-    FORM_RAZORPAY_PARTNER_CONFIG_VERSION: formPartnerVersion || " ",
     RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION: platformVersion || " ",
     // Quoted whitespace satisfies legacy Firebase parameter discovery while
     // remaining unconfigured under the source-owned trim checks.
@@ -328,7 +320,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
 }
 
 const referenceNames = Object.freeze([
-  "FORM_RAZORPAY_PARTNER_CONFIG_VERSION", "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
+  "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
   "FLIGHT_PROVIDER_CONFIG_VERSION", "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
   "EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
 ]);

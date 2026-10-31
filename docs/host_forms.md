@@ -520,11 +520,13 @@ Refund recovery uses the same saved amount and `X-Refund-Idempotency` key on
 every retry, following the
 [idempotent refund API](https://razorpay.com/docs/api/refunds/normal-refunds-idempotent).
 
-The deployment remains unconfigured unless its GitHub environment variable
-`FORM_RAZORPAY_PARTNER_CONFIG_VERSION` names a numeric Secret Manager version
-in that same Firebase project. The deploy materializer writes only this
-reference, never the credentials, and rejects cross-project references or
-`latest` aliases. The referenced secret contains exactly `schema`
+The payment Functions read the newest version of the `FORM_RAZORPAY_PARTNER_CONFIG`
+secret in their own project at runtime, so storing a new version takes effect
+within a minute without a deploy. With no version stored, the deployment stays
+unconfigured and form payments are unavailable. Records that start a payment
+keep the exact version they started under (`configurationVersion`) and keep
+reading that version, so earlier versions stay enabled until those payments
+settle. The secret contains exactly `schema`
 (`catch.form-razorpay-partner/v1`), `clientId`, `clientSecret`, `mode` (`test` or
 `live`), and `credentialSecretId` (the pre-created merchant credential vault).
 Grant the Functions runtime access to the partner secret and add/access/disable
@@ -532,7 +534,7 @@ version permissions on that vault. `infra/firebase/form_payments.tf` creates
 both secrets (`FORM_RAZORPAY_PARTNER_CONFIG` and
 `FORM_RAZORPAY_MERCHANT_CREDENTIALS`) and these grants in dev and prod, and
 `infra/scripts/store_razorpay_partner_secret.sh <dev|prod>` stores the partner
-config and pins the version; see
+config; see
 [`infrastructure_as_code.md`](infrastructure_as_code.md#forms-payment-secrets).
 The runtime derives the callback and webhook URLs from
 `https://asia-south1-<project>.cloudfunctions.net`, using

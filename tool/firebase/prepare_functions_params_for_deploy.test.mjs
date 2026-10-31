@@ -35,7 +35,6 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'CATCH_HOST_OPERATOR_ALERTS_SINCE=" "',
     'ALGOLIA_APPLICATION_ID="CATCHDEV01"',
     'RAZORPAY_PUBLIC_KEY_ID="rzp_test_example123"',
-    'FORM_RAZORPAY_PARTNER_CONFIG_VERSION=" "',
     'RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION=" "',
     "META_WHATSAPP_APP_ID=\" \"",
     "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID=\" \"",
@@ -94,7 +93,6 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'CATCH_HOST_OPERATOR_ALERTS_SINCE=" "',
     'ALGOLIA_APPLICATION_ID="CATCHDEV01"',
     'RAZORPAY_PUBLIC_KEY_ID="rzp_test_example123"',
-    'FORM_RAZORPAY_PARTNER_CONFIG_VERSION=" "',
     'RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION=" "',
     "META_WHATSAPP_APP_ID=\" \"",
     "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID=\" \"",
@@ -307,26 +305,6 @@ test("Instagram discovery pins a project-local token and needs Catch's account",
       functionsDir: fixture(), projectId: "catchdates-dev",
       environment: {...publicIds, ...environment},
     }), message);
-  }
-});
-
-test("form partner config is opt-in and pins only a project-local version", () => {
-  const version = "projects/catchdates-dev/secrets/FORM_PARTNER/versions/12";
-  const result = prepareFunctionsParamsForDeploy({
-    functionsDir: fixture(), projectId: "catchdates-dev",
-    environment: {...publicIds, FORM_RAZORPAY_PARTNER_CONFIG_VERSION: version},
-  });
-  assert.ok(fs.readFileSync(result.outputPath, "utf8").includes(
-    `FORM_RAZORPAY_PARTNER_CONFIG_VERSION="${version}"`));
-  for (const value of [version.replace("catchdates-dev", "catchdates-prod"),
-    version.replace("/12", "/latest"), "private-secret-value", `${version}\nx=y`]) {
-    const functionsDir = fixture();
-    assert.throws(() => prepareFunctionsParamsForDeploy({
-      functionsDir, projectId: "catchdates-dev",
-      environment: {...publicIds, FORM_RAZORPAY_PARTNER_CONFIG_VERSION: value},
-    }), /must pin a secret in this project/);
-    assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
-      false);
   }
 });
 
