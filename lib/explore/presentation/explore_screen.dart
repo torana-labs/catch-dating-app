@@ -34,6 +34,7 @@ import 'package:catch_dating_app/platform/firebase/initial_load_policy.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/failed_reads.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -182,7 +183,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       switch (retryTarget) {
         case ExploreScreenRetryTarget.eventFeed:
           ref.invalidate(exploreDiscoveryWindowProvider);
-          ref.invalidate(exploreFeedViewModelProvider);
+          ref.retryFailedReads(
+            feedState.error,
+            composition: exploreFeedViewModelProvider,
+          );
         case ExploreScreenRetryTarget.explore:
         case null:
           ref.invalidate(
@@ -466,7 +470,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               organizersViewModel: bodyState.viewModel,
               filters: visibleFilters,
               searchQuery: query,
-              onRetryFeed: () => ref.invalidate(exploreFeedViewModelProvider),
+              onRetryFeed: () => ref.retryFailedReads(
+                feedState.error,
+                composition: exploreFeedViewModelProvider,
+              ),
               onRetryOrganizers: () =>
                   retryBodyState(ExploreScreenRetryTarget.explore),
               onClearSearch: () =>
@@ -496,7 +503,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 filters: visibleFilters,
                 searchQuery: query,
                 organizerSectionError: bodyState.error,
-                onRetryFeed: () => ref.invalidate(exploreFeedViewModelProvider),
+                onRetryFeed: () => ref.retryFailedReads(
+                  feedState.error,
+                  composition: exploreFeedViewModelProvider,
+                ),
                 onRetryOrganizers: () => retryBodyState(bodyState.retryTarget),
                 onClearSearch: () =>
                     ref.read(exploreSearchQueryProvider.notifier).clear(),
