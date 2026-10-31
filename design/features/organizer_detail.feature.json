@@ -118,7 +118,7 @@
         {
           "id": "retry_detail",
           "owner": "route_screen",
-          "codeValue": "invalidate",
+          "codeValue": "retryFailedReads",
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
@@ -684,7 +684,7 @@
         {
           "id": "retry_detail",
           "owner": "route_screen",
-          "codeValue": "invalidate",
+          "codeValue": "retryFailedReads",
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",

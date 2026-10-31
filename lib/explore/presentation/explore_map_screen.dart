@@ -24,6 +24,7 @@ import 'package:catch_dating_app/platform/device/device_location.dart';
 import 'package:catch_dating_app/platform/device/external_links.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/failed_reads.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -256,7 +257,10 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
               preserveCanvasWhenEmpty: true,
               selectedEventId: _selectedEventId,
               overlay: emptyOverlay,
-              onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
+              onRetry: () => ref.retryFailedReads(
+                feedState.error,
+                composition: exploreFeedViewModelProvider,
+              ),
               onEventSelected: _selectEvent,
               onExternalEventSelected: _selectExternalEvent,
               onSelectionCleared: _clearSelection,

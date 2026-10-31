@@ -22,6 +22,7 @@ import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/failed_reads.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -211,7 +212,10 @@ class OrganizerDetailScreen extends ConsumerWidget {
             onRetry: () {
               switch (retryIntent) {
                 case HostOrganizerDetailRetryIntent.reloadDetail:
-                  ref.invalidate(organizerDetailViewModelProvider(organizerId));
+                  ref.retryFailedReads(
+                    error,
+                    composition: organizerDetailViewModelProvider(organizerId),
+                  );
               }
             },
           ),
