@@ -561,6 +561,15 @@ the asynchronous next-rotation draft trigger. It accepts an integer from 1 to
 10 and defaults to 3 when absent or invalid. This configuration affects retry
 resilience only; rotation publication never performs synchronous generation.
 
+The compiled entry point loads each Function's module the first time its
+export is read. Every Function runs as its own Cloud Run service that reads
+only its own export, so a cold start loads that Function's code instead of
+the whole backend. `scripts/lazy-entry.cjs` rewrites `lib/index.js` after
+`tsc` (the `postbuild` step) and fails the build on any re-export shape it
+cannot defer. `src/index.ts` stays an ordinary list of re-exports, and global
+options still run before any Function is defined. Deploy discovery and the
+emulator read every export, so they load everything as before.
+
 ## Secrets
 
 Razorpay secret definitions live in `src/payments/razorpay.ts`.
