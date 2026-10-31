@@ -15,7 +15,6 @@ export const eventRosterHandoffDocumentSchema: Record<string, unknown> = {
   "x-owner": "createEventRosterHandoff and ingestEventRosterWebhook",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "hostUid",
     "tokenHash",
@@ -27,11 +26,6 @@ export const eventRosterHandoffDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180

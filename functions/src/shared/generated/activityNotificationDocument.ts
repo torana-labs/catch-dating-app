@@ -18,7 +18,6 @@ export interface ActivityNotificationDocument {
     | "waitlistOfferExpired"
     | "eventCancelled"
     | "eventUpdated"
-    | "clubUpdate"
     | "organizerUpdate"
     | "formResponse"
     | "crossPathsInvitation"
@@ -40,7 +39,6 @@ export interface ActivityNotificationDocument {
   } | null;
   matchId?: string | null;
   eventId?: string | null;
-  clubId?: string | null;
   organizerId?: string | null;
   postId?: string | null;
   invitationId?: string | null;

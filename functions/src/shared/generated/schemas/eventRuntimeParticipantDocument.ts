@@ -15,7 +15,6 @@ export const eventRuntimeParticipantDocumentSchema: Record<string, unknown> = {
   "x-owner": "runtime claim/profile callables; owner get only; no client writes or list access",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uid",
     "eventAttendeeId",
@@ -34,11 +33,6 @@ export const eventRuntimeParticipantDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180

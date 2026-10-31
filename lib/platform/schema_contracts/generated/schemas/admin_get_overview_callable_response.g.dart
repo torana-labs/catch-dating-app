@@ -65,8 +65,8 @@ const schemaAdminGetOverviewCallableResponseSchema = <String, Object?>{
         'moderationFlags',
         'eventSafetyReports',
         'accessApplications',
-        'clubClaimRequests',
-        'clubIndexReviews',
+        'organizerClaimRequests',
+        'organizerIndexReviews',
         'paymentIssues',
       ],
       'properties': <String, Object?>{
@@ -278,7 +278,7 @@ const schemaAdminGetOverviewCallableResponseSchema = <String, Object?>{
             },
           },
         },
-        'clubClaimRequests': <String, Object?>{
+        'organizerClaimRequests': <String, Object?>{
           'type': 'array',
           'items': <String, Object?>{
             'type': 'object',
@@ -330,7 +330,7 @@ const schemaAdminGetOverviewCallableResponseSchema = <String, Object?>{
             },
           },
         },
-        'clubIndexReviews': <String, Object?>{
+        'organizerIndexReviews': <String, Object?>{
           'type': 'array',
           'items': <String, Object?>{
             'type': 'object',

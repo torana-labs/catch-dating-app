@@ -7,8 +7,7 @@
  */
 export interface EventSuccessUnitOutcomesDocument {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   unitOutcome: "completion" | "score" | "rank";
   revision: number;
   /**

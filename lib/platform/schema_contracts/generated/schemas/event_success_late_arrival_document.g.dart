@@ -17,7 +17,6 @@ const schemaEventSuccessLateArrivalDocumentSchema = <String, Object?>{
   'x-owner': 'event-success late-arrival callable',
   'required': <Object?>[
     'eventId',
-    'clubId',
     'organizerId',
     'uid',
     'resolvedByUid',
@@ -30,12 +29,6 @@ const schemaEventSuccessLateArrivalDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-      'x-catch-ownership': 'callable-owned',
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

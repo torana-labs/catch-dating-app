@@ -15,7 +15,6 @@ export const eventSuccessLateArrivalDocumentSchema: Record<string, unknown> = {
   "x-owner": "event-success late-arrival callable",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uid",
     "resolvedByUid",
@@ -28,12 +27,6 @@ export const eventSuccessLateArrivalDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

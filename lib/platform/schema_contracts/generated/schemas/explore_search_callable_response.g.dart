@@ -13,20 +13,10 @@ const schemaExploreSearchCallableResponseSchema = <String, Object?>{
   'additionalProperties': false,
   'required': <Object?>[
     'organizerIds',
-    'clubIds',
     'eventIds',
   ],
   'properties': <String, Object?>{
     'organizerIds': <String, Object?>{
-      'type': 'array',
-      'maxItems': 50,
-      'items': <String, Object?>{
-        'type': 'string',
-        'minLength': 1,
-        'maxLength': 256,
-      },
-    },
-    'clubIds': <String, Object?>{
       'type': 'array',
       'maxItems': 50,
       'items': <String, Object?>{

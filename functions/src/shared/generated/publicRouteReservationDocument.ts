@@ -47,8 +47,6 @@ export interface PublicRouteReservationDocument {
   };
   lastVerifiedByUid: string;
   lastVerifiedSource:
-    | "adminUpdateClubDetails"
-    | "adminSetClubIndexStatus"
     | "adminUpdateOrganizerDetails"
     | "adminSetOrganizerIndexStatus"
     | "adminCreateOrganizerDraftFromCandidate"

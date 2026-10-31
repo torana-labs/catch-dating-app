@@ -52,7 +52,7 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
       "type": "string",
       "enum": [
         "unclaimedScraped",
-        "appCreatedClub"
+        "appCreatedOrganizer"
       ]
     },
     "dataOrigin": {

@@ -16,9 +16,7 @@ export interface HostAnalyticsCallableResponse {
   };
   scope: {
     organizerIds: string[];
-    clubIds: string[];
     eventIds: string[];
-    clubName?: string | null;
     organizerName?: string | null;
     eventTitle?: string | null;
   };
@@ -43,8 +41,7 @@ export interface HostAnalyticsCallableResponse {
    */
   topEvents: {
     eventId: string;
-    clubId: string;
-    organizerId?: string;
+    organizerId: string;
     title: string;
     startTime: string;
     status: string;

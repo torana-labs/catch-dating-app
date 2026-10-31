@@ -7,7 +7,6 @@
  */
 export interface AdminListEventDetailsCallablePayload {
   query?: string | null;
-  clubId?: string | null;
   organizerId?: string | null;
   citySlug?: string | null;
   citySlugs?: string[] | null;

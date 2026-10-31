@@ -71,19 +71,10 @@ export const hostAnalyticsCallableResponseSchema: Record<string, unknown> = {
       "additionalProperties": false,
       "required": [
         "organizerIds",
-        "clubIds",
         "eventIds"
       ],
       "properties": {
         "organizerIds": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
-          }
-        },
-        "clubIds": {
           "type": "array",
           "items": {
             "type": "string",
@@ -98,13 +89,6 @@ export const hostAnalyticsCallableResponseSchema: Record<string, unknown> = {
             "minLength": 1,
             "maxLength": 180
           }
-        },
-        "clubName": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 160
         },
         "organizerName": {
           "type": [
@@ -217,7 +201,7 @@ export const hostAnalyticsCallableResponseSchema: Record<string, unknown> = {
         "additionalProperties": false,
         "required": [
           "eventId",
-          "clubId",
+          "organizerId",
           "title",
           "startTime",
           "status",
@@ -244,11 +228,6 @@ export const hostAnalyticsCallableResponseSchema: Record<string, unknown> = {
         ],
         "properties": {
           "eventId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
-          },
-          "clubId": {
             "type": "string",
             "minLength": 1,
             "maxLength": 180

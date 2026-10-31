@@ -15,7 +15,6 @@ export const eventRuntimeClaimRequestDocumentSchema: Record<string, unknown> = {
   "x-owner": "runtime claim and Host approval callables; no client writes",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uid",
     "displayName",
@@ -30,11 +29,6 @@ export const eventRuntimeClaimRequestDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180

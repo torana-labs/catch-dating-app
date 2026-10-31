@@ -7,7 +7,6 @@
  */
 export interface EventRuntimeParticipantDocument {
   eventId: string;
-  clubId: string;
   organizerId: string;
   uid: string;
   eventAttendeeId: string | null;

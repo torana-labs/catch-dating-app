@@ -22,7 +22,7 @@ export const eventDocumentSchema: Record<string, unknown> = {
     "demoOpsCommand"
   ],
   "required": [
-    "clubId",
+    "organizerId",
     "startTime",
     "bookedCount",
     "checkedInCount",
@@ -40,12 +40,6 @@ export const eventDocumentSchema: Record<string, unknown> = {
       "minLength": 1,
       "maxLength": 120,
       "description": "Organizer-authored event name. Legacy documents may omit it and use the client-derived fallback title.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
       "x-catch-ownership": "callable-owned"
     },
     "organizerId": {
@@ -2140,7 +2134,7 @@ export const eventDocumentSchema: Record<string, unknown> = {
       },
       "else": {
         "required": [
-          "clubId",
+          "organizerId",
           "startTime",
           "endTime",
           "meetingPoint",

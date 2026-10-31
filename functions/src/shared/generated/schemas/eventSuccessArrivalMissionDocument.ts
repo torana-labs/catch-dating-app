@@ -23,7 +23,7 @@ export const eventSuccessArrivalMissionDocumentSchema: Record<string, unknown> =
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "observerUid",
     "targetUid",
     "targetDisplayName",
@@ -38,12 +38,6 @@ export const eventSuccessArrivalMissionDocumentSchema: Record<string, unknown> =
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

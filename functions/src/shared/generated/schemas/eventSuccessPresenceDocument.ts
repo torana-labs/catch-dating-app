@@ -15,7 +15,6 @@ export const eventSuccessPresenceDocumentSchema: Record<string, unknown> = {
   "x-owner": "event-success heartbeat callable",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uid",
     "surface",
@@ -25,12 +24,6 @@ export const eventSuccessPresenceDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

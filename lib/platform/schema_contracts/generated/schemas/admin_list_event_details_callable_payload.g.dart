@@ -19,18 +19,6 @@ const schemaAdminListEventDetailsCallablePayloadSchema = <String, Object?>{
       ],
       'maxLength': 160,
     },
-    'clubId': <String, Object?>{
-      'anyOf': <Object?>[
-        <String, Object?>{
-          'type': 'string',
-          'minLength': 1,
-          'maxLength': 180,
-        },
-        <String, Object?>{
-          'type': 'null',
-        },
-      ],
-    },
     'organizerId': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{

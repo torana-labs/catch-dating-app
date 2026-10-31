@@ -17,18 +17,6 @@ export const adminListEventDetailsCallablePayloadSchema: Record<string, unknown>
       ],
       "maxLength": 160
     },
-    "clubId": {
-      "anyOf": [
-        {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
     "organizerId": {
       "anyOf": [
         {

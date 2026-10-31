@@ -343,7 +343,7 @@ export const organizerIntakeCurationDecisionDocumentSchema: Record<string, unkno
                 "type": "string",
                 "enum": [
                   "hostDiscoveryRun",
-                  "seedClub",
+                  "seedOrganizer",
                   "userReportedSearchResult",
                   "manualNote"
                 ]
@@ -603,7 +603,7 @@ export const organizerIntakeCurationDecisionDocumentSchema: Record<string, unkno
                 "type": "string",
                 "enum": [
                   "hostDiscoveryRun",
-                  "seedClub",
+                  "seedOrganizer",
                   "userReportedSearchResult",
                   "manualNote"
                 ]
@@ -642,7 +642,7 @@ export const organizerIntakeCurationDecisionDocumentSchema: Record<string, unkno
           "type": "string",
           "enum": [
             "hostDiscoveryRun",
-            "seedClub",
+            "seedOrganizer",
             "userReportedSearchResult",
             "manualNote"
           ]

@@ -7,8 +7,7 @@
  */
 export interface EventSuccessWingmanRequestDocument {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   requesterUid: string;
   targetUid: string;
   status: "active" | "withdrawn";

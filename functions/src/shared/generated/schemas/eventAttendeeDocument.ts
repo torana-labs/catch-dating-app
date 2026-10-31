@@ -15,7 +15,6 @@ export const eventAttendeeDocumentSchema: Record<string, unknown> = {
   "x-owner": "standalone Host roster, Catch-booking projection, public registration, and attendance callables",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "displayName",
     "searchName",
@@ -40,11 +39,6 @@ export const eventAttendeeDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180

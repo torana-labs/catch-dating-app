@@ -9,7 +9,6 @@
 final class RecordOrganizerAnalyticsEventCallableRequest {
   const RecordOrganizerAnalyticsEventCallableRequest({
     required this.organizerId,
-    this.clubId,
     this.eventId,
     required this.eventName,
     this.linkId,
@@ -21,7 +20,6 @@ final class RecordOrganizerAnalyticsEventCallableRequest {
   });
 
   final String organizerId;
-  final String? clubId;
   final String? eventId;
   final String eventName;
   final String? linkId;
@@ -33,7 +31,6 @@ final class RecordOrganizerAnalyticsEventCallableRequest {
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
-    'clubId': ?clubId,
     'eventId': ?eventId,
     'eventName': eventName,
     'linkId': ?linkId,

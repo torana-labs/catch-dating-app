@@ -7,8 +7,7 @@
  */
 export interface EventSuccessPreferenceDocument {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   uid: string;
   microPodsOptedOut: boolean;
   guidedRotationsOptedOut: boolean;

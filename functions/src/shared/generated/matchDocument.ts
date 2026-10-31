@@ -39,8 +39,7 @@ export interface MatchDocument {
    * @maxItems 2
    */
   participantIds: string[];
-  conversationType?: "match" | "clubHostInquiry" | "crossPathsEventPlan";
-  clubId?: string;
+  conversationType?: "match" | "organizerHostInquiry" | "crossPathsEventPlan";
   organizerId?: string;
   crossPathsInvitationId?: string;
   /**

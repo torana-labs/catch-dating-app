@@ -17,7 +17,6 @@ const schemaEventSuccessConversationGraphDocumentSchema = <String, Object?>{
   'x-owner': 'subject attendee read; conversation graph callable write',
   'required': <Object?>[
     'eventId',
-    'clubId',
     'organizerId',
     'uid',
     'status',
@@ -30,12 +29,6 @@ const schemaEventSuccessConversationGraphDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-      'x-catch-ownership': 'callable-owned',
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

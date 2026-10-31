@@ -59,9 +59,8 @@ export interface OrganizerDocument {
   };
   imageUrl: string | null;
   profileImageUrl: string | null;
-  clubPhotos?: UploadedPhoto[];
   /**
-   * Canonical organizer gallery. clubPhotos is tolerated only while released clients migrate.
+   * Canonical organizer gallery. organizerPhotos is tolerated only while released clients migrate.
    */
   organizerPhotos: UploadedPhoto[];
   logoPhoto?: UploadedPhoto | null;
@@ -400,8 +399,8 @@ export interface OrganizerDocument {
     updatedBySource:
       | "adminCreateOrganizerDraftFromCandidate"
       | "adminApproveOrganizerListing"
-      | "adminUpdateClubDetails"
-      | "adminSetClubIndexStatus"
+      | "adminUpdateOrganizerDetails"
+      | "adminSetOrganizerIndexStatus"
       | "adminOrganizerSearchBackfill";
   };
   /**

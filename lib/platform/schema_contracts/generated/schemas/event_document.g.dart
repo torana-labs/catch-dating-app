@@ -24,7 +24,7 @@ const schemaEventDocumentSchema = <String, Object?>{
     'demoOpsCommand',
   ],
   'required': <Object?>[
-    'clubId',
+    'organizerId',
     'startTime',
     'bookedCount',
     'checkedInCount',
@@ -42,12 +42,6 @@ const schemaEventDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 120,
       'description': 'Organizer-authored event name. Legacy documents may omit it and use the client-derived fallback title.',
-      'x-catch-ownership': 'callable-owned',
-    },
-    'clubId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
       'x-catch-ownership': 'callable-owned',
     },
     'organizerId': <String, Object?>{
@@ -2142,7 +2136,7 @@ const schemaEventDocumentSchema = <String, Object?>{
       },
       'else': <String, Object?>{
         'required': <Object?>[
-          'clubId',
+          'organizerId',
           'startTime',
           'endTime',
           'meetingPoint',

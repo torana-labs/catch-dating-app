@@ -1973,7 +1973,7 @@ const schemaOrganizerPublicPageDocumentSchema = <String, Object?>{
                 'type': 'string',
                 'enum': <Object?>[
                   'unclaimedScraped',
-                  'appCreatedClub',
+                  'appCreatedOrganizer',
                 ],
               },
               'dataOrigin': <String, Object?>{
@@ -4550,7 +4550,7 @@ const schemaOrganizerPublicPageDocumentSchema = <String, Object?>{
               'type': 'string',
               'enum': <Object?>[
                 'unclaimedScraped',
-                'appCreatedClub',
+                'appCreatedOrganizer',
               ],
             },
             'dataOrigin': <String, Object?>{

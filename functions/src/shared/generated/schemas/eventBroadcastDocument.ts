@@ -15,7 +15,7 @@ export const eventBroadcastDocumentSchema: Record<string, unknown> = {
   "x-owner": "sendEventBroadcast callable",
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "actorUid",
     "audience",
     "title",
@@ -39,12 +39,6 @@ export const eventBroadcastDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "server-only"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

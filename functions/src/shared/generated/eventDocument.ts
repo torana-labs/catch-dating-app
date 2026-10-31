@@ -17,8 +17,7 @@ export type EventDocument = {
    * Organizer-authored event name. Legacy documents may omit it and use the client-derived fallback title.
    */
   name?: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   /**
    * Optional organizer venue used to prefill this event. Meeting location and capacity remain event-local snapshots.
    */

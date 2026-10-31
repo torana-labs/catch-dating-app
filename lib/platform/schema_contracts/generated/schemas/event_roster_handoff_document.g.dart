@@ -17,7 +17,6 @@ const schemaEventRosterHandoffDocumentSchema = <String, Object?>{
   'x-owner': 'createEventRosterHandoff and ingestEventRosterWebhook',
   'required': <Object?>[
     'eventId',
-    'clubId',
     'organizerId',
     'hostUid',
     'tokenHash',
@@ -29,11 +28,6 @@ const schemaEventRosterHandoffDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

@@ -242,7 +242,7 @@ const schemaAdminRecordOrganizerCurationCallablePayloadSchema = <String, Object?
                 'type': 'string',
                 'enum': <Object?>[
                   'hostDiscoveryRun',
-                  'seedClub',
+                  'seedOrganizer',
                   'userReportedSearchResult',
                   'manualNote',
                 ],
@@ -457,7 +457,7 @@ const schemaAdminRecordOrganizerCurationCallablePayloadSchema = <String, Object?
                 'type': 'string',
                 'enum': <Object?>[
                   'hostDiscoveryRun',
-                  'seedClub',
+                  'seedOrganizer',
                   'userReportedSearchResult',
                   'manualNote',
                 ],
@@ -496,7 +496,7 @@ const schemaAdminRecordOrganizerCurationCallablePayloadSchema = <String, Object?
           'type': 'string',
           'enum': <Object?>[
             'hostDiscoveryRun',
-            'seedClub',
+            'seedOrganizer',
             'userReportedSearchResult',
             'manualNote',
           ],

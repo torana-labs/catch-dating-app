@@ -27,7 +27,7 @@ export interface HostProfileDocument {
   /**
    * @maxItems 20
    */
-  linkedClubIds?: string[];
+  linkedOrganizerIds?: string[];
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

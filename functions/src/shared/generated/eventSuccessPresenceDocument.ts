@@ -7,7 +7,6 @@
  */
 export interface EventSuccessPresenceDocument {
   eventId: string;
-  clubId: string;
   organizerId: string;
   uid: string;
   surface: "flutter" | "web";

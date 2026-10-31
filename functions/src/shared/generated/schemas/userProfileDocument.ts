@@ -32,7 +32,7 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
     "prefsMessages",
     "prefsEventReminders",
     "prefsRunStatusUpdates",
-    "prefsClubUpdates",
+    "prefsOrganizerUpdates",
     "prefsWeeklyDigest",
     "prefsShowOnMap"
   ],
@@ -756,7 +756,7 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
       "type": "boolean",
       "x-catch-ownership": "client-writable"
     },
-    "prefsClubUpdates": {
+    "prefsOrganizerUpdates": {
       "type": "boolean",
       "x-catch-ownership": "client-writable"
     },

@@ -23,7 +23,7 @@ export const eventSuccessScorecardDocumentSchema: Record<string, unknown> = {
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "bookedCount",
     "checkedInCount",
     "feedbackCount",
@@ -42,12 +42,6 @@ export const eventSuccessScorecardDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "trigger-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

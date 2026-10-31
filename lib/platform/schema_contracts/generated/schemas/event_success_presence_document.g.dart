@@ -17,7 +17,6 @@ const schemaEventSuccessPresenceDocumentSchema = <String, Object?>{
   'x-owner': 'event-success heartbeat callable',
   'required': <Object?>[
     'eventId',
-    'clubId',
     'organizerId',
     'uid',
     'surface',
@@ -27,12 +26,6 @@ const schemaEventSuccessPresenceDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-      'x-catch-ownership': 'callable-owned',
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

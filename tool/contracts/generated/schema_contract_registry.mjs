@@ -153509,7 +153509,7 @@ export const userProfileDocumentSchema = {
     "prefsMessages",
     "prefsEventReminders",
     "prefsRunStatusUpdates",
-    "prefsClubUpdates",
+    "prefsOrganizerUpdates",
     "prefsWeeklyDigest",
     "prefsShowOnMap"
   ],
@@ -154233,7 +154233,7 @@ export const userProfileDocumentSchema = {
       "type": "boolean",
       "x-catch-ownership": "client-writable"
     },
-    "prefsClubUpdates": {
+    "prefsOrganizerUpdates": {
       "type": "boolean",
       "x-catch-ownership": "client-writable"
     },
@@ -154968,7 +154968,7 @@ export const hostProfileDocumentSchema = {
     "verified": {
       "type": "boolean"
     },
-    "linkedClubIds": {
+    "linkedOrganizerIds": {
       "type": "array",
       "maxItems": 20,
       "uniqueItems": true,
@@ -155019,2388 +155019,6 @@ export const hostProfileDocumentSchema = {
       }
     }
   }
-};
-
-export const clubDocumentSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/clubs.schema.json",
-  "title": "ClubDocument",
-  "description": "Legacy storage contract for an organizer document stored at clubs/{clubId} during the clubs-to-organizers migration. The organizer id is the document id and is not stored in document data.",
-  "type": "object",
-  "additionalProperties": false,
-  "x-firestore-collection": "clubs",
-  "x-firestore-path": "clubs/{clubId}",
-  "x-document-id-field": "id",
-  "x-owner": "create/update/archive/delete club callables; aggregate projections are trigger-owned",
-  "x-internal-demo-fields": [
-    "synthetic",
-    "seedPrefix",
-    "scenario",
-    "demoOps",
-    "demoOpsId",
-    "demoOpsCommand"
-  ],
-  "required": [
-    "name",
-    "description",
-    "location",
-    "locationCityId",
-    "locationMarketId",
-    "area",
-    "hostUserId",
-    "hostName",
-    "hostAvatarUrl",
-    "ownerUserId",
-    "hostUserIds",
-    "hostProfiles",
-    "createdAt",
-    "imageUrl",
-    "profileImageUrl",
-    "tags",
-    "memberCount",
-    "rating",
-    "reviewCount",
-    "nextEventAt",
-    "nextEventLabel",
-    "instagramHandle",
-    "phoneNumber",
-    "email",
-    "status",
-    "archived",
-    "archivedAt",
-    "archiveReason"
-  ],
-  "properties": {
-    "name": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120,
-      "x-catch-ownership": "callable-owned"
-    },
-    "description": {
-      "type": "string",
-      "maxLength": 2000,
-      "description": "Member-facing organizer description. May be empty on hidden intake drafts until an operator supplies source-backed copy.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "location": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120,
-      "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$",
-      "description": "Canonical launch market id. Public URL slugs live under publicPage.citySlug.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "locationCityId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120,
-      "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$",
-      "x-catch-ownership": "callable-owned"
-    },
-    "locationMarketId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120,
-      "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$",
-      "x-catch-ownership": "callable-owned"
-    },
-    "area": {
-      "type": "string",
-      "maxLength": 120,
-      "description": "Verified locality within the canonical market. May be empty when intake evidence establishes only the city.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "hostUserId": {
-      "anyOf": [
-        {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "description": "Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "hostName": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 120,
-      "description": "Legacy host display projection. Null when the organizer has not been claimed by a Catch user.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "hostAvatarUrl": {
-      "anyOf": [
-        {
-          "type": "string",
-          "format": "uri",
-          "maxLength": 2048
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "x-catch-ownership": "callable-owned"
-    },
-    "ownerUserId": {
-      "anyOf": [
-        {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "description": "Canonical owner user id after claim or user-created setup. Null for unclaimed programmatic profiles.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "hostUserIds": {
-      "type": "array",
-      "maxItems": 20,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 180
-      },
-      "x-catch-ownership": "callable-owned"
-    },
-    "hostProfiles": {
-      "type": "array",
-      "maxItems": 20,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "uid",
-          "displayName",
-          "avatarUrl",
-          "role"
-        ],
-        "properties": {
-          "uid": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
-          },
-          "displayName": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 120
-          },
-          "avatarUrl": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uri",
-                "maxLength": 2048
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "role": {
-            "type": "string",
-            "enum": [
-              "owner",
-              "host"
-            ]
-          }
-        }
-      },
-      "x-catch-ownership": "callable-owned"
-    },
-    "createdAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
-        },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
-        }
-      },
-      "x-catch-ownership": "callable-owned"
-    },
-    "imageUrl": {
-      "anyOf": [
-        {
-          "type": "string",
-          "format": "uri",
-          "maxLength": 2048
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "x-catch-ownership": "callable-owned"
-    },
-    "profileImageUrl": {
-      "anyOf": [
-        {
-          "type": "string",
-          "format": "uri",
-          "maxLength": 2048
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubPhotos": {
-      "type": "array",
-      "items": {
-        "title": "UploadedPhoto",
-        "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "url",
-          "storagePath",
-          "thumbnailUrl",
-          "thumbnailStoragePath",
-          "position",
-          "createdAt",
-          "updatedAt"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 120,
-            "pattern": "^[A-Za-z0-9_-]+$"
-          },
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "maxLength": 2048
-          },
-          "storagePath": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 512,
-            "pattern": "^[^/\\u0000][^\\u0000]*$"
-          },
-          "thumbnailUrl": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uri",
-                "maxLength": 2048
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "thumbnailStoragePath": {
-            "anyOf": [
-              {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 512,
-                "pattern": "^[^/\\u0000][^\\u0000]*$"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "position": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "moderation": {
-            "type": [
-              "object",
-              "null"
-            ],
-            "additionalProperties": false,
-            "required": [
-              "status"
-            ],
-            "properties": {
-              "status": {
-                "type": "string",
-                "enum": [
-                  "pending",
-                  "approved",
-                  "rejected"
-                ]
-              },
-              "reason": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 240
-              },
-              "reviewedAt": {
-                "anyOf": [
-                  {
-                    "type": "object",
-                    "description": "Serialized Firestore Timestamp fixture shape.",
-                    "x-firestore-type": "timestamp",
-                    "additionalProperties": false,
-                    "required": [
-                      "_seconds",
-                      "_nanoseconds"
-                    ],
-                    "properties": {
-                      "_seconds": {
-                        "type": "integer"
-                      },
-                      "_nanoseconds": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 999999999
-                      }
-                    }
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              }
-            }
-          },
-          "createdAt": {
-            "type": "object",
-            "description": "Serialized Firestore Timestamp fixture shape.",
-            "x-firestore-type": "timestamp",
-            "additionalProperties": false,
-            "required": [
-              "_seconds",
-              "_nanoseconds"
-            ],
-            "properties": {
-              "_seconds": {
-                "type": "integer"
-              },
-              "_nanoseconds": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 999999999
-              }
-            }
-          },
-          "updatedAt": {
-            "type": "object",
-            "description": "Serialized Firestore Timestamp fixture shape.",
-            "x-firestore-type": "timestamp",
-            "additionalProperties": false,
-            "required": [
-              "_seconds",
-              "_nanoseconds"
-            ],
-            "properties": {
-              "_seconds": {
-                "type": "integer"
-              },
-              "_nanoseconds": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 999999999
-              }
-            }
-          }
-        },
-        "definitions": {
-          "storageObjectPath": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 512,
-            "pattern": "^[^/\\u0000][^\\u0000]*$"
-          }
-        }
-      },
-      "x-catch-ownership": "callable-owned"
-    },
-    "logoPhoto": {
-      "anyOf": [
-        {
-          "title": "UploadedPhoto",
-          "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "id",
-            "url",
-            "storagePath",
-            "thumbnailUrl",
-            "thumbnailStoragePath",
-            "position",
-            "createdAt",
-            "updatedAt"
-          ],
-          "properties": {
-            "id": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 120,
-              "pattern": "^[A-Za-z0-9_-]+$"
-            },
-            "url": {
-              "type": "string",
-              "format": "uri",
-              "maxLength": 2048
-            },
-            "storagePath": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 512,
-              "pattern": "^[^/\\u0000][^\\u0000]*$"
-            },
-            "thumbnailUrl": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "uri",
-                  "maxLength": 2048
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "thumbnailStoragePath": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512,
-                  "pattern": "^[^/\\u0000][^\\u0000]*$"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "position": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "moderation": {
-              "type": [
-                "object",
-                "null"
-              ],
-              "additionalProperties": false,
-              "required": [
-                "status"
-              ],
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "enum": [
-                    "pending",
-                    "approved",
-                    "rejected"
-                  ]
-                },
-                "reason": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 240
-                },
-                "reviewedAt": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "description": "Serialized Firestore Timestamp fixture shape.",
-                      "x-firestore-type": "timestamp",
-                      "additionalProperties": false,
-                      "required": [
-                        "_seconds",
-                        "_nanoseconds"
-                      ],
-                      "properties": {
-                        "_seconds": {
-                          "type": "integer"
-                        },
-                        "_nanoseconds": {
-                          "type": "integer",
-                          "minimum": 0,
-                          "maximum": 999999999
-                        }
-                      }
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                }
-              }
-            },
-            "createdAt": {
-              "type": "object",
-              "description": "Serialized Firestore Timestamp fixture shape.",
-              "x-firestore-type": "timestamp",
-              "additionalProperties": false,
-              "required": [
-                "_seconds",
-                "_nanoseconds"
-              ],
-              "properties": {
-                "_seconds": {
-                  "type": "integer"
-                },
-                "_nanoseconds": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 999999999
-                }
-              }
-            },
-            "updatedAt": {
-              "type": "object",
-              "description": "Serialized Firestore Timestamp fixture shape.",
-              "x-firestore-type": "timestamp",
-              "additionalProperties": false,
-              "required": [
-                "_seconds",
-                "_nanoseconds"
-              ],
-              "properties": {
-                "_seconds": {
-                  "type": "integer"
-                },
-                "_nanoseconds": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 999999999
-                }
-              }
-            }
-          },
-          "definitions": {
-            "storageObjectPath": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 512,
-              "pattern": "^[^/\\u0000][^\\u0000]*$"
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "x-catch-ownership": "callable-owned"
-    },
-    "tags": {
-      "type": "array",
-      "maxItems": 20,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 80
-      },
-      "x-catch-ownership": "callable-owned"
-    },
-    "memberCount": {
-      "type": "integer",
-      "minimum": 0,
-      "x-catch-ownership": "trigger-owned"
-    },
-    "rating": {
-      "type": "number",
-      "minimum": 0,
-      "maximum": 5,
-      "x-catch-ownership": "trigger-owned"
-    },
-    "reviewCount": {
-      "type": "integer",
-      "minimum": 0,
-      "x-catch-ownership": "trigger-owned"
-    },
-    "verifiedReviewCount": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "Published reviews that are verified (attended a Catch event). Only these back the headline rating; unverified public reviews cannot move the score.",
-      "x-catch-ownership": "trigger-owned"
-    },
-    "nextEventAt": {
-      "anyOf": [
-        {
-          "type": "object",
-          "description": "Serialized Firestore Timestamp fixture shape.",
-          "x-firestore-type": "timestamp",
-          "additionalProperties": false,
-          "required": [
-            "_seconds",
-            "_nanoseconds"
-          ],
-          "properties": {
-            "_seconds": {
-              "type": "integer"
-            },
-            "_nanoseconds": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 999999999
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "x-catch-ownership": "trigger-owned"
-    },
-    "nextEventLabel": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 240,
-      "x-catch-ownership": "trigger-owned"
-    },
-    "instagramHandle": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 320,
-      "x-catch-ownership": "callable-owned"
-    },
-    "phoneNumber": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 320,
-      "x-catch-ownership": "callable-owned"
-    },
-    "email": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 320,
-      "x-catch-ownership": "callable-owned"
-    },
-    "status": {
-      "type": "string",
-      "enum": [
-        "active",
-        "archived"
-      ],
-      "x-catch-ownership": "callable-owned"
-    },
-    "archived": {
-      "type": "boolean",
-      "x-catch-ownership": "callable-owned"
-    },
-    "archivedAt": {
-      "anyOf": [
-        {
-          "type": "object",
-          "description": "Serialized Firestore Timestamp fixture shape.",
-          "x-firestore-type": "timestamp",
-          "additionalProperties": false,
-          "required": [
-            "_seconds",
-            "_nanoseconds"
-          ],
-          "properties": {
-            "_seconds": {
-              "type": "integer"
-            },
-            "_nanoseconds": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 999999999
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "x-catch-ownership": "callable-owned"
-    },
-    "archiveReason": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 500,
-      "x-catch-ownership": "callable-owned"
-    },
-    "hostDefaults": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "primaryActivityKind": {
-          "type": "string",
-          "enum": [
-            "socialRun",
-            "running",
-            "walking",
-            "pickleball",
-            "padel",
-            "tennis",
-            "badminton",
-            "cycling",
-            "spinClass",
-            "yoga",
-            "strengthTraining",
-            "pubQuiz",
-            "barCrawl",
-            "dinner",
-            "singlesMixer",
-            "openActivity"
-          ]
-        },
-        "supportedActivityKinds": {
-          "type": "array",
-          "maxItems": 16,
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [
-              "socialRun",
-              "running",
-              "walking",
-              "pickleball",
-              "padel",
-              "tennis",
-              "badminton",
-              "cycling",
-              "spinClass",
-              "yoga",
-              "strengthTraining",
-              "pubQuiz",
-              "barCrawl",
-              "dinner",
-              "singlesMixer",
-              "openActivity"
-            ]
-          }
-        },
-        "eventPolicy": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "admissionPreset": {
-              "type": "string",
-              "enum": [
-                "openCapacity",
-                "inviteOnly",
-                "balancedSingles",
-                "fixedCohortCaps"
-              ]
-            },
-            "minAge": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 120
-            },
-            "maxAge": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 120
-            },
-            "maxMen": {
-              "type": [
-                "integer",
-                "null"
-              ],
-              "minimum": 0
-            },
-            "maxWomen": {
-              "type": [
-                "integer",
-                "null"
-              ],
-              "minimum": 0
-            },
-            "dynamicPricingEnabled": {
-              "type": "boolean"
-            },
-            "crossPathsPairCapacity": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 100
-            },
-            "dynamicPricingStepInPaise": {
-              "type": [
-                "integer",
-                "null"
-              ],
-              "minimum": 0,
-              "maximum": 100000000
-            },
-            "dynamicPricingMaxInPaise": {
-              "type": [
-                "integer",
-                "null"
-              ],
-              "minimum": 0,
-              "maximum": 100000000
-            },
-            "cancellationPolicyId": {
-              "type": "string",
-              "enum": [
-                "flexible",
-                "standard",
-                "strict"
-              ]
-            }
-          }
-        },
-        "eventSuccess": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "enabled": {
-              "type": "boolean"
-            },
-            "layoutId": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
-            },
-            "playbookId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 120
-            },
-            "selectedModuleIds": {
-              "type": "array",
-              "maxItems": 24,
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 120
-              }
-            },
-            "moduleSelectionConfigured": {
-              "type": "boolean"
-            },
-            "structureConfig": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "unitKind",
-                "unitSize",
-                "revealCountdownSeconds"
-              ],
-              "properties": {
-                "unitKind": {
-                  "type": "string",
-                  "enum": [
-                    "wholeGroup",
-                    "pods",
-                    "pairs",
-                    "teams",
-                    "tables"
-                  ]
-                },
-                "unitSize": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 1000
-                },
-                "unitCount": {
-                  "type": [
-                    "integer",
-                    "null"
-                  ],
-                  "minimum": 1,
-                  "maximum": 200
-                },
-                "rotationIntervalMinutes": {
-                  "type": [
-                    "integer",
-                    "null"
-                  ],
-                  "minimum": 5,
-                  "maximum": 180
-                },
-                "topology": {
-                  "type": "string",
-                  "enum": [
-                    "set",
-                    "sequence",
-                    "adjacency"
-                  ]
-                },
-                "resourceCapacity": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "concurrentUnits",
-                        "resourceLabelId",
-                        "seatsPerUnit"
-                      ],
-                      "properties": {
-                        "concurrentUnits": {
-                          "type": [
-                            "integer",
-                            "null"
-                          ],
-                          "minimum": 1,
-                          "maximum": 200
-                        },
-                        "resourceLabelId": {
-                          "type": "string",
-                          "enum": [
-                            "court",
-                            "table",
-                            "lane",
-                            "board"
-                          ]
-                        },
-                        "seatsPerUnit": {
-                          "type": [
-                            "integer",
-                            "null"
-                          ],
-                          "minimum": 1,
-                          "maximum": 1000
-                        }
-                      }
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                },
-                "revealCountdownSeconds": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 60
-                },
-                "rotationRepeatStrategy": {
-                  "type": "string",
-                  "enum": [
-                    "avoid",
-                    "allowWhenExhausted"
-                  ]
-                },
-                "maxPairMeetings": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 10
-                },
-                "balanceActivityAttributes": {
-                  "type": "array",
-                  "maxItems": 8,
-                  "uniqueItems": true,
-                  "items": {
-                    "type": "string",
-                    "enum": [
-                      "paceBand",
-                      "skillBand",
-                      "roleBand"
-                    ]
-                  }
-                },
-                "clusterActivityAttributes": {
-                  "type": "array",
-                  "maxItems": 8,
-                  "uniqueItems": true,
-                  "items": {
-                    "type": "string",
-                    "enum": [
-                      "paceBand",
-                      "skillBand",
-                      "roleBand"
-                    ]
-                  }
-                }
-              },
-              "allOf": [
-                {
-                  "if": {
-                    "required": [
-                      "resourceCapacity"
-                    ],
-                    "properties": {
-                      "resourceCapacity": {
-                        "type": "object",
-                        "required": [
-                          "seatsPerUnit"
-                        ],
-                        "properties": {
-                          "seatsPerUnit": {
-                            "type": "integer"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "then": {
-                    "required": [
-                      "topology"
-                    ],
-                    "properties": {
-                      "topology": {
-                        "const": "adjacency"
-                      }
-                    }
-                  }
-                }
-              ]
-            },
-            "hostGoal": {
-              "type": "string",
-              "maxLength": 300
-            },
-            "wingmanRequestsEnabled": {
-              "type": "boolean"
-            },
-            "contextualOpenersEnabled": {
-              "type": "boolean"
-            },
-            "compatibilityAffectsRanking": {
-              "type": "boolean"
-            },
-            "questionnaireConfig": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "templateId"
-              ],
-              "properties": {
-                "templateId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 120
-                },
-                "customTitle": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 80
-                },
-                "customQuestions": {
-                  "type": "array",
-                  "maxItems": 8,
-                  "items": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "id",
-                      "prompt",
-                      "options"
-                    ],
-                    "properties": {
-                      "id": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 120
-                      },
-                      "prompt": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 140
-                      },
-                      "options": {
-                        "type": "array",
-                        "minItems": 2,
-                        "maxItems": 5,
-                        "items": {
-                          "type": "object",
-                          "additionalProperties": false,
-                          "required": [
-                            "id",
-                            "label"
-                          ],
-                          "properties": {
-                            "id": {
-                              "type": "string",
-                              "minLength": 1,
-                              "maxLength": 120
-                            },
-                            "label": {
-                              "type": "string",
-                              "minLength": 1,
-                              "maxLength": 80
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "attendeePrompt": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 300
-            }
-          }
-        },
-        "eventSuccessByActivityKind": {
-          "type": "object",
-          "maxProperties": 16,
-          "additionalProperties": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "enabled": {
-                "type": "boolean"
-              },
-              "layoutId": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
-              },
-              "playbookId": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 120
-              },
-              "selectedModuleIds": {
-                "type": "array",
-                "maxItems": 24,
-                "items": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 120
-                }
-              },
-              "moduleSelectionConfigured": {
-                "type": "boolean"
-              },
-              "structureConfig": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "unitKind",
-                  "unitSize",
-                  "revealCountdownSeconds"
-                ],
-                "properties": {
-                  "unitKind": {
-                    "type": "string",
-                    "enum": [
-                      "wholeGroup",
-                      "pods",
-                      "pairs",
-                      "teams",
-                      "tables"
-                    ]
-                  },
-                  "unitSize": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 1000
-                  },
-                  "unitCount": {
-                    "type": [
-                      "integer",
-                      "null"
-                    ],
-                    "minimum": 1,
-                    "maximum": 200
-                  },
-                  "rotationIntervalMinutes": {
-                    "type": [
-                      "integer",
-                      "null"
-                    ],
-                    "minimum": 5,
-                    "maximum": 180
-                  },
-                  "topology": {
-                    "type": "string",
-                    "enum": [
-                      "set",
-                      "sequence",
-                      "adjacency"
-                    ]
-                  },
-                  "resourceCapacity": {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "required": [
-                          "concurrentUnits",
-                          "resourceLabelId",
-                          "seatsPerUnit"
-                        ],
-                        "properties": {
-                          "concurrentUnits": {
-                            "type": [
-                              "integer",
-                              "null"
-                            ],
-                            "minimum": 1,
-                            "maximum": 200
-                          },
-                          "resourceLabelId": {
-                            "type": "string",
-                            "enum": [
-                              "court",
-                              "table",
-                              "lane",
-                              "board"
-                            ]
-                          },
-                          "seatsPerUnit": {
-                            "type": [
-                              "integer",
-                              "null"
-                            ],
-                            "minimum": 1,
-                            "maximum": 1000
-                          }
-                        }
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
-                  "revealCountdownSeconds": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 60
-                  },
-                  "rotationRepeatStrategy": {
-                    "type": "string",
-                    "enum": [
-                      "avoid",
-                      "allowWhenExhausted"
-                    ]
-                  },
-                  "maxPairMeetings": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 10
-                  },
-                  "balanceActivityAttributes": {
-                    "type": "array",
-                    "maxItems": 8,
-                    "uniqueItems": true,
-                    "items": {
-                      "type": "string",
-                      "enum": [
-                        "paceBand",
-                        "skillBand",
-                        "roleBand"
-                      ]
-                    }
-                  },
-                  "clusterActivityAttributes": {
-                    "type": "array",
-                    "maxItems": 8,
-                    "uniqueItems": true,
-                    "items": {
-                      "type": "string",
-                      "enum": [
-                        "paceBand",
-                        "skillBand",
-                        "roleBand"
-                      ]
-                    }
-                  }
-                },
-                "allOf": [
-                  {
-                    "if": {
-                      "required": [
-                        "resourceCapacity"
-                      ],
-                      "properties": {
-                        "resourceCapacity": {
-                          "type": "object",
-                          "required": [
-                            "seatsPerUnit"
-                          ],
-                          "properties": {
-                            "seatsPerUnit": {
-                              "type": "integer"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "then": {
-                      "required": [
-                        "topology"
-                      ],
-                      "properties": {
-                        "topology": {
-                          "const": "adjacency"
-                        }
-                      }
-                    }
-                  }
-                ]
-              },
-              "hostGoal": {
-                "type": "string",
-                "maxLength": 300
-              },
-              "wingmanRequestsEnabled": {
-                "type": "boolean"
-              },
-              "contextualOpenersEnabled": {
-                "type": "boolean"
-              },
-              "compatibilityAffectsRanking": {
-                "type": "boolean"
-              },
-              "questionnaireConfig": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "templateId"
-                ],
-                "properties": {
-                  "templateId": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 120
-                  },
-                  "customTitle": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "maxLength": 80
-                  },
-                  "customQuestions": {
-                    "type": "array",
-                    "maxItems": 8,
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "id",
-                        "prompt",
-                        "options"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 120
-                        },
-                        "prompt": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 140
-                        },
-                        "options": {
-                          "type": "array",
-                          "minItems": 2,
-                          "maxItems": 5,
-                          "items": {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "required": [
-                              "id",
-                              "label"
-                            ],
-                            "properties": {
-                              "id": {
-                                "type": "string",
-                                "minLength": 1,
-                                "maxLength": 120
-                              },
-                              "label": {
-                                "type": "string",
-                                "minLength": 1,
-                                "maxLength": 80
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "attendeePrompt": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 300
-              }
-            }
-          }
-        }
-      },
-      "x-catch-ownership": "callable-owned"
-    },
-    "organizerType": {
-      "type": "string",
-      "enum": [
-        "club",
-        "community",
-        "individual",
-        "eventProducer",
-        "venue",
-        "brand"
-      ],
-      "description": "Canonical organizer subtype. Legacy documents without this field normalize to club until backfill is complete.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "organizerTypeUpdatedAt": {
-      "anyOf": [
-        {
-          "type": "object",
-          "description": "Serialized Firestore Timestamp fixture shape.",
-          "x-firestore-type": "timestamp",
-          "additionalProperties": false,
-          "required": [
-            "_seconds",
-            "_nanoseconds"
-          ],
-          "properties": {
-            "_seconds": {
-              "type": "integer"
-            },
-            "_nanoseconds": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 999999999
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "description": "Server-owned timestamp of the latest organizer type decision.",
-      "x-catch-ownership": "server-only"
-    },
-    "organizerTypeUpdatedByUid": {
-      "anyOf": [
-        {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "description": "Server-owned user id that made the latest organizer type decision.",
-      "x-catch-ownership": "server-only"
-    },
-    "publicCategoryLabel": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 120,
-      "description": "Optional admin-curated public category copy. It never replaces organizerType as the classification authority.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "entityKind": {
-      "type": "string",
-      "enum": [
-        "club",
-        "venue",
-        "eventOrganizer",
-        "creatorCommunity",
-        "brand"
-      ],
-      "description": "Deprecated organizer classification retained only while legacy data and clients are migrated to organizerType.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "entitySubtypes": {
-      "type": "array",
-      "maxItems": 20,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 80
-      },
-      "description": "Deprecated free-form organizer classification retained only for migration reads.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "displayCategory": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 120,
-      "description": "Deprecated reader-facing category label retained until publicCategoryLabel migration is complete.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "cityName": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 120,
-      "x-catch-ownership": "callable-owned"
-    },
-    "regionName": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 120,
-      "x-catch-ownership": "callable-owned"
-    },
-    "countryCode": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "pattern": "^[A-Z]{2}$",
-      "x-catch-ownership": "callable-owned"
-    },
-    "countryName": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 120,
-      "x-catch-ownership": "callable-owned"
-    },
-    "appVisibility": {
-      "type": "string",
-      "enum": [
-        "discoverable",
-        "hidden"
-      ],
-      "description": "Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "supplyCapabilities": {
-      "title": "OrganizerSupplyCapabilities",
-      "description": "Compatibility shadow of the canonical organizer member-affordance ceiling.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "mode",
-        "bookable",
-        "paymentsEnabled",
-        "waitlistEnabled",
-        "hostContactEnabled",
-        "claimable",
-        "reviewPolicy"
-      ],
-      "properties": {
-        "mode": {
-          "type": "string",
-          "enum": [
-            "unclaimed_read_only",
-            "claimed_managed"
-          ]
-        },
-        "bookable": {
-          "type": "boolean"
-        },
-        "paymentsEnabled": {
-          "type": "boolean"
-        },
-        "waitlistEnabled": {
-          "type": "boolean"
-        },
-        "hostContactEnabled": {
-          "type": "boolean"
-        },
-        "claimable": {
-          "type": "boolean"
-        },
-        "reviewPolicy": {
-          "type": "string",
-          "enum": [
-            "after_event_end",
-            "attended_event_only"
-          ]
-        }
-      },
-      "oneOf": [
-        {
-          "properties": {
-            "mode": {
-              "const": "unclaimed_read_only"
-            },
-            "bookable": {
-              "const": false
-            },
-            "paymentsEnabled": {
-              "const": false
-            },
-            "waitlistEnabled": {
-              "const": false
-            },
-            "hostContactEnabled": {
-              "const": false
-            },
-            "reviewPolicy": {
-              "const": "after_event_end"
-            }
-          },
-          "required": [
-            "mode",
-            "bookable",
-            "paymentsEnabled",
-            "waitlistEnabled",
-            "hostContactEnabled",
-            "reviewPolicy"
-          ]
-        },
-        {
-          "properties": {
-            "mode": {
-              "const": "claimed_managed"
-            },
-            "bookable": {
-              "const": true
-            },
-            "paymentsEnabled": {
-              "const": true
-            },
-            "waitlistEnabled": {
-              "const": true
-            },
-            "hostContactEnabled": {
-              "const": true
-            },
-            "claimable": {
-              "const": false
-            },
-            "reviewPolicy": {
-              "const": "attended_event_only"
-            }
-          },
-          "required": [
-            "mode",
-            "bookable",
-            "paymentsEnabled",
-            "waitlistEnabled",
-            "hostContactEnabled",
-            "claimable",
-            "reviewPolicy"
-          ]
-        }
-      ],
-      "x-catch-ownership": "callable-owned"
-    },
-    "ownership": {
-      "type": "object",
-      "additionalProperties": false,
-      "description": "Claim-aware organizer ownership state. This is the forward-looking owner model; legacy host fields are maintained for app compatibility.",
-      "required": [
-        "state",
-        "ownerUserId",
-        "primaryHostUserId",
-        "hostUserIds",
-        "claimedAt",
-        "claimedByUid"
-      ],
-      "properties": {
-        "state": {
-          "type": "string",
-          "enum": [
-            "programmatic",
-            "userCreated",
-            "claimed",
-            "transferred"
-          ]
-        },
-        "ownerUserId": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 180
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "primaryHostUserId": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 180
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "hostUserIds": {
-          "type": "array",
-          "maxItems": 20,
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
-          }
-        },
-        "claimedAt": {
-          "anyOf": [
-            {
-              "type": "object",
-              "description": "Serialized Firestore Timestamp fixture shape.",
-              "x-firestore-type": "timestamp",
-              "additionalProperties": false,
-              "required": [
-                "_seconds",
-                "_nanoseconds"
-              ],
-              "properties": {
-                "_seconds": {
-                  "type": "integer"
-                },
-                "_nanoseconds": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 999999999
-                }
-              }
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "claimedByUid": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 180
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      },
-      "x-catch-ownership": "callable-owned"
-    },
-    "claim": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "state",
-        "claimHref",
-        "lastClaimRequestId"
-      ],
-      "properties": {
-        "state": {
-          "type": "string",
-          "enum": [
-            "unclaimed",
-            "claimPending",
-            "claimed",
-            "verified",
-            "suppressed"
-          ]
-        },
-        "claimHref": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 240
-        },
-        "lastClaimRequestId": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 180
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      },
-      "x-catch-ownership": "callable-owned"
-    },
-    "publicPage": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "slug",
-        "citySlug",
-        "canonicalPath",
-        "publishStatus",
-        "indexStatus",
-        "robots",
-        "seoTitle",
-        "seoDescription",
-        "lastRenderedAt"
-      ],
-      "properties": {
-        "slug": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 160,
-          "pattern": "^[a-z0-9-]+$"
-        },
-        "citySlug": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 80,
-          "pattern": "^[a-z0-9-]+$"
-        },
-        "canonicalPath": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 240
-        },
-        "publishStatus": {
-          "type": "string",
-          "enum": [
-            "draft",
-            "qa",
-            "published",
-            "suppressed",
-            "removed"
-          ]
-        },
-        "indexStatus": {
-          "type": "string",
-          "enum": [
-            "noindex",
-            "indexReady",
-            "indexed"
-          ]
-        },
-        "robots": {
-          "type": "string",
-          "enum": [
-            "noindex, follow",
-            "index, follow"
-          ]
-        },
-        "seoTitle": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 120
-        },
-        "seoDescription": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 320
-        },
-        "lastRenderedAt": {
-          "anyOf": [
-            {
-              "type": "object",
-              "description": "Serialized Firestore Timestamp fixture shape.",
-              "x-firestore-type": "timestamp",
-              "additionalProperties": false,
-              "required": [
-                "_seconds",
-                "_nanoseconds"
-              ],
-              "properties": {
-                "_seconds": {
-                  "type": "integer"
-                },
-                "_nanoseconds": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 999999999
-                }
-              }
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "indexReview": {
-          "type": [
-            "object",
-            "null"
-          ],
-          "additionalProperties": false,
-          "required": [
-            "reviewedAt",
-            "reviewedByUid",
-            "indexStatus",
-            "checklist",
-            "reviewNote"
-          ],
-          "properties": {
-            "reviewedAt": {
-              "type": "object",
-              "description": "Serialized Firestore Timestamp fixture shape.",
-              "x-firestore-type": "timestamp",
-              "additionalProperties": false,
-              "required": [
-                "_seconds",
-                "_nanoseconds"
-              ],
-              "properties": {
-                "_seconds": {
-                  "type": "integer"
-                },
-                "_nanoseconds": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 999999999
-                }
-              }
-            },
-            "reviewedByUid": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 180
-            },
-            "indexStatus": {
-              "type": "string",
-              "enum": [
-                "noindex",
-                "indexReady",
-                "indexed"
-              ]
-            },
-            "checklist": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "sourceEvidenceVerified",
-                "mediaRightsVerified",
-                "cadenceVerified",
-                "ownerContactVerified"
-              ],
-              "properties": {
-                "sourceEvidenceVerified": {
-                  "type": "boolean"
-                },
-                "mediaRightsVerified": {
-                  "type": "boolean"
-                },
-                "cadenceVerified": {
-                  "type": "boolean"
-                },
-                "ownerContactVerified": {
-                  "type": "boolean"
-                }
-              }
-            },
-            "reviewNote": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 1000
-            }
-          }
-        }
-      },
-      "x-catch-ownership": "callable-owned"
-    },
-    "provenance": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "origin",
-        "sourceConfidence",
-        "verificationStatus",
-        "lastVerifiedAt"
-      ],
-      "properties": {
-        "origin": {
-          "type": "string",
-          "enum": [
-            "userCreated",
-            "scraper",
-            "adminSeed",
-            "import"
-          ]
-        },
-        "sourceConfidence": {
-          "type": "string",
-          "enum": [
-            "seedOnly",
-            "low",
-            "medium",
-            "high",
-            "ownerVerified"
-          ]
-        },
-        "verificationStatus": {
-          "type": "string",
-          "enum": [
-            "unverified",
-            "sourceBacked",
-            "ownerVerified"
-          ]
-        },
-        "lastVerifiedAt": {
-          "anyOf": [
-            {
-              "type": "object",
-              "description": "Serialized Firestore Timestamp fixture shape.",
-              "x-firestore-type": "timestamp",
-              "additionalProperties": false,
-              "required": [
-                "_seconds",
-                "_nanoseconds"
-              ],
-              "properties": {
-                "_seconds": {
-                  "type": "integer"
-                },
-                "_nanoseconds": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 999999999
-                }
-              }
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      },
-      "x-catch-ownership": "server-only"
-    },
-    "adminSearch": {
-      "type": "object",
-      "additionalProperties": false,
-      "description": "Server-owned deterministic search projection used by admin organizer publishing. Rebuildable from canonical club fields; not consumed by the app.",
-      "required": [
-        "tokens",
-        "sortKey",
-        "updatedAt",
-        "updatedBySource"
-      ],
-      "properties": {
-        "tokens": {
-          "type": "array",
-          "maxItems": 120,
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 80,
-            "pattern": "^[a-z0-9-]+$"
-          }
-        },
-        "sortKey": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 160,
-          "pattern": "^[a-z0-9-]+(?:-[a-z0-9-]+)*$"
-        },
-        "updatedAt": {
-          "type": "object",
-          "description": "Serialized Firestore Timestamp fixture shape.",
-          "x-firestore-type": "timestamp",
-          "additionalProperties": false,
-          "required": [
-            "_seconds",
-            "_nanoseconds"
-          ],
-          "properties": {
-            "_seconds": {
-              "type": "integer"
-            },
-            "_nanoseconds": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 999999999
-            }
-          }
-        },
-        "updatedBySource": {
-          "type": "string",
-          "enum": [
-            "adminUpdateClubDetails",
-            "adminSetClubIndexStatus",
-            "adminOrganizerSearchBackfill",
-            "adminCreateOrganizerDraftFromCandidate"
-          ]
-        }
-      },
-      "x-catch-ownership": "server-only"
-    },
-    "publicProfile": {
-      "type": "object",
-      "additionalProperties": false,
-      "description": "Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.",
-      "properties": {
-        "headline": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 160
-        },
-        "summary": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 800
-        },
-        "sourceSummary": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 800
-        },
-        "formats": {
-          "type": "array",
-          "maxItems": 12,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 80
-          }
-        },
-        "facts": {
-          "type": "array",
-          "maxItems": 20,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "label",
-              "value"
-            ],
-            "properties": {
-              "label": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 80
-              },
-              "value": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 240
-              }
-            }
-          }
-        },
-        "eventEvidence": {
-          "type": "array",
-          "maxItems": 12,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "title",
-              "date",
-              "location",
-              "summary",
-              "facts",
-              "sourceLabel",
-              "sourceHref"
-            ],
-            "properties": {
-              "title": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 160
-              },
-              "date": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 120
-              },
-              "location": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 240
-              },
-              "summary": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 600
-              },
-              "facts": {
-                "type": "array",
-                "maxItems": 12,
-                "items": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 240
-                }
-              },
-              "sourceLabel": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 120
-              },
-              "sourceHref": {
-                "type": "string",
-                "format": "uri",
-                "maxLength": 2048
-              }
-            }
-          }
-        }
-      },
-      "x-catch-ownership": "callable-owned"
-    },
-    "publicSources": {
-      "type": "array",
-      "maxItems": 20,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "type",
-          "label",
-          "detail",
-          "href",
-          "confidence",
-          "lastCheckedAt"
-        ],
-        "properties": {
-          "type": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 80
-          },
-          "label": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 120
-          },
-          "detail": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 600
-          },
-          "href": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uri",
-                "maxLength": 2048
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "confidence": {
-            "type": "string",
-            "enum": [
-              "low",
-              "medium",
-              "high"
-            ]
-          },
-          "lastCheckedAt": {
-            "anyOf": [
-              {
-                "type": "object",
-                "description": "Serialized Firestore Timestamp fixture shape.",
-                "x-firestore-type": "timestamp",
-                "additionalProperties": false,
-                "required": [
-                  "_seconds",
-                  "_nanoseconds"
-                ],
-                "properties": {
-                  "_seconds": {
-                    "type": "integer"
-                  },
-                  "_nanoseconds": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 999999999
-                  }
-                }
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        }
-      },
-      "x-catch-ownership": "server-only"
-    },
-    "synthetic": {
-      "type": "boolean",
-      "description": "Internal demo seed marker used for cleanup and diagnostics."
-    },
-    "seedPrefix": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120,
-      "description": "Internal demo seed prefix used for cleanup and diagnostics."
-    },
-    "scenario": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120,
-      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
-    },
-    "demoOps": {
-      "type": "boolean",
-      "description": "Internal demo-operations marker used for cleanup and diagnostics."
-    },
-    "demoOpsId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "description": "Internal demo-operations id used for cleanup and diagnostics."
-    },
-    "demoOpsCommand": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 80,
-      "description": "Internal demo-operations command name used for cleanup and diagnostics."
-    }
-  },
-  "x-legacy-tolerated-fields": [
-    "entityKind",
-    "entitySubtypes",
-    "displayCategory"
-  ]
 };
 
 export const organizerDocumentSchema = {
@@ -157649,176 +155267,6 @@ export const organizerDocumentSchema = {
       ],
       "x-catch-ownership": "callable-owned"
     },
-    "clubPhotos": {
-      "type": "array",
-      "items": {
-        "title": "UploadedPhoto",
-        "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "url",
-          "storagePath",
-          "thumbnailUrl",
-          "thumbnailStoragePath",
-          "position",
-          "createdAt",
-          "updatedAt"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 120,
-            "pattern": "^[A-Za-z0-9_-]+$"
-          },
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "maxLength": 2048
-          },
-          "storagePath": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 512,
-            "pattern": "^[^/\\u0000][^\\u0000]*$"
-          },
-          "thumbnailUrl": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uri",
-                "maxLength": 2048
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "thumbnailStoragePath": {
-            "anyOf": [
-              {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 512,
-                "pattern": "^[^/\\u0000][^\\u0000]*$"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "position": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "moderation": {
-            "type": [
-              "object",
-              "null"
-            ],
-            "additionalProperties": false,
-            "required": [
-              "status"
-            ],
-            "properties": {
-              "status": {
-                "type": "string",
-                "enum": [
-                  "pending",
-                  "approved",
-                  "rejected"
-                ]
-              },
-              "reason": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 240
-              },
-              "reviewedAt": {
-                "anyOf": [
-                  {
-                    "type": "object",
-                    "description": "Serialized Firestore Timestamp fixture shape.",
-                    "x-firestore-type": "timestamp",
-                    "additionalProperties": false,
-                    "required": [
-                      "_seconds",
-                      "_nanoseconds"
-                    ],
-                    "properties": {
-                      "_seconds": {
-                        "type": "integer"
-                      },
-                      "_nanoseconds": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 999999999
-                      }
-                    }
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              }
-            }
-          },
-          "createdAt": {
-            "type": "object",
-            "description": "Serialized Firestore Timestamp fixture shape.",
-            "x-firestore-type": "timestamp",
-            "additionalProperties": false,
-            "required": [
-              "_seconds",
-              "_nanoseconds"
-            ],
-            "properties": {
-              "_seconds": {
-                "type": "integer"
-              },
-              "_nanoseconds": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 999999999
-              }
-            }
-          },
-          "updatedAt": {
-            "type": "object",
-            "description": "Serialized Firestore Timestamp fixture shape.",
-            "x-firestore-type": "timestamp",
-            "additionalProperties": false,
-            "required": [
-              "_seconds",
-              "_nanoseconds"
-            ],
-            "properties": {
-              "_seconds": {
-                "type": "integer"
-              },
-              "_nanoseconds": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 999999999
-              }
-            }
-          }
-        },
-        "definitions": {
-          "storageObjectPath": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 512,
-            "pattern": "^[^/\\u0000][^\\u0000]*$"
-          }
-        }
-      },
-      "x-catch-ownership": "callable-owned"
-    },
     "organizerPhotos": {
       "type": "array",
       "items": {
@@ -157987,7 +155435,7 @@ export const organizerDocumentSchema = {
           }
         }
       },
-      "description": "Canonical organizer gallery. clubPhotos is tolerated only while released clients migrate.",
+      "description": "Canonical organizer gallery. organizerPhotos is tolerated only while released clients migrate.",
       "x-catch-ownership": "callable-owned"
     },
     "logoPhoto": {
@@ -159865,8 +157313,8 @@ export const organizerDocumentSchema = {
           "enum": [
             "adminCreateOrganizerDraftFromCandidate",
             "adminApproveOrganizerListing",
-            "adminUpdateClubDetails",
-            "adminSetClubIndexStatus",
+            "adminUpdateOrganizerDetails",
+            "adminSetOrganizerIndexStatus",
             "adminOrganizerSearchBackfill"
           ]
         }
@@ -160203,7 +157651,7 @@ export const organizerDocumentSchema = {
     }
   },
   "x-legacy-tolerated-fields": [
-    "clubPhotos",
+    "organizerPhotos",
     "memberCount",
     "entityKind",
     "entitySubtypes",
@@ -194382,6 +191830,14 @@ export const organizerScheduleLockDocumentSchema = {
   "x-firestore-path": "organizerScheduleLocks/{lockId}",
   "x-document-id-field": "lockId",
   "x-owner": "event schedule conflict callables",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
   "required": [
     "ownerType",
     "ownerId",
@@ -194429,107 +191885,51 @@ export const organizerScheduleLockDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "x-catch-ownership": "callable-owned"
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
     }
   }
 };
 
-export const clubPostDocumentSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/club_posts.schema.json",
-  "title": "ClubPostDocument",
-  "description": "Legacy organizer-post projection stored at clubs/{clubId}/posts/{postId} during the clubs-to-organizers migration.",
-  "type": "object",
-  "additionalProperties": false,
-  "x-firestore-collection": "club_posts",
-  "x-firestore-path": "clubs/{clubId}/posts/{postId}",
-  "x-document-id-field": "id",
-  "x-owner": "createClubPost callable",
-  "required": [
-    "authorUid",
-    "text",
-    "audience",
-    "createdAt",
-    "status"
-  ],
-  "properties": {
-    "authorUid": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "text": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 500,
-      "x-catch-ownership": "callable-owned"
-    },
-    "photoPath": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "minLength": 1,
-      "maxLength": 500,
-      "x-catch-ownership": "callable-owned"
-    },
-    "eventId": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "audience": {
-      "type": "string",
-      "enum": [
-        "followers"
-      ],
-      "x-catch-ownership": "callable-owned"
-    },
-    "createdAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
-        },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
-        }
-      },
-      "x-catch-ownership": "callable-owned"
-    },
-    "status": {
-      "type": "string",
-      "enum": [
-        "active",
-        "removed"
-      ],
-      "x-catch-ownership": "callable-owned"
-    }
-  }
-};
-
-export const clubMembershipDocumentSchema = {
+export const organizerMembershipDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/club_memberships.schema.json",
-  "title": "ClubMembershipDocument",
-  "description": "Canonical club membership edge stored at clubMemberships/{membershipId}.",
+  "title": "OrganizerMembershipDocument",
+  "description": "Canonical club membership edge stored at organizerMemberships/{membershipId}.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "clubMemberships",
-  "x-firestore-path": "clubMemberships/{membershipId}",
+  "x-firestore-collection": "organizerMemberships",
+  "x-firestore-path": "organizerMemberships/{membershipId}",
   "x-document-id-field": "id",
   "x-owner": "club membership callables; parent member count is trigger-owned",
   "x-internal-demo-fields": [
@@ -194541,7 +191941,7 @@ export const clubMembershipDocumentSchema = {
     "demoOpsCommand"
   ],
   "required": [
-    "clubId",
+    "organizerId",
     "uid",
     "role",
     "status",
@@ -194551,7 +191951,7 @@ export const clubMembershipDocumentSchema = {
     "deletedAt"
   ],
   "properties": {
-    "clubId": {
+    "organizerId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -194697,20 +192097,20 @@ export const clubMembershipDocumentSchema = {
   }
 };
 
-export const clubHostClaimDocumentSchema = {
+export const organizerHostClaimDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/club_host_claims.schema.json",
-  "title": "ClubHostClaimDocument",
-  "description": "Server-owned singleton claim stored at clubHostClaims/{uid} to enforce one hosted club per user.",
+  "title": "OrganizerHostClaimDocument",
+  "description": "Server-owned singleton claim stored at organizerHostClaims/{uid} to enforce one hosted club per user.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "clubHostClaims",
-  "x-firestore-path": "clubHostClaims/{uid}",
+  "x-firestore-collection": "organizerHostClaims",
+  "x-firestore-path": "organizerHostClaims/{uid}",
   "x-document-id-field": "uid",
-  "x-owner": "createClub callable",
+  "x-owner": "createOrganizer callable",
   "required": [
     "uid",
-    "clubId",
+    "organizerId",
     "createdAt"
   ],
   "properties": {
@@ -194720,7 +192120,7 @@ export const clubHostClaimDocumentSchema = {
       "maxLength": 180,
       "x-catch-ownership": "server-only"
     },
-    "clubId": {
+    "organizerId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -194746,225 +192146,6 @@ export const clubHostClaimDocumentSchema = {
         }
       },
       "x-catch-ownership": "server-only"
-    }
-  }
-};
-
-export const clubClaimRequestDocumentSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/club_claim_requests.schema.json",
-  "title": "ClubClaimRequestDocument",
-  "description": "Server-owned organizer listing claim request stored at clubClaimRequests/{requestId}.",
-  "type": "object",
-  "additionalProperties": false,
-  "x-firestore-collection": "clubClaimRequests",
-  "x-firestore-path": "clubClaimRequests/{requestId}",
-  "x-document-id-field": "requestId",
-  "x-owner": "requestClubClaim and adminDecideClubClaim callables",
-  "required": [
-    "requestId",
-    "clubId",
-    "requesterUid",
-    "requesterName",
-    "requesterRole",
-    "businessEmail",
-    "businessPhone",
-    "proofUrls",
-    "message",
-    "status",
-    "createdAt",
-    "updatedAt",
-    "decidedAt",
-    "decidedByUid",
-    "decisionReason",
-    "previousRequestId"
-  ],
-  "properties": {
-    "requestId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "requesterUid": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "requesterName": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120,
-      "x-catch-ownership": "callable-owned"
-    },
-    "requesterRole": {
-      "type": "string",
-      "enum": [
-        "owner",
-        "founder",
-        "manager",
-        "marketer",
-        "venueManager",
-        "other"
-      ],
-      "x-catch-ownership": "callable-owned"
-    },
-    "businessEmail": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 320,
-      "x-catch-ownership": "callable-owned"
-    },
-    "businessPhone": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 32,
-      "x-catch-ownership": "callable-owned"
-    },
-    "proofUrls": {
-      "type": "array",
-      "maxItems": 8,
-      "items": {
-        "type": "string",
-        "format": "uri",
-        "maxLength": 2048
-      },
-      "uniqueItems": true,
-      "x-catch-ownership": "callable-owned"
-    },
-    "message": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 1000,
-      "x-catch-ownership": "callable-owned"
-    },
-    "status": {
-      "type": "string",
-      "enum": [
-        "pending",
-        "approved",
-        "rejected",
-        "withdrawn",
-        "superseded"
-      ],
-      "x-catch-ownership": "callable-owned"
-    },
-    "createdAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
-        },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
-        }
-      },
-      "x-catch-ownership": "callable-owned"
-    },
-    "updatedAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
-        },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
-        }
-      },
-      "x-catch-ownership": "callable-owned"
-    },
-    "decidedAt": {
-      "anyOf": [
-        {
-          "type": "object",
-          "description": "Serialized Firestore Timestamp fixture shape.",
-          "x-firestore-type": "timestamp",
-          "additionalProperties": false,
-          "required": [
-            "_seconds",
-            "_nanoseconds"
-          ],
-          "properties": {
-            "_seconds": {
-              "type": "integer"
-            },
-            "_nanoseconds": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 999999999
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "x-catch-ownership": "callable-owned"
-    },
-    "decidedByUid": {
-      "anyOf": [
-        {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "x-catch-ownership": "callable-owned"
-    },
-    "decisionReason": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 1000,
-      "x-catch-ownership": "callable-owned"
-    },
-    "previousRequestId": {
-      "anyOf": [
-        {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "x-catch-ownership": "callable-owned"
     }
   }
 };
@@ -194989,7 +192170,7 @@ export const eventDocumentSchema = {
     "demoOpsCommand"
   ],
   "required": [
-    "clubId",
+    "organizerId",
     "startTime",
     "bookedCount",
     "checkedInCount",
@@ -195007,12 +192188,6 @@ export const eventDocumentSchema = {
       "minLength": 1,
       "maxLength": 120,
       "description": "Organizer-authored event name. Legacy documents may omit it and use the client-derived fallback title.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
       "x-catch-ownership": "callable-owned"
     },
     "organizerId": {
@@ -197107,7 +194282,7 @@ export const eventDocumentSchema = {
       },
       "else": {
         "required": [
-          "clubId",
+          "organizerId",
           "startTime",
           "endTime",
           "meetingPoint",
@@ -197411,7 +194586,6 @@ export const externalEventDocumentSchema = {
     "schemaVersion",
     "eventId",
     "canonicalHostId",
-    "compatibilityClubId",
     "title",
     "description",
     "startTime",
@@ -197445,11 +194619,6 @@ export const externalEventDocumentSchema = {
       "maxLength": 180
     },
     "canonicalHostId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "compatibilityClubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -200248,7 +197417,7 @@ export const organizerPublicPageDocumentSchema = {
                 "type": "string",
                 "enum": [
                   "unclaimedScraped",
-                  "appCreatedClub"
+                  "appCreatedOrganizer"
                 ]
               },
               "dataOrigin": {
@@ -202825,7 +199994,7 @@ export const organizerPublicPageDocumentSchema = {
               "type": "string",
               "enum": [
                 "unclaimedScraped",
-                "appCreatedClub"
+                "appCreatedOrganizer"
               ]
             },
             "dataOrigin": {
@@ -206468,7 +203637,7 @@ export const eventPublicPageDocumentSchema = {
               "type": "string",
               "enum": [
                 "unclaimedScraped",
-                "appCreatedClub"
+                "appCreatedOrganizer"
               ]
             },
             "dataOrigin": {
@@ -209775,18 +206944,12 @@ export const eventPrivateAccessDocumentSchema = {
   "x-owner": "createEvent callable; readable only by the host of the linked event",
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "inviteCode",
     "createdAt"
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -209842,7 +207005,7 @@ export const eventInviteLinkDocumentSchema = {
   "x-owner": "event invite link callables and event-success scorecard recomputation",
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "hostUid",
     "label",
     "source",
@@ -209861,12 +207024,6 @@ export const eventInviteLinkDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -210725,7 +207882,7 @@ export const eventParticipationDocumentSchema = {
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "uid",
     "status",
     "createdAt",
@@ -210740,12 +207897,6 @@ export const eventParticipationDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -211277,7 +208428,6 @@ export const eventAttendeeDocumentSchema = {
   "x-owner": "standalone Host roster, Catch-booking projection, public registration, and attendance callables",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "displayName",
     "searchName",
@@ -211302,11 +208452,6 @@ export const eventAttendeeDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -233442,7 +230587,6 @@ export const eventAttendeeImportDocumentSchema = {
   "x-owner": "importEventAttendees callable",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uploadedBy",
     "importKey",
@@ -233461,11 +230605,6 @@ export const eventAttendeeImportDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -233643,7 +230782,6 @@ export const eventRosterHandoffDocumentSchema = {
   "x-owner": "createEventRosterHandoff and ingestEventRosterWebhook",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "hostUid",
     "tokenHash",
@@ -233655,11 +230793,6 @@ export const eventRosterHandoffDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -233776,7 +230909,6 @@ export const eventRuntimeParticipantDocumentSchema = {
   "x-owner": "runtime claim/profile callables; owner get only; no client writes or list access",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uid",
     "eventAttendeeId",
@@ -233795,11 +230927,6 @@ export const eventRuntimeParticipantDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -234754,7 +231881,6 @@ export const eventSuccessPresenceDocumentSchema = {
   "x-owner": "event-success heartbeat callable",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uid",
     "surface",
@@ -234764,12 +231890,6 @@ export const eventSuccessPresenceDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -234874,7 +231994,6 @@ export const eventLivePositionDocumentSchema = {
   "x-owner": "event live-position callable",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uid",
     "role",
@@ -234889,12 +232008,6 @@ export const eventLivePositionDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -235050,7 +232163,6 @@ export const eventSuccessLateArrivalDocumentSchema = {
   "x-owner": "event-success late-arrival callable",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uid",
     "resolvedByUid",
@@ -235063,12 +232175,6 @@ export const eventSuccessLateArrivalDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -239321,7 +236427,6 @@ export const eventRehearsalDocumentSchema = {
   "x-owner": "event rehearsal callables",
   "required": [
     "organizerId",
-    "clubId",
     "ownerUid",
     "sourceEventId",
     "sourceEventRevision",
@@ -239347,12 +236452,6 @@ export const eventRehearsalDocumentSchema = {
   ],
   "properties": {
     "organizerId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -248777,7 +245876,6 @@ export const eventRuntimeClaimRequestDocumentSchema = {
   "x-owner": "runtime claim and Host approval callables; no client writes",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uid",
     "displayName",
@@ -248792,11 +245890,6 @@ export const eventRuntimeClaimRequestDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -249856,7 +246949,7 @@ export const eventBroadcastDocumentSchema = {
   "x-owner": "sendEventBroadcast callable",
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "actorUid",
     "audience",
     "title",
@@ -249880,12 +246973,6 @@ export const eventBroadcastDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "server-only"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -250186,7 +247273,7 @@ export const eventWaitlistOfferDocumentSchema = {
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "uid",
     "cohortAtOffer",
     "status",
@@ -250200,12 +247287,6 @@ export const eventWaitlistOfferDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -250464,7 +247545,7 @@ export const eventSuccessPlanDocumentSchema = {
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "playbookId",
     "selectedModuleIds",
     "targetAttendeeCount",
@@ -250478,12 +247559,6 @@ export const eventSuccessPlanDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -251362,7 +248437,6 @@ export const eventSuccessConversationGraphDocumentSchema = {
   "x-owner": "subject attendee read; conversation graph callable write",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uid",
     "status",
@@ -251375,12 +248449,6 @@ export const eventSuccessConversationGraphDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -251788,7 +248856,6 @@ export const eventSuccessAssignmentDraftDocumentSchema = {
   "x-owner": "event-success assignment preparation",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uid",
     "moduleId",
@@ -251800,12 +248867,6 @@ export const eventSuccessAssignmentDraftDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -251861,7 +248922,7 @@ export const eventSuccessAssignmentDraftDocumentSchema = {
       ],
       "required": [
         "eventId",
-        "clubId",
+        "organizerId",
         "uid",
         "moduleId",
         "label",
@@ -251873,12 +248934,6 @@ export const eventSuccessAssignmentDraftDocumentSchema = {
       ],
       "properties": {
         "eventId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180,
-          "x-catch-ownership": "callable-owned"
-        },
-        "clubId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 180,
@@ -252731,7 +249786,7 @@ export const eventSuccessFeedbackDocumentSchema = {
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "uid",
     "welcomeRating",
     "structureRating",
@@ -252742,12 +249797,6 @@ export const eventSuccessFeedbackDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -252893,7 +249942,7 @@ export const eventSuccessPreferenceDocumentSchema = {
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "uid",
     "microPodsOptedOut",
     "guidedRotationsOptedOut",
@@ -252902,12 +249951,6 @@ export const eventSuccessPreferenceDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -253031,7 +250074,7 @@ export const eventSuccessCompatibilityResponseDocumentSchema = {
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "uid",
     "answerIds",
     "createdAt",
@@ -253039,12 +250082,6 @@ export const eventSuccessCompatibilityResponseDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -253171,7 +250208,7 @@ export const eventSuccessWingmanRequestDocumentSchema = {
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "requesterUid",
     "targetUid",
     "status",
@@ -253181,12 +250218,6 @@ export const eventSuccessWingmanRequestDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -253329,7 +250360,7 @@ export const eventSuccessArrivalMissionDocumentSchema = {
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "observerUid",
     "targetUid",
     "targetDisplayName",
@@ -253344,12 +250375,6 @@ export const eventSuccessArrivalMissionDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -253561,7 +250586,7 @@ export const eventSuccessAssignmentDocumentSchema = {
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "uid",
     "moduleId",
     "label",
@@ -253573,12 +250598,6 @@ export const eventSuccessAssignmentDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -254218,7 +251237,7 @@ export const eventSuccessUnitOutcomesDocumentSchema = {
   "x-owner": "recordEventSuccessUnitOutcomes callable",
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "unitOutcome",
     "revision",
     "rounds",
@@ -254317,12 +251336,6 @@ export const eventSuccessUnitOutcomesDocumentSchema = {
   },
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -254509,7 +251522,7 @@ export const eventSuccessStandingsDocumentSchema = {
   "x-owner": "recordEventSuccessUnitOutcomes callable",
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "unitOutcome",
     "revision",
     "latestRoundIndex",
@@ -254559,12 +251572,6 @@ export const eventSuccessStandingsDocumentSchema = {
   },
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -254768,7 +251775,7 @@ export const eventSuccessScorecardDocumentSchema = {
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "bookedCount",
     "checkedInCount",
     "feedbackCount",
@@ -254787,12 +251794,6 @@ export const eventSuccessScorecardDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "trigger-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -255158,7 +252159,7 @@ export const eventSafetyReportDocumentSchema = {
   "x-owner": "onEventSuccessFeedbackWritten trigger",
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "reporterUserId",
     "feedbackId",
     "source",
@@ -255168,12 +252169,6 @@ export const eventSafetyReportDocumentSchema = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -255263,108 +252258,6 @@ export const eventSafetyReportDocumentSchema = {
   }
 };
 
-export const clubScheduleLockDocumentSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/club_schedule_locks.schema.json",
-  "title": "ClubScheduleLockDocument",
-  "description": "Server-owned time-slot claim stored at clubScheduleLocks/{clubId_slot}.",
-  "type": "object",
-  "additionalProperties": false,
-  "x-firestore-collection": "clubScheduleLocks",
-  "x-firestore-path": "clubScheduleLocks/{lockId}",
-  "x-document-id-field": "lockId",
-  "x-owner": "event schedule conflict callables",
-  "x-internal-demo-fields": [
-    "synthetic",
-    "seedPrefix",
-    "scenario",
-    "demoOps",
-    "demoOpsId",
-    "demoOpsCommand"
-  ],
-  "required": [
-    "ownerType",
-    "ownerId",
-    "slot",
-    "eventId",
-    "clubId",
-    "startTimeMillis",
-    "endTimeMillis"
-  ],
-  "properties": {
-    "ownerType": {
-      "type": "string",
-      "const": "club",
-      "x-catch-ownership": "callable-owned"
-    },
-    "ownerId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "slot": {
-      "type": "integer",
-      "minimum": 0,
-      "x-catch-ownership": "callable-owned"
-    },
-    "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "startTimeMillis": {
-      "type": "integer",
-      "minimum": 0,
-      "x-catch-ownership": "callable-owned"
-    },
-    "endTimeMillis": {
-      "type": "integer",
-      "minimum": 0,
-      "x-catch-ownership": "callable-owned"
-    },
-    "synthetic": {
-      "type": "boolean",
-      "description": "Internal demo seed marker used for cleanup and diagnostics."
-    },
-    "seedPrefix": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120,
-      "description": "Internal demo seed prefix used for cleanup and diagnostics."
-    },
-    "scenario": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120,
-      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
-    },
-    "demoOps": {
-      "type": "boolean",
-      "description": "Internal demo-operations marker used for cleanup and diagnostics."
-    },
-    "demoOpsId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "description": "Internal demo-operations id used for cleanup and diagnostics."
-    },
-    "demoOpsCommand": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 80,
-      "description": "Internal demo-operations command name used for cleanup and diagnostics."
-    }
-  }
-};
-
 export const userEventScheduleLockDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/user_event_schedule_locks.schema.json",
@@ -255389,7 +252282,7 @@ export const userEventScheduleLockDocumentSchema = {
     "ownerId",
     "slot",
     "eventId",
-    "clubId",
+    "organizerId",
     "uid",
     "startTimeMillis",
     "endTimeMillis"
@@ -255412,12 +252305,6 @@ export const userEventScheduleLockDocumentSchema = {
       "x-catch-ownership": "callable-owned"
     },
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -257076,15 +253963,9 @@ export const matchDocumentSchema = {
       "type": "string",
       "enum": [
         "match",
-        "clubHostInquiry",
+        "organizerHostInquiry",
         "crossPathsEventPlan"
       ],
-      "x-catch-ownership": "trigger-owned"
-    },
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
       "x-catch-ownership": "trigger-owned"
     },
     "organizerId": {
@@ -257363,7 +254244,6 @@ export const activityNotificationDocumentSchema = {
         "waitlistOfferExpired",
         "eventCancelled",
         "eventUpdated",
-        "clubUpdate",
         "organizerUpdate",
         "formResponse",
         "crossPathsInvitation",
@@ -257444,15 +254324,6 @@ export const activityNotificationDocumentSchema = {
       "x-catch-ownership": "server-only"
     },
     "eventId": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "server-only"
-    },
-    "clubId": {
       "type": [
         "string",
         "null"
@@ -258021,10 +254892,10 @@ export const moderationFlagDocumentSchema = {
       "type": "string",
       "enum": [
         "profile_photo",
-        "club_image",
+        "organizer_image",
         "chat_message",
         "user_bio",
-        "club_description",
+        "organizer_description",
         "review_comment"
       ],
       "x-catch-ownership": "trigger-owned"
@@ -258378,19 +255249,10 @@ export const hostAnalyticsSnapshotDocumentSchema = {
           "additionalProperties": false,
           "required": [
             "organizerIds",
-            "clubIds",
             "eventIds"
           ],
           "properties": {
             "organizerIds": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 180
-              }
-            },
-            "clubIds": {
               "type": "array",
               "items": {
                 "type": "string",
@@ -258405,13 +255267,6 @@ export const hostAnalyticsSnapshotDocumentSchema = {
                 "minLength": 1,
                 "maxLength": 180
               }
-            },
-            "clubName": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 160
             },
             "organizerName": {
               "type": [
@@ -258524,7 +255379,7 @@ export const hostAnalyticsSnapshotDocumentSchema = {
             "additionalProperties": false,
             "required": [
               "eventId",
-              "clubId",
+              "organizerId",
               "title",
               "startTime",
               "status",
@@ -258551,11 +255406,6 @@ export const hostAnalyticsSnapshotDocumentSchema = {
             ],
             "properties": {
               "eventId": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 180
-              },
-              "clubId": {
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 180
@@ -259288,8 +256138,6 @@ export const publicRouteReservationDocumentSchema = {
     "lastVerifiedSource": {
       "type": "string",
       "enum": [
-        "adminUpdateClubDetails",
-        "adminSetClubIndexStatus",
         "adminUpdateOrganizerDetails",
         "adminSetOrganizerIndexStatus",
         "adminCreateOrganizerDraftFromCandidate",
@@ -260202,7 +257050,7 @@ export const organizerIntakeCurationDecisionDocumentSchema = {
                 "type": "string",
                 "enum": [
                   "hostDiscoveryRun",
-                  "seedClub",
+                  "seedOrganizer",
                   "userReportedSearchResult",
                   "manualNote"
                 ]
@@ -260462,7 +257310,7 @@ export const organizerIntakeCurationDecisionDocumentSchema = {
                 "type": "string",
                 "enum": [
                   "hostDiscoveryRun",
-                  "seedClub",
+                  "seedOrganizer",
                   "userReportedSearchResult",
                   "manualNote"
                 ]
@@ -260501,7 +257349,7 @@ export const organizerIntakeCurationDecisionDocumentSchema = {
           "type": "string",
           "enum": [
             "hostDiscoveryRun",
-            "seedClub",
+            "seedOrganizer",
             "userReportedSearchResult",
             "manualNote"
           ]
@@ -261425,7 +258273,7 @@ export const updateUserProfileCallablePayloadSchema = {
         "prefsRunStatusUpdates": {
           "type": "boolean"
         },
-        "prefsClubUpdates": {
+        "prefsOrganizerUpdates": {
           "type": "boolean"
         },
         "prefsWeeklyDigest": {
@@ -261458,1150 +258306,6 @@ export const updateUserProfileCallablePayloadSchema = {
     "sexualOrientation",
     "bio"
   ]
-};
-
-export const createClubCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/create_club_payload.schema.json",
-  "title": "CreateClubCallablePayload",
-  "description": "Callable payload accepted by createClub.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "name",
-    "description",
-    "location",
-    "area"
-  ],
-  "properties": {
-    "clubId": {
-      "type": "string",
-      "pattern": "^[A-Za-z0-9]{20}$",
-      "description": "Optional Firestore auto-id reserved by a legacy client. Human-readable slugs are separate publicPage fields."
-    },
-    "name": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120
-    },
-    "description": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 2000
-    },
-    "location": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120,
-      "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
-    },
-    "area": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120
-    },
-    "organizerType": {
-      "type": "string",
-      "enum": [
-        "club",
-        "community",
-        "individual",
-        "eventProducer",
-        "venue",
-        "brand"
-      ],
-      "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
-    },
-    "imageUrl": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 320
-    },
-    "profileImageUrl": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 320
-    },
-    "clubPhotos": {
-      "type": "array",
-      "items": {
-        "title": "UploadedPhoto",
-        "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "url",
-          "storagePath",
-          "thumbnailUrl",
-          "thumbnailStoragePath",
-          "position",
-          "createdAt",
-          "updatedAt"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 120,
-            "pattern": "^[A-Za-z0-9_-]+$"
-          },
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "maxLength": 2048
-          },
-          "storagePath": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 512,
-            "pattern": "^[^/\\u0000][^\\u0000]*$"
-          },
-          "thumbnailUrl": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uri",
-                "maxLength": 2048
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "thumbnailStoragePath": {
-            "anyOf": [
-              {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 512,
-                "pattern": "^[^/\\u0000][^\\u0000]*$"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "position": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "moderation": {
-            "type": [
-              "object",
-              "null"
-            ],
-            "additionalProperties": false,
-            "required": [
-              "status"
-            ],
-            "properties": {
-              "status": {
-                "type": "string",
-                "enum": [
-                  "pending",
-                  "approved",
-                  "rejected"
-                ]
-              },
-              "reason": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 240
-              },
-              "reviewedAt": {
-                "anyOf": [
-                  {
-                    "type": "object",
-                    "description": "Serialized Firestore Timestamp fixture shape.",
-                    "x-firestore-type": "timestamp",
-                    "additionalProperties": false,
-                    "required": [
-                      "_seconds",
-                      "_nanoseconds"
-                    ],
-                    "properties": {
-                      "_seconds": {
-                        "type": "integer"
-                      },
-                      "_nanoseconds": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 999999999
-                      }
-                    }
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              }
-            }
-          },
-          "createdAt": {
-            "type": "object",
-            "description": "Serialized Firestore Timestamp fixture shape.",
-            "x-firestore-type": "timestamp",
-            "additionalProperties": false,
-            "required": [
-              "_seconds",
-              "_nanoseconds"
-            ],
-            "properties": {
-              "_seconds": {
-                "type": "integer"
-              },
-              "_nanoseconds": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 999999999
-              }
-            }
-          },
-          "updatedAt": {
-            "type": "object",
-            "description": "Serialized Firestore Timestamp fixture shape.",
-            "x-firestore-type": "timestamp",
-            "additionalProperties": false,
-            "required": [
-              "_seconds",
-              "_nanoseconds"
-            ],
-            "properties": {
-              "_seconds": {
-                "type": "integer"
-              },
-              "_nanoseconds": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 999999999
-              }
-            }
-          }
-        },
-        "definitions": {
-          "storageObjectPath": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 512,
-            "pattern": "^[^/\\u0000][^\\u0000]*$"
-          }
-        }
-      }
-    },
-    "logoPhoto": {
-      "anyOf": [
-        {
-          "title": "UploadedPhoto",
-          "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "id",
-            "url",
-            "storagePath",
-            "thumbnailUrl",
-            "thumbnailStoragePath",
-            "position",
-            "createdAt",
-            "updatedAt"
-          ],
-          "properties": {
-            "id": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 120,
-              "pattern": "^[A-Za-z0-9_-]+$"
-            },
-            "url": {
-              "type": "string",
-              "format": "uri",
-              "maxLength": 2048
-            },
-            "storagePath": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 512,
-              "pattern": "^[^/\\u0000][^\\u0000]*$"
-            },
-            "thumbnailUrl": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "uri",
-                  "maxLength": 2048
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "thumbnailStoragePath": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512,
-                  "pattern": "^[^/\\u0000][^\\u0000]*$"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "position": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "moderation": {
-              "type": [
-                "object",
-                "null"
-              ],
-              "additionalProperties": false,
-              "required": [
-                "status"
-              ],
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "enum": [
-                    "pending",
-                    "approved",
-                    "rejected"
-                  ]
-                },
-                "reason": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 240
-                },
-                "reviewedAt": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "description": "Serialized Firestore Timestamp fixture shape.",
-                      "x-firestore-type": "timestamp",
-                      "additionalProperties": false,
-                      "required": [
-                        "_seconds",
-                        "_nanoseconds"
-                      ],
-                      "properties": {
-                        "_seconds": {
-                          "type": "integer"
-                        },
-                        "_nanoseconds": {
-                          "type": "integer",
-                          "minimum": 0,
-                          "maximum": 999999999
-                        }
-                      }
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                }
-              }
-            },
-            "createdAt": {
-              "type": "object",
-              "description": "Serialized Firestore Timestamp fixture shape.",
-              "x-firestore-type": "timestamp",
-              "additionalProperties": false,
-              "required": [
-                "_seconds",
-                "_nanoseconds"
-              ],
-              "properties": {
-                "_seconds": {
-                  "type": "integer"
-                },
-                "_nanoseconds": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 999999999
-                }
-              }
-            },
-            "updatedAt": {
-              "type": "object",
-              "description": "Serialized Firestore Timestamp fixture shape.",
-              "x-firestore-type": "timestamp",
-              "additionalProperties": false,
-              "required": [
-                "_seconds",
-                "_nanoseconds"
-              ],
-              "properties": {
-                "_seconds": {
-                  "type": "integer"
-                },
-                "_nanoseconds": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 999999999
-                }
-              }
-            }
-          },
-          "definitions": {
-            "storageObjectPath": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 512,
-              "pattern": "^[^/\\u0000][^\\u0000]*$"
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "instagramHandle": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 320
-    },
-    "phoneNumber": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 320
-    },
-    "email": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 320
-    },
-    "hostDefaults": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "primaryActivityKind": {
-          "type": "string",
-          "enum": [
-            "socialRun",
-            "running",
-            "walking",
-            "pickleball",
-            "padel",
-            "tennis",
-            "badminton",
-            "cycling",
-            "spinClass",
-            "yoga",
-            "strengthTraining",
-            "pubQuiz",
-            "barCrawl",
-            "dinner",
-            "singlesMixer",
-            "openActivity"
-          ]
-        },
-        "supportedActivityKinds": {
-          "type": "array",
-          "maxItems": 16,
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [
-              "socialRun",
-              "running",
-              "walking",
-              "pickleball",
-              "padel",
-              "tennis",
-              "badminton",
-              "cycling",
-              "spinClass",
-              "yoga",
-              "strengthTraining",
-              "pubQuiz",
-              "barCrawl",
-              "dinner",
-              "singlesMixer",
-              "openActivity"
-            ]
-          }
-        },
-        "eventPolicy": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "admissionPreset": {
-              "type": "string",
-              "enum": [
-                "openCapacity",
-                "inviteOnly",
-                "balancedSingles",
-                "fixedCohortCaps"
-              ]
-            },
-            "minAge": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 120
-            },
-            "maxAge": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 120
-            },
-            "maxMen": {
-              "type": [
-                "integer",
-                "null"
-              ],
-              "minimum": 0
-            },
-            "maxWomen": {
-              "type": [
-                "integer",
-                "null"
-              ],
-              "minimum": 0
-            },
-            "dynamicPricingEnabled": {
-              "type": "boolean"
-            },
-            "crossPathsPairCapacity": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 100
-            },
-            "dynamicPricingStepInPaise": {
-              "type": [
-                "integer",
-                "null"
-              ],
-              "minimum": 0,
-              "maximum": 100000000
-            },
-            "dynamicPricingMaxInPaise": {
-              "type": [
-                "integer",
-                "null"
-              ],
-              "minimum": 0,
-              "maximum": 100000000
-            },
-            "cancellationPolicyId": {
-              "type": "string",
-              "enum": [
-                "flexible",
-                "standard",
-                "strict"
-              ]
-            }
-          }
-        },
-        "eventSuccess": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "enabled": {
-              "type": "boolean"
-            },
-            "layoutId": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
-            },
-            "playbookId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 120
-            },
-            "selectedModuleIds": {
-              "type": "array",
-              "maxItems": 24,
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 120
-              }
-            },
-            "moduleSelectionConfigured": {
-              "type": "boolean"
-            },
-            "structureConfig": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "unitKind",
-                "unitSize",
-                "revealCountdownSeconds"
-              ],
-              "properties": {
-                "unitKind": {
-                  "type": "string",
-                  "enum": [
-                    "wholeGroup",
-                    "pods",
-                    "pairs",
-                    "teams",
-                    "tables"
-                  ]
-                },
-                "unitSize": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 1000
-                },
-                "unitCount": {
-                  "type": [
-                    "integer",
-                    "null"
-                  ],
-                  "minimum": 1,
-                  "maximum": 200
-                },
-                "rotationIntervalMinutes": {
-                  "type": [
-                    "integer",
-                    "null"
-                  ],
-                  "minimum": 5,
-                  "maximum": 180
-                },
-                "topology": {
-                  "type": "string",
-                  "enum": [
-                    "set",
-                    "sequence",
-                    "adjacency"
-                  ]
-                },
-                "resourceCapacity": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "concurrentUnits",
-                        "resourceLabelId",
-                        "seatsPerUnit"
-                      ],
-                      "properties": {
-                        "concurrentUnits": {
-                          "type": [
-                            "integer",
-                            "null"
-                          ],
-                          "minimum": 1,
-                          "maximum": 200
-                        },
-                        "resourceLabelId": {
-                          "type": "string",
-                          "enum": [
-                            "court",
-                            "table",
-                            "lane",
-                            "board"
-                          ]
-                        },
-                        "seatsPerUnit": {
-                          "type": [
-                            "integer",
-                            "null"
-                          ],
-                          "minimum": 1,
-                          "maximum": 1000
-                        }
-                      }
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                },
-                "revealCountdownSeconds": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 60
-                },
-                "rotationRepeatStrategy": {
-                  "type": "string",
-                  "enum": [
-                    "avoid",
-                    "allowWhenExhausted"
-                  ]
-                },
-                "maxPairMeetings": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 10
-                },
-                "balanceActivityAttributes": {
-                  "type": "array",
-                  "maxItems": 8,
-                  "uniqueItems": true,
-                  "items": {
-                    "type": "string",
-                    "enum": [
-                      "paceBand",
-                      "skillBand",
-                      "roleBand"
-                    ]
-                  }
-                },
-                "clusterActivityAttributes": {
-                  "type": "array",
-                  "maxItems": 8,
-                  "uniqueItems": true,
-                  "items": {
-                    "type": "string",
-                    "enum": [
-                      "paceBand",
-                      "skillBand",
-                      "roleBand"
-                    ]
-                  }
-                }
-              },
-              "allOf": [
-                {
-                  "if": {
-                    "required": [
-                      "resourceCapacity"
-                    ],
-                    "properties": {
-                      "resourceCapacity": {
-                        "type": "object",
-                        "required": [
-                          "seatsPerUnit"
-                        ],
-                        "properties": {
-                          "seatsPerUnit": {
-                            "type": "integer"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "then": {
-                    "required": [
-                      "topology"
-                    ],
-                    "properties": {
-                      "topology": {
-                        "const": "adjacency"
-                      }
-                    }
-                  }
-                }
-              ]
-            },
-            "hostGoal": {
-              "type": "string",
-              "maxLength": 300
-            },
-            "wingmanRequestsEnabled": {
-              "type": "boolean"
-            },
-            "contextualOpenersEnabled": {
-              "type": "boolean"
-            },
-            "compatibilityAffectsRanking": {
-              "type": "boolean"
-            },
-            "questionnaireConfig": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "templateId"
-              ],
-              "properties": {
-                "templateId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 120
-                },
-                "customTitle": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 80
-                },
-                "customQuestions": {
-                  "type": "array",
-                  "maxItems": 8,
-                  "items": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "id",
-                      "prompt",
-                      "options"
-                    ],
-                    "properties": {
-                      "id": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 120
-                      },
-                      "prompt": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 140
-                      },
-                      "options": {
-                        "type": "array",
-                        "minItems": 2,
-                        "maxItems": 5,
-                        "items": {
-                          "type": "object",
-                          "additionalProperties": false,
-                          "required": [
-                            "id",
-                            "label"
-                          ],
-                          "properties": {
-                            "id": {
-                              "type": "string",
-                              "minLength": 1,
-                              "maxLength": 120
-                            },
-                            "label": {
-                              "type": "string",
-                              "minLength": 1,
-                              "maxLength": 80
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "attendeePrompt": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 300
-            }
-          }
-        },
-        "eventSuccessByActivityKind": {
-          "type": "object",
-          "maxProperties": 16,
-          "additionalProperties": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "enabled": {
-                "type": "boolean"
-              },
-              "layoutId": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
-              },
-              "playbookId": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 120
-              },
-              "selectedModuleIds": {
-                "type": "array",
-                "maxItems": 24,
-                "items": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 120
-                }
-              },
-              "moduleSelectionConfigured": {
-                "type": "boolean"
-              },
-              "structureConfig": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "unitKind",
-                  "unitSize",
-                  "revealCountdownSeconds"
-                ],
-                "properties": {
-                  "unitKind": {
-                    "type": "string",
-                    "enum": [
-                      "wholeGroup",
-                      "pods",
-                      "pairs",
-                      "teams",
-                      "tables"
-                    ]
-                  },
-                  "unitSize": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 1000
-                  },
-                  "unitCount": {
-                    "type": [
-                      "integer",
-                      "null"
-                    ],
-                    "minimum": 1,
-                    "maximum": 200
-                  },
-                  "rotationIntervalMinutes": {
-                    "type": [
-                      "integer",
-                      "null"
-                    ],
-                    "minimum": 5,
-                    "maximum": 180
-                  },
-                  "topology": {
-                    "type": "string",
-                    "enum": [
-                      "set",
-                      "sequence",
-                      "adjacency"
-                    ]
-                  },
-                  "resourceCapacity": {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "required": [
-                          "concurrentUnits",
-                          "resourceLabelId",
-                          "seatsPerUnit"
-                        ],
-                        "properties": {
-                          "concurrentUnits": {
-                            "type": [
-                              "integer",
-                              "null"
-                            ],
-                            "minimum": 1,
-                            "maximum": 200
-                          },
-                          "resourceLabelId": {
-                            "type": "string",
-                            "enum": [
-                              "court",
-                              "table",
-                              "lane",
-                              "board"
-                            ]
-                          },
-                          "seatsPerUnit": {
-                            "type": [
-                              "integer",
-                              "null"
-                            ],
-                            "minimum": 1,
-                            "maximum": 1000
-                          }
-                        }
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
-                  "revealCountdownSeconds": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 60
-                  },
-                  "rotationRepeatStrategy": {
-                    "type": "string",
-                    "enum": [
-                      "avoid",
-                      "allowWhenExhausted"
-                    ]
-                  },
-                  "maxPairMeetings": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 10
-                  },
-                  "balanceActivityAttributes": {
-                    "type": "array",
-                    "maxItems": 8,
-                    "uniqueItems": true,
-                    "items": {
-                      "type": "string",
-                      "enum": [
-                        "paceBand",
-                        "skillBand",
-                        "roleBand"
-                      ]
-                    }
-                  },
-                  "clusterActivityAttributes": {
-                    "type": "array",
-                    "maxItems": 8,
-                    "uniqueItems": true,
-                    "items": {
-                      "type": "string",
-                      "enum": [
-                        "paceBand",
-                        "skillBand",
-                        "roleBand"
-                      ]
-                    }
-                  }
-                },
-                "allOf": [
-                  {
-                    "if": {
-                      "required": [
-                        "resourceCapacity"
-                      ],
-                      "properties": {
-                        "resourceCapacity": {
-                          "type": "object",
-                          "required": [
-                            "seatsPerUnit"
-                          ],
-                          "properties": {
-                            "seatsPerUnit": {
-                              "type": "integer"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "then": {
-                      "required": [
-                        "topology"
-                      ],
-                      "properties": {
-                        "topology": {
-                          "const": "adjacency"
-                        }
-                      }
-                    }
-                  }
-                ]
-              },
-              "hostGoal": {
-                "type": "string",
-                "maxLength": 300
-              },
-              "wingmanRequestsEnabled": {
-                "type": "boolean"
-              },
-              "contextualOpenersEnabled": {
-                "type": "boolean"
-              },
-              "compatibilityAffectsRanking": {
-                "type": "boolean"
-              },
-              "questionnaireConfig": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "templateId"
-                ],
-                "properties": {
-                  "templateId": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 120
-                  },
-                  "customTitle": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "maxLength": 80
-                  },
-                  "customQuestions": {
-                    "type": "array",
-                    "maxItems": 8,
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "id",
-                        "prompt",
-                        "options"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 120
-                        },
-                        "prompt": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 140
-                        },
-                        "options": {
-                          "type": "array",
-                          "minItems": 2,
-                          "maxItems": 5,
-                          "items": {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "required": [
-                              "id",
-                              "label"
-                            ],
-                            "properties": {
-                              "id": {
-                                "type": "string",
-                                "minLength": 1,
-                                "maxLength": 120
-                              },
-                              "label": {
-                                "type": "string",
-                                "minLength": 1,
-                                "maxLength": 80
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "attendeePrompt": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 300
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 };
 
 export const createOrganizerCallablePayloadSchema = {
@@ -265494,85 +261198,6 @@ export const adminDecideOrganizerClaimCallablePayloadSchema = {
   }
 };
 
-export const createClubCallableResponseSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callable_responses/create_club_response.schema.json",
-  "title": "CreateClubCallableResponse",
-  "description": "Callable response returned by createClub.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "clubId"
-  ],
-  "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    }
-  }
-};
-
-export const createClubPostCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/create_club_post_payload.schema.json",
-  "title": "CreateClubPostCallablePayload",
-  "description": "Callable payload accepted by createClubPost.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "clubId",
-    "text"
-  ],
-  "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "text": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 500
-    },
-    "photoPath": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 500
-    },
-    "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    }
-  }
-};
-
-export const createClubPostCallableResponseSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callable_responses/create_club_post_response.schema.json",
-  "title": "CreateClubPostCallableResponse",
-  "description": "Callable response returned by createClubPost.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "postId",
-    "remainingWeeklyQuota"
-  ],
-  "properties": {
-    "postId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "remainingWeeklyQuota": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 3
-    }
-  }
-};
-
 export const sendEventBroadcastCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/send_event_broadcast_payload.schema.json",
@@ -265686,1178 +261311,6 @@ export const sendEventBroadcastCallableResponseSchema = {
   }
 };
 
-export const updateClubCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/update_club_payload.schema.json",
-  "title": "UpdateClubCallablePayload",
-  "description": "Callable payload accepted by updateClub.",
-  "x-callable-shape": "patch",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "clubId",
-    "fields"
-  ],
-  "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "fields": {
-      "type": "object",
-      "additionalProperties": false,
-      "minProperties": 1,
-      "properties": {
-        "name": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120
-        },
-        "description": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 2000
-        },
-        "location": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120,
-          "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
-        },
-        "area": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120
-        },
-        "organizerType": {
-          "type": "string",
-          "enum": [
-            "club",
-            "community",
-            "individual",
-            "eventProducer",
-            "venue",
-            "brand"
-          ],
-          "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
-        },
-        "hostName": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120
-        },
-        "hostAvatarUrl": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 320
-        },
-        "imageUrl": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 320
-        },
-        "profileImageUrl": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 320
-        },
-        "clubPhotos": {
-          "type": "array",
-          "items": {
-            "title": "UploadedPhoto",
-            "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "id",
-              "url",
-              "storagePath",
-              "thumbnailUrl",
-              "thumbnailStoragePath",
-              "position",
-              "createdAt",
-              "updatedAt"
-            ],
-            "properties": {
-              "id": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 120,
-                "pattern": "^[A-Za-z0-9_-]+$"
-              },
-              "url": {
-                "type": "string",
-                "format": "uri",
-                "maxLength": 2048
-              },
-              "storagePath": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 512,
-                "pattern": "^[^/\\u0000][^\\u0000]*$"
-              },
-              "thumbnailUrl": {
-                "anyOf": [
-                  {
-                    "type": "string",
-                    "format": "uri",
-                    "maxLength": 2048
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "thumbnailStoragePath": {
-                "anyOf": [
-                  {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 512,
-                    "pattern": "^[^/\\u0000][^\\u0000]*$"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "position": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "moderation": {
-                "type": [
-                  "object",
-                  "null"
-                ],
-                "additionalProperties": false,
-                "required": [
-                  "status"
-                ],
-                "properties": {
-                  "status": {
-                    "type": "string",
-                    "enum": [
-                      "pending",
-                      "approved",
-                      "rejected"
-                    ]
-                  },
-                  "reason": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "maxLength": 240
-                  },
-                  "reviewedAt": {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "description": "Serialized Firestore Timestamp fixture shape.",
-                        "x-firestore-type": "timestamp",
-                        "additionalProperties": false,
-                        "required": [
-                          "_seconds",
-                          "_nanoseconds"
-                        ],
-                        "properties": {
-                          "_seconds": {
-                            "type": "integer"
-                          },
-                          "_nanoseconds": {
-                            "type": "integer",
-                            "minimum": 0,
-                            "maximum": 999999999
-                          }
-                        }
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  }
-                }
-              },
-              "createdAt": {
-                "type": "object",
-                "description": "Serialized Firestore Timestamp fixture shape.",
-                "x-firestore-type": "timestamp",
-                "additionalProperties": false,
-                "required": [
-                  "_seconds",
-                  "_nanoseconds"
-                ],
-                "properties": {
-                  "_seconds": {
-                    "type": "integer"
-                  },
-                  "_nanoseconds": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 999999999
-                  }
-                }
-              },
-              "updatedAt": {
-                "type": "object",
-                "description": "Serialized Firestore Timestamp fixture shape.",
-                "x-firestore-type": "timestamp",
-                "additionalProperties": false,
-                "required": [
-                  "_seconds",
-                  "_nanoseconds"
-                ],
-                "properties": {
-                  "_seconds": {
-                    "type": "integer"
-                  },
-                  "_nanoseconds": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 999999999
-                  }
-                }
-              }
-            },
-            "definitions": {
-              "storageObjectPath": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 512,
-                "pattern": "^[^/\\u0000][^\\u0000]*$"
-              }
-            }
-          }
-        },
-        "logoPhoto": {
-          "anyOf": [
-            {
-              "title": "UploadedPhoto",
-              "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "id",
-                "url",
-                "storagePath",
-                "thumbnailUrl",
-                "thumbnailStoragePath",
-                "position",
-                "createdAt",
-                "updatedAt"
-              ],
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 120,
-                  "pattern": "^[A-Za-z0-9_-]+$"
-                },
-                "url": {
-                  "type": "string",
-                  "format": "uri",
-                  "maxLength": 2048
-                },
-                "storagePath": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512,
-                  "pattern": "^[^/\\u0000][^\\u0000]*$"
-                },
-                "thumbnailUrl": {
-                  "anyOf": [
-                    {
-                      "type": "string",
-                      "format": "uri",
-                      "maxLength": 2048
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                },
-                "thumbnailStoragePath": {
-                  "anyOf": [
-                    {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 512,
-                      "pattern": "^[^/\\u0000][^\\u0000]*$"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                },
-                "position": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "moderation": {
-                  "type": [
-                    "object",
-                    "null"
-                  ],
-                  "additionalProperties": false,
-                  "required": [
-                    "status"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "enum": [
-                        "pending",
-                        "approved",
-                        "rejected"
-                      ]
-                    },
-                    "reason": {
-                      "type": [
-                        "string",
-                        "null"
-                      ],
-                      "maxLength": 240
-                    },
-                    "reviewedAt": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "description": "Serialized Firestore Timestamp fixture shape.",
-                          "x-firestore-type": "timestamp",
-                          "additionalProperties": false,
-                          "required": [
-                            "_seconds",
-                            "_nanoseconds"
-                          ],
-                          "properties": {
-                            "_seconds": {
-                              "type": "integer"
-                            },
-                            "_nanoseconds": {
-                              "type": "integer",
-                              "minimum": 0,
-                              "maximum": 999999999
-                            }
-                          }
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    }
-                  }
-                },
-                "createdAt": {
-                  "type": "object",
-                  "description": "Serialized Firestore Timestamp fixture shape.",
-                  "x-firestore-type": "timestamp",
-                  "additionalProperties": false,
-                  "required": [
-                    "_seconds",
-                    "_nanoseconds"
-                  ],
-                  "properties": {
-                    "_seconds": {
-                      "type": "integer"
-                    },
-                    "_nanoseconds": {
-                      "type": "integer",
-                      "minimum": 0,
-                      "maximum": 999999999
-                    }
-                  }
-                },
-                "updatedAt": {
-                  "type": "object",
-                  "description": "Serialized Firestore Timestamp fixture shape.",
-                  "x-firestore-type": "timestamp",
-                  "additionalProperties": false,
-                  "required": [
-                    "_seconds",
-                    "_nanoseconds"
-                  ],
-                  "properties": {
-                    "_seconds": {
-                      "type": "integer"
-                    },
-                    "_nanoseconds": {
-                      "type": "integer",
-                      "minimum": 0,
-                      "maximum": 999999999
-                    }
-                  }
-                }
-              },
-              "definitions": {
-                "storageObjectPath": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512,
-                  "pattern": "^[^/\\u0000][^\\u0000]*$"
-                }
-              }
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 40
-          },
-          "maxItems": 12,
-          "uniqueItems": true
-        },
-        "instagramHandle": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 320
-        },
-        "phoneNumber": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 320
-        },
-        "email": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 320
-        },
-        "hostDefaults": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "primaryActivityKind": {
-              "type": "string",
-              "enum": [
-                "socialRun",
-                "running",
-                "walking",
-                "pickleball",
-                "padel",
-                "tennis",
-                "badminton",
-                "cycling",
-                "spinClass",
-                "yoga",
-                "strengthTraining",
-                "pubQuiz",
-                "barCrawl",
-                "dinner",
-                "singlesMixer",
-                "openActivity"
-              ]
-            },
-            "supportedActivityKinds": {
-              "type": "array",
-              "maxItems": 16,
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "socialRun",
-                  "running",
-                  "walking",
-                  "pickleball",
-                  "padel",
-                  "tennis",
-                  "badminton",
-                  "cycling",
-                  "spinClass",
-                  "yoga",
-                  "strengthTraining",
-                  "pubQuiz",
-                  "barCrawl",
-                  "dinner",
-                  "singlesMixer",
-                  "openActivity"
-                ]
-              }
-            },
-            "eventPolicy": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "admissionPreset": {
-                  "type": "string",
-                  "enum": [
-                    "openCapacity",
-                    "inviteOnly",
-                    "balancedSingles",
-                    "fixedCohortCaps"
-                  ]
-                },
-                "minAge": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 120
-                },
-                "maxAge": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 120
-                },
-                "maxMen": {
-                  "type": [
-                    "integer",
-                    "null"
-                  ],
-                  "minimum": 0
-                },
-                "maxWomen": {
-                  "type": [
-                    "integer",
-                    "null"
-                  ],
-                  "minimum": 0
-                },
-                "dynamicPricingEnabled": {
-                  "type": "boolean"
-                },
-                "crossPathsPairCapacity": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 100
-                },
-                "dynamicPricingStepInPaise": {
-                  "type": [
-                    "integer",
-                    "null"
-                  ],
-                  "minimum": 0,
-                  "maximum": 100000000
-                },
-                "dynamicPricingMaxInPaise": {
-                  "type": [
-                    "integer",
-                    "null"
-                  ],
-                  "minimum": 0,
-                  "maximum": 100000000
-                },
-                "cancellationPolicyId": {
-                  "type": "string",
-                  "enum": [
-                    "flexible",
-                    "standard",
-                    "strict"
-                  ]
-                }
-              }
-            },
-            "eventSuccess": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "enabled": {
-                  "type": "boolean"
-                },
-                "layoutId": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
-                },
-                "playbookId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 120
-                },
-                "selectedModuleIds": {
-                  "type": "array",
-                  "maxItems": 24,
-                  "items": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 120
-                  }
-                },
-                "moduleSelectionConfigured": {
-                  "type": "boolean"
-                },
-                "structureConfig": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "unitKind",
-                    "unitSize",
-                    "revealCountdownSeconds"
-                  ],
-                  "properties": {
-                    "unitKind": {
-                      "type": "string",
-                      "enum": [
-                        "wholeGroup",
-                        "pods",
-                        "pairs",
-                        "teams",
-                        "tables"
-                      ]
-                    },
-                    "unitSize": {
-                      "type": "integer",
-                      "minimum": 1,
-                      "maximum": 1000
-                    },
-                    "unitCount": {
-                      "type": [
-                        "integer",
-                        "null"
-                      ],
-                      "minimum": 1,
-                      "maximum": 200
-                    },
-                    "rotationIntervalMinutes": {
-                      "type": [
-                        "integer",
-                        "null"
-                      ],
-                      "minimum": 5,
-                      "maximum": 180
-                    },
-                    "topology": {
-                      "type": "string",
-                      "enum": [
-                        "set",
-                        "sequence",
-                        "adjacency"
-                      ]
-                    },
-                    "resourceCapacity": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "additionalProperties": false,
-                          "required": [
-                            "concurrentUnits",
-                            "resourceLabelId",
-                            "seatsPerUnit"
-                          ],
-                          "properties": {
-                            "concurrentUnits": {
-                              "type": [
-                                "integer",
-                                "null"
-                              ],
-                              "minimum": 1,
-                              "maximum": 200
-                            },
-                            "resourceLabelId": {
-                              "type": "string",
-                              "enum": [
-                                "court",
-                                "table",
-                                "lane",
-                                "board"
-                              ]
-                            },
-                            "seatsPerUnit": {
-                              "type": [
-                                "integer",
-                                "null"
-                              ],
-                              "minimum": 1,
-                              "maximum": 1000
-                            }
-                          }
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "revealCountdownSeconds": {
-                      "type": "integer",
-                      "minimum": 0,
-                      "maximum": 60
-                    },
-                    "rotationRepeatStrategy": {
-                      "type": "string",
-                      "enum": [
-                        "avoid",
-                        "allowWhenExhausted"
-                      ]
-                    },
-                    "maxPairMeetings": {
-                      "type": "integer",
-                      "minimum": 1,
-                      "maximum": 10
-                    },
-                    "balanceActivityAttributes": {
-                      "type": "array",
-                      "maxItems": 8,
-                      "uniqueItems": true,
-                      "items": {
-                        "type": "string",
-                        "enum": [
-                          "paceBand",
-                          "skillBand",
-                          "roleBand"
-                        ]
-                      }
-                    },
-                    "clusterActivityAttributes": {
-                      "type": "array",
-                      "maxItems": 8,
-                      "uniqueItems": true,
-                      "items": {
-                        "type": "string",
-                        "enum": [
-                          "paceBand",
-                          "skillBand",
-                          "roleBand"
-                        ]
-                      }
-                    }
-                  },
-                  "allOf": [
-                    {
-                      "if": {
-                        "required": [
-                          "resourceCapacity"
-                        ],
-                        "properties": {
-                          "resourceCapacity": {
-                            "type": "object",
-                            "required": [
-                              "seatsPerUnit"
-                            ],
-                            "properties": {
-                              "seatsPerUnit": {
-                                "type": "integer"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "then": {
-                        "required": [
-                          "topology"
-                        ],
-                        "properties": {
-                          "topology": {
-                            "const": "adjacency"
-                          }
-                        }
-                      }
-                    }
-                  ]
-                },
-                "hostGoal": {
-                  "type": "string",
-                  "maxLength": 300
-                },
-                "wingmanRequestsEnabled": {
-                  "type": "boolean"
-                },
-                "contextualOpenersEnabled": {
-                  "type": "boolean"
-                },
-                "compatibilityAffectsRanking": {
-                  "type": "boolean"
-                },
-                "questionnaireConfig": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "templateId"
-                  ],
-                  "properties": {
-                    "templateId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 120
-                    },
-                    "customTitle": {
-                      "type": [
-                        "string",
-                        "null"
-                      ],
-                      "maxLength": 80
-                    },
-                    "customQuestions": {
-                      "type": "array",
-                      "maxItems": 8,
-                      "items": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "required": [
-                          "id",
-                          "prompt",
-                          "options"
-                        ],
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 120
-                          },
-                          "prompt": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 140
-                          },
-                          "options": {
-                            "type": "array",
-                            "minItems": 2,
-                            "maxItems": 5,
-                            "items": {
-                              "type": "object",
-                              "additionalProperties": false,
-                              "required": [
-                                "id",
-                                "label"
-                              ],
-                              "properties": {
-                                "id": {
-                                  "type": "string",
-                                  "minLength": 1,
-                                  "maxLength": 120
-                                },
-                                "label": {
-                                  "type": "string",
-                                  "minLength": 1,
-                                  "maxLength": 80
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "attendeePrompt": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 300
-                }
-              }
-            },
-            "eventSuccessByActivityKind": {
-              "type": "object",
-              "maxProperties": 16,
-              "additionalProperties": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "enabled": {
-                    "type": "boolean"
-                  },
-                  "layoutId": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
-                  },
-                  "playbookId": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 120
-                  },
-                  "selectedModuleIds": {
-                    "type": "array",
-                    "maxItems": 24,
-                    "items": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 120
-                    }
-                  },
-                  "moduleSelectionConfigured": {
-                    "type": "boolean"
-                  },
-                  "structureConfig": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "unitKind",
-                      "unitSize",
-                      "revealCountdownSeconds"
-                    ],
-                    "properties": {
-                      "unitKind": {
-                        "type": "string",
-                        "enum": [
-                          "wholeGroup",
-                          "pods",
-                          "pairs",
-                          "teams",
-                          "tables"
-                        ]
-                      },
-                      "unitSize": {
-                        "type": "integer",
-                        "minimum": 1,
-                        "maximum": 1000
-                      },
-                      "unitCount": {
-                        "type": [
-                          "integer",
-                          "null"
-                        ],
-                        "minimum": 1,
-                        "maximum": 200
-                      },
-                      "rotationIntervalMinutes": {
-                        "type": [
-                          "integer",
-                          "null"
-                        ],
-                        "minimum": 5,
-                        "maximum": 180
-                      },
-                      "topology": {
-                        "type": "string",
-                        "enum": [
-                          "set",
-                          "sequence",
-                          "adjacency"
-                        ]
-                      },
-                      "resourceCapacity": {
-                        "anyOf": [
-                          {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "required": [
-                              "concurrentUnits",
-                              "resourceLabelId",
-                              "seatsPerUnit"
-                            ],
-                            "properties": {
-                              "concurrentUnits": {
-                                "type": [
-                                  "integer",
-                                  "null"
-                                ],
-                                "minimum": 1,
-                                "maximum": 200
-                              },
-                              "resourceLabelId": {
-                                "type": "string",
-                                "enum": [
-                                  "court",
-                                  "table",
-                                  "lane",
-                                  "board"
-                                ]
-                              },
-                              "seatsPerUnit": {
-                                "type": [
-                                  "integer",
-                                  "null"
-                                ],
-                                "minimum": 1,
-                                "maximum": 1000
-                              }
-                            }
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
-                      },
-                      "revealCountdownSeconds": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 60
-                      },
-                      "rotationRepeatStrategy": {
-                        "type": "string",
-                        "enum": [
-                          "avoid",
-                          "allowWhenExhausted"
-                        ]
-                      },
-                      "maxPairMeetings": {
-                        "type": "integer",
-                        "minimum": 1,
-                        "maximum": 10
-                      },
-                      "balanceActivityAttributes": {
-                        "type": "array",
-                        "maxItems": 8,
-                        "uniqueItems": true,
-                        "items": {
-                          "type": "string",
-                          "enum": [
-                            "paceBand",
-                            "skillBand",
-                            "roleBand"
-                          ]
-                        }
-                      },
-                      "clusterActivityAttributes": {
-                        "type": "array",
-                        "maxItems": 8,
-                        "uniqueItems": true,
-                        "items": {
-                          "type": "string",
-                          "enum": [
-                            "paceBand",
-                            "skillBand",
-                            "roleBand"
-                          ]
-                        }
-                      }
-                    },
-                    "allOf": [
-                      {
-                        "if": {
-                          "required": [
-                            "resourceCapacity"
-                          ],
-                          "properties": {
-                            "resourceCapacity": {
-                              "type": "object",
-                              "required": [
-                                "seatsPerUnit"
-                              ],
-                              "properties": {
-                                "seatsPerUnit": {
-                                  "type": "integer"
-                                }
-                              }
-                            }
-                          }
-                        },
-                        "then": {
-                          "required": [
-                            "topology"
-                          ],
-                          "properties": {
-                            "topology": {
-                              "const": "adjacency"
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "hostGoal": {
-                    "type": "string",
-                    "maxLength": 300
-                  },
-                  "wingmanRequestsEnabled": {
-                    "type": "boolean"
-                  },
-                  "contextualOpenersEnabled": {
-                    "type": "boolean"
-                  },
-                  "compatibilityAffectsRanking": {
-                    "type": "boolean"
-                  },
-                  "questionnaireConfig": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "templateId"
-                    ],
-                    "properties": {
-                      "templateId": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 120
-                      },
-                      "customTitle": {
-                        "type": [
-                          "string",
-                          "null"
-                        ],
-                        "maxLength": 80
-                      },
-                      "customQuestions": {
-                        "type": "array",
-                        "maxItems": 8,
-                        "items": {
-                          "type": "object",
-                          "additionalProperties": false,
-                          "required": [
-                            "id",
-                            "prompt",
-                            "options"
-                          ],
-                          "properties": {
-                            "id": {
-                              "type": "string",
-                              "minLength": 1,
-                              "maxLength": 120
-                            },
-                            "prompt": {
-                              "type": "string",
-                              "minLength": 1,
-                              "maxLength": 140
-                            },
-                            "options": {
-                              "type": "array",
-                              "minItems": 2,
-                              "maxItems": 5,
-                              "items": {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "required": [
-                                  "id",
-                                  "label"
-                                ],
-                                "properties": {
-                                  "id": {
-                                    "type": "string",
-                                    "minLength": 1,
-                                    "maxLength": 120
-                                  },
-                                  "label": {
-                                    "type": "string",
-                                    "minLength": 1,
-                                    "maxLength": 80
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "attendeePrompt": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "maxLength": 300
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-};
-
 export const hostAnalyticsQueryCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/host_analytics_query_payload.schema.json",
@@ -266870,18 +261323,6 @@ export const hostAnalyticsQueryCallablePayloadSchema = {
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "clubId": {
-      "anyOf": [
-        {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
     "organizerId": {
       "anyOf": [
         {
@@ -267016,19 +261457,10 @@ export const hostAnalyticsCallableResponseSchema = {
       "additionalProperties": false,
       "required": [
         "organizerIds",
-        "clubIds",
         "eventIds"
       ],
       "properties": {
         "organizerIds": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
-          }
-        },
-        "clubIds": {
           "type": "array",
           "items": {
             "type": "string",
@@ -267043,13 +261475,6 @@ export const hostAnalyticsCallableResponseSchema = {
             "minLength": 1,
             "maxLength": 180
           }
-        },
-        "clubName": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 160
         },
         "organizerName": {
           "type": [
@@ -267162,7 +261587,7 @@ export const hostAnalyticsCallableResponseSchema = {
         "additionalProperties": false,
         "required": [
           "eventId",
-          "clubId",
+          "organizerId",
           "title",
           "startTime",
           "status",
@@ -267189,11 +261614,6 @@ export const hostAnalyticsCallableResponseSchema = {
         ],
         "properties": {
           "eventId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
-          },
-          "clubId": {
             "type": "string",
             "minLength": 1,
             "maxLength": 180
@@ -268056,15 +262476,15 @@ export const userAnalyticsCallableResponseSchema = {
   }
 };
 
-export const addClubHostCallablePayloadSchema = {
+export const addOrganizerHostCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/add_club_host_payload.schema.json",
-  "title": "AddClubHostCallablePayload",
-  "description": "Callable payload accepted by addClubHost.",
+  "title": "AddOrganizerHostCallablePayload",
+  "description": "Callable payload accepted by addOrganizerHost.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "clubId"
+    "organizerId"
   ],
   "oneOf": [
     {
@@ -268079,7 +262499,7 @@ export const addClubHostCallablePayloadSchema = {
     }
   ],
   "properties": {
-    "clubId": {
+    "organizerId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -268239,19 +262659,19 @@ export const transferOrganizerOwnershipCallablePayloadSchema = {
   }
 };
 
-export const removeClubHostCallablePayloadSchema = {
+export const removeOrganizerHostCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/remove_club_host_payload.schema.json",
-  "title": "RemoveClubHostCallablePayload",
-  "description": "Callable payload accepted by removeClubHost.",
+  "title": "RemoveOrganizerHostCallablePayload",
+  "description": "Callable payload accepted by removeOrganizerHost.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "clubId",
+    "organizerId",
     "uid"
   ],
   "properties": {
-    "clubId": {
+    "organizerId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -268260,158 +262680,6 @@ export const removeClubHostCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
-    }
-  }
-};
-
-export const transferClubOwnershipCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/transfer_club_ownership_payload.schema.json",
-  "title": "TransferClubOwnershipCallablePayload",
-  "description": "Callable payload accepted by transferClubOwnership.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "clubId",
-    "uid"
-  ],
-  "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "uid": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    }
-  }
-};
-
-export const requestClubClaimCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/request_club_claim_payload.schema.json",
-  "title": "RequestClubClaimCallablePayload",
-  "description": "Callable payload accepted by requestClubClaim.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "clubId",
-    "requesterName",
-    "requesterRole"
-  ],
-  "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "requesterName": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120
-    },
-    "requesterRole": {
-      "type": "string",
-      "enum": [
-        "owner",
-        "founder",
-        "manager",
-        "marketer",
-        "venueManager",
-        "other"
-      ]
-    },
-    "businessEmail": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 320
-    },
-    "businessPhone": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 32
-    },
-    "proofUrls": {
-      "type": "array",
-      "maxItems": 8,
-      "items": {
-        "type": "string",
-        "format": "uri",
-        "maxLength": 2048
-      },
-      "uniqueItems": true
-    },
-    "message": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 1000
-    }
-  }
-};
-
-export const requestClubClaimCallableResponseSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callable_responses/request_club_claim_response.schema.json",
-  "title": "RequestClubClaimCallableResponse",
-  "description": "Callable response returned by requestClubClaim after a public organizer claim request is accepted for review.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "requestId",
-    "status"
-  ],
-  "properties": {
-    "requestId": {
-      "type": "string",
-      "minLength": 1
-    },
-    "status": {
-      "type": "string",
-      "enum": [
-        "pending"
-      ]
-    }
-  }
-};
-
-export const adminDecideClubClaimCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
-  "title": "AdminDecideClubClaimCallablePayload",
-  "description": "Callable payload accepted by adminDecideClubClaim.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "requestId",
-    "decision"
-  ],
-  "properties": {
-    "requestId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "decision": {
-      "type": "string",
-      "enum": [
-        "approve",
-        "reject"
-      ]
-    },
-    "decisionReason": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 1000
     }
   }
 };
@@ -268770,7 +263038,7 @@ export const adminRecordOrganizerCurationCallablePayloadSchema = {
                 "type": "string",
                 "enum": [
                   "hostDiscoveryRun",
-                  "seedClub",
+                  "seedOrganizer",
                   "userReportedSearchResult",
                   "manualNote"
                 ]
@@ -268985,7 +263253,7 @@ export const adminRecordOrganizerCurationCallablePayloadSchema = {
                 "type": "string",
                 "enum": [
                   "hostDiscoveryRun",
-                  "seedClub",
+                  "seedOrganizer",
                   "userReportedSearchResult",
                   "manualNote"
                 ]
@@ -269024,7 +263292,7 @@ export const adminRecordOrganizerCurationCallablePayloadSchema = {
           "type": "string",
           "enum": [
             "hostDiscoveryRun",
-            "seedClub",
+            "seedOrganizer",
             "userReportedSearchResult",
             "manualNote"
           ]
@@ -271197,20 +265465,20 @@ export const adminDecideOrganizerPolicyGapCallablePayloadSchema = {
   }
 };
 
-export const adminSetClubIndexStatusCallablePayloadSchema = {
+export const adminSetOrganizerIndexStatusCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
-  "title": "AdminSetClubIndexStatusCallablePayload",
-  "description": "Callable payload accepted by adminSetClubIndexStatus.",
+  "title": "AdminSetOrganizerIndexStatusCallablePayload",
+  "description": "Callable payload accepted by adminSetOrganizerIndexStatus.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "clubId",
+    "organizerId",
     "indexStatus",
     "checklist"
   ],
   "properties": {
-    "clubId": {
+    "organizerId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -271373,484 +265641,6 @@ export const adminSetCrossPathsShowcaseEligibilityCallablePayloadSchema = {
     "reviewNote": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 1000
-    }
-  }
-};
-
-export const adminGetClubDetailsCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/admin_get_club_details_payload.schema.json",
-  "title": "AdminGetClubDetailsCallablePayload",
-  "description": "Callable payload accepted by adminGetClubDetails.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "clubId"
-  ],
-  "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    }
-  }
-};
-
-export const adminListClubDetailsCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/admin_list_club_details_payload.schema.json",
-  "title": "AdminListClubDetailsCallablePayload",
-  "description": "Deprecated compatibility callable payload accepted by adminListClubDetails. The handler reads canonical organizer profile rows from organizers/{organizerId}; new clients use adminListOrganizerDetails.",
-  "type": "object",
-  "additionalProperties": false,
-  "properties": {
-    "query": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 160
-    },
-    "citySlug": {
-      "anyOf": [
-        {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120,
-          "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "citySlugs": {
-      "anyOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 120,
-            "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
-          },
-          "minItems": 1,
-          "maxItems": 10,
-          "uniqueItems": true
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "publishStatus": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "enum": [
-        "draft",
-        "qa",
-        "published",
-        "suppressed",
-        "removed",
-        null
-      ]
-    },
-    "appVisibility": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "enum": [
-        "discoverable",
-        "hidden",
-        null
-      ]
-    },
-    "limit": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 100
-    }
-  }
-};
-
-export const adminUpdateClubDetailsCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/admin_update_club_details_payload.schema.json",
-  "title": "AdminUpdateClubDetailsCallablePayload",
-  "description": "Callable payload accepted by adminUpdateClubDetails. This edits owner-safe organizer listing fields through an audited admin callable.",
-  "x-callable-shape": "patch",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "clubId",
-    "fields"
-  ],
-  "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "fields": {
-      "type": "object",
-      "additionalProperties": false,
-      "minProperties": 1,
-      "properties": {
-        "name": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120
-        },
-        "description": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 2000
-        },
-        "location": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120,
-          "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
-        },
-        "area": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120
-        },
-        "tags": {
-          "type": "array",
-          "maxItems": 20,
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 80
-          }
-        },
-        "instagramHandle": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 320
-        },
-        "phoneNumber": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 320
-        },
-        "email": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 320
-        },
-        "imageUrl": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "uri",
-              "maxLength": 2048
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "profileImageUrl": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "uri",
-              "maxLength": 2048
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "organizerType": {
-          "type": "string",
-          "enum": [
-            "club",
-            "community",
-            "individual",
-            "eventProducer",
-            "venue",
-            "brand"
-          ],
-          "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
-        },
-        "publicCategoryLabel": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 120
-        },
-        "entityKind": {
-          "type": "string",
-          "enum": [
-            "club",
-            "venue",
-            "eventOrganizer",
-            "creatorCommunity",
-            "brand"
-          ]
-        },
-        "entitySubtypes": {
-          "type": "array",
-          "maxItems": 20,
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 80
-          }
-        },
-        "displayCategory": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 120
-        },
-        "cityName": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 120
-        },
-        "regionName": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 120
-        },
-        "countryCode": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "pattern": "^[A-Z]{2}$"
-        },
-        "countryName": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 120
-        },
-        "appVisibility": {
-          "type": "string",
-          "enum": [
-            "discoverable",
-            "hidden"
-          ]
-        },
-        "publicPage": {
-          "type": "object",
-          "additionalProperties": false,
-          "minProperties": 1,
-          "properties": {
-            "slug": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[a-z0-9-]+$"
-            },
-            "citySlug": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "minLength": 1,
-              "maxLength": 80,
-              "pattern": "^[a-z0-9-]+$"
-            },
-            "canonicalPath": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 240
-            },
-            "publishStatus": {
-              "type": "string",
-              "enum": [
-                "draft",
-                "qa",
-                "published",
-                "suppressed",
-                "removed"
-              ]
-            },
-            "seoTitle": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 120
-            },
-            "seoDescription": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 320
-            }
-          }
-        },
-        "provenance": {
-          "type": "object",
-          "additionalProperties": false,
-          "minProperties": 1,
-          "properties": {
-            "sourceConfidence": {
-              "type": "string",
-              "enum": [
-                "seedOnly",
-                "low",
-                "medium",
-                "high",
-                "ownerVerified"
-              ]
-            },
-            "verificationStatus": {
-              "type": "string",
-              "enum": [
-                "unverified",
-                "sourceBacked",
-                "ownerVerified"
-              ]
-            }
-          }
-        },
-        "ownerLinks": {
-          "type": "array",
-          "maxItems": 20,
-          "description": "Replaces the organizer page links, in display order. An empty array removes them.",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "description": "An owner link as an admin edit sends it. showUntil is an ISO date-time; the server checks the URL against the owner-link policy before saving.",
-            "required": [
-              "id",
-              "label",
-              "subtitle",
-              "url",
-              "icon",
-              "pinned",
-              "showUntil"
-            ],
-            "properties": {
-              "id": {
-                "type": "string",
-                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
-              },
-              "label": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 80
-              },
-              "subtitle": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 1,
-                "maxLength": 80
-              },
-              "url": {
-                "type": "string",
-                "format": "uri",
-                "maxLength": 4096,
-                "pattern": "^https://"
-              },
-              "icon": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "enum": [
-                  "link",
-                  "website",
-                  "community",
-                  "social",
-                  "tickets",
-                  "calendar",
-                  "shop",
-                  "partner",
-                  "video",
-                  "route",
-                  null
-                ],
-                "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
-              },
-              "pinned": {
-                "type": "boolean"
-              },
-              "showUntil": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "format": "date-time"
-              }
-            }
-          }
-        },
-        "publicProfile": {
-          "type": "object",
-          "additionalProperties": false,
-          "minProperties": 1,
-          "properties": {
-            "headline": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 160
-            },
-            "summary": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 800
-            },
-            "sourceSummary": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 800
-            },
-            "formats": {
-              "type": "array",
-              "maxItems": 12,
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 80
-              }
-            }
-          }
-        }
-      }
-    },
-    "reviewNote": {
-      "type": [
-        "string",
-        "null"
-      ],
       "maxLength": 1000
     }
   }
@@ -273997,18 +267787,6 @@ export const adminListEventDetailsCallablePayloadSchema = {
       ],
       "maxLength": 160
     },
-    "clubId": {
-      "anyOf": [
-        {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
     "organizerId": {
       "anyOf": [
         {
@@ -274714,19 +268492,19 @@ export const adminTakedownExternalEventCallablePayloadSchema = {
   }
 };
 
-export const startClubHostConversationCallablePayloadSchema = {
+export const startOrganizerHostConversationCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/start_club_host_conversation_payload.schema.json",
-  "title": "StartClubHostConversationCallablePayload",
-  "description": "Callable payload accepted by startClubHostConversation.",
+  "title": "StartOrganizerHostConversationCallablePayload",
+  "description": "Callable payload accepted by startOrganizerHostConversation.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "clubId",
+    "organizerId",
     "hostUid"
   ],
   "properties": {
-    "clubId": {
+    "organizerId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -274799,89 +268577,21 @@ export const startOrganizerContactConversationCallablePayloadSchema = {
   }
 };
 
-export const archiveClubCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/archive_club_payload.schema.json",
-  "title": "ArchiveClubCallablePayload",
-  "description": "Callable payload accepted by archiveClub.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "clubId"
-  ],
-  "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "reason": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "maxLength": 500
-    }
-  }
-};
-
-export const deleteClubCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/delete_club_payload.schema.json",
-  "title": "DeleteClubCallablePayload",
-  "description": "Callable payload accepted by deleteClub.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "clubId"
-  ],
-  "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    }
-  }
-};
-
-export const clubMembershipCallablePayloadSchema = {
+export const organizerMembershipCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/club_membership_payload.schema.json",
-  "title": "ClubMembershipCallablePayload",
+  "title": "OrganizerMembershipCallablePayload",
   "description": "Retired legacy membership payload retained only for schema-history decoding.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "clubId"
+    "organizerId"
   ],
   "properties": {
-    "clubId": {
+    "organizerId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
-    }
-  }
-};
-
-export const setClubNotificationPreferenceCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/set_club_notification_preference_payload.schema.json",
-  "title": "SetClubNotificationPreferenceCallablePayload",
-  "description": "Callable payload accepted by setClubNotificationPreference.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "clubId",
-    "enabled"
-  ],
-  "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "enabled": {
-      "type": "boolean"
     }
   }
 };
@@ -280614,12 +274324,6 @@ export const createEventCallablePayloadSchema = {
         "null"
       ],
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
-    },
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "description": "Deprecated compatibility alias for organizerId."
     },
     "startTimeMillis": {
       "type": "integer"
@@ -289671,11 +283375,6 @@ export const recordOrganizerAnalyticsEventCallablePayloadSchema = {
   ],
   "properties": {
     "organizerId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -313979,7 +307678,6 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
             "accessStatus",
             "attendanceStatus",
             "eventId",
-            "clubId",
             "organizerId",
             "requiredFieldIds",
             "completedFieldIds",
@@ -314020,11 +307718,6 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
               ]
             },
             "eventId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 180
-            },
-            "clubId": {
               "type": "string",
               "minLength": 1,
               "maxLength": 180
@@ -342178,552 +335871,6 @@ export const createEventReviewCallablePayloadSchema = {
   }
 };
 
-export const createPublicClubReviewCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/create_public_club_review_payload.schema.json",
-  "title": "CreatePublicClubReviewCallablePayload",
-  "description": "Callable payload accepted by createPublicClubReview for unverified public organizer listing reviews.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "clubId",
-    "rating",
-    "comment",
-    "reviewerName",
-    "isAnonymous",
-    "submittedFromPath"
-  ],
-  "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "rating": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 5
-    },
-    "comment": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1000
-    },
-    "reviewerName": {
-      "type": "string",
-      "maxLength": 120
-    },
-    "isAnonymous": {
-      "type": "boolean"
-    },
-    "submittedFromPath": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 240
-    }
-  }
-};
-
-export const createPublicClubReviewCallableResponseSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callable_responses/create_public_club_review_response.schema.json",
-  "title": "CreatePublicClubReviewCallableResponse",
-  "description": "Callable response returned by createPublicClubReview after a public organizer review is accepted.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "reviewId",
-    "review"
-  ],
-  "properties": {
-    "reviewId": {
-      "type": "string",
-      "minLength": 1
-    },
-    "review": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "id",
-        "reviewerName",
-        "rating",
-        "comment",
-        "createdAt",
-        "verificationStatus",
-        "source",
-        "moderationStatus",
-        "isAnonymous",
-        "ownerResponse"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "reviewerName": {
-          "type": "string",
-          "minLength": 1
-        },
-        "rating": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 5
-        },
-        "comment": {
-          "type": "string"
-        },
-        "createdAt": {
-          "type": "string",
-          "minLength": 1
-        },
-        "verificationStatus": {
-          "type": "string",
-          "enum": [
-            "verified",
-            "unverified"
-          ]
-        },
-        "source": {
-          "type": "string",
-          "enum": [
-            "catchEvent",
-            "publicListing"
-          ]
-        },
-        "moderationStatus": {
-          "type": "string",
-          "enum": [
-            "published",
-            "pending"
-          ]
-        },
-        "isAnonymous": {
-          "type": "boolean"
-        },
-        "ownerResponse": {
-          "anyOf": [
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "hostName",
-                "hostAvatarUrl",
-                "message",
-                "updatedAt"
-              ],
-              "properties": {
-                "hostName": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "hostAvatarUrl": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "format": "uri"
-                },
-                "message": {
-                  "type": "string"
-                },
-                "updatedAt": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              }
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      }
-    }
-  },
-  "definitions": {
-    "publicClubReview": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "id",
-        "reviewerName",
-        "rating",
-        "comment",
-        "createdAt",
-        "verificationStatus",
-        "source",
-        "moderationStatus",
-        "isAnonymous",
-        "ownerResponse"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "reviewerName": {
-          "type": "string",
-          "minLength": 1
-        },
-        "rating": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 5
-        },
-        "comment": {
-          "type": "string"
-        },
-        "createdAt": {
-          "type": "string",
-          "minLength": 1
-        },
-        "verificationStatus": {
-          "type": "string",
-          "enum": [
-            "verified",
-            "unverified"
-          ]
-        },
-        "source": {
-          "type": "string",
-          "enum": [
-            "catchEvent",
-            "publicListing"
-          ]
-        },
-        "moderationStatus": {
-          "type": "string",
-          "enum": [
-            "published",
-            "pending"
-          ]
-        },
-        "isAnonymous": {
-          "type": "boolean"
-        },
-        "ownerResponse": {
-          "anyOf": [
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "hostName",
-                "hostAvatarUrl",
-                "message",
-                "updatedAt"
-              ],
-              "properties": {
-                "hostName": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "hostAvatarUrl": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "format": "uri"
-                },
-                "message": {
-                  "type": "string"
-                },
-                "updatedAt": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              }
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      }
-    },
-    "ownerResponse": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "hostName",
-        "hostAvatarUrl",
-        "message",
-        "updatedAt"
-      ],
-      "properties": {
-        "hostName": {
-          "type": "string",
-          "minLength": 1
-        },
-        "hostAvatarUrl": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "uri"
-        },
-        "message": {
-          "type": "string"
-        },
-        "updatedAt": {
-          "type": "string",
-          "minLength": 1
-        }
-      }
-    }
-  }
-};
-
-export const listPublicClubReviewsCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/list_public_club_reviews_payload.schema.json",
-  "title": "ListPublicClubReviewsCallablePayload",
-  "description": "Callable payload accepted by listPublicClubReviews for public organizer listing review hydration.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "clubId"
-  ],
-  "properties": {
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    }
-  }
-};
-
-export const listPublicClubReviewsCallableResponseSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callable_responses/list_public_club_reviews_response.schema.json",
-  "title": "ListPublicClubReviewsCallableResponse",
-  "description": "Callable response returned by listPublicClubReviews for public organizer listing review hydration.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "reviews"
-  ],
-  "properties": {
-    "reviews": {
-      "type": "array",
-      "maxItems": 50,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "reviewerName",
-          "rating",
-          "comment",
-          "createdAt",
-          "verificationStatus",
-          "source",
-          "isAnonymous",
-          "ownerResponse"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "minLength": 1
-          },
-          "reviewerName": {
-            "type": "string",
-            "minLength": 1
-          },
-          "rating": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 5
-          },
-          "comment": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "minLength": 1
-          },
-          "verificationStatus": {
-            "type": "string",
-            "enum": [
-              "verified",
-              "unverified"
-            ]
-          },
-          "source": {
-            "type": "string",
-            "enum": [
-              "catchEvent",
-              "publicListing"
-            ]
-          },
-          "isAnonymous": {
-            "type": "boolean"
-          },
-          "ownerResponse": {
-            "anyOf": [
-              {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "hostName",
-                  "hostAvatarUrl",
-                  "message",
-                  "updatedAt"
-                ],
-                "properties": {
-                  "hostName": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "hostAvatarUrl": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "format": "uri"
-                  },
-                  "message": {
-                    "type": "string"
-                  },
-                  "updatedAt": {
-                    "type": "string",
-                    "minLength": 1
-                  }
-                }
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        }
-      }
-    }
-  },
-  "definitions": {
-    "publicClubReview": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "id",
-        "reviewerName",
-        "rating",
-        "comment",
-        "createdAt",
-        "verificationStatus",
-        "source",
-        "isAnonymous",
-        "ownerResponse"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "reviewerName": {
-          "type": "string",
-          "minLength": 1
-        },
-        "rating": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 5
-        },
-        "comment": {
-          "type": "string"
-        },
-        "createdAt": {
-          "type": "string",
-          "minLength": 1
-        },
-        "verificationStatus": {
-          "type": "string",
-          "enum": [
-            "verified",
-            "unverified"
-          ]
-        },
-        "source": {
-          "type": "string",
-          "enum": [
-            "catchEvent",
-            "publicListing"
-          ]
-        },
-        "isAnonymous": {
-          "type": "boolean"
-        },
-        "ownerResponse": {
-          "anyOf": [
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "hostName",
-                "hostAvatarUrl",
-                "message",
-                "updatedAt"
-              ],
-              "properties": {
-                "hostName": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "hostAvatarUrl": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "format": "uri"
-                },
-                "message": {
-                  "type": "string"
-                },
-                "updatedAt": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              }
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      }
-    },
-    "ownerResponse": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "hostName",
-        "hostAvatarUrl",
-        "message",
-        "updatedAt"
-      ],
-      "properties": {
-        "hostName": {
-          "type": "string",
-          "minLength": 1
-        },
-        "hostAvatarUrl": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "uri"
-        },
-        "message": {
-          "type": "string"
-        },
-        "updatedAt": {
-          "type": "string",
-          "minLength": 1
-        }
-      }
-    }
-  }
-};
-
 export const createPublicOrganizerReviewCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/create_public_organizer_review_payload.schema.json",
@@ -344135,20 +337282,10 @@ export const exploreSearchCallableResponseSchema = {
   "additionalProperties": false,
   "required": [
     "organizerIds",
-    "clubIds",
     "eventIds"
   ],
   "properties": {
     "organizerIds": {
-      "type": "array",
-      "maxItems": 50,
-      "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 256
-      }
-    },
-    "clubIds": {
       "type": "array",
       "maxItems": 50,
       "items": {
@@ -344219,7 +337356,7 @@ export const websiteHostListingProjectionSchema = {
       "type": "string",
       "enum": [
         "unclaimedScraped",
-        "appCreatedClub"
+        "appCreatedOrganizer"
       ]
     },
     "dataOrigin": {
@@ -348258,8 +341395,8 @@ export const adminGetOverviewCallableResponseSchema = {
         "moderationFlags",
         "eventSafetyReports",
         "accessApplications",
-        "clubClaimRequests",
-        "clubIndexReviews",
+        "organizerClaimRequests",
+        "organizerIndexReviews",
         "paymentIssues"
       ],
       "properties": {
@@ -348471,7 +341608,7 @@ export const adminGetOverviewCallableResponseSchema = {
             }
           }
         },
-        "clubClaimRequests": {
+        "organizerClaimRequests": {
           "type": "array",
           "items": {
             "type": "object",
@@ -348523,7 +341660,7 @@ export const adminGetOverviewCallableResponseSchema = {
             }
           }
         },
-        "clubIndexReviews": {
+        "organizerIndexReviews": {
           "type": "array",
           "items": {
             "type": "object",

@@ -17,7 +17,6 @@ const schemaEventRuntimeParticipantDocumentSchema = <String, Object?>{
   'x-owner': 'runtime claim/profile callables; owner get only; no client writes or list access',
   'required': <Object?>[
     'eventId',
-    'clubId',
     'organizerId',
     'uid',
     'eventAttendeeId',
@@ -36,11 +35,6 @@ const schemaEventRuntimeParticipantDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

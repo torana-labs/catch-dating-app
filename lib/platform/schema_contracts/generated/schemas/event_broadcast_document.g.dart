@@ -17,7 +17,7 @@ const schemaEventBroadcastDocumentSchema = <String, Object?>{
   'x-owner': 'sendEventBroadcast callable',
   'required': <Object?>[
     'eventId',
-    'clubId',
+    'organizerId',
     'actorUid',
     'audience',
     'title',
@@ -41,12 +41,6 @@ const schemaEventBroadcastDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-      'x-catch-ownership': 'server-only',
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

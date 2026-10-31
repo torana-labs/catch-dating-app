@@ -15,7 +15,7 @@ export const eventSuccessStandingsDocumentSchema: Record<string, unknown> = {
   "x-owner": "recordEventSuccessUnitOutcomes callable",
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "unitOutcome",
     "revision",
     "latestRoundIndex",
@@ -65,12 +65,6 @@ export const eventSuccessStandingsDocumentSchema: Record<string, unknown> = {
   },
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

@@ -693,7 +693,6 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
             "accessStatus",
             "attendanceStatus",
             "eventId",
-            "clubId",
             "organizerId",
             "requiredFieldIds",
             "completedFieldIds",
@@ -734,11 +733,6 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
               ]
             },
             "eventId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 180
-            },
-            "clubId": {
               "type": "string",
               "minLength": 1,
               "maxLength": 180

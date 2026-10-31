@@ -64,7 +64,7 @@ const schemaHostProfileDocumentSchema = <String, Object?>{
     'verified': <String, Object?>{
       'type': 'boolean',
     },
-    'linkedClubIds': <String, Object?>{
+    'linkedOrganizerIds': <String, Object?>{
       'type': 'array',
       'maxItems': 20,
       'uniqueItems': true,

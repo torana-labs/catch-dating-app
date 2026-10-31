@@ -17,7 +17,6 @@ const schemaEventSuccessAssignmentDraftDocumentSchema = <String, Object?>{
   'x-owner': 'event-success assignment preparation',
   'required': <Object?>[
     'eventId',
-    'clubId',
     'organizerId',
     'uid',
     'moduleId',
@@ -29,12 +28,6 @@ const schemaEventSuccessAssignmentDraftDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-      'x-catch-ownership': 'callable-owned',
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -90,7 +83,7 @@ const schemaEventSuccessAssignmentDraftDocumentSchema = <String, Object?>{
       ],
       'required': <Object?>[
         'eventId',
-        'clubId',
+        'organizerId',
         'uid',
         'moduleId',
         'label',
@@ -102,12 +95,6 @@ const schemaEventSuccessAssignmentDraftDocumentSchema = <String, Object?>{
       ],
       'properties': <String, Object?>{
         'eventId': <String, Object?>{
-          'type': 'string',
-          'minLength': 1,
-          'maxLength': 180,
-          'x-catch-ownership': 'callable-owned',
-        },
-        'clubId': <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 180,

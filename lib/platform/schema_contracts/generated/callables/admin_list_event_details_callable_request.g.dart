@@ -9,7 +9,6 @@
 final class AdminListEventDetailsCallableRequest {
   const AdminListEventDetailsCallableRequest({
     this.query,
-    this.clubId,
     this.organizerId,
     this.citySlug,
     this.citySlugs,
@@ -20,7 +19,6 @@ final class AdminListEventDetailsCallableRequest {
   });
 
   final String? query;
-  final String? clubId;
   final String? organizerId;
   final String? citySlug;
   final List<String>? citySlugs;
@@ -31,7 +29,6 @@ final class AdminListEventDetailsCallableRequest {
 
   Map<String, Object?> toJson() => {
     'query': ?query,
-    'clubId': ?clubId,
     'organizerId': ?organizerId,
     'citySlug': ?citySlug,
     'citySlugs': ?citySlugs,

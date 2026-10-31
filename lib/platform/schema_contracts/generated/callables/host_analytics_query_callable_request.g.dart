@@ -8,7 +8,6 @@
 /// Callable payload accepted by getHostAnalytics and adminGetHostAnalytics.
 final class HostAnalyticsQueryCallableRequest {
   const HostAnalyticsQueryCallableRequest({
-    this.clubId,
     this.organizerId,
     this.eventId,
     this.rangePreset,
@@ -18,7 +17,6 @@ final class HostAnalyticsQueryCallableRequest {
     this.timezone,
   });
 
-  final String? clubId;
   final String? organizerId;
   final String? eventId;
   final String? rangePreset;
@@ -28,7 +26,6 @@ final class HostAnalyticsQueryCallableRequest {
   final String? timezone;
 
   Map<String, Object?> toJson() => {
-    'clubId': ?clubId,
     'organizerId': ?organizerId,
     'eventId': ?eventId,
     'rangePreset': ?rangePreset,

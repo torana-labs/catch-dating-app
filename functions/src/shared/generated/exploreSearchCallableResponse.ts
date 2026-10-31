@@ -13,9 +13,5 @@ export interface ExploreSearchCallableResponse {
   /**
    * @maxItems 50
    */
-  clubIds: string[];
-  /**
-   * @maxItems 50
-   */
   eventIds: string[];
 }

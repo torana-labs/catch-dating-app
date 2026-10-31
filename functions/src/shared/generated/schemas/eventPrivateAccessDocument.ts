@@ -15,18 +15,12 @@ export const eventPrivateAccessDocumentSchema: Record<string, unknown> = {
   "x-owner": "createEvent callable; readable only by the host of the linked event",
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "inviteCode",
     "createdAt"
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

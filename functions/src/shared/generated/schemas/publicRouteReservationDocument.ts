@@ -191,8 +191,6 @@ export const publicRouteReservationDocumentSchema: Record<string, unknown> = {
     "lastVerifiedSource": {
       "type": "string",
       "enum": [
-        "adminUpdateClubDetails",
-        "adminSetClubIndexStatus",
         "adminUpdateOrganizerDetails",
         "adminSetOrganizerIndexStatus",
         "adminCreateOrganizerDraftFromCandidate",

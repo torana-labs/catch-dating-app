@@ -15,7 +15,6 @@ export const eventSuccessConversationGraphDocumentSchema: Record<string, unknown
   "x-owner": "subject attendee read; conversation graph callable write",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uid",
     "status",
@@ -28,12 +27,6 @@ export const eventSuccessConversationGraphDocumentSchema: Record<string, unknown
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

@@ -15,7 +15,6 @@ export const eventRehearsalDocumentSchema: Record<string, unknown> = {
   "x-owner": "event rehearsal callables",
   "required": [
     "organizerId",
-    "clubId",
     "ownerUid",
     "sourceEventId",
     "sourceEventRevision",
@@ -41,12 +40,6 @@ export const eventRehearsalDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "organizerId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

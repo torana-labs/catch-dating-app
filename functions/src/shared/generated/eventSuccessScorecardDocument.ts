@@ -7,8 +7,7 @@
  */
 export interface EventSuccessScorecardDocument {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   bookedCount: number;
   checkedInCount: number;
   feedbackCount: number;

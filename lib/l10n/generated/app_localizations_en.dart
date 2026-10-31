@@ -720,7 +720,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatsSuvbotActionBarLabelCreateMatch => 'Create match';
 
   @override
-  String get organizersOrganizerDetailScreenBodyOrganizerid => 'clubId';
+  String get organizersOrganizerDetailScreenBodyOrganizerid => 'organizerId';
 
   @override
   String get organizersOrganizerDetailScreenBodyEventid => 'eventId';
@@ -1319,7 +1319,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsEventDetailScreenBodyEventid => 'eventId';
 
   @override
-  String get eventsEventDetailScreenBodyOrganizerid => 'clubId';
+  String get eventsEventDetailScreenBodyOrganizerid => 'organizerId';
 
   @override
   String get eventsEventLocationMapBodyScreenLabelGetDirections =>

@@ -48,7 +48,6 @@ export const activityNotificationDocumentSchema: Record<string, unknown> = {
         "waitlistOfferExpired",
         "eventCancelled",
         "eventUpdated",
-        "clubUpdate",
         "organizerUpdate",
         "formResponse",
         "crossPathsInvitation",
@@ -129,15 +128,6 @@ export const activityNotificationDocumentSchema: Record<string, unknown> = {
       "x-catch-ownership": "server-only"
     },
     "eventId": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "server-only"
-    },
-    "clubId": {
       "type": [
         "string",
         "null"

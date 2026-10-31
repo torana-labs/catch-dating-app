@@ -7,8 +7,7 @@
  */
 export interface EventSuccessPlanDocument {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   layoutId?: string | null;
   /**
    * @maxItems 300

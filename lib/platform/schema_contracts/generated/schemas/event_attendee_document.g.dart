@@ -17,7 +17,6 @@ const schemaEventAttendeeDocumentSchema = <String, Object?>{
   'x-owner': 'standalone Host roster, Catch-booking projection, public registration, and attendance callables',
   'required': <Object?>[
     'eventId',
-    'clubId',
     'organizerId',
     'displayName',
     'searchName',
@@ -42,11 +41,6 @@ const schemaEventAttendeeDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

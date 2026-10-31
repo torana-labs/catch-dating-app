@@ -12,7 +12,6 @@ export interface ExternalEventDocument {
   schemaVersion: 1;
   eventId: string;
   canonicalHostId: string;
-  compatibilityClubId: string;
   title: string;
   description: string;
   /**

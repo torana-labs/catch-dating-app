@@ -23,7 +23,7 @@ enum OrganizerMembershipStatus { active, left, deleted }
 abstract class OrganizerMembership with _$OrganizerMembership {
   const factory OrganizerMembership({
     @JsonKey(includeToJson: false) required String id,
-    required String clubId,
+    required String organizerId,
     required String uid,
     required OrganizerMembershipRole role,
     required OrganizerMembershipStatus status,

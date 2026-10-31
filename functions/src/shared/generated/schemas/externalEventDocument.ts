@@ -17,7 +17,6 @@ export const externalEventDocumentSchema: Record<string, unknown> = {
     "schemaVersion",
     "eventId",
     "canonicalHostId",
-    "compatibilityClubId",
     "title",
     "description",
     "startTime",
@@ -51,11 +50,6 @@ export const externalEventDocumentSchema: Record<string, unknown> = {
       "maxLength": 180
     },
     "canonicalHostId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "compatibilityClubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180

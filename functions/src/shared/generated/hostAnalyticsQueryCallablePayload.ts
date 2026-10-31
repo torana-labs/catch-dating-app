@@ -6,7 +6,6 @@
  * Callable payload accepted by getHostAnalytics and adminGetHostAnalytics.
  */
 export interface HostAnalyticsQueryCallablePayload {
-  clubId?: string | null;
   organizerId?: string | null;
   eventId?: string | null;
   rangePreset?: "7d" | "30d" | "90d" | "12m" | "month" | "custom";
