@@ -2159,6 +2159,111 @@ export const adminActionCatalog = {
       ],
       "summary": "Offer a reviewed organizer lead to an exact active referral partner with a bounded next action, review time and expiry.",
       "controlPlane": true
+    },
+    {
+      "actionId": "safety.actions.take",
+      "callable": "adminTakeAccountSafetyAction",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "Warn, restrict, suspend or ban one account. Ops may warn and restrict; suspend and ban are owner-only.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "safety.actions.lift",
+      "callable": "adminLiftAccountSafetyAction",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "Lift one account safety action early. Lifting a suspension or ban is owner-only.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "safety.actions.list",
+      "callable": "adminListAccountSafetyActions",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "List account safety actions in force, with an appeal waiting, or most recent.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "safety.appeals.decide",
+      "callable": "adminDecideSafetyAppeal",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "Decide the one appeal on an account safety action; the reviewer must not be its decider.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "safety.settings.get",
+      "callable": "adminGetSafetySettings",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/settings/safety",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "Read the report reasons, safety rules, deadlines and who may take each step.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "safety.settings.update",
+      "callable": "adminUpdateSafetySettings",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/settings/safety",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Owner-only: replace the report reasons and the safety rules.",
+      "controlPlane": false
     }
   ],
   "workflows": [
@@ -2181,7 +2286,13 @@ export const adminActionCatalog = {
         "overview.get",
         "safety.get",
         "safety.assign",
-        "safety.decide"
+        "safety.decide",
+        "safety.actions.take",
+        "safety.actions.lift",
+        "safety.actions.list",
+        "safety.appeals.decide",
+        "safety.settings.get",
+        "safety.settings.update"
       ]
     },
     {

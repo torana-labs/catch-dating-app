@@ -29,6 +29,13 @@ import {validateEventAssistanceCaseDocument} from
 import type {EventAssistanceCaseDocument} from
   "../shared/generated/eventAssistanceCaseDocument";
 import {validateCallableWithAjv} from "../shared/validation";
+import {Timestamp} from "firebase-admin/firestore";
+import {
+  REPORT_HANDLED_NOTICE,
+  safetyNotice,
+  safetyNoticeRef,
+} from "../safety/accountStanding";
+import {SAFETY_DEADLINES} from "../safety/safetyPolicy";
 
 const safetyDetailRoles = [
   "admin",
@@ -200,6 +207,11 @@ export async function adminGetSafetyTriageDetailsHandler(
     snapshot.data() ?? {},
     deps.now()
   );
+  if (target.kind === "report" && !snapshot.data()?.firstLookAt) {
+    // Opening a report is its first look, which the 24-hour deadline counts.
+    await db.collection(target.collection).doc(target.docId)
+      .update({firstLookAt: Timestamp.fromDate(deps.now())});
+  }
   const priorHistory = await loadPriorHistory(db, target, baseItem);
   const item: AdminSafetyTriageDetails = {
     ...baseItem,
@@ -249,7 +261,7 @@ export async function adminDecideSafetyTriageItemHandler(
     const before = snapshot.data() ?? {};
     assertSafetyItemEditable(target, before);
     const nextStatus = statusForDecision(target, payload.decision);
-    tx.update(docRef, buildSafetyDecisionPatch(
+    const patch = buildSafetyDecisionPatch(
       target,
       before,
       payload.decision,
@@ -257,7 +269,24 @@ export async function adminDecideSafetyTriageItemHandler(
       adminContext.uid,
       deps.serverTimestamp(),
       deps.now()
-    ));
+    );
+    const reporterUid = stringValue(before.reporterUserId);
+    if (target.kind === "report" && reporterUid && !before.reporterNotifiedAt) {
+      // The reporter hears the case was handled, never what was done.
+      const at = Timestamp.fromDate(deps.now());
+      patch.reporterNotifiedAt = at;
+      const noticeId = `report-handled-${target.docId}`;
+      tx.set(safetyNoticeRef(db, reporterUid, noticeId), safetyNotice({
+        noticeId,
+        uid: reporterUid,
+        kind: "reportHandled",
+        ...REPORT_HANDLED_NOTICE,
+        actionId: null,
+        appealable: false,
+        createdAt: at,
+      }));
+    }
+    tx.update(docRef, patch);
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminDecideSafetyTriageItem",
       targetPath: target.targetPath,
@@ -527,7 +556,12 @@ function buildSafetyDecisionPatch(
   if (target.collection === "eventSafetyReports") {
     return {status, updatedAt: timestamp};
   }
-  return {status};
+  const at = Timestamp.fromDate(now);
+  return {
+    status,
+    resolvedAt: at,
+    ...(data.firstLookAt ? {} : {firstLookAt: at}),
+  };
 }
 
 /**
@@ -1000,12 +1034,12 @@ function buildOutcomeGuidance(
   )) {
     guidance.push({
       id: "restriction_requires_contract",
-      label: "Restriction requires separate account action",
+      label: "Act on the account if the rule was broken",
       detail:
-        "This tab does not restrict accounts. Use a dedicated " +
-        "account-safety callable before changing user state.",
+        "Warn or restrict (ops), or suspend or ban (owner) from the " +
+        "account action sheet; it links this case and resolves it.",
       severity: "warning",
-      actionStatus: "needs_contract",
+      actionStatus: "available",
     });
   }
   if (item.kind === "eventSafetyReport") {
@@ -1043,11 +1077,10 @@ function buildOutcomeGuidance(
   }
   guidance.push({
     id: "status_only_resolution",
-    label: "Reviewed/dismissed is queue-only",
+    label: "Reviewed/dismissed closes the case only",
     detail:
-      "The current mutation only updates the queue document status. " +
-      "Account, content, event, and payment changes require their owning " +
-      "workflow.",
+      "Closing tells the reporter it was handled, never what was done. " +
+      "Account changes go through the account action sheet.",
     severity: "info",
     actionStatus: "available",
   });
@@ -1092,6 +1125,7 @@ function severityFor(
 ): AdminSafetyTriageSeverity {
   if (target.kind === "eventSafetyReport" ||
       target.kind === "eventAssistanceCase") return "high";
+  if (data.severity === "severe") return "high";
   const haystack = [
     stringValue(data.reasonCode),
     stringValue(data.flagType),
@@ -1167,11 +1201,20 @@ function slaFor(
   severity: AdminSafetyTriageSeverity,
   now: Date
 ): AdminSafetyTriageSla {
+  const deadline = reportDeadlineFor(data);
+  if (deadline) {
+    return {
+      dueAt: deadline.dueAt,
+      state: slaState(deadline.dueAt, now),
+      policy: deadline.policy,
+    };
+  }
   const explicitDueAt =
     isoFromTimestamp(data.slaDueAt) ??
     isoFromTimestamp(data.dueAt) ??
     isoFromTimestamp(data.escalationDueAt);
-  const responseHours = responseHoursFor(severity);
+  // Queue items without their own deadlines get the first-look window.
+  const responseHours = SAFETY_DEADLINES.firstLookHours;
   const createdAt = dateFromTimestamp(data.createdAt);
   const dueAt = explicitDueAt ?? (
     createdAt ?
@@ -1187,11 +1230,31 @@ function slaFor(
   };
 }
 
-function responseHoursFor(severity: AdminSafetyTriageSeverity): number {
-  if (severity === "high") return 24;
-  if (severity === "medium") return 48;
-  return 72;
+/**
+ * The deadline a report counts down to: intimate images down within 24
+ * hours, a first look within 24 hours, then resolved within 15 days.
+ * @param {FirebaseFirestore.DocumentData} data Report document.
+ * @return {object | null} Due time and policy, or null for older reports.
+ */
+function reportDeadlineFor(
+  data: FirebaseFirestore.DocumentData
+): {dueAt: string; policy: string} | null {
+  const firstLookDueAt = isoFromTimestamp(data.firstLookDueAt);
+  const resolveDueAt = isoFromTimestamp(data.resolveDueAt);
+  if (!firstLookDueAt || !resolveDueAt) return null;
+  const takedownDueAt = isoFromTimestamp(data.takedownDueAt);
+  if (takedownDueAt && !data.resolvedAt) {
+    return {dueAt: takedownDueAt, policy:
+      `Intimate images down within ${SAFETY_DEADLINES.takedownHours}h.`};
+  }
+  if (!data.firstLookAt) {
+    return {dueAt: firstLookDueAt, policy:
+      `First look within ${SAFETY_DEADLINES.firstLookHours}h.`};
+  }
+  return {dueAt: resolveDueAt, policy:
+    `Resolve within ${SAFETY_DEADLINES.resolveDays} days.`};
 }
+
 
 function slaState(
   dueAt: string | null,

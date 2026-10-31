@@ -5,6 +5,7 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {moderateText} from "../moderation/textFilter";
+import {assertAccountMayMessage} from "../safety/accountStanding";
 import {dispatchEventChatNotificationCandidates} from
   "./eventChatNotificationPolicy";
 import {eventChatMembershipId, requireEventChatMember,
@@ -54,6 +55,7 @@ export async function sendEventChatMessageHandler(
   const payloadHash = chatHash(kind === "text" ?
     [text, data.replyToMessageId] : [text, data.replyToMessageId, kind]);
   const result = await db.runTransaction(async (tx) => {
+    await assertAccountMayMessage(tx, db, uid, deps.now().toMillis());
     const access = await requireEventChatMember(db, tx, data.eventId, uid,
       deps.now().toMillis());
     if (!access.view.canPostMessages ||

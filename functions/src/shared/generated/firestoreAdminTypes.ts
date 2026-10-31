@@ -2582,6 +2582,174 @@ export interface SupplyNominatorDocument {
 }
 
 /**
+ * One step Catch took against an account: warn, restrict (no messages or group chats), suspend (signed out, future bookings cancelled) or ban (Catch-wide, phone and device blocked from new accounts). Ops may warn and restrict; suspend and ban are owner-only; a severe report restricts automatically. The person may appeal once, and someone other than the decider reviews it. Kept 180 days after the account is deleted (retainUntil).
+ */
+export interface AccountSafetyActionDocument {
+  schemaVersion: 1;
+  actionId: string;
+  uid: string;
+  kind: "warn" | "restrict" | "suspend" | "ban";
+  reasonCode: string;
+  messageToUser: string;
+  durationDays: 7 | 30 | null;
+  startsAt: FirebaseFirestore.Timestamp;
+  endsAt: FirebaseFirestore.Timestamp | null;
+  status: "active" | "expired" | "lifted" | "replaced";
+  /**
+   * @maxItems 20
+   */
+  caseTargetPaths: string[];
+  decidedByUid: string;
+  decidedByRole: "owner" | "ops" | "system";
+  automatic: boolean;
+  appealable: boolean;
+  appeal: null | {
+    status: "open" | "kept" | "reduced" | "lifted";
+    text: string;
+    submittedAt: FirebaseFirestore.Timestamp;
+    reviewerUid: string | null;
+    decidedAt: FirebaseFirestore.Timestamp | null;
+    decisionNote: string | null;
+    replacementActionId: string | null;
+  };
+  bookings: {
+    /**
+     * @maxItems 200
+     */
+    cancelledEventIds: string[];
+    /**
+     * @maxItems 200
+     */
+    needsOrganizerEventIds: string[];
+    /**
+     * @maxItems 200
+     */
+    failedEventIds: string[];
+  };
+  lifted: null | {
+    at: FirebaseFirestore.Timestamp;
+    byUid: string;
+    note: string;
+  };
+  retainUntil: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * The current standing of one account, derived from its active account safety actions. Messaging, event chats and bookings read it; Firestore rules read messaging to stop direct chat writes. The account may read its own standing.
+ */
+export interface AccountSafetyStateDocument {
+  schemaVersion: 1;
+  uid: string;
+  level: "none" | "warned" | "restricted" | "suspended" | "banned";
+  messaging: {
+    held: boolean;
+    until: FirebaseFirestore.Timestamp | null;
+  };
+  booking: {
+    held: boolean;
+    until: FirebaseFirestore.Timestamp | null;
+  };
+  authDisabledBySafety: boolean;
+  /**
+   * @maxItems 50
+   */
+  activeActionIds: string[];
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * A safety message to one account: the rule they broke and what changes, an appeal outcome, or (to a reporter) that their report was received or handled. A reporter is never told what was done. Server-written; the account reads its own.
+ */
+export interface AccountSafetyNoticeDocument {
+  schemaVersion: 1;
+  noticeId: string;
+  uid: string;
+  kind:
+    | "warning"
+    | "restriction"
+    | "suspension"
+    | "ban"
+    | "lifted"
+    | "appealDecision"
+    | "reportReceived"
+    | "reportHandled";
+  title: string;
+  body: string;
+  actionId: string | null;
+  appealable: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  readAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Catch's safety rules, edited by the owner in Settings → Safety: the report reasons (and which are severe), whether a severe report restricts at once, and whether organizers may keep block lists and report guests. Absent means the defaults in code.
+ */
+export interface SafetySettingsDocument {
+  schemaVersion: 1;
+  /**
+   * @minItems 1
+   * @maxItems 40
+   */
+  reasons: {
+    code: string;
+    label: string;
+    severe: boolean;
+    takedown: boolean;
+    active: boolean;
+  }[];
+  restrictOnSevereReport: boolean;
+  organizerBlockLists: boolean;
+  organizerReports: boolean;
+  updatedAt: FirebaseFirestore.Timestamp;
+  updatedByUid: string;
+}
+
+/**
+ * A phone number or device that a Catch-wide ban stops from making a new account. Only a SHA-256 hash of the value is stored. It stays after the banned account is deleted so the ban keeps holding; lifting the ban sets active to false.
+ */
+export interface BannedIdentityDocument {
+  schemaVersion: 1;
+  identityId: string;
+  kind: "phone" | "installation" | "pushToken";
+  valueHash: string;
+  uid: string;
+  actionId: string;
+  active: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * A new account that used a banned phone or device. The account is disabled and the attempt is shown on the ban in Safety.
+ */
+export interface BlockedSignupAttemptDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  attemptedUid: string;
+  identityId: string;
+  kind: "phone" | "installation" | "pushToken";
+  bannedUid: string;
+  actionId: string;
+  outcome: "disabled";
+  at: FirebaseFirestore.Timestamp;
+  retainUntil: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * An organizer's own block list entry: this person cannot book that organizer's events. No reason or review is needed and it affects no other organizer.
+ */
+export interface OrganizerGuestBlockDocument {
+  schemaVersion: 1;
+  blockId: string;
+  organizerId: string;
+  uid: string;
+  blockedByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Private frozen zero-model draft request, attempt lease and completion pointer. Firestore is authoritative; local Operations files are temporary scratch only.
  */
 export interface SalesOutreachJobsDocument {
@@ -20271,17 +20439,39 @@ export interface BlockDocument {
 }
 
 /**
- * Canonical safety report stored at reports/{reportId}.
+ * Canonical safety report stored at reports/{reportId}. A guest reports another guest from a profile or chat; an organizer or their team reports a guest from an event. The reporter is acknowledged at once and the deadlines (first look 24 h, resolve 15 days, intimate images down 24 h) drive the Safety queue. A severe reason restricts the reported account at once, pending review. Kept 180 days after either account is deleted (retainUntil).
  */
 export interface ReportDocument {
   reporterUserId: string;
   targetUserId: string;
   createdAt: FirebaseFirestore.Timestamp;
-  source: "profile" | "chat" | "match" | "support";
+  source: "profile" | "chat" | "match" | "support" | "organizer";
   status: "open" | "reviewed" | "dismissed";
   reasonCode?: string;
   contextId?: string;
   notes?: string;
+  reporterRole?: "guest" | "organizer";
+  organizerId?: string;
+  eventId?: string;
+  severity?: "severe" | "standard";
+  acknowledgedAt?: FirebaseFirestore.Timestamp;
+  firstLookDueAt?: FirebaseFirestore.Timestamp;
+  resolveDueAt?: FirebaseFirestore.Timestamp;
+  takedownDueAt?: FirebaseFirestore.Timestamp | null;
+  firstLookAt?: FirebaseFirestore.Timestamp | null;
+  resolvedAt?: FirebaseFirestore.Timestamp | null;
+  reporterNotifiedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * @maxItems 20
+   */
+  actionIds?: string[];
+  assigneeUid?: string | null;
+  assignmentUpdatedAt?: FirebaseFirestore.Timestamp;
+  assignmentUpdatedByUid?: string;
+  hasDeletedUser?: boolean;
+  deletedUserId?: string;
+  deletedUserMarkedAt?: FirebaseFirestore.Timestamp;
+  retainUntil?: FirebaseFirestore.Timestamp | null;
 }
 
 /**

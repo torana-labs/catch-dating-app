@@ -413,6 +413,42 @@ preserve its event/attendee/message binding and write an Admin audit record;
 they do not perform an account, content, payment or event mutation.
 See `docs/event_success.md` for lifecycle and integration boundaries.
 
+### Account Safety Actions
+
+Owner policy of 1 Nov 2026. `accountSafetyActions/{actionId}` records each
+step: warn, restrict (no messages or group chats for 7 or 30 days, or until
+lifted), suspend, or ban (Catch-wide, no end). Ops may warn and restrict;
+suspend and ban, and lifting either, are owner-only (`adminOwner`). The
+derived `accountSafetyStates/{uid}` standing holds messaging (restrict and
+above) and booking (suspend and ban). `sendEventChatMessage` and every booking
+writer (`signUpUserForEvent`, `joinEventWaitlist`, public free registration
+and paid reservation) read it in their transaction through
+`assertAccountMayMessage` / `assertAccountMayBook`; Firestore rules read it
+to refuse direct match messages. Suspend and ban also disable Firebase Auth
+sign-in (`authDisabledBySafety` restores it when nothing holds booking) and
+cancel future bookings through the guest's own cancel and leave-waitlist
+paths; bookings paid through an organizer's own checkout are listed on the
+action for the organizer to cancel and refund. A ban stores SHA-256 hashes of
+the phone, push installation ids and push tokens in `bannedIdentities`; a
+new account created after the ban that registers one is disabled and logged
+in `blockedSignupAttempts`. Those hashes outlive the deleted account so the
+ban keeps holding.
+
+Reports carry `severity`, `acknowledgedAt` and the deadlines that drive the
+Safety queue's due time: first look 24 h (`firstLookAt` is set when staff
+open the case), resolve 15 days, and intimate images down 24 h
+(`takedownDueAt`). The reasons, which are severe, and whether a severe report
+restricts at once live in `safetySettings/current`; codes are switched off
+rather than removed. A severe report restricts the account with no end date,
+pending review. Each action allows one appeal, embedded on the action; the
+reviewer must not be its decider, and a reduced step is a new action that
+replaces the old. People see `accountSafetyNotices/{uid}/items`; a reporter
+is told their report was received and later handled, never what was done.
+`organizerGuestBlocks/{organizerId}__{uid}` is an organizer's own block list.
+Account deletion sets `retainUntil` (180 days) on reports, actions and
+blocked sign-ups touching the account and removes its standing, notices and
+organizer blocks; `purgeRetainedSafetyRecords` deletes them when due.
+
 ### Event Assistance Delivery Review
 
 `event_assistance_delivery_review.schema.json` owns the closed Host delivery

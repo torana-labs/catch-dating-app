@@ -1,3 +1,4 @@
+import {assertAccountMayBook} from "../safety/accountStanding";
 import {communityMembershipId, requiresCommunityMembership,
   readCommunityMembership} from
   "../memberships/communityMembershipAuthority";
@@ -124,6 +125,8 @@ export async function signUpUserForEvent(
       ]),
       tx.get(db.collection("deletedUsers").doc(userId)),
     ]);
+    await assertAccountMayBook(tx, db, userId,
+      eventSnap.data()?.organizerId ?? null, Date.now());
 
     const applyPayment = options.paidBooking ?
       await prepareNativePaidBooking({db, tx, booking: options.paidBooking,

@@ -309,7 +309,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       },
       "reports/report-1": {
         reporterUserId: "runner-2",
-        reportedUserId: "runner-1",
+        targetUserId: "runner-1",
       },
     },
     now,
@@ -581,7 +581,8 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   assert.ok(
     harness.setWrites.some((write) =>
       write.path === "reports/report-1" &&
-      write.data.hasDeletedUser === true
+      write.data.hasDeletedUser === true &&
+      write.data.retainUntil !== undefined
     )
   );
   assert.deepEqual(harness.deletedAuthUsers, ["runner-1"]);

@@ -300,7 +300,13 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `updateUserProfile` | `src/profiles/` | Profile patch callable with generated contract validation |
 | `blockUser` / `unblockUser` | `src/safety/` | Block/unblock another user |
 | `requestAccountDeletion` | `src/safety/` | Anonymize + delete user data |
-| `reportUser` | `src/safety/` | File a safety report |
+| `reportUser` / `reportGuest` | `src/safety/reporting.ts` | File a safety report (guest, or organizer and team); acknowledged at once, deadlines attached, severe reasons restrict at once |
+| `adminTakeAccountSafetyAction` / `adminLiftAccountSafetyAction` / `adminListAccountSafetyActions` / `expireAccountSafetyActions` | `src/safety/accountActions.ts` | Warn and restrict (ops), suspend and ban (owner), enforced at sign-in, messaging and booking; suspensions and bans cancel future bookings; expiry every 15 minutes |
+| `submitSafetyAppeal` / `adminDecideSafetyAppeal` | `src/safety/safetyAppeals.ts` | One appeal per action, reviewed by someone who did not decide |
+| `adminGetSafetySettings` / `adminUpdateSafetySettings` | `src/safety/safetySettings.ts` | Settings → Safety: configurable reasons and rules (owner edits) |
+| `manageOrganizerGuestBlock` / `listOrganizerGuestBlocks` | `src/safety/organizerGuestBlocks.ts` | An organizer's own block list, enforced by every booking path |
+| `onUserCreatedSafetyScreen` / `onPushInstallationSafetyScreen` | `src/safety/bannedIdentities.ts` | Stop new accounts on a banned phone or device and record the attempt |
+| `purgeRetainedSafetyRecords` | `src/safety/safetyRetention.ts` | Delete case records 180 days after account deletion |
 | `listSuvbotDemoActions` / `requestSuvbotDemoOperation` | `src/demoOps/` | Demo-data operation catalogue and request surface |
 | `adminListCrossPathsShowcaseCandidates` / `adminSetCrossPathsShowcaseEligibility` | `src/admin/crossPathsShowcaseEligibility.ts` | Admin bounded Cross Paths showcase review queue and audited score-free eligibility decision |
 | `adminListActionExecutions` | `src/admin/adminActionExecutions.ts` | Admin bounded execution-receipt register for catalog-driven action monitoring |
@@ -313,7 +319,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminSetAdminUserRoles` | `src/admin/adminUserRoles.ts` | Admin-owner audited Firebase Auth custom-claim assignment |
 | `adminGetSafetyTriageDetails` | `src/admin/safetyTriage.ts` | Admin read-only normalized safety queue detail |
 | `adminAssignSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue assignment |
-| `adminDecideSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue reviewed/dismissed status decision |
+| `adminDecideSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue reviewed/dismissed decision; tells the reporter it was handled |
 | `adminGetAccessApplicationDetails` | `src/admin/accessApplications.ts` | Admin read-only launch access application detail and overlap signals |
 | `adminListOrganizerClaimRequests` / `adminGetOrganizerClaimRequestDetails` | `src/admin/organizerClaimReview.ts` | Admin pending organizer claim queue and review-safe evidence detail |
 | `adminSetOrganizerIndexStatus` | `src/admin/organizerIndexing.ts` | Admin audited organizer index/noindex publishing decision |

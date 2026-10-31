@@ -42,6 +42,7 @@ import {
   publicPaymentId,
   parsePublicPayment,
 } from "./paymentLedger";
+import {assertAccountMayBook} from "../../safety/accountStanding";
 import {publicHostMembershipQuoteTerms} from
   "../../hostMemberships/publicCheckout";
 
@@ -115,6 +116,7 @@ export async function reservePublicPayment(input: {
       tx,
       eventId,
     });
+    await assertAccountMayBook(tx, db, uid, event.organizerId, nowMillis);
     await assertPublicEventAge({db, tx, uid, event, nowMillis});
     const quote = publicCheckoutQuote(eventId, event, organizer, nowMillis,
       await publicGuestMembership({db, tx, event, uid, nowMillis}),

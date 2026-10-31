@@ -141,6 +141,18 @@ service cloud.firestore {
       return exists(/databases/$(database)/documents/deletedUsers/$(uid));
     }
 
+    // A restricted, suspended or banned account cannot send messages. The
+    // standing is server-written by the account safety actions.
+    function isMessagingHeld(uid) {
+      let standing = /databases/$(database)/documents/accountSafetyStates/$(uid);
+      return exists(standing)
+        && get(standing).data.messaging.held == true
+        && (
+          get(standing).data.messaging.until == null
+          || get(standing).data.messaging.until > request.time
+        );
+    }
+
     function isOrganizerHostData(organizerData) {
       return organizerData.hostUserId == request.auth.uid
         || (
@@ -968,6 +980,33 @@ service cloud.firestore {
     }
 
     match /supplyIntakeUsage/{monthKey} {
+      allow read, write: if false;
+    }
+
+    // Account safety: the account may read its own standing and notices;
+    // everything else (actions, appeals, banned phone and device hashes,
+    // blocked sign-ups, organizer block lists, settings) is callable-only.
+    match /accountSafetyStates/{uid} {
+      allow get: if isAuthed() && request.auth.uid == uid;
+      allow list, write: if false;
+    }
+    match /accountSafetyNotices/{uid}/items/{noticeId} {
+      allow read: if isAuthed() && request.auth.uid == uid;
+      allow write: if false;
+    }
+    match /accountSafetyActions/{actionId} {
+      allow read, write: if false;
+    }
+    match /bannedIdentities/{identityId} {
+      allow read, write: if false;
+    }
+    match /blockedSignupAttempts/{attemptId} {
+      allow read, write: if false;
+    }
+    match /organizerGuestBlocks/{blockId} {
+      allow read, write: if false;
+    }
+    match /safetySettings/{settingsId} {
       allow read, write: if false;
     }
 
@@ -2950,6 +2989,7 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/matches/$(matchId))
             .data.status != 'blocked';
       allow create: if isAuthed()
+        && !isMessagingHeld(request.auth.uid)
         && hasValidChatMessageCreate(matchId);
       allow update, delete: if false;
     }

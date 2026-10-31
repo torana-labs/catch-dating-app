@@ -1216,6 +1216,69 @@ export const ADMIN_ACTION_CATALOG = {
       "admin",
       "adminOwner"
     ]
+  },
+  "safety.actions.take": {
+    "callable": "adminTakeAccountSafetyAction",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "safety.actions.lift": {
+    "callable": "adminLiftAccountSafetyAction",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "safety.actions.list": {
+    "callable": "adminListAccountSafetyActions",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "safety.appeals.decide": {
+    "callable": "adminDecideSafetyAppeal",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "safety.settings.get": {
+    "callable": "adminGetSafetySettings",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "safety.settings.update": {
+    "callable": "adminUpdateSafetySettings",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
   }
 } as const;
 
