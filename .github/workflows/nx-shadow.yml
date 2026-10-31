@@ -1,0 +1,62 @@
+name: Nx shadow plan
+
+# Shadow mode for the Nx cut-over (#1306, stage 2): for every ready PR and
+# queue group, compare what the current planner selects with what
+# `nx affected` would select. It never gates a merge and is deleted with the
+# planner once every difference is explained.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  merge_group:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nx-shadow-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shadow:
+    name: Compare planner and Nx
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Compare selections
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          mode=pr
+          base="$PR_BASE_SHA"
+          if [[ "$EVENT_NAME" == "merge_group" ]]; then
+            mode=merge_group
+            base="$MERGE_GROUP_BASE_SHA"
+          fi
+          mkdir -p build/ci
+          node tool/nx/shadow_plan.mjs --base "$base" --head "$HEAD_SHA" --mode "$mode" --out build/ci/nx-shadow.json
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: nx-shadow-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/nx-shadow.json
+          retention-days: 30

@@ -52,6 +52,9 @@ test("independently locked npm packages and source projects become projects", as
   assert.equal(projects.operations.name, operationsPackage.name);
   assert.equal(projects.contracts.name, "contracts");
   assert.match(projects.contracts.targets.check.options.command, /generate_schema_contracts\.mjs --check$/);
+  // The conformance scans read Functions and Dart code, so editing either selects them.
+  assert.ok(projects.contracts.targets.conformance.inputs.includes("{workspaceRoot}/functions/src/**/*"));
+  assert.ok(projects.contracts.targets.conformance.inputs.includes("{workspaceRoot}/lib/**/*"));
   assert.equal(projects["design/tokens"].name, "design-tokens");
 });
 
