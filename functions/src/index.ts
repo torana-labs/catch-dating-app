@@ -611,6 +611,7 @@ export {
   adminRebuildInbox,
   adminUpdateInboxItem,
 } from "./admin/inbox/callables";
+export {adminListMyNominations} from "./admin/inbox/myNominations";
 export {
   onAccessApplicationWrittenSyncInbox,
   onExternalEventWrittenSyncInbox,

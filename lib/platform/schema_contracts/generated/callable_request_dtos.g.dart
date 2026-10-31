@@ -60,6 +60,7 @@ export 'callables/admin_list_external_event_details_callable_request.g.dart';
 export 'callables/admin_list_inbox_items_callable_request.g.dart';
 export 'callables/admin_list_intake_operations_callable_request.g.dart';
 export 'callables/admin_list_listing_event_imports_callable_request.g.dart';
+export 'callables/admin_list_my_nominations_callable_request.g.dart';
 export 'callables/admin_list_organizer_details_callable_request.g.dart';
 export 'callables/admin_list_organizer_listing_reviews_callable_request.g.dart';
 export 'callables/admin_list_sales_commercial_report_callable_request.g.dart';

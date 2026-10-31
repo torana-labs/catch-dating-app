@@ -900,6 +900,8 @@ import {
   adminNominateOrganizerCallablePayloadSchema,
   adminNominateOrganizerCallableResponseSchema,
   adminApproveOrganizerListingCallablePayloadSchema,
+  adminListMyNominationsCallablePayloadSchema,
+  adminListMyNominationsCallableResponseSchema,
   adminListInboxItemsCallablePayloadSchema,
   adminListInboxItemsCallableResponseSchema,
   adminGetInboxItemCallablePayloadSchema,
@@ -2223,6 +2225,8 @@ export const validateAdminRecordActionExecutionCallablePayload = ajv.compile(adm
 export const validateAdminNominateOrganizerCallablePayload = ajv.compile(adminNominateOrganizerCallablePayloadSchema);
 export const validateAdminNominateOrganizerCallableResponse = ajv.compile(adminNominateOrganizerCallableResponseSchema);
 export const validateAdminApproveOrganizerListingCallablePayload = ajv.compile(adminApproveOrganizerListingCallablePayloadSchema);
+export const validateAdminListMyNominationsCallablePayload = ajv.compile(adminListMyNominationsCallablePayloadSchema);
+export const validateAdminListMyNominationsCallableResponse = ajv.compile(adminListMyNominationsCallableResponseSchema);
 export const validateAdminListInboxItemsCallablePayload = ajv.compile(adminListInboxItemsCallablePayloadSchema);
 export const validateAdminListInboxItemsCallableResponse = ajv.compile(adminListInboxItemsCallableResponseSchema);
 export const validateAdminGetInboxItemCallablePayload = ajv.compile(adminGetInboxItemCallablePayloadSchema);

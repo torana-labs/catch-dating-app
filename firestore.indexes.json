@@ -6857,6 +6857,64 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "adminInboxItems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "nominatorUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "waitingSince",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "adminInboxItems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "nominatorUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state.code",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "waitingSince",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "adminInboxItems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "nominatorUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "waitingSince",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
