@@ -19,6 +19,12 @@ describe("CatchViewport", () => {
     expect(screen.getByText("quiet medium true")).toBeTruthy();
   });
 
+  it("keeps the window's size class while the box has no layout", () => {
+    const {container} = render(<CatchViewport><Probe /></CatchViewport>);
+    const expected = window.innerWidth >= 840 ? "expanded" : window.innerWidth >= 600 ? "medium" : "compact";
+    expect((container.firstElementChild as HTMLElement).dataset.size).toBe(expected);
+  });
+
   it("lays out the navigation, top bar, body and dock in their slots", () => {
     render(
       <CatchViewport dock={<p>Dock</p>} navigation={<nav>Nav</nav>} topBar={<header>Top</header>}>

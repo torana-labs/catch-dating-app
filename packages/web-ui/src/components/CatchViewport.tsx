@@ -52,7 +52,11 @@ export function CatchViewport({
   useLayoutEffect(() => {
     const element = ref.current;
     if (sizeClass !== "auto" || !element) return;
-    const update = () => setMeasured(catchViewportSizeClassFor(element.getBoundingClientRect().width));
+    // A box with no layout yet (or no layout engine) keeps the window's size class.
+    const update = () => {
+      const width = element.getBoundingClientRect().width;
+      if (width > 0) setMeasured(catchViewportSizeClassFor(width));
+    };
     update();
     if (typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(update);

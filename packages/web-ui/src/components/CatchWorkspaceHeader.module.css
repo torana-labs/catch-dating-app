@@ -189,3 +189,6 @@
   font: inherit;
   font-size: 14px;
 }
+
+/* Phones keep the title and count; the summary note gives way. */
+:global([data-size="compact"]) .note { display: none; }
