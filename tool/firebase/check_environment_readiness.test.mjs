@@ -725,38 +725,48 @@ test("manifest accepts only terminal prerequisite states", () => {
   );
 });
 
-test("Deploy backend plans before credentials and checks readiness before any mutation", () => {
-  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/_backend-deploy.yml"), "utf8");
-  const deployJob = workflow.slice(workflow.indexOf("\n  deploy:"));
+const backendDeployWorkflow = () =>
+  fs.readFileSync(path.join(repoRoot, ".github/workflows/_backend-deploy.yml"), "utf8");
+const workflowStepShell = (workflow, name) => {
+  const start = workflow.indexOf(`name: ${name}`);
+  assert.ok(start >= 0, name);
+  const step = workflow.slice(start, workflow.indexOf("\n      - ", start));
+  const run = step.match(/        run: \|\n((?:          .*\n|\n)+)/u)?.[1];
+  assert.ok(run, `${name} runs a shell block`);
+  return run.replace(/^          /gmu, "");
+};
+
+test("Deploy backend checks readiness before any mutation", () => {
+  const deployJob = backendDeployWorkflow().slice(backendDeployWorkflow().indexOf("\n  deploy:"));
   const step = (name) => {
     const at = deployJob.indexOf(`name: ${name}`);
     assert.ok(at >= 0, name);
     return at;
   };
-  const plan = step("Plan from the last deployed commit");
-  const auth = step("Authenticate to Google Cloud");
-  const params = step("Materialize Functions parameters from this environment's variables");
-  const readiness = step("Check this environment is ready for these targets");
-  const deploy = step("Deploy only what changed");
-  assert.ok(plan < auth && auth < params && params < readiness && readiness < deploy);
-  const readinessStep = deployJob.slice(readiness, deployJob.indexOf("\n      - ", readiness));
-  assert.match(readinessStep, /check_environment_readiness\.mjs/u);
+  const block = (name) => deployJob.slice(step(name), deployJob.indexOf("\n      - ", step(name)));
+  const order = ["Skip a commit older than the deployed one", "Authenticate to Google Cloud",
+    "Materialize Functions parameters from this environment's variables", "Package Functions as codebases",
+    "Choose the Functions to deploy", "Check this environment is ready", "Deploy Firestore indexes",
+    "Deploy Functions", "Check callable access and Functions parity", "Deploy Firestore and Storage rules",
+    "Verify the active rules match this commit", "Record the deployed commit"].map(step);
+  assert.deepEqual(order, [...order].sort((a, b) => a - b));
+  assert.match(block("Check this environment is ready"), /check_environment_readiness\.mjs/u);
   for (const name of ["Authenticate to Google Cloud", "Materialize Functions parameters from this environment's variables",
-    "Check this environment is ready for these targets", "Deploy only what changed"]) {
-    const at = step(name);
-    assert.match(deployJob.slice(at, deployJob.indexOf("\n      - ", at)), /if: \$\{\{ steps\.plan\.outputs\.mode != 'no-op' \}\}/u,
-      `${name} is skipped when there is nothing to deploy`);
+    "Check this environment is ready", "Deploy Functions", "Check callable access and Functions parity"]) {
+    assert.match(block(name), /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' \}\}/u,
+      `${name} is skipped for a commit older than the deployed one`);
+  }
+  // A named run deploys those Functions only and leaves the record alone.
+  for (const name of ["Deploy Firestore indexes", "Deploy Firestore and Storage rules",
+    "Verify the active rules match this commit", "Record the deployed commit"]) {
+    assert.match(block(name),
+      /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' && steps\.choose\.outputs\.mode != 'named' \}\}/u, name);
   }
 });
 
 test("Deploy backend preserves every readiness failure before mutation", (t) => {
-  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/_backend-deploy.yml"), "utf8");
-  const start = workflow.indexOf("name: Check this environment is ready for these targets");
-  assert.ok(start >= 0);
-  const step = workflow.slice(start, workflow.indexOf("\n      - ", start));
-  const run = step.match(/        run: \|\n((?:          .*\n|\n)+)/u)?.[1];
-  assert.ok(run?.includes("check_environment_readiness.mjs"), "execute the actual workflow shell");
-  const script = run.replace(/^          /gmu, "");
+  const script = workflowStepShell(backendDeployWorkflow(), "Check this environment is ready");
+  assert.ok(script.includes("check_environment_readiness.mjs"), "execute the actual workflow shell");
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-readiness-workflow-"));
   t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
   for (const [status, report] of [
@@ -772,7 +782,7 @@ test("Deploy backend preserves every readiness failure before mutation", (t) => 
       ( ${script} ) && printf 'DEPLOY_REACHED'
     `], {
       cwd, encoding: "utf8",
-      env: {...process.env, DEPLOY_ENVIRONMENT: "dev", DEPLOY_TARGETS: "functions:exploreSearch",
+      env: {...process.env, DEPLOY_ENVIRONMENT: "dev", DEPLOY_TARGETS: "functions",
         GITHUB_SHA: "a".repeat(40), READINESS_EXIT: String(status), READINESS_REPORT: report ? JSON.stringify(report) : ""},
     });
     assert.equal(result.status, status, `preserve readiness exit ${status}: ${result.stderr}`);
@@ -780,43 +790,65 @@ test("Deploy backend preserves every readiness failure before mutation", (t) => 
   }
 });
 
-test("Deploy backend requires manual dispatch to bootstrap an untagged environment", (t) => {
-  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/_backend-deploy.yml"), "utf8");
-  const blocks = [...workflow.matchAll(/name: Plan from the last deployed commit[\s\S]*?        run: \|\n((?:          .*\n|\n)+)/gu)];
-  assert.equal(blocks.length, 2, "check both the initial and post-approval plans");
-  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-bootstrap-"));
+test("Deploy backend skips a commit older than the deployed one", (t) => {
+  const script = workflowStepShell(backendDeployWorkflow(), "Skip a commit older than the deployed one");
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-guard-"));
   t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
-  for (const [index, block] of blocks.entries()) {
-    for (const event of ["push", "schedule", "workflow_dispatch"]) {
-      const output = path.join(cwd, `${index}-${event}.txt`);
-      const result = spawnSync("bash", ["-c", `
-        git() { if [[ "$1" == "rev-parse" ]]; then return 1; fi; }
-        node() { printf 'planner reached\n' >> "$GITHUB_OUTPUT"; }
-        ${block[1].replace(/^          /gmu, "")}
-      `], {
-        cwd, encoding: "utf8",
-        env: {...process.env, GITHUB_EVENT_NAME: event, GITHUB_OUTPUT: output,
-          DEPLOY_ENVIRONMENT: "staging", GITHUB_SHA: "a".repeat(40), FULL: "false"},
-      });
-      assert.equal(result.status, 0, result.stderr);
-      assert.equal(fs.readFileSync(output, "utf8"), event === "workflow_dispatch" ? "planner reached\n" : "mode=no-op\n");
-    }
-    // Named Functions skip the planner and become exact targets.
-    const named = path.join(cwd, `${index}-named.txt`);
-    const run = (functions, full = "false") => spawnSync("bash", ["-c", `
-      gh() { return 0; }
-      git() { if [[ "$1" == "rev-parse" ]]; then return 1; fi; }
-      node() { printf 'planner reached\n' >> "$GITHUB_OUTPUT"; }
-      ${block[1].replace(/^          /gmu, "")}
-    `], {cwd, encoding: "utf8", env: {...process.env, GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_OUTPUT: named,
-      GITHUB_STEP_SUMMARY: path.join(cwd, "summary.md"), GITHUB_REPOSITORY: "o/r", DEPLOY_ENVIRONMENT: "prod",
-      GITHUB_SHA: "a".repeat(40), FULL: full, FUNCTIONS: functions}});
-    assert.equal(run("instagramClaimWebhook, startOrganizerClaimVerification").status, 0);
-    assert.equal(fs.readFileSync(named, "utf8"),
-      "mode=named\ntargets=functions:instagramClaimWebhook,functions:startOrganizerClaimVerification\n");
-    assert.notEqual(run("bad;name").status, 0);
-    assert.notEqual(run("instagramClaimWebhook", "true").status, 0);
+  for (const [label, deployments, ancestor, skipped] of [
+    ["newer commit", "7", 0, false],
+    ["older commit", "7", 1, true],
+    ["first deploy", "", 0, false],
+  ]) {
+    const output = path.join(cwd, `${label}.txt`);
+    fs.writeFileSync(output, "");
+    const result = spawnSync("bash", ["-c", `
+      gh() {
+        case "$*" in
+          *"/statuses"*) echo success;;
+          *"deployments?"*) printf '%s\\n' $DEPLOYMENTS;;
+          *) echo ${"b".repeat(40)};;
+        esac
+      }
+      git() { return "$ANCESTOR"; }
+      ${script}
+    `], {
+      cwd, encoding: "utf8",
+      env: {...process.env, GITHUB_OUTPUT: output, GITHUB_REPOSITORY: "o/r", DEPLOY_ENVIRONMENT: "dev",
+        GITHUB_SHA: "a".repeat(40), DEPLOYMENTS: deployments, ANCESTOR: String(ancestor)},
+    });
+    assert.equal(result.status, 0, `${label}: ${result.stderr}`);
+    assert.equal(fs.readFileSync(output, "utf8"), skipped ? "skip=true\n" : "", label);
   }
+});
+
+test("Deploy backend turns named Functions into exact codebase targets", (t) => {
+  const script = workflowStepShell(backendDeployWorkflow(), "Choose the Functions to deploy");
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-choose-"));
+  t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
+  const {entrySource} = createRequire(import.meta.url)("../../functions/scripts/build-deploy-codebases.cjs");
+  for (const [codebase, names] of [["social", ["instagramClaimWebhook"]], ["organizers", ["startOrganizerClaimVerification"]]]) {
+    fs.mkdirSync(path.join(cwd, "build/functions-codebases", codebase), {recursive: true});
+    fs.writeFileSync(path.join(cwd, "build/functions-codebases", codebase, "index.js"),
+      entrySource([{module: "x", names: names.map((name) => ({name, symbol: name}))}]));
+  }
+  fs.writeFileSync(path.join(cwd, "firebase.deploy.json"),
+    JSON.stringify({functions: [{codebase: "organizers"}, {codebase: "social"}]}));
+  const run = (functions, full = "false") => {
+    const output = path.join(cwd, "output.txt");
+    fs.writeFileSync(output, "");
+    const result = spawnSync("bash", ["-c", script], {cwd, encoding: "utf8", env: {...process.env,
+      GITHUB_OUTPUT: output, GITHUB_STEP_SUMMARY: path.join(cwd, "summary.md"), FULL: full, FUNCTIONS: functions}});
+    return {status: result.status, output: fs.readFileSync(output, "utf8")};
+  };
+  assert.deepEqual(run(""), {status: 0, output: "only=functions\npostconditions=functions\n"});
+  assert.deepEqual(run("", "true"),
+    {status: 0, output: "only=functions:organizers,functions:social\npostconditions=functions\n"});
+  assert.deepEqual(run("instagramClaimWebhook, startOrganizerClaimVerification"), {status: 0, output:
+    "mode=named\nonly=functions:social:instagramClaimWebhook,functions:organizers:startOrganizerClaimVerification\n" +
+    "postconditions=functions:instagramClaimWebhook,functions:startOrganizerClaimVerification\n"});
+  assert.notEqual(run("bad;name").status, 0);
+  assert.notEqual(run("notDeployed").status, 0);
+  assert.notEqual(run("instagramClaimWebhook", "true").status, 0);
 });
 
 function readyMetadataRunner(spec) {

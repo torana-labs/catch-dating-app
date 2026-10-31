@@ -172,8 +172,8 @@ Last consolidated from live environment evidence on 2026-05-21.
   refreshed afterward. Host App Check provider registrations were verified in
   Firebase Console on 2026-06-10 for dev, staging, and prod: Android uses Play
   Integrity, iOS uses App Attest, and web uses reCAPTCHA Enterprise. Firebase
-  CLI `15.20.0` and `gcloud` `566.0.0` do not expose App Check app-management
-  commands in this local toolchain. Use
+  CLI `15.34.2` manages only App Check debug tokens, and `gcloud` `566.0.0`
+  exposes no App Check app-management commands. Use
   `node tool/firebase/register_app_check_debug_token.mjs` for explicitly
   approved local debug-token registration; it reads the token from `.env.local`
   and does not print it.

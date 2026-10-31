@@ -1,0 +1,16 @@
+{
+  "codebases": {
+    "admin": ["admin"],
+    "events": ["events", "publicPages", "marketplace", "search", "places", "cityPlans", "waitlist"],
+    "eventsuccess": ["eventSuccess"],
+    "host": ["hostReadModels", "hostWork"],
+    "offers": ["organizerEventOffers", "organizerEventOfferRecipients", "organizerFormAdmission", "organizerResponseQuery", "acquisition"],
+    "organizers": ["organizers"],
+    "payments": ["payments", "hostMemberships", "commercialTerms", "memberships", "entitlements"],
+    "platform": ["analytics", "operations", "demoOps"],
+    "programs": ["programs", "transport", "programRsvp"],
+    "rehearsal": ["eventRehearsal", "doorJournal"],
+    "sales": ["salesDemo", "partners", "salesAssistant"],
+    "social": ["chats", "profiles", "crossPaths", "moments", "reviews", "safety", "matching", "media", "moderation", "messaging", "catchMessaging"]
+  }
+}

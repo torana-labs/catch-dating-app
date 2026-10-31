@@ -3,10 +3,11 @@ name: Deploy backend
 # The one path from main to the Firebase backend (indexes, Functions, Firestore
 # and Storage rules). Dev deploys on every backend-relevant merge; prod then
 # deploys the same commit automatically once dev succeeds (the prod
-# environment has no required reviewer since 30 Oct 2026), and only when the
-# commit changes something prod has not received. Staging refreshes on the
-# first of each month. Run it manually for prod, dev or staging, optionally as
-# a full deploy, or for named Functions only. Operator guide: docs/release_operations.md, "Deploy backend".
+# environment has no required reviewer since 30 Oct 2026). Each deploy
+# rebuilds only the Functions codebases whose code, parameters or secrets
+# changed; the Firebase CLI skips the rest. Staging refreshes on the first of
+# each month. Run it manually for prod, dev or staging, optionally as a full
+# deploy or for named Functions only. Operator guide: docs/release_operations.md, "Deploy backend".
 
 on:
   push:
@@ -35,7 +36,7 @@ on:
         options: [prod, dev, staging]
         default: prod
       full:
-        description: Deploy every stage and Function, not only what changed
+        description: Redeploy every Function, including unchanged ones
         type: boolean
         default: false
       functions:

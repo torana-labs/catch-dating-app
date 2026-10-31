@@ -1,13 +1,14 @@
 name: Backend deploy (one environment)
 
 # Deploys one environment's Firebase backend from the commit this run was
-# started on. The environment remembers the commit it last received as a GitHub
-# deployment (task deploy:backend); only what changed since then is deployed
-# (tool/firebase/affected_function_targets.mjs) through
-# tool/deploy_firebase_targets.sh, and a new deployment then records this commit.
-# GITHUB_TOKEN can't move a tag across workflow-file changes, which is why the
-# record is a deployment and the deployed/<environment> tag is only local.
-# Operator guide: docs/release_operations.md, "Deploy backend".
+# started on. Functions deploy as the codebases in functions/deploy-codebases.json
+# (functions/scripts/build-deploy-codebases.cjs). The Firebase CLI hashes each
+# codebase's code, parameters and secrets and skips every Function whose hash
+# matches what is live, so a deploy rebuilds only what changed, and a retry
+# rebuilds only what failed. Indexes and rules deploy every time; the CLI
+# leaves them alone when they match. A GitHub deployment then records this
+# commit. A run given named Functions deploys only those, for a configuration
+# change, and records nothing. Operator guide: docs/release_operations.md, "Deploy backend".
 
 on:
   workflow_call:
@@ -19,9 +20,9 @@ on:
         required: false
         type: boolean
         default: false
-      # Comma-separated Function names deployed instead of the plan, for a
-      # configuration change. The record stays where it is, because the rest
-      # of this commit has not reached the environment.
+      # Comma-separated Function names deployed instead of every changed one,
+      # for a configuration change. The record stays where it is, because the
+      # rest of this commit has not reached the environment.
       functions:
         required: false
         type: string
@@ -33,99 +34,12 @@ permissions:
   id-token: write
 
 jobs:
-  # Plans without credentials or approval, so a merge with nothing to deploy
-  # never asks for a production approval.
-  plan:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    outputs:
-      mode: ${{ steps.plan.outputs.mode }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - id: toolchain
-        uses: ./.github/actions/load-toolchain
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ steps.toolchain.outputs.node-version }}
-          cache: npm
-          cache-dependency-path: functions/package-lock.json
-
-      - name: Install the pinned TypeScript parser
-        run: npm --prefix functions ci --ignore-scripts
-
-      - id: plan
-        name: Plan from the last deployed commit
-        env:
-          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
-          FULL: ${{ inputs.full }}
-          FUNCTIONS: ${{ inputs.functions }}
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          # The newest successful deploy:backend deployment is the base. The
-          # deployed/<environment> tag on origin is only read until the first
-          # deployment exists. affected_function_targets reads the local tag.
-          base=""
-          for id in $(gh api "repos/$GITHUB_REPOSITORY/deployments?environment=$DEPLOY_ENVIRONMENT&task=deploy:backend&per_page=20" -q '.[].id'); do
-            if [[ "$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses?per_page=1" -q '.[0].state // ""')" == "success" ]]; then
-              base="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id" -q .sha)"
-              break
-            fi
-          done
-          if [[ -z "$base" ]]; then
-            git fetch --force origin "refs/tags/deployed/$DEPLOY_ENVIRONMENT:refs/tags/deployed/$DEPLOY_ENVIRONMENT" 2>/dev/null || true
-          else
-            git tag -f "deployed/$DEPLOY_ENVIRONMENT" "$base" > /dev/null
-          fi
-          if base="$(git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT^{commit}")" &&
-              ! git merge-base --is-ancestor "$base" "$GITHUB_SHA"; then
-            echo "::notice::$DEPLOY_ENVIRONMENT already has $base, which $GITHUB_SHA does not contain; nothing to deploy."
-            echo "mode=no-op" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          # A first deploy is full and long, so only a manual run may start it.
-          if [[ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]] &&
-              ! git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT" > /dev/null; then
-            echo "::notice::$DEPLOY_ENVIRONMENT has no deployed/$DEPLOY_ENVIRONMENT tag; run Deploy backend manually to bootstrap it."
-            echo "mode=no-op" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          functions="${FUNCTIONS:-}"
-          if [[ -n "${functions// /}" ]]; then
-            if [[ "$FULL" == "true" ]]; then
-              echo "::error::Choose a full deploy or named Functions, not both."
-              exit 1
-            fi
-            targets=""
-            for name in $(tr ',' ' ' <<< "$functions"); do
-              if [[ ! "$name" =~ ^[A-Za-z][A-Za-z0-9_-]*$ ]]; then
-                echo "::error::'$name' is not a Function name."
-                exit 1
-              fi
-              targets="${targets:+$targets,}functions:$name"
-            done
-            echo "mode=named" >> "$GITHUB_OUTPUT"
-            echo "targets=$targets" >> "$GITHUB_OUTPUT"
-            echo "Named Functions only: $targets" >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          args=(--environment "$DEPLOY_ENVIRONMENT" --head "$GITHUB_SHA")
-          if [[ "$FULL" == "true" ]]; then args+=(--full); fi
-          NODE_PATH=functions/node_modules \
-            node tool/firebase/affected_function_targets.mjs "${args[@]}" > /dev/null
-
   deploy:
-    needs: plan
-    if: ${{ needs.plan.outputs.mode != 'no-op' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 330
+    timeout-minutes: 180
     environment: ${{ inputs.environment }}
     # One deploy per environment at a time. A newer run waits; GitHub keeps
-    # only the newest waiting run, and each run deploys everything since the tag.
+    # only the newest waiting run.
     concurrency:
       group: backend-deploy-${{ inputs.environment }}
       cancel-in-progress: false
@@ -134,100 +48,60 @@ jobs:
         with:
           fetch-depth: 0
 
+      # A rerun of an older commit must not replace a newer deployed one.
+      - id: guard
+        name: Skip a commit older than the deployed one
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for id in $(gh api "repos/$GITHUB_REPOSITORY/deployments?environment=$DEPLOY_ENVIRONMENT&task=deploy:backend&per_page=20" -q '.[].id'); do
+            if [[ "$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses?per_page=1" -q '.[0].state // ""')" == "success" ]]; then
+              base="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id" -q .sha)"
+              if ! git merge-base --is-ancestor "$base" "$GITHUB_SHA"; then
+                echo "::notice::$DEPLOY_ENVIRONMENT already has $base, which $GITHUB_SHA does not contain; nothing to deploy."
+                echo "skip=true" >> "$GITHUB_OUTPUT"
+              fi
+              break
+            fi
+          done
+
       - id: toolchain
+        if: ${{ steps.guard.outputs.skip != 'true' }}
         uses: ./.github/actions/load-toolchain
 
       - uses: actions/setup-node@v6
+        if: ${{ steps.guard.outputs.skip != 'true' }}
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
           cache: npm
           cache-dependency-path: functions/package-lock.json
 
       - name: Install and build Functions
+        if: ${{ steps.guard.outputs.skip != 'true' }}
         run: |
           set -euo pipefail
           npm --prefix functions ci
           npm --prefix functions run build
 
-      # Replans after approval: an earlier run may have moved the tag meanwhile.
-      - id: plan
-        name: Plan from the last deployed commit
-        env:
-          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
-          FULL: ${{ inputs.full }}
-          FUNCTIONS: ${{ inputs.functions }}
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          # The newest successful deploy:backend deployment is the base. The
-          # deployed/<environment> tag on origin is only read until the first
-          # deployment exists. affected_function_targets reads the local tag.
-          base=""
-          for id in $(gh api "repos/$GITHUB_REPOSITORY/deployments?environment=$DEPLOY_ENVIRONMENT&task=deploy:backend&per_page=20" -q '.[].id'); do
-            if [[ "$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses?per_page=1" -q '.[0].state // ""')" == "success" ]]; then
-              base="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id" -q .sha)"
-              break
-            fi
-          done
-          if [[ -z "$base" ]]; then
-            git fetch --force origin "refs/tags/deployed/$DEPLOY_ENVIRONMENT:refs/tags/deployed/$DEPLOY_ENVIRONMENT" 2>/dev/null || true
-          else
-            git tag -f "deployed/$DEPLOY_ENVIRONMENT" "$base" > /dev/null
-          fi
-          if base="$(git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT^{commit}")" &&
-              ! git merge-base --is-ancestor "$base" "$GITHUB_SHA"; then
-            echo "::notice::$DEPLOY_ENVIRONMENT already has $base, which $GITHUB_SHA does not contain; nothing to deploy."
-            echo "mode=no-op" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          # A first deploy is full and long, so only a manual run may start it.
-          if [[ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]] &&
-              ! git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT" > /dev/null; then
-            echo "::notice::$DEPLOY_ENVIRONMENT has no deployed/$DEPLOY_ENVIRONMENT tag; run Deploy backend manually to bootstrap it."
-            echo "mode=no-op" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          functions="${FUNCTIONS:-}"
-          if [[ -n "${functions// /}" ]]; then
-            if [[ "$FULL" == "true" ]]; then
-              echo "::error::Choose a full deploy or named Functions, not both."
-              exit 1
-            fi
-            targets=""
-            for name in $(tr ',' ' ' <<< "$functions"); do
-              if [[ ! "$name" =~ ^[A-Za-z][A-Za-z0-9_-]*$ ]]; then
-                echo "::error::'$name' is not a Function name."
-                exit 1
-              fi
-              targets="${targets:+$targets,}functions:$name"
-            done
-            echo "mode=named" >> "$GITHUB_OUTPUT"
-            echo "targets=$targets" >> "$GITHUB_OUTPUT"
-            echo "Named Functions only: $targets" >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          args=(--environment "$DEPLOY_ENVIRONMENT" --head "$GITHUB_SHA")
-          if [[ "$FULL" == "true" ]]; then args+=(--full); fi
-          NODE_PATH=functions/node_modules \
-            node tool/firebase/affected_function_targets.mjs "${args[@]}" > /dev/null
-
       - name: Authenticate to Google Cloud
-        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+        if: ${{ steps.guard.outputs.skip != 'true' }}
         uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
 
       - name: Install Google Cloud CLI
-        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+        if: ${{ steps.guard.outputs.skip != 'true' }}
         uses: google-github-actions/setup-gcloud@v3
 
       - name: Install Firebase CLI
-        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+        if: ${{ steps.guard.outputs.skip != 'true' }}
         run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
 
       - name: Materialize Functions parameters from this environment's variables
-        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+        if: ${{ steps.guard.outputs.skip != 'true' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           # Non-secret configuration only; secret values stay in Secret Manager.
@@ -245,13 +119,69 @@ jobs:
           node tool/firebase/check_functions_params_coverage.mjs \
             --functions-dir functions --env-file "functions/.env.$project_id"
 
+      # CI already ran the predeploy test suites for this commit and the build
+      # above produced lib, so the deploy config carries no predeploy hooks.
+      - name: Package Functions as codebases
+        if: ${{ steps.guard.outputs.skip != 'true' }}
+        run: |
+          set -euo pipefail
+          node functions/scripts/build-deploy-codebases.cjs --config-out firebase.deploy.json
+          jq 'walk(if type == "object" then del(.predeploy) else . end)' \
+            firebase.deploy.json > firebase.deploy.tmp.json
+          mv firebase.deploy.tmp.json firebase.deploy.json
+
+      # The CLI addresses a Function in a codebase as functions:<codebase>:<name>.
+      # Exact names may also pass --force (newly enabling retry on failure);
+      # a broad selector never does, because --force also deletes Functions
+      # missing from source.
+      - id: choose
+        name: Choose the Functions to deploy
+        if: ${{ steps.guard.outputs.skip != 'true' }}
+        env:
+          FULL: ${{ inputs.full }}
+          FUNCTIONS: ${{ inputs.functions }}
+        run: |
+          set -euo pipefail
+          functions="${FUNCTIONS:-}"
+          if [[ -z "${functions// /}" ]]; then
+            only=functions
+            if [[ "$FULL" == "true" ]]; then
+              only="$(jq -r '[.functions[].codebase | "functions:" + .] | join(",")' firebase.deploy.json)"
+            fi
+            printf 'only=%s\npostconditions=functions\n' "$only" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [[ "$FULL" == "true" ]]; then
+            echo "::error::Choose a full deploy or named Functions, not both."
+            exit 1
+          fi
+          only=""
+          names=""
+          for name in $(tr ',' ' ' <<< "$functions"); do
+            if [[ ! "$name" =~ ^[A-Za-z][A-Za-z0-9_-]*$ ]]; then
+              echo "::error::'$name' is not a Function name."
+              exit 1
+            fi
+            entry="$(grep -lF "Object.defineProperty(exports, \"$name\"," build/functions-codebases/*/index.js || true)"
+            if [[ -z "$entry" ]]; then
+              echo "::error::'$name' is not a deployable Function in this commit."
+              exit 1
+            fi
+            only="${only:+$only,}functions:$(basename "$(dirname "$entry")"):$name"
+            names="${names:+$names,}functions:$name"
+          done
+          printf 'mode=named\nonly=%s\npostconditions=%s\n' "$only" "$names" >> "$GITHUB_OUTPUT"
+          echo "Named Functions only: $only" >> "$GITHUB_STEP_SUMMARY"
+
       # Missing and indeterminate prerequisites both stop before mutation.
       # Preserve the checker's exit status, including errors without a report.
-      - name: Check this environment is ready for these targets
-        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+      - name: Check this environment is ready
+        if: ${{ steps.guard.outputs.skip != 'true' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
-          DEPLOY_TARGETS: ${{ steps.plan.outputs.targets }}
+          DEPLOY_TARGETS: >-
+            ${{ steps.choose.outputs.mode == 'named' && steps.choose.outputs.postconditions
+            || 'firestore:indexes,functions,firestore:rules,storage' }}
         run: |
           set -euo pipefail
           mkdir -p build
@@ -262,40 +192,69 @@ jobs:
           cat build/readiness.json
           exit "$readiness_status"
 
-      # CI already ran the predeploy test suites for this commit, and the build
-      # above produced lib, so deploy from a copy of firebase.json without hooks.
       # New indexes must be READY before Functions that query them deploy.
-      # --force only reaches exact Function batches (deploy_firebase_targets.sh).
-      - name: Deploy only what changed
-        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+      - name: Deploy Firestore indexes
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.choose.outputs.mode != 'named' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
-          DEPLOY_TARGETS: ${{ steps.plan.outputs.targets }}
-          # This run deploys its own exact commit; the tag records which one.
+          # This run deploys its own exact commit; the record says which one.
           CATCH_DEPLOY_ALLOW_BEHIND: "1"
         run: |
           set -euo pipefail
           project_id="$(jq -er --arg env "$DEPLOY_ENVIRONMENT" '.projects[$env]' .firebaserc)"
-          jq 'walk(if type == "object" then del(.predeploy) else . end)' \
-            firebase.json > firebase.deploy.json
-          remaining="$DEPLOY_TARGETS"
-          if [[ ",$DEPLOY_TARGETS," == *",firestore:indexes,"* ]]; then
-            ./tool/deploy_firebase_targets.sh "$DEPLOY_ENVIRONMENT" firestore:indexes \
-              --config firebase.deploy.json
-            node tool/firebase/wait_firestore_indexes_ready.mjs \
-              --indexes firestore.indexes.json --project "$project_id" \
-              --timeout-seconds 1800 --poll-seconds 20
-            remaining="$(tr ',' '\n' <<< "$DEPLOY_TARGETS" | grep -vx 'firestore:indexes' | paste -sd, - || true)"
-          fi
-          if [[ -n "$remaining" ]]; then
-            ./tool/deploy_firebase_targets.sh "$DEPLOY_ENVIRONMENT" "$remaining" \
-              --config firebase.deploy.json --force
-          fi
+          ./tool/deploy_firebase_targets.sh "$DEPLOY_ENVIRONMENT" firestore:indexes \
+            --config firebase.deploy.json
+          node tool/firebase/wait_firestore_indexes_ready.mjs \
+            --indexes firestore.indexes.json --project "$project_id" \
+            --timeout-seconds 1800 --poll-seconds 20
+
+      # Naming codebases (full) or Functions (named) makes the CLI deploy them
+      # even when unchanged. After a failed full deploy the second attempt uses
+      # plain `functions`, so whatever succeeded is skipped and only what
+      # failed is rebuilt.
+      - name: Deploy Functions
+        if: ${{ steps.guard.outputs.skip != 'true' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          DEPLOY_ONLY: ${{ steps.choose.outputs.only }}
+          NAMED: ${{ steps.choose.outputs.mode == 'named' }}
+        run: |
+          set -euo pipefail
+          only="$DEPLOY_ONLY"
+          force=()
+          if [[ "$NAMED" == "true" ]]; then force=(--force); fi
+          for attempt in 1 2; do
+            status=0
+            ./tool/firebase_with_env.sh "$DEPLOY_ENVIRONMENT" deploy --only "$only" \
+              --config firebase.deploy.json --non-interactive "${force[@]}" || status=$?
+            if [[ "$status" == "0" ]]; then exit 0; fi
+            echo "::warning::Functions deploy attempt $attempt failed; retrying only what did not deploy."
+            if [[ "$NAMED" != "true" ]]; then only=functions; fi
+            sleep 60
+          done
+          exit "$status"
+
+      - name: Check callable access and Functions parity
+        if: ${{ steps.guard.outputs.skip != 'true' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          # This run deploys its own exact commit; the record says which one.
+          CATCH_DEPLOY_ALLOW_BEHIND: "1"
+          TARGETS: ${{ steps.choose.outputs.postconditions }}
+        run: ./tool/deploy_firebase_targets.sh --functions-postconditions-only "$DEPLOY_ENVIRONMENT" "$TARGETS"
+
+      - name: Deploy Firestore and Storage rules
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.choose.outputs.mode != 'named' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          # This run deploys its own exact commit; the record says which one.
+          CATCH_DEPLOY_ALLOW_BEHIND: "1"
+        run: ./tool/deploy_firebase_targets.sh "$DEPLOY_ENVIRONMENT" firestore:rules,storage --config firebase.deploy.json
 
       # Live Firestore and Storage rules must equal this commit's sources before
-      # the tag claims the environment received it.
+      # the record claims the environment received it.
       - name: Verify the active rules match this commit
-        if: ${{ steps.plan.outputs.mode != 'no-op' && steps.plan.outputs.mode != 'named' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.choose.outputs.mode != 'named' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
         run: >-
@@ -304,9 +263,9 @@ jobs:
 
       # A GitHub deployment, not a tag: GITHUB_TOKEN may create one for any
       # commit, while GitHub refuses it a tag on a commit whose history changes
-      # workflow files. The plan above refuses a commit older than the record.
+      # workflow files. The guard above refuses a commit older than the record.
       - name: Record the deployed commit
-        if: ${{ steps.plan.outputs.mode != 'no-op' && steps.plan.outputs.mode != 'named' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.choose.outputs.mode != 'named' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           GH_TOKEN: ${{ github.token }}
