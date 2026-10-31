@@ -113,7 +113,8 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
           );
     final hostInquiryOrganizerIds = {
       for (final match in displayMatches)
-        if (match.isOrganizerHostInquiry && match.organizerId != null) match.organizerId!,
+        if (match.isOrganizerHostInquiry && match.organizerId != null)
+          match.organizerId!,
     };
     final organizersState = hostInquiryOrganizerIds.isEmpty
         ? null
@@ -134,7 +135,8 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
     final publicProfileUids = <String>{};
     for (final match in displayMatches) {
       final otherUid = match.otherId(currentUid);
-      final organizer = match.isOrganizerHostInquiry && match.organizerId != null
+      final organizer =
+          match.isOrganizerHostInquiry && match.organizerId != null
           ? organizersById[match.organizerId!]
           : null;
       final hostProfile = _hostProfileFor(organizer, otherUid);

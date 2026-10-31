@@ -105,7 +105,9 @@ class _HostSendIntentFixture extends StatelessWidget {
   @override
   Widget build(BuildContext context) => WidgetbookFixtureScope(
     overrides: [
-      hostMessagingSetupProvider(HostInboxSurfaceFixtures.organizerId).overrideWith(
+      hostMessagingSetupProvider(
+        HostInboxSurfaceFixtures.organizerId,
+      ).overrideWith(
         (ref) async => HostMessagingSetup(
           organizerId: HostInboxSurfaceFixtures.organizerId,
           providerConfigured: available,

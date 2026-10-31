@@ -398,7 +398,10 @@ void main() {
         );
         await _seedEvent(firestore, later);
         await _seedEvent(firestore, earlier);
-        await _seedEvent(firestore, buildEvent(id: 'other', organizerId: 'club-3'));
+        await _seedEvent(
+          firestore,
+          buildEvent(id: 'other', organizerId: 'club-3'),
+        );
 
         await expectLater(
           repository.watchEventsForOrganizers(

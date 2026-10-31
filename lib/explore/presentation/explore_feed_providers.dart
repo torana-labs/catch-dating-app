@@ -384,7 +384,9 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
             (!organizer.isPubliclyBrowseable && !isSignedUpSyntheticFixture)) {
           return null;
         }
-        final isOrganizerMember = membershipOrganizerIds.contains(event.organizerId);
+        final isOrganizerMember = membershipOrganizerIds.contains(
+          event.organizerId,
+        );
         final distanceFromUserKm = _distanceFromUserKm(
           event: event,
           deviceLocation: deviceLocation,

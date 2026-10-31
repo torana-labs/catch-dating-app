@@ -16,7 +16,10 @@ void main() {
 
     test('builds a nested event detail URL from the router path contract', () {
       expect(
-        AppDeepLinks.event(organizerId: 'club-1', eventId: 'event-1').toString(),
+        AppDeepLinks.event(
+          organizerId: 'club-1',
+          eventId: 'event-1',
+        ).toString(),
         '${Brand.webOrigin}/organizers/club-1/events/event-1',
       );
     });

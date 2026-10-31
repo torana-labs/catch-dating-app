@@ -101,7 +101,9 @@ final class StartOrganizerHostConversationCallableResponse {
       }
     }
 
-    throw StateError('startOrganizerHostConversation response was missing matchId.');
+    throw StateError(
+      'startOrganizerHostConversation response was missing matchId.',
+    );
   }
 
   final String matchId;

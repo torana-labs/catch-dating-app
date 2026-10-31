@@ -35,6 +35,9 @@ class OrganizerMembershipController extends _$OrganizerMembershipController {
     requireSignedInUid(ref, action: 'update organizer notifications');
     await ref
         .read(organizersRepositoryProvider)
-        .setOrganizerPushNotifications(organizerId: organizerId, enabled: enabled);
+        .setOrganizerPushNotifications(
+          organizerId: organizerId,
+          enabled: enabled,
+        );
   }
 }

@@ -34,7 +34,9 @@ Widget organizerPhotoStripStates(BuildContext context) {
         label: 'single photo',
         child: OrganizerPhotoRail(
           organizer: widgetbookOrganizerOrganizer.copyWith(
-            organizerPhotos: [widgetbookOrganizerOrganizer.organizerPhotos.first],
+            organizerPhotos: [
+              widgetbookOrganizerOrganizer.organizerPhotos.first,
+            ],
           ),
         ),
       ),

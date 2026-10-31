@@ -233,7 +233,10 @@ void main() {
         tester,
         MediaQuery(
           data: media,
-          child: const EventDetailScreen(organizerId: 'club-1', eventId: 'event-1'),
+          child: const EventDetailScreen(
+            organizerId: 'club-1',
+            eventId: 'event-1',
+          ),
         ),
         viewerState: viewerFixture(),
         overrides: [
@@ -953,7 +956,9 @@ void main() {
             overrides: [
               uidProvider.overrideWith((ref) => Stream.value('runner-1')),
               organizersRepositoryProvider.overrideWithValue(
-                seededOrganizersRepository(buildOrganizer(id: event.organizerId)),
+                seededOrganizersRepository(
+                  buildOrganizer(id: event.organizerId),
+                ),
               ),
               eventDetailViewModelProvider(event.id).overrideWith(
                 (ref) => AsyncData(

@@ -24,7 +24,10 @@ class HostTeamManagementController extends _$HostTeamManagementController {
         .addOrganizerHost(organizerId: organizerId, phoneNumber: phoneNumber);
   }
 
-  Future<void> removeHost({required String organizerId, required String uid}) async {
+  Future<void> removeHost({
+    required String organizerId,
+    required String uid,
+  }) async {
     requireSignedInUid(ref, action: 'remove an organizer manager');
     await ref
         .read(organizersRepositoryProvider)

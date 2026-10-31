@@ -402,8 +402,9 @@ Stream<List<EventInviteLink>> watchEventInviteLinks(Ref ref, String eventId) =>
     ref.watch(eventRepositoryProvider).watchInviteLinks(eventId);
 
 @riverpod
-Stream<List<Event>> watchEventsForOrganizer(Ref ref, String organizerId) =>
-    ref.watch(eventRepositoryProvider).watchEventsForOrganizer(organizerId: organizerId);
+Stream<List<Event>> watchEventsForOrganizer(Ref ref, String organizerId) => ref
+    .watch(eventRepositoryProvider)
+    .watchEventsForOrganizer(organizerId: organizerId);
 
 @riverpod
 Stream<EventVenueSession> eventVenueSession(Ref ref, String eventId) async* {

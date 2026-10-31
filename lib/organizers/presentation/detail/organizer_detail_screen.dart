@@ -133,7 +133,10 @@ class OrganizerDetailScreen extends ConsumerWidget {
               ref,
               (tx) => tx
                   .get(organizerHostContactControllerProvider.notifier)
-                  .startConversation(organizerId: organizer.id, hostUid: host.uid),
+                  .startConversation(
+                    organizerId: organizer.id,
+                    hostUid: host.uid,
+                  ),
             );
         if (!buttonContext.mounted) return;
         unawaited(

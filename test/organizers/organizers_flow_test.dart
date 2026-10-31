@@ -256,8 +256,9 @@ void main() {
           GoRoute(
             path: Routes.hostOrganizerDetailScreen.path,
             name: Routes.hostOrganizerDetailScreen.name,
-            builder: (_, state) =>
-                OrganizerDetailScreen(organizerId: state.pathParameters['organizerId']!),
+            builder: (_, state) => OrganizerDetailScreen(
+              organizerId: state.pathParameters['organizerId']!,
+            ),
           ),
           GoRoute(
             path: Routes.hostAppEventDetailScreen.path,

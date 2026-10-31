@@ -111,7 +111,9 @@ Widget hostTeamRouteStates(BuildContext context) {
           child: WidgetbookMediaOverride(
             textScaler: TextScaler.linear(2),
             child: WidgetbookHostShellScope(
-              child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
+              child: HostOrganizerTeamScreen(
+                organizerId: 'design-host-sea-face',
+              ),
             ),
           ),
         ),
@@ -122,7 +124,9 @@ Widget hostTeamRouteStates(BuildContext context) {
           child: WidgetbookMediaOverride(
             disableAnimations: true,
             child: WidgetbookHostShellScope(
-              child: HostOrganizerTeamScreen(organizerId: 'design-host-sea-face'),
+              child: HostOrganizerTeamScreen(
+                organizerId: 'design-host-sea-face',
+              ),
             ),
           ),
         ),

@@ -15,7 +15,11 @@ mixin _EventDetailScreenActions on ConsumerState<EventDetailScreen> {
       if (!isAuthenticated) {
         _openEventSignIn(context, organizerId: organizerId, eventId: event.id);
       } else {
-        _openEventProfileCompletion(context, organizerId: organizerId, eventId: event.id);
+        _openEventProfileCompletion(
+          context,
+          organizerId: organizerId,
+          eventId: event.id,
+        );
       }
       return;
     }
@@ -166,7 +170,10 @@ void _openEventProfileCompletion(
           if (event?.requiresAgeDetails == true) 'ageRestricted',
           if (event?.requiresCohortDetails == true) 'cohortRestricted',
         ],
-        from: AppDeepLinks.inAppEventPath(organizerId: organizerId, eventId: eventId),
+        from: AppDeepLinks.inAppEventPath(
+          organizerId: organizerId,
+          eventId: eventId,
+        ),
       ),
     ),
   );

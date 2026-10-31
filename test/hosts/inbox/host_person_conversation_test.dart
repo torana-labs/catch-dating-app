@@ -77,7 +77,9 @@ void main() {
         uidProvider.overrideWithValue(const AsyncData('host')),
         matchStreamProvider('source-id').overrideWithValue(
           AsyncData(
-            validCatch ? source.match : source.match.copyWith(organizerId: 'other'),
+            validCatch
+                ? source.match
+                : source.match.copyWith(organizerId: 'other'),
           ),
         ),
         conversationRepositoryProvider.overrideWithValue(conversations),

@@ -244,7 +244,10 @@ enum Routes {
     '/host/organizers/memberships',
     AppRouteAudience.host,
   ),
-  hostOrganizerDetailScreen('/host/organizers/:organizerId', AppRouteAudience.host),
+  hostOrganizerDetailScreen(
+    '/host/organizers/:organizerId',
+    AppRouteAudience.host,
+  ),
   hostCreateOrganizerScreen(
     '/host/organizers/create-organizer',
     AppRouteAudience.host,

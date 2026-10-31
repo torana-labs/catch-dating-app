@@ -1009,7 +1009,10 @@ void main() {
           );
 
       expect(fakeRepository.lastCreateCall, isNotNull);
-      expect(fakeRepository.lastCreateCall!.organizerId, fakeRepository.generatedId);
+      expect(
+        fakeRepository.lastCreateCall!.organizerId,
+        fakeRepository.generatedId,
+      );
     });
 
     test('co-host media edits update only media fields', () async {

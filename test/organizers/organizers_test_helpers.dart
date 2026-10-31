@@ -540,7 +540,8 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     final resolvedMediaId = mediaId ?? 'test-media';
     return UploadedImage(
       url: uploadResult,
-      storagePath: 'organizers/$organizerId/media/$resolvedMediaId/original.jpg',
+      storagePath:
+          'organizers/$organizerId/media/$resolvedMediaId/original.jpg',
     );
   }
 

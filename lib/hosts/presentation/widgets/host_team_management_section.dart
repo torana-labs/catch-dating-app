@@ -70,7 +70,10 @@ class HostTeamManagementSection extends ConsumerWidget {
                 ref,
                 (tx) => tx
                     .get(hostTeamManagementControllerProvider.notifier)
-                    .addHostByPhone(organizerId: organizer.id, phoneNumber: phone),
+                    .addHostByPhone(
+                      organizerId: organizer.id,
+                      phoneNumber: phone,
+                    ),
               );
             } catch (error, stackTrace) {
               ref

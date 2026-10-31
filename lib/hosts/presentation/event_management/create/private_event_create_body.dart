@@ -297,7 +297,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         localStartTime: summary.localStartTime,
         timezone: EventSetupValue.set(summary.timezone),
       );
-      final drafts = await controller.loadDrafts(organizerId: widget.organizer.id);
+      final drafts = await controller.loadDrafts(
+        organizerId: widget.organizer.id,
+      );
       if (!mounted) {
         return;
       }
@@ -704,6 +706,8 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         .read(createEventDraftControllerProvider.notifier)
         .saveDraft(draft);
     _activeDraft = draft;
-    ref.invalidate(organizerEventDraftsProvider(organizerId: widget.organizer.id));
+    ref.invalidate(
+      organizerEventDraftsProvider(organizerId: widget.organizer.id),
+    );
   }
 }

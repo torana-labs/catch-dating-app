@@ -38,7 +38,10 @@ class CreateEventDraftController extends _$CreateEventDraftController {
     return draft;
   }
 
-  Future<void> deleteDraft({required String organizerId, required String draftId}) {
+  Future<void> deleteDraft({
+    required String organizerId,
+    required String draftId,
+  }) {
     final uid = requireSignedInUid(ref, action: 'delete draft');
     return ref
         .read(eventDraftRepositoryProvider)

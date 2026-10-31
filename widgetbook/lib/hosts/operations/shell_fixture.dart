@@ -194,7 +194,8 @@ class WidgetbookHostShellScope extends StatelessWidget {
           (ref) =>
               organizerEventStreams[organizerId] ??
               Stream<List<Event>>.value(
-                HostOperationsFixtures.eventsByOrganizer[organizerId] ?? const [],
+                HostOperationsFixtures.eventsByOrganizer[organizerId] ??
+                    const [],
               ),
         ),
         hostCrmSummaryProvider(

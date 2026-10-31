@@ -18,7 +18,9 @@ void main() {
       final logoPhoto = _photo('logo', 0);
 
       expect(
-        organizerHeroVariantFor(buildOrganizer(organizerPhotos: [organizerPhoto])),
+        organizerHeroVariantFor(
+          buildOrganizer(organizerPhotos: [organizerPhoto]),
+        ),
         OrganizerHeroVariant.poster,
       );
       expect(

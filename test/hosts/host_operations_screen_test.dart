@@ -287,7 +287,8 @@ Future<void> _pumpHostScreen(
       GoRoute(
         path: Routes.hostOrganizerDetailScreen.path,
         name: Routes.hostOrganizerDetailScreen.name,
-        builder: (_, state) => Text('Club ${state.pathParameters['organizerId']}'),
+        builder: (_, state) =>
+            Text('Club ${state.pathParameters['organizerId']}'),
       ),
       GoRoute(
         path: Routes.hostOrganizerEventDefaultsScreen.path,

@@ -260,7 +260,9 @@ class OrganizersRepository {
   Future<void> joinOrganizer(String organizerId) => withBackendErrorContext(
     () => _functions
         .httpsCallable('followOrganizer')
-        .call(OrganizerFollowCallableRequest(organizerId: organizerId).toJson()),
+        .call(
+          OrganizerFollowCallableRequest(organizerId: organizerId).toJson(),
+        ),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'follow organizer',
@@ -272,7 +274,9 @@ class OrganizersRepository {
   Future<void> leaveOrganizer(String organizerId) => withBackendErrorContext(
     () => _functions
         .httpsCallable('unfollowOrganizer')
-        .call(OrganizerFollowCallableRequest(organizerId: organizerId).toJson()),
+        .call(
+          OrganizerFollowCallableRequest(organizerId: organizerId).toJson(),
+        ),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'unfollow organizer',

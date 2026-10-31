@@ -283,7 +283,8 @@ List<ActivityNotification> organizerPostNotificationsFromActivity(
           .where(
             (notification) =>
                 notification.isUnread &&
-                (notification.type == ActivityNotificationType.organizerUpdate ||
+                (notification.type ==
+                        ActivityNotificationType.organizerUpdate ||
                     notification.type ==
                         ActivityNotificationType.organizerUpdate) &&
                 notification.postId != null,

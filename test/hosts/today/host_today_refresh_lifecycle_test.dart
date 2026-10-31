@@ -580,7 +580,9 @@ class _Fixture {
               ]),
             ),
           for (final org in ['org-a', 'org-b']) ...[
-            organizerEventDraftsProvider(organizerId: org).overrideWith((_) async {
+            organizerEventDraftsProvider(organizerId: org).overrideWith((
+              _,
+            ) async {
               draftReads.add(org);
               return [];
             }),

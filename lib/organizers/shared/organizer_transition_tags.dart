@@ -1,7 +1,8 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/widgets.dart';
 
-String organizerInteractionHeroTag(String organizerId) => 'club-interaction-$organizerId';
+String organizerInteractionHeroTag(String organizerId) =>
+    'club-interaction-$organizerId';
 
 /// Shared inset for the club tile media frame and the detail-page hero module.
 ///

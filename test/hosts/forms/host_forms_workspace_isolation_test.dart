@@ -330,7 +330,12 @@ void main() {
   }
 
   for (final action in ['Archive form', 'Delete draft']) {
-    for (final change in ['organizerABA', 'actorABA', 'organizersABA', 'liveAuth']) {
+    for (final change in [
+      'organizerABA',
+      'actorABA',
+      'organizersABA',
+      'liveAuth',
+    ]) {
       testWidgets('$action confirmation cannot dispatch after $change', (
         tester,
       ) async {
@@ -354,7 +359,12 @@ void main() {
     }
   }
 
-  for (final change in ['organizerABA', 'actorABA', 'organizersABA', 'liveAuth']) {
+  for (final change in [
+    'organizerABA',
+    'actorABA',
+    'organizersABA',
+    'liveAuth',
+  ]) {
     for (final fails in [false, true]) {
       testWidgets(
         'duplicate completion is fenced after $change; failure=$fails',
@@ -386,7 +396,12 @@ void main() {
   }
 
   for (final phase in ['picker', 'confirmation', 'acknowledgment']) {
-    for (final change in ['organizerABA', 'actorABA', 'organizersABA', 'liveAuth']) {
+    for (final change in [
+      'organizerABA',
+      'actorABA',
+      'organizersABA',
+      'liveAuth',
+    ]) {
       testWidgets('import $phase is fenced after $change', (tester) async {
         final h = await _Harness.mount(tester);
         final pick = Completer<HostRosterTable?>();

@@ -407,11 +407,17 @@ void _registerExploreMapTests() {
   ) async {
     final organizer = buildOrganizer(id: 'filter-count-club');
     final first = ExploreEventItem(
-      event: event_test.buildEvent(id: 'filter-count-1', organizerId: organizer.id),
+      event: event_test.buildEvent(
+        id: 'filter-count-1',
+        organizerId: organizer.id,
+      ),
       organizer: organizer,
     );
     final second = ExploreEventItem(
-      event: event_test.buildEvent(id: 'filter-count-2', organizerId: organizer.id),
+      event: event_test.buildEvent(
+        id: 'filter-count-2',
+        organizerId: organizer.id,
+      ),
       organizer: organizer,
     );
 

@@ -14,7 +14,6 @@ import 'package:catch_dating_app/platform/time/time_formatters.dart';
 const _legacyUnattributedCohortId = 'legacyUnattributed';
 
 extension EventX on Event {
-
   double get distanceMiles => distanceKm * 0.621371;
   ActivityKind get activityKind => eventFormat.activityKind;
   int get signedUpCount => bookedCount ?? 0;

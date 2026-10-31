@@ -83,7 +83,8 @@ class _DashboardFullSliverBodyState
               pendingReviewEvent: widget.viewModel.pendingReviewEvent,
               now: ref.watch(dashboardNowProvider),
               onWindowImpression: _logWindowImpression,
-              organizerNameBuilder: (event) => organizerNames?[event.organizerId],
+              organizerNameBuilder: (event) =>
+                  organizerNames?[event.organizerId],
               checkInState: EventFocusCheckInState(
                 isPending: checkInMutation.isPending,
                 error: checkInMutation.hasError
@@ -292,7 +293,10 @@ class _DashboardFullSliverBodyState
                 Navigator.of(routeContext).pop();
                 GoRouter.of(context).goNamed(
                   Routes.eventDetailScreen.name,
-                  pathParameters: {'organizerId': event.organizerId, 'eventId': event.id},
+                  pathParameters: {
+                    'organizerId': event.organizerId,
+                    'eventId': event.id,
+                  },
                   extra: event,
                 );
               },

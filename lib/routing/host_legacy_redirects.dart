@@ -8,7 +8,8 @@ String? hostOrganizerAudienceRedirect(Uri uri) {
   return Uri(
     path: Routes.hostAudienceScreen.path,
     queryParameters: {
-      if (organizerId != null && organizerId.isNotEmpty) 'organizerId': organizerId,
+      if (organizerId != null && organizerId.isNotEmpty)
+        'organizerId': organizerId,
     },
   ).toString();
 }

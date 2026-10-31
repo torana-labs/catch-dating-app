@@ -2501,7 +2501,8 @@ List<Object> _calendarProviderOverrides({
   final effectiveSavedEvents =
       savedEvents ?? AsyncData<List<Event>>(_dashboardSavedEvents);
   final organizerNameQuery = OrganizerNameLookupQuery([
-    for (final event in _asyncDataList(effectiveSignedUpEvents)) event.organizerId,
+    for (final event in _asyncDataList(effectiveSignedUpEvents))
+      event.organizerId,
     for (final event in _asyncDataList(effectiveSavedEvents)) event.organizerId,
   ]);
 
@@ -2562,7 +2563,9 @@ Map<String, String> _organizerNamesForEvents(List<Event> events) {
   return <String, String>{
     for (final event in events)
       event.organizerId:
-          _captureOrganizersRepository.organizersById[event.organizerId]?.name ??
+          _captureOrganizersRepository
+              .organizersById[event.organizerId]
+              ?.name ??
           event.organizerId,
   };
 }
@@ -2924,7 +2927,8 @@ List<Object> _hostOperationsProviderOverrides({
       organizerId: switch (organizerEvents[organizerId]) {
         AsyncData<List<Event>>(:final value) => value,
         _ =>
-          HostOperationsFixtures.eventsByOrganizer[organizerId] ?? const <Event>[],
+          HostOperationsFixtures.eventsByOrganizer[organizerId] ??
+              const <Event>[],
       },
   };
 
@@ -3021,7 +3025,8 @@ List<Object> _hostOperationsProviderOverrides({
       else
         watchEventsForOrganizerProvider(organizerId).overrideWith(
           (ref) => Stream.value(
-            HostOperationsFixtures.eventsByOrganizer[organizerId] ?? const <Event>[],
+            HostOperationsFixtures.eventsByOrganizer[organizerId] ??
+                const <Event>[],
           ),
         ),
   ];

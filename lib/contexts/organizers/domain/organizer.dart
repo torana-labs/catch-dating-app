@@ -112,7 +112,6 @@ abstract class Organizer with _$Organizer {
     return imageUrl;
   }
 
-
   int get followerCount => memberCount;
 
   String? get logoPhotoUrl => logoPhoto?.thumbnailOrUrl ?? profileImageUrl;

@@ -234,7 +234,10 @@ Widget _app(
       home: Scaffold(
         body: SingleChildScrollView(
           child: EventAssistanceLiveSettingsSection(
-            event: buildEvent(id: scope.eventId, organizerId: scope.organizerId),
+            event: buildEvent(
+              id: scope.eventId,
+              organizerId: scope.organizerId,
+            ),
           ),
         ),
       ),

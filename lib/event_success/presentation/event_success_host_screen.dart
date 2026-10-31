@@ -169,7 +169,9 @@ class _EventSuccessHostSectionState
         showTabs || initialTab == EventSuccessHostTab.setup;
     final AsyncValue<List<EventSuccessLayout>> organizerLayoutsAsync =
         shouldLoadSetupResources
-        ? ref.watch(watchOrganizerEventSuccessLayoutsProvider(event.organizerId))
+        ? ref.watch(
+            watchOrganizerEventSuccessLayoutsProvider(event.organizerId),
+          )
         : const AsyncData(<EventSuccessLayout>[]);
     final eventEnded = !event.endTime.isAfter(referenceNow);
     final shouldLoadLiveResources =

@@ -116,12 +116,18 @@ void main() {
       expect(decoded?.isAppDiscoverable, isFalse);
     });
 
-    test('watchOrganizer emits the decoded club when the document exists', () async {
-      final organizer = buildOrganizer();
-      await _seedOrganizer(firestore, organizer);
+    test(
+      'watchOrganizer emits the decoded club when the document exists',
+      () async {
+        final organizer = buildOrganizer();
+        await _seedOrganizer(firestore, organizer);
 
-      await expectLater(repository.watchOrganizer('club-1'), emits(organizer));
-    });
+        await expectLater(
+          repository.watchOrganizer('club-1'),
+          emits(organizer),
+        );
+      },
+    );
 
     test('watchOrganizer emits null when the document is missing', () async {
       await expectLater(repository.watchOrganizer('club-missing'), emits(null));
@@ -175,37 +181,43 @@ void main() {
       },
     );
 
-    test('watchOrganizersByLocation hides app-hidden organizer profiles', () async {
-      final visible = buildOrganizer(id: 'visible');
-      final hidden = buildOrganizer(
-        id: 'hidden',
-        appVisibility: OrganizerAppVisibility.hidden,
-        createdAt: DateTime(2025, 1, 2),
-      );
-      await _seedOrganizer(firestore, visible);
-      await _seedOrganizer(firestore, hidden);
+    test(
+      'watchOrganizersByLocation hides app-hidden organizer profiles',
+      () async {
+        final visible = buildOrganizer(id: 'visible');
+        final hidden = buildOrganizer(
+          id: 'hidden',
+          appVisibility: OrganizerAppVisibility.hidden,
+          createdAt: DateTime(2025, 1, 2),
+        );
+        await _seedOrganizer(firestore, visible);
+        await _seedOrganizer(firestore, hidden);
 
-      await expectLater(
-        repository.watchOrganizersByLocation('in-mh-mumbai'),
-        emits([visible]),
-      );
-    });
+        await expectLater(
+          repository.watchOrganizersByLocation('in-mh-mumbai'),
+          emits([visible]),
+        );
+      },
+    );
 
-    test('watchOrganizersByLocation hides synthetic organizer profiles', () async {
-      final visible = buildOrganizer(id: 'visible');
-      final synthetic = buildOrganizer(id: 'synthetic');
-      await _seedOrganizer(firestore, visible);
-      await _seedOrganizer(firestore, synthetic);
-      await firestore.collection('organizers').doc(synthetic.id).update({
-        'synthetic': true,
-        'seedPrefix': 'cross_paths_mumbai_qa',
-      });
+    test(
+      'watchOrganizersByLocation hides synthetic organizer profiles',
+      () async {
+        final visible = buildOrganizer(id: 'visible');
+        final synthetic = buildOrganizer(id: 'synthetic');
+        await _seedOrganizer(firestore, visible);
+        await _seedOrganizer(firestore, synthetic);
+        await firestore.collection('organizers').doc(synthetic.id).update({
+          'synthetic': true,
+          'seedPrefix': 'cross_paths_mumbai_qa',
+        });
 
-      await expectLater(
-        repository.watchOrganizersByLocation('in-mh-mumbai'),
-        emits([visible]),
-      );
-    });
+        await expectLater(
+          repository.watchOrganizersByLocation('in-mh-mumbai'),
+          emits([visible]),
+        );
+      },
+    );
 
     test('watchOrganizersByLocation caps the discovery stream', () async {
       for (var i = 0; i < ReadLimitPolicy.directoryPage + 5; i++) {
@@ -324,63 +336,69 @@ void main() {
       );
     });
 
-    test('createOrganizer delegates creation to the organizer callable', () async {
-      final callable =
-          functions.httpsCallable('createOrganizer') as TestHttpsCallable;
-      callable.resultData = {'organizerId': 'club-42'};
+    test(
+      'createOrganizer delegates creation to the organizer callable',
+      () async {
+        final callable =
+            functions.httpsCallable('createOrganizer') as TestHttpsCallable;
+        callable.resultData = {'organizerId': 'club-42'};
 
-      final createdId = await repository.createOrganizer(
-        organizerId: 'club-42',
-        name: 'Sunset Striders',
-        description: 'Easy city loops',
-        location: 'in-mh-mumbai',
-        area: 'Bandra',
-        imageUrl: 'https://example.com/cover.jpg',
-      );
+        final createdId = await repository.createOrganizer(
+          organizerId: 'club-42',
+          name: 'Sunset Striders',
+          description: 'Easy city loops',
+          location: 'in-mh-mumbai',
+          area: 'Bandra',
+          imageUrl: 'https://example.com/cover.jpg',
+        );
 
-      expect(createdId, 'club-42');
-      expect(callable.calls, [
-        {
-          'organizerId': 'club-42',
-          'name': 'Sunset Striders',
-          'description': 'Easy city loops',
-          'location': 'in-mh-mumbai',
-          'area': 'Bandra',
-          'organizerType': 'club',
-          'imageUrl': 'https://example.com/cover.jpg',
-        },
-      ]);
-    });
+        expect(createdId, 'club-42');
+        expect(callable.calls, [
+          {
+            'organizerId': 'club-42',
+            'name': 'Sunset Striders',
+            'description': 'Easy city loops',
+            'location': 'in-mh-mumbai',
+            'area': 'Bandra',
+            'organizerType': 'club',
+            'imageUrl': 'https://example.com/cover.jpg',
+          },
+        ]);
+      },
+    );
 
-    test('createOrganizer passes contact fields through to the callable', () async {
-      final callable =
-          functions.httpsCallable('createOrganizer') as TestHttpsCallable;
-      callable.resultData = {'organizerId': 'club-42'};
+    test(
+      'createOrganizer passes contact fields through to the callable',
+      () async {
+        final callable =
+            functions.httpsCallable('createOrganizer') as TestHttpsCallable;
+        callable.resultData = {'organizerId': 'club-42'};
 
-      await repository.createOrganizer(
-        organizerId: 'club-42',
-        name: 'Contact Club',
-        description: 'A club with contact info.',
-        location: 'in-mh-mumbai',
-        area: 'Bandra',
-        instagramHandle: '@contactclub',
-        phoneNumber: '+91 99999 99999',
-        email: 'hello@contactclub.com',
-      );
+        await repository.createOrganizer(
+          organizerId: 'club-42',
+          name: 'Contact Club',
+          description: 'A club with contact info.',
+          location: 'in-mh-mumbai',
+          area: 'Bandra',
+          instagramHandle: '@contactclub',
+          phoneNumber: '+91 99999 99999',
+          email: 'hello@contactclub.com',
+        );
 
-      expect(
-        callable.calls.single,
-        containsPair('instagramHandle', '@contactclub'),
-      );
-      expect(
-        callable.calls.single,
-        containsPair('phoneNumber', '+91 99999 99999'),
-      );
-      expect(
-        callable.calls.single,
-        containsPair('email', 'hello@contactclub.com'),
-      );
-    });
+        expect(
+          callable.calls.single,
+          containsPair('instagramHandle', '@contactclub'),
+        );
+        expect(
+          callable.calls.single,
+          containsPair('phoneNumber', '+91 99999 99999'),
+        );
+        expect(
+          callable.calls.single,
+          containsPair('email', 'hello@contactclub.com'),
+        );
+      },
+    );
 
     test('updateOrganizer delegates field patches to the callable', () async {
       await repository.updateOrganizer(

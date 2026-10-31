@@ -56,7 +56,10 @@ dynamic membershipsOverride(UserProfile user, List<String> organizerIds) =>
     watchActiveOrganizerMembershipsForUserProvider(user.uid).overrideWith(
       (ref) => Stream.value(
         organizerIds
-            .map((organizerId) => membership(organizerId: organizerId, uid: user.uid))
+            .map(
+              (organizerId) =>
+                  membership(organizerId: organizerId, uid: user.uid),
+            )
             .toList(),
       ),
     );

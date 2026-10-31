@@ -225,7 +225,10 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
       ref,
       (tx) async => tx
           .get(createEventDraftControllerProvider.notifier)
-          .deleteDraft(organizerId: widget.organizer.id, draftId: intent.draftId),
+          .deleteDraft(
+            organizerId: widget.organizer.id,
+            draftId: intent.draftId,
+          ),
     );
   }
 

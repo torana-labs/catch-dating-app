@@ -192,7 +192,10 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       onManagePublication: event.setupRevision != null
           ? () => context.pushNamed(
               Routes.hostEventPublicationScreen.name,
-              pathParameters: {'organizerId': organizer.id, 'eventId': event.id},
+              pathParameters: {
+                'organizerId': organizer.id,
+                'eventId': event.id,
+              },
               extra: organizer,
             )
           : null,

@@ -207,7 +207,9 @@ Future<void> _pumpSavedEvents(
           'runner-1',
         ).overrideWithValue(AsyncData<List<Event>>(savedEvents)),
         organizerNameLookupProvider(
-          OrganizerNameLookupQuery(savedEvents.map((event) => event.organizerId)),
+          OrganizerNameLookupQuery(
+            savedEvents.map((event) => event.organizerId),
+          ),
         ).overrideWithValue(
           AsyncData({
             for (final event in savedEvents) event.organizerId: 'Stride Social',

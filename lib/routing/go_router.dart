@@ -411,7 +411,8 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
                               parentNavigatorKey: keys.root,
                               builder: (context, state) =>
                                   EventSuccessCompanionRouteScreen(
-                                    organizerId: state.pathParameters['organizerId']!,
+                                    organizerId:
+                                        state.pathParameters['organizerId']!,
                                     eventId: state.pathParameters['eventId']!,
                                     initialEvent: _routeEventExtra(state),
                                   ),
@@ -874,8 +875,9 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.organizer,
     path: Routes.hostOrganizerMessagingScreen.path,
     name: Routes.hostOrganizerMessagingScreen.name,
-    builder: (context, state) =>
-        HostMessagingSetupScreen(organizerId: state.pathParameters['organizerId']!),
+    builder: (context, state) => HostMessagingSetupScreen(
+      organizerId: state.pathParameters['organizerId']!,
+    ),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.organizer,

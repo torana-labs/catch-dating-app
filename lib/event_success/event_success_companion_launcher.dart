@@ -131,7 +131,9 @@ launchEventSuccessCompanionIfAvailable({
     final organizersRepository = ref.read(organizersRepositoryProvider);
     final eventSuccessRepository = ref.read(eventSuccessRepositoryProvider);
     final registry = ref.read(eventSuccessCompanionLaunchRegistryProvider);
-    final organizer = await organizersRepository.fetchOrganizer(event.organizerId);
+    final organizer = await organizersRepository.fetchOrganizer(
+      event.organizerId,
+    );
     if (organizer == null || organizer.isHostedBy(uid)) {
       return EventSuccessCompanionLaunchResult.unavailable;
     }

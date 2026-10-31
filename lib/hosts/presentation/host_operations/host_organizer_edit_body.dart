@@ -92,7 +92,8 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
     } else if (oldWidget.initialExpandedField != widget.initialExpandedField) {
       _setExpandedField(widget.initialExpandedField);
     }
-    if (oldWidget.organizer.organizerPhotos != widget.organizer.organizerPhotos ||
+    if (oldWidget.organizer.organizerPhotos !=
+            widget.organizer.organizerPhotos ||
         oldWidget.organizer.profileImageUrl !=
             widget.organizer.profileImageUrl ||
         oldWidget.organizer.logoPhoto != widget.organizer.logoPhoto) {

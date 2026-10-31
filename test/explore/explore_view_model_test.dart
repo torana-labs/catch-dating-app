@@ -1563,32 +1563,35 @@ void main() {
       expect(filtered.map((organizer) => organizer.id), ['club-distance-only']);
     });
 
-    test('organizerMatchesScopeFilters short-circuits the tag check for events', () {
-      // Default tags are ['social'] — the club does not carry 'running'.
-      final organizer = buildOrganizer(id: 'club-social');
-      const filters = ExploreFilterSelection(activityTag: 'running');
+    test(
+      'organizerMatchesScopeFilters short-circuits the tag check for events',
+      () {
+        // Default tags are ['social'] — the club does not carry 'running'.
+        final organizer = buildOrganizer(id: 'club-social');
+        const filters = ExploreFilterSelection(activityTag: 'running');
 
-      // The events query already filtered by ActivityKind, so the club need not
-      // also carry the tag as free text.
-      expect(
-        organizerMatchesScopeFilters(
-          organizer: organizer,
-          filters: filters,
-          joinedOrganizerIds: const {},
-          activityHandledByEventFilter: true,
-        ),
-        isTrue,
-      );
-      // The club list has no event filter behind it, so the tag must match.
-      expect(
-        organizerMatchesScopeFilters(
-          organizer: organizer,
-          filters: filters,
-          joinedOrganizerIds: const {},
-        ),
-        isFalse,
-      );
-    });
+        // The events query already filtered by ActivityKind, so the club need not
+        // also carry the tag as free text.
+        expect(
+          organizerMatchesScopeFilters(
+            organizer: organizer,
+            filters: filters,
+            joinedOrganizerIds: const {},
+            activityHandledByEventFilter: true,
+          ),
+          isTrue,
+        );
+        // The club list has no event filter behind it, so the tag must match.
+        expect(
+          organizerMatchesScopeFilters(
+            organizer: organizer,
+            filters: filters,
+            joinedOrganizerIds: const {},
+          ),
+          isFalse,
+        );
+      },
+    );
 
     test('debouncedExploreSearchQuery debounces and trims the server key', () async {
       final container = ProviderContainer();

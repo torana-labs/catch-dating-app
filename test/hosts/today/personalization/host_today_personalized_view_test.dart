@@ -354,7 +354,8 @@ class _TestTodayFeed extends HostTodayFeedController {
 
   HostTodayFeedData _data() => HostTodayFeedData(
     activeEvents: [
-      if (statuses.value == HostTodayStatus.content) buildEvent(organizerId: 'org'),
+      if (statuses.value == HostTodayStatus.content)
+        buildEvent(organizerId: 'org'),
     ],
     pastEvents: const [],
   );

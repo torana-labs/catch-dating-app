@@ -433,7 +433,10 @@ List<Object> appShellTestOverrides({
           (ref) => Stream.value(
             joinedOrganizerIds.contains(organizer.id)
                 ? OrganizerMembership(
-                    id: organizerMembershipId(organizerId: organizer.id, uid: uid),
+                    id: organizerMembershipId(
+                      organizerId: organizer.id,
+                      uid: uid,
+                    ),
                     organizerId: organizer.id,
                     uid: uid,
                     role: OrganizerMembershipRole.member,

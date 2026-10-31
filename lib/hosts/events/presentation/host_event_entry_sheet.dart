@@ -30,7 +30,10 @@ Future<HostEventEntrySelection?> showHostEventEntrySheet({
               ) {
                 return tx
                     .get(createEventDraftControllerProvider.notifier)
-                    .deleteDraft(organizerId: draft.organizerId, draftId: draft.id);
+                    .deleteDraft(
+                      organizerId: draft.organizerId,
+                      draftId: draft.id,
+                    );
               });
               ref.invalidate(
                 organizerEventDraftsProvider(organizerId: draft.organizerId),

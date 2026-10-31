@@ -22,7 +22,9 @@ Future<void> runHostEventEntryFlow({
   switch (selection.intent) {
     case HostEventEntryIntent.resumeDraft:
       final draft = selection.draft;
-      if (draft == null || draft.organizerId != organizer.id || !context.mounted) {
+      if (draft == null ||
+          draft.organizerId != organizer.id ||
+          !context.mounted) {
         return;
       }
       await _openCreateEvent(

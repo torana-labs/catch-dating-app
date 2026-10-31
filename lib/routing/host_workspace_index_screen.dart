@@ -66,7 +66,10 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
             id: hostWorkspaceContentId(
               Routes.hostAppEventManageScreen.name,
               Routes.hostAppEventManageScreen.path,
-              {'organizerId': selection.organizerId, 'eventId': selection.eventId},
+              {
+                'organizerId': selection.organizerId,
+                'eventId': selection.eventId,
+              },
             ),
             builder: (context) => HostEventManageRouteScreen(
               key: ValueKey('${selection.organizerId}/${selection.eventId}'),

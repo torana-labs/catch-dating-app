@@ -88,7 +88,8 @@ void main() {
         'location': 'updateOrganizerCallablePayload.fields.location',
         'area': 'updateOrganizerCallablePayload.fields.area',
         'description': 'updateOrganizerCallablePayload.fields.description',
-        'instagramHandle': 'updateOrganizerCallablePayload.fields.instagramHandle',
+        'instagramHandle':
+            'updateOrganizerCallablePayload.fields.instagramHandle',
         'phoneNumber': 'updateOrganizerCallablePayload.fields.phoneNumber',
         'email': 'updateOrganizerCallablePayload.fields.email',
       }),

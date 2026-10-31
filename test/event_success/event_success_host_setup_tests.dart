@@ -559,9 +559,7 @@ void _registerEventSuccessHostSetupTests() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('host section keeps real tabs while guide loads', (
-    tester,
-  ) async {
+  testWidgets('host section keeps real tabs while guide loads', (tester) async {
     final event = buildEvent(id: 'event-loading-host-guide');
 
     await tester.pumpWidget(

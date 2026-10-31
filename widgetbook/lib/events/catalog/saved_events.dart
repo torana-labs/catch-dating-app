@@ -178,7 +178,9 @@ class _SavedEventsRouteFrame extends StatelessWidget {
     final effectiveSavedEvents =
         savedEvents ?? AsyncData<List<Event>>(widgetbookEventsAgendaEvents());
     final events = _asyncDataList(effectiveSavedEvents);
-    final query = OrganizerNameLookupQuery(events.map((event) => event.organizerId));
+    final query = OrganizerNameLookupQuery(
+      events.map((event) => event.organizerId),
+    );
 
     return WidgetbookEventDeviceFrame(
       child: WidgetbookFixtureScope(

@@ -93,7 +93,10 @@ OrganizerPostsRepository organizerPostsRepository(Ref ref) =>
     );
 
 @riverpod
-Stream<int> watchOrganizerPostRemainingWeeklyQuota(Ref ref, String organizerId) {
+Stream<int> watchOrganizerPostRemainingWeeklyQuota(
+  Ref ref,
+  String organizerId,
+) {
   return ref
       .watch(organizerPostsRepositoryProvider)
       .watchRemainingWeeklyQuota(organizerId: organizerId);

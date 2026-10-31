@@ -72,7 +72,8 @@ Future<List<ExploreEventRecommendationCandidate>> exploreRecommendedEvents(
     for (final event in events)
       ExploreEventRecommendationCandidate(
         event: event,
-        organizerName: organizersById[event.organizerId]?.name ?? 'Your organizer',
+        organizerName:
+            organizersById[event.organizerId]?.name ?? 'Your organizer',
         organizerLocation: organizersById[event.organizerId]?.location,
       ),
   ];

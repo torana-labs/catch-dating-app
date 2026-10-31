@@ -112,8 +112,8 @@ class OrganizerBasicsStep extends StatelessWidget {
                   copy: catchFieldCopy(context.l10n),
                   title:
                       context.l10n.hostsOrganizerBasicsStepTitleOrganizerName,
-                  contract:
-                      CatchContractConstraints.createOrganizerCallablePayloadName,
+                  contract: CatchContractConstraints
+                      .createOrganizerCallablePayloadName,
                   controller: nameController,
                   icon: CatchIcons.people,
                   states: <WidgetState>{
@@ -178,8 +178,8 @@ class OrganizerBasicsStep extends StatelessWidget {
                   title: context
                       .l10n
                       .hostsOrganizerBasicsStepTitleAreaNeighbourhood,
-                  contract:
-                      CatchContractConstraints.createOrganizerCallablePayloadArea,
+                  contract: CatchContractConstraints
+                      .createOrganizerCallablePayloadArea,
                   controller: areaController,
                   icon: CatchIcons.location,
                   states: <WidgetState>{

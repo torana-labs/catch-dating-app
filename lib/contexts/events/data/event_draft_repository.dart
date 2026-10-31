@@ -24,7 +24,8 @@ class EventDraftRepository {
     return _prefsInstance!;
   }
 
-  String _key(String organizerId, String userId) => 'event_drafts_${organizerId}_$userId';
+  String _key(String organizerId, String userId) =>
+      'event_drafts_${organizerId}_$userId';
 
   Future<List<EventDraft>> loadDrafts({
     required String organizerId,

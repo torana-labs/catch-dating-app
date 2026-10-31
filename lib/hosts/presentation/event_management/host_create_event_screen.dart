@@ -99,7 +99,8 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
         ),
       );
     }
-    if (initialPrefill != null && initialPrefill.values.organizerId != organizerId) {
+    if (initialPrefill != null &&
+        initialPrefill.values.organizerId != organizerId) {
       return CatchScaffold.stepFlow(
         body: CatchErrorState(
           title: context.l10n.hostsHostCreateEventScreenTitleRepeatUnavailable,

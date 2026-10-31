@@ -34,29 +34,30 @@ void _registerExploreDiscoveryWidgetsTests() {
     expect(find.byIcon(CatchIcons.forward), findsNothing);
   });
 
-  testWidgets('OrganizersContent renders personal rail and mixed discovery cards', (
-    tester,
-  ) async {
-    await _pumpOrganizersSlivers(tester, [
-      _exploreBodySliverGroup(
-        includeOrganizerDirectory: false,
-        organizersViewModel: ExploreViewModel(
-          joinedOrganizers: [
-            buildOrganizer(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
-          ],
-          allOrganizers: [
-            buildOrganizer(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
-            buildOrganizer(id: 'discover-1'),
-          ],
-          joinedOrganizerIds: {'joined-1'},
+  testWidgets(
+    'OrganizersContent renders personal rail and mixed discovery cards',
+    (tester) async {
+      await _pumpOrganizersSlivers(tester, [
+        _exploreBodySliverGroup(
+          includeOrganizerDirectory: false,
+          organizersViewModel: ExploreViewModel(
+            joinedOrganizers: [
+              buildOrganizer(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
+            ],
+            allOrganizers: [
+              buildOrganizer(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
+              buildOrganizer(id: 'discover-1'),
+            ],
+            joinedOrganizerIds: {'joined-1'},
+          ),
         ),
-      ),
-    ]);
+      ]);
 
-    expect(find.text('Your organizers'), findsOneWidget);
-    expect(find.text('Organizer directory'), findsNothing);
-    expect(find.text('You host'), findsNothing);
-  });
+      expect(find.text('Your organizers'), findsOneWidget);
+      expect(find.text('Organizer directory'), findsNothing);
+      expect(find.text('You host'), findsNothing);
+    },
+  );
 
   testWidgets('Explore body keeps joined rail and club directory together', (
     tester,

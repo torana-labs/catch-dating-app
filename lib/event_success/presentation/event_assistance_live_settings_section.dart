@@ -40,7 +40,9 @@ class EventAssistanceLiveSettingsSection extends ConsumerWidget {
         : const <RoutePaceGroup>[];
     final pending = ref
         .watch(eventAssistancePendingSettingsProvider)
-        .where((s) => s.eventId == event.id && s.organizerId == event.organizerId);
+        .where(
+          (s) => s.eventId == event.id && s.organizerId == event.organizerId,
+        );
     String groupLabel(String id) => id == 'event:whole'
         ? l10n.eventAssistanceLateJoinEveryone
         : groups.where((g) => g.id == id).firstOrNull?.label ??

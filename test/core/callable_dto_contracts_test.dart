@@ -172,7 +172,9 @@ void main() {
       );
       _expectValid(
         'OrganizerMembershipCallablePayload',
-        const OrganizerMembershipCallableRequest(organizerId: 'club-1').toJson(),
+        const OrganizerMembershipCallableRequest(
+          organizerId: 'club-1',
+        ).toJson(),
       );
       _expectValid(
         'DeleteOrganizerCallablePayload',

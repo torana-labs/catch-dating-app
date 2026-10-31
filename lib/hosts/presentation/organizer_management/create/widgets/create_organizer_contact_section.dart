@@ -37,8 +37,8 @@ class CreateOrganizerContactSection extends StatelessWidget {
           title: context
               .l10n
               .hostsCreateOrganizerContactFieldsTitleInstagramHandle,
-          contract:
-              CatchContractConstraints.createOrganizerCallablePayloadInstagramHandle,
+          contract: CatchContractConstraints
+              .createOrganizerCallablePayloadInstagramHandle,
           controller: instagramController,
           labelMode: CatchFieldLabelTextMode.optional,
           icon: CatchIcons.handle,
@@ -51,8 +51,8 @@ class CreateOrganizerContactSection extends StatelessWidget {
         CatchField.input(
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsCreateOrganizerContactFieldsTitlePhoneNumber,
-          contract:
-              CatchContractConstraints.createOrganizerCallablePayloadPhoneNumber,
+          contract: CatchContractConstraints
+              .createOrganizerCallablePayloadPhoneNumber,
           controller: phoneController,
           labelMode: CatchFieldLabelTextMode.optional,
           icon: CatchIcons.phone,
@@ -67,7 +67,8 @@ class CreateOrganizerContactSection extends StatelessWidget {
         CatchField.input(
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsCreateOrganizerContactFieldsTitleEmail,
-          contract: CatchContractConstraints.createOrganizerCallablePayloadEmail,
+          contract:
+              CatchContractConstraints.createOrganizerCallablePayloadEmail,
           controller: emailController,
           labelMode: CatchFieldLabelTextMode.optional,
           icon: CatchIcons.email,

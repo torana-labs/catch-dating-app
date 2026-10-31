@@ -139,7 +139,11 @@ EventDraft privateEventDraftSnapshot({
   PrivateEventCreateReceipt? receipt,
 }) {
   return (old ??
-          EventDraft(id: draftId, organizerId: organizerId, savedAt: DateTime.now()))
+          EventDraft(
+            id: draftId,
+            organizerId: organizerId,
+            savedAt: DateTime.now(),
+          ))
       .copyWith(
         savedAt: DateTime.now(),
         name: name,

@@ -115,8 +115,10 @@ class HostOrganizerInsightsState {
   final String organizerId;
   final HostOrganizerInsightsRangePreset rangePreset;
 
-  HostOrganizerInsightsQueryState get query =>
-      HostOrganizerInsightsQueryState(organizerId: organizerId, rangePreset: rangePreset);
+  HostOrganizerInsightsQueryState get query => HostOrganizerInsightsQueryState(
+    organizerId: organizerId,
+    rangePreset: rangePreset,
+  );
 
   HostOrganizerInsightsState selectOrganizer(String organizerId) {
     if (organizerId == this.organizerId) return this;
