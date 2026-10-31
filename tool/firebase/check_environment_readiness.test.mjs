@@ -32,6 +32,7 @@ import {
   validateEnvironmentReadinessManifest,
   validateReadinessSelectors,
 } from "./check_environment_readiness.mjs";
+import {dormantFirebaseFunctionTargets} from "./list_firebase_function_targets.mjs";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, "../..");
@@ -196,7 +197,8 @@ test("target and capability filtering selects only relevant prerequisites", () =
     ).length,
     21,
   );
-  assert.equal(selected("dev", ["functions"]).length, 34);
+  // The event-assistance guest keyring is read only by dormant Functions.
+  assert.equal(selected("dev", ["functions"]).length, 33);
   for (const environment of ["dev", "staging", "prod"]) {
     for (const [target, secrets] of [
       ["refreshProgramTravelLeg", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
@@ -938,6 +940,27 @@ test("disabled optional configuration performs no secret query; enabled configur
   assert.equal(active.exitCode, 1);
   assert.equal(active.environments[0].results[1].reason, "active-reference-missing");
   assert.equal(run({FAKE_CONFIG_VERSION: "RAW-SECRET-DO-NOT-PRINT"}).exitCode, 1);
+});
+
+test("a broad Functions target checks no dormant consumer; naming one exactly still does", () => {
+  const dormant = dormantFirebaseFunctionTargets[0];
+  const requirement = {id: "functions.reference.fake", kind: "secret-reference", owner: "fake",
+    binding: {parameter: "FAKE_CONFIG_VERSION", enabledParameter: "FAKE_ENABLED", optional: true},
+    requiredWhen: {anyDeployTarget: ["functions:fakeConsumer", dormant]}, environments: ["dev"],
+    acceptedStates: ["ENABLED"]};
+  const fn = fakeFunction("fakeConsumer", "unused");
+  fn.serviceConfig.environmentVariables = {FAKE_CONFIG_VERSION: " ", FAKE_ENABLED: "false"};
+  const checked = (targets) => runEnvironmentReadiness({aliases, environments: ["dev"], targets,
+    manifest: {...manifest, requirements: [requirement]}, runCommand(spec) {
+      if (spec.args[0] === "projects") return readyProjectMetadata("catchdates-dev");
+      if (spec.args[0] === "functions") return metadata([fn]);
+      throw new Error("inactive must not probe secrets");
+    }}).environments[0].results.map((result) => result.id).filter((id) => id.startsWith(requirement.id));
+  const consumer = `${requirement.id}:${dormant.slice("functions:".length)}`;
+  for (const targets of [["functions"], ["all"]]) {
+    assert.deepEqual(checked(targets), [`${requirement.id}:fakeConsumer`], targets.join());
+  }
+  assert.deepEqual(checked([dormant]), [consumer]);
 });
 
 test("IAM uses the explicit identity and catches a reader inheriting the provisioner grant", () => {

@@ -8,6 +8,7 @@ import {materializedNonSecretParams} from "./prepare_functions_params_for_deploy
 import {collectFunctionBindingIntent, discoverFunctionExportNames} from "./function_binding_intent.mjs";
 
 import {inspectUploadIdentity, uploadIdentityTarget} from "./form_upload_identity.mjs";
+import {dormantFirebaseFunctionTargets} from "./list_firebase_function_targets.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const defaultRepoRoot = path.resolve(toolDir, "../..");
@@ -1395,9 +1396,14 @@ export function executeReadinessCli(argv, dependencies = {}) {
   };
 }
 
+const dormantFunctionTargets = new Set(dormantFirebaseFunctionTargets);
+
+// A broad selector deploys every Function except the dormant ones, so it
+// requires nothing of a dormant Function; naming one exactly still does.
 function targetMatches(requiredTarget, selectedTargets) {
-  if (selectedTargets.has("all")) return true;
   if (selectedTargets.has(requiredTarget)) return true;
+  if (dormantFunctionTargets.has(requiredTarget)) return false;
+  if (selectedTargets.has("all")) return true;
   return requiredTarget.startsWith("functions:") &&
     selectedTargets.has("functions");
 }
