@@ -64,10 +64,11 @@ class HostOrganizersScreen extends ConsumerWidget {
           );
         }
 
-        final organizersAsync = ref.watch(_hostOrganizersForUserProvider(uid));
+        final organizersAsync = ref.watch(hostOperableOrganizersProvider(uid));
         return CatchAsyncBoundary<List<Organizer>>(
           value: organizersAsync,
-          onRetry: () => ref.invalidate(_hostOrganizersForUserProvider(uid)),
+          onRetry: () =>
+              hostOperableOrganizerReads(uid).forEach(ref.invalidate),
           loadingBuilder: (_) => HostOrganizerStateScaffold(
             selectedTab: selectedTab,
             scrollKey: const PageStorageKey<String>(

@@ -289,7 +289,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
                 ref.invalidate(uidProvider);
                 return;
               }
-              ref.invalidate(hostOperableOrganizersProvider(currentUid));
+              hostOperableOrganizerReads(currentUid).forEach(ref.invalidate);
             },
           ),
           HostTodayRouteStatus.empty => HostTodayOrganizerEmptyState(

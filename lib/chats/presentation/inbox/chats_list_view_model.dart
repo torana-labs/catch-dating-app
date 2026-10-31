@@ -72,8 +72,21 @@ class ChatThreadPreview {
 // keepalive: preserve inbox search text across tab switches and route re-entry.
 @Riverpod(keepAlive: true)
 class ChatSearchQuery extends _$ChatSearchQuery {
+  var _accountResolved = false;
+  String? _account;
+
   @override
-  String build() => '';
+  String build() {
+    // Consumer Chats and the Host inbox share this text; a different signed-in
+    // account (or none) must start from an empty search, not the last one's.
+    ref.listen(uidProvider, (_, next) {
+      if (next is! AsyncData<String?>) return;
+      if (_accountResolved && next.value != _account) state = '';
+      _accountResolved = true;
+      _account = next.value;
+    }, fireImmediately: true);
+    return '';
+  }
 
   void setQuery(String query) {
     final normalizedQuery = query.trimLeft();

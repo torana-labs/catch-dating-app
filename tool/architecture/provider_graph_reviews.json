@@ -95,11 +95,6 @@
       "rationale": "The eighteen dependencies are a cohesive discovery aggregate spanning filters, viewer eligibility, memberships, participations, saves, internal and external supply, search, and club names. Splitting now would duplicate partial-loading and precedence logic; revisit if a second route needs a stable subset or fan-out rises above twenty."
     },
     {
-      "id": "manual-provider:_hostOrganizersForUserProvider",
-      "status": "accepted-exception",
-      "rationale": "This is a private auto-dispose adapter in a part file that narrows a Host route provider result. Moving it only to satisfy code generation would add a public generated symbol and another ownership file without changing the dependency boundary."
-    },
-    {
       "id": "manual-provider:programCreateControllerProvider",
       "status": "planned",
       "debtId": "CAT156",
