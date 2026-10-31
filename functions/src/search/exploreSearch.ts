@@ -164,16 +164,13 @@ function algoliaEndpoint(): string {
 }
 
 /**
- * Reads the organizer index name with rollout-compatible fallbacks.
+ * Reads the organizer index name with a local-test fallback.
  * @return {string} Algolia organizers index name.
  */
 export function organizersIndexName(): string {
   return process.env.ALGOLIA_ORGANIZERS_INDEX ||
     "organizers";
 }
-
-/** @deprecated Use organizersIndexName. */
-export const organizersIndexName = organizersIndexName;
 
 /**
  * Reads the event index name with a local-test fallback.

@@ -32,7 +32,7 @@ const defaultDeps: AlgoliaExploreIndexDeps = {
 
 export interface AlgoliaOrganizerSearchRecord {
   objectID: string;
-  type: "club" | "organizer";
+  type: "organizer";
   name: string;
   description: string;
   location: string;
@@ -118,9 +118,9 @@ export function eventSearchIndexSettings(): Record<string, unknown> {
 }
 
 /**
- * Converts a Firestore club document into an Algolia club record.
- * @param {string} organizerId Firestore club id.
- * @param {OrganizerDocument} club Club document data.
+ * Converts an organizer document into an Algolia organizer record.
+ * @param {string} organizerId Firestore organizer id.
+ * @param {OrganizerDocument} organizer Organizer document data.
  * @return {AlgoliaOrganizerSearchRecord | null} Algolia record, or null if hidden.
  */
 export function buildOrganizerSearchRecord(
@@ -142,7 +142,8 @@ export function buildOrganizerSearchRecord(
 
   return {
     objectID: organizerId,
-    type: "club",
+    type: "organizer",
+    organizerType: organizer.organizerType,
     name: organizer.name,
     description: organizer.description,
     location: organizer.cityName ?? organizer.location,
@@ -150,7 +151,7 @@ export function buildOrganizerSearchRecord(
     area: organizer.area,
     hostName: organizer.hostName ?? organizer.name,
     tags: Array.isArray(organizer.tags) ? organizer.tags : [],
-    memberCount: finiteNumberOrZero(organizer.memberCount),
+    memberCount: finiteNumberOrZero(organizer.followerCount),
     rating: finiteNumberOrZero(organizer.rating),
     reviewCount: finiteNumberOrZero(organizer.reviewCount),
     status: organizer.status,
@@ -158,23 +159,6 @@ export function buildOrganizerSearchRecord(
     nextEventAtEpoch: timestampEpochSeconds(organizer.nextEventAt),
     nextEventLabel: organizer.nextEventLabel ?? null,
   };
-}
-
-/** Converts a canonical organizer document into an Algolia record. */
-export function buildOrganizerSearchRecord(
-  organizerId: string,
-  organizer: OrganizerDocument
-): AlgoliaOrganizerSearchRecord | null {
-  const legacyShape = {
-    ...organizer,
-    memberCount: organizer.followerCount,
-  } as OrganizerDocument;
-  const record = buildOrganizerSearchRecord(organizerId, legacyShape);
-  return record ? {
-    ...record,
-    type: "organizer",
-    organizerType: organizer.organizerType,
-  } : null;
 }
 
 /**

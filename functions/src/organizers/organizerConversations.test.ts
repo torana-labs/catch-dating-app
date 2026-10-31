@@ -119,13 +119,6 @@ function organizer(overrides: FakeData = {}): FakeData {
     hostUserId: "owner-1",
     ownerUserId: "owner-1",
     hostUserIds: ["owner-1", "host-1"],
-    ...overrides,
-  };
-}
-
-function organizer(overrides: FakeData = {}): FakeData {
-  return {
-    ...organizer(),
     organizerType: "club",
     hostProfiles: [],
     ...overrides,

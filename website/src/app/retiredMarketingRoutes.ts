@@ -1,7 +1,7 @@
 // Compatibility only: retired URLs have no route components or static pages.
 const retiredDestinations: Readonly<Record<string, string>> = {
   overview: "/", platform: "/host/#features", workflows: "/host/#how-it-works",
-  planners: "/host/#use-cases", mixers: "/host/#use-cases", organizers: "/host/#use-cases",
+  planners: "/host/#use-cases", mixers: "/host/#use-cases", clubs: "/host/#use-cases",
   stack: "/host/#existing-tools", directory: "/organizers/", claim: "/claim/", preview: "/host/",
 };
 

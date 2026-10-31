@@ -148,7 +148,7 @@ test("recompute arguments reject broader common syntax with legacy errors", () =
 });
 
 test("all four recompute commands use the shared bounded parser", () => {
-  for (const name of ["club_host_profiles", "club_member_counts",
+  for (const name of ["organizer_host_profiles", "organizer_member_counts",
     "event_aggregate_counts", "review_author_profiles"]) {
     const source = fs.readFileSync(`tool/data/recompute_${name}.mjs`, "utf8");
     assert.match(source, /import \{isMain, parseRecomputeArgs\} from "\.\.\/lib\/cli_args\.mjs"/u);

@@ -156,82 +156,6 @@ export interface AdminUpdateOrganizerDetailsResponse {
   updatedFieldCount: number;
 }
 
-export type AdminOrganizerDetailsSnapshot = Omit<
-  AdminOrganizerDetailsSnapshot,
-  "organizerId"
-> & {organizerId: string};
-
-export type AdminOrganizerListRow = Omit<AdminOrganizerListRow, "organizerId"> & {
-  organizerId: string;
-};
-
-/** Canonical organizer-named adapter for the legacy admin detail handler. */
-export async function adminGetOrganizerDetailsHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerDetailsDeps = defaultDeps
-): Promise<AdminGetOrganizerDetailsResponse> {
-  const data = validateCallableWithAjv<AdminGetOrganizerDetailsCallablePayload>(
-    request,
-    validateAdminGetOrganizerDetailsCallablePayload,
-    normalizeAdminGetOrganizerDetailsPayload
-  );
-  const result = await adminGetOrganizerDetailsHandler(
-    requestWithData(request, {organizerId: data.organizerId}),
-    deps
-  );
-  const {organizerId, ...organizer} = result.organizer;
-  return {organizer: {...organizer, organizerId: organizerId}};
-}
-
-/** Canonical organizer-named adapter for the admin organizer directory. */
-export async function adminListOrganizerDetailsHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerDetailsDeps = defaultDeps
-): Promise<AdminListOrganizerDetailsResponse> {
-  const data =
-    validateCallableWithAjv<AdminListOrganizerDetailsCallablePayload>(
-      request,
-      validateAdminListOrganizerDetailsCallablePayload,
-      normalizeAdminListOrganizerDetailsPayload
-    );
-  const result = await adminListOrganizerDetailsHandler(
-    requestWithData(request, data),
-    deps
-  );
-  return {
-    generatedAt: result.generatedAt,
-    rows: result.rows.map(({organizerId, ...row}) => ({
-      ...row,
-      organizerId: organizerId,
-    })),
-  };
-}
-
-/** Canonical organizer-named adapter for audited organizer edits. */
-export async function adminUpdateOrganizerDetailsHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerDetailsDeps = defaultDeps
-): Promise<AdminUpdateOrganizerDetailsResponse> {
-  const data =
-    validateCallableWithAjv<AdminUpdateOrganizerDetailsCallablePayload>(
-      request,
-      validateAdminUpdateOrganizerDetailsCallablePayload,
-      normalizeAdminUpdateOrganizerDetailsPayload
-    );
-  const result = await adminUpdateOrganizerDetailsHandler(
-    requestWithData(request, {
-      organizerId: data.organizerId,
-      fields: data.fields,
-      reviewNote: data.reviewNote,
-    }),
-    deps
-  );
-  return {
-    organizerId: result.organizerId,
-    updatedFieldCount: result.updatedFieldCount,
-  };
-}
-
 /**
  * Loads a review-safe organizer snapshot for the admin cleanup editor.
  * @param {CallableRequest<unknown>} request Callable request.
@@ -882,29 +806,6 @@ function normalizeAdminUpdateOrganizerDetailsPayload(value: unknown): unknown {
     reviewNote: normalizeNullableString(data.reviewNote),
     fields: normalizeOrganizerDetailsFields(fields as Record<string, unknown>),
   };
-}
-
-function normalizeAdminUpdateOrganizerDetailsPayload(value: unknown): unknown {
-  if (!value || typeof value !== "object") return value;
-  const data = value as Record<string, unknown>;
-  const legacyNormalized = normalizeAdminUpdateOrganizerDetailsPayload({
-    ...data,
-    organizerId: data.organizerId,
-  });
-  if (!legacyNormalized || typeof legacyNormalized !== "object") {
-    return legacyNormalized;
-  }
-  const normalized = legacyNormalized as Record<string, unknown>;
-  const canonical = {...normalized};
-  delete canonical.organizerId;
-  return {...canonical, organizerId: normalized.organizerId};
-}
-
-function requestWithData(
-  request: CallableRequest<unknown>,
-  data: unknown
-): CallableRequest<unknown> {
-  return {...request, data};
 }
 
 /**

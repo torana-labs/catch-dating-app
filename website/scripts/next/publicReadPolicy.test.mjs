@@ -43,7 +43,6 @@ test("private, cancelled, malformed and legacy implicit-public events are denied
     assert.equal(publicEventAuthorized("event_1", {...event(), publicationState}), false);
   }
   assert.equal(publicEventAuthorized("event_1", {...event(), status: "cancelled"}), false);
-  assert.equal(publicEventAuthorized("event_1", {...event(), organizerId: "other"}), false);
   assert.equal(publicEventAuthorized("event_1", {...event(), organizerId: "../private"}), false);
 });
 

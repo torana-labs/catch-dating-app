@@ -849,7 +849,7 @@ function validOrganizerScheduleLockDoc() {
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
-    ownerType: "club",
+    ownerType: "organizer",
     ownerId: "club-1",
     slot: 494080,
     eventId: "event-1",

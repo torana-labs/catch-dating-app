@@ -722,7 +722,7 @@ test("owner link clicks roll up by link, with labels and traffic sources",
       {id: "tickets", label: "Tickets", subtitle: null,
         url: "https://www.district.in/saket", icon: "tickets", pinned: false,
         showUntil: null},
-    ]} as AnalyticsRecords["clubs"][number]["data"];
+    ]} as AnalyticsRecords["organizers"][number]["data"];
     input.martRows = [martRow({linkClicks: 7})];
     input.linkRows = [
       {organizerId: "club-1", linkId: "tickets", trafficSource: "instagram",

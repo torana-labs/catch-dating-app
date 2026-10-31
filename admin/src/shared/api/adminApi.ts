@@ -1752,7 +1752,7 @@ export async function loadOrganizerDetails(
 
   const callable = httpsCallable<
     {organizerId: string},
-    {organizer: Omit<AdminGetOrganizerDetailsResponse["club"], "organizerId"> & {
+    {organizer: Omit<AdminGetOrganizerDetailsResponse["organizer"], "organizerId"> & {
       organizerId: string;
     }}
   >(functions, "adminGetOrganizerDetails");
@@ -1954,7 +1954,7 @@ export async function saveEventDetails(
   return result.data;
 }
 
-function sampleOrganizerListRow(organizer: AdminGetOrganizerDetailsResponse["club"]):
+function sampleOrganizerListRow(organizer: AdminGetOrganizerDetailsResponse["organizer"]):
   AdminOrganizerListRow {
   return {
     organizerId: organizer.organizerId,
@@ -2172,7 +2172,7 @@ function sampleExternalEventMatchesTimeWindow(
 }
 
 function applySampleOrganizerDetailsPatch(
-  organizer: AdminGetOrganizerDetailsResponse["club"],
+  organizer: AdminGetOrganizerDetailsResponse["organizer"],
   fields: AdminUpdateOrganizerDetailsPayload["fields"]
 ) {
   Object.assign(organizer, {

@@ -90,11 +90,11 @@ export async function claimOrganizerScheduleInTransaction(
   await claimLocksInTransaction(
     tx,
     db,
-    organizerLockRefs(db, params.organizerId, params, params.organizerId !== undefined),
+    organizerLockRefs(db, params.organizerId, params),
     params.eventId,
     "This club already has an event during that time.",
     (slot) => ({
-      ownerType: params.organizerId ? "organizer" : "club",
+      ownerType: "organizer",
       ownerId: params.organizerId,
       slot,
       eventId: params.eventId,
@@ -122,8 +122,7 @@ export async function replaceOrganizerScheduleInTransaction(
   const nextRefs = organizerLockRefs(
     db,
     params.organizerId,
-    params,
-    params.organizerId !== undefined
+    params
   );
   await claimLocksInTransaction(
     tx,
@@ -132,7 +131,7 @@ export async function replaceOrganizerScheduleInTransaction(
     params.eventId,
     "This club already has an event during that time.",
     (slot) => ({
-      ownerType: params.organizerId ? "organizer" : "club",
+      ownerType: "organizer",
       ownerId: params.organizerId,
       slot,
       eventId: params.eventId,
@@ -146,7 +145,7 @@ export async function replaceOrganizerScheduleInTransaction(
   for (const {ref, slot} of organizerLockRefs(db, params.organizerId, {
     startTimeMillis: params.previousStartTimeMillis,
     endTimeMillis: params.previousEndTimeMillis,
-  }, params.organizerId !== undefined)) {
+  })) {
     if (!nextSlots.has(slot)) {
       tx.delete(ref);
     }
@@ -167,8 +166,7 @@ export function releaseOrganizerScheduleInTransaction(
   for (const {ref} of organizerLockRefs(
     db,
     params.organizerId,
-    params,
-    params.organizerId !== undefined
+    params
   )) {
     tx.delete(ref);
   }
@@ -305,13 +303,11 @@ function scheduleSlots(params: ScheduleWindow): number[] {
 function organizerLockRefs(
   db: FirebaseFirestore.Firestore,
   organizerId: string,
-  params: ScheduleWindow,
-  canonicalOrganizer = false
+  params: ScheduleWindow
 ) {
   return scheduleSlots(params).map((slot) => ({
     slot,
-    ref: db.collection(canonicalOrganizer ?
-      ORGANIZER_LOCK_COLLECTION : ORGANIZER_LOCK_COLLECTION)
+    ref: db.collection(ORGANIZER_LOCK_COLLECTION)
       .doc(`${organizerId}_${slot}`),
   }));
 }

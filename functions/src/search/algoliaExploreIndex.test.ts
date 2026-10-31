@@ -63,20 +63,11 @@ function organizer(overrides: Partial<OrganizerDocument> = {}): OrganizerDocumen
     archived: false,
     archivedAt: null,
     archiveReason: null,
-    ...overrides,
-  };
-}
-
-function organizer(
-  overrides: Partial<OrganizerDocument> = {}
-): OrganizerDocument {
-  return {
-    ...organizer(),
     organizerType: "club",
     organizerPhotos: [],
     followerCount: 12,
     ...overrides,
-  } as OrganizerDocument;
+  };
 }
 
 /**
