@@ -46,7 +46,7 @@ const generated = [
   /(?:^|\/)generated\//u,
   /\.g\.dart$/u,
   /\.freezed\.dart$/u,
-  /^lib\/l10n\//u,
+  /^lib\/l10n\/generated\//u,
   /^design\/source_packs\//u,
   /^analytics\//u,
   /^tool\/analytics\//u,
@@ -61,7 +61,7 @@ const excluded = [...generated, ownTests, toolFixtures, ...migrationRecord];
 const scriptFile = /\.(?:ts|tsx|mts|cts|js|jsx|mjs|cjs)$/u;
 const rulesFile = /(?:^|\/)[\w.]*\.rules$/u;
 const contractSchema = /^contracts\/.*\.schema\.json$/u;
-const edited = /\.(?:ts|tsx|mts|cts|js|jsx|mjs|cjs|rules|dart|json|md|css|ya?ml|sh)$/u;
+const edited = /\.(?:ts|tsx|mts|cts|js|jsx|mjs|cjs|rules|dart|json|arb|md|css|ya?ml|sh)$/u;
 const movedFile = /\.(?:ts|tsx|mts|cts|js|jsx|mjs|cjs|css)$|^contracts\/.*\.json$/u;
 const generatedPath = /(?:^|\/)generated\//u;
 // Flutter files moved with rename_to_organizer; Dart takes only string edits.
@@ -677,6 +677,14 @@ export function renameText(source, plan) {
   return renameNamedSymbols(source, plan);
 }
 
+// Localization messages are copy, except a message that is a wire name: the
+// host routes read their path parameter names from it (`clubId`). Keys
+// rename with rename_to_organizer.
+export function renameArbValues(source, plan) {
+  return source.replace(/^(\s*"(?!@)[^"]+"\s*:\s*)"([A-Za-z_]\w*)"/gmu, (whole, head, value) =>
+    plan.wire.has(value) ? `${head}"${plan.wire.get(value)}"` : whole);
+}
+
 export function renameCss(source) {
   return source.replace(/(?<![\w-])[A-Za-z_][\w-]*/gu, (word) => isClubIdentifier(word) ? renameWord(word) : word);
 }
@@ -694,7 +702,8 @@ export function transformFile({file, source, plan}) {
   else if (file.endsWith(".json")) {
     out = renameJson(out, plan);
     if (/(?:^|\/)firestore\.indexes\.json$/u.test(file)) out = withoutRepeatedIndexes(out);
-  } else if (file.endsWith(".css")) out = renameCss(out);
+  } else if (file.endsWith(".arb")) out = renameArbValues(out, plan);
+  else if (file.endsWith(".css")) out = renameCss(out);
   else out = renameText(out, plan);
   if (plan.moves.size > 0) out = rewritePathMentions(out, plan.moves, new Map()).source;
   return out;

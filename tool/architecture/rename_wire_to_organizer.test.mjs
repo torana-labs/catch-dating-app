@@ -194,6 +194,15 @@ test("indexes that became the same index are one", () => {
   assert.equal(withoutRepeatedIndexes(single), single);
 });
 
+test("a localization message that is a wire name renames; copy and keys stay", () => {
+  const {plan} = fixture();
+  const arb = "{\n  \"organizersDetailOrganizerid\": \"clubId\",\n  \"hostsOrganizerTypeClub\": \"Club\",\n" +
+    "  \"clubsTitle\": \"Run clubs near you\",\n  \"@clubsTitle\": {\"description\": \"clubId\"}\n}\n";
+  assert.equal(transformFile({file: "lib/l10n/app_en.arb", source: arb, plan}),
+    "{\n  \"organizersDetailOrganizerid\": \"organizerId\",\n  \"hostsOrganizerTypeClub\": \"Club\",\n" +
+    "  \"clubsTitle\": \"Run clubs near you\",\n  \"@clubsTitle\": {\"description\": \"clubId\"}\n}\n");
+});
+
 test("rules rename identifiers and wire strings but keep the subtype", () => {
   const {plan} = fixture();
   assert.equal(
