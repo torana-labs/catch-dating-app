@@ -117,7 +117,11 @@ updates:
       - dependency-name: "google_maps_flutter"
 
   - package-ecosystem: "github-actions"
-    directory: "/"
+    # Workflows pin actions to commit SHAs with a version comment; Dependabot
+    # updates both. The composite actions under .github/actions pin theirs too.
+    directories:
+      - "/"
+      - "/.github/actions/*"
     schedule:
       interval: "weekly"
       day: "wednesday"

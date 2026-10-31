@@ -12,8 +12,10 @@ name: Website Release
 # merge; the newest pending train waits behind it. Operator guide:
 # docs/web_surface_architecture.md, "Release train".
 
+# The plan job runs only for main pushes, schedules and dispatches, never for
+# pull-request workflow runs, so workflow_run is safe here.
 on:
-  workflow_run:
+  workflow_run: # zizmor: ignore[dangerous-triggers]
     workflows: [CI]
     types: [completed]
     branches: [main]
@@ -44,13 +46,13 @@ jobs:
       source_sha: ${{ steps.plan.outputs.source_sha }}
     steps:
       # Full history: the planner compares live with main's head.
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
           persist-credentials: false
       - id: toolchain
         uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
       - id: plan
@@ -72,12 +74,12 @@ jobs:
     outputs:
       current: ${{ steps.validate.outputs.current }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
       - id: toolchain
         uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
       - id: validate
@@ -101,12 +103,12 @@ jobs:
       preview_run_id: ${{ steps.preview.outputs.preview_run_id }}
       preview_url: ${{ steps.preview.outputs.preview_url }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
       - id: toolchain
         uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
       - id: preview
@@ -147,12 +149,12 @@ jobs:
       actions: write
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           persist-credentials: false
       - id: toolchain
         uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
       - env:

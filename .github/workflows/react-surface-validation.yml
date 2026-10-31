@@ -34,7 +34,7 @@ jobs:
     timeout-minutes: 25
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
 
@@ -50,7 +50,7 @@ jobs:
       - id: toolchain
         uses: ./.github/actions/load-toolchain
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
           cache: npm
@@ -196,7 +196,7 @@ jobs:
 
       - name: Retain validation-only marketing package proof
         if: ${{ inputs.surface == 'marketing' && !inputs.skip_deployable_build && github.event_name == 'workflow_dispatch' && github.workflow == 'Marketing Website' }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: marketing-hosting-validation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: build/ci/marketing-hosting-validation/upload
@@ -241,7 +241,7 @@ jobs:
 
       - name: Retain custom-domain synthetic browser evidence
         if: ${{ inputs.surface == 'marketing' && success() }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: form-domain-browser-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/form-domain-browser-${{ github.run_id }}-${{ github.run_attempt }}
@@ -287,7 +287,7 @@ jobs:
 
       - name: Upload marketing visual diagnostics
         if: ${{ always() && (steps.marketing-visual-check.outcome == 'failure' || steps.marketing-visual-check.outputs.has_changes == 'true') }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: marketing-visual-diagnostics-${{ github.run_id }}
           path: |
@@ -300,7 +300,7 @@ jobs:
 
       - name: Upload admin visual diagnostics
         if: ${{ always() && (steps.admin-visual-check.outcome == 'failure' || steps.admin-visual-check.outputs.has_changes == 'true') }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: admin-visual-diagnostics-${{ github.run_id }}
           path: |
@@ -311,7 +311,7 @@ jobs:
 
       - name: Upload marketing visual baselines
         if: ${{ steps.marketing-visual-update.outcome == 'success' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: marketing-visual-baselines-${{ github.run_id }}
           path: |
@@ -322,7 +322,7 @@ jobs:
 
       - name: Upload admin visual baselines
         if: ${{ steps.admin-visual-update.outcome == 'success' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: admin-visual-baselines-${{ github.run_id }}
           path: design/visual_baselines/admin/linux
