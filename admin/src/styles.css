@@ -1173,10 +1173,16 @@ button {
 
 .intake-workspace-content {
   position: relative;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
-.intake-workspace-content > * {
+.intake-workspace-content > :only-child {
   flex: 1 1 auto;
+}
+
+.intake-workspace-content > .intake-review-workbench:not(:only-child) {
+  min-height: 70dvh;
 }
 
 .admin-pending-operation-boundary {
@@ -2249,11 +2255,6 @@ select {
   font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
-.organizer-state-list {
-  display: grid;
-  gap: var(--catch-space-s2);
-}
-
 .search-candidate-card {
   display: grid;
   gap: var(--catch-space-s3);
@@ -3321,7 +3322,6 @@ th {
   font-size: var(--catch-typography-web-context-size);
 }
 
-.marketing-step-list,
 .marketing-query-list,
 .marketing-audit-list,
 .marketing-recommendation-list,
