@@ -10024,12 +10024,7 @@
           "outlined-actions",
           "root-title",
           "root-subtitle-actions",
-          "primary-rail",
-          "wide-row",
-          "tab-home",
-          "step",
-          "live",
-          "moment"
+          "primary-rail"
         ],
         "slots": [
           {
@@ -14209,12 +14204,7 @@
           "contact-preview",
           "press-and-slide",
           "pointer-focus",
-          "long-press-secondary-action",
-          "sidebar",
-          "rail",
-          "sections",
-          "pinned-more",
-          "quiet-register"
+          "long-press-secondary-action"
         ],
         "slots": [],
         "tokens": [
@@ -19271,9 +19261,7 @@
           "local-cross-axis-width",
           "width-capped",
           "local-height",
-          "safe-area-metrics",
-          "app-shell",
-          "quiet-register"
+          "safe-area-metrics"
         ],
         "slots": [
           "compactBuilder",
@@ -19390,10 +19378,6 @@
     },
     {
       "id": "catch.workspace_header",
-      "verification": {
-        "vehicle": "widgetbook-contract",
-        "reason": "The Flutter Widgetbook contract covers measured header growth and single-pane states; the React Contract story covers queue, views, filters, position and page headers."
-      },
       "name": "CatchWorkspaceHeader",
       "status": "active",
       "kind": "composite",
@@ -19516,12 +19500,7 @@
           "content-shrink",
           "single-pane",
           "hidden-ancestor",
-          "text-scale-2",
-          "queue-header",
-          "views",
-          "filters",
-          "position",
-          "page-header"
+          "text-scale-2"
         ],
         "slots": [],
         "tokens": [
@@ -19578,6 +19557,10 @@
           "catch.screen_body"
         ],
         "reason": "Heads one pane of the screen body beside sibling panes, with views, filters and position as data; the step header heads one step of a flow with its progress."
+      },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "The Flutter Widgetbook contract covers measured header growth, shrink, a single pane, a header without a layout ancestor and large text; the React Contract story covers queue, views, filters, position and page headers."
       }
     },
     {

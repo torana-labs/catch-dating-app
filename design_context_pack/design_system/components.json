@@ -10300,12 +10300,7 @@
           "outlined-actions",
           "root-title",
           "root-subtitle-actions",
-          "primary-rail",
-          "wide-row",
-          "tab-home",
-          "step",
-          "live",
-          "moment"
+          "primary-rail"
         ],
         "slots": [
           {
@@ -14544,12 +14539,7 @@
           "contact-preview",
           "press-and-slide",
           "pointer-focus",
-          "long-press-secondary-action",
-          "sidebar",
-          "rail",
-          "sections",
-          "pinned-more",
-          "quiet-register"
+          "long-press-secondary-action"
         ],
         "slots": [],
         "tokens": [
@@ -19715,9 +19705,7 @@
           "local-cross-axis-width",
           "width-capped",
           "local-height",
-          "safe-area-metrics",
-          "app-shell",
-          "quiet-register"
+          "safe-area-metrics"
         ],
         "slots": [
           "compactBuilder",
@@ -19834,10 +19822,6 @@
     },
     {
       "id": "catch.workspace_header",
-      "verification": {
-        "vehicle": "widgetbook-contract",
-        "reason": "The Flutter Widgetbook contract covers measured header growth and single-pane states; the React Contract story covers queue, views, filters, position and page headers."
-      },
       "name": "CatchWorkspaceHeader",
       "status": "active",
       "kind": "composite",
@@ -19960,12 +19944,7 @@
           "content-shrink",
           "single-pane",
           "hidden-ancestor",
-          "text-scale-2",
-          "queue-header",
-          "views",
-          "filters",
-          "position",
-          "page-header"
+          "text-scale-2"
         ],
         "slots": [],
         "tokens": [
@@ -20007,18 +19986,25 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.workspace_header"
+        "conceptRole": "member",
+        "conceptId": "catch.screen_body",
+        "parentConceptId": "catch.screen_body",
+        "qualifier": "layout",
+        "decisionRef": "contract-family:catch.screen_body"
       },
       "level": "L4",
       "roleNoun": "Header",
       "naming": {
         "useCase": "Workspace",
         "comparedWith": [
-          "catch.top_bar",
+          "catch.step_header",
           "catch.screen_body"
         ],
-        "reason": "One pane's header beside sibling panes, aligned on a shared row; the top bar heads a whole screen with back and screen actions."
+        "reason": "Heads one pane of the screen body beside sibling panes, with views, filters and position as data; the step header heads one step of a flow with its progress."
+      },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "The Flutter Widgetbook contract covers measured header growth, shrink, a single pane, a header without a layout ancestor and large text; the React Contract story covers queue, views, filters, position and page headers."
       }
     },
     {
@@ -20178,18 +20164,20 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.pane_layout"
+        "conceptRole": "member",
+        "conceptId": "catch.screen_body",
+        "parentConceptId": "catch.screen_body",
+        "qualifier": "layout",
+        "decisionRef": "contract-family:catch.screen_body"
       },
       "level": "L4",
       "roleNoun": "Layout",
       "naming": {
         "useCase": "Pane",
         "comparedWith": [
-          "catch.viewport",
           "catch.screen_body"
         ],
-        "reason": "Arranges sibling panes for a named screen pattern inside a body; the viewport owns the whole screen and the page body owns one scrolling column."
+        "reason": "Arranges sibling panes for a named screen pattern inside the screen body it belongs to; the body owns one scrolling column and the viewport the whole screen."
       }
     },
     {
