@@ -769,7 +769,13 @@ String _relative(String path, String root) =>
 
 String _audience(String path) {
   if (path.startsWith('lib/hosts/') || path.contains('/host_')) return 'host';
-  if (path.startsWith('lib/core/')) return 'shared';
+  const sharedRoots = [
+    'lib/contexts/',
+    'lib/kernel/',
+    'lib/pages/',
+    'lib/platform/',
+  ];
+  if (sharedRoots.any(path.startsWith)) return 'shared';
   return 'consumer';
 }
 

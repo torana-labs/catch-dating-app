@@ -19,10 +19,6 @@
   ],
   "scopeExclusions": [
     {
-      "pathPrefix": "lib/core/widgets/",
-      "reason": "Canonical primitive implementations are target owners, not product field surfaces."
-    },
-    {
       "pathPrefix": "lib/design_fixtures/",
       "reason": "Design fixtures are reviewed through their production owner before migration."
     },
@@ -31,9 +27,7 @@
       "reason": "Generated localization output is not a field surface."
     }
   ],
-  "definitionFiles": [
-    "lib/events/shared/map_pin_tile.dart"
-  ],
+  "definitionFiles": [],
   "candidates": [
     {
       "id": "FIELD-SURFACE-HOST-EVENT-EDIT",

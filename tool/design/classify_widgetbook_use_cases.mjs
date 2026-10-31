@@ -12,7 +12,7 @@ const dispositionPath = path.join(
 );
 export const classes = ["component-mount", "body-mount", "screen-scope", "prototype"];
 export const dispositions = ["migrate-to-ui-capture", "keep-widgetbook"];
-const sharedSource = (file) => ["lib/core/", "packages/catch_ui/lib/", "packages/catch_tokens/lib/"].some((prefix) => file.startsWith(prefix));
+const sharedSource = (file) => ["packages/catch_ui/lib/", "packages/catch_tokens/lib/"].some((prefix) => file.startsWith(prefix));
 const simpleType = (value) => value?.replace(/<.*>/u, "");
 const key = (row) => [row.file, row.builder, simpleType(row.type), row.name].join(":");
 const proposalMarker = /(?:^|[\s·([])proposed(?:$|[\s)\]])/iu;
