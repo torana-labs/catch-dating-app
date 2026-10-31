@@ -1171,12 +1171,25 @@ button {
   flex: 0 0 auto;
 }
 
+/* A lone workbench fills the tab and scrolls its own table. A tab that stacks
+ * panels above it scrolls as a page instead, and the workbench keeps a usable
+ * height rather than shrinking to fit what is left. */
 .intake-workspace-content {
   position: relative;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .intake-workspace-content > * {
   flex: 1 1 auto;
+}
+
+.intake-workspace-content > :not(:only-child) {
+  flex: 0 0 auto;
+}
+
+.intake-workspace-content > .intake-review-workbench:not(:only-child) {
+  min-height: 70dvh;
 }
 
 .admin-pending-operation-boundary {
