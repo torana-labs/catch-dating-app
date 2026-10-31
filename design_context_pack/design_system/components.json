@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-10-31",
+  "updated": "2026-11-01",
   "sourceOfTruth": {
     "behavior": "Each component contract in this registry owns runtime behavior, accessibility, layout, and state for every framework that implements it. Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled widgets in lib/contexts/*/parts and lib/platform are the reference implementation; @catch/web-ui implements the same contracts for React.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -10116,7 +10116,7 @@
       "name": "CatchTopBar",
       "status": "active",
       "kind": "composite",
-      "tier": "T3",
+      "tier": "T2",
       "aliases": [
         "AppBar",
         "Toolbar",
@@ -10157,31 +10157,36 @@
             "name": "title",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "subtitle",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "identityName",
             "type": "string",
             "required": false,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "identityPhotoUrl",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "onIdentityTap",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "tone",
@@ -10193,7 +10198,8 @@
               "page",
               "surface",
               "overlay"
-            ]
+            ],
+            "tsType": "CatchTopBarTone"
           },
           {
             "name": "emphasis",
@@ -10204,19 +10210,81 @@
             "values": [
               "plain",
               "divided"
-            ]
+            ],
+            "tsType": "CatchTopBarEmphasis"
           },
           {
             "name": "navigation",
             "type": "object",
             "required": false,
-            "dartType": "CatchTopBarNavigation"
+            "dartType": "CatchTopBarNavigation",
+            "tsType": "CatchTopBarNavigation"
           },
           {
             "name": "search",
             "type": "object",
             "required": false,
-            "dartType": "CatchTopBarSearch?"
+            "dartType": "CatchTopBarSearch?",
+            "tsType": "CatchTopBarSearch"
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "default": "tool",
+            "dartType": "CatchTopBarVariant",
+            "tsType": "CatchTopBarVariant",
+            "values": [
+              "tab-home",
+              "tool",
+              "step",
+              "live",
+              "moment"
+            ],
+            "notes": "Design system v15 page tops; on tablets and desktops every variant but moment is the same 56px row."
+          },
+          {
+            "name": "kicker",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "A muted line above the title; a breadcrumb before it on wide screens."
+          },
+          {
+            "name": "back",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchTopBarBack?",
+            "tsType": "CatchTopBarBack"
+          },
+          {
+            "name": "action",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchTopBarAction?",
+            "tsType": "CatchTopBarAction"
+          },
+          {
+            "name": "actions",
+            "type": "widget",
+            "required": false,
+            "dartType": "List<Widget>?",
+            "tsType": "ReactNode"
+          },
+          {
+            "name": "step",
+            "type": "object",
+            "required": false,
+            "dartType": "({int index, int total})?",
+            "tsType": "{index: number; total: number}"
+          },
+          {
+            "name": "live",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           }
         ],
         "states": [
@@ -10232,7 +10300,12 @@
           "outlined-actions",
           "root-title",
           "root-subtitle-actions",
-          "primary-rail"
+          "primary-rail",
+          "wide-row",
+          "tab-home",
+          "step",
+          "live",
+          "moment"
         ],
         "slots": [
           {
@@ -10523,6 +10596,27 @@
       "roleNoun": "TopBar",
       "naming": {
         "useCase": ""
+      },
+      "react": {
+        "symbol": "CatchTopBar",
+        "file": "packages/web-ui/src/components/CatchTopBar.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchTopBar.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "compact",
+            "with-leading",
+            "with-action-text",
+            "wide-row",
+            "tab-home",
+            "step",
+            "live",
+            "moment"
+          ]
+        },
+        "notes": "Design system v15 TopBar (variant, kicker, back, action, actions, step, live). Inside CatchViewport it gains a hairline once the body scrolls. The website keeps CatchSiteHeader for the site variant; identity, tone, emphasis, navigation and search remain Flutter recipes until the Flutter mirror adopts the variants."
       }
     },
     {
@@ -11764,35 +11858,6 @@
                 "catch.screen_body"
               ],
               "reason": "Aligns visible pane headers using their measured content height, without a fixed header floor or body intrinsic sizing."
-            }
-          },
-          {
-            "id": "catch.screen_body.workspace_header",
-            "symbol": "CatchWorkspaceHeader",
-            "file": "packages/catch_ui/lib/src/patterns/catch_workspace_header_layout.dart",
-            "summary": "Measures one pane header naturally and participates in the enclosing workspace header layout.",
-            "states": [
-              "content-growth",
-              "content-shrink",
-              "single-pane",
-              "hidden-ancestor",
-              "text-scale-2"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.screen_body"
-            },
-            "level": "L4",
-            "roleNoun": "Header",
-            "naming": {
-              "useCase": "Workspace",
-              "comparedWith": [
-                "catch.screen_body"
-              ],
-              "reason": "Measures one pane header naturally and participates in the enclosing workspace header layout."
             }
           },
           {
@@ -14353,7 +14418,7 @@
       "name": "CatchTabBar",
       "status": "active",
       "kind": "composite",
-      "tier": "T3",
+      "tier": "T2",
       "aliases": [
         "BottomNavBar",
         "BottomNavigation",
@@ -14390,19 +14455,77 @@
             "name": "items",
             "type": "generic-list",
             "required": true,
-            "dartType": "List<CatchTabBarItem<T>>"
+            "dartType": "List<CatchTabBarItem<T>>",
+            "tsType": "readonly CatchTabBarItem[]",
+            "notes": "Each item carries value, label, icon, href and badge; section draws a sidebar heading (a rule in the rail) and pinned keeps it on the phone bar."
           },
           {
             "name": "active",
             "type": "object",
             "required": true,
-            "dartType": "T"
+            "dartType": "T",
+            "tsType": "string"
           },
           {
             "name": "onChanged",
             "type": "callback",
             "required": false,
-            "dartType": "ValueChanged<T>?"
+            "dartType": "ValueChanged<T>?",
+            "tsType": "(value: string) => void"
+          },
+          {
+            "name": "layout",
+            "type": "enum",
+            "required": false,
+            "default": "auto",
+            "dartType": "CatchTabBarLayout",
+            "tsType": "CatchTabBarLayout",
+            "values": [
+              "auto",
+              "bottom",
+              "rail",
+              "sidebar"
+            ],
+            "notes": "auto follows the size class: bottom under 600, rail from 600, sidebar from 840."
+          },
+          {
+            "name": "header",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode | CatchTabBarIdentity",
+            "notes": "Sidebar and rail: the app mark or who the app acts as, in the shared 56px header row."
+          },
+          {
+            "name": "primaryAction",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchTabBarAction?",
+            "tsType": "CatchTabBarAction"
+          },
+          {
+            "name": "footer",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode | CatchTabBarIdentity",
+            "notes": "Sidebar: who is signed in."
+          },
+          {
+            "name": "label",
+            "type": "string",
+            "required": false,
+            "default": "Main",
+            "dartType": "String",
+            "tsType": "string"
+          },
+          {
+            "name": "more",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchTabBarMore?",
+            "tsType": "CatchTabBarMore",
+            "notes": "Phone bar with pinned items: where More goes."
           }
         ],
         "states": [
@@ -14421,7 +14544,12 @@
           "contact-preview",
           "press-and-slide",
           "pointer-focus",
-          "long-press-secondary-action"
+          "long-press-secondary-action",
+          "sidebar",
+          "rail",
+          "sections",
+          "pinned-more",
+          "quiet-register"
         ],
         "slots": [],
         "tokens": [
@@ -14558,6 +14686,26 @@
       "naming": {
         "useCase": "",
         "reason": "Canonical product-level destination navigation with committed route selection, drag contact preview, badges and platform-adaptive bottom chrome. Page peers use the distinct scaled page-tab placement contract."
+      },
+      "react": {
+        "symbol": "CatchTabBar",
+        "file": "packages/web-ui/src/components/CatchTabBar.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchTabBar.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "selected",
+            "with-badge",
+            "sidebar",
+            "rail",
+            "sections",
+            "pinned-more",
+            "quiet-register"
+          ]
+        },
+        "notes": "Design system v15 Navigation: one item list draws the phone bar, the 96px rail and the 240px sidebar. With an href and onChanged a plain click calls onChanged (client routing) and modified clicks follow the link. The quiet register draws a text-only sidebar with plain counts. Flutter's layout, header, primaryAction, footer, label and more props follow in the Flutter mirror."
       }
     },
     {
@@ -19389,7 +19537,7 @@
       "name": "CatchViewport",
       "status": "active",
       "kind": "pattern",
-      "tier": "T3",
+      "tier": "T2",
       "aliases": [
         "ResponsiveLayout",
         "AdaptiveLayout",
@@ -19431,54 +19579,62 @@
             "name": "compactBuilder",
             "type": "callback",
             "required": true,
-            "dartType": "WidgetBuilder"
+            "dartType": "WidgetBuilder",
+            "tsType": "() => ReactNode"
           },
           {
             "name": "mediumBuilder",
             "type": "callback",
             "required": false,
-            "dartType": "WidgetBuilder?"
+            "dartType": "WidgetBuilder?",
+            "tsType": "() => ReactNode"
           },
           {
             "name": "expandedBuilder",
             "type": "callback",
             "required": false,
-            "dartType": "WidgetBuilder?"
+            "dartType": "WidgetBuilder?",
+            "tsType": "() => ReactNode"
           },
           {
             "name": "breakpoint",
             "type": "number",
             "required": true,
             "dartType": "double",
-            "notes": "Required by atWidth; compares actual local width using below versus at-or-above semantics."
+            "notes": "Required by atWidth; compares actual local width using below versus at-or-above semantics.",
+            "tsType": "number"
           },
           {
             "name": "sliverBuilder",
             "type": "callback",
             "required": true,
             "dartType": "CatchViewportSliverBuilder",
-            "notes": "Required by sliver; returns a sliver from local cross-axis geometry."
+            "notes": "Required by sliver; returns a sliver from local cross-axis geometry.",
+            "tsType": "() => ReactNode"
           },
           {
             "name": "maxWidth",
             "type": "number",
             "required": true,
             "dartType": "double",
-            "notes": "Required by scene; caps the local or MediaQuery fallback width."
+            "notes": "Required by scene; caps the local or MediaQuery fallback width.",
+            "tsType": "number"
           },
           {
             "name": "builder",
             "type": "callback",
             "required": true,
             "dartType": "CatchViewportSceneBuilder",
-            "notes": "Required by scene; receives bounded width/height and inherited media padding."
+            "notes": "Required by scene; receives bounded width/height and inherited media padding.",
+            "tsType": "() => ReactNode"
           },
           {
             "name": "child",
             "type": "widget",
             "required": true,
             "dartType": "Widget",
-            "notes": "Required sliver content for sliverLane; stays direct below the width cap."
+            "notes": "Required sliver content for sliverLane; stays direct below the width cap.",
+            "tsType": "ReactNode"
           },
           {
             "name": "maxExtent",
@@ -19486,7 +19642,64 @@
             "required": false,
             "dartType": "double",
             "default": "CatchLayout.screenPageMaxExtent",
-            "notes": "Positive local cross-axis width cap for sliverLane; wide lanes are centered without gutters."
+            "notes": "Positive local cross-axis width cap for sliverLane; wide lanes are centered without gutters.",
+            "tsType": "number"
+          },
+          {
+            "name": "register",
+            "type": "enum",
+            "required": false,
+            "default": "app",
+            "dartType": "CatchViewportRegister",
+            "tsType": "CatchViewportRegister",
+            "values": [
+              "app",
+              "quiet"
+            ],
+            "notes": "quiet is Admin's register, set once by the shell: plain-type headings, neutral badges, one-line cells, a text sidebar. Parts read it; screens never restyle them."
+          },
+          {
+            "name": "sizeClass",
+            "type": "enum",
+            "required": false,
+            "default": "auto",
+            "dartType": "CatchViewportSizeClass?",
+            "tsType": "CatchViewportSizeClass",
+            "values": [
+              "compact",
+              "medium",
+              "expanded"
+            ],
+            "notes": "Omit (auto) to measure the viewport's own width: compact under 600, medium to 839, expanded from 840."
+          },
+          {
+            "name": "navigation",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode",
+            "notes": "A CatchTabBar, placed at the bottom, in a rail or in a sidebar by size class."
+          },
+          {
+            "name": "topBar",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
+          },
+          {
+            "name": "dock",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
+          },
+          {
+            "name": "overlay",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           }
         ],
         "states": [
@@ -19502,7 +19715,9 @@
           "local-cross-axis-width",
           "width-capped",
           "local-height",
-          "safe-area-metrics"
+          "safe-area-metrics",
+          "app-shell",
+          "quiet-register"
         ],
         "slots": [
           "compactBuilder",
@@ -19598,6 +19813,383 @@
       "roleNoun": "Viewport",
       "naming": {
         "useCase": ""
+      },
+      "react": {
+        "symbol": "CatchViewport",
+        "file": "packages/web-ui/src/components/CatchViewport.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchViewport.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "compact",
+            "expanded",
+            "app-shell",
+            "quiet-register"
+          ]
+        },
+        "notes": "Design system v15 AppShell on the web: measures its own size class (600/840), lays out navigation, top bar, the scrolling body, dock and overlays, and provides size class, register and scroll state through useCatchViewport. Flutter's builder recipes have no web use yet."
+      }
+    },
+    {
+      "id": "catch.workspace_header",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "The Flutter Widgetbook contract covers measured header growth and single-pane states; the React Contract story covers queue, views, filters, position and page headers."
+      },
+      "name": "CatchWorkspaceHeader",
+      "status": "active",
+      "kind": "composite",
+      "tier": "T2",
+      "aliases": [
+        "PaneHeader",
+        "QueueHeader",
+        "WorkspaceTitle"
+      ],
+      "summary": "The 56px header of one workspace pane, or of a whole page placed straight in the body: a breadcrumb kicker, the title with a muted count and note, the item's position with previous and next, the list's views as a select, and filters (chips with counts and search) as a second row, all as data.",
+      "dart": {
+        "symbol": "CatchWorkspaceHeader",
+        "file": "packages/catch_ui/lib/src/patterns/catch_workspace_header_layout.dart",
+        "constructors": [
+          "CatchWorkspaceHeader"
+        ]
+      },
+      "react": {
+        "symbol": "CatchWorkspaceHeader",
+        "file": "packages/web-ui/src/components/CatchWorkspaceHeader.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchWorkspaceHeader.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "queue-header",
+            "views",
+            "filters",
+            "position",
+            "page-header"
+          ]
+        },
+        "notes": "Design system v15 PaneHeader. Sticky at the top of its pane, it bleeds over the pane's --catch-pane-inline padding; straight in the viewport body it insets by the shell gutter and heads every pane under it. A detail beside its list (CatchPaneLayout split) drops its back arrow and breadcrumb."
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/PaneHeader",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "PaneHeader",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "title",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget",
+            "tsType": "ReactNode"
+          },
+          {
+            "name": "kicker",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "count",
+            "type": "number",
+            "required": false,
+            "dartType": "int?",
+            "tsType": "number"
+          },
+          {
+            "name": "note",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "back",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchWorkspaceHeaderBack?",
+            "tsType": "CatchWorkspaceHeaderBack"
+          },
+          {
+            "name": "position",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchWorkspaceHeaderPosition?",
+            "tsType": "CatchWorkspaceHeaderPosition"
+          },
+          {
+            "name": "views",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchWorkspaceHeaderViews?",
+            "tsType": "CatchWorkspaceHeaderViews"
+          },
+          {
+            "name": "filters",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchWorkspaceHeaderFilters?",
+            "tsType": "CatchWorkspaceHeaderFilters"
+          },
+          {
+            "name": "actions",
+            "type": "widget",
+            "required": false,
+            "dartType": "List<Widget>?",
+            "tsType": "ReactNode"
+          }
+        ],
+        "states": [
+          "content-growth",
+          "content-shrink",
+          "single-pane",
+          "hidden-ancestor",
+          "text-scale-2",
+          "queue-header",
+          "views",
+          "filters",
+          "position",
+          "page-header"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s4",
+          "space.s6",
+          "theme.light.color.line",
+          "theme.light.color.surface"
+        ],
+        "dartRoles": [],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Every queue and directory header is this record with data; no screen builds its own header row.",
+          "Flutter's CatchWorkspaceHeader measures the header inside CatchWorkspaceHeaderLayout; the title, views, filters and position props follow in the Flutter mirror."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.workspace_header",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.workspace_header"
+      },
+      "level": "L4",
+      "roleNoun": "Header",
+      "naming": {
+        "useCase": "Workspace",
+        "comparedWith": [
+          "catch.top_bar",
+          "catch.screen_body"
+        ],
+        "reason": "One pane's header beside sibling panes, aligned on a shared row; the top bar heads a whole screen with back and screen actions."
+      }
+    },
+    {
+      "id": "catch.pane_layout",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "The Widgetbook contract and the React Contract story cover every pattern, unsplit and detail-open; focused tests in both twins check the split widths."
+      },
+      "name": "CatchPaneLayout",
+      "status": "active",
+      "kind": "pattern",
+      "tier": "T2",
+      "aliases": [
+        "SplitView",
+        "MasterDetail",
+        "ListDetailLayout",
+        "WorkspaceLayout"
+      ],
+      "summary": "One layout for workspace screens: queue (a table and a 440/480px inspector that replaces the table when narrow), list-detail (a 360px list and the detail), feed and reading (with a 360px side pane) and wide-table, measured on the layout's own width.",
+      "dart": {
+        "symbol": "CatchPaneLayout",
+        "file": "packages/catch_ui/lib/src/patterns/catch_pane_layout.dart",
+        "constructors": [
+          "CatchPaneLayout"
+        ]
+      },
+      "react": {
+        "symbol": "CatchPaneLayout",
+        "file": "packages/web-ui/src/components/CatchPaneLayout.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchPaneLayout.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "queue",
+            "list-detail",
+            "feed",
+            "reading",
+            "wide-table",
+            "unsplit"
+          ]
+        },
+        "notes": "Measures its own width (queue splits from 900px, list-detail from 600, feed and reading from 960) and provides useCatchPane so a header knows its slot. Each pane scrolls on its own in a queue; panes inset their content from --catch-pane-inline."
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/PaneLayout",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "PaneLayout",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "pattern",
+            "type": "enum",
+            "required": true,
+            "dartType": "CatchPaneLayoutMode",
+            "tsType": "CatchPaneLayoutMode",
+            "values": [
+              "queue",
+              "list-detail",
+              "feed",
+              "reading",
+              "wide-table"
+            ]
+          },
+          {
+            "name": "main",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget",
+            "tsType": "ReactNode",
+            "notes": "Flutter takes children: [main, second pane]."
+          },
+          {
+            "name": "detail",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode",
+            "notes": "Flutter takes children: [main, second pane]."
+          },
+          {
+            "name": "aside",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode",
+            "notes": "Flutter takes children: [main, second pane]."
+          },
+          {
+            "name": "detailOpen",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "tsType": "boolean"
+          }
+        ],
+        "states": [
+          "queue",
+          "list-detail",
+          "feed",
+          "reading",
+          "wide-table",
+          "unsplit",
+          "detail-open"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s4",
+          "space.s6",
+          "theme.light.color.line",
+          "theme.light.color.surface"
+        ],
+        "dartRoles": [],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Rule 13: every Admin screen is the viewport plus one pane pattern; no hand-written grids.",
+          "Start each pane with a CatchWorkspaceHeader."
+        ]
+      },
+      "governance": {
+        "role": "pattern",
+        "canonicalFamily": "catch.pane_layout",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.pane_layout"
+      },
+      "level": "L4",
+      "roleNoun": "Layout",
+      "naming": {
+        "useCase": "Pane",
+        "comparedWith": [
+          "catch.viewport",
+          "catch.screen_body"
+        ],
+        "reason": "Arranges sibling panes for a named screen pattern inside a body; the viewport owns the whole screen and the page body owns one scrolling column."
       }
     },
     {

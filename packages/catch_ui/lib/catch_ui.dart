@@ -193,6 +193,7 @@ export 'src/patterns/catch_form_step_spec.dart';
 export 'src/patterns/catch_form_text_field.dart';
 export 'src/patterns/catch_navigation_viewport.dart';
 export 'src/patterns/catch_page_body.dart';
+export 'src/patterns/catch_pane_layout.dart';
 export 'src/patterns/catch_page_body_mode.dart';
 export 'src/patterns/catch_page_body_variant.dart';
 export 'src/patterns/catch_root_screen_body.dart';
