@@ -11,6 +11,8 @@
   ],
   "scripts": {
     "agent:context": "node tool/agent/context_pack.mjs",
+    "nx:projects": "nx show projects",
+    "nx:graph": "nx graph",
     "repo:hygiene": "node tool/repository_hygiene.mjs --json",
     "repo:hygiene:check": "node tool/check_repository_root_hygiene.mjs",
     "web:admin:dev": "npm --workspace catch-admin run dev",
