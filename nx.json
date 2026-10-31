@@ -19,6 +19,7 @@
   },
   "targetDefaults": {
     "analyze": {"cache": true, "inputs": ["default", "^production"]},
+    "check": {"cache": true, "inputs": ["default"]},
     "lint": {"cache": true, "inputs": ["default", "^production"]},
     "test": {"cache": true, "inputs": ["default", "^production"]},
     "build": {
@@ -33,15 +34,23 @@
       "plugin": "./tool/nx/catch_projects.mjs",
       "options": {
         "sourceProjects": [
-          {"name": "contracts", "root": "contracts"},
-          {"name": "design-tokens", "root": "design/tokens"}
+          {
+            "name": "contracts",
+            "root": "contracts",
+            "check": "node tool/contracts/generate_schema_contracts.mjs --check"
+          },
+          {
+            "name": "design-tokens",
+            "root": "design/tokens",
+            "check": "dart run tool/design_tokens.dart --check"
+          }
         ],
         "implicitDependencies": {
           "catch_dating_app": ["contracts", "@catch/brand"],
           "functions": ["contracts", "@catch/brand"],
           "catch-admin": ["contracts"],
           "catch-marketing": ["contracts"],
-          "@catch/operations": ["contracts"],
+          "@catch/operations": ["contracts", "@catch/brand"],
           "catch_tokens": ["design-tokens"],
           "@catch/web-config": ["design-tokens"]
         }
