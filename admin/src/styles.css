@@ -1171,21 +1171,14 @@ button {
   flex: 0 0 auto;
 }
 
-/* A lone workbench fills the tab and scrolls its own table. A tab that stacks
- * panels above it scrolls as a page instead, and the workbench keeps a usable
- * height rather than shrinking to fit what is left. */
 .intake-workspace-content {
   position: relative;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
-.intake-workspace-content > * {
+.intake-workspace-content > :only-child {
   flex: 1 1 auto;
-}
-
-.intake-workspace-content > :not(:only-child) {
-  flex: 0 0 auto;
 }
 
 .intake-workspace-content > .intake-review-workbench:not(:only-child) {
@@ -2262,11 +2255,6 @@ select {
   font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
-.organizer-state-list {
-  display: grid;
-  gap: var(--catch-space-s2);
-}
-
 .search-candidate-card {
   display: grid;
   gap: var(--catch-space-s3);
@@ -3334,7 +3322,6 @@ th {
   font-size: var(--catch-typography-web-context-size);
 }
 
-.marketing-step-list,
 .marketing-query-list,
 .marketing-audit-list,
 .marketing-recommendation-list,
