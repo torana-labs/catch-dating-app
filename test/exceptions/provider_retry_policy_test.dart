@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/app_bootstrap.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
 import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:catch_dating_app/platform/errors/provider_retry_policy.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -26,7 +27,7 @@ void main() {
       expect(
         catchProviderRetry(
           0,
-          FirebaseException(plugin: 'cloud_functions', code: 'unavailable'),
+          FirebaseException(plugin: 'cloud_firestore', code: 'unavailable'),
         ),
         const Duration(milliseconds: 200),
       );
@@ -37,10 +38,35 @@ void main() {
         const PermissionException('No access.'),
         const DocumentNotFoundException('event'),
         const SignInRequiredException('load events'),
-        FirebaseException(plugin: 'cloud_firestore', code: 'permission-denied'),
+        FirebaseException(plugin: 'cloud_firestore', code: 'not-found'),
         StateError('bug'),
       ]) {
         expect(catchProviderRetry(0, error), isNull, reason: '$error');
+      }
+    });
+
+    test('a raw Firestore error gets the answer its mapped form gets', () {
+      const repository = BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'load events',
+      );
+      for (final code in [
+        'aborted',
+        'deadline-exceeded',
+        'failed-precondition',
+        'invalid-argument',
+        'not-found',
+        'permission-denied',
+        'unauthenticated',
+        'unavailable',
+      ]) {
+        final raw = FirebaseException(plugin: 'cloud_firestore', code: code);
+        final mapped = normalizeBackendError(raw, context: repository);
+        expect(
+          catchProviderRetry(0, raw),
+          catchProviderRetry(0, mapped),
+          reason: code,
+        );
       }
     });
   });
