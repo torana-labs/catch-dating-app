@@ -994,7 +994,6 @@ ActivityNotification _activityNotification({
   String title = "It's a catch",
   String body = 'You and Runner Two matched. Say hi!',
   String? organizerId,
-  String? organizerId,
   String? postId,
   String? eventId,
   DateTime? createdAt,
@@ -1010,7 +1009,6 @@ ActivityNotification _activityNotification({
     readAt: readAt,
     matchId: type == ActivityNotificationType.match ? 'match-1' : null,
     eventId: eventId,
-    organizerId: organizerId,
     organizerId: organizerId,
     postId: postId,
   );

@@ -112,7 +112,6 @@ abstract class Organizer with _$Organizer {
     return imageUrl;
   }
 
-  List<UploadedPhoto> get organizerPhotos => organizerPhotos;
 
   int get followerCount => memberCount;
 

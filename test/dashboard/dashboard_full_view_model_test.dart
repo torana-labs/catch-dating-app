@@ -411,7 +411,6 @@ ActivityNotification _activityNotification({
     type: type,
     title: 'Club update',
     body: 'Meet ten minutes early.',
-    organizerId: type == ActivityNotificationType.organizerUpdate ? 'club-1' : null,
     organizerId: type == ActivityNotificationType.organizerUpdate
         ? 'organizer-1'
         : null,

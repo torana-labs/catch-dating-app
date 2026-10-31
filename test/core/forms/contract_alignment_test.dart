@@ -83,14 +83,14 @@ void main() {
         .toList(growable: false);
     expect(
       _alignmentIssues(rows, const {
-        'organizerType': 'updateOrganizerPatch.organizerType',
-        'name': 'updateOrganizerPatch.name',
-        'location': 'updateOrganizerPatch.location',
-        'area': 'updateOrganizerPatch.area',
-        'description': 'updateOrganizerPatch.description',
-        'instagramHandle': 'updateOrganizerPatch.instagramHandle',
-        'phoneNumber': 'updateOrganizerPatch.phoneNumber',
-        'email': 'updateOrganizerPatch.email',
+        'organizerType': 'updateOrganizerCallablePayload.fields.organizerType',
+        'name': 'updateOrganizerCallablePayload.fields.name',
+        'location': 'updateOrganizerCallablePayload.fields.location',
+        'area': 'updateOrganizerCallablePayload.fields.area',
+        'description': 'updateOrganizerCallablePayload.fields.description',
+        'instagramHandle': 'updateOrganizerCallablePayload.fields.instagramHandle',
+        'phoneNumber': 'updateOrganizerCallablePayload.fields.phoneNumber',
+        'email': 'updateOrganizerCallablePayload.fields.email',
       }),
       isEmpty,
     );

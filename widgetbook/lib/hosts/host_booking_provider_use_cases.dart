@@ -337,7 +337,6 @@ EventAttendee _attendee(
   id: id,
   eventId: _previewEventId,
   organizerId: _previewOrganizerId,
-  organizerId: _previewOrganizerId,
   displayName: name,
   searchName: name.toLowerCase(),
   source: source,
@@ -408,7 +407,6 @@ final _insights = HostEventRosterInsights(
 final _claim = EventRuntimeClaimRequest(
   id: 'preview-claim',
   eventId: _previewEventId,
-  organizerId: _previewOrganizerId,
   organizerId: _previewOrganizerId,
   uid: 'preview-claimant',
   displayName: 'Ananya Rao',

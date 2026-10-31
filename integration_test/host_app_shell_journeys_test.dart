@@ -262,7 +262,6 @@ void main() {
           id: id,
           eventId: event.id,
           organizerId: _saketRunClub.id,
-          organizerId: _saketRunClub.id,
           displayName: name,
           searchName: name.toLowerCase(),
           source: EventAttendeeSource.hostImport,

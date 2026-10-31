@@ -6645,7 +6645,6 @@ final _marketingHostLiveAttendees = [
       id: 'marketing-india-attendee-$index',
       eventId: _marketingHostLiveEvent.id,
       organizerId: _marketingHostOrganizer.id,
-      organizerId: _captureViewerUid,
       displayName: _captureFixtures.publicProfile(guest.personaId).name,
       searchName: _captureFixtures
           .publicProfile(guest.personaId)
@@ -6841,7 +6840,6 @@ final _hostOperationalAttendees = [
         id: 'host-attendee-${indexed.$1}',
         eventId: _hostEvent.id,
         organizerId: _hostEvent.organizerId,
-        organizerId: _captureViewerUid,
         displayName: _hostGuestProfiles[indexed.$1].name,
         searchName: _hostGuestProfiles[indexed.$1].name.toLowerCase(),
         source: EventAttendeeSource.catchBooking,
@@ -7379,7 +7377,6 @@ final _hostLiveReferenceOperationalAttendees = List<EventAttendee>.generate(
     id: 'host-live-attendee-$index',
     eventId: _hostLiveReferenceEvent.id,
     organizerId: _hostLiveReferenceEvent.organizerId,
-    organizerId: _captureViewerUid,
     displayName: 'Guest ${index + 1}',
     searchName: 'guest ${index + 1}',
     source: EventAttendeeSource.hostImport,

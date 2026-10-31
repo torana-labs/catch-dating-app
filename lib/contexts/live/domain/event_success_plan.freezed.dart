@@ -37,7 +37,7 @@ int get hashCode => Object.hashAll([runtimeType,id,eventId,organizerId,layoutId,
 
 @override
 String toString() {
-  return 'EventSuccessPlan(id: $id, eventId: $eventId, clubId: $organizerId, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, conversationGraphConsentMode: $conversationGraphConsentMode, activeStepIndex: $activeStepIndex, liveControlRevision: $liveControlRevision, assignmentDraftRevision: $assignmentDraftRevision, publishedRotationRoundIndex: $publishedRotationRoundIndex, publishedRevealRoundIndex: $publishedRevealRoundIndex, status: $status, revealStatus: $revealStatus, activeRevealRoundIndex: $activeRevealRoundIndex, revealStartedAt: $revealStartedAt, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
+  return 'EventSuccessPlan(id: $id, eventId: $eventId, organizerId: $organizerId, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, conversationGraphConsentMode: $conversationGraphConsentMode, activeStepIndex: $activeStepIndex, liveControlRevision: $liveControlRevision, assignmentDraftRevision: $assignmentDraftRevision, publishedRotationRoundIndex: $publishedRotationRoundIndex, publishedRevealRoundIndex: $publishedRevealRoundIndex, status: $status, revealStatus: $revealStatus, activeRevealRoundIndex: $activeRevealRoundIndex, revealStartedAt: $revealStartedAt, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
 }
 
 
@@ -296,7 +296,7 @@ int get hashCode => Object.hashAll([runtimeType,id,eventId,organizerId,layoutId,
 
 @override
 String toString() {
-  return 'EventSuccessPlan(id: $id, eventId: $eventId, clubId: $organizerId, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, conversationGraphConsentMode: $conversationGraphConsentMode, activeStepIndex: $activeStepIndex, liveControlRevision: $liveControlRevision, assignmentDraftRevision: $assignmentDraftRevision, publishedRotationRoundIndex: $publishedRotationRoundIndex, publishedRevealRoundIndex: $publishedRevealRoundIndex, status: $status, revealStatus: $revealStatus, activeRevealRoundIndex: $activeRevealRoundIndex, revealStartedAt: $revealStartedAt, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
+  return 'EventSuccessPlan(id: $id, eventId: $eventId, organizerId: $organizerId, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, conversationGraphConsentMode: $conversationGraphConsentMode, activeStepIndex: $activeStepIndex, liveControlRevision: $liveControlRevision, assignmentDraftRevision: $assignmentDraftRevision, publishedRotationRoundIndex: $publishedRotationRoundIndex, publishedRevealRoundIndex: $publishedRevealRoundIndex, status: $status, revealStatus: $revealStatus, activeRevealRoundIndex: $activeRevealRoundIndex, revealStartedAt: $revealStartedAt, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
 }
 
 
@@ -387,7 +387,7 @@ int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,uid,welcomeRa
 
 @override
 String toString() {
-  return 'EventSuccessFeedback(id: $id, eventId: $eventId, clubId: $organizerId, uid: $uid, welcomeRating: $welcomeRating, structureRating: $structureRating, metNewPeopleCount: $metNewPeopleCount, safetyConcern: $safetyConcern, privateNote: $privateNote, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'EventSuccessFeedback(id: $id, eventId: $eventId, organizerId: $organizerId, uid: $uid, welcomeRating: $welcomeRating, structureRating: $structureRating, metNewPeopleCount: $metNewPeopleCount, safetyConcern: $safetyConcern, privateNote: $privateNote, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -606,7 +606,7 @@ int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,uid,welcomeRa
 
 @override
 String toString() {
-  return 'EventSuccessFeedback(id: $id, eventId: $eventId, clubId: $organizerId, uid: $uid, welcomeRating: $welcomeRating, structureRating: $structureRating, metNewPeopleCount: $metNewPeopleCount, safetyConcern: $safetyConcern, privateNote: $privateNote, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'EventSuccessFeedback(id: $id, eventId: $eventId, organizerId: $organizerId, uid: $uid, welcomeRating: $welcomeRating, structureRating: $structureRating, metNewPeopleCount: $metNewPeopleCount, safetyConcern: $safetyConcern, privateNote: $privateNote, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 

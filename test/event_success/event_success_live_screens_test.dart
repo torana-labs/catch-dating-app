@@ -233,7 +233,6 @@ EventAttendee _accountabilityAttendee({
     id: id,
     eventId: event.id,
     organizerId: event.organizerId,
-    organizerId: event.organizerId,
     displayName: displayName,
     searchName: displayName.toLowerCase(),
     source: EventAttendeeSource.hostImport,

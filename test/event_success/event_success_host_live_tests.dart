@@ -190,7 +190,6 @@ void _registerEventSuccessHostLiveTests() {
       id: id,
       eventId: event.id,
       organizerId: event.organizerId,
-      organizerId: 'host-1',
       displayName: 'Guest $id',
       searchName: 'guest $id',
       source: EventAttendeeSource.hostImport,

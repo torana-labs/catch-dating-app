@@ -24,7 +24,6 @@ CreateEventCallableRequest createEventCallableRequestFromEvent(
     eventId: event.id,
     name: event.name.trim(),
     organizerId: event.organizerId,
-    organizerId: event.organizerId,
     sourceVenueId: event.sourceVenueId,
     startTimeMillis: event.startTime.millisecondsSinceEpoch,
     endTimeMillis: event.endTime.millisecondsSinceEpoch,

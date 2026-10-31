@@ -37,7 +37,6 @@ abstract class EventAttendee with _$EventAttendee {
     @JsonKey(includeToJson: false) required String id,
     required String eventId,
     required String organizerId,
-    required String organizerId,
     required String displayName,
     required String searchName,
     required EventAttendeeSource source,

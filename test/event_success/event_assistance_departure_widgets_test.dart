@@ -119,7 +119,6 @@ void main() {
                         id: id,
                         eventId: 'event-1',
                         organizerId: 'organizer-1',
-                        organizerId: 'organizer-1',
                         displayName: id == 'guest-1' ? 'Asha Menon' : 'Sam Rao',
                         searchName: id,
                         source: EventAttendeeSource.hostManual,

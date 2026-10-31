@@ -31,7 +31,6 @@ abstract class Match with _$Match {
     @Default(MatchConversationType.match)
     MatchConversationType conversationType,
     String? organizerId,
-    String? organizerId,
     String? crossPathsInvitationId,
     @NullableTimestampConverter() DateTime? eventPlanExpiresAt,
     @NullableTimestampConverter() DateTime? closedAt,

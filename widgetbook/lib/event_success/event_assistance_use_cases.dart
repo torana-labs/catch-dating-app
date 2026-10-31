@@ -236,7 +236,6 @@ class _AssistancePreviewState extends State<_AssistancePreview> {
         id: 'guest-1',
         eventId: event.id,
         organizerId: event.organizerId,
-        organizerId: event.organizerId,
         displayName: 'Asha Menon',
         searchName: 'asha menon',
         source: EventAttendeeSource.hostManual,

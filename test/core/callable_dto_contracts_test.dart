@@ -69,7 +69,6 @@ void main() {
           name: 'Cubbon Morning Social',
           eventId: 'event-1',
           organizerId: 'club-1',
-          organizerId: 'club-1',
           startTimeMillis: startTime.millisecondsSinceEpoch,
           endTimeMillis: endTime.millisecondsSinceEpoch,
           meetingPoint: meetingLocation.name,
@@ -337,7 +336,6 @@ void main() {
       for (final malformed in <Map<String, Object?>>[
         {},
         {'organizerId': ''},
-        {'organizerId': 'club-delhi-runners'},
       ]) {
         expect(
           () => CreateOrganizerCallableResponse.fromCallableData(malformed),

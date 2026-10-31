@@ -186,7 +186,6 @@ Future<void> _seedExternalEvent(
     'schemaVersion': 1,
     'eventId': id,
     'canonicalHostId': 'host-afterfly',
-    'canonicalHostId': 'club-afterfly',
     'title': 'External event $id',
     'description': 'A reviewed external event.',
     'startTime': Timestamp.fromDate(startTime),

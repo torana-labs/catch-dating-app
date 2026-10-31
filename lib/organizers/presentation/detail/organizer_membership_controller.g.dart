@@ -55,7 +55,7 @@ final class OrganizerMembershipControllerProvider
 }
 
 String _$organizerMembershipControllerHash() =>
-    r'd288ec2dffd6918ec4e96172fa56da416ea653ec';
+    r'235af6766ff5b70eb5799420c600c36bde00995c';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

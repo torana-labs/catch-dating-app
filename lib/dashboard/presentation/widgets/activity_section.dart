@@ -373,10 +373,6 @@ class _NotificationVisual {
         icon: CatchIcons.people,
         accent: t.ink2,
       ),
-      ActivityNotificationType.organizerUpdate => visual(
-        icon: CatchIcons.people,
-        accent: t.ink2,
-      ),
       ActivityNotificationType.crossPathsInvitation => visual(
         icon: CatchIcons.like,
         accent: t.primary,

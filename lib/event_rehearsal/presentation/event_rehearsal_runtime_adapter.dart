@@ -297,7 +297,6 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
             id: row.actorId,
             eventId: eventId,
             organizerId: session.organizerId,
-            organizerId: session.organizerId,
             displayName: rehearsal.actors
                 .firstWhere((actor) => actor.actorId == row.actorId)
                 .displayName,

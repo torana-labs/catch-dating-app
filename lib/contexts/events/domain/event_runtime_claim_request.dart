@@ -14,7 +14,6 @@ abstract class EventRuntimeClaimRequest with _$EventRuntimeClaimRequest {
     @JsonKey(includeToJson: false) required String id,
     required String eventId,
     required String organizerId,
-    required String organizerId,
     required String uid,
     required String displayName,
     required String phoneLastFour,

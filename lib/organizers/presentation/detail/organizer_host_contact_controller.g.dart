@@ -43,7 +43,7 @@ final class OrganizerHostContactControllerProvider
 }
 
 String _$organizerHostContactControllerHash() =>
-    r'9ee9e2d57c9628fbff0d12e56c51adee68b47f8d';
+    r'9ba600cef743e9dad91cb288d04c465570f631de';
 
 abstract class _$OrganizerHostContactController extends $Notifier<void> {
   void build();

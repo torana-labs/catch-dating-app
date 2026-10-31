@@ -117,7 +117,7 @@ void main() {
       expect(policy.usesDemandPricing, isFalse);
     });
 
-    test('Club decodes club_doc.json', () {
+    test('Organizer decodes organizer_doc.json', () {
       final json = _loadFixture('organizer_doc.json', injectIdField: 'id');
       final organizer = Organizer.fromJson(json);
       expect(organizer.id, isNotEmpty);
