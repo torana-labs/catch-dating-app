@@ -15,6 +15,15 @@ interface CredentialDeps {
   now?: () => number;
 }
 
+/** A credential this close to expiry is always refreshed before use. */
+export const formPaymentMandatoryRefreshMillis = 120_000;
+
+export interface FormPaymentCredentialAccessOptions {
+  /** Refresh early when the token expires within this window. Scheduled
+   * maintenance uses a wide window; a checkout uses the mandatory one. */
+  refreshWithinMillis?: number;
+}
+
 /** A refresh token can rotate. An uncertain POST must never be repeated. */
 export class FormPaymentCredentials {
   private readonly now: () => number;
@@ -22,8 +31,13 @@ export class FormPaymentCredentials {
     this.now = deps.now ?? Date.now;
   }
 
-  async access(binding: RazorpayCredentialBinding):
+  async access(binding: RazorpayCredentialBinding,
+    options: FormPaymentCredentialAccessOptions = {}):
     Promise<RazorpayStoredCredential> {
+    const refreshWithin = options.refreshWithinMillis ??
+      formPaymentMandatoryRefreshMillis;
+    if (!Number.isSafeInteger(refreshWithin) ||
+        refreshWithin < formPaymentMandatoryRefreshMillis) unavailable();
     const ref = this.deps.db.collection("organizerPaymentConnections")
       .doc(binding.connectionId);
     const current = requireDoc<Connection>(await ref.get(),
@@ -31,7 +45,13 @@ export class FormPaymentCredentials {
     assertBinding(current, binding);
     const credential = await this.deps.vault.access(
       current.secretVersionResource!, binding);
-    if (credential.token.expiresAt > this.now() + 120_000) return credential;
+    if (credential.token.expiresAt > this.now() + refreshWithin) {
+      return credential;
+    }
+    // An early refresh that never left the process must not take a still
+    // usable connection out of service.
+    const usable = credential.token.expiresAt >
+      this.now() + formPaymentMandatoryRefreshMillis;
     const leaseUntil = Timestamp.fromMillis(this.now() + 60_000);
     const claimed = await this.deps.db.runTransaction(async (tx) => {
       const latest = requireDoc<Connection>(await tx.get(ref),
@@ -59,13 +79,13 @@ export class FormPaymentCredentials {
         updatedAt: Timestamp.fromMillis(this.now())});
       return "claimed" as const;
     });
-    if (claimed === "reload") return this.access(binding);
+    if (claimed === "reload") return this.access(binding, options);
     if (claimed !== "claimed") unavailable();
     let newVersion: string | null = null;
     try {
       const token = await this.deps.provider.refreshToken(credential.token);
       if (token.accountId !== binding.accountId ||
-          token.expiresAt <= this.now() + 120_000 ||
+          token.expiresAt <= this.now() + formPaymentMandatoryRefreshMillis ||
           !token.publicToken.startsWith(`rzp_${binding.mode}_oauth_`)) {
         throw new Error("Refreshed credential does not match merchant.");
       }
@@ -115,7 +135,8 @@ export class FormPaymentCredentials {
         tx.update(ref, {refreshLeaseUntil: null,
           status: notSent || value.status === "disconnected" ?
             value.status : "needsAttention",
-          lastErrorCode: notSent ? "refreshNotSent" :
+          lastErrorCode: notSent ?
+            usable ? value.lastErrorCode : "refreshNotSent" :
             rejected ? "refreshRejected" : "refreshOutcomeUnknown",
           updatedAt: Timestamp.fromMillis(this.now())});
       });
