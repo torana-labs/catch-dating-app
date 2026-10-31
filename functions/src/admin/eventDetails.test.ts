@@ -922,7 +922,7 @@ test("adminGetEventDetailsHandler denies viewer-only admins", async () => {
     () => adminGetEventDetailsHandler(
       callableRequest("admin-1", {
         eventId: "afterfly-social-run-1",
-      }, {analyticsViewer: true}),
+      }, {salesStaff: true}),
       h.deps
     ),
     (error) => assertHttpsCode(error, "permission-denied")

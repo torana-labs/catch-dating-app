@@ -86,7 +86,7 @@ describe("useAdminRoleManagementController", () => {
     await waitFor(() => expect(result.current.selectedUser?.targetUid).toBe("first"));
     rerender({targetUid: "second"});
     expect(result.current.selectedUser).toBeNull();
-    act(() => resolveSecond?.({user: user("second", ["analyticsViewer"])}));
+    act(() => resolveSecond?.({user: user("second", ["salesStaff"])}));
     await waitFor(() => expect(result.current.selectedUser?.targetUid).toBe("second"));
   });
 
@@ -146,6 +146,7 @@ describe("useAdminRoleManagementController", () => {
 describe("adminRolePolicies", () => {
   it("has exactly one policy for every governed role claim", () => {
     expect(Object.keys(adminRolePolicies).sort()).toEqual([...adminRoleClaimKeys].sort());
-    expect(adminRolePolicies.finance.capability).toContain("contract-first deferred");
+    expect(adminRoleClaimKeys).not.toContain("finance");
+    expect(adminRoleClaimKeys).not.toContain("analyticsViewer");
   });
 });

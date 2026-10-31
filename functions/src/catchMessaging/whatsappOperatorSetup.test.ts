@@ -94,7 +94,7 @@ test("planning rejects current identity, role, " +
       f.snapshot.actorAssignmentExists = true;
     },
     (f) => {
-      f.snapshot.recipient.claims.finance = true;
+      f.snapshot.recipient.claims.salesStaff = true;
     },
     (f) => {
       f.scope.actorUid = f.scope.recipientUid;

@@ -305,7 +305,7 @@ test(
 
     await assert.rejects(
       () => adminGetAccessApplicationDetailsHandler(
-        request({applicationUid: "runner-3"}, {analyticsViewer: true}),
+        request({applicationUid: "runner-3"}, {salesStaff: true}),
         deps(firestore)
       ),
       (error) =>
@@ -424,7 +424,7 @@ test(
             decision: "approve",
             note: "Reviewed for launch access.",
           },
-          {analyticsViewer: true}
+          {salesStaff: true}
         ),
         deps(firestore)
       ),

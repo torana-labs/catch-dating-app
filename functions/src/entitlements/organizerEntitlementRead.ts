@@ -67,7 +67,7 @@ export async function getOrganizerEntitlementHandler(
   });
   const adminRoles = adminRolesFromToken(
     request.auth?.token as Record<string, unknown> | undefined);
-  if (!adminRoles.includes("finance") && !adminRoles.includes("adminOwner")) {
+  if (!adminRoles.includes("adminOwner")) {
     await requireOrganizerManager({
       db,
       organizerId: data.organizerId,

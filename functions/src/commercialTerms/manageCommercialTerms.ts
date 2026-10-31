@@ -56,7 +56,7 @@ function invalid(message: string): never {
 export async function manageCommercialTermsHandler(
   request: CallableRequest<unknown>, deps: Dependencies = defaults):
   Promise<Result> {
-  const actor = requireAdminRole(request, ["adminOwner", "finance"]);
+  const actor = requireAdminRole(request, ["adminOwner"]);
   const data = validateCallableWithAjv<Payload>(request,
     validateManageCommercialTermsCallablePayload);
   if (data.action === "read" ? data.expectedRevision !== null ||

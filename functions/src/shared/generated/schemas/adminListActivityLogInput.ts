@@ -1,0 +1,49 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const adminListActivityLogCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_activity_log_payload.schema.json",
+  "title": "AdminListActivityLogCallablePayload",
+  "description": "One page of the Admin activity log, newest first: people's decisions and agent receipts, filterable to problems.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "filter",
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "filter": {
+      "type": "string",
+      "enum": [
+        "all",
+        "problems",
+        "decisions",
+        "agents"
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminListActivityLog"
+  ]
+} as const;

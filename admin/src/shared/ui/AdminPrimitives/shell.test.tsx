@@ -18,7 +18,7 @@ describe("AdminAccountMenu", () => {
       <AdminAccountMenu
         mode="live"
         onSignOut={() => undefined}
-        roles={["admin", "analyticsViewer"]}
+        roles={["admin", "salesStaff"]}
         userLabel="+91 91314 04263"
       />
     );
@@ -35,7 +35,7 @@ describe("AdminAccountMenu", () => {
     const details = screen.getByRole("region", {name: "Account details"});
     expect(details.textContent).toContain("+91 91314 04263");
     expect(details.textContent).toContain("Admin");
-    expect(details.textContent).toContain("Analytics viewer");
+    expect(details.textContent).toContain("Sales staff");
 
     await user.keyboard("{Escape}");
 

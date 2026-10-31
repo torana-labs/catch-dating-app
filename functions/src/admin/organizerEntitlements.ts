@@ -38,7 +38,7 @@ import {organizerEntitlementSkuCatalog} from
 
 const entitlementCollection = "organizerEntitlements";
 const receiptCollection = "organizerEntitlementReceipts";
-const allowedRoles = ["adminOwner", "finance"] as const;
+const allowedRoles = ["adminOwner"] as const;
 const maxGrantsPerOrganizer = 50;
 const receiptRetentionMillis = 30 * 24 * 60 * 60 * 1000;
 

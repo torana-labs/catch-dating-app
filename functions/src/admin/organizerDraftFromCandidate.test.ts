@@ -541,7 +541,7 @@ test("blocks matched, unreviewed, and viewer-only candidate creation",
     });
     await assert.rejects(
       adminCreateOrganizerDraftFromCandidateHandler(
-        callableRequest(payload(), {analyticsViewer: true}),
+        callableRequest(payload(), {salesStaff: true}),
         viewer.deps
       ),
       (error) => assertHttpsCode(error, "permission-denied")

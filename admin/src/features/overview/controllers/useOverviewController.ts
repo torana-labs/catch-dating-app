@@ -18,10 +18,7 @@ export type OverviewAnalyticsGranularity = NonNullable<
   HostAnalyticsQueryPayload["granularity"]
 >;
 
-const hostAnalyticsRoles = [
-  "adminOwner",
-  "analyticsViewer",
-] as const;
+const hostAnalyticsRoles = ["adminOwner"] as const;
 
 export function useOverviewController({
   adminRoles,

@@ -191559,7 +191559,7 @@ export const organizerClaimRequestDocumentSchema = {
   "x-firestore-collection": "organizerClaimRequests",
   "x-firestore-path": "organizerClaimRequests/{requestId}",
   "x-document-id-field": "requestId",
-  "x-owner": "requestOrganizerClaim and adminDecideOrganizerClaim callables",
+  "x-owner": "requestOrganizerClaim, adminRecommendOrganizerClaim and adminDecideOrganizerClaim callables",
   "required": [
     "requestId",
     "organizerId",
@@ -191761,6 +191761,48 @@ export const organizerClaimRequestDocumentSchema = {
         },
         {
           "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "recommendation": {
+      "description": "What ops recommend for a pending claim, set by adminRecommendOrganizerClaim. The owner decides the claim; a later recommendation replaces this one. Absent until someone recommends.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "decision",
+            "byUid",
+            "at",
+            "note"
+          ],
+          "properties": {
+            "decision": {
+              "type": "string",
+              "enum": [
+                "approve",
+                "reject"
+              ]
+            },
+            "byUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
         }
       ],
       "x-catch-ownership": "callable-owned"
@@ -264537,6 +264579,1605 @@ export const adminApproveOrganizerListingCallablePayloadSchema = {
   "x-callable-aliases": [
     "adminApproveOrganizerListing"
   ]
+};
+
+export const adminListInboxItemsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_inbox_items_payload.schema.json",
+  "title": "AdminListInboxItemsCallablePayload",
+  "description": "One page of the Admin inbox: items waiting on a person, oldest first, with real totals per scope and type.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "type",
+    "city",
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "scope": {
+      "type": "string",
+      "enum": [
+        "waiting",
+        "mine",
+        "snoozed",
+        "done",
+        "working"
+      ]
+    },
+    "type": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "listing",
+            "event",
+            "claim",
+            "enquiry",
+            "access",
+            "stuck"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "city": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminListInboxItems"
+  ]
+};
+
+export const adminListInboxItemsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_inbox_items_response.schema.json",
+  "title": "AdminListInboxItemsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "scope",
+    "type",
+    "city",
+    "items",
+    "nextCursor",
+    "totals",
+    "oldestWaitingSince"
+  ],
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "waiting",
+        "mine",
+        "snoozed",
+        "done",
+        "working"
+      ]
+    },
+    "type": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "listing",
+            "event",
+            "claim",
+            "enquiry",
+            "access",
+            "stuck"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "city": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "itemId",
+          "type",
+          "sourceKind",
+          "sourceId",
+          "sourcePath",
+          "title",
+          "subtitle",
+          "cameFrom",
+          "nominatorUid",
+          "city",
+          "state",
+          "status",
+          "waitingSince",
+          "doneAt",
+          "assigneeUid",
+          "snoozedUntil",
+          "recommendation"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 220,
+            "pattern": "^[a-z]+-[A-Za-z0-9._:-]+$"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "listing",
+              "event",
+              "claim",
+              "enquiry",
+              "access",
+              "stuck"
+            ]
+          },
+          "sourceKind": {
+            "type": "string",
+            "enum": [
+              "supplyIntakeRequest",
+              "organizerClaimRequest",
+              "salesInboundIntent",
+              "accessApplication",
+              "externalEvent"
+            ]
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourcePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cameFrom": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "nominatorUid": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "label",
+              "tone"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "tone": {
+                "type": "string",
+                "enum": [
+                  "neutral",
+                  "info",
+                  "success",
+                  "warning",
+                  "danger"
+                ]
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "working",
+              "waiting",
+              "snoozed",
+              "done"
+            ]
+          },
+          "waitingSince": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "doneAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "assigneeUid": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "snoozedUntil": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "recommendation": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "decision",
+                  "byUid",
+                  "at",
+                  "note"
+                ],
+                "properties": {
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "approve",
+                      "reject"
+                    ]
+                  },
+                  "byUid": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "note": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scopes",
+        "types"
+      ],
+      "properties": {
+        "scopes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "waiting",
+            "mine",
+            "snoozed",
+            "working"
+          ],
+          "properties": {
+            "waiting": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "mine": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "snoozed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "working": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "types": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "all",
+            "listing",
+            "event",
+            "claim",
+            "enquiry",
+            "access",
+            "stuck"
+          ],
+          "properties": {
+            "all": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "listing": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "event": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "claim": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "enquiry": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "access": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stuck": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "oldestWaitingSince": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const adminGetInboxItemCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_inbox_item_payload.schema.json",
+  "title": "AdminGetInboxItemCallablePayload",
+  "description": "One Admin inbox item and every step it took, oldest first.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "itemId"
+  ],
+  "properties": {
+    "itemId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 220,
+      "pattern": "^[a-z]+-[A-Za-z0-9._:-]+$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetInboxItem"
+  ]
+};
+
+export const adminGetInboxItemCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_inbox_item_response.schema.json",
+  "title": "AdminGetInboxItemCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "item",
+    "journey",
+    "canWork",
+    "canDecideClaim"
+  ],
+  "properties": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId",
+        "type",
+        "sourceKind",
+        "sourceId",
+        "sourcePath",
+        "title",
+        "subtitle",
+        "cameFrom",
+        "nominatorUid",
+        "city",
+        "state",
+        "status",
+        "waitingSince",
+        "doneAt",
+        "assigneeUid",
+        "snoozedUntil",
+        "recommendation"
+      ],
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 220,
+          "pattern": "^[a-z]+-[A-Za-z0-9._:-]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "listing",
+            "event",
+            "claim",
+            "enquiry",
+            "access",
+            "stuck"
+          ]
+        },
+        "sourceKind": {
+          "type": "string",
+          "enum": [
+            "supplyIntakeRequest",
+            "organizerClaimRequest",
+            "salesInboundIntent",
+            "accessApplication",
+            "externalEvent"
+          ]
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "sourcePath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "subtitle": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 300
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cameFrom": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "nominatorUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "label",
+            "tone"
+          ],
+          "properties": {
+            "code": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "tone": {
+              "type": "string",
+              "enum": [
+                "neutral",
+                "info",
+                "success",
+                "warning",
+                "danger"
+              ]
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "working",
+            "waiting",
+            "snoozed",
+            "done"
+          ]
+        },
+        "waitingSince": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "doneAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "assigneeUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "snoozedUntil": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "recommendation": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "decision",
+                "byUid",
+                "at",
+                "note"
+              ],
+              "properties": {
+                "decision": {
+                  "type": "string",
+                  "enum": [
+                    "approve",
+                    "reject"
+                  ]
+                },
+                "byUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "note": {
+                  "type": "string",
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "journey": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stepId",
+          "occurredAt",
+          "title",
+          "detail",
+          "actorUid",
+          "tone"
+        ],
+        "properties": {
+          "stepId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actorUid": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tone": {
+            "type": "string",
+            "enum": [
+              "ink",
+              "success",
+              "warning",
+              "danger",
+              "muted"
+            ]
+          }
+        }
+      }
+    },
+    "canWork": {
+      "type": "boolean"
+    },
+    "canDecideClaim": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const adminUpdateInboxItemCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_update_inbox_item_payload.schema.json",
+  "title": "AdminUpdateInboxItemCallablePayload",
+  "description": "Assign, unassign, snooze or wake one Admin inbox item; audited and recorded in its journey.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "itemId",
+    "action",
+    "assigneeUid",
+    "snoozedUntil",
+    "note"
+  ],
+  "properties": {
+    "itemId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 220,
+      "pattern": "^[a-z]+-[A-Za-z0-9._:-]+$"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "assign",
+        "unassign",
+        "snooze",
+        "wake"
+      ]
+    },
+    "assigneeUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "snoozedUntil": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "note": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminUpdateInboxItem"
+  ]
+};
+
+export const adminUpdateInboxItemCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_update_inbox_item_response.schema.json",
+  "title": "AdminUpdateInboxItemCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "item"
+  ],
+  "properties": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId",
+        "type",
+        "sourceKind",
+        "sourceId",
+        "sourcePath",
+        "title",
+        "subtitle",
+        "cameFrom",
+        "nominatorUid",
+        "city",
+        "state",
+        "status",
+        "waitingSince",
+        "doneAt",
+        "assigneeUid",
+        "snoozedUntil",
+        "recommendation"
+      ],
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 220,
+          "pattern": "^[a-z]+-[A-Za-z0-9._:-]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "listing",
+            "event",
+            "claim",
+            "enquiry",
+            "access",
+            "stuck"
+          ]
+        },
+        "sourceKind": {
+          "type": "string",
+          "enum": [
+            "supplyIntakeRequest",
+            "organizerClaimRequest",
+            "salesInboundIntent",
+            "accessApplication",
+            "externalEvent"
+          ]
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "sourcePath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "subtitle": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 300
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cameFrom": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "nominatorUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "label",
+            "tone"
+          ],
+          "properties": {
+            "code": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "tone": {
+              "type": "string",
+              "enum": [
+                "neutral",
+                "info",
+                "success",
+                "warning",
+                "danger"
+              ]
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "working",
+            "waiting",
+            "snoozed",
+            "done"
+          ]
+        },
+        "waitingSince": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "doneAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "assigneeUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "snoozedUntil": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "recommendation": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "decision",
+                "byUid",
+                "at",
+                "note"
+              ],
+              "properties": {
+                "decision": {
+                  "type": "string",
+                  "enum": [
+                    "approve",
+                    "reject"
+                  ]
+                },
+                "byUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "note": {
+                  "type": "string",
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+
+export const adminRebuildInboxCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_rebuild_inbox_payload.schema.json",
+  "title": "AdminRebuildInboxCallablePayload",
+  "description": "Owner-only: re-project one page of an inbox source collection, or of users into the people index.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source",
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "source": {
+      "type": "string",
+      "enum": [
+        "supplyIntakeRequest",
+        "organizerClaimRequest",
+        "salesInboundIntent",
+        "accessApplication",
+        "externalEvent",
+        "people"
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminRebuildInbox"
+  ]
+};
+
+export const adminRebuildInboxCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_rebuild_inbox_response.schema.json",
+  "title": "AdminRebuildInboxCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source",
+    "scanned",
+    "written",
+    "nextCursor"
+  ],
+  "properties": {
+    "source": {
+      "type": "string",
+      "enum": [
+        "supplyIntakeRequest",
+        "organizerClaimRequest",
+        "salesInboundIntent",
+        "accessApplication",
+        "externalEvent",
+        "people"
+      ]
+    },
+    "scanned": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "written": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const adminRecommendOrganizerClaimCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_recommend_organizer_claim_payload.schema.json",
+  "title": "AdminRecommendOrganizerClaimCallablePayload",
+  "description": "Ops recommend approving or rejecting a pending organizer claim; the owner decides it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "decision",
+    "note"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "reject"
+      ]
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "x-callable-aliases": [
+    "adminRecommendOrganizerClaim"
+  ]
+};
+
+export const adminRecommendOrganizerClaimCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_recommend_organizer_claim_response.schema.json",
+  "title": "AdminRecommendOrganizerClaimCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "status",
+    "recommendation"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "status": {
+      "const": "pending"
+    },
+    "recommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision",
+        "byUid",
+        "at",
+        "note"
+      ],
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "reject"
+          ]
+        },
+        "byUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      }
+    }
+  }
+};
+
+export const adminSearchPeopleCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_search_people_payload.schema.json",
+  "title": "AdminSearchPeopleCallablePayload",
+  "description": "Search people by name, phone or user id; every search is written to the admin audit log.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "query",
+    "limit"
+  ],
+  "properties": {
+    "query": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 25
+    }
+  },
+  "x-callable-aliases": [
+    "adminSearchPeople"
+  ]
+};
+
+export const adminSearchPeopleCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_search_people_response.schema.json",
+  "title": "AdminSearchPeopleCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "rows"
+  ],
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "uid",
+        "phone",
+        "name"
+      ]
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "name",
+          "phone",
+          "city",
+          "deleted"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminListActivityLogCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_activity_log_payload.schema.json",
+  "title": "AdminListActivityLogCallablePayload",
+  "description": "One page of the Admin activity log, newest first: people's decisions and agent receipts, filterable to problems.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "filter",
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "filter": {
+      "type": "string",
+      "enum": [
+        "all",
+        "problems",
+        "decisions",
+        "agents"
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminListActivityLog"
+  ]
+};
+
+export const adminListActivityLogCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_activity_log_response.schema.json",
+  "title": "AdminListActivityLogCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "filter",
+    "entries",
+    "nextCursor"
+  ],
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "filter": {
+      "type": "string",
+      "enum": [
+        "all",
+        "problems",
+        "decisions",
+        "agents"
+      ]
+    },
+    "entries": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entryId",
+          "kind",
+          "at",
+          "actorUid",
+          "actorRoles",
+          "action",
+          "target",
+          "outcome",
+          "detail",
+          "problem"
+        ],
+        "properties": {
+          "entryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 220
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "decision",
+              "agent"
+            ]
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actorUid": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actorRoles": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40
+            }
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "target": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "done",
+              "started",
+              "failed",
+              "indeterminate"
+            ]
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "problem": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
 };
 
 export const adminListOrganizerListingReviewsCallablePayloadSchema = {
@@ -342729,8 +344370,6 @@ export const adminSetAdminUserRolesCallablePayloadSchema = {
           "adminOwner",
           "safetyReviewer",
           "support",
-          "finance",
-          "analyticsViewer",
           "salesStaff"
         ]
       }
@@ -342749,8 +344388,6 @@ export const adminSetAdminUserRolesCallablePayloadSchema = {
         "adminOwner",
         "safetyReviewer",
         "support",
-        "finance",
-        "analyticsViewer",
         "salesStaff"
       ]
     }
@@ -342818,8 +344455,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
               "adminOwner",
               "safetyReviewer",
               "support",
-              "finance",
-              "analyticsViewer",
               "salesStaff"
             ]
           }
@@ -342840,8 +344475,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "adminOwner",
           "safetyReviewer",
           "support",
-          "finance",
-          "analyticsViewer",
           "salesStaff"
         ]
       }
@@ -342856,8 +344489,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "adminOwner",
           "safetyReviewer",
           "support",
-          "finance",
-          "analyticsViewer",
           "salesStaff"
         ]
       }
@@ -342871,8 +344502,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
         "adminOwner",
         "safetyReviewer",
         "support",
-        "finance",
-        "analyticsViewer",
         "salesStaff"
       ]
     },
@@ -342886,8 +344515,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "adminOwner",
           "safetyReviewer",
           "support",
-          "finance",
-          "analyticsViewer",
           "salesStaff"
         ]
       }
@@ -342951,8 +344578,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
               "adminOwner",
               "safetyReviewer",
               "support",
-              "finance",
-              "analyticsViewer",
               "salesStaff"
             ]
           }

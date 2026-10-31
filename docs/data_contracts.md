@@ -4433,7 +4433,7 @@ host locks:
 
 | Collection / field | Owner | Notes |
 |---|---|---|
-| `organizerClaimRequests/{requestId}` | `requestOrganizerClaim`, `adminDecideOrganizerClaim` | Server-owned claim queue. Clients create and decide only through callables; direct Firestore reads/writes are denied. |
+| `organizerClaimRequests/{requestId}` | `requestOrganizerClaim`, `adminRecommendOrganizerClaim`, `adminDecideOrganizerClaim` | Server-owned claim queue. Clients create and decide only through callables; direct Firestore reads/writes are denied. Ops record an optional `recommendation` on a pending request; only the owner (`admin`, `adminOwner`) decides it. |
 | `organizers/{organizerId}.claim` | organizer claim callables and admin index-review callables | Public-page claim state, latest request id, review audit, and owner-facing status. |
 | `organizers/{organizerId}.ownership` | organizer claim/create/update callables | `programmatic` before ownership, `claimed` after approval. |
 | `organizers/{organizerId}.publicPage.indexReview` | admin organizer indexing | Audit evidence for source quality, media rights, cadence, and owner/contact verification before a page becomes indexable. |

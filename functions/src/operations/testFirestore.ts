@@ -4,7 +4,11 @@ import {isDeepStrictEqual} from "node:util";
 type FakeData = Record<string, unknown>;
 
 class FakeSnapshot {
-  constructor(readonly id: string, private readonly value?: FakeData) {}
+  constructor(
+    readonly id: string,
+    private readonly value?: FakeData,
+    readonly ref?: FakeDocReference
+  ) {}
 
   get exists(): boolean {
     return this.value !== undefined;
@@ -27,7 +31,15 @@ class FakeDocReference {
   }
 
   async get(): Promise<FakeSnapshot> {
-    return new FakeSnapshot(this.id, this.firestore.read(this.path));
+    return new FakeSnapshot(this.id, this.firestore.read(this.path), this);
+  }
+
+  async set(value: FakeData): Promise<void> {
+    this.firestore.write(this.path, value);
+  }
+
+  async delete(): Promise<void> {
+    this.firestore.remove(this.path);
   }
 }
 
@@ -117,8 +129,10 @@ class FakeQuery {
     };
     const docs = this.firestore.entries()
       .filter(([path]) => path.startsWith(prefix))
-      .map(([path, value]) =>
-        new FakeSnapshot(path.slice(prefix.length), value))
+      .filter(([path]) => !path.slice(prefix.length).includes("/"))
+      .map(([path, value]) => new FakeSnapshot(path.slice(prefix.length),
+        value, new FakeDocReference(this.firestore, this.collectionPath,
+          path.slice(prefix.length))))
       .filter((snapshot) => orders.every(([field]) =>
         read(snapshot, field) !== undefined))
       .filter((snapshot) => !this.cursor ||
@@ -131,6 +145,8 @@ class FakeQuery {
         case "array-contains": return Array.isArray(stored) &&
           stored.some((item) => isDeepStrictEqual(item, value));
         case "==": return isDeepStrictEqual(stored, value);
+        case "in": return Array.isArray(value) &&
+          value.some((item) => isDeepStrictEqual(stored, item));
         case ">=": return (compare(stored, value) ?? -1) >= 0;
         case "<=": return (compare(stored, value) ?? 1) <= 0;
         case ">": return (compare(stored, value) ?? -1) > 0;
@@ -146,8 +162,18 @@ class FakeQuery {
     const page = this.projection === null ? limited :
       limited.map((snapshot) =>
         new FakeSnapshot(snapshot.id, project(snapshot.data() ?? {},
-          this.projection ?? [])));
+          this.projection ?? []), snapshot.ref));
     return {docs: page, size: page.length, empty: page.length === 0};
+  }
+
+  /** Like Firestore count(): the matching documents, ignoring any limit. */
+  count(): {get: () => Promise<{data: () => {count: number}}>} {
+    const unlimited = new FakeQuery(this.firestore, this.collectionPath,
+      this.filters, this.cursor, null, this.orders, this.projection);
+    return {get: async () => {
+      const {size} = await unlimited.get();
+      return {data: () => ({count: size})};
+    }};
   }
 }
 
@@ -198,6 +224,12 @@ class FakeCollection extends FakeQuery {
       this.collectionPath,
       id ?? this.firestore.autoId()
     );
+  }
+
+  async add(value: FakeData): Promise<FakeDocReference> {
+    const reference = this.doc();
+    await reference.set(value);
+    return reference;
   }
 }
 
