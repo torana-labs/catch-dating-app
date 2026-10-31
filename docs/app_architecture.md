@@ -194,13 +194,15 @@ to end: Dart types, providers, files, folders, route names and localization
 keys (`Organizer`, `OrganizersRepository`, `lib/organizers/`,
 `Routes.hostOrganizersScreen`), and on the wire the contracts, Firestore fields
 and collections, rules, indexes, callables, Functions and web code
-(`organizerId`, `organizerMemberships`, `OrganizerCover`). A record carries one
-organizer id; there is no club alias beside it. Club stays only as the `club`
-subtype (`OrganizerType.club`, run clubs), in copy and URLs about real clubs
-(`/host/clubs/`), in the BigQuery warehouse columns (`club_id`, which need a
-table migration), and in the clubs-to-organizers migration record.
-`contracts:organizer-nomenclature` fails on any other club name in Dart,
-contracts, TypeScript or file names. Two committed codemods made the rename and
+(`organizerId`, `organizerMemberships`, `OrganizerCover`), and the BigQuery
+warehouse (`organizer_id`, `organizers_raw_latest`, `bq-host-organizers`). A
+record carries one organizer id; there is no club alias beside it. Club stays
+only as the `club` subtype (`OrganizerType.club`, run clubs), in copy and URLs
+about real clubs (`/host/clubs/`), and in the clubs-to-organizers migration
+record. `contracts:organizer-nomenclature` fails on any other club name in
+Dart, contracts, TypeScript, file names or the warehouse; the one warehouse
+exception is the deploy scripts' `RENAME COLUMN club_id TO organizer_id`
+migration. Two committed codemods made the rename and
 prove their commits with `--verify`: `tool/architecture/rename_to_organizer.mjs`
 for Dart names and `tool/architecture/rename_wire_to_organizer.mjs` for the
 wire, which collapses a club field into its organizer twin.
@@ -677,8 +679,8 @@ Hard rules:
   repository/data boundaries or feature-neutral adapter seams that keep those
   SDKs out of domain models and validators.
 - Domain serialization that still needs Firestore `Timestamp` handling routes
-  through `core/firestore_converters`. Existing direct Firebase imports in
-  domain are ratcheted debt in
+  through `lib/platform/firebase/firestore_converters.dart`. Existing direct
+  Firebase imports in domain are ratcheted debt in
   `tool/architecture/dependency_direction_baseline.json`; new domain code must
   not add them. The long-term target is no Firebase API calls or Firebase types
   in domain signatures. Full DTO purity is not the target by default.
@@ -2174,8 +2176,8 @@ verification step, not something widget tests prove.
 
 ### Durable Local Commands
 
-`core/persistence/local_command_journal.dart` owns the offline command policy for
-both event attendance and private-program operations. Feature adapters own typed
+`lib/platform/persistence/local_command_journal.dart` owns the offline command
+policy for both event attendance and private-program operations. Feature adapters own typed
 payload validation, resource keys and callable execution; neither domain owns a
 second persistence or retry algorithm. Account-scoped journals retain immutable
 operation IDs, payload hashes, expected revisions and dependencies. Append,

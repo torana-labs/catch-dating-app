@@ -30,7 +30,7 @@
         {"type": "null"}
       ]
     },
-    "club_id": {
+    "organizer_id": {
       "anyOf": [
         {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         {"type": "null"}

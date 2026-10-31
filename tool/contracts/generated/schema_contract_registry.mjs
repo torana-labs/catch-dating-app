@@ -252472,7 +252472,7 @@ export const hostAnalyticsEventSchema = {
     "occurred_at",
     "event_date",
     "event_name",
-    "club_id",
+    "organizer_id",
     "page_path",
     "ingested_at"
   ],
@@ -252504,7 +252504,7 @@ export const hostAnalyticsEventSchema = {
         "linkClick"
       ]
     },
-    "club_id": {
+    "organizer_id": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -252643,7 +252643,7 @@ export const userProfileExposureEventSchema = {
         }
       ]
     },
-    "club_id": {
+    "organizer_id": {
       "anyOf": [
         {
           "type": "string",
