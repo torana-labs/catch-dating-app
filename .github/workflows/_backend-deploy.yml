@@ -94,13 +94,14 @@ jobs:
             echo "mode=no-op" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          if [[ -n "${FUNCTIONS// /}" ]]; then
+          functions="${FUNCTIONS:-}"
+          if [[ -n "${functions// /}" ]]; then
             if [[ "$FULL" == "true" ]]; then
               echo "::error::Choose a full deploy or named Functions, not both."
               exit 1
             fi
             targets=""
-            for name in $(tr ',' ' ' <<< "$FUNCTIONS"); do
+            for name in $(tr ',' ' ' <<< "$functions"); do
               if [[ ! "$name" =~ ^[A-Za-z][A-Za-z0-9_-]*$ ]]; then
                 echo "::error::'$name' is not a Function name."
                 exit 1
@@ -186,13 +187,14 @@ jobs:
             echo "mode=no-op" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          if [[ -n "${FUNCTIONS// /}" ]]; then
+          functions="${FUNCTIONS:-}"
+          if [[ -n "${functions// /}" ]]; then
             if [[ "$FULL" == "true" ]]; then
               echo "::error::Choose a full deploy or named Functions, not both."
               exit 1
             fi
             targets=""
-            for name in $(tr ',' ' ' <<< "$FUNCTIONS"); do
+            for name in $(tr ',' ' ' <<< "$functions"); do
               if [[ ! "$name" =~ ^[A-Za-z][A-Za-z0-9_-]*$ ]]; then
                 echo "::error::'$name' is not a Function name."
                 exit 1
