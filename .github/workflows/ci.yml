@@ -101,6 +101,7 @@ jobs:
             /.github/actions/load-toolchain/action.yml
             /tool/design/build_host_feature_responsibilities.mjs
             /design/features/host_feature_responsibilities.json
+          persist-credentials: false
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -197,9 +198,11 @@ jobs:
           rm build/ci/impact-plan.unbound.json
           node tool/harness/compare_selectors.mjs --verify-plan build/ci/impact-plan.json \
             --comparison build/ci/selector-comparison.json --github-output "$GITHUB_OUTPUT"
-          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
-          echo "source_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
-          echo "producer_attempt=$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
+          {
+            echo "base_sha=$base_sha"
+            echo "source_sha=$HEAD_SHA"
+            echo "producer_attempt=$GITHUB_RUN_ATTEMPT"
+          } >> "$GITHUB_OUTPUT"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {toolsOwnUiLintSmoke, toolsOwnDesignChecks} from './tool/lib/tool_impact.mjs';
@@ -306,6 +309,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
+          persist-credentials: false
       - id: toolchain
         uses: ./.github/actions/load-toolchain
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -359,19 +363,16 @@ jobs:
       commit_window: ${{ needs.plan.outputs.commit_window == 'true' }}
       marketing_checks_in_react: ${{ needs.plan.outputs.marketing == 'true' }}
       capture_binding: ${{ needs.capture-freshness.outputs.capture_binding }}
-    secrets: inherit
 
   contracts:
     needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.contracts == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/contracts-ci.yml
-    secrets: inherit
 
   functions:
     needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.functions == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/functions-ci.yml
-    secrets: inherit
 
   firestore-rules:
     needs: [plan, source-preflight]
@@ -392,7 +393,6 @@ jobs:
       ci_plan_source_sha: ${{ needs.plan.outputs.source_sha }}
       base_sha: ${{ needs.plan.outputs.base_sha }}
       mode: ${{ needs.plan.outputs.mode }}
-    secrets: inherit
 
   flutter:
     needs: [plan, source-preflight]
@@ -405,13 +405,11 @@ jobs:
       ui_lint_smoke_in_tools: ${{ needs.plan.outputs.tools_owns_ui_lint_smoke == 'true' }}
       design_parity_in_tools: ${{ needs.plan.outputs.tools_owns_design_parity == 'true' }}
       design_handoff_in_tools: ${{ needs.plan.outputs.tools_owns_design_handoff == 'true' }}
-    secrets: inherit
 
   visual-integration:
     needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.visual_integration == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/visual-integration-ci.yml
-    secrets: inherit
 
   admin:
     needs: [plan, source-preflight]
@@ -419,7 +417,6 @@ jobs:
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: admin
-    secrets: inherit
 
   marketing:
     needs: [plan, source-preflight, capture-freshness]
@@ -428,7 +425,6 @@ jobs:
     with:
       surface: marketing
       capture_binding: ${{ needs.capture-freshness.outputs.capture_binding }}
-    secrets: inherit
 
   capture-freshness:
     needs: [plan, source-preflight]
@@ -441,7 +437,6 @@ jobs:
     needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.operations == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/operations-ci.yml
-    secrets: inherit
 
   docs-policy:
     needs: [plan, source-preflight]
@@ -498,6 +493,7 @@ jobs:
         timeout-minutes: 10
         with:
           fetch-depth: ${{ steps.docs-checkout.outputs.fetch_depth }}
+          persist-credentials: false
 
       - name: Apply ordinary-doc working-tree closure
         if: ${{ steps.docs-checkout.outcome == 'success' }}
@@ -521,6 +517,7 @@ jobs:
         timeout-minutes: 10
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Load Harness toolchain
         if: ${{ needs.plan.outputs.policy_docs == 'true' && needs.plan.outputs.tools != 'true' }}
         id: policy-toolchain
@@ -562,7 +559,9 @@ jobs:
       build_ios: ${{ needs.plan.outputs.flutter_build_ios == 'true' }}
       build_web: ${{ needs.plan.outputs.flutter_build_web == 'true' }}
       web_smoke: ${{ needs.plan.outputs.flutter_web_smoke == 'true' }}
-    secrets: inherit
+    secrets:
+      GOOGLE_MAPS_ANDROID_API_KEY_DEV: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY_DEV }}
+      GOOGLE_MAPS_IOS_API_KEY_DEV: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY_DEV }}
 
   workflow-lint:
     name: Lint workflows
@@ -595,9 +594,9 @@ jobs:
           tar -xzf "$bin/actionlint.tgz" -C "$bin" actionlint
           tar -xzf "$bin/zizmor.tgz" -C "$bin"
           echo "$bin" >> "$GITHUB_PATH"
-      # Shell and Python inside run steps are not linted yet.
-      - run: actionlint -shellcheck= -pyflakes=
-      - run: zizmor --offline --config .github/zizmor.yml --min-severity high .github
+      # shellcheck comes preinstalled on the runner; Python steps are not linted.
+      - run: actionlint -pyflakes=
+      - run: zizmor --offline --config .github/zizmor.yml --min-severity medium .github
 
   required:
     name: Required CI

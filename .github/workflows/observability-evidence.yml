@@ -29,6 +29,9 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   record:
     name: Record observability evidence

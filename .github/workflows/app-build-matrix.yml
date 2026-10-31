@@ -24,6 +24,12 @@ on:
         required: false
         type: boolean
         default: false
+    # The only secrets these builds read; callers pass them by name.
+    secrets:
+      GOOGLE_MAPS_ANDROID_API_KEY_DEV:
+        required: false
+      GOOGLE_MAPS_IOS_API_KEY_DEV:
+        required: false
   workflow_dispatch:
     inputs:
       app_roles:
@@ -48,6 +54,9 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: read
+
 jobs:
   app-targets:
     name: App target contract
@@ -56,6 +65,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -96,6 +107,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -135,6 +148,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -206,6 +221,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
