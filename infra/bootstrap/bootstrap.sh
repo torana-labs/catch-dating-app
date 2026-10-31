@@ -69,15 +69,18 @@ PLAN_ROLE=catchPlatformPlanReader
 APPLY_ROLE=catchPlatformApplier
 # Read the Firebase Android apps Terraform imports (get, list), their App
 # Check Play Integrity configs, and Firestore database settings and backup
-# schedules. No Firestore documents (no datastore.entities.*), Storage data,
-# Auth users, secrets or IAM.
-PLAN_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.projects.get,firebaseappcheck.playIntegrityConfig.get,datastore.databases.get,datastore.databases.getMetadata,datastore.backupSchedules.get,datastore.backupSchedules.list
+# schedules, and alert policies, uptime checks and notification channels.
+# No Firestore documents (no datastore.entities.*), Storage data, Auth users,
+# secrets or IAM.
+PLAN_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.projects.get,firebaseappcheck.playIntegrityConfig.get,datastore.databases.get,datastore.databases.getMetadata,datastore.backupSchedules.get,datastore.backupSchedules.list,monitoring.alertPolicies.get,monitoring.alertPolicies.list,monitoring.uptimeCheckConfigs.get,monitoring.uptimeCheckConfigs.list,monitoring.notificationChannels.get,monitoring.notificationChannels.list
 # The same reads plus updating an existing app's fingerprints and its Play
 # Integrity config, updating a Firestore database's settings, and creating
 # or updating its backup schedules. Deliberately no firebase.clients.create/
 # delete, no firebaseappcheck.services.update (App Check enforcement), no
 # datastore.databases.create/delete and no datastore.backupSchedules.delete.
-APPLY_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.clients.update,firebase.projects.get,firebaseappcheck.playIntegrityConfig.get,firebaseappcheck.playIntegrityConfig.update,datastore.databases.get,datastore.databases.getMetadata,datastore.databases.update,datastore.backupSchedules.get,datastore.backupSchedules.list,datastore.backupSchedules.create,datastore.backupSchedules.update
+# Alert policies and uptime checks may be created and updated, never deleted;
+# notification channels are only read.
+APPLY_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.clients.update,firebase.projects.get,firebaseappcheck.playIntegrityConfig.get,firebaseappcheck.playIntegrityConfig.update,datastore.databases.get,datastore.databases.getMetadata,datastore.databases.update,datastore.backupSchedules.get,datastore.backupSchedules.list,datastore.backupSchedules.create,datastore.backupSchedules.update,monitoring.alertPolicies.get,monitoring.alertPolicies.list,monitoring.alertPolicies.create,monitoring.alertPolicies.update,monitoring.uptimeCheckConfigs.get,monitoring.uptimeCheckConfigs.list,monitoring.uptimeCheckConfigs.create,monitoring.uptimeCheckConfigs.update,monitoring.notificationChannels.get,monitoring.notificationChannels.list
 
 # Forms payment secrets. Secret IAM conditions see secret names with the
 # project number. Custom roles live here, not in Terraform: an identity that
