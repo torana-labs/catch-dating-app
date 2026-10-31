@@ -5,10 +5,10 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schema_contracts;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
+
+import '../support/contract_schemas.dart';
 
 void main() {
   group('UpdateOrganizerPatch schema parity', () {
@@ -33,8 +33,7 @@ void main() {
         publicListingEnabled: true,
       );
 
-      final schema = schema_contracts
-          .schemaContractsByName['UpdateOrganizerCallablePayload']!;
+      final schema = contractSchema('UpdateOrganizerCallablePayload');
       final fieldsSchema =
           (schema['properties'] as Map<String, Object?>)['fields']
               as Map<String, Object?>;
@@ -81,8 +80,7 @@ void main() {
         hostDefaults: const OrganizerHostDefaults(),
       );
       final schema = JsonSchema.create(
-        schema_contracts
-            .schemaContractsByName['UpdateOrganizerCallablePayload']!,
+        contractSchema('UpdateOrganizerCallablePayload'),
       );
       expect(
         schema.validate(patch.toCallableJson(organizerId: 'club-1')).isValid,
@@ -93,8 +91,7 @@ void main() {
     test('raw() escape hatch produces a schema-valid patch', () {
       final patch = UpdateOrganizerPatch.raw({'name': 'New Name'});
       final schema = JsonSchema.create(
-        schema_contracts
-            .schemaContractsByName['UpdateOrganizerCallablePayload']!,
+        contractSchema('UpdateOrganizerCallablePayload'),
       );
       expect(
         schema.validate(patch.toCallableJson(organizerId: 'club-1')).isValid,

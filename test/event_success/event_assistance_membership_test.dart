@@ -3,11 +3,10 @@ import 'dart:convert';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_assistance_membership_fixtures.dart';
 
 void main() {
@@ -16,18 +15,19 @@ void main() {
   Map<String, Object?> body(Map<String, Object?> wire) =>
       wire['view']! as Map<String, Object?>;
   final responseSchema = JsonSchema.create(
-    schemas.schemaContractsByName['EventAssistanceMembershipCallableResponse']!,
+    contractSchema('EventAssistanceMembershipCallableResponse'),
   );
   final commandSchema = JsonSchema.create(
-    schemas
-        .schemaContractsByName['TransferEventAssistanceGroupCallablePayload']!,
+    contractSchema('TransferEventAssistanceGroupCallablePayload'),
   );
 
   test(
     'the canonical actions and transfer states require complete native coverage',
     () {
       final properties =
-          schemas.schemaContractsByName['EventAssistanceMembershipCallableResponse']!['properties']!
+          contractSchema(
+                'EventAssistanceMembershipCallableResponse',
+              )['properties']!
               as Map;
       final view = (properties['view']! as Map)['properties']! as Map;
       final actionValues =
@@ -46,7 +46,9 @@ void main() {
         AssistanceMembershipOutcome.values.map((o) => o.name).toSet(),
       );
       final command =
-          schemas.schemaContractsByName['TransferEventAssistanceGroupCallablePayload']!['properties']!
+          contractSchema(
+                'TransferEventAssistanceGroupCallablePayload',
+              )['properties']!
               as Map;
       final commandProperties =
           (command['command']! as Map)['properties']! as Map;

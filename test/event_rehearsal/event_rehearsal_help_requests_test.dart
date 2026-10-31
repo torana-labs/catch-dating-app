@@ -3,11 +3,10 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_chan
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_help_requests.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_rehearsal_assistance_fixtures.dart';
 
 void main() {
@@ -46,7 +45,7 @@ void main() {
       final request =
           snapshot.helpRequests!.cases.single as RehearsalOpenHelpCase;
       final validator = JsonSchema.create(
-        schemas.schemaContractsByName['ControlEventRehearsalCallablePayload']!,
+        contractSchema('ControlEventRehearsalCallablePayload'),
       );
       for (final decision in [
         const AssistanceCaseDecision.resolve(),

@@ -9,11 +9,10 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_help_requests.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_rehearsal_accountability_fixtures.dart';
 import 'event_rehearsal_assistance_fixtures.dart';
 import 'event_rehearsal_delivery_fixtures.dart';
@@ -31,8 +30,7 @@ void main() {
   final definitions = shared['definitions'] as Map;
   final deliveryVariants =
       (definitions['automationDelivery'] as Map)['oneOf'] as List;
-  final policySchema =
-      schemas.schemaContractsByName['EventAssistanceLateJoinDecision']!;
+  final policySchema = contractSchema('EventAssistanceLateJoinDecision');
 
   test('every schema outcome and command kind is represented natively', () {
     for (final variant in (definitions['outcome'] as Map)['oneOf'] as List) {
@@ -94,8 +92,7 @@ void main() {
       ),
     ];
     // Generated schemas resolve shared references in the canonical command union.
-    final payload =
-        schemas.schemaContractsByName['ControlEventRehearsalCallablePayload']!;
+    final payload = contractSchema('ControlEventRehearsalCallablePayload');
     final commandSchema = ((payload['properties'] as Map)['assistance'] as Map);
     final sourceKinds = (commandSchema['oneOf'] as List).map(
       (variant) =>

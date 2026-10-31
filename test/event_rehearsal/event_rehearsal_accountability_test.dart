@@ -2,11 +2,10 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountab
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_accountability.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_rehearsal_accountability_fixtures.dart';
 import 'event_rehearsal_assistance_fixtures.dart';
 
@@ -17,7 +16,7 @@ void main() {
   test('canonical reviews use backend clock and episode identities', () {
     final wire = practiceVisitBootstrap();
     final validator = JsonSchema.create(
-      schemas.schemaContractsByName['EventRehearsalBootstrapCallableResponse']!,
+      contractSchema('EventRehearsalBootstrapCallableResponse'),
     );
     expect(validator.validate(wire).isValid, isTrue);
     final reviews = read(wire).accountabilityReviews!;
@@ -158,8 +157,7 @@ void main() {
       () {
         final change = practiceVisitChange(disposition: disposition);
         final validator = JsonSchema.create(
-          schemas
-              .schemaContractsByName['ControlEventRehearsalCallablePayload']!,
+          contractSchema('ControlEventRehearsalCallablePayload'),
         );
         expect(validator.validate(change.toJson()).isValid, isTrue);
         expect(change.command.toJson(), {

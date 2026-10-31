@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/contexts/live/domain/event_sms_preference.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/event_assistance_sms_preference_callable_response.g.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/set_event_assistance_sms_preference_callable_payload.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_sms_preference_fixtures.dart';
 
 void main() {
@@ -55,7 +54,7 @@ void main() {
         decision: EventSmsPreferenceDecision.revoke,
       );
       final schema = JsonSchema.create(
-        schemaSetEventAssistanceSmsPreferenceCallablePayloadSchema,
+        contractSchema('SetEventAssistanceSmsPreferenceCallablePayload'),
       );
       for (final change in [first, second]) {
         final wire = change.toJson();
@@ -79,7 +78,7 @@ void main() {
     'server states remain typed with withdrawal independent of readiness',
     () {
       final schema = JsonSchema.create(
-        schemaEventAssistanceSmsPreferenceCallableResponseSchema,
+        contractSchema('EventAssistanceSmsPreferenceCallableResponse'),
       );
       for (final availability in EventSmsAvailability.values) {
         for (final preference in EventSmsPreference.values) {

@@ -2,19 +2,18 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting_result.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_template.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/event_assistance_setting_callable_response.g.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/set_event_assistance_setting_callable_payload.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_assistance_late_join_setting_fixtures.dart';
 
 void main() {
   final responseSchema = JsonSchema.create(
-    schemaEventAssistanceSettingCallableResponseSchema,
+    contractSchema('EventAssistanceSettingCallableResponse'),
   );
   final commandSchema = JsonSchema.create(
-    schemaSetEventAssistanceSettingCallablePayloadSchema,
+    contractSchema('SetEventAssistanceSettingCallablePayload'),
   );
   LateJoinSettingView read(
     Map<String, Object?> value, {

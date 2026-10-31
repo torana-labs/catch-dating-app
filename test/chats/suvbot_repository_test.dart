@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schema_contracts;
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
+
+import '../support/contract_schemas.dart';
 
 class TestFirebaseFunctions extends Fake implements FirebaseFunctions {
   final callables = <String, TestHttpsCallable>{};
@@ -116,9 +116,9 @@ void main() {
 }
 
 void _expectValid(String schemaName, Object? payload) {
-  final schema = schema_contracts.schemaContractsByName[schemaName];
-  expect(schema, isNotNull, reason: 'Missing generated schema $schemaName');
-  final result = JsonSchema.create(schema!).validate(payload);
+  final result = JsonSchema.create(
+    contractSchema(schemaName),
+  ).validate(payload);
   expect(
     result.isValid,
     isTrue,
