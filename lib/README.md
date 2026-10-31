@@ -30,7 +30,7 @@ Contract in `docs/app_architecture.md` before adding a folder or moving code.
 
 Current ownership clarifications:
 
-- Cross-cutting analytics code lives in `core/analytics`, not a top-level
+- Cross-cutting analytics code lives in `platform/analytics`, not a top-level
   feature folder.
 - Explore-owned search lives in `contexts/discovery/data`.
 - The calendar agenda route lives in `events/presentation/calendar`.
@@ -39,7 +39,7 @@ Current ownership clarifications:
   `matches/presentation` keeps match-specific screens.
 - Event display helpers and platform seams that are not widgets live in
   `contexts/events/domain` or `contexts/events/data`; shared event/activity visual primitives
-  used by core widgets live in `core/widgets`.
+  live in `contexts/events/parts`.
 
 Generated `*.g.dart`, `*.freezed.dart`, and Riverpod outputs live next to their
 source files and should not be hand-edited.

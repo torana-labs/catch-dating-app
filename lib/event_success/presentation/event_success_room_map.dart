@@ -1,3 +1,4 @@
+// size-exemption: pre-existing; split before it grows further.
 import 'dart:async';
 import 'dart:math' as math;
 

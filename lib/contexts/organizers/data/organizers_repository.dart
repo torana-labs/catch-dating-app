@@ -468,6 +468,13 @@ AsyncValue<List<Organizer>> hostOperableOrganizers(Ref ref, String uid) {
   );
 }
 
+/// The listeners [hostOperableOrganizersProvider] composes. A retry
+/// invalidates these; invalidating the composition re-reads the same failure.
+List<ProviderOrFamily> hostOperableOrganizerReads(String uid) => [
+  watchOrganizersHostedByProvider(uid),
+  watchOrganizersOwnedByProvider(uid),
+];
+
 List<Organizer> mergeHostOperableOrganizers({
   required Iterable<Organizer> hosted,
   required Iterable<Organizer> owned,

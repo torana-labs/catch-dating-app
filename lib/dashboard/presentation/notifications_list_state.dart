@@ -183,7 +183,7 @@ String? notificationRoute(ActivityNotification notification) {
       invitationId,
     );
   }
-  final organizerId = notification.organizerId ?? notification.organizerId;
+  final organizerId = notification.organizerId;
   if (notification.eventId case final eventId? when organizerId != null) {
     return Routes.eventDetailScreen.path
         .replaceFirst(':organizerId', organizerId)

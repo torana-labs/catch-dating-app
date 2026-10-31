@@ -7041,22 +7041,13 @@ async function main() {
       commonSchema: readContractJson("shared/profile_common.schema.json"),
     })
   );
-  const dartSchemaContracts = renderDartSchemaContracts({
-    schemaMap: bundledSchemas,
-  });
-  addTextOutput(
-    "lib/platform/schema_contracts/generated/schema_contracts.g.dart",
-    dartSchemaContracts.text
-  );
-  for (const file of dartSchemaContracts.files) {
-    addTextOutput(file.path, file.content);
-  }
 
   addTextOutput(
     "lib/platform/schema_contracts/generated/field_constraints.g.dart",
     renderDartFieldConstraints({
       schemaSpecs,
       schemaMap: bundledSchemas,
+      bindings: readContractJson("forms/field_constraint_bindings.json"),
     })
   );
 
@@ -7074,7 +7065,7 @@ async function main() {
   }
   addTextOutput(
     "lib/platform/schema_contracts/generated/INDEX.md",
-    renderGeneratedIndex({dartSchemaContracts, dartCallableRequests})
+    renderGeneratedIndex({dartCallableRequests})
   );
   if (!checkOnly && dartCallableRequests.ungenerable.length > 0) {
     console.log(
@@ -8961,107 +8952,12 @@ const schemaUpdateUserProfileCallablePayloadSchema =
 `;
 }
 
+// Retired output: Dart tests read contracts/ directly. Check mode still
+// reports leftovers here and publishing removes the directory.
 const DART_SCHEMA_OUTPUT_DIR = "lib/platform/schema_contracts/generated/schemas";
 
-function renderDartSchemaContracts({schemaMap}) {
-  const files = [];
-  const generatedConstants = [];
-  const schemaExports = [];
-
-  for (const spec of schemaSpecs) {
-    const constName = dartSchemaConstName(spec.name);
-    const output = dartSchemaOutputPath(spec.name);
-    generatedConstants.push({
-      constName,
-      schemaName: spec.name,
-      source: spec.source,
-      output,
-    });
-    schemaExports.push(dartSchemaGeneratedExportPath(output));
-    files.push({
-      path: output,
-      content: renderDartSchemaConstantFile({
-        constName,
-        source: spec.source,
-        schema: schemaMap.get(spec.name),
-      }),
-    });
-  }
-
-  const definitions = schemaSpecs.map((spec) => {
-    const schemaName = dartSchemaConstName(spec.name);
-    return `  SchemaContractDefinition(
-    name: ${dartString(spec.name)},
-    source: ${dartString(spec.source)},
-    schema: ${schemaName},
-  ),`;
-  }).join("\n");
-  const byName = schemaSpecs.map((spec) =>
-    `  ${dartString(spec.name)}: ${dartSchemaConstName(spec.name)},`
-  ).join("\n");
-  const bySource = schemaSpecs.map((spec) =>
-    `  ${dartString(spec.source)}: ${dartSchemaConstName(spec.name)},`
-  ).join("\n");
-
-  files.push({
-    path: `${DART_SCHEMA_OUTPUT_DIR}/schema_constants.g.dart`,
-    content: `${dartGeneratedHeader()}
-// Barrel for generated Dart JSON Schema constants.
-
-${[...new Set(schemaExports)]
-    .sort()
-    .map((item) => `export '${item}';`)
-    .join("\n")}
-`,
-  });
-
-  files.push({
-    path: `${DART_SCHEMA_OUTPUT_DIR}/schema_registry.g.dart`,
-    content: `${dartGeneratedHeader()}import 'schema_constants.g.dart';
-
-class SchemaContractDefinition {
-  const SchemaContractDefinition({
-    required this.name,
-    required this.source,
-    required this.schema,
-  });
-
-  final String name;
-  final String source;
-  final Map<String, Object?> schema;
-}
-
-const schemaContractDefinitions = <SchemaContractDefinition>[
-${definitions}
-];
-
-const schemaContractsByName = <String, Map<String, Object?>>{
-${byName}
-};
-
-const schemaContractsBySource = <String, Map<String, Object?>>{
-${bySource}
-};
-`,
-  });
-
-  return {
-    text: `${dartGeneratedHeader()}
-// Stable barrel for generated Dart JSON Schema contracts.
-
-export 'event_assistance_kinds.g.dart';
-export 'event_success_moment_presentations.g.dart';
-export 'field_constraints.g.dart';
-export 'schemas/schema_constants.g.dart';
-export 'schemas/schema_registry.g.dart';
-`,
-    files,
-    generatedConstants,
-  };
-}
-
-function renderDartFieldConstraints({schemaSpecs, schemaMap}) {
-  const constraints = [];
+function renderDartFieldConstraints({schemaSpecs, schemaMap, bindings}) {
+  const projected = [];
   for (const spec of schemaSpecs) {
     const schema = schemaMap.get(spec.name);
     if (!schema) continue;
@@ -9076,12 +8972,15 @@ function renderDartFieldConstraints({schemaSpecs, schemaMap}) {
       schema: rootSchema,
       rootName,
       segments: [],
-      constraints,
+      constraints: projected,
     });
   }
 
-  constraints.sort((a, b) => a.path.localeCompare(b.path));
-  disambiguateFieldConstraintNames(constraints);
+  projected.sort((a, b) => a.path.localeCompare(b.path));
+  // Names are settled against every projected field so a binding keeps the
+  // same constant name however many other fields are declared.
+  disambiguateFieldConstraintNames(projected);
+  const constraints = boundFieldConstraints(projected, bindings);
   const declarations = constraints.map((entry) => {
     const args = [
       `path: ${dartString(entry.path)}`,
@@ -9120,7 +9019,8 @@ function renderDartFieldConstraints({schemaSpecs, schemaMap}) {
   return `${dartGeneratedHeader()}
 import 'package:catch_ui/catch_ui.dart' show CatchContractFieldConstraints;
 
-/// App-owned field constraints projected from every generated JSON Schema.
+/// App-owned field constraints for the schema fields that app forms bind to,
+/// as declared in contracts/forms/field_constraint_bindings.json.
 
 abstract final class CatchContractConstraints {
 ${declarations}
@@ -9130,6 +9030,37 @@ ${allEntries}
   };
 }
 `;
+}
+
+/**
+ * Keeps the projected constraints a form binds to. Bindings are the declared
+ * source of truth, so the generator never reads app code; an undeclared field
+ * fails the app's analyzer, and a binding that names no schema field fails
+ * here.
+ */
+export function boundFieldConstraints(projected, bindings) {
+  const byPath = new Map(projected.map((entry) => [entry.path, entry]));
+  const bound = new Map();
+  const unresolved = [];
+  for (const [root, fieldPaths] of Object.entries(bindings.fields ?? {})) {
+    for (const fieldPath of fieldPaths) {
+      const entry = byPath.get(`${root}.${fieldPath}`);
+      if (entry) bound.set(entry.path, entry);
+      else unresolved.push(`${root}.${fieldPath}`);
+    }
+  }
+  for (const prefix of bindings.lookupPrefixes ?? []) {
+    const matches = projected.filter((entry) => entry.path.startsWith(prefix));
+    if (matches.length === 0) unresolved.push(`${prefix}*`);
+    for (const entry of matches) bound.set(entry.path, entry);
+  }
+  if (unresolved.length > 0) {
+    throw new Error(
+      "contracts/forms/field_constraint_bindings.json names fields no " +
+      `schema projects:\n${unresolved.map((item) => `- ${item}`).join("\n")}`
+    );
+  }
+  return [...bound.values()].sort((a, b) => a.path.localeCompare(b.path));
 }
 
 function disambiguateFieldConstraintNames(constraints) {
@@ -9307,29 +9238,9 @@ function lowerCamelCase(value) {
     `${converted[0].toLowerCase()}${converted.slice(1)}`;
 }
 
-function dartSchemaOutputPath(name) {
-  return `${DART_SCHEMA_OUTPUT_DIR}/${snakeCase(name)}.g.dart`;
-}
-
-function dartSchemaGeneratedExportPath(outputPath) {
-  return outputPath.replace(`${DART_SCHEMA_OUTPUT_DIR}/`, "");
-}
-
-function renderDartSchemaConstantFile({constName, source, schema}) {
-  return `${dartGeneratedHeader()}
-// JSON Schema constant emitted from ${source}.
-
-const ${constName} = ${dartLiteral(schema)};
-`;
-}
-
-function renderGeneratedIndex({dartSchemaContracts, dartCallableRequests}) {
+function renderGeneratedIndex({dartCallableRequests}) {
   const tsRows = schemaSpecs.map((spec) =>
     `| ${spec.name} | \`${spec.source}\` | \`${spec.typeOutput}\` |`
-  ).join("\n");
-  const dartSchemaRows = dartSchemaContracts.generatedConstants.map((entry) =>
-    `| \`${entry.constName}\` | ${entry.schemaName} | ` +
-    `\`${entry.source}\` | \`${entry.output}\` |`
   ).join("\n");
   const callableRows = dartCallableRequests.generatedClasses.length === 0 ?
     "| _None_ | _None_ | _None_ | _None_ |" :
@@ -9354,12 +9265,6 @@ Do not edit it by hand.
 |---|---|---|
 ${tsRows}
 
-## Dart Schema Constants
-
-| Dart Constant | Schema Name | Source Schema | Output |
-|---|---|---|---|
-${dartSchemaRows}
-
 ## Dart Callable Classes
 
 | Generated Class | Schema Name | Source Schema | Output |
@@ -9383,16 +9288,10 @@ ${ungenerableRows}
 | \`tool/contracts/generated/schema_contract_registry.mjs\` | Node-side schema registry for validation tooling. |
 | \`tool/contracts/generated/schema_contract_validators.mjs\` | Node-side Ajv validators for contract checks. |
 | \`lib/platform/schema_contracts/generated/profile_schema_contracts.g.dart\` | Dart profile catalog and storage policy constants. |
-| \`lib/platform/schema_contracts/generated/field_constraints.g.dart\` | UI-relevant constraints projected from patch and Firestore document schemas. |
-| \`lib/platform/schema_contracts/generated/schema_contracts.g.dart\` | Dart schema contract barrel. |
-| \`lib/platform/schema_contracts/generated/schemas/*.g.dart\` | One generated Dart JSON Schema constant file per schema, plus lookup registry files. |
+| \`lib/platform/schema_contracts/generated/field_constraints.g.dart\` | UI constraints for the schema fields declared in \`contracts/forms/field_constraint_bindings.json\`. |
 | \`lib/platform/schema_contracts/generated/callable_request_dtos.g.dart\` | Generated Dart callable request and patch helper barrel. |
 | \`lib/platform/schema_contracts/generated/callables/*.g.dart\` | One generated Dart callable request or patch helper file per schema-owned class. |
 `;
-}
-
-function dartSchemaConstName(name) {
-  return `schema${name}Schema`;
 }
 
 // ────────────────────────────────────────────────────────────────────────────

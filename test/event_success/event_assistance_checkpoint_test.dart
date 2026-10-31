@@ -1,20 +1,18 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_change.dart';
 import 'package:catch_dating_app/platform/schema_contracts/generated/callables/record_event_assistance_checkpoint_callable_request.g.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_assistance_checkpoint_fixtures.dart';
 
 void main() {
   final schema = JsonSchema.create(
-    schemas.schemaContractsByName['EventAssistanceCheckpointCallableResponse']!,
+    contractSchema('EventAssistanceCheckpointCallableResponse'),
   );
   final commandSchema = JsonSchema.create(
-    schemas
-        .schemaContractsByName['RecordEventAssistanceCheckpointCallablePayload']!,
+    contractSchema('RecordEventAssistanceCheckpointCallablePayload'),
   );
   Map availability(Map<String, Object?> wire) =>
       checkpointBody(wire)['availability']! as Map;
@@ -25,7 +23,9 @@ void main() {
     'canonical report outcomes, statuses and unavailability have complete native coverage',
     () {
       final properties =
-          schemas.schemaContractsByName['EventAssistanceCheckpointCallableResponse']!['properties']!
+          contractSchema(
+                'EventAssistanceCheckpointCallableResponse',
+              )['properties']!
               as Map;
       final view = (properties['view']! as Map)['properties']! as Map;
       expect(

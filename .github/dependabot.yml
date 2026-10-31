@@ -16,6 +16,10 @@ updates:
       time: "05:30"
       timezone: "Asia/Kolkata"
     open-pull-requests-limit: 1
+    # Wait 7 days before proposing a new release, so a hijacked publish is
+    # usually caught upstream first. Security updates are not delayed.
+    cooldown:
+      default-days: 7
     groups:
       security:
         applies-to: "security-updates"
@@ -45,6 +49,10 @@ updates:
       time: "05:30"
       timezone: "Asia/Kolkata"
     open-pull-requests-limit: 1
+    # Wait 7 days before proposing a new release, so a hijacked publish is
+    # usually caught upstream first. Security updates are not delayed.
+    cooldown:
+      default-days: 7
     groups:
       security:
         applies-to: "security-updates"
@@ -77,6 +85,10 @@ updates:
       time: "05:45"
       timezone: "Asia/Kolkata"
     open-pull-requests-limit: 1
+    # Wait 7 days before proposing a new release, so a hijacked publish is
+    # usually caught upstream first. Security updates are not delayed.
+    cooldown:
+      default-days: 7
     groups:
       security:
         applies-to: "security-updates"
@@ -117,13 +129,21 @@ updates:
       - dependency-name: "google_maps_flutter"
 
   - package-ecosystem: "github-actions"
-    directory: "/"
+    # Workflows pin actions to commit SHAs with a version comment; Dependabot
+    # updates both. The composite actions under .github/actions pin theirs too.
+    directories:
+      - "/"
+      - "/.github/actions/*"
     schedule:
       interval: "weekly"
       day: "wednesday"
       time: "06:00"
       timezone: "Asia/Kolkata"
     open-pull-requests-limit: 1
+    # Wait 7 days before proposing a new release, so a hijacked publish is
+    # usually caught upstream first. Security updates are not delayed.
+    cooldown:
+      default-days: 7
     groups:
       security:
         applies-to: "security-updates"

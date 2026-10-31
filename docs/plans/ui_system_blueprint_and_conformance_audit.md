@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.30.2
-updated: 2026-10-30
+version: 1.30.3
+updated: 2026-10-31
 owner: app_architecture
 status: active
 ---
@@ -512,6 +512,10 @@ use-case monoliths (9,885-line `primitive_contract_use_cases.dart`,
 Phase 5 (repository by subdomain, screens by pane/workspace, `catch_tokens`
 by tier during Phase 2/3, use-case files by component family onto the
 Phase 1 shared harness).
+
+Superseded on 31 Oct 2026: both size checks dropped their baseline files. A file
+over its limit now states its reason in a `// size-exemption: <reason>` comment,
+under a 2,500-line ceiling; see `docs/app_architecture.md#source-size-budgets`.
 
 The `CatchField` constructor facade is one explicit file-size exception:
 `packages/catch_ui/lib/src/components/catch_field.dart` may contain at most

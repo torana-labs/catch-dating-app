@@ -8,6 +8,9 @@ const TOOL_FILE = fileURLToPath(import.meta.url);
 const DEFAULT_ROOT = path.resolve(path.dirname(TOOL_FILE), "../..");
 const DEFAULT_OUTPUT =
   "build/reports/flutter_form_contract_inventory.json";
+const FIELD_BINDINGS = "contracts/forms/field_constraint_bindings.json";
+const FIELD_CONSTRAINTS_OUTPUT =
+  "lib/platform/schema_contracts/generated/field_constraints.g.dart";
 const EDITABLE_SYMBOLS = new Set([
   "choices",
   "choiceInputForm",
@@ -419,9 +422,50 @@ function render(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
+/**
+ * Lists declared form field bindings whose generated constant no Dart source
+ * references. The generator emits constants only for declared bindings, so a
+ * stale declaration is the one way the projection can regrow unused code.
+ * Lookup prefixes are exempt because their callers build paths at runtime.
+ */
+export function unreferencedFieldBindings({repoRoot = DEFAULT_ROOT} = {}) {
+  const bindings = JSON.parse(fs.readFileSync(
+    path.join(repoRoot, FIELD_BINDINGS), "utf8"));
+  const generated = fs.readFileSync(
+    path.join(repoRoot, FIELD_CONSTRAINTS_OUTPUT), "utf8");
+  const nameByPath = new Map([...generated.matchAll(
+    /static const (\w+) = CatchContractFieldConstraints\(\s*path: '([^']+)'/g,
+  )].map((match) => [match[2], match[1]]));
+  const referenced = new Set();
+  for (const directory of ["lib", "test", "integration_test", "widgetbook"]) {
+    for (const file of listDartFiles(path.join(repoRoot, directory))) {
+      if (normalizePath(path.relative(repoRoot, file)) ===
+        FIELD_CONSTRAINTS_OUTPUT) continue;
+      const source = fs.readFileSync(file, "utf8");
+      for (const match of source.matchAll(
+        /CatchContractConstraints\s*\.\s*(\w+)/g,
+      )) referenced.add(match[1]);
+    }
+  }
+  return Object.entries(bindings.fields ?? {}).flatMap(([root, fields]) =>
+    fields.map((field) => `${root}.${field}`)
+      .filter((fieldPath) => !referenced.has(nameByPath.get(fieldPath))));
+}
+
 function run() {
   const repoRoot = process.cwd();
   const output = path.join(repoRoot, DEFAULT_OUTPUT);
+  const unreferenced = unreferencedFieldBindings({repoRoot});
+  if (unreferenced.length > 0) {
+    for (const fieldPath of unreferenced) {
+      console.error(
+        `${FIELD_BINDINGS}: ${fieldPath} is declared but no Dart source ` +
+          "references its constant; remove the binding and regenerate.",
+      );
+    }
+    process.exitCode = 1;
+    return;
+  }
   const inventory = buildFormContractInventory({repoRoot});
   const unbound = inventory.callsites.filter(
     (entry) => !isBound(entry) && entry.contractExemption == null,

@@ -67,7 +67,7 @@ test("data validation uses bash and always uploads its report after failure", ()
   assert.match(validation.run, /^set -euo pipefail\n/);
   assert.match(validation.run, /node tool\/data\/validate_firestore_data\.mjs "\$\{args\[@\]\}"/);
   assert.match(source, /environment: \$\{\{ github\.event\.inputs\.environment \|\| 'prod' \}\}/);
-  assert.match(source, /uses: actions\/upload-artifact@v6\n        if: always\(\)\n        with:\n          name: firestore-data-validation-[^\n]+\n          path: firestore-data-validation\.json/);
+  assert.match(source, /uses: actions\/upload-artifact@[0-9a-f]{40} # v6[.0-9]*\n        if: always\(\)\n        with:\n          name: firestore-data-validation-[^\n]+\n          path: firestore-data-validation\.json/);
 });
 
 test("successful validator remains successful and explicit output saves its JSON", () => {

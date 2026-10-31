@@ -18,7 +18,8 @@ function command(name) {
   return step.run;
 }
 const selectedLanes = ["tools", "contracts", "functions", "firestore-rules", "flutter",
-  "visual-integration", "admin", "marketing", "capture-freshness", "operations", "docs-policy", "app-builds"];
+  "visual-integration", "admin", "marketing", "capture-freshness", "operations", "docs-policy", "app-builds",
+  "workflow-lint"];
 const dependencies = [...required.matchAll(/^      - ([a-z-]+)$/gmu)].map((match) => match[1]);
 const graph = JSON.parse(fs.readFileSync(path.join(root, "tool/harness/component_graph.json"), "utf8"));
 const successfulNeeds = () => {

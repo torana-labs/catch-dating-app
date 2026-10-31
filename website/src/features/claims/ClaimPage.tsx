@@ -8,6 +8,9 @@ import {
   ClaimUrlStateSection,
   ClaimWorkspaceSection,
 } from "./sections/ClaimPageSections";
+import {InstantClaimPanel} from "./sections/InstantClaimSection";
+import type {HostListing} from "../organizers/types";
+import {useInstantClaimController} from "./useInstantClaimController";
 import type {ClaimRouteState} from "./claimRouting";
 import {useClaimFlowController} from "./useClaimFlowController";
 
@@ -34,7 +37,10 @@ function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
             requestId={controller.activeRequestId}
           />
         ) : (
-          <ClaimWorkspaceSection controller={controller} />
+          <>
+            {controller.listing ? <InstantClaim key={controller.listing.id} listing={controller.listing} /> : null}
+            <ClaimWorkspaceSection controller={controller} />
+          </>
         )}
         <HostPreviewSection variant="faq">
           <HostPreviewSectionHead titleId="claim-guidance-title" title={claimGuidance.title} body={claimGuidance.body} />
@@ -46,4 +52,8 @@ function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
       <PublicSiteFooter />
     </>
   );
+}
+
+function InstantClaim({listing}: {listing: HostListing}) {
+  return <InstantClaimPanel controller={useInstantClaimController(listing.id)} listing={listing} />;
 }

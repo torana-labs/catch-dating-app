@@ -1,10 +1,11 @@
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_manifest_mapper.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/import_program_manifest_callable_payload.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
+
+import '../support/contract_schemas.dart';
 
 void main() {
   group('organizerProgramDetail', () {
@@ -492,7 +493,7 @@ void main() {
         'side:Bride; Friends; College; Family',
       );
       final schema = JsonSchema.create(
-        schemaImportProgramManifestCallablePayloadSchema,
+        contractSchema('ImportProgramManifestCallablePayload'),
       );
       final payload = {
         'programId': 'program',

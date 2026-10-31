@@ -87,6 +87,11 @@ read_with_apksigner() {
     END {
       pick = ""
       for (i = 1; i <= count; i++) if (tolower(sha256[order[i]]) == want) { pick = order[i]; break }
+      if (pick == "" && want != "" && count > 0) {
+        found = ""
+        for (i = 1; i <= count; i++) found = found order[i] "=" sha256[order[i]] "; "
+        print "No apksigner signer has Play'"'"'s certificateSha256Hash " want "; signers found: " found > "/dev/stderr"
+      }
       if (pick == "" && count > 0) pick = order[1]
       if (pick != "" && (pick in sha1)) print sha1[pick], sha256[pick]
     }' <<<"$output") || true
@@ -120,7 +125,7 @@ for index in $(seq 0 $((count - 1))); do
   if [[ -n "$reported" ]]; then
     reported_hex="$(normalise "$reported" 64)" || reported_hex=""
   fi
-  echo "$package version $version_code: downloaded $(wc -c < "$apk") bytes, starting with $(head -c 4 "$apk" | od -An -tx1 | tr -d ' \n')." >&2
+  echo "$package version $version_code: downloaded $(wc -c < "$apk" | tr -d ' ') bytes, starting with $(head -c 4 "$apk" | od -An -tx1 | tr -d ' \n')." >&2
   if read_with_keytool "$apk"; then
     reader=keytool
   elif read_with_apksigner "$apk" "$reported_hex"; then

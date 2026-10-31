@@ -368,7 +368,7 @@ test("Flutter new-widget gate consumes the planner's exact reachable base", () =
   );
 
   const checkout = flutter.slice(0, flutter.indexOf("      - id: toolchain"));
-  assert.match(checkout, /actions\/checkout@v6\s*\n\s+with:\s*\n\s+fetch-depth: 0/u);
+  assert.match(checkout, /actions\/checkout@[0-9a-f]{40} # v6[.0-9]*\s*\n\s+with:\s*\n\s+fetch-depth: 0/u);
 });
 
 test("resolved composition gate owns its authorities and both split suites", () => {
@@ -453,7 +453,7 @@ test("Flutter l10n ratchet derives JSON live and uploads ephemeral evidence", ()
     "Upload localization key-usage evidence",
   );
   assert.match(upload, /if: always\(\)/u);
-  assert.match(upload, /uses: actions\/upload-artifact@v7/u);
+  assert.match(upload, /uses: actions\/upload-artifact@[0-9a-f]{40} # v7/u);
   assert.match(
     upload,
     /name: l10n-key-usage-\$\{\{ github\.sha \}\}/u,
@@ -724,7 +724,7 @@ test("policy-only CI wiring has one Harness owner with its required dependencies
   for (const step of steps) assert.ok(step.includes(condition), step);
   assert.match(steps[0], /id: policy-toolchain/u);
   assert.match(steps[0], /uses: \.\/\.github\/actions\/load-toolchain/u);
-  assert.match(steps[1], /uses: actions\/setup-node@v6/u);
+  assert.match(steps[1], /uses: actions\/setup-node@[0-9a-f]{40} # v6/u);
   assert.ok(steps[1].includes("node-version: ${{ steps.policy-toolchain.outputs.node-version }}"));
   assert.match(steps[2], /run: npm ci --ignore-scripts --workspaces=false/u);
   assert.match(steps[3], /run: node tool\/run\.mjs check agent:harness-v2/u);
@@ -864,7 +864,7 @@ test("fast structural ratchets block dependency-heavy full tool buckets", () => 
   assert.match(checkout, /timeout-minutes: 2/u);
   assert.match(checkout, /fetch-depth: 1/u);
   assert.match(checkout, /sparse-checkout-cone-mode: false/u);
-  assert.match(fastJob, /uses: actions\/setup-node@v6/u);
+  assert.match(fastJob, /uses: actions\/setup-node@[0-9a-f]{40} # v6/u);
 
   const ratchet = namedStep(
     fastJob,
@@ -1050,7 +1050,7 @@ test("tools materialize only the closure required by each repository view", () =
   assert.ok(fullBuckets, "tool-buckets job must remain present");
   assert.match(
     fullBuckets,
-    /- uses: actions\/checkout@v6\s+with:\s+fetch-depth: 0/u,
+    /- uses: actions\/checkout@[0-9a-f]{40} # v6[.0-9]*\s+with:\s+fetch-depth: 0/u,
   );
   assert.doesNotMatch(fullBuckets, /sparse-checkout/u);
 });
@@ -1069,7 +1069,7 @@ test("affected tools install only planner-declared setup requirements", () => {
     /  affected-tools:\n(?<body>[\s\S]*?)\n  tool-buckets:/u,
   )?.groups?.body;
   assert.ok(affectedJob, "affected-tools job must remain present");
-  assert.match(affectedJob, /- uses: actions\/setup-node@v6/u);
+  assert.match(affectedJob, /- uses: actions\/setup-node@[0-9a-f]{40} # v6/u);
   assert.match(
     affectedJob,
     /cache: \$\{\{ \(contains\(fromJSON\(needs\.preflight\.outputs\.setup_requirements\), 'root-npm'\) \|\| contains\(fromJSON\(needs\.preflight\.outputs\.setup_requirements\), 'functions-npm'\)\) && 'npm' \|\| '' \}\}/u,
@@ -1424,7 +1424,7 @@ test("headless journeys start independently of macOS rendering and native smoke"
   assert.match(native, /working-directory: apps\/consumer\n\s+run: bash \.\.\/\.\.\/tool\/test_app_shell_integration.sh macos smoke/u);
   assert.match(native, /lockfiles: apps\/consumer\/macos\/Podfile\.lock/u);
   assert.match(native, /cache-cocoapods/u);
-  assert.match(native, /actions\/checkout@v6/u);
+  assert.match(native, /actions\/checkout@[0-9a-f]{40} # v6/u);
   assert.doesNotMatch(goldens, /macos smoke/u);
   assert.doesNotMatch(native, /flutter test.*goldens/u);
   for (const job of [goldens, native]) {

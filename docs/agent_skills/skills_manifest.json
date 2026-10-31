@@ -196,7 +196,7 @@
       "updated": "2026-08-07",
       "applies_to": [
         "lib/**/presentation/**",
-        "lib/core/widgets/**",
+        "lib/contexts/*/parts/**",
         "widgetbook/**",
         "docs/design_parity/**"
       ],
@@ -238,7 +238,7 @@
         "design/tokens/**",
         "design_context_pack/**",
         "widgetbook/**",
-        "lib/core/widgets/**"
+        "lib/contexts/*/parts/**"
       ],
       "source_docs": [
         "AGENTS.md",
@@ -255,7 +255,7 @@
         "node tool/run.mjs check --category design"
       ],
       "optional_guidance": [
-        "node tool/agent/context_pack.mjs --task design-parity --paths docs/design_parity,widgetbook,lib/core/widgets"
+        "node tool/agent/context_pack.mjs --task design-parity --paths docs/design_parity,widgetbook,lib/contexts"
       ],
       "success_evidence": "Review uses canonical/repair/unify/register/discard decisions and updates owning contracts, Widgetbook coverage, or docs in the same pass.",
       "known_failure_modes": [

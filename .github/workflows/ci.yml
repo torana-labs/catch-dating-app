@@ -77,7 +77,7 @@ jobs:
 
     steps:
       - name: Checkout planner closure
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         timeout-minutes: 3
         with:
           fetch-depth: 0
@@ -101,10 +101,11 @@ jobs:
             /.github/actions/load-toolchain/action.yml
             /tool/design/build_host_feature_responsibilities.mjs
             /design/features/host_feature_responsibilities.json
+          persist-credentials: false
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
 
@@ -197,9 +198,11 @@ jobs:
           rm build/ci/impact-plan.unbound.json
           node tool/harness/compare_selectors.mjs --verify-plan build/ci/impact-plan.json \
             --comparison build/ci/selector-comparison.json --github-output "$GITHUB_OUTPUT"
-          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
-          echo "source_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
-          echo "producer_attempt=$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
+          {
+            echo "base_sha=$base_sha"
+            echo "source_sha=$HEAD_SHA"
+            echo "producer_attempt=$GITHUB_RUN_ATTEMPT"
+          } >> "$GITHUB_OUTPUT"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {toolsOwnUiLintSmoke, toolsOwnDesignChecks} from './tool/lib/tool_impact.mjs';
@@ -263,7 +266,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Audience documentation advice
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: audience-doc-impact-${{ github.run_number }}-${{ github.run_id }}-${{ steps.plan.outputs.source_sha }}-${{ github.run_attempt }}
           path: build/ci/audience-doc-impact.json
@@ -281,7 +284,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload planner evidence
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: harness-plan-${{ github.run_number }}-${{ github.run_id }}-${{ steps.plan.outputs.source_sha }}-${{ github.run_attempt }}
           path: build/ci/impact-plan.json
@@ -289,7 +292,7 @@ jobs:
           retention-days: 90
 
       - name: Upload selector comparison
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: selector-comparison-${{ github.run_id }}-${{ github.run_attempt }}
           path: build/ci/selector-comparison.json
@@ -303,12 +306,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
+          persist-credentials: false
       - id: toolchain
         uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
       - name: Derive exact-source route and widget inventories
@@ -337,7 +341,7 @@ jobs:
           node tool/harness/verify_local.mjs "${args[@]}" > build/ci/source-preflight.json
       - name: Retain preflight findings
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: source-preflight-${{ github.run_id }}-${{ github.run_attempt }}
           path: build/ci/source-preflight.json
@@ -359,19 +363,16 @@ jobs:
       commit_window: ${{ needs.plan.outputs.commit_window == 'true' }}
       marketing_checks_in_react: ${{ needs.plan.outputs.marketing == 'true' }}
       capture_binding: ${{ needs.capture-freshness.outputs.capture_binding }}
-    secrets: inherit
 
   contracts:
     needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.contracts == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/contracts-ci.yml
-    secrets: inherit
 
   functions:
     needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.functions == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/functions-ci.yml
-    secrets: inherit
 
   firestore-rules:
     needs: [plan, source-preflight]
@@ -392,7 +393,6 @@ jobs:
       ci_plan_source_sha: ${{ needs.plan.outputs.source_sha }}
       base_sha: ${{ needs.plan.outputs.base_sha }}
       mode: ${{ needs.plan.outputs.mode }}
-    secrets: inherit
 
   flutter:
     needs: [plan, source-preflight]
@@ -405,13 +405,11 @@ jobs:
       ui_lint_smoke_in_tools: ${{ needs.plan.outputs.tools_owns_ui_lint_smoke == 'true' }}
       design_parity_in_tools: ${{ needs.plan.outputs.tools_owns_design_parity == 'true' }}
       design_handoff_in_tools: ${{ needs.plan.outputs.tools_owns_design_handoff == 'true' }}
-    secrets: inherit
 
   visual-integration:
     needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.visual_integration == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/visual-integration-ci.yml
-    secrets: inherit
 
   admin:
     needs: [plan, source-preflight]
@@ -419,7 +417,6 @@ jobs:
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: admin
-    secrets: inherit
 
   marketing:
     needs: [plan, source-preflight, capture-freshness]
@@ -428,7 +425,6 @@ jobs:
     with:
       surface: marketing
       capture_binding: ${{ needs.capture-freshness.outputs.capture_binding }}
-    secrets: inherit
 
   capture-freshness:
     needs: [plan, source-preflight]
@@ -441,7 +437,6 @@ jobs:
     needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.operations == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/operations-ci.yml
-    secrets: inherit
 
   docs-policy:
     needs: [plan, source-preflight]
@@ -492,12 +487,13 @@ jobs:
 
       - name: Checkout ordinary-doc closure
         if: ${{ steps.docs-checkout.outcome == 'success' }}
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         # Supplying sparse-checkout to checkout also enables blob:none. The
         # offline metadata scanner needs current and historical document blobs.
         timeout-minutes: 10
         with:
           fetch-depth: ${{ steps.docs-checkout.outputs.fetch_depth }}
+          persist-credentials: false
 
       - name: Apply ordinary-doc working-tree closure
         if: ${{ steps.docs-checkout.outcome == 'success' }}
@@ -517,17 +513,18 @@ jobs:
         if: >-
           needs.plan.outputs.policy_docs == 'true' ||
           fromJSON(needs.plan.outputs.docs_checkout).mode == 'full'
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         timeout-minutes: 10
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Load Harness toolchain
         if: ${{ needs.plan.outputs.policy_docs == 'true' && needs.plan.outputs.tools != 'true' }}
         id: policy-toolchain
         uses: ./.github/actions/load-toolchain
       - name: Set up Harness Node.js
         if: ${{ needs.plan.outputs.policy_docs == 'true' && needs.plan.outputs.tools != 'true' }}
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.policy-toolchain.outputs.node-version }}
           cache: npm
@@ -562,7 +559,44 @@ jobs:
       build_ios: ${{ needs.plan.outputs.flutter_build_ios == 'true' }}
       build_web: ${{ needs.plan.outputs.flutter_build_web == 'true' }}
       web_smoke: ${{ needs.plan.outputs.flutter_web_smoke == 'true' }}
-    secrets: inherit
+    secrets:
+      GOOGLE_MAPS_ANDROID_API_KEY_DEV: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY_DEV }}
+      GOOGLE_MAPS_IOS_API_KEY_DEV: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY_DEV }}
+
+  workflow-lint:
+    name: Lint workflows
+    # Seconds of work, so it runs on every ready PR and queue group rather
+    # than through the planner.
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: .github
+      - name: Install pinned actionlint and zizmor
+        env:
+          ACTIONLINT_VERSION: 1.7.12
+          ACTIONLINT_SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+          ZIZMOR_VERSION: 1.31.1
+          ZIZMOR_SHA256: d185f726bdaf92df78273217dfdd24ebcd6b0ef48cf3ce776ff5762b6e138c99
+        run: |
+          set -euo pipefail
+          bin="$RUNNER_TEMP/workflow-lint"
+          mkdir -p "$bin"
+          curl -fsSL -o "$bin/actionlint.tgz" \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          curl -fsSL -o "$bin/zizmor.tgz" \
+            "https://github.com/zizmorcore/zizmor/releases/download/v${ZIZMOR_VERSION}/zizmor-x86_64-unknown-linux-gnu.tar.gz"
+          echo "$ACTIONLINT_SHA256  $bin/actionlint.tgz" | sha256sum -c -
+          echo "$ZIZMOR_SHA256  $bin/zizmor.tgz" | sha256sum -c -
+          tar -xzf "$bin/actionlint.tgz" -C "$bin" actionlint
+          tar -xzf "$bin/zizmor.tgz" -C "$bin"
+          echo "$bin" >> "$GITHUB_PATH"
+      # shellcheck comes preinstalled on the runner; Python steps are not linted.
+      - run: actionlint -pyflakes=
+      - run: zizmor --offline --config .github/zizmor.yml --min-severity medium .github
 
   required:
     name: Required CI
@@ -583,6 +617,7 @@ jobs:
       - operations
       - docs-policy
       - app-builds
+      - workflow-lint
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

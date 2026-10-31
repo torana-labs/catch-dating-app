@@ -32,6 +32,13 @@ override_resource {
   target = google_firebase_app_check_play_integrity_config.app
 }
 
+override_resource {
+  target = google_firestore_database.prod
+  values = {
+    name = "(default)"
+  }
+}
+
 variables {
   android_apps = {
     "prod-consumer" = {
@@ -249,4 +256,23 @@ run "form_payments_only_in_dev_and_prod" {
   }
 
   expect_failures = [var.form_payment_environments]
+}
+
+run "production_firestore_keeps_recovery_on" {
+  command = plan
+
+  assert {
+    condition     = google_firestore_database.prod.point_in_time_recovery_enablement == "POINT_IN_TIME_RECOVERY_ENABLED"
+    error_message = "Point-in-time recovery must be on for the production database."
+  }
+
+  assert {
+    condition     = google_firestore_database.prod.delete_protection_state == "DELETE_PROTECTION_ENABLED"
+    error_message = "Delete protection must be on for the production database."
+  }
+
+  assert {
+    condition     = google_firestore_backup_schedule.prod_daily.retention == "1209600s" && length(google_firestore_backup_schedule.prod_daily.daily_recurrence) == 1
+    error_message = "The production database keeps a daily backup for 14 days."
+  }
 }

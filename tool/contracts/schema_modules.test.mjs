@@ -8,7 +8,10 @@ import {createRequire} from "node:module";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
 import * as canonical from "./generated/schema_contract_registry.mjs";
-import {publishSchemaOutputs} from "./generate_schema_contracts.mjs";
+import {
+  boundFieldConstraints,
+  publishSchemaOutputs,
+} from "./generate_schema_contracts.mjs";
 
 const requireFromFunctions = createRequire(
   new URL("../../functions/package.json", import.meta.url)
@@ -163,4 +166,27 @@ test("publication removes only owned stale outputs and restores expected content
     [...fixture.files.map((file) => file.path), foreign].sort());
   assert.equal(fixture.hashes()[foreign], foreignHash);
   assert.deepEqual(fixture.check(), []);
+});
+
+test("field constraints keep only declared bindings and lookup prefixes", () => {
+  const projected = [
+    "claim.profile.city", "claim.profile.languages", "claim.reviewedUrl",
+    "event.capacity", "event.title", "event.description",
+  ].map((entryPath) => ({path: entryPath, constName: entryPath}));
+  const bound = boundFieldConstraints(projected, {
+    lookupPrefixes: ["claim.profile."],
+    fields: {event: ["title", "capacity"], claim: ["profile.city"]},
+  });
+  assert.deepEqual(bound.map((entry) => entry.path), [
+    "claim.profile.city", "claim.profile.languages",
+    "event.capacity", "event.title",
+  ]);
+});
+
+test("field constraint bindings fail on paths no schema projects", () => {
+  const projected = [{path: "event.title", constName: "eventTitle"}];
+  assert.throws(() => boundFieldConstraints(projected, {
+    lookupPrefixes: ["claim.profile."],
+    fields: {event: ["title", "subtitle"]},
+  }), /- event\.subtitle\n- claim\.profile\.\*/);
 });

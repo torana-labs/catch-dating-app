@@ -69,7 +69,7 @@ jobs:
     steps:
       - name: Checkout tool preflight closure
         timeout-minutes: 3
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
           sparse-checkout-cone-mode: false
@@ -82,11 +82,12 @@ jobs:
             /.github/workflows/mobile-beta.yml
             /.github/workflows/mobile-production.yml
             /.github/workflows/visual-integration-ci.yml
+          persist-credentials: false
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
           cache: npm
@@ -142,7 +143,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload affected-tool plan
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: affected-tools-plan-${{ github.sha }}
           path: build/ci/affected-tools-plan.json
@@ -172,25 +173,27 @@ jobs:
       - name: Checkout affected index closure
         if: ${{ needs.preflight.outputs.repository_view == 'index' }}
         timeout-minutes: 3
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             /tool/
             /.github/actions/load-toolchain/action.yml
+          persist-credentials: false
 
       - name: Checkout full affected repository
         if: ${{ needs.preflight.outputs.repository_view != 'index' }}
         timeout-minutes: 5
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
           cache: ${{ (contains(fromJSON(needs.preflight.outputs.setup_requirements), 'root-npm') || contains(fromJSON(needs.preflight.outputs.setup_requirements), 'functions-npm')) && 'npm' || '' }}
@@ -286,7 +289,7 @@ jobs:
 
       - name: Upload visual diagnostics
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: tools-visual-diagnostics-affected-${{ github.run_id }}
           path: |
@@ -305,7 +308,7 @@ jobs:
     steps:
       - name: Checkout fast deterministic gate closure
         timeout-minutes: 2
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 1
           sparse-checkout-cone-mode: false
@@ -317,11 +320,12 @@ jobs:
             /tool/test/flutter_test_size_baseline.json
             /test/
             /integration_test/
+          persist-credentials: false
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
 
@@ -361,14 +365,15 @@ jobs:
             categories: organizer-intake
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
           cache: npm
@@ -450,7 +455,7 @@ jobs:
 
       - name: Upload visual diagnostics
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: tools-visual-diagnostics-${{ matrix.name }}-${{ github.run_id }}
           path: |

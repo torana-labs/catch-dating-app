@@ -4566,7 +4566,7 @@
               "id": "host_clubs_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "_hostOrganizersForUserProvider loading renders _HostLoadingScreen with HostRouteLoadingBody and host-operations-shaped skeletons. Club loading capture is registered.",
+              "notes": "hostOperableOrganizersProvider loading renders _HostLoadingScreen with HostRouteLoadingBody and host-operations-shaped skeletons. Club loading capture is registered.",
               "previewIds": [
                 "hostHomeRouteStates"
               ],

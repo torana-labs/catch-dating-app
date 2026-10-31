@@ -166,7 +166,7 @@ class _DashboardFullSliverBodyState
       context.l10n.dashboardDashboardFullVisiblecopyOpenPost,
     );
     final parameters = <String, Object>{};
-    final organizerId = notification.organizerId ?? notification.organizerId;
+    final organizerId = notification.organizerId;
     final eventId = notification.eventId;
     if (organizerId != null) {
       parameters[AnalyticsParameters.organizerId] = organizerId;

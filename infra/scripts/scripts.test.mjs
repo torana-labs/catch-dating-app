@@ -232,6 +232,22 @@ test("play fingerprints read a lone hybrid v3.2 signer", (t) => {
   assert.equal(JSON.parse(result.stdout).sha256, sha256("56"));
 });
 
+test("play fingerprints list every signer when none has Play's SHA-256", (t) => {
+  const signer = (label, sha1Hex, sha256Hex) =>
+    `echo "${label} certificate SHA-256 digest: ${sha256Hex}"; echo "${label} certificate SHA-1 digest: ${sha1Hex}"`;
+  const result = play(t, {reported: sha256("99"), keytool: 'echo "Not a signed jar file"',
+    apksigner: [
+      signer("V3.2 Hybrid Classical Signer: (minSdkVersion=37, maxSdkVersion=2147483647)", sha1("34"), sha256("56")),
+      signer("Signer #1", sha1("12"), sha256("ef")),
+    ].join("; ")});
+  assert.equal(result.status, 1);
+  assert.ok(result.stderr.includes(
+    `signers found: V3.2 Hybrid Classical Signer: (minSdkVersion=37, maxSdkVersion=2147483647)=${sha256("56")}; ` +
+      `Signer #1=${sha256("ef")}; `,
+  ), result.stderr);
+  assert.match(result.stderr, /does not match Play's certificateSha256Hash/u);
+});
+
 test("play fingerprints explain why neither reader worked", (t) => {
   const result = play(t, {reported: sha256("ef"), keytool: 'echo "Not a signed jar file"',
     apksigner: 'echo "DOES NOT VERIFY"; echo "ERROR: no signers" >&2; exit 1'});
@@ -355,6 +371,46 @@ for (const [label, change] of [
   test(`plan guard refuses ${label}`, (t) => {
     const result = guard(t, planWith([change]));
     assert.equal(result.status, 1, result.stdout);
+  });
+}
+
+// --- Firestore recovery -------------------------------------------------------
+
+const recovered = {delete_protection_state: "DELETE_PROTECTION_ENABLED",
+  point_in_time_recovery_enablement: "POINT_IN_TIME_RECOVERY_ENABLED"};
+const databaseAdoption = {
+  address: "google_firestore_database.prod", mode: "managed", type: "google_firestore_database",
+  change: {actions: ["update"], importing: {id: "projects/catch-dating-app-64e51/databases/(default)"},
+    before: {delete_protection_state: "DELETE_PROTECTION_DISABLED",
+      point_in_time_recovery_enablement: "POINT_IN_TIME_RECOVERY_DISABLED"},
+    after: recovered},
+};
+const backupSchedule = {
+  address: "google_firestore_backup_schedule.prod_daily", mode: "managed",
+  type: "google_firestore_backup_schedule",
+  change: {actions: ["create"], before: null, after: {retention: "1209600s"}},
+};
+
+test("plan guard lets Terraform adopt the database, turn on recovery and add a backup schedule", (t) => {
+  const result = guard(t, planWith([databaseAdoption, backupSchedule]));
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /Plan guard: passed/u);
+});
+
+for (const [label, change] of [
+  ["creating a database instead of importing one", {...databaseAdoption,
+    change: {...databaseAdoption.change, actions: ["create"], importing: undefined}}],
+  ["turning delete protection off", {...databaseAdoption, change: {...databaseAdoption.change,
+    after: {...recovered, delete_protection_state: "DELETE_PROTECTION_DISABLED"}}}],
+  ["turning point-in-time recovery off", {...databaseAdoption, change: {...databaseAdoption.change,
+    after: {...recovered, point_in_time_recovery_enablement: "POINT_IN_TIME_RECOVERY_DISABLED"}}}],
+  ["deleting the backup schedule", {...backupSchedule,
+    change: {actions: ["delete"], before: {retention: "1209600s"}, after: null}}],
+]) {
+  test(`plan guard refuses ${label}`, (t) => {
+    const result = guard(t, planWith([change]));
+    assert.equal(result.status, 1, result.stdout);
+    assert.match(result.stdout, /Plan guard: \*\*refused\*\*/u);
   });
 }
 

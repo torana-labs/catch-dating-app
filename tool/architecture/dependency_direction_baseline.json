@@ -32,14 +32,6 @@
     },
     {
       "rule": "manualProviderDeclaration",
-      "path": "lib/hosts/presentation/host_operations/host_route_providers.dart",
-      "symbol": "_hostOrganizersForUserProvider",
-      "operation": "Provider.autoDispose.family",
-      "status": "accepted-exception",
-      "rationale": "Existing private auto-dispose adapter in a route part file; preserve the exact exception reviewed in provider_graph_reviews.json, without admitting additional declarations."
-    },
-    {
-      "rule": "manualProviderDeclaration",
       "path": "lib/programs/presentation/program_events_controller.dart",
       "symbol": "programCreateControllerProvider",
       "operation": "FutureProvider.autoDispose.family",

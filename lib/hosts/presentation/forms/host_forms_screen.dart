@@ -220,7 +220,8 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
           CatchLocalizedSliverErrorState(
             organizersState.error!,
             context: AppErrorContext.organizer,
-            onRetry: () => ref.invalidate(hostOperableOrganizersProvider(uid)),
+            onRetry: () =>
+                hostOperableOrganizerReads(uid).forEach(ref.invalidate),
           ),
         ],
       );

@@ -1,9 +1,9 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-10-24",
+  "updated": "2026-10-31",
   "sourceOfTruth": {
-    "behavior": "Each component contract in this registry owns runtime behavior, accessibility, layout, and state for every framework that implements it. Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled lib/core/widgets are the reference implementation; @catch/web-ui implements the same contracts for React.",
+    "behavior": "Each component contract in this registry owns runtime behavior, accessibility, layout, and state for every framework that implements it. Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled widgets in lib/contexts/*/parts and lib/platform are the reference implementation; @catch/web-ui implements the same contracts for React.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
     "designTools": "Figma and Claude Design may compose these contracts, but they do not own production widget implementation.",
     "handoff": "Design handoffs should name contract ids and props. Arbitrary JSX/CSS is proposal material until mapped to these contracts."

@@ -1690,12 +1690,7 @@
           "status": "aligned"
         }
       ],
-      "exceptions": [
-        {
-          "path": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
-          "reason": "_hostOrganizersForUserProvider remains the reviewed private part-file adapter exception recorded in provider_graph_reviews.json."
-        }
-      ],
+      "exceptions": [],
       "requiredBackPropagation": "When a handwritten feature-owned async provider family is migrated, preserve its provider name, family call shape, value-equality key semantics, lifecycle, .future access, and override contracts; regenerate adjacent output and remove the matching planned manual-provider review decision.",
       "requiredChecks": [
         "flutter test test/architecture/generated_provider_family_test.dart",

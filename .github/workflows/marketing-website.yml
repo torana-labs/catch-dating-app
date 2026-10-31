@@ -112,10 +112,12 @@ jobs:
       validated: ${{ steps.validation.outputs.validated }}
       capture_binding: ${{ steps.validation.outputs.capture_binding }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
       - id: toolchain
         uses: ./.github/actions/load-toolchain
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
       - name: Wait for successful same-source Marketing and capture jobs
@@ -124,7 +126,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: node tool/ci/wait_main_marketing_validation.mjs > marketing-validation.json
       - name: Save exact-source validation identity
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: marketing-validation-${{ github.run_id }}-${{ github.run_attempt }}
           path: marketing-validation.json
@@ -173,7 +175,6 @@ jobs:
     with:
       surface: marketing
       capture_binding: ${{ needs.ci-validation.outputs.capture_binding || needs.captures.outputs.capture_binding }}
-    secrets: inherit
     permissions:
       actions: read
       contents: read
@@ -192,7 +193,6 @@ jobs:
       source_ci_run_id: ${{ needs.package.outputs.source_ci_run_id }}
       source_sha: ${{ needs.package.outputs.source_sha }}
       surface: marketing
-    secrets: inherit
     permissions:
       actions: read
       contents: read
@@ -211,7 +211,6 @@ jobs:
       source_ci_run_id: ${{ inputs.recovery_source_run_id }}
       source_sha: ${{ inputs.recovery_source_sha }}
       surface: marketing
-    secrets: inherit
     permissions:
       actions: read
       contents: read

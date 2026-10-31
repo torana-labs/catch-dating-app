@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/event_assistance_participation_callable_response.g.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/set_event_assistance_participation_callable_payload.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_assistance_participation_fixtures.dart';
 
 void main() {
@@ -70,7 +69,7 @@ void main() {
 
   test('all typed participation commands match the shared wire contract', () {
     final schema = JsonSchema.create(
-      schemaSetEventAssistanceParticipationCallablePayloadSchema,
+      contractSchema('SetEventAssistanceParticipationCallablePayload'),
     );
     final view = participationView();
     for (final participation in [
@@ -113,7 +112,7 @@ void main() {
     );
     expect(
       JsonSchema.create(
-        schemaEventAssistanceParticipationCallableResponseSchema,
+        contractSchema('EventAssistanceParticipationCallableResponse'),
       ).validate(raw).isValid,
       isTrue,
     );
@@ -139,7 +138,7 @@ void main() {
         );
         expect(
           JsonSchema.create(
-            schemaEventAssistanceParticipationCallableResponseSchema,
+            contractSchema('EventAssistanceParticipationCallableResponse'),
           ).validate(raw).isValid,
           isTrue,
         );
@@ -159,7 +158,7 @@ void main() {
         );
         expect(
           JsonSchema.create(
-            schemaSetEventAssistanceParticipationCallablePayloadSchema,
+            contractSchema('SetEventAssistanceParticipationCallablePayload'),
           ).validate({
             'command': change.command,
             'expectedSourceHash': view.sourceHash,

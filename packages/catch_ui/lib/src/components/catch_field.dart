@@ -1,3 +1,4 @@
+// size-exemption: the Field facade, one public API for every field variant.
 // Public constructor names deliberately differ from private storage.
 // ignore_for_file: prefer_initializing_formals
 

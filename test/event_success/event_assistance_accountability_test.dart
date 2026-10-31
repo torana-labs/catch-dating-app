@@ -1,30 +1,29 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/platform/schema_contracts/generated/callables/resolve_event_assistance_accountability_callable_request.g.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schema_contracts.g.dart'
-    as schemas;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_assistance_accountability_fixtures.dart';
 
 void main() {
   Map<String, Object?> body(Map<String, Object?> wire) =>
       wire['view']! as Map<String, Object?>;
   final responseSchema = JsonSchema.create(
-    schemas
-        .schemaContractsByName['EventAssistanceAccountabilityCallableResponse']!,
+    contractSchema('EventAssistanceAccountabilityCallableResponse'),
   );
   final commandSchema = JsonSchema.create(
-    schemas
-        .schemaContractsByName['ResolveEventAssistanceAccountabilityCallablePayload']!,
+    contractSchema('ResolveEventAssistanceAccountabilityCallablePayload'),
   );
 
   test(
     'all canonical dispositions, outcomes and unavailable reasons have native coverage',
     () {
       final properties =
-          schemas.schemaContractsByName['EventAssistanceAccountabilityCallableResponse']!['properties']!
+          contractSchema(
+                'EventAssistanceAccountabilityCallableResponse',
+              )['properties']!
               as Map;
       final view = (properties['view']! as Map)['properties']! as Map;
       expect(

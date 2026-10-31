@@ -4,12 +4,10 @@ import 'dart:io';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_deliveries_page.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.dart';
 import 'package:catch_dating_app/platform/schema_contracts/generated/callables/repair_event_assistance_delivery_callable_request.g.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/event_assistance_deliveries_callable_response.g.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/event_assistance_delivery_callable_response.g.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/schemas/repair_event_assistance_delivery_callable_payload.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import '../support/contract_schemas.dart';
 import 'event_assistance_deliveries_fixtures.dart';
 
 void main() {
@@ -20,7 +18,7 @@ void main() {
         serverTime: now,
       );
   final pageSchema = JsonSchema.create(
-    schemaEventAssistanceDeliveriesCallableResponseSchema,
+    contractSchema('EventAssistanceDeliveriesCallableResponse'),
   );
 
   test(
@@ -34,7 +32,7 @@ void main() {
       ).toJson();
       expect(
         JsonSchema.create(
-          schemaRepairEventAssistanceDeliveryCallablePayloadSchema,
+          contractSchema('RepairEventAssistanceDeliveryCallablePayload'),
         ).validate(input).isValid,
         isTrue,
       );
@@ -56,7 +54,7 @@ void main() {
       );
       expect(
         JsonSchema.create(
-          schemaEventAssistanceDeliveryCallableResponseSchema,
+          contractSchema('EventAssistanceDeliveryCallableResponse'),
         ).validate(deliveryResultResponse(change)).isValid,
         isTrue,
       );
