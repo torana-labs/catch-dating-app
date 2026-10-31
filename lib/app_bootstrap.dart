@@ -9,6 +9,7 @@ import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/platform/errors/error_logger.dart';
+import 'package:catch_dating_app/platform/errors/provider_retry_policy.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_dating_app/platform/push/fcm_service.dart';
@@ -121,7 +122,11 @@ Future<void> runCatchApp({
 @visibleForTesting
 ProviderContainer createCatchAppContainer({
   List<Override> overrides = const [],
-}) => ProviderContainer(overrides: overrides, observers: [_asyncErrorLogger()]);
+}) => ProviderContainer(
+  overrides: overrides,
+  observers: [_asyncErrorLogger()],
+  retry: catchProviderRetry,
+);
 
 AsyncErrorLogger _asyncErrorLogger() {
   return AsyncErrorLogger(
