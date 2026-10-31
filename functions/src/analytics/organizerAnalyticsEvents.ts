@@ -174,12 +174,9 @@ async function assertOrganizerScope(
       throw new HttpsError("not-found", "Event not found.");
     }
     const ownerId = eventSnapshot.exists ?
-      snapshot.get("organizerId") ?? snapshot.get("organizerId") :
+      snapshot.get("organizerId") :
       snapshot.get("canonicalHostId");
-    if (ownerId !== organizerId ||
-        (eventSnapshot.exists && snapshot.get("organizerId") &&
-         snapshot.get("organizerId") &&
-         snapshot.get("organizerId") !== snapshot.get("organizerId"))) {
+    if (ownerId !== organizerId) {
       throw new HttpsError(
         "invalid-argument", "Event does not belong to that organizer."
       );
