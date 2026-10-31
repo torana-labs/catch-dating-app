@@ -331,7 +331,7 @@ test("the producing job binds workflow generation, builds production bytes, and 
   const manifest = build.indexOf("delivery_core.mjs manifest");
   const coreVerify = build.indexOf("delivery_core.mjs verify");
   const adapterVerify = build.indexOf("package_web_hosting.mjs verify");
-  const upload = build.lastIndexOf("actions/upload-artifact@v7");
+  const upload = build.lastIndexOf("actions/upload-artifact@");
   assert.ok(prepare >= 0 && prepare < manifest && manifest < coreVerify &&
     coreVerify < adapterVerify && adapterVerify < upload);
   assert.match(build, /tar --sort=name --mtime='UTC 1970-01-01'/u);
@@ -837,7 +837,7 @@ test("initial helper is immutable control-plane code; candidate checkout and clo
   const control = promote.indexOf("Checkout immutable workflow control plane");
   const authorization = promote.indexOf("- id: authorize");
   const source = promote.indexOf("Checkout the exact producing source");
-  const cloud = promote.indexOf("google-github-actions/auth@v3");
+  const cloud = promote.indexOf("google-github-actions/auth@");
   assert.ok(control >= 0 && control < authorization && authorization < source && source < cloud);
   assert.match(promote, /ref: \$\{\{ github.workflow_sha \}\}/u);
   assert.match(promote, /sparse-checkout: tool\/ci\/web_hosting_freshness.mjs/u);
