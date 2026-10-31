@@ -2,8 +2,6 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp, FieldValue} from "firebase-admin/firestore";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
-import {validateEventSetupReceiptDocument} from
-  "../shared/generated/validators/eventSetupReceiptDocument";
 import {validateUpdateEventCallablePayload} from
   "../shared/generated/validators/updateEventInput";
 import {FakeFirestore} from "../shared/testing/programFirestore";
@@ -13,6 +11,10 @@ import {
   eventMediaFingerprint,
   updateEventMediaRecovery,
 } from "./eventMediaRecovery";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateEventSetupReceiptDocument =
+  contractValidator("EventSetupReceiptDocument");
 
 function fixture() {
   const store = new FakeFirestore({

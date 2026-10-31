@@ -8,13 +8,15 @@ import {validateProgramLodgingReceiptDocument} from
   "../shared/generated/validators/programLodgingReceiptDocument";
 import {validateWorkspaceMembershipAssertionDocument} from
   "../shared/generated/validators/workspaceMembershipAssertionDocument";
-import {validateWorkspaceMembershipDecisionDocument} from
-  "../shared/generated/validators/workspaceMembershipDecisionDocument";
 import {selectWorkspaceMembership, workspaceMembershipAssertionId} from
   "../workspaces/workspaceMembershipAuthority";
 import type {WorkspaceMembershipAssertion} from
   "../workspaces/workspaceMembershipAuthority";
 import {lodgingProposalId} from "./programLodgingPlanner";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateWorkspaceMembershipDecisionDocument =
+  contractValidator("WorkspaceMembershipDecisionDocument");
 
 const scope = {organizerId: "org", programId: "program"};
 const revisions = {source: 1, inventory: 1, layout: 1, published: 0};

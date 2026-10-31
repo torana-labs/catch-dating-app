@@ -6,12 +6,14 @@ import {
   syncHostProfileProjectionsHandler,
   syncUserProfileProjectionsHandler,
 } from "./syncPublicProfile";
-import {defaultProfilePromptIds} from "../shared/generated/schemaRegistry";
 import {removeOrganizerManagerHandler, transferOrganizerOwnershipHandler} from
   "../organizers/manageOrganizerTeam";
 import {getOrganizerEventSetupDefaultsHandler} from
   "../organizers/eventSetupDefaults/callables";
 import {isOrganizerManager} from "../shared/organizerHosts";
+import {defaultProfilePromptIds} from
+  "../shared/generated/catalogs/defaultProfilePromptIds";
+
 
 type FakeData = Record<string, unknown>;
 

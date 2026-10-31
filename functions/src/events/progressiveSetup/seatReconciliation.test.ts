@@ -3,8 +3,6 @@ import test from "node:test";
 import {Timestamp, FieldValue} from "firebase-admin/firestore";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {reconcilePrivateEventSeatsHandler} from "./callables";
-import {validateEventSetupReceiptDocument} from
-  "../../shared/generated/validators/eventSetupReceiptDocument";
 import {Store, migrationTestAttendee, migrationTestEvent} from
   "../seatAuthority/migrationTestFixture";
 import {getManagerEventSetupDefaults} from
@@ -15,6 +13,10 @@ import {reconcilePrivateEventSeats, SeatReconciliationDependencies} from
   "./seatReconciliation";
 import {UpdatePrivateEventDetailsCommand, updatePrivateEventDetails} from
   "./details";
+import {contractValidator} from "../../shared/contractTestValidators";
+
+const validateEventSetupReceiptDocument =
+  contractValidator("EventSetupReceiptDocument");
 
 async function setup() {
   const store = new Store();

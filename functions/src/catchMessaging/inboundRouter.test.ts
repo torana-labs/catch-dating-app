@@ -6,12 +6,15 @@ import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import {SUPPLY_NOMINATORS, whatsappNominatorId} from "../operations/supplyIntake/nominators";
 import {packagedMessageParser} from "../operations/supplyIntake/runtime";
-import {validateSupplyIntakeRequestsDocument} from "../shared/generated/validators/supplyIntakeRequestsDocument";
 import type {CatchAutoReplyRequest} from "./autoReply";
 import {CATCH_CLARIFICATIONS, routeCatchWhatsappInbound, type CatchInboundRouterDeps} from "./inboundRouter";
 import {TestDocStore} from "./testDocStore";
 import {CATCH_RECEIPTS, type CatchReceipt} from "./whatsappEndpointStops";
 import {catchEndpointHash} from "./whatsappReply";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateSupplyIntakeRequestsDocument =
+  contractValidator("SupplyIntakeRequestsDocument");
 
 // The build post-step copies the Operations runtime into lib; tests use it.
 execFileSync(process.execPath, [path.join(__dirname, "../../scripts/copy-operations-runtime.cjs")]);

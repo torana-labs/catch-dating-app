@@ -2,83 +2,246 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
-import {
-  schemaErrorMessages,
-  validateActivityNotificationDocument,
-  validateArchiveOrganizerCallablePayload,
-  validateBlockUserCallablePayload,
-  validateBlockDocument,
-  validateCancelEventCallablePayload,
-  validateChatMessageDocument,
-  validateConfigCitiesDocument,
-  validateCreateEventCallablePayload,
-  validateCreateOrganizerCallablePayload,
-  validateCreateOrganizerCallableResponse,
-  validateCreateEventReviewCallablePayload,
-  validateCreateChatMessageClientWrite,
-  validateCreateProfileDecisionClientWrite,
-  validateCreateSavedEventClientWrite,
-  validateDeleteEventCallablePayload,
-  validateDeleteOrganizerCallablePayload,
-  validateDeleteEventReviewCallablePayload,
-  validateDeleteSavedEventClientWrite,
-  validateDeletedUserTombstoneDocument,
-  validateFunctionEventReceiptDocument,
-  validateFetchSwipeCandidatesCallableResponse,
-  validateMarkNotificationReadClientWrite,
-  validateMarkEventAttendanceCallablePayload,
-  validateMarkEventAttendanceCallableResponse,
-  validateMatchDocument,
-  validateModerationFlagDocument,
-  validateOnboardingDraftDocument,
-  validatePaymentDocument,
-  validatePlaceDetailsCallablePayload,
-  validatePlaceDetailsCallableResponse,
-  validatePlacesAutocompleteCallablePayload,
-  validatePlacesAutocompleteCallableResponse,
-  validatePhotoPromptAnswer,
-  validateProfilePhoto,
-  validateProfilePromptAnswer,
-  validatePublicProfileDocument,
-  validateRateLimitDocument,
-  validateReportDocument,
-  validateReportUserCallablePayload,
-  validateReviewDocument,
-  validateResetMatchUnreadCountClientWrite,
-  validateOrganizerHostClaimDocument,
-  validateOrganizerScheduleLockDocument,
-  validateEventIdCallablePayload,
-  validateOrganizerDocument,
-  validateOrganizerMembershipDocument,
-  validateEventDocument,
-  validateExternalEventDocument,
-  validateEventParticipationDocument,
-  validateEventSafetyReportDocument,
-  validateEventSuccessAssignmentDocument,
-  validateEventSuccessCompatibilityResponseDocument,
-  validateEventSuccessConversationGraphDocument,
-  validateEventSuccessFeedbackDocument,
-  validateEventSuccessPlanDocument,
-  validateEventSuccessPreferenceDocument,
-  validateEventSuccessScorecardDocument,
-  validateEventSuccessWingmanRequestDocument,
-  validateSubmitEventSuccessWingmanRequestCallablePayload,
-  validateSavedEventDocument,
-  validateSeedEventManifestDocument,
-  validateOrganizerMembershipCallablePayload,
-  validateSelfCheckInAttendanceCallablePayload,
-  validateSetOrganizerNotificationPreferenceCallablePayload,
-  validateSwipeDocument,
-  validateUpdateUserProfileCallablePayload,
-  validateUpdateEventCallablePayload,
-  validateUpdateOrganizerCallablePayload,
-  validateUpdateEventReviewCallablePayload,
-  validateUnblockUserCallablePayload,
-  validateUserEventScheduleLockDocument,
-  validateUserProfileDocument,
-  validateVerifyRazorpayPaymentCallablePayload,
-  validateRazorpayOrderCallableResponse,
-} from "./generated/schemaValidators";
+import type {ActivityNotificationDocument} from
+  "./generated/activityNotificationDocument";
+import type {ArchiveOrganizerCallablePayload} from
+  "./generated/archiveOrganizerCallablePayload";
+import type {BlockUserCallablePayload} from
+  "./generated/blockUserCallablePayload";
+import type {CancelEventCallablePayload} from
+  "./generated/cancelEventCallablePayload";
+import type {ChatMessageDocument} from "./generated/chatMessageDocument";
+import type {CreateEventCallablePayload} from
+  "./generated/createEventCallablePayload";
+import type {CreateOrganizerCallablePayload} from
+  "./generated/createOrganizerCallablePayload";
+import type {CreateEventReviewCallablePayload} from
+  "./generated/createEventReviewCallablePayload";
+import type {DeleteEventCallablePayload} from
+  "./generated/deleteEventCallablePayload";
+import type {DeleteOrganizerCallablePayload} from
+  "./generated/deleteOrganizerCallablePayload";
+import type {DeleteEventReviewCallablePayload} from
+  "./generated/deleteEventReviewCallablePayload";
+import type {FetchSwipeCandidatesCallableResponse} from
+  "./generated/fetchSwipeCandidatesCallableResponse";
+import type {MarkEventAttendanceCallablePayload} from
+  "./generated/markEventAttendanceCallablePayload";
+import type {MatchDocument} from "./generated/matchDocument";
+import type {PaymentDocument} from "./generated/paymentDocument";
+import type {PlaceDetailsCallablePayload} from
+  "./generated/placeDetailsCallablePayload";
+import type {PlacesAutocompleteCallablePayload} from
+  "./generated/placesAutocompleteCallablePayload";
+import type {PhotoPromptAnswer} from "./generated/photoPromptAnswer";
+import type {ProfilePhoto} from "./generated/profilePhoto";
+import type {ProfilePromptAnswer} from "./generated/profilePromptAnswer";
+import type {PublicProfileDocument} from "./generated/publicProfileDocument";
+import type {ReportUserCallablePayload} from
+  "./generated/reportUserCallablePayload";
+import type {EventIdCallablePayload} from "./generated/eventIdCallablePayload";
+import type {OrganizerDocument} from "./generated/organizerDocument";
+import type {EventDocument} from "./generated/eventDocument";
+import type {ExternalEventDocument} from "./generated/externalEventDocument";
+import type {EventParticipationDocument} from
+  "./generated/eventParticipationDocument";
+import type {EventSuccessPlanDocument} from
+  "./generated/eventSuccessPlanDocument";
+import type {SubmitEventSuccessWingmanRequestCallablePayload} from
+  "./generated/submitEventSuccessWingmanRequestCallablePayload";
+import type {SavedEventDocument} from "./generated/savedEventDocument";
+import type {SelfCheckInAttendanceCallablePayload} from
+  "./generated/selfCheckInAttendanceCallablePayload";
+import type {SetOrganizerNotificationPreferenceCallablePayload} from
+  "./generated/setOrganizerNotificationPreferenceCallablePayload";
+import type {SwipeDocument} from "./generated/swipeDocument";
+import type {UpdateUserProfileCallablePayload} from
+  "./generated/updateUserProfileCallablePayload";
+import type {UpdateEventCallablePayload} from
+  "./generated/updateEventCallablePayload";
+import type {UpdateOrganizerCallablePayload} from
+  "./generated/updateOrganizerCallablePayload";
+import type {UpdateEventReviewCallablePayload} from
+  "./generated/updateEventReviewCallablePayload";
+import type {UnblockUserCallablePayload} from
+  "./generated/unblockUserCallablePayload";
+import type {UserProfileDocument} from "./generated/userProfileDocument";
+import type {VerifyRazorpayPaymentCallablePayload} from
+  "./generated/verifyRazorpayPaymentCallablePayload";
+import {schemaErrorMessages} from "./generated/schemaValidationRuntime";
+import {contractValidator} from "./contractTestValidators";
+
+const validateActivityNotificationDocument =
+  contractValidator<ActivityNotificationDocument>(
+    "ActivityNotificationDocument"
+  );
+const validateArchiveOrganizerCallablePayload =
+  contractValidator<ArchiveOrganizerCallablePayload>(
+    "ArchiveOrganizerCallablePayload"
+  );
+const validateBlockUserCallablePayload =
+  contractValidator<BlockUserCallablePayload>("BlockUserCallablePayload");
+const validateBlockDocument = contractValidator("BlockDocument");
+const validateCancelEventCallablePayload =
+  contractValidator<CancelEventCallablePayload>("CancelEventCallablePayload");
+const validateChatMessageDocument =
+  contractValidator<ChatMessageDocument>("ChatMessageDocument");
+const validateConfigCitiesDocument = contractValidator("ConfigCitiesDocument");
+const validateCreateEventCallablePayload =
+  contractValidator<CreateEventCallablePayload>("CreateEventCallablePayload");
+const validateCreateOrganizerCallablePayload =
+  contractValidator<CreateOrganizerCallablePayload>(
+    "CreateOrganizerCallablePayload"
+  );
+const validateCreateOrganizerCallableResponse =
+  contractValidator("CreateOrganizerCallableResponse");
+const validateCreateEventReviewCallablePayload =
+  contractValidator<CreateEventReviewCallablePayload>(
+    "CreateEventReviewCallablePayload"
+  );
+const validateCreateChatMessageClientWrite =
+  contractValidator("CreateChatMessageClientWrite");
+const validateCreateProfileDecisionClientWrite =
+  contractValidator("CreateProfileDecisionClientWrite");
+const validateCreateSavedEventClientWrite =
+  contractValidator("CreateSavedEventClientWrite");
+const validateDeleteEventCallablePayload =
+  contractValidator<DeleteEventCallablePayload>("DeleteEventCallablePayload");
+const validateDeleteOrganizerCallablePayload =
+  contractValidator<DeleteOrganizerCallablePayload>(
+    "DeleteOrganizerCallablePayload"
+  );
+const validateDeleteEventReviewCallablePayload =
+  contractValidator<DeleteEventReviewCallablePayload>(
+    "DeleteEventReviewCallablePayload"
+  );
+const validateDeleteSavedEventClientWrite =
+  contractValidator("DeleteSavedEventClientWrite");
+const validateDeletedUserTombstoneDocument =
+  contractValidator("DeletedUserTombstoneDocument");
+const validateFunctionEventReceiptDocument =
+  contractValidator("FunctionEventReceiptDocument");
+const validateFetchSwipeCandidatesCallableResponse =
+  contractValidator<FetchSwipeCandidatesCallableResponse>(
+    "FetchSwipeCandidatesCallableResponse"
+  );
+const validateMarkNotificationReadClientWrite =
+  contractValidator("MarkNotificationReadClientWrite");
+const validateMarkEventAttendanceCallablePayload =
+  contractValidator<MarkEventAttendanceCallablePayload>(
+    "MarkEventAttendanceCallablePayload"
+  );
+const validateMarkEventAttendanceCallableResponse =
+  contractValidator("MarkEventAttendanceCallableResponse");
+const validateMatchDocument = contractValidator<MatchDocument>("MatchDocument");
+const validateModerationFlagDocument =
+  contractValidator("ModerationFlagDocument");
+const validateOnboardingDraftDocument =
+  contractValidator("OnboardingDraftDocument");
+const validatePaymentDocument =
+  contractValidator<PaymentDocument>("PaymentDocument");
+const validatePlaceDetailsCallablePayload =
+  contractValidator<PlaceDetailsCallablePayload>("PlaceDetailsCallablePayload");
+const validatePlaceDetailsCallableResponse =
+  contractValidator("PlaceDetailsCallableResponse");
+const validatePlacesAutocompleteCallablePayload =
+  contractValidator<PlacesAutocompleteCallablePayload>(
+    "PlacesAutocompleteCallablePayload"
+  );
+const validatePlacesAutocompleteCallableResponse =
+  contractValidator("PlacesAutocompleteCallableResponse");
+const validatePhotoPromptAnswer =
+  contractValidator<PhotoPromptAnswer>("PhotoPromptAnswer");
+const validateProfilePhoto = contractValidator<ProfilePhoto>("ProfilePhoto");
+const validateProfilePromptAnswer =
+  contractValidator<ProfilePromptAnswer>("ProfilePromptAnswer");
+const validatePublicProfileDocument =
+  contractValidator<PublicProfileDocument>("PublicProfileDocument");
+const validateRateLimitDocument = contractValidator("RateLimitDocument");
+const validateReportDocument = contractValidator("ReportDocument");
+const validateReportUserCallablePayload =
+  contractValidator<ReportUserCallablePayload>("ReportUserCallablePayload");
+const validateReviewDocument = contractValidator("ReviewDocument");
+const validateResetMatchUnreadCountClientWrite =
+  contractValidator("ResetMatchUnreadCountClientWrite");
+const validateOrganizerHostClaimDocument =
+  contractValidator("OrganizerHostClaimDocument");
+const validateOrganizerScheduleLockDocument =
+  contractValidator("OrganizerScheduleLockDocument");
+const validateEventIdCallablePayload =
+  contractValidator<EventIdCallablePayload>("EventIdCallablePayload");
+const validateOrganizerDocument =
+  contractValidator<OrganizerDocument>("OrganizerDocument");
+const validateOrganizerMembershipDocument =
+  contractValidator("OrganizerMembershipDocument");
+const validateEventDocument = contractValidator<EventDocument>("EventDocument");
+const validateExternalEventDocument =
+  contractValidator<ExternalEventDocument>("ExternalEventDocument");
+const validateEventParticipationDocument =
+  contractValidator<EventParticipationDocument>("EventParticipationDocument");
+const validateEventSafetyReportDocument =
+  contractValidator("EventSafetyReportDocument");
+const validateEventSuccessAssignmentDocument =
+  contractValidator("EventSuccessAssignmentDocument");
+const validateEventSuccessCompatibilityResponseDocument =
+  contractValidator("EventSuccessCompatibilityResponseDocument");
+const validateEventSuccessConversationGraphDocument =
+  contractValidator("EventSuccessConversationGraphDocument");
+const validateEventSuccessFeedbackDocument =
+  contractValidator("EventSuccessFeedbackDocument");
+const validateEventSuccessPlanDocument =
+  contractValidator<EventSuccessPlanDocument>("EventSuccessPlanDocument");
+const validateEventSuccessPreferenceDocument =
+  contractValidator("EventSuccessPreferenceDocument");
+const validateEventSuccessScorecardDocument =
+  contractValidator("EventSuccessScorecardDocument");
+const validateEventSuccessWingmanRequestDocument =
+  contractValidator("EventSuccessWingmanRequestDocument");
+const validateSubmitEventSuccessWingmanRequestCallablePayload =
+  contractValidator<SubmitEventSuccessWingmanRequestCallablePayload>(
+    "SubmitEventSuccessWingmanRequestCallablePayload"
+  );
+const validateSavedEventDocument =
+  contractValidator<SavedEventDocument>("SavedEventDocument");
+const validateSeedEventManifestDocument =
+  contractValidator("SeedEventManifestDocument");
+const validateOrganizerMembershipCallablePayload =
+  contractValidator("OrganizerMembershipCallablePayload");
+const validateSelfCheckInAttendanceCallablePayload =
+  contractValidator<SelfCheckInAttendanceCallablePayload>(
+    "SelfCheckInAttendanceCallablePayload"
+  );
+const validateSetOrganizerNotificationPreferenceCallablePayload =
+  contractValidator<SetOrganizerNotificationPreferenceCallablePayload>(
+    "SetOrganizerNotificationPreferenceCallablePayload"
+  );
+const validateSwipeDocument = contractValidator<SwipeDocument>("SwipeDocument");
+const validateUpdateUserProfileCallablePayload =
+  contractValidator<UpdateUserProfileCallablePayload>(
+    "UpdateUserProfileCallablePayload"
+  );
+const validateUpdateEventCallablePayload =
+  contractValidator<UpdateEventCallablePayload>("UpdateEventCallablePayload");
+const validateUpdateOrganizerCallablePayload =
+  contractValidator<UpdateOrganizerCallablePayload>(
+    "UpdateOrganizerCallablePayload"
+  );
+const validateUpdateEventReviewCallablePayload =
+  contractValidator<UpdateEventReviewCallablePayload>(
+    "UpdateEventReviewCallablePayload"
+  );
+const validateUnblockUserCallablePayload =
+  contractValidator<UnblockUserCallablePayload>("UnblockUserCallablePayload");
+const validateUserEventScheduleLockDocument =
+  contractValidator("UserEventScheduleLockDocument");
+const validateUserProfileDocument =
+  contractValidator<UserProfileDocument>("UserProfileDocument");
+const validateVerifyRazorpayPaymentCallablePayload =
+  contractValidator<VerifyRazorpayPaymentCallablePayload>(
+    "VerifyRazorpayPaymentCallablePayload"
+  );
+const validateRazorpayOrderCallableResponse =
+  contractValidator("RazorpayOrderCallableResponse");
 
 type Validator = Parameters<typeof schemaErrorMessages>[0];
 const contractRoot = fs.existsSync(path.resolve(process.cwd(), "contracts")) ?

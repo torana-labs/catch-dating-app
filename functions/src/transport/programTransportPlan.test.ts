@@ -6,8 +6,14 @@ import {baseSeed, deps, request, now} from "../shared/testing/programFixtures";
 import {FakeFirestore} from "../shared/testing/programFirestore";
 import {getProgramArrivalsRosterHandler, getProgramTransportPlanHandler}
   from "./programArrivals";
-import {validateProgramTransportPlanCallableResponse} from
-  "../shared/generated/validators/programTransportPlanOutput";
+import type {ProgramTransportPlanCallableResponse} from
+  "../shared/generated/programTransportPlanCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateProgramTransportPlanCallableResponse =
+  contractValidator<ProgramTransportPlanCallableResponse>(
+    "ProgramTransportPlanCallableResponse"
+  );
 
 async function plan(db: FakeFirestore) {
   const result = await getProgramTransportPlanHandler(

@@ -2,15 +2,20 @@
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {currentPartnerActor} from "../../partners/callables";
 import {validateCallableWithAjv} from "../../shared/validation";
-import {validateGenerateSalesPartnerOutreachCallablePayload} from "../../shared/generated/validators/generateSalesPartnerOutreachInput";
-import {validateGetSalesPartnerOutreachJobCallablePayload} from "../../shared/generated/validators/getSalesPartnerOutreachJobInput";
-import {validateGetSalesPartnerOutreachDraftCallablePayload} from "../../shared/generated/validators/getSalesPartnerOutreachDraftInput";
-import {validateReviewSalesPartnerOutreachDraftCallablePayload} from "../../shared/generated/validators/reviewSalesPartnerOutreachDraftInput";
-import {validateCopySalesPartnerOutreachDraftCallablePayload} from "../../shared/generated/validators/copySalesPartnerOutreachDraftInput";
-import {validateRecordSalesPartnerManualSendCallablePayload} from "../../shared/generated/validators/recordSalesPartnerManualSendInput";
-import {validateSalesActivityDocument} from "../../shared/generated/validators/salesActivityDocument";
-import {validateGetSalesPartnerPreparationCallablePayload} from "../../shared/generated/validators/getSalesPartnerPreparationInput";
-import {validateAdminGetSalesIntelligenceCatalogResponse} from "../../shared/generated/validators/adminGetSalesIntelligenceCatalogResponse";
+import {validateGenerateSalesPartnerOutreachCallablePayload} from
+  "../../shared/generated/validators/generateSalesPartnerOutreachInput";
+import {validateGetSalesPartnerOutreachJobCallablePayload} from
+  "../../shared/generated/validators/getSalesPartnerOutreachJobInput";
+import {validateGetSalesPartnerOutreachDraftCallablePayload} from
+  "../../shared/generated/validators/getSalesPartnerOutreachDraftInput";
+import {validateReviewSalesPartnerOutreachDraftCallablePayload} from
+  "../../shared/generated/validators/reviewSalesPartnerOutreachDraftInput";
+import {validateCopySalesPartnerOutreachDraftCallablePayload} from
+  "../../shared/generated/validators/copySalesPartnerOutreachDraftInput";
+import {validateRecordSalesPartnerManualSendCallablePayload} from
+  "../../shared/generated/validators/recordSalesPartnerManualSendInput";
+import {validateGetSalesPartnerPreparationCallablePayload} from
+  "../../shared/generated/validators/getSalesPartnerPreparationInput";
 import {strict as assert} from "node:assert";
 import {readFileSync} from "node:fs";
 import Ajv from "ajv";
@@ -30,6 +35,12 @@ import {buildOutreachInput, buildPartnerOutreachInput, recordPartnerOperationsDr
   recordPartnerManualSend, getPartnerPreparation, getIntelligenceCatalog, reviewIntelligenceClause,
   type DraftRequest, type IntelligenceDeps} from "./service";
 import {PARTNER_TERMS_VERSION, type PartnerDeps} from "../../partners/model";
+import {contractValidator} from "../../shared/contractTestValidators";
+
+const validateSalesActivityDocument =
+  contractValidator("SalesActivityDocument");
+const validateAdminGetSalesIntelligenceCatalogResponse =
+  contractValidator("AdminGetSalesIntelligenceCatalogResponse");
 
 const started = "2026-09-28T10:00:00.000Z";
 const sampleRequest = {requestId: "draft-request-123",

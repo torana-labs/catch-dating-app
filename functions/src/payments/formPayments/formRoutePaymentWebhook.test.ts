@@ -6,8 +6,10 @@ import {recordFormRoutePaymentWebhook, processFormRoutePaymentWebhook,
   formRouteWebhookConfigurationVersion} from "./formRoutePaymentWebhook";
 import type {OrganizerFormPaymentDocument as Payment} from
   "../../shared/generated/firestoreAdminTypes";
-import {validateOrganizerFormPaymentWebhookDocument} from
-  "../../shared/generated/validators/organizerFormPaymentWebhookDocument";
+import {contractValidator} from "../../shared/contractTestValidators";
+
+const validateOrganizerFormPaymentWebhookDocument =
+  contractValidator("OrganizerFormPaymentWebhookDocument");
 
 const version = "projects/catch-test/secrets/PLATFORM/versions/1";
 async function fixture() {

@@ -10,6 +10,7 @@ import test from "node:test";
 import * as canonical from "./generated/schema_contract_registry.mjs";
 import {
   boundFieldConstraints,
+  functionsRuntimeModules,
   publishSchemaOutputs,
 } from "./generate_schema_contracts.mjs";
 
@@ -20,7 +21,7 @@ const ts = requireFromFunctions("typescript");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
-test("modular Functions schemas preserve every canonical schema and catalog value", () => {
+test("modular Functions schemas match their canonical schema and catalog values", () => {
   const actual = {};
   for (const directory of ["schemas", "catalogs"]) {
     const folder = path.join(root, "functions/src/shared/generated", directory);
@@ -39,10 +40,72 @@ test("modular Functions schemas preserve every canonical schema and catalog valu
       actual[name] = JSON.parse(expression.getText(source));
     }
   }
-  assert.deepEqual(Object.keys(actual).sort(), Object.keys(canonical).sort());
-  for (const [name, value] of Object.entries(canonical)) {
-    assert.deepEqual(actual[name], value, `Schema/catalog semantics drifted: ${name}`);
+  const declared = JSON.parse(fs.readFileSync(
+    path.join(root, "contracts/functions/runtime_modules.json"), "utf8"));
+  const expectedSchemas = declared.validators.map((name) =>
+    `${name.charAt(0).toLowerCase()}${name.slice(1)}Schema`);
+  const emittedSchemas = Object.keys(actual).filter((name) =>
+    name.endsWith("Schema") && Object.hasOwn(canonical, name));
+  assert.deepEqual(emittedSchemas.sort(), expectedSchemas.sort(),
+    "Functions schema modules must be exactly the declared runtime validators");
+  for (const [name, value] of Object.entries(actual)) {
+    assert.ok(Object.hasOwn(canonical, name), `Unknown generated export: ${name}`);
+    assert.deepEqual(value, canonical[name], `Schema/catalog semantics drifted: ${name}`);
   }
+});
+
+test("declared Functions runtime modules are imported by runtime code", () => {
+  const declared = JSON.parse(fs.readFileSync(
+    path.join(root, "contracts/functions/runtime_modules.json"), "utf8"));
+  const generated = path.join(root, "functions/src/shared/generated");
+  const moduleOf = new Map();
+  for (const directory of ["validators", "schemas"]) {
+    for (const file of fs.readdirSync(path.join(generated, directory))) {
+      const source = fs.readFileSync(path.join(generated, directory, file), "utf8");
+      const match = source.match(/export const (?:validate(\w+)|(\w+)Schema)\b/);
+      const name = match[1] ?? `${match[2][0].toUpperCase()}${match[2].slice(1)}`;
+      moduleOf.set(`${directory}:${name}`, path.join(generated, directory, file));
+    }
+  }
+  for (const file of fs.readdirSync(generated)) {
+    if (!file.endsWith(".ts")) continue;
+    const source = fs.readFileSync(path.join(generated, file), "utf8");
+    for (const match of source.matchAll(/^export (?:interface|type) (\w+)\b/gm)) {
+      if (!moduleOf.has(`types:${match[1]}`)) {
+        moduleOf.set(`types:${match[1]}`, path.join(generated, file));
+      }
+    }
+  }
+  const imported = new Set();
+  const runtimeSources = (directory) => fs.existsSync(directory) ?
+    fs.readdirSync(directory, {recursive: true})
+      .map((file) => path.join(directory, file))
+      .filter((file) => /\.(tsx?|cjs|mjs|js)$/.test(file) &&
+        !/\.test\.ts$/.test(file) && !file.includes("/generated/")) :
+    [];
+  for (const file of [
+    ...runtimeSources(path.join(root, "functions/src")),
+    ...runtimeSources(path.join(root, "functions/scripts")),
+    ...runtimeSources(path.join(root, "admin/src/shared")),
+    ...runtimeSources(path.join(root, "website/src")),
+  ]) {
+    const info = ts.preProcessFile(fs.readFileSync(file, "utf8"), true, true);
+    for (const {fileName} of info.importedFiles) {
+      if (!fileName.startsWith(".")) continue;
+      imported.add(path.resolve(path.dirname(file), fileName)
+        .replace("/functions/lib/", "/functions/src/")
+        .replace(/\.js$/, "").concat(".ts"));
+    }
+  }
+  const unused = [
+    ...declared.validators.filter((name) =>
+      !imported.has(moduleOf.get(`validators:${name}`)) &&
+      !imported.has(moduleOf.get(`schemas:${name}`))),
+    ...declared.types.filter((name) =>
+      !imported.has(moduleOf.get(`types:${name}`))),
+  ];
+  assert.deepEqual(unused, [],
+    "Remove these from contracts/functions/runtime_modules.json and regenerate");
 });
 
 const dartDirectories = [
@@ -189,4 +252,38 @@ test("field constraint bindings fail on paths no schema projects", () => {
     lookupPrefixes: ["claim.profile."],
     fields: {event: ["title", "subtitle"]},
   }), /- event\.subtitle\n- claim\.profile\.\*/);
+});
+
+test("Functions runtime modules close over generated type dependencies", () => {
+  const modules = functionsRuntimeModules({
+    declaration: {validators: ["EventDocument"], types: ["Organizer"]},
+    specNames: ["EventDocument", "Organizer", "Venue", "Photo", "Unused"],
+    typeDependencies: new Map([["EventDocument", ["Venue"]], ["Venue", ["Photo"]]]),
+    adminTypeDependencies: ["Photo"],
+  });
+  assert.deepEqual([...modules.validators], ["EventDocument"]);
+  assert.deepEqual([...modules.types].sort(),
+    ["EventDocument", "Organizer", "Photo", "Venue"]);
+});
+
+test("Functions runtime modules reject undeclared schema spec names", () => {
+  assert.throws(() => functionsRuntimeModules({
+    declaration: {validators: ["EventDocument"], types: ["Missing"]},
+    specNames: ["EventDocument"],
+    typeDependencies: new Map(),
+    adminTypeDependencies: [],
+  }), /unknown schema specs:\n- Missing/);
+});
+
+test("check reports and publish removes retired outputs only when present", (t) => {
+  const fixture = outputFixture(t);
+  const retired = "functions/src/shared/generated/schemaValidators.ts";
+  fixture.write(retired, "export {};\n");
+  assert.deepEqual(publishSchemaOutputs({root: fixture.directory,
+    files: fixture.files, checkOnly: true, retiredFiles: [retired]}), [retired]);
+  publishSchemaOutputs({root: fixture.directory, files: fixture.files,
+    checkOnly: false, retiredFiles: [retired]});
+  assert.ok(!fs.existsSync(path.join(fixture.directory, retired)));
+  assert.deepEqual(publishSchemaOutputs({root: fixture.directory,
+    files: fixture.files, checkOnly: true, retiredFiles: [retired]}), []);
 });

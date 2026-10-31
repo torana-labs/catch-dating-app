@@ -6843,6 +6843,9 @@ const FIRESTORE_ADMIN_OPTIONAL_FIELDS = new Map([
 ]);
 
 const generatedFiles = [];
+// Former outputs this generator removes when publishing and reports when they
+// linger in check mode, so a retired module cannot silently stay importable.
+const retiredOutputs = [];
 
 async function main() {
   generatedFiles.push(...profileRequirementsOutputs(
@@ -6916,6 +6919,7 @@ async function main() {
     })
   );
   const bundledSchemas = new Map();
+  const typeModules = new Map();
 
   for (const spec of schemaSpecs) {
     const file = path.join(contractRoot, spec.source);
@@ -6924,13 +6928,33 @@ async function main() {
       profilePhotoPolicy
     );
     bundledSchemas.set(spec.name, schema);
-    await addTypeOutput(spec, schema);
+    typeModules.set(spec.name, await addTypeOutput(spec, schema));
   }
 
-  addTextOutput(
-    "functions/src/shared/generated/schemaRegistry.ts",
-    renderTsSchemaRegistry({
+  const firestoreAdminTypes = await renderTsFirestoreAdminTypes({
+    schemaSpecs,
+    profilePhotoPolicy,
+  });
+  const runtimeModules = functionsRuntimeModules({
+    declaration: readContractJson("functions/runtime_modules.json"),
+    specNames: schemaSpecs.map((spec) => spec.name),
+    typeDependencies: new Map([...typeModules].map(([name, module]) =>
+      [name, module.typeDependencies])),
+    adminTypeDependencies: [...firestoreAdminTypes.matchAll(
+      /^import type \{(\w+)\} from /gm
+    )].map((match) => match[1]),
+  });
+  for (const spec of schemaSpecs) {
+    if (runtimeModules.types.has(spec.name)) {
+      addTextOutput(spec.typeOutput, typeModules.get(spec.name).content);
+    } else {
+      retiredOutputs.push(spec.typeOutput);
+    }
+  }
+
+  renderTsSchemaModules({
       schemaMap: bundledSchemas,
+      runtimeValidators: runtimeModules.validators,
       eventAssistanceCatalog,
       eventAssistanceCommandBindingCatalog,
       profileCatalog,
@@ -6940,18 +6964,11 @@ async function main() {
       organizerEntitlementSkuCatalog,
       photoCatalog,
       profilePhotoPolicy,
-    })
-  );
-  addTextOutput(
-    "functions/src/shared/generated/schemaValidators.ts",
-    renderTsValidators()
-  );
+  });
+  renderTsValidators(runtimeModules.validators);
   addTextOutput(
     "functions/src/shared/generated/firestoreAdminTypes.ts",
-    await renderTsFirestoreAdminTypes({
-      schemaSpecs,
-      profilePhotoPolicy,
-    })
+    firestoreAdminTypes
   );
   addTextOutput(
     "functions/src/shared/generated/schemaPaths.ts",
@@ -7065,7 +7082,7 @@ async function main() {
   }
   addTextOutput(
     "lib/platform/schema_contracts/generated/INDEX.md",
-    renderGeneratedIndex({dartCallableRequests})
+    renderGeneratedIndex({dartCallableRequests, runtimeModules})
   );
   if (!checkOnly && dartCallableRequests.ungenerable.length > 0) {
     console.log(
@@ -7078,7 +7095,7 @@ async function main() {
   }
 
   const staleFiles = publishSchemaOutputs({
-    root: repoRoot, files: generatedFiles, checkOnly,
+    root: repoRoot, files: generatedFiles, checkOnly, retiredFiles: retiredOutputs,
   });
 
   if (staleFiles.length > 0) {
@@ -7097,9 +7114,15 @@ async function main() {
 }
 
 /** Check or publish only this generator's declared outputs and exclusive dirs. */
-export function publishSchemaOutputs({root, files, checkOnly}) {
+export function publishSchemaOutputs({root, files, checkOnly, retiredFiles = []}) {
   const staleFiles = [];
   const expectedFiles = new Set(files.map((file) => file.path));
+  for (const relativeFile of retiredFiles) {
+    const absoluteFile = path.join(root, relativeFile);
+    if (expectedFiles.has(relativeFile) || !fs.existsSync(absoluteFile)) continue;
+    if (checkOnly) staleFiles.push(relativeFile);
+    else fs.unlinkSync(absoluteFile);
+  }
   const ownedDirectories = [
     "functions/src/shared/generated/schemas",
     "functions/src/shared/generated/validators",
@@ -8253,12 +8276,51 @@ async function addTypeOutput(spec, schema) {
   types = normalizeExternalTypeReferences(spec.name, types);
   const imports = tsTypeImports(spec.name, types);
   const content = `${tsGeneratedHeader()}${imports}${types.trim()}\n`;
-  for (const output of [
-    spec.typeOutput,
-    ...(spec.additionalTypeOutputs ?? []),
-  ]) {
+  for (const output of spec.additionalTypeOutputs ?? []) {
     addTextOutput(output, content);
   }
+  return {content, typeDependencies: referencedSpecNames(spec.name, types)};
+}
+
+function referencedSpecNames(currentTypeName, source) {
+  const typeSource = source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/.*$/gm, "");
+  return schemaSpecs
+    .filter((spec) => spec.name !== currentTypeName &&
+      new RegExp(`\\b${spec.name}\\b`).test(typeSource))
+    .map((spec) => spec.name);
+}
+
+/**
+ * Resolves contracts/functions/runtime_modules.json into the specs whose
+ * Functions type and validator modules are emitted. The declaration is the
+ * source of truth, so the generator never reads Functions code: an
+ * undeclared import fails the Functions build, and a declared name that is
+ * not a schema spec fails here. Types the emitted modules depend on are
+ * added from the generator's own output.
+ */
+export function functionsRuntimeModules({declaration, specNames, typeDependencies,
+  adminTypeDependencies}) {
+  const known = new Set(specNames);
+  const validators = new Set(declaration.validators ?? []);
+  const declaredTypes = [...validators, ...(declaration.types ?? [])];
+  const unknown = declaredTypes.filter((name) => !known.has(name));
+  if (unknown.length > 0) {
+    throw new Error(
+      "contracts/functions/runtime_modules.json names unknown schema specs:\n" +
+      unknown.map((name) => `- ${name}`).join("\n")
+    );
+  }
+  const types = new Set();
+  const pending = [...declaredTypes, ...adminTypeDependencies];
+  while (pending.length > 0) {
+    const name = pending.pop();
+    if (types.has(name)) continue;
+    types.add(name);
+    pending.push(...(typeDependencies.get(name) ?? []));
+  }
+  return {validators, types};
 }
 
 function compileTs(schema, name) {
@@ -8512,8 +8574,9 @@ function runtimeSchemaModuleName(spec) {
     .replace(/CallableResponse$/, "Output");
 }
 
-function renderTsSchemaRegistry({
+function renderTsSchemaModules({
   schemaMap,
+  runtimeValidators,
   eventAssistanceCatalog,
   eventAssistanceCommandBindingCatalog,
   profileCatalog,
@@ -8524,12 +8587,12 @@ function renderTsSchemaRegistry({
   photoCatalog,
   profilePhotoPolicy,
 }) {
-  const exports = [];
   const moduleNames = new Set();
   for (const spec of schemaSpecs) {
     const key = runtimeSchemaModuleName(spec);
     if (moduleNames.has(key)) throw new Error(`Duplicate runtime schema module: ${key}`);
     moduleNames.add(key);
+    if (!runtimeValidators.has(spec.name)) continue;
     const name = schemaConstName(spec);
     const module = runtimeSchemaModuleName(spec);
     addTextOutput(
@@ -8537,7 +8600,6 @@ function renderTsSchemaRegistry({
       `${tsGeneratedHeader()}export const ${name}: Record<string, unknown> = ` +
         `${jsonForTs(schemaMap.get(spec.name))};\n`
     );
-    exports.push(`export {${name}} from "./schemas/${module}";`);
   }
   const catalogEntries = [
     ["eventAssistanceWorkflowCatalog", eventAssistanceCatalog],
@@ -8559,16 +8621,13 @@ function renderTsSchemaRegistry({
       `functions/src/shared/generated/catalogs/${name}.ts`,
       `${tsGeneratedHeader()}export const ${name} = ${jsonForTs(value)};\n`
     );
-    exports.push(`export {${name}} from "./catalogs/${name}";`);
   }
-  return `${tsGeneratedHeader()}// Aggregate inventory for tests and tools only.\n` +
-    `// Runtime consumers import individual schemas or catalogs.\n\n` +
-    `${exports.join("\n")}\n`;
+  retiredOutputs.push("functions/src/shared/generated/schemaRegistry.ts");
 }
 
-function renderTsValidators() {
-  const exports = [];
+function renderTsValidators(runtimeValidators) {
   for (const spec of schemaSpecs) {
+    if (!runtimeValidators.has(spec.name)) continue;
     const module = runtimeSchemaModuleName(spec);
     const schema = schemaConstName(spec);
     const validator = validatorName(spec);
@@ -8580,16 +8639,12 @@ function renderTsValidators() {
         `export const ${validator} =\n` +
         `  lazyValidator<${spec.name}>(${schema});\n`
     );
-    exports.push(`export {${validator}} from "./validators/${module}";`);
   }
   addTextOutput(
     "functions/src/shared/generated/schemaValidationRuntime.ts",
     renderTsValidationRuntime()
   );
-  return `${tsGeneratedHeader()}// Aggregate inventory for tests and tools only.\n` +
-    `// Runtime consumers import individual validators.\n\n` +
-    `${exports.join("\n")}\n\n` +
-    `export {schemaErrorMessages} from "./schemaValidationRuntime";\n`;
+  retiredOutputs.push("functions/src/shared/generated/schemaValidators.ts");
 }
 
 function renderTsValidationRuntime() {
@@ -9238,10 +9293,12 @@ function lowerCamelCase(value) {
     `${converted[0].toLowerCase()}${converted.slice(1)}`;
 }
 
-function renderGeneratedIndex({dartCallableRequests}) {
-  const tsRows = schemaSpecs.map((spec) =>
-    `| ${spec.name} | \`${spec.source}\` | \`${spec.typeOutput}\` |`
-  ).join("\n");
+function renderGeneratedIndex({dartCallableRequests, runtimeModules}) {
+  const tsRows = schemaSpecs.filter((spec) => runtimeModules.types.has(spec.name))
+    .map((spec) =>
+      `| ${spec.name} | \`${spec.source}\` | \`${spec.typeOutput}\` | ` +
+      `${runtimeModules.validators.has(spec.name) ? "yes" : "no"} |`
+    ).join("\n");
   const callableRows = dartCallableRequests.generatedClasses.length === 0 ?
     "| _None_ | _None_ | _None_ | _None_ |" :
     dartCallableRequests.generatedClasses.map((entry) =>
@@ -9259,10 +9316,13 @@ function renderGeneratedIndex({dartCallableRequests}) {
 This file is generated by \`tool/contracts/generate_schema_contracts.mjs\`.
 Do not edit it by hand.
 
-## TypeScript Schema Types
+## Functions Runtime Types
 
-| Generated Type | Source Schema | Output |
-|---|---|---|
+Only the contracts declared in \`contracts/functions/runtime_modules.json\`
+(and the types they depend on) are emitted. Tests read the others at test time.
+
+| Generated Type | Source Schema | Output | Validator Module |
+|---|---|---|---|
 ${tsRows}
 
 ## Dart Callable Classes
@@ -9281,8 +9341,8 @@ ${ungenerableRows}
 
 | Output | Purpose |
 |---|---|
-| \`functions/src/shared/generated/schemaRegistry.ts\` | TypeScript schema registry for Functions runtime code. |
-| \`functions/src/shared/generated/schemaValidators.ts\` | Ajv validators compiled from callable/schema contracts. |
+| \`functions/src/shared/generated/schemas/*.ts\`, \`validators/*.ts\` | One schema constant and lazy Ajv validator per declared runtime validator. |
+| \`functions/src/shared/generated/schemaValidationRuntime.ts\` | Shared Ajv options, formats and lazy compilation for those validators. |
 | \`functions/src/shared/generated/firestoreAdminTypes.ts\` | Admin SDK Timestamp-aware Firestore projection types. |
 | \`functions/src/shared/generated/schemaPaths.ts\` | Generated storage/path constants for migrated logical paths. |
 | \`tool/contracts/generated/schema_contract_registry.mjs\` | Node-side schema registry for validation tooling. |

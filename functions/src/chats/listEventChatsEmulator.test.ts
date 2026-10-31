@@ -8,9 +8,13 @@ import type {CallableRequest} from "firebase-functions/v2/https";
 import {listEventChatsHandler as list} from "./listEventChats";
 import type {ListEventChatsCallableResponse as Result} from
   "../shared/generated/listEventChatsCallableResponse";
-import {validateListEventChatsCallableResponse as valid} from
-  "../shared/generated/validators/listEventChatsOutput";
 import {eventChatMembershipId} from "./eventChatAccess";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const valid =
+  contractValidator<Result>(
+    "ListEventChatsCallableResponse"
+  );
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 test("Firestore directory discovers admitted native and imported rooms only",

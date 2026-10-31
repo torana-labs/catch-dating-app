@@ -8,11 +8,19 @@ import {SUPPLY_NOMINATORS, instagramNominatorId} from "../operations/supplyIntak
 import {packagedMessageParser} from "../operations/supplyIntake/runtime";
 import type {InstagramInboundMessage} from "../organizers/instagramClaimProtocol";
 import {FakeInstagramProvider} from "../organizers/instagramMessagingProvider";
-import {validateOrganizerClaimInstagramMessageDocument} from "../shared/generated/validators/organizerClaimInstagramMessageDocument";
-import {validateSupplyIntakeRequestsDocument} from "../shared/generated/validators/supplyIntakeRequestsDocument";
 import {INSTAGRAM_MESSAGE_RECEIPTS, routeInstagramInbound, type InstagramInboundRouterDeps} from "./instagramInboundRouter";
 import {TestDocStore} from "./testDocStore";
 import {BRAND} from "../shared/generated/brand";
+import type {OrganizerClaimInstagramMessageDocument} from
+  "../shared/generated/organizerClaimInstagramMessageDocument";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateOrganizerClaimInstagramMessageDocument =
+  contractValidator<OrganizerClaimInstagramMessageDocument>(
+    "OrganizerClaimInstagramMessageDocument"
+  );
+const validateSupplyIntakeRequestsDocument =
+  contractValidator("SupplyIntakeRequestsDocument");
 
 // The build post-step copies the Operations runtime into lib; tests use it.
 execFileSync(process.execPath, [path.join(__dirname, "../../scripts/copy-operations-runtime.cjs")]);

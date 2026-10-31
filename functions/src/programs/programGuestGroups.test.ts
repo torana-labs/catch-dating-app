@@ -14,8 +14,10 @@ import {
 } from "./programGuestGroups";
 import {listProgramGuestsHandler, upsertProgramGuestHandler} from
   "./programGuests";
-import {validateProgramGuestGroupDocument} from
-  "../shared/generated/validators/programGuestGroupDocument";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateProgramGuestGroupDocument =
+  contractValidator("ProgramGuestGroupDocument");
 
 const group = (patch: Partial<FakeData> = {}): FakeData => ({
   programId: "program-1", organizerId: "org-1", label: "Groom side",

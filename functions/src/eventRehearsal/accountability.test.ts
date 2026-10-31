@@ -7,9 +7,6 @@ import * as admin from "firebase-admin";
 import {Timestamp} from "firebase-admin/firestore";
 import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
 import {
-  validateEventRehearsalBootstrapCallableResponse,
-} from "../shared/generated/validators/eventRehearsalBootstrapOutput";
-import {
   validateControlEventRehearsalCallablePayload,
 } from "../shared/generated/validators/controlEventRehearsalInput";
 import {
@@ -26,6 +23,14 @@ import {
   resolvePracticeAccountability,
   practiceAccountabilityProjection,
 } from "./accountability";
+import type {EventRehearsalBootstrapCallableResponse} from
+  "../shared/generated/eventRehearsalBootstrapCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validateEventRehearsalBootstrapCallableResponse =
+  contractValidator<EventRehearsalBootstrapCallableResponse>(
+    "EventRehearsalBootstrapCallableResponse"
+  );
 
 function organizer(): OrganizerDocument {
   const fixture = JSON.parse(

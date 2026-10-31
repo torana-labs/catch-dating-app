@@ -9,10 +9,14 @@ import {listEventChatParticipantsHandler as list} from
   "./listEventChatParticipants";
 import {eventChatMembershipId as memberId} from "./eventChatAccess";
 import {blockDocId} from "../safety/blocking";
-import {validateListEventChatParticipantsCallableResponse as valid} from
-  "../shared/generated/validators/listEventChatParticipantsOutput";
 import type {ListEventChatParticipantsCallableResponse as Result} from
   "../shared/generated/listEventChatParticipantsCallableResponse";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const valid =
+  contractValidator<Result>(
+    "ListEventChatParticipantsCallableResponse"
+  );
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 test("Firestore room participants are current, bounded and private",
