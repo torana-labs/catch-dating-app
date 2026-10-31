@@ -1,3 +1,4 @@
+// size-exemption: the single home of the route table; check_route_inventory.mjs allows GoRoute nowhere else.
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';

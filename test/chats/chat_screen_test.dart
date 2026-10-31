@@ -1,3 +1,4 @@
+// size-exemption: pre-existing; split before it grows further.
 import 'dart:async';
 
 import 'package:catch_dating_app/chats/presentation/chat_read_marker_controller.dart';

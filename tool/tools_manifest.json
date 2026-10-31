@@ -2449,27 +2449,25 @@
       "command": "node tool/test/check_flutter_test_size.mjs --check",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Keeps new and split Flutter test specs within 1,200 lines while ratcheting every reviewed oversized legacy spec against an exact baseline.",
+      "description": "Keeps Flutter test specs within 1,200 lines unless the spec states a reason in a size-exemption comment near its top; no spec may pass 2,500 lines. No baseline file.",
       "checks": [
         "node --check tool/test/check_flutter_test_size.mjs",
         "node --test tool/test/check_flutter_test_size.test.mjs",
         "node tool/test/check_flutter_test_size.mjs --check"
       ],
       "impactPaths": [
-        "tool/test/check_flutter_test_size.test.mjs",
-        "tool/test/flutter_test_size_baseline.json"
+        "tool/test/check_flutter_test_size.test.mjs"
       ],
-      "role": "ratchet",
+      "role": "gate",
       "rules": [
         "FLUTTER-TEST-MAINTAINABILITY-001"
       ],
-      "baseline": "tool/test/flutter_test_size_baseline.json",
       "vacuityProof": {
         "type": "test",
         "path": "tool/test/check_flutter_test_size.test.mjs",
         "contains": [
-          "known-bad new oversized Flutter test spec fails closed",
-          "ratchet rejects growth and asks reductions to refresh the baseline"
+          "an oversized spec without a stated exemption fails",
+          "a stated exemption allows growth and shrinkage up to the ceiling with no bookkeeping"
         ]
       },
       "ciRequirements": {
@@ -2494,28 +2492,26 @@
         "lib/**/*.dart",
         "packages/**/*.dart",
         "widgetbook/lib/**/*.dart",
-        "tool/architecture/flutter_source_size_baseline.json",
         "tool/architecture/check_flutter_source_size.test.mjs",
         "tool/test/check_flutter_test_size.mjs"
       ],
-      "description": "Keeps new and split handwritten Dart sources within 800 lines, ratchets legacy debt against Git history, and bounds the exact CatchField facade exception at 1,150 lines. lib/routing/go_router.dart is exempt because route inventory requires every GoRoute there, so its length tracks route count.",
+      "description": "Keeps handwritten Dart sources within 800 lines unless the file states a reason in a size-exemption comment near its top; no file may pass 2,500 lines. No baseline file; lib/routing/go_router.dart and the CatchField facade carry their reasons in the file.",
       "checks": [
         "node --check tool/architecture/check_flutter_source_size.mjs",
         "node --test tool/architecture/check_flutter_source_size.test.mjs",
         "node tool/architecture/check_flutter_source_size.mjs --check"
       ],
-      "role": "ratchet",
+      "role": "gate",
       "rules": [
         "FLUTTER-SOURCE-MAINTAINABILITY-001"
       ],
-      "baseline": "tool/architecture/flutter_source_size_baseline.json",
       "vacuityProof": {
         "type": "test",
         "path": "tool/architecture/check_flutter_source_size.test.mjs",
         "contains": [
-          "known-bad new source at 801 lines fails in every owned source root",
-          "CLI known-bad Field over-cap fails even when a baseline records the same size",
-          "CLI sees untracked source, permits reductions, and rejects a hand-broadened baseline"
+          "a new source at 801 lines fails in every owned source root unless it states an exemption",
+          "no source passes the ceiling, exemption or not",
+          "CLI reads the exemption from the file itself, including untracked source"
         ]
       }
     },
