@@ -89,8 +89,8 @@ export interface DemoWorld {
     description: string;
     cities: string[];
     usersPerCity: number;
-    clubsPerCity: number;
-    eventsPerClub: number;
+    organizersPerCity: number;
+    eventsPerOrganizer: number;
     anchorsPerRun: number;
     preferPaidEvents: boolean;
     eventPatterns: Array<{

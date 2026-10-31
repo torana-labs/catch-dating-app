@@ -1315,7 +1315,7 @@ function buildCandidates() {
     title: "TopBar vs OrganizerHeroTopBar",
     bucket: "unify",
     reason:
-      "Claude names this concept AppBar/ClubHero; repo has CatchTopBar and OrganizerHeroTopBar. Decide whether OrganizerHeroTopBar is a real component or a TopBar variant/section.",
+      "Claude names this concept AppBar/OrganizerHero; repo has CatchTopBar and OrganizerHeroTopBar. Decide whether OrganizerHeroTopBar is a real component or a TopBar variant/section.",
     recommended: "catch.top_bar + catch.club_hero",
     left: findFirst(byName, "CatchTopBar"),
     right: findFirst(byName, "OrganizerHeroTopBar"),
@@ -1660,7 +1660,7 @@ function buildCandidates() {
       tags: ["avatar", "people"],
       names: [
         "CatchAvatar",
-        "ClubHostAvatar",
+        "OrganizerHostAvatar",
         "HostTodayAvatarDot",
         "OrganizerHostIdentityRow",
       ],
@@ -1878,7 +1878,7 @@ function buildCandidates() {
         "HostEventsOrganizerCard",
         "HostEventToolCard",
         "HostTodayTaskCard",
-        "HostClubProfileCard",
+        "HostOrganizerProfileCard",
       ],
     },
     {
@@ -1906,7 +1906,7 @@ function buildCandidates() {
       tags: ["tiles", "rows"],
       names: [
         "CatchIconTile",
-        "ClubListTile",
+        "OrganizerListTile",
         "CatchPersonRow",
         "MapPinTile",
         "PublicProfileReportReasonTile",
@@ -1923,7 +1923,7 @@ function buildCandidates() {
       names: [
         "CatchHorizontalScrollView",
         "CatchSection",
-        "DashboardClubsRail",
+        "DashboardOrganizersRail",
         "EventFocusRail",
         "ExplorePeekRailContent",
         "CountdownBeatRail",
@@ -1942,7 +1942,7 @@ function buildCandidates() {
       names: [
         "CatchPageTabBar",
         "HostSettingsTabRail",
-        "HostClubTabRail",
+        "HostOrganizerTabRail",
         "EventSuccessHostTabBar",
         "ProfilePreviewBody",
         "ProfileTab",

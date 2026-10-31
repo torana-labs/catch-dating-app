@@ -151,7 +151,7 @@ export function buildOrganizerFollowerDelivery(params: {
   const token = params.user.fcmToken;
   const canPush = params.followPushNotificationsEnabled === true &&
     typeof token === "string" && token.length > 0 &&
-    allowsPushPreference(params.user, "clubUpdates");
+    allowsPushPreference(params.user, "organizerUpdates");
   return {
     activity,
     push: canPush && token ? {
@@ -212,7 +212,7 @@ async function dispatchOrganizerPostDeliveryPage(
         await db.collection("events").doc(post.eventId).get() : null;
       const event = eventSnap?.data();
       suppressLinkedEvent = !event || !isEventPubliclyAccessible(event) ||
-        (event.organizerId ?? event.clubId) !== claimed.organizerId;
+        (event.organizerId) !== claimed.organizerId;
       if (suppressLinkedEvent) {
         await markLinkedEventSuppressed(operationRef, leaseOwner, deps);
       }

@@ -137,7 +137,7 @@ test("a platform page whose template drifted abstains for the agent instead of g
 test("organizer websites fall back to schema.org markup, then to metadata only", () => {
   const marked = snapshotFromHtml({url: "https://thebhag.in/events", html: `<script type="application/ld+json">
     {"@context":"https://schema.org","@graph":[
-      {"@type":"SportsClub","name":"The Bhag","url":"https://thebhag.in","sameAs":["https://instagram.com/thebhag"]},
+      {"@type":"SportsOrganizer","name":"The Bhag","url":"https://thebhag.in","sameAs":["https://instagram.com/thebhag"]},
       {"@type":"Event","name":"Sunday Long Run","startDate":"2026-11-01T06:00:00+05:30",
        "location":{"@type":"Place","name":"Cubbon Park","address":{"addressLocality":"Bengaluru"}}}]}</script>`});
   const result = extractWithAdapters({snapshot: marked});

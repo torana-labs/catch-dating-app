@@ -343,7 +343,7 @@ void _registerExploreScreenFiltersTests() {
                   context.pushNamed<void>(
                     Routes.eventDetailScreen.name,
                     pathParameters: {
-                      'clubId': organizer.id,
+                      'organizerId': organizer.id,
                       'eventId': selectedEvent.id,
                     },
                   ),
@@ -352,7 +352,7 @@ void _registerExploreScreenFiltersTests() {
             ),
           ),
           GoRoute(
-            path: '/events/:clubId/:eventId',
+            path: '/events/:organizerId/:eventId',
             name: Routes.eventDetailScreen.name,
             builder: (_, state) => Text(
               'Event ${state.pathParameters['eventId']}',

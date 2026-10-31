@@ -9,7 +9,7 @@ import {validateEventParticipationDocument} from
 const statuses: EventParticipationStatus[] = [
   "signedUp", "waitlisted", "attended", "cancelled", "deleted",
 ];
-const identity = {eventId: "event_test", clubId: "club_test", uid: "user_test"};
+const identity = {eventId: "event_test", organizerId: "club_test", uid: "user_test"};
 const firstTime = {_seconds: 1700000000, _nanoseconds: 0};
 const nextTime = {_seconds: 1700000060, _nanoseconds: 0};
 

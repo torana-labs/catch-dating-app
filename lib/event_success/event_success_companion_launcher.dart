@@ -160,7 +160,7 @@ launchEventSuccessCompanionIfAvailable({
     unawaited(
       context.pushNamed(
         Routes.eventSuccessCompanionScreen.name,
-        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+        pathParameters: {'organizerId': event.clubId, 'eventId': event.id},
         extra: event,
       ),
     );

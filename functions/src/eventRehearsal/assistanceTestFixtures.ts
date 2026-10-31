@@ -9,7 +9,7 @@ import type {PracticePlan} from "./assistanceRuntime";
 
 export function practiceSession(now = Date.now()): Session {
   const time = Timestamp.fromMillis(now);
-  return {organizerId: "organizer-1", clubId: "organizer-1", ownerUid: "host-1",
+  return {organizerId: "organizer-1", ownerUid: "host-1",
     sourceEventId: null, sourceEventRevision: null,
     publicRehearsalId: "practicepublic1234567890",
     viewerTokenHash: "a".repeat(64),

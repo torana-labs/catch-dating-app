@@ -101,7 +101,6 @@ test("fixture can bind the event and participations to one hidden organizer", ()
     path: "events/demo-event",
     data: {
       crossPathsDiscoveryEnabled: true,
-      clubId: "courtside",
       organizerId: "courtside",
     },
   });
@@ -110,11 +109,11 @@ test("fixture can bind the event and participations to one hidden organizer", ()
     [
       {
         path: "eventParticipations/demo-event_viewer",
-        data: {clubId: "courtside"},
+        data: {organizerId: "courtside"},
       },
       {
         path: "eventParticipations/demo-event_candidate",
-        data: {clubId: "courtside"},
+        data: {organizerId: "courtside"},
       },
     ]
   );

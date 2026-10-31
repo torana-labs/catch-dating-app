@@ -36,7 +36,7 @@ void main() {
         emits(
           isA<OrganizerMembership>()
               .having((membership) => membership.id, 'id', id)
-              .having((membership) => membership.clubId, 'clubId', 'club-1')
+              .having((membership) => membership.clubId, 'organizerId', 'club-1')
               .having((membership) => membership.uid, 'uid', 'runner-1'),
         ),
       );

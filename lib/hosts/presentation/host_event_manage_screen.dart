@@ -192,7 +192,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       onManagePublication: event.setupRevision != null
           ? () => context.pushNamed(
               Routes.hostEventPublicationScreen.name,
-              pathParameters: {'clubId': organizer.id, 'eventId': event.id},
+              pathParameters: {'organizerId': organizer.id, 'eventId': event.id},
               extra: organizer,
             )
           : null,
@@ -315,7 +315,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               emphasis: CatchFieldEmphasis.title,
               onTap: () => context.pushNamed(
                 Routes.hostEventRehearsalStartScreen.name,
-                pathParameters: {'clubId': organizer.id},
+                pathParameters: {'organizerId': organizer.id},
                 queryParameters: {'eventId': event.id},
               ),
             ),
@@ -508,7 +508,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       context.pushNamed(
         Routes.hostEventRosterScreen.name,
         pathParameters: {
-          'clubId': widget.organizer.id,
+          'organizerId': widget.organizer.id,
           'eventId': widget.event.id,
         },
         extra: widget.event,

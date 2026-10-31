@@ -207,7 +207,7 @@ void main() {
       final now = DateTime.utc(2026, 8, 13, 12);
       await firestore.collection('eventSuccessStandings').doc('event-1').set({
         'eventId': 'event-1',
-        'clubId': 'club-1',
+        'organizerId': 'club-1',
         'unitOutcome': 'score',
         'revision': 1,
         'latestRoundIndex': 0,

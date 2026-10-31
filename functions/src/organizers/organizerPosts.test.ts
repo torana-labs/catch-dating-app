@@ -284,11 +284,11 @@ function deliveryHarness(options: {
     },
     "users/user-1": {
       fcmToken: "token-1",
-      prefsClubUpdates: true,
+      prefsOrganizerUpdates: true,
     },
     "users/user-2": {
       fcmToken: "token-2",
-      prefsClubUpdates: true,
+      prefsOrganizerUpdates: true,
     },
   };
   const firestore = new FakeFirestore(docs);
@@ -327,7 +327,7 @@ const delivery = (overrides: Partial<Parameters<
 >[0]> = {}) => buildOrganizerFollowerDelivery({
   uid: "follower-1",
   followPushNotificationsEnabled: true,
-  user: {fcmToken: "token-1", prefsClubUpdates: true},
+  user: {fcmToken: "token-1", prefsOrganizerUpdates: true},
   organizerId: "organizer-1",
   authorUid: "host-1",
   organizerName: "Sunday Social",
@@ -340,7 +340,7 @@ const delivery = (overrides: Partial<Parameters<
 test("follower updates build the durable Organizer Activity route", () => {
   const result = delivery({
     followPushNotificationsEnabled: false,
-    user: {prefsClubUpdates: false},
+    user: {prefsOrganizerUpdates: false},
   });
 
   assert.deepEqual(result.activity, {
@@ -362,10 +362,10 @@ test("follower push needs both follow-level and user-level permission", () => {
   assert.equal(delivery().push?.token, "token-1");
   assert.equal(delivery({followPushNotificationsEnabled: false}).push, null);
   assert.equal(
-    delivery({user: {fcmToken: "token-1", prefsClubUpdates: false}}).push,
+    delivery({user: {fcmToken: "token-1", prefsOrganizerUpdates: false}}).push,
     null,
   );
-  assert.equal(delivery({user: {prefsClubUpdates: true}}).push, null);
+  assert.equal(delivery({user: {prefsOrganizerUpdates: true}}).push, null);
 });
 
 test("post and receipt ids are deterministic and content-bound", () => {
@@ -591,8 +591,7 @@ test("follower posts cannot link a private setup event", async () => {
       name: "Sunday Social", hostUserId: "host-1",
       ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: [],
     },
-    "events/private-1": {organizerId: "organizer-1", clubId: "organizer-1",
-      status: "active", publicationState: "private", setupRevision: 1},
+    "events/private-1": {organizerId: "organizer-1", status: "active", publicationState: "private", setupRevision: 1},
   });
   type CreateDeps = NonNullable<
     Parameters<typeof createOrganizerPostHandler>[1]

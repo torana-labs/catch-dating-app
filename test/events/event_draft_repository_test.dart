@@ -212,7 +212,7 @@ void main() {
     });
 
     group('isolation', () {
-      test('different clubIds produce isolated lists', () async {
+      test('different organizerIds produce isolated lists', () async {
         await repo.saveDraft(
           userId: 'user-1',
           draft: buildDraft(id: 'd-1'),

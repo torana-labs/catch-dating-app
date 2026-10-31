@@ -41,7 +41,7 @@ export async function findRecipientAdmission(
         receipt.attendeeId !== ownership.attendeeId ||
         !validateEventAttendeeDocument(attendee) ||
         attendee.linkedUid !== uid || attendee.eventId !== grant.eventId ||
-        (attendee.organizerId ?? attendee.clubId) !== grant.organizerId ||
+        (attendee.organizerId) !== grant.organizerId ||
         !["registered", "checkedIn"].includes(attendee.status)) {
       return undefined;
     }

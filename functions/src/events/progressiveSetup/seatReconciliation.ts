@@ -69,8 +69,7 @@ export async function reconcilePrivateEventSeats(params: {
     const organizer = authorizeSetupManager(organizerSnap, deletedSnap,
       actorUid);
     const event = eventSnap.data();
-    if (!event || event.organizerId !== command.organizerId ||
-        event.clubId !== command.organizerId) {
+    if (!event || event.organizerId !== command.organizerId) {
       throw new HttpsError("not-found", "Event not found.");
     }
     return {organizer, event};

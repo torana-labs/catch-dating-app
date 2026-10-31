@@ -28,7 +28,6 @@ function session(
 ): EventRehearsalDocument {
   return {
     organizerId: "organizer-1",
-    clubId: "organizer-1",
     ownerUid: "host-1",
     sourceEventId: null,
     sourceEventRevision: null,

@@ -137,7 +137,7 @@ test("onSwipeCreatedHandler appends event ids to an existing match", async (
   assert.deepEqual(matchPatch, {
     eventIds: {arrayUnion: ["event-2", "event-3"]},
     conversationType: "match",
-    clubId: matchPatch.clubId,
+    organizerId: matchPatch.organizerId,
   });
   assert.deepEqual(refreshed, ["event-3", "event-2"]);
 });
@@ -152,8 +152,8 @@ test(
       user2Id: "user-b",
       participantIds: ["user-a", "user-b"],
       eventIds: [],
-      conversationType: "clubHostInquiry",
-      clubId: "club-1",
+      conversationType: "organizerHostInquiry",
+      organizerId: "club-1",
       status: "active",
     };
 
@@ -186,8 +186,8 @@ test(
     assert.equal(datingMatch.conversationType, "match");
     assert.deepEqual(datingMatch.eventIds, ["event-1", "event-2"]);
     assert.equal(updated["matches/user-a_user-b"], undefined);
-    assert.equal(legacyInquiry.conversationType, "clubHostInquiry");
-    assert.equal(legacyInquiry.clubId, "club-1");
+    assert.equal(legacyInquiry.conversationType, "organizerHostInquiry");
+    assert.equal(legacyInquiry.organizerId, "club-1");
   }
 );
 

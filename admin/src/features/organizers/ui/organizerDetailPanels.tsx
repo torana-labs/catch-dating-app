@@ -16,8 +16,8 @@ import {
   Users,
 } from "lucide-react";
 import type {
-  AdminClubDetails,
-  AdminClubListRow,
+  AdminOrganizerDetails,
+  AdminOrganizerListRow,
   OrganizerAppVisibility,
   OrganizerType,
   OrganizerPublishStatus,
@@ -106,9 +106,9 @@ function OrganizerDetailView({
   controller: OrganizerPublishingController;
 }) {
   const title =
-    controller.club?.name ||
+    controller.organizer?.name ||
     controller.form?.name ||
-    controller.clubId ||
+    controller.organizerId ||
     "Organizer";
   return (
     <AdminDetailScreenStack>
@@ -126,8 +126,8 @@ function OrganizerDetailView({
       <OrganizerDetailSummary controller={controller} />
       <OrganizerEditor
         checklist={controller.checklist}
-        club={controller.club}
-        clubId={controller.clubId}
+        organizer={controller.organizer}
+        organizerId={controller.organizerId}
         completeChecklist={controller.completeChecklist}
         diffRows={controller.diffRows}
         form={controller.form}
@@ -136,9 +136,9 @@ function OrganizerDetailView({
         isSaving={controller.isSaving}
         publishingIssues={controller.publishingIssues}
         onChecklistChange={controller.setChecklist}
-        onClubIdChange={controller.setClubId}
+        onOrganizerIdChange={controller.setOrganizerId}
         onFormChange={controller.setForm}
-        onLoad={() => void controller.selectOrganizer(controller.clubId)}
+        onLoad={() => void controller.selectOrganizer(controller.organizerId)}
         onPublish={() => void controller.saveAndPublish()}
         onSave={() => void controller.save()}
         validationIssues={controller.validationIssues}
@@ -195,7 +195,7 @@ function OrganizerDirectoryPanel({
       </AdminToolbar>
       <OrganizerDirectoryTable
         rows={controller.filteredRows}
-        selectedClubId={controller.club?.clubId ?? controller.clubId}
+        selectedOrganizerId={controller.organizer?.organizerId ?? controller.organizerId}
         onSelect={controller.selectOrganizer}
       />
       <AdminWorkbenchNote>
@@ -211,7 +211,7 @@ function OrganizerDetailSummary({
 }: {
   controller: OrganizerPublishingController;
 }) {
-  const club = controller.club;
+  const organizer = controller.organizer;
   const form = controller.form;
   const saveBlockers = countBlockingIssues(controller.validationIssues);
   const publishBlockers = countBlockingIssues(controller.publishingIssues);
@@ -247,21 +247,21 @@ function OrganizerDetailSummary({
         editor; each field blocker links to its control.
       </AlertRow>
       <AdminStatusGrid>
-        <StateRow label="Document" value={club?.clubId ?? controller.clubId} />
+        <StateRow label="Document" value={organizer?.organizerId ?? controller.organizerId} />
         <StateRow
           label="App · member visibility"
-          value={form?.appVisibility ?? club?.appVisibility}
+          value={form?.appVisibility ?? organizer?.appVisibility}
         />
         <StateRow
           label="Public web · publication"
-          value={form?.publishStatus ?? club?.publicPage.publishStatus}
+          value={form?.publishStatus ?? organizer?.publicPage.publishStatus}
         />
-        <StateRow label="Public web · indexing" value={club?.publicPage.indexStatus} />
-        <StateRow label="Ownership claim" value={club?.claimState} />
-        <StateRow label="Ownership state" value={club?.ownershipState} />
+        <StateRow label="Public web · indexing" value={organizer?.publicPage.indexStatus} />
+        <StateRow label="Ownership claim" value={organizer?.claimState} />
+        <StateRow label="Ownership state" value={organizer?.ownershipState} />
         <StateRow
           label="Verification"
-          value={club?.provenance.verificationStatus}
+          value={organizer?.provenance.verificationStatus}
         />
         <StateRow
           label="Pending field changes"
@@ -278,11 +278,11 @@ function OrganizerDetailSummary({
 function OrganizerDirectoryTable({
   onSelect,
   rows,
-  selectedClubId,
+  selectedOrganizerId,
 }: {
-  onSelect: (clubId: string) => void;
-  rows: AdminClubListRow[];
-  selectedClubId: string;
+  onSelect: (organizerId: string) => void;
+  rows: AdminOrganizerListRow[];
+  selectedOrganizerId: string;
 }) {
   if (rows.length === 0) {
     return (
@@ -308,11 +308,11 @@ function OrganizerDirectoryTable({
       </thead>
       <tbody>
         {rows.map((row) => (
-          <AdminTableRow key={row.clubId} selected={selectedClubId === row.clubId}>
+          <AdminTableRow key={row.organizerId} selected={selectedOrganizerId === row.organizerId}>
             <td>
               <AdminRowTitle>
                 <strong>{row.name}</strong>
-                <span>{row.clubId}</span>
+                <span>{row.organizerId}</span>
               </AdminRowTitle>
             </td>
             <td>
@@ -344,8 +344,8 @@ function OrganizerDirectoryTable({
               </AdminTagRow>
             </td>
             <td>
-              <TableActionButton onClick={() => onSelect(row.clubId)}>
-                {selectedClubId === row.clubId ? "Selected" : "Open"}
+              <TableActionButton onClick={() => onSelect(row.organizerId)}>
+                {selectedOrganizerId === row.organizerId ? "Selected" : "Open"}
               </TableActionButton>
             </td>
           </AdminTableRow>
@@ -357,8 +357,8 @@ function OrganizerDirectoryTable({
 
 function OrganizerEditor({
   checklist,
-  club,
-  clubId,
+  organizer,
+  organizerId,
   completeChecklist,
   diffRows,
   form,
@@ -366,7 +366,7 @@ function OrganizerEditor({
   isPublishing,
   isSaving,
   onChecklistChange,
-  onClubIdChange,
+  onOrganizerIdChange,
   onFormChange,
   onLoad,
   onPublish,
@@ -375,8 +375,8 @@ function OrganizerEditor({
   validationIssues,
 }: {
   checklist: PublishChecklistState;
-  club: AdminClubDetails | null;
-  clubId: string;
+  organizer: AdminOrganizerDetails | null;
+  organizerId: string;
   completeChecklist: boolean;
   diffRows: OrganizerDiffRow[];
   form: OrganizerPublishingFormState | null;
@@ -384,7 +384,7 @@ function OrganizerEditor({
   isPublishing: boolean;
   isSaving: boolean;
   onChecklistChange: (checklist: PublishChecklistState) => void;
-  onClubIdChange: (clubId: string) => void;
+  onOrganizerIdChange: (organizerId: string) => void;
   onFormChange: (form: OrganizerPublishingFormState | null) => void;
   onLoad: () => void;
   onPublish: () => void;
@@ -433,14 +433,14 @@ function OrganizerEditor({
       <AdminEditorPanel
         icon={<Settings2 size={18} strokeWidth={1.9} />}
         title="Canonical organizer record"
-        action={club?.clubId ?? "No organizer loaded"}
+        action={organizer?.organizerId ?? "No organizer loaded"}
       >
         <AdminPublishingLoadbar>
           <CatchField
             recipe="input"
             title="Document ID"
-            onChanged={onClubIdChange}
-            value={clubId}
+            onChanged={onOrganizerIdChange}
+            value={organizerId}
           />
           <AdminButton
             disabled={isDetailLoading}
@@ -517,8 +517,8 @@ function OrganizerEditor({
             <AdminEditorSection>
               <legend>Ownership and contact</legend>
               <QualityList>
-                <StateRow label="Claim state" value={club?.claimState ?? "Unavailable"} />
-                <StateRow label="Ownership state" value={club?.ownershipState ?? "Unavailable"} />
+                <StateRow label="Claim state" value={organizer?.claimState ?? "Unavailable"} />
+                <StateRow label="Ownership state" value={organizer?.ownershipState ?? "Unavailable"} />
               </QualityList>
               <AdminFieldGrid columns={1}>
                 <CatchField
@@ -642,7 +642,7 @@ function OrganizerEditor({
                 />
                 <StateRow
                   label="Search indexing"
-                  value={`${club?.publicPage.indexStatus ?? "Unavailable"} · changed only by Save + publish`}
+                  value={`${organizer?.publicPage.indexStatus ?? "Unavailable"} · changed only by Save + publish`}
                 />
                 <CatchField
                   recipe="input"
@@ -771,7 +771,7 @@ function OrganizerEditor({
 
       <PublishingSidePanel
         checklist={checklist}
-        club={club}
+        organizer={organizer}
         diffRows={diffRows}
         form={form}
         onChecklistChange={onChecklistChange}
@@ -819,7 +819,7 @@ function OrganizerEditor({
 
 function PublishingSidePanel({
   checklist,
-  club,
+  organizer,
   diffRows,
   form,
   onChecklistChange,
@@ -827,7 +827,7 @@ function PublishingSidePanel({
   validationIssues,
 }: {
   checklist: PublishChecklistState;
-  club: AdminClubDetails | null;
+  organizer: AdminOrganizerDetails | null;
   diffRows: OrganizerDiffRow[];
   form: OrganizerPublishingFormState | null;
   onChecklistChange: (checklist: PublishChecklistState) => void;
@@ -903,7 +903,7 @@ function PublishingSidePanel({
         action={form?.appVisibility ?? "No app"}
       >
         {form ? (
-          <AppListingPreview club={club} form={form} />
+          <AppListingPreview organizer={organizer} form={form} />
         ) : (
           <EmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
             No organizer loaded
@@ -913,16 +913,16 @@ function PublishingSidePanel({
       <Panel
         icon={<ExternalLink size={18} strokeWidth={1.9} />}
         title="Public page preview"
-        action={club?.publicPage.indexStatus ?? "No page"}
+        action={organizer?.publicPage.indexStatus ?? "No page"}
       >
         {form ? (
           <QualityList>
-            <StateRow label="Claim" value={club?.claimState} />
-            <StateRow label="Ownership" value={club?.ownershipState} />
+            <StateRow label="Claim" value={organizer?.claimState} />
+            <StateRow label="Ownership" value={organizer?.ownershipState} />
             <StateRow label="Canonical" value={form.canonicalPath} />
             <StateRow label="Public-web publication" value={form.publishStatus} />
-            <StateRow label="Search indexing" value={club?.publicPage.indexStatus} />
-            <StateRow label="Robots" value={club?.publicPage.robots} />
+            <StateRow label="Search indexing" value={organizer?.publicPage.indexStatus} />
+            <StateRow label="Robots" value={organizer?.publicPage.robots} />
             {form.canonicalPath && (
               <AdminLinkButton
                 href={publicPreviewHref(form.canonicalPath)}
@@ -951,10 +951,10 @@ function publicPreviewHref(canonicalPath: string): string {
 }
 
 function AppListingPreview({
-  club,
+  organizer,
   form,
 }: {
-  club: AdminClubDetails | null;
+  organizer: AdminOrganizerDetails | null;
   form: OrganizerPublishingFormState;
 }) {
   const location = [form.cityName || form.area, form.regionName]
@@ -968,7 +968,7 @@ function AppListingPreview({
     <QualityList>
       <StateRow
         label="Record ID"
-        value={club?.clubId}
+        value={organizer?.organizerId}
       />
       <StateRow label="App visibility" value={form.appVisibility} />
       <StateRow label="Image" value={form.imageUrl ? "imageUrl set" : "missing"} />

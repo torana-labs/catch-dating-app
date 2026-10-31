@@ -5,7 +5,7 @@ import {
 } from "./salesRepository";
 
 vi.mock("../../../shared/api/dataMode", () => ({dataMode: () => "live"}));
-vi.mock("../../../shared/api/adminApi", () => ({listClubDetails: vi.fn()}));
+vi.mock("../../../shared/api/adminApi", () => ({listOrganizerDetails: vi.fn()}));
 vi.mock("../../../shared/api/firebaseFunctions", async () => {
   const {initializeApp} = await import("firebase/app");
   const {getFunctions} = await import("firebase/functions");

@@ -167,7 +167,7 @@ Owned routes:
 Typed handoffs:
 
 - `hostInboxScreen` — `/host/inbox`
-- `hostAppEventDetailScreen` — `/host/organizers/:clubId/events/:eventId`
+- `hostAppEventDetailScreen` — `/host/organizers/:organizerId/events/:eventId`
 
 ## Key code owners
 

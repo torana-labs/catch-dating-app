@@ -9,7 +9,7 @@ class AppDeepLinks {
 
   static Uri organizer(String clubId) => _httpsRoute(
     Routes.organizerDetailScreen.path,
-    pathParameters: {'clubId': clubId},
+    pathParameters: {'organizerId': clubId},
   );
 
   static Uri eventInvite(String inviteToken) => Uri(
@@ -25,7 +25,7 @@ class AppDeepLinks {
     String? inviteLinkId,
   }) => _httpsRoute(
     Routes.eventDetailScreen.path,
-    pathParameters: {'clubId': clubId, 'eventId': eventId},
+    pathParameters: {'organizerId': clubId, 'eventId': eventId},
     queryParameters: _eventQuery(
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
@@ -61,7 +61,7 @@ class AppDeepLinks {
       role.isHost
           ? Routes.hostAppEventDetailScreen.path
           : Routes.eventDetailScreen.path,
-      pathParameters: {'clubId': clubId, 'eventId': eventId},
+      pathParameters: {'organizerId': clubId, 'eventId': eventId},
       queryParameters: _eventQuery(
         inviteCode: inviteCode,
         inviteLinkId: inviteLinkId,

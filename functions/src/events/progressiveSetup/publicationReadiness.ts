@@ -52,7 +52,7 @@ export function preparePublishedEventPatch(params: {
     ...publicationRegistrationPatch(event),
     ...(event.description === undefined ? {description: ""} : {}),
     ...eventDiscoveryProjection({event: configured,
-      clubLocationMarketId: event.eventMarketId}),
+      organizerLocationMarketId: event.eventMarketId}),
     ...(event.firstPublishedAt === undefined ?
       {firstPublishedAt: timestampFromMillis(nowMillis)} : {}),
   };

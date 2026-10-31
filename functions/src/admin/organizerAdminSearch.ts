@@ -1,5 +1,4 @@
 import type {
-  ClubDocument,
   OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
 
@@ -26,8 +25,8 @@ const stopWords = new Set([
 export type OrganizerAdminSearchSource =
   "adminCreateOrganizerDraftFromCandidate" |
   "adminApproveOrganizerListing" |
-  "adminUpdateClubDetails" |
-  "adminSetClubIndexStatus" |
+  "adminUpdateOrganizerDetails" |
+  "adminSetOrganizerIndexStatus" |
   "adminOrganizerSearchBackfill";
 
 export interface OrganizerAdminSearchProjection {
@@ -39,22 +38,22 @@ export interface OrganizerAdminSearchProjection {
 
 /**
  * Builds the deterministic admin search projection for an organizer document.
- * @param {string} clubId Firestore club document id.
- * @param {ClubDocument} club Canonical club document.
+ * @param {string} organizerId Firestore club document id.
+ * @param {OrganizerDocument} club Canonical club document.
  * @param {FirebaseFirestore.FieldValue} updatedAt Server timestamp marker.
  * @param {OrganizerAdminSearchSource} updatedBySource Projection source.
  * @return {OrganizerAdminSearchProjection} Rebuildable search projection.
  */
 export function buildOrganizerAdminSearchProjection(
-  clubId: string,
-  club: ClubDocument | OrganizerDocument,
+  organizerId: string,
+  organizer: OrganizerDocument | OrganizerDocument,
   updatedAt: FirebaseFirestore.FieldValue,
   updatedBySource: OrganizerAdminSearchSource
 ): OrganizerAdminSearchProjection {
-  const sourceText = organizerSearchSourceText(clubId, club);
+  const sourceText = organizerSearchSourceText(organizerId, organizer);
   return {
     tokens: buildSearchTokens(sourceText, true, maxAdminSearchTokens),
-    sortKey: firstSearchToken(club.name) ?? firstSearchToken(clubId) ?? clubId,
+    sortKey: firstSearchToken(organizer.name) ?? firstSearchToken(organizerId) ?? organizerId,
     updatedAt,
     updatedBySource,
   };
@@ -71,14 +70,14 @@ export function organizerAdminSearchQueryTokens(query: string): string[] {
 
 /**
  * Returns a lightweight next-club view after applying admin editable fields.
- * @param {ClubDocument} before Current canonical club document.
+ * @param {OrganizerDocument} before Current canonical club document.
  * @param {Record<string, unknown>} fields Admin update fields.
- * @return {ClubDocument} Club document view for derived projections.
+ * @return {OrganizerDocument} Club document view for derived projections.
  */
-export function clubWithAdminFieldsForSearch(
-  before: ClubDocument,
+export function organizerWithAdminFieldsForSearch(
+  before: OrganizerDocument,
   fields: Record<string, unknown>
-): ClubDocument {
+): OrganizerDocument {
   return {
     ...before,
     ...copyTopLevelFields(fields),
@@ -90,14 +89,14 @@ export function clubWithAdminFieldsForSearch(
 
 /**
  * Returns a lightweight next-club view after index status changes.
- * @param {ClubDocument} before Current canonical club document.
+ * @param {OrganizerDocument} before Current canonical club document.
  * @param {object} publicPagePatch Public page patch.
- * @return {ClubDocument} Club document view for derived projections.
+ * @return {OrganizerDocument} Club document view for derived projections.
  */
-export function clubWithPublicPageForSearch(
-  before: ClubDocument,
+export function organizerWithPublicPageForSearch(
+  before: OrganizerDocument,
   publicPagePatch: Record<string, unknown>
-): ClubDocument {
+): OrganizerDocument {
   return {
     ...before,
     publicPage: mergeNested(before.publicPage, publicPagePatch),
@@ -106,46 +105,46 @@ export function clubWithPublicPageForSearch(
 
 /**
  * Collects high-signal public/admin-safe organizer fields for search.
- * @param {string} clubId Firestore club document id.
- * @param {ClubDocument} club Canonical club document.
+ * @param {string} organizerId Firestore club document id.
+ * @param {OrganizerDocument} club Canonical club document.
  * @return {string[]} Search source strings in priority order.
  */
 function organizerSearchSourceText(
-  clubId: string,
-  club: ClubDocument | OrganizerDocument
+  organizerId: string,
+  organizer: OrganizerDocument | OrganizerDocument
 ): string[] {
   return compactStrings([
-    clubId,
-    club.name,
-    club.publicPage?.slug,
-    club.publicPage?.citySlug,
-    club.publicPage?.canonicalPath,
-    club.instagramHandle,
-    club.email,
-    club.organizerType,
-    club.publicCategoryLabel,
-    club.displayCategory,
-    club.cityName,
-    club.location,
-    club.locationMarketId,
-    club.locationCityId,
-    club.area,
-    club.regionName,
-    club.countryCode,
-    club.countryName,
-    club.entityKind,
-    club.appVisibility,
-    club.ownership?.state,
-    club.claim?.state,
-    club.provenance?.sourceConfidence,
-    club.provenance?.verificationStatus,
-    club.publicProfile?.headline,
-    club.publicProfile?.summary,
-    club.publicProfile?.sourceSummary,
-    ...stringArray(club.tags),
-    ...stringArray(club.entitySubtypes),
-    ...stringArray(club.publicProfile?.formats),
-    ...factStrings(club.publicProfile?.facts),
+    organizerId,
+    organizer.name,
+    organizer.publicPage?.slug,
+    organizer.publicPage?.citySlug,
+    organizer.publicPage?.canonicalPath,
+    organizer.instagramHandle,
+    organizer.email,
+    organizer.organizerType,
+    organizer.publicCategoryLabel,
+    organizer.displayCategory,
+    organizer.cityName,
+    organizer.location,
+    organizer.locationMarketId,
+    organizer.locationCityId,
+    organizer.area,
+    organizer.regionName,
+    organizer.countryCode,
+    organizer.countryName,
+    organizer.entityKind,
+    organizer.appVisibility,
+    organizer.ownership?.state,
+    organizer.claim?.state,
+    organizer.provenance?.sourceConfidence,
+    organizer.provenance?.verificationStatus,
+    organizer.publicProfile?.headline,
+    organizer.publicProfile?.summary,
+    organizer.publicProfile?.sourceSummary,
+    ...stringArray(organizer.tags),
+    ...stringArray(organizer.entitySubtypes),
+    ...stringArray(organizer.publicProfile?.formats),
+    ...factStrings(organizer.publicProfile?.facts),
   ]);
 }
 
@@ -209,12 +208,12 @@ function firstSearchToken(value: string | null | undefined): string | null {
 /**
  * Copies top-level admin editable fields for projection rebuilding.
  * @param {Record<string, unknown>} fields Admin fields.
- * @return {Partial<ClubDocument>} Top-level patch.
+ * @return {Partial<OrganizerDocument>} Top-level patch.
  */
 function copyTopLevelFields(
   fields: Record<string, unknown>
-): Partial<ClubDocument> {
-  const patch: Partial<ClubDocument> = {};
+): Partial<OrganizerDocument> {
+  const patch: Partial<OrganizerDocument> = {};
   for (const key of [
     "name",
     "description",

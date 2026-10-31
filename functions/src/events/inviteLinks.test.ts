@@ -135,7 +135,6 @@ test("attendee links default to the external booking destination", async () => {
   const attendeeId = eventAttendeeId("event-1", "phone:+919876543210");
   const firestore = new FakeFirestore({
     "events/event-1": {
-      clubId: "organizer-1",
       organizerId: "organizer-1",
       status: "active",
       startTime: new FakeTimestamp(Date.parse("2026-08-16T13:00:00.000Z")),
@@ -151,7 +150,6 @@ test("attendee links default to the external booking destination", async () => {
     },
     "eventParticipations/event-1_user-1": {
       eventId: "event-1",
-      clubId: "organizer-1",
       organizerId: "organizer-1",
       uid: "user-1",
       status: "signedUp",
@@ -208,7 +206,6 @@ test("invite landing verifies its token and bounds projection", async () => {
     "eventInviteLinks/invite-1": {
       contractVersion: 2,
       eventId: "event-1",
-      clubId: "organizer-1",
       organizerId: "organizer-1",
       destinationKind: "externalBooking",
       tokenHash: inviteLinkTokenHash(token),
@@ -218,7 +215,6 @@ test("invite landing verifies its token and bounds projection", async () => {
       ),
     },
     "events/event-1": {
-      clubId: "organizer-1",
       organizerId: "organizer-1",
       status: "active",
       startTime: new FakeTimestamp(Date.parse("2026-08-16T13:00:00.000Z")),

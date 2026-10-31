@@ -201,7 +201,6 @@ export async function finalizePublicPayment(input: {
       const attendee: EventAttendeeDocument = {
         ...existing,
         eventId,
-        clubId: event.clubId,
         organizerId,
         displayName,
         searchName: displayName.toLocaleLowerCase("en"),

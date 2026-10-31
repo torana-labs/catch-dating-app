@@ -128,7 +128,7 @@ const factLimit = 6;
 
 export function organizerPageKind(record: OrganizerPageRecord): OrganizerPageKind {
   const owned = record.identity.verified || record.claim.state === "claimed" || record.claim.state === "verified" ||
-    record.profile.listingVariant === "appCreatedClub";
+    record.profile.listingVariant === "appCreatedOrganizer";
   return owned ? "claimed" : "generated";
 }
 
@@ -137,7 +137,7 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
   const kind = organizerPageKind(record);
   const generated = kind === "generated";
   const allEvents = [...record.upcomingEvents, ...record.pastMoments];
-  const accent = clubAccent(allEvents);
+  const accent = organizerAccent(allEvents);
   const sourceNames = publicSourceNames(record);
   const rows = record.upcomingEvents.map((item, index) => eventView(item, index, kind, accent));
   const average = averageOf(record);
@@ -386,7 +386,7 @@ function averageOf(record: OrganizerPageRecord): string | null {
   return (total / count).toFixed(1);
 }
 
-function clubAccent(events: readonly OrganizerPageEvent[]): Accent {
+function organizerAccent(events: readonly OrganizerPageEvent[]): Accent {
   const accents = events.flatMap((item) => catchFormatAccentOf(item.event.activityKind) ?? []);
   return (mostCommon(accents) as Accent | null) ?? "coral";
 }

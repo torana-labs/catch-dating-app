@@ -488,7 +488,6 @@ test("rejects invalid batches before any reads", async () => {
 
 function event(overrides: FakeData = {}): FakeData {
   return {
-    clubId: "organizer-1",
     organizerId: "organizer-1",
     startTime: timestamp(eventStartMillis),
     endTime: timestamp(eventStartMillis + 2 * 60 * 60 * 1000),

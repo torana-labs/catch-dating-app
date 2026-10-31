@@ -3,9 +3,9 @@ import {useCallback, useEffect, useMemo, useState} from "react";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import type {
-  AdminClubClaimListRow,
-  AdminClubClaimRequestDetails,
-  ClubClaimDecision,
+  AdminOrganizerClaimListRow,
+  AdminOrganizerClaimRequestDetails,
+  OrganizerClaimDecision,
 } from "../../../shared/types/adminTypes";
 import {
   decideOrganizerClaim,
@@ -15,25 +15,25 @@ import {
 
 export interface OrganizerClaimReviewController {
   approvalIssue: string | null;
-  decisionInFlight: ClubClaimDecision | null;
+  decisionInFlight: OrganizerClaimDecision | null;
   detailError: string | null;
-  details: AdminClubClaimRequestDetails | null;
-  filteredRows: AdminClubClaimListRow[];
+  details: AdminOrganizerClaimRequestDetails | null;
+  filteredRows: AdminOrganizerClaimListRow[];
   isDetailLoading: boolean;
   isLoading: boolean;
   generatedAt: string | null;
   note: string;
   query: string;
   rejectionIssue: string | null;
-  rows: AdminClubClaimListRow[];
-  selected: AdminClubClaimListRow | null;
+  rows: AdminOrganizerClaimListRow[];
+  selected: AdminOrganizerClaimListRow | null;
   selectedRequestId: string | null;
   selectedUnavailable: boolean;
   validationIssue: string | null;
-  decide: (decision: ClubClaimDecision) => Promise<boolean>;
+  decide: (decision: OrganizerClaimDecision) => Promise<boolean>;
   refresh: () => Promise<void>;
   refreshDetail: () => Promise<void>;
-  select: (row: AdminClubClaimListRow) => void;
+  select: (row: AdminOrganizerClaimListRow) => void;
   setNote: (note: string) => void;
   setQuery: (query: string) => void;
 }
@@ -115,13 +115,13 @@ export function useOrganizerClaimReviewController({
     if (detailQuery.isSuccess && !listQuery.isError) onError(null);
   }, [detailQuery.error, detailQuery.isError, detailQuery.isSuccess, listQuery.isError, onError]);
 
-  const select = useCallback((row: AdminClubClaimListRow) => {
+  const select = useCallback((row: AdminOrganizerClaimListRow) => {
     setSelectedRequestId(row.requestId);
     setNote("");
     onError(null);
   }, [onError, setSelectedRequestId]);
 
-  const decide = useCallback(async (decision: ClubClaimDecision) => {
+  const decide = useCallback(async (decision: OrganizerClaimDecision) => {
     if (!selected) {
       onError("Select an organizer claim before deciding.");
       return false;
@@ -153,7 +153,7 @@ export function useOrganizerClaimReviewController({
           queryKey: adminQueryKeys.organizers.claims(),
         }),
         queryClient.invalidateQueries({
-          queryKey: adminQueryKeys.organizers.detail(result.clubId),
+          queryKey: adminQueryKeys.organizers.detail(result.organizerId),
         }),
         queryClient.invalidateQueries({
           queryKey: [...adminQueryKeys.all, "overview"],
@@ -233,15 +233,15 @@ export function useOrganizerClaimReviewController({
 }
 
 function filterClaimRows(
-  rows: AdminClubClaimListRow[],
+  rows: AdminOrganizerClaimListRow[],
   query: string
-): AdminClubClaimListRow[] {
+): AdminOrganizerClaimListRow[] {
   const tokens = query.trim().toLowerCase().split(/\s+/u).filter(Boolean);
   if (tokens.length === 0) return rows;
   return rows.filter((row) => {
     const haystack = [
       row.requestId,
-      row.clubId,
+      row.organizerId,
       row.requesterUid,
       row.requesterName,
       row.requesterRole,
@@ -253,10 +253,10 @@ function filterClaimRows(
 }
 
 function validateClaimDecision(
-  selected: AdminClubClaimListRow | null,
-  details: AdminClubClaimRequestDetails | null,
+  selected: AdminOrganizerClaimListRow | null,
+  details: AdminOrganizerClaimRequestDetails | null,
   note: string,
-  decision: ClubClaimDecision | null = null
+  decision: OrganizerClaimDecision | null = null
 ): string | null {
   if (!selected) return "Select an organizer claim before deciding.";
   if (!details) return "Load the claim evidence before deciding.";
@@ -264,7 +264,7 @@ function validateClaimDecision(
   if (note.trim().length > 1000) {
     return "Review note must be 1000 characters or fewer.";
   }
-  if (decision === "approve" && !details.club.exists) {
+  if (decision === "approve" && !details.organizer.exists) {
     return "The organizer document is missing and cannot be approved.";
   }
   if (decision === "approve" && !details.requesterProfile.exists) {

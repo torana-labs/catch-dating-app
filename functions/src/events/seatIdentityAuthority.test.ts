@@ -369,7 +369,7 @@ test("verified form origin reuses imported guest seat without reserving again",
     store.ready();
     store.rows.set(`eventSeatLedgers/${eventId}`, {eventId,
       state: "ready", migrationRevision: 1, revision: 1});
-    store.rows.set(`events/${eventId}`, {clubId: organizerId,
+    store.rows.set(`events/${eventId}`, {organizerId: organizerId,
       status: "active"});
     crmSource(store);
     store.rows.set("organizerFormResponses/response1", {
@@ -441,8 +441,7 @@ function guestSeatStore(options: {externalReference?: string} = {}) {
     `external:${options.externalReference.toLowerCase()}`) :
     eventAttendeeId(eventId, `phone:${phone}`);
   const key = "guestSeat";
-  store.rows.set(`events/${eventId}`, {clubId: organizerId,
-    organizerId, status: "active"});
+  store.rows.set(`events/${eventId}`, {organizerId, status: "active"});
   store.rows.set(`eventSeatLedgers/${eventId}`, {eventId, state: "ready",
     migrationRevision: 1, revision: 3});
   store.rows.set(`eventAttendees/${attendeeId}`, {eventId, organizerId,

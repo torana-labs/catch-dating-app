@@ -843,7 +843,7 @@ async function requireTargetBelongsToOrganizer(params: {
   const snap = await params.db.collection(collection)
     .doc(params.targetId!).get();
   const row = snap.data() as Record<string, unknown> | undefined;
-  const organizerId = row?.organizerId ?? row?.clubId;
+  const organizerId = row?.organizerId;
   if (!row || organizerId !== params.organizerId) {
     throw new HttpsError("not-found", "Application target not found.");
   }

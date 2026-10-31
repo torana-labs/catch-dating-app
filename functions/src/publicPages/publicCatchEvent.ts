@@ -66,9 +66,9 @@ export function projectLivePublicCatchEvent(
   // Filter before reading rich fields: a private draft need not have them.
   if (!data || data.publicationState !== "published" ||
       data.status !== "active") return null;
-  const organizerId = text(data.organizerId || data.clubId);
+  const organizerId = text(data.organizerId);
   if (!documentId.test(id) || !documentId.test(organizerId) ||
-      data.organizerId && data.clubId && data.organizerId !== data.clubId) {
+      data.organizerId && data.organizerId !== data.organizerId) {
     return null;
   }
   const start = millis(data.startTime);

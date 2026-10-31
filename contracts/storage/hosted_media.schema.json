@@ -21,7 +21,7 @@
     },
     "fileName": {
       "type": "string",
-      "description": "Conventional patterns: club_{clubId}_cover_{timestamp}.{ext}, club_{clubId}_profile_{timestamp}.{ext}, event_{clubId}_{eventId}_{timestamp}.{ext}"
+      "description": "Conventional patterns: club_{organizerId}_cover_{timestamp}.{ext}, club_{organizerId}_profile_{timestamp}.{ext}, event_{organizerId}_{eventId}_{timestamp}.{ext}"
     }
   }
 }

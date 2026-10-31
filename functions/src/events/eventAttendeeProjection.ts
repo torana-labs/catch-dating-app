@@ -57,7 +57,7 @@ export async function projectEventParticipationToAttendee(
       undefined) ?? participation;
     if (source.eventId !== participation.eventId ||
         source.uid !== participation.uid) return;
-    const organizerId = source.organizerId ?? source.clubId;
+    const organizerId = source.organizerId;
     const stableKey = verifiedPhone ?
       `phone:${verifiedPhone}` : `uid:${source.uid}`;
     const fallbackRef = db.collection("eventAttendees")
@@ -76,7 +76,7 @@ export async function projectEventParticipationToAttendee(
     if (mode === "ready") {
       const event = (await tx.get(db.collection("events")
         .doc(source.eventId))).data();
-      if (source.clubId !== organizerId ||
+      if (source.organizerId !== organizerId ||
           source.organizerId !== undefined &&
             source.organizerId !== organizerId) return;
       const identity = await new FirestoreSeatIdentityAuthority().resolve({
@@ -117,7 +117,6 @@ export async function projectEventParticipationToAttendee(
       source.uid;
     const document: EventAttendeeDocument = {
       eventId: source.eventId,
-      clubId: source.clubId,
       organizerId,
       displayName,
       searchName: displayName.toLocaleLowerCase("en"),

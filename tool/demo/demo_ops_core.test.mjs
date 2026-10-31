@@ -246,7 +246,7 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
       p1: {eventId: "demo_past"},
       p2: {eventId: "demo_future"},
     },
-    clubScheduleLocks: {
+    organizerScheduleLocks: {
       club_lock: {eventId: "demo_past"},
     },
     userEventScheduleLocks: {
@@ -301,7 +301,7 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
 
   assert.deepEqual(plan.staleEventIds, ["demo_cancelled", "demo_past"]);
   assert.deepEqual([...plan.paths].sort(), [
-    "clubScheduleLocks/club_lock",
+    "organizerScheduleLocks/club_lock",
     "eventParticipations/p1",
     "events/demo_cancelled",
     "events/demo_past",

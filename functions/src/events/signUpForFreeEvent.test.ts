@@ -337,7 +337,7 @@ function emptyMembershipContext(): HostMembershipContext {
 function configuredEventFixture(): Record<string, unknown> {
   const time = (millis: number) => ({toMillis: () => millis});
   return {
-    clubId: "club-1",
+    organizerId: "club-1",
     startTime: time(1_000),
     endTime: time(2_000),
     meetingPoint: "Park gate",

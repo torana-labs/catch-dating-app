@@ -38,12 +38,12 @@ describe("useOverviewController", () => {
     expect(result.current.hostAnalytics!.summaryCards.length).toBeGreaterThan(0);
 
     act(() => {
-      result.current.setAnalyticsClubId("club-1");
+      result.current.setAnalyticsOrganizerId("club-1");
       result.current.setAnalyticsEventId("event-1");
     });
-    expect(result.current.analyticsClubId).toBe("club-1");
+    expect(result.current.analyticsOrganizerId).toBe("club-1");
     act(() => result.current.clearAnalyticsScope());
-    expect(result.current.analyticsClubId).toBe("");
+    expect(result.current.analyticsOrganizerId).toBe("");
     expect(result.current.analyticsEventId).toBe("");
   });
 });

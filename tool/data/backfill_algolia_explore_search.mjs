@@ -37,7 +37,7 @@ export async function main(argv = process.argv.slice(2)) {
   const plan = await buildAlgoliaExploreSearchPlan(db, helpers);
   const summary = {
     projectId,
-    clubsIndex: algoliaConfig.clubsIndex,
+    organizersIndex: algoliaConfig.organizersIndex,
     eventsIndex: algoliaConfig.eventsIndex,
     ...plan.summary,
   };
@@ -62,45 +62,45 @@ export async function main(argv = process.argv.slice(2)) {
 }
 
 export async function buildAlgoliaExploreSearchPlan(firestore, helpers) {
-  const [clubsSnap, eventsSnap] = await Promise.all([
+  const [organizersSnap, eventsSnap] = await Promise.all([
     firestore.collection("clubs").get(),
     firestore.collection("events").get(),
   ]);
-  const clubDocs = new Map();
-  for (const doc of clubsSnap.docs) {
-    clubDocs.set(doc.id, doc.data());
+  const organizerDocs = new Map();
+  for (const doc of organizersSnap.docs) {
+    organizerDocs.set(doc.id, doc.data());
   }
 
-  const clubRecords = [];
-  for (const doc of clubsSnap.docs) {
-    const record = helpers.buildClubSearchRecord(doc.id, doc.data());
-    if (record) clubRecords.push(record);
+  const organizerRecords = [];
+  for (const doc of organizersSnap.docs) {
+    const record = helpers.buildOrganizerSearchRecord(doc.id, doc.data());
+    if (record) organizerRecords.push(record);
   }
 
   const eventRecords = [];
   const warnings = [];
   for (const doc of eventsSnap.docs) {
     const event = doc.data();
-    const clubId = typeof event.clubId === "string" ? event.clubId : null;
-    const club = clubId ? clubDocs.get(clubId) : null;
-    if (!club) {
+    const organizerId = typeof event.organizerId === "string" ? event.organizerId : null;
+    const organizer = organizerId ? organizerDocs.get(organizerId) : null;
+    if (!organizer) {
       warnings.push(
-        `${doc.ref.path} references missing clubs/${clubId ?? "<missing>"}; ` +
+        `${doc.ref.path} references missing clubs/${organizerId ?? "<missing>"}; ` +
         "event was skipped."
       );
       continue;
     }
-    const record = helpers.buildEventSearchRecord(doc.id, event, club);
+    const record = helpers.buildEventSearchRecord(doc.id, event, organizer);
     if (record) eventRecords.push(record);
   }
 
   return {
-    clubRecords,
+    organizerRecords,
     eventRecords,
     summary: {
-      clubsScanned: clubsSnap.size,
+      organizersScanned: organizersSnap.size,
       eventsScanned: eventsSnap.size,
-      clubRecords: clubRecords.length,
+      organizerRecords: organizerRecords.length,
       eventRecords: eventRecords.length,
       warnings,
     },
@@ -115,8 +115,8 @@ export async function applyAlgoliaExploreSearchPlan(
   await Promise.all([
     putSettings(
       config,
-      config.clubsIndex,
-      helpers.clubSearchIndexSettings()
+      config.organizersIndex,
+      helpers.organizerSearchIndexSettings()
     ),
     putSettings(
       config,
@@ -125,7 +125,7 @@ export async function applyAlgoliaExploreSearchPlan(
     ),
   ]);
   await Promise.all([
-    saveObjects(config, config.clubsIndex, plan.clubRecords),
+    saveObjects(config, config.organizersIndex, plan.organizerRecords),
     saveObjects(config, config.eventsIndex, plan.eventRecords),
   ]);
 }
@@ -206,7 +206,7 @@ function readAlgoliaConfig(args) {
   return {
     appId,
     writeApiKey,
-    clubsIndex: args.clubsIndex || process.env.ALGOLIA_CLUBS_INDEX || "clubs",
+    organizersIndex: args.organizersIndex || process.env.ALGOLIA_ORGANIZERS_INDEX || "clubs",
     eventsIndex: args.eventsIndex || process.env.ALGOLIA_EVENTS_INDEX ||
       "events",
   };
@@ -217,7 +217,7 @@ function parseArgs(argv) {
     env: null,
     project: null,
     appId: null,
-    clubsIndex: null,
+    organizersIndex: null,
     eventsIndex: null,
     apply: false,
     allowProd: false,
@@ -239,7 +239,7 @@ function parseArgs(argv) {
     } else if (arg === "--app-id") {
       parsed.appId = requireValue(argv, ++i, arg);
     } else if (arg === "--clubs-index") {
-      parsed.clubsIndex = requireValue(argv, ++i, arg);
+      parsed.organizersIndex = requireValue(argv, ++i, arg);
     } else if (arg === "--events-index") {
       parsed.eventsIndex = requireValue(argv, ++i, arg);
     } else {
@@ -261,11 +261,11 @@ function requireValue(argv, index, flag) {
 function compactSummary(summary) {
   return {
     projectId: summary.projectId,
-    clubsIndex: summary.clubsIndex,
+    organizersIndex: summary.organizersIndex,
     eventsIndex: summary.eventsIndex,
-    clubsScanned: summary.clubsScanned,
+    organizersScanned: summary.organizersScanned,
     eventsScanned: summary.eventsScanned,
-    clubRecords: summary.clubRecords,
+    organizerRecords: summary.organizerRecords,
     eventRecords: summary.eventRecords,
     warningCount: summary.warnings.length,
   };
@@ -273,10 +273,10 @@ function compactSummary(summary) {
 
 function printSummary(summary, {summaryOnly}) {
   console.log(`Project: ${summary.projectId}`);
-  console.log(`Indices: ${summary.clubsIndex}, ${summary.eventsIndex}`);
-  console.log(`Clubs scanned: ${summary.clubsScanned}`);
+  console.log(`Indices: ${summary.organizersIndex}, ${summary.eventsIndex}`);
+  console.log(`Clubs scanned: ${summary.organizersScanned}`);
   console.log(`Events scanned: ${summary.eventsScanned}`);
-  console.log(`Club records: ${summary.clubRecords}`);
+  console.log(`Club records: ${summary.organizerRecords}`);
   console.log(`Event records: ${summary.eventRecords}`);
   console.log(`Warnings: ${summary.warnings.length}`);
   if (!summaryOnly && summary.warnings.length > 0) {

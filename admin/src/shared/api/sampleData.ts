@@ -1,6 +1,6 @@
 import {
   AdminActionExecutionRecord,
-  AdminClubDetails,
+  AdminOrganizerDetails,
   AdminEventDetails,
   AdminExternalEventListRow,
   AdminOverviewResponse,
@@ -111,7 +111,7 @@ export const sampleOverview: AdminOverviewResponse = {
     {id: "pendingModerationFlags", label: "Pending moderation", value: 7},
     {id: "eventSafetyReports", label: "Event safety reports", value: 2},
     {id: "pendingApplications", label: "Pending applications", value: 41},
-    {id: "pendingClubClaims", label: "Pending organizer claims", value: 2},
+    {id: "pendingOrganizerClaims", label: "Pending organizer claims", value: 2},
     {id: "indexReviewPages", label: "Index review pages", value: 2},
     {id: "activeHosts", label: "Active host claims", value: 23},
     {id: "activeEvents", label: "Active events", value: 31},
@@ -185,7 +185,7 @@ export const sampleOverview: AdminOverviewResponse = {
         targetPath: "accessApplications/application-2",
       },
     ],
-    clubClaimRequests: [
+    organizerClaimRequests: [
       {
         id: "organizerClaimRequests/club_claim_afterfly",
         title: "AFTER FLY owner",
@@ -203,7 +203,7 @@ export const sampleOverview: AdminOverviewResponse = {
         targetPath: "organizerClaimRequests/club_claim_bhag",
       },
     ],
-    clubIndexReviews: [
+    organizerIndexReviews: [
       {
         id: "organizers/afterfly",
         title: "AFTER FLY",
@@ -277,9 +277,8 @@ export const sampleHostAnalytics: HostAnalyticsResponse = {
   },
   scope: {
     organizerIds: ["afterfly", "bhag"],
-    clubIds: ["afterfly", "bhag"],
     eventIds: ["afterfly-social-run-1", "bhag-sunday-run-1"],
-    clubName: null,
+    organizerName: null,
     eventTitle: null,
   },
   summaryCards: [
@@ -394,7 +393,7 @@ export const sampleHostAnalytics: HostAnalyticsResponse = {
   topEvents: [
     {
       eventId: "afterfly-social-run-1",
-      clubId: "afterfly",
+      organizerId: "afterfly",
       title: "Social run · 2026-05-31",
       startTime: "2026-05-31T01:30:00.000Z",
       status: "active",
@@ -421,7 +420,7 @@ export const sampleHostAnalytics: HostAnalyticsResponse = {
     },
     {
       eventId: "bhag-sunday-run-1",
-      clubId: "bhag",
+      organizerId: "bhag",
       title: "Running · 2026-05-24",
       startTime: "2026-05-24T02:00:00.000Z",
       status: "active",
@@ -565,10 +564,10 @@ export function sampleUserAnalyticsReport(
   };
 }
 
-export const sampleClubDetails: Record<string, AdminClubDetails> =
+export const sampleOrganizerDetails: Record<string, AdminOrganizerDetails> =
   Object.fromEntries([
     sampleOrganizer({
-      clubId: "afterfly",
+      organizerId: "afterfly",
       name: "AFTER FLY",
       description:
         "Source-backed Indore run club used for local canonical-organizer review.",
@@ -609,7 +608,7 @@ export const sampleClubDetails: Record<string, AdminClubDetails> =
       ],
     }),
     sampleOrganizer({
-      clubId: "bhag",
+      organizerId: "bhag",
       name: "Bhag Run Club",
       description:
         "Mumbai running community with an indexed public organizer profile.",
@@ -630,7 +629,7 @@ export const sampleClubDetails: Record<string, AdminClubDetails> =
       formats: ["Running", "Training run"],
     }),
     sampleOrganizer({
-      clubId: "bandra-runners",
+      organizerId: "bandra-runners",
       name: "Bandra Runners",
       description:
         "Mumbai organizer that still needs deterministic search backfill.",
@@ -651,7 +650,7 @@ export const sampleClubDetails: Record<string, AdminClubDetails> =
       formats: ["Running", "Social run"],
     }),
     sampleOrganizer({
-      clubId: "mumbai-padel-social",
+      organizerId: "mumbai-padel-social",
       name: "Mumbai Padel Social",
       description:
         "Mumbai racket-sport organizer used for non-running event coverage.",
@@ -671,14 +670,14 @@ export const sampleClubDetails: Record<string, AdminClubDetails> =
       verificationStatus: "sourceBacked",
       formats: ["Padel mixer", "Paired rotations"],
     }),
-  ].map((club) => [club.clubId, club]));
+  ].map((organizer) => [organizer.organizerId, organizer]));
 
 export const sampleEventDetails: Record<string, AdminEventDetails> =
   Object.fromEntries([
     sampleCanonicalEvent({
       eventId: "afterfly-social-run-1",
-      clubId: "afterfly",
-      organizerName: sampleClubDetails.afterfly?.name ?? "AFTER FLY",
+      organizerId: "afterfly",
+      organizerName: sampleOrganizerDetails.afterfly?.name ?? "AFTER FLY",
       title: "Social run",
       startTime: "2026-06-28T01:30:00.000Z",
       meetingPoint: "Nehru Park gate",
@@ -698,7 +697,7 @@ export const sampleEventDetails: Record<string, AdminEventDetails> =
     }),
     sampleCanonicalEvent({
       eventId: "bandra-sunset-run-1",
-      clubId: "bandra-runners",
+      organizerId: "bandra-runners",
       organizerName: "Bandra Runners",
       title: "Sunset run",
       startTime: "2026-06-29T12:30:00.000Z",
@@ -719,7 +718,7 @@ export const sampleEventDetails: Record<string, AdminEventDetails> =
     }),
     sampleCanonicalEvent({
       eventId: "mumbai-padel-mixer-1",
-      clubId: "mumbai-padel-social",
+      organizerId: "mumbai-padel-social",
       organizerName: "Mumbai Padel Social",
       title: "Padel mixer",
       startTime: "2026-07-01T13:30:00.000Z",
@@ -746,7 +745,6 @@ export const sampleExternalEventRows: AdminExternalEventListRow[] = [
     eventId: "ext-afterfly-202503151800-takeoff-run-rave-e99b5e2138",
     targetPath: "externalEvents/ext-afterfly-202503151800-takeoff-run-rave-e99b5e2138",
     canonicalHostId: "afterfly",
-    compatibilityClubId: "afterfly",
     title: "Takeoff: Run + Rave",
     startTime: "2026-07-05T12:30:00.000Z",
     endTime: "2026-07-05T15:30:00.000Z",
@@ -783,7 +781,6 @@ export const sampleExternalEventRows: AdminExternalEventListRow[] = [
     eventId: "ext-mumbai-editorial-mixer-1",
     targetPath: "externalEvents/ext-mumbai-editorial-mixer-1",
     canonicalHostId: "mumbai-socials",
-    compatibilityClubId: "mumbai-socials",
     title: "Mumbai gallery mixer",
     startTime: "2026-07-08T13:30:00.000Z",
     endTime: "2026-07-08T15:30:00.000Z",
@@ -820,7 +817,7 @@ export const sampleExternalEventRows: AdminExternalEventListRow[] = [
 
 interface SampleCanonicalEventConfig {
   eventId: string;
-  clubId: string;
+  organizerId: string;
   organizerName: string | null;
   title: string;
   startTime: string;
@@ -850,7 +847,7 @@ function sampleCanonicalEvent(
   };
   return {
     eventId: config.eventId,
-    clubId: config.clubId,
+    organizerId: config.organizerId,
     organizerName: config.organizerName,
     title: label,
     startTime: config.startTime,
@@ -975,26 +972,26 @@ function metric(
 }
 
 function sampleOrganizer(config: {
-  clubId: string;
+  organizerId: string;
   name: string;
   description: string;
   citySlug: string;
   cityName: string;
   tags: string[];
   instagramHandle: string | null;
-  entityKind: AdminClubDetails["entityKind"];
+  entityKind: AdminOrganizerDetails["entityKind"];
   entitySubtypes: string[];
   displayCategory: string;
   canonicalPath: string | null;
-  appVisibility: AdminClubDetails["appVisibility"];
+  appVisibility: AdminOrganizerDetails["appVisibility"];
   claimState: string;
-  publishStatus: AdminClubDetails["publicPage"]["publishStatus"];
+  publishStatus: AdminOrganizerDetails["publicPage"]["publishStatus"];
   indexStatus: string;
-  sourceConfidence: AdminClubDetails["provenance"]["sourceConfidence"];
-  verificationStatus: AdminClubDetails["provenance"]["verificationStatus"];
+  sourceConfidence: AdminOrganizerDetails["provenance"]["sourceConfidence"];
+  verificationStatus: AdminOrganizerDetails["provenance"]["verificationStatus"];
   formats: string[];
-  ownerLinks?: AdminClubDetails["ownerLinks"];
-}): AdminClubDetails {
+  ownerLinks?: AdminOrganizerDetails["ownerLinks"];
+}): AdminOrganizerDetails {
   const market = sampleMarketsBySlug[config.citySlug] ?? {
     cityId: config.citySlug,
     marketId: config.citySlug,
@@ -1004,7 +1001,7 @@ function sampleOrganizer(config: {
     countryName: "India",
   };
   return {
-    clubId: config.clubId,
+    organizerId: config.organizerId,
     name: config.name,
     description: config.description,
     location: market.marketId,
@@ -1032,7 +1029,7 @@ function sampleOrganizer(config: {
     ownershipState: "programmatic",
     claimState: config.claimState,
     publicPage: {
-      slug: config.clubId,
+      slug: config.organizerId,
       citySlug: config.citySlug,
       canonicalPath: config.canonicalPath,
       publishStatus: config.publishStatus,

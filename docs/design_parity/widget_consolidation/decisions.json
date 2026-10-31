@@ -85,7 +85,7 @@
       "canonicalSymbol": "CatchMetaRow",
       "members": [
         {
-          "name": "ClubShareMetaRow",
+          "name": "OrganizerShareMetaRow",
           "action": "absorb"
         },
         {
@@ -120,7 +120,7 @@
           "note": "becomes CatchScrim.detailHero()"
         },
         {
-          "name": "ClubPhotoScrim",
+          "name": "OrganizerPhotoScrim",
           "action": "absorb",
           "note": "becomes CatchScrim.photoFrame()"
         },
@@ -311,12 +311,12 @@
       "status": "implemented-WO-006"
     },
     {
-      "clusterId": "ranked-pair: ClubTagLoadingSkeleton/GenderFilterSkeleton (J=1.0)",
+      "clusterId": "ranked-pair: OrganizerTagLoadingSkeleton/GenderFilterSkeleton (J=1.0)",
       "decision": "merge-new-primitive",
       "canonicalSymbol": "CatchSkeletonChips",
       "members": [
         {
-          "name": "ClubTagLoadingSkeleton",
+          "name": "OrganizerTagLoadingSkeleton",
           "action": "absorb"
         },
         {
@@ -537,7 +537,7 @@
       "canonicalSymbol": "CatchTabRail<T>",
       "members": [
         {
-          "name": "HostClubTabRail",
+          "name": "HostOrganizerTabRail",
           "action": "absorb"
         },
         {
@@ -652,7 +652,7 @@
     {
       "clusterId": "c036-card (directory)",
       "decision": "merge-new-primitive",
-      "canonicalSymbol": "DirectoryClubCard (feature-level)",
+      "canonicalSymbol": "DirectoryOrganizerCard (feature-level)",
       "members": [
         {
           "name": "DirectoryIdentityCard",
@@ -941,7 +941,7 @@
           "action": "delete"
         },
         {
-          "name": "HostClubEditFooter",
+          "name": "HostOrganizerEditFooter",
           "action": "delete"
         }
       ],
@@ -1671,7 +1671,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubHostLoadingSkeleton",
+          "name": "OrganizerHostLoadingSkeleton",
           "action": "keep"
         },
         {
@@ -2988,15 +2988,15 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: ClubHostLoadingSkeleton/ClubStatsLoadingSkeleton",
+      "clusterId": "ranked-pair: OrganizerHostLoadingSkeleton/OrganizerStatsLoadingSkeleton",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubHostLoadingSkeleton",
+          "name": "OrganizerHostLoadingSkeleton",
           "action": "keep"
         },
         {
-          "name": "ClubStatsLoadingSkeleton",
+          "name": "OrganizerStatsLoadingSkeleton",
           "action": "keep"
         }
       ],
@@ -3024,11 +3024,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: HostClubEditSection/HostSettingsSection",
+      "clusterId": "ranked-pair: HostOrganizerEditSection/HostSettingsSection",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostClubEditSection",
+          "name": "HostOrganizerEditSection",
           "action": "keep"
         },
         {
@@ -3060,7 +3060,7 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: OrganizerBasicsStep/ClubDetailsStep",
+      "clusterId": "ranked-pair: OrganizerBasicsStep/OrganizerDetailsStep",
       "decision": "keep-distinct",
       "members": [
         {
@@ -3096,7 +3096,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: OrganizerEventSuccessDefaultsStep/ClubHostDefaultsStep",
+      "clusterId": "ranked-pair: OrganizerEventSuccessDefaultsStep/OrganizerHostDefaultsStep",
       "decision": "keep-distinct",
       "members": [
         {
@@ -3205,11 +3205,11 @@
       "status": "implemented-WO-020 (footer extraction only)"
     },
     {
-      "clusterId": "ranked-pair: HostClubEditorStateView/HostCreateEventRouteBody",
+      "clusterId": "ranked-pair: HostOrganizerEditorStateView/HostCreateEventRouteBody",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostClubEditorStateView",
+          "name": "HostOrganizerEditorStateView",
           "action": "keep"
         },
         {
@@ -3314,7 +3314,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: ExploreExternalEventRow/ExploreFeedClubRow",
+      "clusterId": "ranked-pair: ExploreExternalEventRow/ExploreFeedOrganizerRow",
       "decision": "keep-distinct",
       "members": [
         {
@@ -3530,11 +3530,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: FollowedClubsRailSkeleton/HostTabRailSkeleton",
+      "clusterId": "ranked-pair: FollowedOrganizersRailSkeleton/HostTabRailSkeleton",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "FollowedClubsRailSkeleton",
+          "name": "FollowedOrganizersRailSkeleton",
           "action": "keep"
         },
         {
@@ -3603,7 +3603,7 @@
       "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: HostEmptyActionCard. Active sibling behavior is retained."
     },
     {
-      "clusterId": "ranked-pair: OrganizerDetailBody/ClubDetailLoadingBody",
+      "clusterId": "ranked-pair: OrganizerDetailBody/OrganizerDetailLoadingBody",
       "decision": "keep-distinct",
       "members": [
         {
@@ -3611,7 +3611,7 @@
           "action": "keep"
         },
         {
-          "name": "ClubDetailLoadingBody",
+          "name": "OrganizerDetailLoadingBody",
           "action": "keep"
         }
       ],
@@ -3804,7 +3804,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: OrganizerContactSection/ClubHostSection",
+      "clusterId": "ranked-pair: OrganizerContactSection/OrganizerHostSection",
       "decision": "keep-distinct",
       "members": [
         {
@@ -3913,11 +3913,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: HostTodayClubPill/HostTodayCountdownPill",
+      "clusterId": "ranked-pair: HostTodayOrganizerPill/HostTodayCountdownPill",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostTodayClubPill",
+          "name": "HostTodayOrganizerPill",
           "action": "keep"
         },
         {
@@ -3949,11 +3949,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: ClubDirectorySkeletonCard/ClubShareCard",
+      "clusterId": "ranked-pair: OrganizerDirectorySkeletonCard/OrganizerShareCard",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubDirectorySkeletonCard",
+          "name": "OrganizerDirectorySkeletonCard",
           "action": "keep"
         },
         {
@@ -3965,7 +3965,7 @@
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded",
-      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: ClubDirectorySkeletonCard. Active sibling behavior is retained."
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: OrganizerDirectorySkeletonCard. Active sibling behavior is retained."
     },
     {
       "clusterId": "ranked-pair: EventDetailTicketSurface/EventSuccessSkeletonSurface",
@@ -4097,7 +4097,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: HostOrganizerInsightsSection/HostClubPreviewPane",
+      "clusterId": "ranked-pair: HostOrganizerInsightsSection/HostOrganizerPreviewPane",
       "decision": "keep-distinct",
       "members": [
         {
@@ -4105,7 +4105,7 @@
           "action": "keep"
         },
         {
-          "name": "HostClubPreviewPane",
+          "name": "HostOrganizerPreviewPane",
           "action": "keep"
         }
       ],
@@ -4630,7 +4630,7 @@
           "action": "keep"
         },
         {
-          "name": "HostEditClubRouteScreen",
+          "name": "HostEditOrganizerRouteScreen",
           "action": "keep"
         },
         {
@@ -4702,7 +4702,7 @@
           "action": "keep"
         },
         {
-          "name": "HostEditClubRouteScreen",
+          "name": "HostEditOrganizerRouteScreen",
           "action": "keep"
         }
       ],
@@ -4724,7 +4724,7 @@
           "action": "keep"
         },
         {
-          "name": "HostSettingsClubsEmptyState",
+          "name": "HostSettingsOrganizersEmptyState",
           "action": "delete"
         },
         {
@@ -4732,7 +4732,7 @@
           "action": "delete"
         }
       ],
-      "rationale": "Name-family review: CatchesHubEmptyState is a full screen-state body (header + empty state + explainer surface) — keep. SwipeEmptyState has 6 content-driven call sites, above the R2 bar — keep. HostSettingsClubsEmptyState is a single supporting Text with one call site — inline it (WO-022). EmptyRoster (event_recap_screen) is an R2 thin CatchEmptyState wrapper with one call site — inline it (WO-022).",
+      "rationale": "Name-family review: CatchesHubEmptyState is a full screen-state body (header + empty state + explainer surface) — keep. SwipeEmptyState has 6 content-driven call sites, above the R2 bar — keep. HostSettingsOrganizersEmptyState is a single supporting Text with one call site — inline it (WO-022). EmptyRoster (event_recap_screen) is an R2 thin CatchEmptyState wrapper with one call site — inline it (WO-022).",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "executed-WO-022",
@@ -4743,7 +4743,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostClubProfileCard",
+          "name": "HostOrganizerProfileCard",
           "action": "keep"
         },
         {
@@ -5099,7 +5099,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): CreateEventStepHeader is a domain adapter over core CatchStepHeader carrying real mapping semantics (0-indexed step -> 1-indexed display, clubName -> subtitle) used at 3 step call sites; inlining would duplicate the +1 offset. K1/K4 keep.",
+      "rationale": "Name-family review (batch 2): CreateEventStepHeader is a domain adapter over core CatchStepHeader carrying real mapping semantics (0-indexed step -> 1-indexed display, organizerName -> subtitle) used at 3 step call sites; inlining would duplicate the +1 offset. K1/K4 keep.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5109,7 +5109,7 @@
       "decision": "absorb-into-existing",
       "members": [
         {
-          "name": "ClubHostAvatar",
+          "name": "OrganizerHostAvatar",
           "action": "absorb"
         },
         {
@@ -5117,7 +5117,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): ClubHostAvatar is a pure 1:1 pass-through over CatchPersonAvatar (only adds a raw size-32 default) with 4 call sites — absorb (WO-023). HostAvatar keeps: distinct event-detail identity treatment (activity accent->deep gradient fallback + CatchGradedImage), a different visual contract from the initials avatar.",
+      "rationale": "Name-family review (batch 2): OrganizerHostAvatar is a pure 1:1 pass-through over CatchPersonAvatar (only adds a raw size-32 default) with 4 call sites — absorb (WO-023). HostAvatar keeps: distinct event-detail identity treatment (activity accent->deep gradient fallback + CatchGradedImage), a different visual contract from the initials avatar.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "executed-WO-023"
@@ -5168,7 +5168,7 @@
           "action": "keep"
         },
         {
-          "name": "HostClubManagementPanel",
+          "name": "HostOrganizerManagementPanel",
           "action": "keep"
         },
         {
@@ -5184,7 +5184,7 @@
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded",
-      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: HostClubManagementPanel, HostEventAttendancePanel. Active sibling behavior is retained."
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: HostOrganizerManagementPanel, HostEventAttendancePanel. Active sibling behavior is retained."
     },
     {
       "clusterId": "n016-host-card",
@@ -5231,7 +5231,7 @@
           "action": "keep"
         },
         {
-          "name": "ClubDirectorySkeletonList",
+          "name": "OrganizerDirectorySkeletonList",
           "action": "keep"
         },
         {
@@ -5243,7 +5243,7 @@
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded",
-      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: ClubDirectorySkeletonList. Active sibling behavior is retained."
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: OrganizerDirectorySkeletonList. Active sibling behavior is retained."
     },
     {
       "clusterId": "n144-async-loading + n213-screen-loading",
@@ -5332,7 +5332,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): the two inline-editor kits (profile: UpdateUserProfilePatch; host: UpdateOrganizerPatch + clubId) both already delegate their chrome to core CatchField.actions — K3 — and fork on genuinely different domain plumbing (save repos, latest-profile rebase, hostDefaults derivation) plus per-field-type logic (slider vs text vs prompt vs options). KIT-WATCH: if a third inline-editor family appears, revisit with a patch-abstraction design.",
+      "rationale": "Name-family review (batch 2): the two inline-editor kits (profile: UpdateUserProfilePatch; host: UpdateOrganizerPatch + organizerId) both already delegate their chrome to core CatchField.actions — K3 — and fork on genuinely different domain plumbing (save repos, latest-profile rebase, hostDefaults derivation) plus per-field-type logic (slider vs text vs prompt vs options). KIT-WATCH: if a third inline-editor family appears, revisit with a patch-abstraction design.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5459,7 +5459,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubPolaroidArtwork",
+          "name": "OrganizerPolaroidArtwork",
           "action": "keep"
         },
         {
@@ -5467,7 +5467,7 @@
           "action": "keep"
         },
         {
-          "name": "ExploreClubPolaroidCard",
+          "name": "ExploreOrganizerPolaroidCard",
           "action": "keep"
         },
         {
@@ -5475,7 +5475,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): K1 chains, dedupe already done: OrganizerShareCover composes ClubPolaroidArtwork (photo-else-polaroid fallback); ExploreClubPolaroidCard composes CatchPolaroid + ClubPolaroidArtwork. The event ticket card is a different art system.",
+      "rationale": "Name-family review (batch 2): K1 chains, dedupe already done: OrganizerShareCover composes OrganizerPolaroidArtwork (photo-else-polaroid fallback); ExploreOrganizerPolaroidCard composes CatchPolaroid + OrganizerPolaroidArtwork. The event ticket card is a different art system.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5523,7 +5523,7 @@
           "action": "keep"
         },
         {
-          "name": "HostSettingsClubsSection",
+          "name": "HostSettingsOrganizersSection",
           "action": "keep"
         },
         {
@@ -5571,23 +5571,23 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubHeroLoadingSkeleton",
+          "name": "OrganizerHeroLoadingSkeleton",
           "action": "keep"
         },
         {
-          "name": "ClubScheduleLoadingSkeleton",
+          "name": "OrganizerScheduleLoadingSkeleton",
           "action": "keep"
         },
         {
-          "name": "ClubStatLoadingSkeleton",
+          "name": "OrganizerStatLoadingSkeleton",
           "action": "keep"
         },
         {
-          "name": "ClubStatsDividerSkeleton",
+          "name": "OrganizerStatsDividerSkeleton",
           "action": "keep"
         },
         {
-          "name": "ClubTextLoadingSkeleton",
+          "name": "OrganizerTextLoadingSkeleton",
           "action": "keep"
         }
       ],
@@ -5709,7 +5709,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubListTile",
+          "name": "OrganizerListTile",
           "action": "keep"
         },
         {
@@ -5851,15 +5851,15 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubDiscoverList",
+          "name": "OrganizerDiscoverList",
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): loaded discovery list vs its skeleton (ClubDirectorySkeletonList, kept under n059); loading/loaded pair precedent.",
+      "rationale": "Name-family review (batch 2): loaded discovery list vs its skeleton (OrganizerDirectorySkeletonList, kept under n059); loading/loaded pair precedent.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded",
-      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: ClubDiscoverList. Active sibling behavior is retained."
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: OrganizerDiscoverList. Active sibling behavior is retained."
     },
     {
       "clusterId": "n019-onboarding-step",
@@ -5963,44 +5963,44 @@
       "canonicalSymbol": "OrganizerIndexRow",
       "members": [
         {
-          "name": "ClubListTile",
+          "name": "OrganizerListTile",
           "action": "delete",
-          "note": "directory routing moved to buildClubDirectorySlivers; avatar rail now uses AvatarChip directly"
+          "note": "directory routing moved to buildOrganizerDirectorySlivers; avatar rail now uses AvatarChip directly"
         },
         {
           "name": "DirectoryCard",
           "action": "delete"
         },
         {
-          "name": "DirectoryClubCard",
+          "name": "DirectoryOrganizerCard",
           "action": "delete"
         },
         {
-          "name": "ClubPhotoMediaOverlay",
+          "name": "OrganizerPhotoMediaOverlay",
           "action": "delete"
         },
         {
-          "name": "ClubPhotoChrome",
+          "name": "OrganizerPhotoChrome",
           "action": "delete"
         },
         {
-          "name": "ClubLogoCrest",
+          "name": "OrganizerLogoCrest",
           "action": "delete"
         },
         {
-          "name": "ClubLogoFallback",
+          "name": "OrganizerLogoFallback",
           "action": "delete"
         },
         {
-          "name": "ClubDirectoryFooter",
+          "name": "OrganizerDirectoryFooter",
           "action": "delete"
         },
         {
-          "name": "ClubHostActionRow",
+          "name": "OrganizerHostActionRow",
           "action": "delete"
         },
         {
-          "name": "ClubRule",
+          "name": "OrganizerRule",
           "action": "delete"
         },
         {
@@ -6024,7 +6024,7 @@
           "note": "provider-free joined badge/join button leaf"
         }
       ],
-      "rationale": "Handoff 2.3 assigns long club directories to a condensed polaroid index-row tier, not the old tall directory card tier. OrganizerIndexRow keeps the polaroid thumbnail cue, activity chip, mono meta row, and membership trailing while ExploreClubPolaroidCard remains the hero/spotlight tier.",
+      "rationale": "Handoff 2.3 assigns long club directories to a condensed polaroid index-row tier, not the old tall directory card tier. OrganizerIndexRow keeps the polaroid thumbnail cue, activity chip, mono meta row, and membership trailing while ExploreOrganizerPolaroidCard remains the hero/spotlight tier.",
       "decidedBy": "claude-review -> codex",
       "date": "2026-07-06",
       "status": "executed-parity-handoff"
@@ -6188,7 +6188,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubHostLoadingSkeleton",
+          "name": "OrganizerHostLoadingSkeleton",
           "action": "keep"
         },
         {
@@ -6576,7 +6576,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K3 already-sharing-internals: both delegate graded network rendering and fallback artwork to CatchGradedImage, CatchNetworkImage, and ClubPolaroidArtwork. OrganizerCover resolves the editorial cover policy (club photo first, then legacy image) and owns optional image semantics; discovery's OrganizerImage resolves cover-only or profile-preferred media for directory and avatar compositions. Those source-selection policies remain feature adapters over the shared renderer, not duplicate primitive concepts.",
+      "rationale": "K3 already-sharing-internals: both delegate graded network rendering and fallback artwork to CatchGradedImage, CatchNetworkImage, and OrganizerPolaroidArtwork. OrganizerCover resolves the editorial cover policy (club photo first, then legacy image) and owns optional image semantics; discovery's OrganizerImage resolves cover-only or profile-preferred media for directory and avatar compositions. Those source-selection policies remain feature adapters over the shared renderer, not duplicate primitive concepts.",
       "decidedBy": "codex-rule:K3 -> prior-reviewed-ledger:handoff-2.3",
       "date": "2026-07-19",
       "status": "recorded-concept-reconciliation"
@@ -8526,7 +8526,7 @@
       "decision": "unify-feature-adapters",
       "members": [
         {
-          "name": "CreateClubStepHeader",
+          "name": "CreateOrganizerStepHeader",
           "action": "replace"
         },
         {
@@ -8757,7 +8757,7 @@
           "note": "CatchTextVariant.statusLabel for supported app Text calls; CatchTextStyles.statusLabel retains existing drawing, measurement and carrier APIs."
         }
       ],
-      "rationale": "The handoff exact-identity rule authorizes absorbing identical recipes into an existing variant. Resolved complete signatures and bodies match statusLabel. Migrate the deterministic supported app call-site set, rename library and unsupported carriers without changing arguments, retire both methods and duplicate specimens, and shrink the resolved Text baseline. Includes the unqualified clubMemberSeal style dependency. This records the mechanical rule without introducing a design decision or new variant.",
+      "rationale": "The handoff exact-identity rule authorizes absorbing identical recipes into an existing variant. Resolved complete signatures and bodies match statusLabel. Migrate the deterministic supported app call-site set, rename library and unsupported carriers without changing arguments, retire both methods and duplicate specimens, and shrink the resolved Text baseline. Includes the unqualified organizerMemberSeal style dependency. This records the mechanical rule without introducing a design decision or new variant.",
       "decidedBy": "codex-rule:exact-text-role-identity",
       "date": "2026-10-24",
       "status": "implemented"

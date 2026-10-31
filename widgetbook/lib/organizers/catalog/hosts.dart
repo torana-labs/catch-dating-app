@@ -24,7 +24,7 @@ Widget organizerHostSectionStates(BuildContext context) {
   );
 
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubHostSection',
+    title: 'OrganizerHostSection',
     catalogId: 'section.club.hosts',
     children: [
       WidgetbookPageStateCard(
@@ -79,7 +79,7 @@ Widget organizerHostRowStates(BuildContext context) {
   );
 
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubHostRow',
+    title: 'OrganizerHostRow',
     catalogId: 'section.club.hosts.row',
     children: [
       WidgetbookPageStateCard(
@@ -119,7 +119,7 @@ Widget organizerContactSectionStates(BuildContext context) {
   );
 
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubContactSection',
+    title: 'OrganizerContactSection',
     catalogId: 'section.club.contact',
     children: [
       WidgetbookPageStateCard(

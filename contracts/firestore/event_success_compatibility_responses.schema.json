@@ -19,7 +19,7 @@
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "uid",
     "answerIds",
     "createdAt",
@@ -27,10 +27,6 @@
   ],
   "properties": {
     "eventId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
       "x-catch-ownership": "callable-owned"
     },

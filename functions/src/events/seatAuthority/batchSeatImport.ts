@@ -168,7 +168,7 @@ export function prepareBatchImportSeats(read: BatchImportSeatReadSet,
     fail("Invalid batch import seat scope.");
   }
   const event = read.event as Record<string, unknown> | null;
-  if (!event || event.clubId !== organizerId ||
+  if (!event || event.organizerId !== organizerId ||
       event.organizerId !== undefined && event.organizerId !== organizerId) {
     fail("Imported event owner is unavailable.");
   }

@@ -17,12 +17,11 @@ const db = getFirestore(initializeApp({projectId: "demo-catch-nextjs"}, "next-ru
 const organizer = organizerFixture();
 organizer.publicPage.legacyPaths = ["/organizers/old-next-proof/"];
 await db.doc("organizers/next-proof").set(organizer);
-await db.doc("events/next-native-event").set({name: "Next proof event", organizerId: "next-proof", clubId: "next-proof",
-  publicationState: "published", status: "active", eventFormat: {activityKind: "socialRun"},
+await db.doc("events/next-native-event").set({name: "Next proof event", organizerId: "next-proof", publicationState: "published", status: "active", eventFormat: {activityKind: "socialRun"},
   startTime: Timestamp.fromDate(new Date("2090-01-01T12:00:00Z")), endTime: Timestamp.fromDate(new Date("2090-01-01T14:00:00Z")),
   meetingLocation: {name: "Public park"}, currency: "INR", priceInPaise: 0, capacityLimit: 20, bookedCount: 2});
 const external = JSON.parse(fs.readFileSync(new URL("../../../contracts/fixtures/valid/external_event_doc.json", import.meta.url), "utf8"));
-external.canonicalHostId = external.compatibilityClubId = "next-proof";
+external.canonicalHostId = external.canonicalHostId = "next-proof";
 await db.doc(`externalEvents/${external.eventId}`).set(external);
 const results = [];
 function customHostRequest(path) {

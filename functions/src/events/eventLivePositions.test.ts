@@ -74,7 +74,6 @@ const now = admin.firestore.Timestamp.fromDate(
 
 function event(): FakeData {
   return {
-    clubId: "organizer-1",
     organizerId: "organizer-1",
     status: "active",
     startTime: admin.firestore.Timestamp.fromDate(

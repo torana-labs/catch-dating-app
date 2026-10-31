@@ -744,7 +744,7 @@ function buildGroundTruthRecall({
       members: [
         "DashboardFocusLoadingCard",
         "HostPaymentAccountLoadingCard",
-        "ClubDirectorySkeletonCard",
+        "OrganizerDirectorySkeletonCard",
       ],
       expectedDetectors: ["name", "ranked-pair"],
     },

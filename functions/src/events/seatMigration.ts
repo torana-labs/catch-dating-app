@@ -133,7 +133,7 @@ export function planEventSeatMigration(input: SeatMigrationInput):
     return {state: "blocked", blockers: ["sourceReadIncomplete"]};
   }
   const raw = input.event as Record<string, unknown> | null;
-  if (!raw || raw.clubId !== input.organizerId ||
+  if (!raw || raw.organizerId !== input.organizerId ||
       raw.organizerId !== undefined &&
         raw.organizerId !== input.organizerId) {
     return {state: "blocked", blockers: ["eventTenantConflict"]};

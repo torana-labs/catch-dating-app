@@ -39,8 +39,7 @@ export async function getPrivateEventSetup(params: {
     ]);
     const manager = authorizeSetupManager(organizer, deleted, actorUid);
     const event = eventSnap.data();
-    if (!event || event.organizerId !== command.organizerId ||
-        event.clubId !== command.organizerId) {
+    if (!event || event.organizerId !== command.organizerId) {
       throw new HttpsError("not-found", "Event not found.");
     }
     if (event.publicationState !== "private" &&

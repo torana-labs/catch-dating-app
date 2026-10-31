@@ -49,7 +49,7 @@ const at = (ms: number) => ({toMillis: () => ms});
 
 /** A published organiser whose sources carry every dating field CAT-247 names. */
 function datingWorld(): World {
-  const organizer = fixture("club_doc.json");
+  const organizer = fixture("organizer_doc.json");
   delete organizer.memberCount;
   Object.assign(organizer, {name: "Harbour Lights Social", organizerType: "eventProducer", organizerPhotos: [], followerCount: 0,
     hostUserId: null, ownerUserId: null, hostName: null, hostAvatarUrl: null, hostUserIds: [], hostProfiles: [],
@@ -57,7 +57,7 @@ function datingWorld(): World {
     claim: {state: "unclaimed", claimHref: "/organizers/harbour/#claim", lastClaimRequestId: null},
     publicPage: {slug: "harbour", citySlug: "indore", canonicalPath: "/organizers/harbour/", publishStatus: "published",
       indexStatus: "indexReady", robots: "index, follow", seoTitle: null, seoDescription: null, lastRenderedAt: null}});
-  const mixer = (patch: Row): Row => ({name: "", organizerId: "harbour", clubId: "harbour", publicationState: "published",
+  const mixer = (patch: Row): Row => ({name: "", organizerId: "harbour", publicationState: "published",
     status: "active", eventFormat: {activityKind: "singlesMixer"}, startTime: at(readAt + 86_400_000),
     endTime: at(readAt + 93_600_000), eventTimezone: "Asia/Kolkata", meetingLocation: {name: "Harbour Steps"}, currency: "INR",
     priceInPaise: 0, capacityLimit: 30, bookedCount: 6, publicRegistrationEnabled: true, publicRegistrationMode: "free",

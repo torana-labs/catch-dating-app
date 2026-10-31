@@ -93,7 +93,6 @@ class FakeFirestore {
 function harness() {
   const firestore = new FakeFirestore({
     "events/event-1": {
-      clubId: "club-1",
       organizerId: "organizer-1",
       status: "active",
       startTime: admin.firestore.Timestamp.fromMillis(1_300_000),
@@ -101,14 +100,12 @@ function harness() {
     },
     "eventParticipations/event-1_runner-1": {
       eventId: "event-1",
-      clubId: "club-1",
       organizerId: "organizer-1",
       uid: "runner-1",
       status: "signedUp",
     },
     "eventParticipations/event-1_runner-2": {
       eventId: "event-1",
-      clubId: "club-1",
       organizerId: "organizer-1",
       uid: "runner-2",
       status: "signedUp",

@@ -138,7 +138,7 @@ control.
 | --- | --- |
 | Headline | **Pick a night worth showing up for** |
 | Support | See the plan, host, price, and who it is for. |
-| Route | `eventDetailScreen` / `/organizers/:clubId/events/:eventId` |
+| Route | `eventDetailScreen` / `/organizers/:organizerId/events/:eventId` |
 | Source capture | Promote `event_detail_member_ticket` or `event_detail_member_spotlight` after visual review. |
 | Source status | Deterministic route captures exist; choose and register one marketing fixture. |
 | Required state | Bookable event detail with a strong hero, event plan, named organizer, price, spots remaining, and primary booking action. |
@@ -166,7 +166,7 @@ control.
 | --- | --- |
 | Headline | **Book with confidence** |
 | Support | Know the host, policies, and verified guest reviews. |
-| Route | `organizerDetailScreen` / `/organizers/:clubId` |
+| Route | `organizerDetailScreen` / `/organizers/:organizerId` |
 | Source capture | Promote `club_detail_member` after scrolling to the trust-rich state. |
 | Source status | Deterministic route capture exists; a store-specific scroll position is needed. |
 | Required state | Claimed organizer profile with a complete identity, upcoming event, rating, review count, and at least one verified review excerpt. |
@@ -180,7 +180,7 @@ control.
 | --- | --- |
 | Headline | **A better night, built in** |
 | Support | Live prompts and introductions help the room connect. |
-| Route | `eventSuccessCompanionScreen` / `/organizers/:clubId/events/:eventId/companion` |
+| Route | `eventSuccessCompanionScreen` / `/organizers/:organizerId/events/:eventId/companion` |
 | Source capture | Promote `event_success_companion_conversation_cues`; compare with `event_success_companion_wingman_request`. |
 | Source status | Deterministic stage captures exist; select the least phone-heavy and most legible state. |
 | Required state | Checked-in attendee during a live step, with one actionable social prompt or private introduction request and clear event context. |
@@ -242,7 +242,7 @@ measure the result.
 | --- | --- |
 | Headline | **Run the whole night from one screen** |
 | Support | Check in guests, move the waitlist, and stay on the run of show. |
-| Route | `hostAppEventManageScreen` / `/host/organizers/:clubId/events/:eventId/manage` |
+| Route | `hostAppEventManageScreen` / `/host/organizers/:organizerId/events/:eventId/manage` |
 | Source capture | `host_live_console` |
 | Source status | Active marketing capture; promote from third to first and refresh. |
 | Required state | Live tab with current Playbook step, booked/due/in/waitlist counts, one waitlist action, and roster rows. |
@@ -256,7 +256,7 @@ measure the result.
 | --- | --- |
 | Headline | **Publish in one guided flow** |
 | Support | Build the event, save a draft, and go live when ready. |
-| Route | `hostCreateEventScreen` / `/host/organizers/:clubId/create-event` |
+| Route | `hostCreateEventScreen` / `/host/organizers/:organizerId/create-event` |
 | Source capture | Promote `host_create_success_manage`; retain `host_event_setup` as supporting evidence. |
 | Source status | Deterministic success capture exists; marketing fixture registration is needed. |
 | Required state | Completed event creation success with event identity and Manage event action, or a final review step with every section complete. |
@@ -270,7 +270,7 @@ measure the result.
 | --- | --- |
 | Headline | **Fill the room on your terms** |
 | Support | Set capacity, approvals, pricing, cohorts, and waitlists. |
-| Route | `hostCreateEventScreen` / `/host/organizers/:clubId/create-event` |
+| Route | `hostCreateEventScreen` / `/host/organizers/:organizerId/create-event` |
 | Source capture | `host_create_policy` |
 | Source status | Active marketing capture; refresh and retain. |
 | Required state | Completed policy step with capacity, INR price, balanced admission, demand pricing, age range, and waitlist behavior. |
@@ -298,7 +298,7 @@ measure the result.
 | --- | --- |
 | Headline | **Keep the door moving** |
 | Support | Check guests in and offer open spots without losing the room. |
-| Route | `hostAppEventManageScreen` / `/host/organizers/:clubId/events/:eventId/manage` |
+| Route | `hostAppEventManageScreen` / `/host/organizers/:organizerId/events/:eventId/manage` |
 | Source capture | Promote `host_manage_attendance_roster`; compare with `host_manage_full_waitlist_apron`. |
 | Source status | Deterministic captures exist; store-specific crop is needed. |
 | Required state | Populated attendance roster with due and checked-in guests plus one visible waitlist movement action. |
@@ -312,7 +312,7 @@ measure the result.
 | --- | --- |
 | Headline | **Let the Playbook work the room** |
 | Support | Run prompts, pods, rotations, and private introductions. |
-| Route | `hostAppEventManageScreen` / `/host/organizers/:clubId/events/:eventId/manage` |
+| Route | `hostAppEventManageScreen` / `/host/organizers/:organizerId/events/:eventId/manage` |
 | Source capture | Compare `host_manage_live_guided_rotations_assigned`, `host_manage_live_micro_pods_assigned`, and `host_manage_live_wingman_requests`. |
 | Source status | Deterministic captures exist; choose one primary module and register it for marketing. |
 | Required state | Live event with a single legible Playbook module, clear host action, and assigned guests or request count. |

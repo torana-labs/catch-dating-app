@@ -158,7 +158,6 @@ function attendee(overrides: Partial<OrganizerCrmAttendeeRow> & {
 }): OrganizerCrmAttendeeRow {
   const {id, eventId, ...fields} = overrides;
   return {
-    clubId: "organizer-1",
     organizerId: "organizer-1",
     displayName: "Asha",
     searchName: "asha",

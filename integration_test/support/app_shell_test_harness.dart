@@ -167,7 +167,7 @@ Future<void> openOrganizerDetail(
   unawaited(
     router.pushNamed(
       Routes.organizerDetailScreen.name,
-      pathParameters: {'clubId': organizer.id},
+      pathParameters: {'organizerId': organizer.id},
       extra: organizer,
     ),
   );
@@ -184,7 +184,7 @@ Future<void> openEventDetail(
   unawaited(
     router.pushNamed(
       Routes.eventDetailScreen.name,
-      pathParameters: {'clubId': organizer.id, 'eventId': event.id},
+      pathParameters: {'organizerId': organizer.id, 'eventId': event.id},
       extra: event,
     ),
   );

@@ -194,7 +194,7 @@ class _DashboardFullSliverBodyState
     );
     context.pushNamed(
       Routes.dashboardEventDetailScreen.name,
-      pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+      pathParameters: {'organizerId': event.clubId, 'eventId': event.id},
       extra: event,
     );
   }
@@ -292,7 +292,7 @@ class _DashboardFullSliverBodyState
                 Navigator.of(routeContext).pop();
                 GoRouter.of(context).goNamed(
                   Routes.eventDetailScreen.name,
-                  pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+                  pathParameters: {'organizerId': event.clubId, 'eventId': event.id},
                   extra: event,
                 );
               },

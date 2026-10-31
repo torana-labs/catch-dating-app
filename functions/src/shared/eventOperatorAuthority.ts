@@ -47,7 +47,7 @@ export async function requireEventOperatorPermission(params: {
   const grant = grantSnap.data() as EventStaffGrantDocument | undefined;
   const now = params.now ?? admin.firestore.Timestamp.now();
   if (!grant || grant.eventId !== params.eventId ||
-      grant.organizerId !== (params.event.organizerId ?? params.event.clubId) ||
+      grant.organizerId !== (params.event.organizerId) ||
       grant.uid !== params.actorUid || grant.status !== "active" ||
       (eventOperatorExpiryMillis(grant) ?? 0) <= now.toMillis() ||
       !grant.permissions.includes(params.permission)) {

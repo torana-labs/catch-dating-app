@@ -8,7 +8,7 @@ import {
 
 test("buildEventAdminSearchRepairPlan detects missing and stale search", async () => {
   const firestore = fakeFirestore({
-    clubs: {
+    organizers: {
       "club-1": {
         name: "AFTER FLY",
         location: "in-mp-indore",
@@ -17,11 +17,11 @@ test("buildEventAdminSearchRepairPlan detects missing and stale search", async (
     },
     events: {
       "event-1": {
-        clubId: "club-1",
+        organizerId: "club-1",
         eventFormat: {activityKind: "socialRun"},
       },
       "event-2": {
-        clubId: "club-1",
+        organizerId: "club-1",
         eventFormat: {activityKind: "socialRun"},
         adminSearch: {
           tokens: ["event", "2", "after", "fly", "indore", "socialrun"],
@@ -31,7 +31,7 @@ test("buildEventAdminSearchRepairPlan detects missing and stale search", async (
         },
       },
       "event-3": {
-        clubId: "club-1",
+        organizerId: "club-1",
         eventFormat: {activityKind: "yoga"},
         adminSearch: {
           tokens: ["stale"],
@@ -48,7 +48,7 @@ test("buildEventAdminSearchRepairPlan detects missing and stale search", async (
   );
 
   assert.equal(plan.summary.eventsScanned, 3);
-  assert.equal(plan.summary.clubsScanned, 1);
+  assert.equal(plan.summary.organizersScanned, 1);
   assert.equal(plan.summary.repairsNeeded, 3);
   assert.equal(plan.summary.missingSearch, 1);
   assert.equal(plan.summary.staleSearch, 2);
@@ -63,10 +63,10 @@ test("buildEventAdminSearchRepairPlan detects missing and stale search", async (
 
 test("buildEventAdminSearchRepairPlan warns when event club is missing", async () => {
   const firestore = fakeFirestore({
-    clubs: {},
+    organizers: {},
     events: {
       "event-1": {
-        clubId: "missing",
+        organizerId: "missing",
         eventFormat: {activityKind: "socialRun"},
       },
     },
@@ -85,10 +85,10 @@ test("buildEventAdminSearchRepairPlan warns when event club is missing", async (
 
 test("applyEventAdminSearchRepairPlan writes planned adminSearch patches", async () => {
   const firestore = fakeFirestore({
-    clubs: {},
+    organizers: {},
     events: {
-      "event-1": {clubId: "club-1", description: "Keep me"},
-      "event-2": {clubId: "club-2"},
+      "event-1": {organizerId: "club-1", description: "Keep me"},
+      "event-2": {organizerId: "club-2"},
     },
   });
 
@@ -109,7 +109,7 @@ test("applyEventAdminSearchRepairPlan writes planned adminSearch patches", async
   });
 
   assert.deepEqual(firestore.data.events["event-1"], {
-    clubId: "club-1",
+    organizerId: "club-1",
     description: "Keep me",
     adminSearch: {
       tokens: ["event-1", "run"],
@@ -118,7 +118,7 @@ test("applyEventAdminSearchRepairPlan writes planned adminSearch patches", async
       updatedBySource: "adminEventSearchBackfill",
     },
   });
-  assert.deepEqual(firestore.data.events["event-2"], {clubId: "club-2"});
+  assert.deepEqual(firestore.data.events["event-2"], {organizerId: "club-2"});
 });
 
 test("pickEventAdminSearchComparable ignores non-search metadata", () => {
@@ -136,14 +136,14 @@ test("pickEventAdminSearchComparable ignores non-search metadata", () => {
 function fakeEventAdminSearchProjection(
   eventId,
   event,
-  club,
+  organizer,
   updatedAt,
   updatedBySource
 ) {
   const tokens = [
     eventId,
-    club?.name,
-    club?.location,
+    organizer?.name,
+    organizer?.location,
     event.eventFormat?.activityKind,
   ]
     .filter((value) => typeof value === "string" && value.trim())

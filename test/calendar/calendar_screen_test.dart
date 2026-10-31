@@ -708,7 +708,7 @@ void main() {
               path: app_router.Routes.calendarEventDetailScreen.path,
               name: app_router.Routes.calendarEventDetailScreen.name,
               builder: (context, state) => EventDetailScreen(
-                clubId: state.pathParameters['clubId']!,
+                clubId: state.pathParameters['organizerId']!,
                 eventId: state.pathParameters['eventId']!,
                 initialEvent: state.extra as Event?,
               ),

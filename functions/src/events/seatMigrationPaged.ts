@@ -143,7 +143,7 @@ function sourceProjection(kind: Source,
 function exactEvent(raw: FirebaseFirestore.DocumentData | undefined,
   command: PagedSeatBootstrapCommand): Record<string, unknown> {
   if (!raw || !validateEventDocument(raw) ||
-      raw.clubId !== command.organizerId ||
+      raw.organizerId !== command.organizerId ||
       raw.organizerId !== undefined &&
         raw.organizerId !== command.organizerId) {
     unavailable("Canonical event source is unavailable.");

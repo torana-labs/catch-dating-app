@@ -39,12 +39,12 @@ Owned routes:
 Typed handoffs:
 
 - `hostEventsScreen` — `/host/events`
-- `hostAppEventManageScreen` — `/host/organizers/:clubId/events/:eventId/manage`
+- `hostAppEventManageScreen` — `/host/organizers/:organizerId/events/:eventId/manage`
 - `hostApplicationDetailScreen` — `/host/audience/applications/:applicationId`
 - `hostAudienceScreen` — `/host/audience`
 - `hostInboxScreen` — `/host/inbox`
 - `hostOrganizerPaymentsScreen` — `/host/organizers/payments`
-- `hostEventRehearsalStartScreen` — `/host/organizers/:clubId/rehearsals/new`
+- `hostEventRehearsalStartScreen` — `/host/organizers/:organizerId/rehearsals/new`
 
 ## Key code owners
 

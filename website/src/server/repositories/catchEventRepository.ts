@@ -29,14 +29,14 @@ export async function listPublishedCatchEvents(
 
 /**
  * One organizer's published Catch events. Events that still carry only the
- * legacy `clubId` match too, as they do in the full catalog read.
+ * legacy `organizerId` match too, as they do in the full catalog read.
  */
 export async function listPublishedCatchEventsForOrganizer(
   db: PublicReader,
   organizerId: string,
   readAt: number
 ): Promise<LivePublicCatchEvent[]> {
-  const reads = await Promise.all(["organizerId", "clubId"].map((field) =>
+  const reads = await Promise.all(["organizerId", "organizerId"].map((field) =>
     readBounded(db.collection("events")
       .where(field, "==", organizerId)
       .where("publicationState", "==", "published"), organizerBound)));

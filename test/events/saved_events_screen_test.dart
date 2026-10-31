@@ -161,7 +161,7 @@ void main() {
             name: app_router.Routes.savedEventDetailScreen.name,
             builder: (context, state) => Scaffold(
               body: Text(
-                'Event detail ${state.pathParameters['clubId']}/${state.pathParameters['eventId']}',
+                'Event detail ${state.pathParameters['organizerId']}/${state.pathParameters['eventId']}',
               ),
             ),
           ),

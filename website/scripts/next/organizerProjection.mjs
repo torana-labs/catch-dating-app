@@ -118,8 +118,8 @@ export function claimCapabilityReason(claimState) {
   }
 }
 
-export function canonicalOrganizerType(club) {
-  const value = club?.organizerType;
+export function canonicalOrganizerType(organizer) {
+  const value = organizer?.organizerType;
   if ([
     "club",
     "community",
@@ -128,7 +128,7 @@ export function canonicalOrganizerType(club) {
     "venue",
     "brand",
   ].includes(value)) return value;
-  switch (club?.entityKind) {
+  switch (organizer?.entityKind) {
   case "creatorCommunity": return "community";
   case "eventOrganizer": return "eventProducer";
   case "venue": return "venue";
@@ -147,28 +147,28 @@ export function organizerTypeLabel(type) {
 
 export function listingFromOrganizerDocument(wrapper) {
   if (!wrapper || typeof wrapper !== "object") return null;
-  const {path: firestorePath, data: club} = wrapper;
-  if (!club || typeof club !== "object") return null;
-  if (!club.publicPage?.canonicalPath) return null;
-  if (!["qa", "published"].includes(club.publicPage.publishStatus)) return null;
+  const {path: firestorePath, data: organizer} = wrapper;
+  if (!organizer || typeof organizer !== "object") return null;
+  if (!organizer.publicPage?.canonicalPath) return null;
+  if (!["qa", "published"].includes(organizer.publicPage.publishStatus)) return null;
 
-  const id = String(firestorePath ?? "").split("/").pop() || club.publicPage.slug;
-  const city = club.cityName || club.area || club.location || "Unknown";
-  const citySlug = club.publicPage.citySlug || club.location || "unknown";
-  const publicProfile = club.publicProfile ?? {};
-  const claimState = club.claim?.state ?? "unclaimed";
+  const id = String(firestorePath ?? "").split("/").pop() || organizer.publicPage.slug;
+  const city = organizer.cityName || organizer.area || organizer.location || "Unknown";
+  const citySlug = organizer.publicPage.citySlug || organizer.location || "unknown";
+  const publicProfile = organizer.publicProfile ?? {};
+  const claimState = organizer.claim?.state ?? "unclaimed";
   const claimHref = claimState === "unclaimed" ?
-    `${club.publicPage.canonicalPath}#claim` :
-    club.publicPage.canonicalPath;
+    `${organizer.publicPage.canonicalPath}#claim` :
+    organizer.publicPage.canonicalPath;
   const authority = organizerAuthority({
-    ownershipState: club.ownership?.state,
+    ownershipState: organizer.ownership?.state,
     claimState,
-    provenanceOrigin: club.provenance?.origin,
-    sourceConfidence: club.provenance?.sourceConfidence,
-    verificationStatus: club.provenance?.verificationStatus,
-    appVisibility: club.appVisibility,
-    publishStatus: club.publicPage.publishStatus,
-    indexStatus: club.publicPage.indexStatus,
+    provenanceOrigin: organizer.provenance?.origin,
+    sourceConfidence: organizer.provenance?.sourceConfidence,
+    verificationStatus: organizer.provenance?.verificationStatus,
+    appVisibility: organizer.appVisibility,
+    publishStatus: organizer.publicPage.publishStatus,
+    indexStatus: organizer.publicPage.indexStatus,
   });
   const publicApi = staticPublicApi(
     "This listing remains fail-closed until its Firestore claim target is verified."
@@ -178,29 +178,29 @@ export function listingFromOrganizerDocument(wrapper) {
     id,
     listingVariant: "unclaimedScraped",
     dataOrigin: "organizerIntake",
-    name: club.name,
-    slug: club.publicPage.slug,
+    name: organizer.name,
+    slug: organizer.publicPage.slug,
     city,
     citySlug,
-    region: club.regionName ?? "",
-    country: club.countryName ?? "",
-    path: club.publicPage.canonicalPath,
+    region: organizer.regionName ?? "",
+    country: organizer.countryName ?? "",
+    path: organizer.publicPage.canonicalPath,
     legacyPaths: [],
-    category: club.publicCategoryLabel ??
-      club.displayCategory ??
-      organizerTypeLabel(canonicalOrganizerType(club)),
+    category: organizer.publicCategoryLabel ??
+      organizer.displayCategory ??
+      organizerTypeLabel(canonicalOrganizerType(organizer)),
     status: claimState,
-    indexing: club.publicPage.robots ?? "noindex, follow",
-    sourceConfidence: club.provenance?.sourceConfidence ?? "low",
-    headline: publicProfile.headline ?? `${club.name} in ${city}`,
-    description: publicProfile.summary ?? club.description,
-    sourceSummary: publicProfile.sourceSummary ?? club.description,
+    indexing: organizer.publicPage.robots ?? "noindex, follow",
+    sourceConfidence: organizer.provenance?.sourceConfidence ?? "low",
+    headline: publicProfile.headline ?? `${organizer.name} in ${city}`,
+    description: publicProfile.summary ?? organizer.description,
+    sourceSummary: publicProfile.sourceSummary ?? organizer.description,
     logo: {
       mode: "monogram",
-      text: initialsForName(club.name),
-      status: club.logoPhoto ? "source_provided" : "not_verified",
+      text: initialsForName(organizer.name),
+      status: organizer.logoPhoto ? "source_provided" : "not_verified",
     },
-    formats: publicProfile.formats?.length ? publicProfile.formats : club.tags ?? [],
+    formats: publicProfile.formats?.length ? publicProfile.formats : organizer.tags ?? [],
     facts: publicProfile.facts ?? [],
     eventEvidence: publicProfile.eventEvidence ?? [],
     reviews: publicReviewsForListing(wrapper.reviews ?? [], id),
@@ -208,7 +208,7 @@ export function listingFromOrganizerDocument(wrapper) {
     // the listing DTO keeps the empty lists until its own contract drops them.
     fitNotes: [],
     missingEvidence: [],
-    sources: publicSourcesForListing(club.publicSources ?? []),
+    sources: publicSourcesForListing(organizer.publicSources ?? []),
     claim: {
       href: claimHref,
       label: claimState === "unclaimed" ? "Claim this listing" : "View organizer profile",
@@ -216,38 +216,38 @@ export function listingFromOrganizerDocument(wrapper) {
     publicApi,
     authority,
     capabilities: listingCapabilities(authority, publicApi),
-    lastVerifiedAt: dateLabel(club.provenance?.lastVerifiedAt),
+    lastVerifiedAt: dateLabel(organizer.provenance?.lastVerifiedAt),
     searchText: searchText([
-      club.name,
+      organizer.name,
       city,
-      club.area,
-      club.organizerType,
-      club.publicCategoryLabel,
-      club.displayCategory,
-      club.instagramHandle,
-      ...(club.tags ?? []),
+      organizer.area,
+      organizer.organizerType,
+      organizer.publicCategoryLabel,
+      organizer.displayCategory,
+      organizer.instagramHandle,
+      ...(organizer.tags ?? []),
       ...(publicProfile.formats ?? []),
     ]),
   };
 }
 
-export function listingFromFirestoreOrganizer({id, path = `organizers/${id}`, data: club}) {
-  const readiness = organizerListingReadiness({id, path, data: club});
-  if (!readiness.documentValid || club.archived || club.status === "archived" ||
-      club.claim?.state === "suppressed") return null;
-  const wrapper = {path, data: club};
+export function listingFromFirestoreOrganizer({id, path = `organizers/${id}`, data: organizer}) {
+  const readiness = organizerListingReadiness({id, path, data: organizer});
+  if (!readiness.documentValid || organizer.archived || organizer.status === "archived" ||
+      organizer.claim?.state === "suppressed") return null;
+  const wrapper = {path, data: organizer};
   const listing = listingFromOrganizerDocument(wrapper);
   if (!listing) return null;
   const {publicApi, publicReviewTarget} = readiness;
   const authority = organizerAuthority({
-    ownershipState: club.ownership?.state,
-    claimState: club.claim?.state,
-    provenanceOrigin: club.provenance?.origin,
-    sourceConfidence: club.provenance?.sourceConfidence,
-    verificationStatus: club.provenance?.verificationStatus,
-    appVisibility: club.appVisibility,
-    publishStatus: club.publicPage?.publishStatus,
-    indexStatus: club.publicPage?.indexStatus,
+    ownershipState: organizer.ownership?.state,
+    claimState: organizer.claim?.state,
+    provenanceOrigin: organizer.provenance?.origin,
+    sourceConfidence: organizer.provenance?.sourceConfidence,
+    verificationStatus: organizer.provenance?.verificationStatus,
+    appVisibility: organizer.appVisibility,
+    publishStatus: organizer.publicPage?.publishStatus,
+    indexStatus: organizer.publicPage?.indexStatus,
   });
   const capabilities = listingCapabilities(authority, publicApi, publicReviewTarget);
   if (capabilities.supply.reviewPolicy === "after_event_end") {
@@ -259,10 +259,10 @@ export function listingFromFirestoreOrganizer({id, path = `organizers/${id}`, da
   }
   return {
     ...listing,
-    dataOrigin: club.provenance?.origin === "userCreated" ?
+    dataOrigin: organizer.provenance?.origin === "userCreated" ?
       "appCreated" :
       "organizerIntake",
-    legacyPaths: club.publicPage?.legacyPaths ?? [],
+    legacyPaths: organizer.publicPage?.legacyPaths ?? [],
     publicApi,
     authority,
     capabilities,
@@ -275,7 +275,7 @@ export function publicReviewsForListing(reviews, organizerId) {
     .map((entry) => {
       const review = entry?.data ?? entry;
       if (!review || typeof review !== "object") return null;
-      if ((review.organizerId ?? review.clubId) !== organizerId) return null;
+      if ((review.organizerId) !== organizerId) return null;
       if (review.moderationStatus && review.moderationStatus !== "published") {
         return null;
       }

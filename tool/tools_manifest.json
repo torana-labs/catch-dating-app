@@ -2831,17 +2831,17 @@
     {
       "id": "data:repair-club-hosts",
       "category": "data",
-      "path": "tool/data/recompute_club_host_profiles.mjs",
-      "command": "node tool/data/recompute_club_host_profiles.mjs",
+      "path": "tool/data/recompute_organizer_host_profiles.mjs",
+      "command": "node tool/data/recompute_organizer_host_profiles.mjs",
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Repairs denormalized club host identity projections.",
       "checks": [
-        "node --check tool/data/recompute_club_host_profiles.mjs",
-        "node --test tool/data/recompute_club_host_profiles.test.mjs"
+        "node --check tool/data/recompute_organizer_host_profiles.mjs",
+        "node --test tool/data/recompute_organizer_host_profiles.test.mjs"
       ],
       "impactPaths": [
-        "tool/data/recompute_club_host_profiles.test.mjs",
+        "tool/data/recompute_organizer_host_profiles.test.mjs",
         "tool/data/lib/recompute_cli_test_support.mjs"
       ],
       "role": "generator",
@@ -2875,17 +2875,17 @@
     {
       "id": "data:repair-club-member-counts",
       "category": "data",
-      "path": "tool/data/recompute_club_member_counts.mjs",
-      "command": "node tool/data/recompute_club_member_counts.mjs",
+      "path": "tool/data/recompute_organizer_member_counts.mjs",
+      "command": "node tool/data/recompute_organizer_member_counts.mjs",
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Repairs club memberCount projections.",
       "checks": [
-        "node --check tool/data/recompute_club_member_counts.mjs",
-        "node --test tool/data/recompute_club_member_counts.test.mjs"
+        "node --check tool/data/recompute_organizer_member_counts.mjs",
+        "node --test tool/data/recompute_organizer_member_counts.test.mjs"
       ],
       "impactPaths": [
-        "tool/data/recompute_club_member_counts.test.mjs",
+        "tool/data/recompute_organizer_member_counts.test.mjs",
         "tool/data/lib/recompute_cli_test_support.mjs"
       ],
       "role": "generator"

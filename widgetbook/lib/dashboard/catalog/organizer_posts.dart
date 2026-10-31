@@ -31,7 +31,7 @@ Widget dashboardOrganizerPostsHomeSectionReviewStates(BuildContext context) {
   ];
 
   return WidgetbookPageCatalogFrame(
-    title: 'ClubPostsHomeSection',
+    title: 'OrganizerPostsHomeSection',
     contractId: 'dashboard.home.club_posts',
     children: [
       WidgetbookPageStateCard(
@@ -66,7 +66,7 @@ Widget dashboardOrganizerPostsHomeSectionReviewStates(BuildContext context) {
 )
 Widget dashboardOrganizerPostHomeCardReviewStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'ClubPostHomeCard',
+    title: 'OrganizerPostHomeCard',
     contractId: 'dashboard.home.club_post_card',
     children: [
       WidgetbookPageStateCard(

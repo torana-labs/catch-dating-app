@@ -27,7 +27,7 @@ const stamp = Timestamp.fromMillis;
 
 function fixture() {
   const store = new Store();
-  const event: Row = {clubId: organizerId, organizerId,
+  const event: Row = {organizerId,
     eventOrigin: catchNativeEventOrigin(),
     startTime: stamp(now + 3600000), endTime: stamp(now + 7200000),
     eventFormat: {version: 1, activityKind: "socialRun",
@@ -49,8 +49,8 @@ function fixture() {
       paceMinSecsPerKm: 300, paceMaxSecsPerKm: 420, preferredDistances: [],
       runningReasons: [], preferredRunTimes: []}}};
   Object.assign(event, eventDiscoveryProjection({
-    event: event as unknown as EventDocument, clubLocation: "mumbai",
-    clubLocationMarketId: "in-mh-mumbai", bookedCount: 0}));
+    event: event as unknown as EventDocument, organizerLocation: "mumbai",
+    organizerLocationMarketId: "in-mh-mumbai", bookedCount: 0}));
   assert.ok(validateEventDocument(event),
     JSON.stringify(validateEventDocument.errors));
   store.put(`events/${eventId}`, event);
@@ -59,7 +59,7 @@ function fixture() {
     loadCurrentAuthPhone: async () => "+919000000001"});
   const participation = (overrides: Row = {}) => store.put(
     `eventParticipations/${eventParticipationId(eventId, uid)}`, {
-      eventId, organizerId, clubId: organizerId, uid, status: "waitlisted",
+      eventId, organizerId, uid, status: "waitlisted",
       createdAt: stamp(now - 1000), updatedAt: stamp(now - 1000),
       signedUpAt: null, waitlistedAt: stamp(now - 1000), attendedAt: null,
       cancelledAt: null, deletedAt: null, genderAtSignup: "man",
@@ -259,8 +259,8 @@ test("owned public paid admission needs no Consumer participation or profile",
     Object.assign(current, {cohortCounts: {}, waitlistedCohortCounts: {},
       eventPolicy: eventPolicyFromEvent(current as unknown as EventDocument)});
     Object.assign(current, eventDiscoveryProjection({
-      event: current as unknown as EventDocument, clubLocation: "mumbai",
-      clubLocationMarketId: "in-mh-mumbai", bookedCount: 1}));
+      event: current as unknown as EventDocument, organizerLocation: "mumbai",
+      organizerLocationMarketId: "in-mh-mumbai", bookedCount: 1}));
     assert.ok(validateEventDocument(current),
       JSON.stringify(validateEventDocument.errors));
     h.store.rows.delete(`users/${paidUid}`);
@@ -289,7 +289,7 @@ test("live offer acceptance still needs current membership",
     h.gated();
     h.participation({waitlistOfferStatus: "active"});
     h.store.put("eventWaitlistOffers/event1_person", {
-      eventId, uid, clubId: organizerId, organizerId,
+      eventId, uid, organizerId,
       cohortAtOffer: "menInterestedInWomen", status: "active", source: "host",
       offeredBy: "host", offeredAt: stamp(now - 1000),
       expiresAt: stamp(now + 1000), decidedAt: null,

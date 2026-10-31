@@ -33,7 +33,7 @@ export async function assertPrivateEventBasicsEditable(params: {
       event.publicationState !== "private" ||
       event.publicRegistrationEnabled !== false ||
       event.status !== "active" ||
-      event.clubId !== event.organizerId ||
+      event.organizerId !== event.organizerId ||
       event.eventOrigin !== undefined ||
       event.firstPublishedAt !== undefined ||
       event.eventSuccessPlanId !== undefined ||

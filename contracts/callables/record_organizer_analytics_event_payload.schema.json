@@ -10,9 +10,6 @@
     "organizerId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     },
-    "clubId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-    },
     "eventId": {
       "anyOf": [
         {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},

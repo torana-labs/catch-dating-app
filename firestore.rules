@@ -141,19 +141,19 @@ service cloud.firestore {
       return exists(/databases/$(database)/documents/deletedUsers/$(uid));
     }
 
-    function isClubHostData(clubData) {
-      return clubData.hostUserId == request.auth.uid
+    function isOrganizerHostData(organizerData) {
+      return organizerData.hostUserId == request.auth.uid
         || (
-          clubData.keys().hasAny(['ownerUserId'])
-          && clubData.ownerUserId == request.auth.uid
+          organizerData.keys().hasAny(['ownerUserId'])
+          && organizerData.ownerUserId == request.auth.uid
         )
         || (
-          clubData.keys().hasAny(['hostUserIds'])
-          && request.auth.uid in clubData.hostUserIds
+          organizerData.keys().hasAny(['hostUserIds'])
+          && request.auth.uid in organizerData.hostUserIds
         );
     }
 
-    function isClubHostForEvent(eventId) {
+    function isOrganizerHostForEvent(eventId) {
       return exists(/databases/$(database)/documents/events/$(eventId))
         && get(/databases/$(database)/documents/events/$(eventId))
           .data.keys().hasAny(['organizerId'])
@@ -161,7 +161,7 @@ service cloud.firestore {
           get(/databases/$(database)/documents/events/$(eventId))
             .data.organizerId
         ))
-        && isClubHostData(get(
+        && isOrganizerHostData(get(
           /databases/$(database)/documents/organizers/$(
             get(/databases/$(database)/documents/events/$(eventId))
               .data.organizerId
@@ -186,7 +186,7 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.organizerId == (
           get(/databases/$(database)/documents/events/$(eventId)).data.keys().hasAny(['organizerId'])
             ? get(/databases/$(database)/documents/events/$(eventId)).data.organizerId
-            : get(/databases/$(database)/documents/events/$(eventId)).data.clubId
+            : get(/databases/$(database)/documents/events/$(eventId)).data.organizerId
         )
         && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.status == 'active'
         && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.expiresAt > request.time
@@ -244,7 +244,7 @@ service cloud.firestore {
     function canReadEventSuccess(eventId) {
       return isAuthed()
         && (
-          isClubHostForEvent(eventId)
+          isOrganizerHostForEvent(eventId)
           || hasEventParticipationStatus(eventId, request.auth.uid, [
             'signedUp', 'waitlisted', 'attended'
           ])
@@ -280,7 +280,7 @@ service cloud.firestore {
           'activityPreferences',
           // Notification / discovery preferences
           'prefsNewCatches', 'prefsMessages', 'prefsEventReminders',
-          'prefsRunStatusUpdates', 'prefsClubUpdates',
+          'prefsRunStatusUpdates', 'prefsOrganizerUpdates',
           'prefsWeeklyDigest', 'prefsShowOnMap', 'prefsShowInCrossPaths',
           'prefsCrossPathsInvitations',
           // Runtime fields
@@ -298,7 +298,7 @@ service cloud.firestore {
           'interestedInGenders', 'minAgePreference', 'maxAgePreference',
           'languages', 'activityPreferences',
           'prefsNewCatches', 'prefsMessages', 'prefsEventReminders',
-          'prefsRunStatusUpdates', 'prefsClubUpdates',
+          'prefsRunStatusUpdates', 'prefsOrganizerUpdates',
           'prefsWeeklyDigest', 'prefsShowOnMap'
         ])
         // Core
@@ -377,7 +377,7 @@ service cloud.firestore {
         && data.prefsMessages is bool
         && data.prefsEventReminders is bool
         && data.prefsRunStatusUpdates is bool
-        && data.prefsClubUpdates is bool
+        && data.prefsOrganizerUpdates is bool
         && data.prefsWeeklyDigest is bool
         && data.prefsShowOnMap is bool
         && optionalBool(data, 'prefsShowInCrossPaths')
@@ -476,7 +476,7 @@ service cloud.firestore {
           'bio',
           'status',
           'verified',
-          'linkedClubIds',
+          'linkedOrganizerIds',
           'createdAt',
           'updatedAt'
         ])
@@ -494,8 +494,8 @@ service cloud.firestore {
         && optionalString(data, 'bio')
         && data.status in ['active', 'pending', 'suspended']
         && (!hasField(data, 'verified') || data.verified is bool)
-        && (!hasField(data, 'linkedClubIds') ||
-          (data.linkedClubIds is list && data.linkedClubIds.size() <= 20))
+        && (!hasField(data, 'linkedOrganizerIds') ||
+          (data.linkedOrganizerIds is list && data.linkedOrganizerIds.size() <= 20))
         && data.createdAt is timestamp
         && data.updatedAt is timestamp;
     }
@@ -1143,7 +1143,7 @@ service cloud.firestore {
             exists(/databases/$(database)/documents/organizers/$(
               resource.data.organizerId
             ))
-            && isClubHostData(get(
+            && isOrganizerHostData(get(
               /databases/$(database)/documents/organizers/$(
                 resource.data.organizerId
               )
@@ -1162,7 +1162,7 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/organizers/$(
           resource.data.organizerId
         ))
-        && isClubHostData(get(
+        && isOrganizerHostData(get(
           /databases/$(database)/documents/organizers/$(
             resource.data.organizerId
           )
@@ -1178,7 +1178,7 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/organizers/$(
           resource.data.organizerId
         ))
-        && isClubHostData(get(
+        && isOrganizerHostData(get(
           /databases/$(database)/documents/organizers/$(
             resource.data.organizerId
           )
@@ -1219,7 +1219,7 @@ service cloud.firestore {
       return isAuthed() && !isDeletedUser(request.auth.uid)
         && organizerId is string
         && exists(/databases/$(database)/documents/organizers/$(organizerId))
-        && isClubHostData(get(
+        && isOrganizerHostData(get(
           /databases/$(database)/documents/organizers/$(organizerId)).data);
     }
     match /hostDirectorySummaries/{organizerId} {
@@ -1769,7 +1769,7 @@ service cloud.firestore {
       allow read: if isAuthed()
         && resource.data.eventId is string
         && (
-          isClubHostForEvent(resource.data.eventId)
+          isOrganizerHostForEvent(resource.data.eventId)
           || hasActiveEventOperatorGrant(resource.data.eventId, 'viewRoster')
         );
       allow write: if false;
@@ -1778,7 +1778,7 @@ service cloud.firestore {
     match /eventAttendeeImports/{importId} {
       allow read: if isAuthed()
         && resource.data.eventId is string
-        && isClubHostForEvent(resource.data.eventId);
+        && isOrganizerHostForEvent(resource.data.eventId);
       allow write: if false;
     }
 
@@ -1885,7 +1885,7 @@ service cloud.firestore {
       allow read: if isAuthed()
         && resource.data.eventId is string
         && (
-          isClubHostForEvent(resource.data.eventId)
+          isOrganizerHostForEvent(resource.data.eventId)
           || hasActiveEventOperatorGrant(
             resource.data.eventId,
             'reviewRuntimeClaims'
@@ -2032,7 +2032,7 @@ service cloud.firestore {
       allow read: if isAuthed()
         && (
           resource.data.uid == request.auth.uid
-          || isClubHostForEvent(resource.data.eventId)
+          || isOrganizerHostForEvent(resource.data.eventId)
         );
       allow write: if false;
     }
@@ -2102,7 +2102,7 @@ service cloud.firestore {
         && resource.data.uid is string
         && (
           resource.data.uid == request.auth.uid
-          || isClubHostForEvent(resource.data.eventId)
+          || isOrganizerHostForEvent(resource.data.eventId)
         );
       allow write: if false;
     }
@@ -2110,7 +2110,7 @@ service cloud.firestore {
     match /eventInviteLinks/{inviteLinkId} {
       allow read: if isAuthed()
         && resource.data.eventId is string
-        && isClubHostForEvent(resource.data.eventId);
+        && isOrganizerHostForEvent(resource.data.eventId);
       allow write: if false;
     }
 
@@ -2159,9 +2159,9 @@ service cloud.firestore {
         && !isDeletedUser(request.auth.uid)
         && data.get('publicationState', '') == 'private'
         && data.get('organizerId', '') is string
-        && data.get('organizerId', '') == data.get('clubId', '')
+        && data.get('organizerId', '') == data.get('organizerId', '')
         && (
-          isClubHostForEvent(eventId)
+          isOrganizerHostForEvent(eventId)
           || hasActiveEventOperatorGrant(eventId, 'viewRoster')
         );
     }
@@ -2215,13 +2215,13 @@ service cloud.firestore {
     match /eventPrivateAccess/{eventId} {
       allow read: if isAuthed()
         && resource.data.eventId == eventId
-        && isClubHostForEvent(eventId);
+        && isOrganizerHostForEvent(eventId);
       allow write: if false;
     }
 
     function isValidEventSuccessPlan(eventId, data) {
       return data.keys().hasOnly([
-          'eventId', 'clubId', 'playbookId', 'selectedModuleIds',
+          'eventId', 'organizerId', 'playbookId', 'selectedModuleIds',
           'targetAttendeeCount', 'structureConfig', 'hostGoal', 'wingmanRequestsEnabled',
           'contextualOpenersEnabled', 'compatibilityAffectsRanking',
           'questionnaireConfig', 'conversationGraphConsentMode',
@@ -2233,14 +2233,14 @@ service cloud.firestore {
           'completedAt'
         ])
         && data.keys().hasAll([
-          'eventId', 'clubId', 'playbookId', 'selectedModuleIds',
+          'eventId', 'organizerId', 'playbookId', 'selectedModuleIds',
           'targetAttendeeCount', 'hostGoal', 'wingmanRequestsEnabled',
           'contextualOpenersEnabled', 'activeStepIndex', 'status',
           'createdAt', 'updatedAt'
         ])
         && exists(/databases/$(database)/documents/events/$(eventId))
         && data.eventId == eventId
-        && data.clubId == get(/databases/$(database)/documents/events/$(eventId)).data.clubId
+        && data.organizerId == get(/databases/$(database)/documents/events/$(eventId)).data.organizerId
         && data.playbookId is string
         && data.playbookId.size() > 0
         && data.playbookId.size() <= 120
@@ -2433,7 +2433,7 @@ service cloud.firestore {
 
     function eventSuccessPlanImmutableFieldsUnchanged() {
       return request.resource.data.eventId == resource.data.eventId
-        && request.resource.data.clubId == resource.data.clubId
+        && request.resource.data.organizerId == resource.data.organizerId
         && request.resource.data.createdAt == resource.data.createdAt;
     }
 
@@ -2488,19 +2488,19 @@ service cloud.firestore {
 
     function isValidEventSuccessFeedback(feedbackId, data) {
       return data.keys().hasOnly([
-          'eventId', 'clubId', 'uid', 'welcomeRating', 'structureRating',
+          'eventId', 'organizerId', 'uid', 'welcomeRating', 'structureRating',
           'metNewPeopleCount', 'safetyConcern',
           'privateNote', 'createdAt', 'updatedAt'
         ])
         && data.keys().hasAll([
-          'eventId', 'clubId', 'uid', 'welcomeRating', 'structureRating',
+          'eventId', 'organizerId', 'uid', 'welcomeRating', 'structureRating',
           'metNewPeopleCount', 'safetyConcern',
           'createdAt', 'updatedAt'
         ])
         && exists(/databases/$(database)/documents/events/$(data.eventId))
         && feedbackId == eventSuccessFeedbackDocId(data.eventId, data.uid)
         && data.uid == request.auth.uid
-        && data.clubId == get(/databases/$(database)/documents/events/$(data.eventId)).data.clubId
+        && data.organizerId == get(/databases/$(database)/documents/events/$(data.eventId)).data.organizerId
         && get(/databases/$(database)/documents/events/$(data.eventId)).data.endTime <= request.time
         && hasCheckedInEventSuccessAccess(data.eventId, data.uid)
         && data.welcomeRating is number
@@ -2521,19 +2521,19 @@ service cloud.firestore {
 
     function isValidEventSuccessPreference(preferenceId, data) {
       return data.keys().hasOnly([
-          'eventId', 'clubId', 'uid', 'microPodsOptedOut',
+          'eventId', 'organizerId', 'uid', 'microPodsOptedOut',
           'guidedRotationsOptedOut',
           'createdAt', 'updatedAt'
         ])
         && data.keys().hasAll([
-          'eventId', 'clubId', 'uid', 'microPodsOptedOut',
+          'eventId', 'organizerId', 'uid', 'microPodsOptedOut',
           'guidedRotationsOptedOut',
           'createdAt', 'updatedAt'
         ])
         && exists(/databases/$(database)/documents/events/$(data.eventId))
         && preferenceId == eventSuccessPreferenceDocId(data.eventId, data.uid)
         && data.uid == request.auth.uid
-        && data.clubId == get(/databases/$(database)/documents/events/$(data.eventId)).data.clubId
+        && data.organizerId == get(/databases/$(database)/documents/events/$(data.eventId)).data.organizerId
         && hasEventSuccessParticipantAccess(data.eventId, data.uid)
         && data.microPodsOptedOut is bool
         && data.guidedRotationsOptedOut is bool
@@ -2543,10 +2543,10 @@ service cloud.firestore {
 
     function isValidEventSuccessCompatibilityResponse(responseId, data) {
       return data.keys().hasOnly([
-          'eventId', 'clubId', 'uid', 'answerIds', 'createdAt', 'updatedAt'
+          'eventId', 'organizerId', 'uid', 'answerIds', 'createdAt', 'updatedAt'
         ])
         && data.keys().hasAll([
-          'eventId', 'clubId', 'uid', 'answerIds', 'createdAt', 'updatedAt'
+          'eventId', 'organizerId', 'uid', 'answerIds', 'createdAt', 'updatedAt'
         ])
         && exists(/databases/$(database)/documents/events/$(data.eventId))
         && responseId == eventSuccessCompatibilityResponseDocId(
@@ -2554,7 +2554,7 @@ service cloud.firestore {
           data.uid
         )
         && data.uid == request.auth.uid
-        && data.clubId == get(/databases/$(database)/documents/events/$(data.eventId)).data.clubId
+        && data.organizerId == get(/databases/$(database)/documents/events/$(data.eventId)).data.organizerId
         && hasEventSuccessParticipantAccess(data.eventId, data.uid)
         && data.answerIds is list
         && data.answerIds.size() >= 1
@@ -2566,10 +2566,10 @@ service cloud.firestore {
     match /eventSuccessPlans/{eventId} {
       allow read: if canReadEventSuccess(eventId);
       allow create: if isAuthed()
-        && isClubHostForEvent(eventId)
+        && isOrganizerHostForEvent(eventId)
         && isEventSuccessPlanCreateAllowed(eventId);
       allow update: if isAuthed()
-        && isClubHostForEvent(eventId)
+        && isOrganizerHostForEvent(eventId)
         && isEventSuccessPlanUpdateAllowed(eventId);
       allow delete: if false;
     }
@@ -2607,7 +2607,7 @@ service cloud.firestore {
       allow read: if isAuthed()
         && (
           resource.data.uid == request.auth.uid
-          || isClubHostForEvent(resource.data.eventId)
+          || isOrganizerHostForEvent(resource.data.eventId)
         );
       allow create, update: if isAuthed()
         && isValidEventSuccessPreference(preferenceId, request.resource.data);
@@ -2650,14 +2650,14 @@ service cloud.firestore {
           || (
             resource.data.status == 'active'
             && resource.data.hostVisibleConsent == true
-            && isClubHostForEvent(resource.data.eventId)
+            && isOrganizerHostForEvent(resource.data.eventId)
           )
         );
       allow list: if isAuthed()
         && resource.data.eventId is string
         && resource.data.status == 'active'
         && resource.data.hostVisibleConsent == true
-        && isClubHostForEvent(resource.data.eventId);
+        && isOrganizerHostForEvent(resource.data.eventId);
       allow create, update: if false;
       allow delete: if false;
     }
@@ -2690,7 +2690,7 @@ service cloud.firestore {
           resource.data.uid
         )
         && (
-          isClubHostForEvent(resource.data.eventId)
+          isOrganizerHostForEvent(resource.data.eventId)
           || (
             resource.data.uid == request.auth.uid
             && hasEventSuccessParticipantAccess(
@@ -2702,7 +2702,7 @@ service cloud.firestore {
       allow list: if isAuthed()
         && resource.data.eventId is string
         && resource.data.moduleId is string
-        && isClubHostForEvent(resource.data.eventId);
+        && isOrganizerHostForEvent(resource.data.eventId);
       allow write: if false;
     }
 
@@ -2710,7 +2710,7 @@ service cloud.firestore {
       allow get, list: if isAuthed()
         && resource.data.eventId is string
         && resource.data.moduleId == 'guided_rotations'
-        && isClubHostForEvent(resource.data.eventId);
+        && isOrganizerHostForEvent(resource.data.eventId);
       allow write: if false;
     }
 
@@ -2735,7 +2735,7 @@ service cloud.firestore {
           resource.data.uid
         )
         && (
-          isClubHostForEvent(resource.data.eventId)
+          isOrganizerHostForEvent(resource.data.eventId)
           || (
             resource.data.uid == request.auth.uid
             && hasEventSuccessParticipantAccess(
@@ -2750,7 +2750,7 @@ service cloud.firestore {
     match /eventSuccessUnitOutcomes/{eventId} {
       allow get: if isAuthed()
         && resource.data.eventId == eventId
-        && isClubHostForEvent(eventId);
+        && isOrganizerHostForEvent(eventId);
       allow list: if false;
       allow write: if false;
     }
@@ -2759,7 +2759,7 @@ service cloud.firestore {
       allow get: if isAuthed()
         && resource.data.eventId == eventId
         && (
-          isClubHostForEvent(eventId)
+          isOrganizerHostForEvent(eventId)
           || hasEventSuccessParticipantAccess(eventId, request.auth.uid)
         );
       allow list: if false;
@@ -2767,7 +2767,7 @@ service cloud.firestore {
     }
 
     match /eventSuccessScorecards/{eventId} {
-      allow read: if isAuthed() && isClubHostForEvent(eventId);
+      allow read: if isAuthed() && isOrganizerHostForEvent(eventId);
       allow write: if false;
     }
 

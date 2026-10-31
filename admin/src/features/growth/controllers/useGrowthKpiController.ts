@@ -213,7 +213,7 @@ function buildGrowthRows(
       "Accounts created in the current calendar week.", overview),
     overviewSignal("completedProfiles", "acquisition", overviewMetric,
       "Profiles currently counted as complete.", overview),
-    overviewSignal("pendingClubClaims", "supply", overviewMetric,
+    overviewSignal("pendingOrganizerClaims", "supply", overviewMetric,
       "Current organizer claims waiting for review.", overview),
     overviewSignal("activeHosts", "supply", overviewMetric,
       "Current active organizer claims.", overview),

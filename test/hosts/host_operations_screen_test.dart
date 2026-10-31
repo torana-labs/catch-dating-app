@@ -254,20 +254,20 @@ Future<void> _pumpHostScreen(
           final HostCreateEventRouteArguments arguments
               when arguments.initialDraft != null =>
             Text('Draft ${arguments.initialDraft!.id}'),
-          _ => Text('Create ${state.pathParameters['clubId']}'),
+          _ => Text('Create ${state.pathParameters['organizerId']}'),
         },
       ),
       GoRoute(
         path: Routes.hostEventRehearsalStartScreen.path,
         name: Routes.hostEventRehearsalStartScreen.name,
         builder: (_, state) =>
-            Text('Rehearse ${state.pathParameters['clubId']}'),
+            Text('Rehearse ${state.pathParameters['organizerId']}'),
       ),
       GoRoute(
         path: Routes.hostOrganizerTeamScreen.path,
         name: Routes.hostOrganizerTeamScreen.name,
         builder: (_, state) => HostOrganizerTeamScreen(
-          clubId: state.uri.queryParameters['clubId'] ?? '',
+          clubId: state.uri.queryParameters['organizerId'] ?? '',
         ),
       ),
       GoRoute(
@@ -282,32 +282,32 @@ Future<void> _pumpHostScreen(
         path: Routes.hostOrganizerMessagingScreen.path,
         name: Routes.hostOrganizerMessagingScreen.name,
         builder: (_, state) =>
-            Text('Messaging setup ${state.pathParameters['clubId']}'),
+            Text('Messaging setup ${state.pathParameters['organizerId']}'),
       ),
       GoRoute(
         path: Routes.hostOrganizerDetailScreen.path,
         name: Routes.hostOrganizerDetailScreen.name,
-        builder: (_, state) => Text('Club ${state.pathParameters['clubId']}'),
+        builder: (_, state) => Text('Club ${state.pathParameters['organizerId']}'),
       ),
       GoRoute(
         path: Routes.hostOrganizerEventDefaultsScreen.path,
         name: Routes.hostOrganizerEventDefaultsScreen.name,
         builder: (_, state) => HostOrganizerEventDefaultsScreen(
-          clubId: state.uri.queryParameters['clubId'] ?? '',
+          clubId: state.uri.queryParameters['organizerId'] ?? '',
         ),
       ),
       GoRoute(
         path: Routes.hostOrganizerLiveGuideScreen.path,
         name: Routes.hostOrganizerLiveGuideScreen.name,
         builder: (_, state) => HostOrganizerLiveGuideScreen(
-          clubId: state.uri.queryParameters['clubId'] ?? '',
+          clubId: state.uri.queryParameters['organizerId'] ?? '',
         ),
       ),
       GoRoute(
         path: Routes.hostOrganizerPaymentsScreen.path,
         name: Routes.hostOrganizerPaymentsScreen.name,
         builder: (_, state) => HostOrganizerPaymentsScreen(
-          clubId: state.uri.queryParameters['clubId'] ?? '',
+          clubId: state.uri.queryParameters['organizerId'] ?? '',
         ),
       ),
       GoRoute(
@@ -324,7 +324,7 @@ Future<void> _pumpHostScreen(
         path: Routes.hostAppEventDetailScreen.path,
         name: Routes.hostAppEventDetailScreen.name,
         builder: (_, state) => Text(
-          'Event ${state.pathParameters['clubId']} '
+          'Event ${state.pathParameters['organizerId']} '
           '${state.pathParameters['eventId']}',
         ),
       ),

@@ -80,11 +80,10 @@ export async function prepareCatchBookingAdmission(input: {
       };
     },
     apply(event: EventDocument): void {
-      const organizerId = event.organizerId ?? event.clubId;
+      const organizerId = event.organizerId;
       tx.set(participationRef, eventParticipationPatch({
         exists: participationSnap.exists,
         eventId,
-        clubId: event.clubId,
         organizerId,
         uid,
         status: "signedUp",
@@ -101,7 +100,6 @@ export async function prepareCatchBookingAdmission(input: {
         body: copy.body,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         eventId,
-        clubId: event.clubId,
         organizerId,
       });
     },
@@ -124,8 +122,7 @@ export function catchBookingCancellation(input: {
   tx.set(participationRef, eventParticipationPatch({
     exists: true,
     eventId,
-    clubId: event.clubId,
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     uid,
     status: "cancelled",
   }), {merge: true});

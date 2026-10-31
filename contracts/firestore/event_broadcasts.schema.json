@@ -11,7 +11,7 @@
   "x-owner": "sendEventBroadcast callable",
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "actorUid",
     "audience",
     "title",
@@ -35,10 +35,6 @@
   ],
   "properties": {
     "eventId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
-      "x-catch-ownership": "server-only"
-    },
-    "clubId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
       "x-catch-ownership": "server-only"
     },

@@ -22,7 +22,7 @@ test("source rehearsal freezes synthetic movement", () => {
     name: "Monsoon Miles",
     publicationState: "private",
     setupRevision: 1,
-    clubId: "organizer-1",
+    organizerId: "organizer-1",
     startTime,
     endTime,
     meetingPoint: "Promenade",
@@ -97,7 +97,7 @@ test("source rehearsal freezes synthetic movement", () => {
 test("private basics cannot supply an invented rehearsal venue", () => {
   assert.throws(() => rehearsalSetupFromEvent({
     name: "Monsoon Miles",
-    clubId: "organizer-1",
+    organizerId: "organizer-1",
     publicationState: "private",
     setupRevision: 1,
     startTime: admin.firestore.Timestamp.fromMillis(
@@ -109,7 +109,7 @@ test("private basics cannot supply an invented rehearsal venue", () => {
 test("rehearsal accepts a named venue without booking coordinates", () => {
   const startTime = admin.firestore.Timestamp.fromMillis(1_000_000);
   const event = {
-    clubId: "organizer-1",
+    organizerId: "organizer-1",
     startTime,
     endTime: admin.firestore.Timestamp.fromMillis(1_000_000 + 3_600_000),
     meetingLocation: {name: "Courtyard"},

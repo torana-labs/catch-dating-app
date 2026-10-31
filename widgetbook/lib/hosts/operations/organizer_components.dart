@@ -39,18 +39,18 @@ Widget _hostOrganizerPreviewFor(String focus) {
   final team = organizer.displayHostProfiles;
   final payment = HostOperationsFixtures.readyPaymentAccount;
   return switch (focus) {
-    'HostClubInsightsSection' => HostOrganizerInsightsSection(
+    'HostOrganizerInsightsSection' => HostOrganizerInsightsSection(
       organizer: organizer,
     ),
-    'HostClubOrganizerSectionList' => HostOrganizerSectionList(
+    'HostOrganizerSectionList' => HostOrganizerSectionList(
       organizer: organizer,
     ),
-    'HostClubEditBody' => HostOrganizerEditBody(
+    'HostOrganizerEditBody' => HostOrganizerEditBody(
       organizer: organizer,
       currentUid: widgetbookHostUid,
       isOwner: true,
     ),
-    'HostEventsClubCard' => HostEventsOrganizerCard(
+    'HostEventsOrganizerCard' => HostEventsOrganizerCard(
       organizer: organizer,
       onEventEntrySelected: (_, _, _) {},
       onManageEvent: (_, _) {},
@@ -107,7 +107,7 @@ Widget _hostOrganizerPreviewFor(String focus) {
 )
 Widget hostStrictHostOrganizerInsightsSectionCatalogStates(
   BuildContext context,
-) => _hostOrganizerExactCatalog(context, 'HostClubInsightsSection');
+) => _hostOrganizerExactCatalog(context, 'HostOrganizerInsightsSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -115,7 +115,7 @@ Widget hostStrictHostOrganizerInsightsSectionCatalogStates(
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostOrganizerSectionListCatalogStates(BuildContext context) =>
-    _hostOrganizerExactCatalog(context, 'HostClubOrganizerSectionList');
+    _hostOrganizerExactCatalog(context, 'HostOrganizerSectionList');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -123,7 +123,7 @@ Widget hostStrictHostOrganizerSectionListCatalogStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostOrganizerEditBodyCatalogStates(BuildContext context) =>
-    _hostOrganizerExactCatalog(context, 'HostClubEditBody');
+    _hostOrganizerExactCatalog(context, 'HostOrganizerEditBody');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -219,7 +219,7 @@ Widget hostOrganizerReadOnlyEventDefaultsStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostEventsOrganizerCardCatalogStates(BuildContext context) =>
-    _hostOrganizerExactCatalog(context, 'HostEventsClubCard');
+    _hostOrganizerExactCatalog(context, 'HostEventsOrganizerCard');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -308,7 +308,7 @@ Widget hostCrmChannelRowStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostOrganizerPublicationChannelRowStates(BuildContext context) =>
-    widgetbookHostComponentStates('HostClubPublicationChannelRow', [
+    widgetbookHostComponentStates('HostOrganizerPublicationChannelRow', [
       (
         'visible',
         const HostOrganizerPublicationChannelRow(

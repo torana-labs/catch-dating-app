@@ -12,7 +12,7 @@ describe("CatchEventPoster", () => {
     expect(poster.getAttribute("aria-hidden")).toBe("true");
     expect(poster.dataset.ground).toBe("indigo");
     expect(poster.dataset.catchTheme).toBe("light");
-    expect(poster.textContent).toBe("Salt Air Run ClubSun 22 Nov15K training runBandra West");
+    expect(poster.textContent).toBe("Salt Air Run OrganizerSun 22 Nov15K training runBandra West");
     expect(poster.querySelector('[data-variant="displayXxl"]')?.textContent).toBe("15K training run");
   });
 

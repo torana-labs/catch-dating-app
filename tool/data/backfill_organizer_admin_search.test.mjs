@@ -9,7 +9,7 @@ import {
 test("buildOrganizerAdminSearchRepairPlan detects missing and stale search",
   async () => {
     const firestore = fakeFirestore({
-      clubs: {
+      organizers: {
         "club-1": {
           name: "AFTER FLY",
           location: "in-mp-indore",
@@ -33,7 +33,7 @@ test("buildOrganizerAdminSearchRepairPlan detects missing and stale search",
             ],
             sortKey: "club",
             updatedAt: "OLDER_TIMESTAMP",
-            updatedBySource: "adminUpdateClubDetails",
+            updatedBySource: "adminUpdateOrganizerDetails",
           },
         },
         "club-3": {
@@ -54,11 +54,11 @@ test("buildOrganizerAdminSearchRepairPlan detects missing and stale search",
       {serverTimestamp: "SERVER_TIMESTAMP"}
     );
 
-    assert.equal(plan.summary.clubsScanned, 3);
+    assert.equal(plan.summary.organizersScanned, 3);
     assert.equal(plan.summary.repairsNeeded, 3);
     assert.equal(plan.summary.missingSearch, 1);
     assert.equal(plan.summary.staleSearch, 2);
-    assert.deepEqual(plan.summary.repairs.map((repair) => repair.clubId), [
+    assert.deepEqual(plan.summary.repairs.map((repair) => repair.organizerId), [
       "club-1",
       "club-2",
       "club-3",
@@ -73,7 +73,7 @@ test("buildOrganizerAdminSearchRepairPlan detects missing and stale search",
 test("applyOrganizerAdminSearchRepairPlan writes planned adminSearch patches",
   async () => {
     const firestore = fakeFirestore({
-      clubs: {
+      organizers: {
         "club-1": {name: "AFTER FLY", description: "Keep me"},
         "club-2": {name: "Bandra Social Run"},
       },
@@ -95,7 +95,7 @@ test("applyOrganizerAdminSearchRepairPlan writes planned adminSearch patches",
       ],
     });
 
-    assert.deepEqual(firestore.data.clubs["club-1"], {
+    assert.deepEqual(firestore.data.organizers["club-1"], {
       name: "AFTER FLY",
       description: "Keep me",
       adminSearch: {
@@ -105,7 +105,7 @@ test("applyOrganizerAdminSearchRepairPlan writes planned adminSearch patches",
         updatedBySource: "adminOrganizerSearchBackfill",
       },
     });
-    assert.deepEqual(firestore.data.clubs["club-2"], {
+    assert.deepEqual(firestore.data.organizers["club-2"], {
       name: "Bandra Social Run",
     });
   }
@@ -117,23 +117,23 @@ test("pickOrganizerAdminSearchComparable ignores non-search metadata", () => {
       tokens: ["organizer", 12, "run"],
       sortKey: "organizer",
       updatedAt: "IGNORED",
-      updatedBySource: "adminUpdateClubDetails",
+      updatedBySource: "adminUpdateOrganizerDetails",
     }),
     {tokens: ["organizer", "run"], sortKey: "organizer"}
   );
 });
 
 function fakeOrganizerAdminSearchProjection(
-  clubId,
-  club,
+  organizerId,
+  organizer,
   updatedAt,
   updatedBySource
 ) {
   const tokens = [
-    clubId,
-    club.name,
-    club.location,
-    club.publicPage?.citySlug,
+    organizerId,
+    organizer.name,
+    organizer.location,
+    organizer.publicPage?.citySlug,
   ]
     .filter((value) => typeof value === "string" && value.trim())
     .flatMap((value) => value.toLowerCase().split(/[^a-z0-9]+/u))

@@ -33,8 +33,8 @@
         "moderationFlags",
         "eventSafetyReports",
         "accessApplications",
-        "clubClaimRequests",
-        "clubIndexReviews",
+        "organizerClaimRequests",
+        "organizerIndexReviews",
         "paymentIssues"
       ],
       "properties": {
@@ -50,10 +50,10 @@
         "accessApplications": {
           "$ref": "#/definitions/queue"
         },
-        "clubClaimRequests": {
+        "organizerClaimRequests": {
           "$ref": "#/definitions/queue"
         },
-        "clubIndexReviews": {
+        "organizerIndexReviews": {
           "$ref": "#/definitions/queue"
         },
         "paymentIssues": {

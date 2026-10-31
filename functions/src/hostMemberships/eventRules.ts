@@ -96,7 +96,7 @@ export async function manageEventMembershipRulesHandler(
   const eventSnap = await eventRef.get();
   if (!eventSnap.exists) throw new HttpsError("not-found", "Event not found.");
   const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-  const organizerId = event.organizerId ?? event.clubId;
+  const organizerId = event.organizerId;
   await deps.requireManager({db, organizerId, actorUid: uid});
   const nowMillis = deps.nowMillis();
   const rulesRef = db.collection(collections.eventRules).doc(data.eventId);

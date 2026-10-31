@@ -45,7 +45,7 @@ List<Widget> buildOrganizerDirectorySlivers({
 void _openOrganizerDetail(BuildContext context, Organizer organizer) {
   context.pushNamed(
     Routes.organizerDetailScreen.name,
-    pathParameters: {'clubId': organizer.id},
+    pathParameters: {'organizerId': organizer.id},
     extra: organizer,
   );
 }

@@ -26,7 +26,7 @@ class ImportStore extends AudienceTestStore {
 }
 const store = new ImportStore({
   [`organizers/${organizerId}`]: {ownerUserId:'demo-host', hostUserIds:['demo-host'], hostProfiles:[], name:'Saket Run Club',imageUrl:null},
-  [`events/${eventId}`]: {organizerId,clubId:organizerId,status:'active',name:'RSVP Escape — spreadsheet demo',eventFormat:{activityKind:'singlesMixer'}},
+  [`events/${eventId}`]: {organizerId,status:'active',name:'RSVP Escape — spreadsheet demo',eventFormat:{activityKind:'singlesMixer'}},
 });
 const deps = {firestore:()=>store.asFirestore(),timestamp:()=>Timestamp.fromMillis(Date.parse('2026-09-21T10:00:00Z')),checkRateLimit:async()=>{},identitySecret:()=> 'LOCAL-SYNTHETIC-ONLY-'.repeat(4)};
 const entities = prefix => Object.entries(store.docs).filter(([key])=>key.startsWith(prefix+'/')).map(([key,value])=>({id:key.split('/').at(-1),...value}));

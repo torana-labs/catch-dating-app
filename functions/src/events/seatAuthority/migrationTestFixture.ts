@@ -102,7 +102,7 @@ export class Store {
   }
 }
 export function migrationTestEvent(): Row {
-  return {clubId: "org1", organizerId: "org1", name: "Event",
+  return {organizerId: "org1", name: "Event",
     startTime: Timestamp.fromMillis(100000), status: "active",
     publicationState: "private", setupRevision: 1,
     publicRegistrationEnabled: false, eventCityId: "city1",

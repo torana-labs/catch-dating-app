@@ -150,7 +150,7 @@ class OrganizerJoinAction extends ConsumerWidget {
                   .logError(
                     error,
                     stackTrace,
-                    reason: 'ClubJoinAction._joinClub failed',
+                    reason: 'OrganizerJoinAction._joinOrganizer failed',
                   );
             }),
       );

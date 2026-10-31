@@ -72,24 +72,24 @@ export async function buildOrganizerAdminSearchRepairPlan(
   options = {}
 ) {
   const serverTimestamp = options.serverTimestamp ?? "SERVER_TIMESTAMP";
-  const clubsSnap = await firestore.collection("clubs").get();
+  const organizersSnap = await firestore.collection("clubs").get();
   const repairs = [];
 
-  for (const clubDoc of clubsSnap.docs) {
-    const club = clubDoc.data();
+  for (const organizerDoc of organizersSnap.docs) {
+    const organizer = organizerDoc.data();
     const expectedAdminSearch = buildOrganizerAdminSearchProjection(
-      clubDoc.id,
-      club,
+      organizerDoc.id,
+      organizer,
       serverTimestamp,
       "adminOrganizerSearchBackfill"
     );
-    const current = pickOrganizerAdminSearchComparable(club.adminSearch);
+    const current = pickOrganizerAdminSearchComparable(organizer.adminSearch);
     const expected =
       pickOrganizerAdminSearchComparable(expectedAdminSearch);
     if (!isDeepStrictEqual(current, expected)) {
       repairs.push({
-        path: clubDoc.ref.path,
-        clubId: clubDoc.id,
+        path: organizerDoc.ref.path,
+        organizerId: organizerDoc.id,
         current,
         expected,
         patch: {adminSearch: expectedAdminSearch},
@@ -101,7 +101,7 @@ export async function buildOrganizerAdminSearchRepairPlan(
   return {
     repairs,
     summary: {
-      clubsScanned: clubsSnap.size,
+      organizersScanned: organizersSnap.size,
       repairsNeeded: repairs.length,
       missingSearch: summaryRepairs.filter((repair) =>
         repair.current.tokens.length === 0
@@ -150,7 +150,7 @@ function loadOrganizerAdminSearchProjectionBuilder() {
 function printHelp() {
   console.log(`Usage: node tool/data/backfill_organizer_admin_search.mjs [options]
 
-Backfills server-owned clubs/{clubId}.adminSearch projections used by the
+Backfills server-owned clubs/{organizerId}.adminSearch projections used by the
 admin Organizers tab. The script is dry-run by default.
 
 Options:
@@ -168,7 +168,7 @@ Options:
 
 function compactSummary(summary) {
   return {
-    clubsScanned: summary.clubsScanned,
+    organizersScanned: summary.organizersScanned,
     repairsNeeded: summary.repairsNeeded,
     missingSearch: summary.missingSearch,
     staleSearch: summary.staleSearch,
@@ -177,7 +177,7 @@ function compactSummary(summary) {
 
 function printSummary(summary, {summaryOnly = false} = {}) {
   console.log("Organizer admin search repair plan");
-  console.log(`Clubs scanned: ${summary.clubsScanned}`);
+  console.log(`Clubs scanned: ${summary.organizersScanned}`);
   console.log(`Repairs needed: ${summary.repairsNeeded}`);
   console.log(`Missing search projections: ${summary.missingSearch}`);
   console.log(`Stale search projections: ${summary.staleSearch}`);

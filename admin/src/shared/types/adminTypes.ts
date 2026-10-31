@@ -77,7 +77,7 @@ export interface AdminSafetyTriageDetails {
   primaryUserId: string | null;
   secondaryUserId: string | null;
   eventId: string | null;
-  clubId: string | null;
+  organizerId: string | null;
   source: string | null;
   contextId: string | null;
   assignment: AdminSafetyTriageAssignment;
@@ -109,8 +109,6 @@ export type AdminAssignSafetyTriageItemResponse =
 
 export interface HostAnalyticsQueryPayload {
   organizerId?: string | null;
-  /** @deprecated Use organizerId. */
-  clubId?: string | null;
   eventId?: string | null;
   rangePreset?: "7d" | "30d" | "90d" | "month" | "custom";
   startDate?: string | null;
@@ -135,9 +133,7 @@ export interface HostAnalyticsTrendPoint {
 
 export interface HostAnalyticsEventRow {
   eventId: string;
-  organizerId?: string;
-  /** @deprecated Use organizerId. */
-  clubId: string;
+  organizerId: string;
   title: string;
   startTime: string;
   status: string;
@@ -174,12 +170,8 @@ export interface HostAnalyticsResponse {
   };
   scope: {
     organizerIds: string[];
-    /** @deprecated Use organizerIds. */
-    clubIds: string[];
     eventIds: string[];
     organizerName?: string | null;
-    /** @deprecated Use organizerName. */
-    clubName?: string | null;
     eventTitle?: string | null;
   };
   summaryCards: HostAnalyticsMetricCard[];
@@ -401,8 +393,8 @@ export type AdminSetAdminUserRolesResponse =
   AdminSetAdminUserRolesCallableResponse;
 
 export type AccessApplicationDecision = "approve" | "deny";
-export type ClubClaimDecision = "approve" | "reject";
-export type ClubIndexDecision = "indexReady" | "noindex";
+export type OrganizerClaimDecision = "approve" | "reject";
+export type OrganizerIndexDecision = "indexReady" | "noindex";
 export type OrganizerIntakeDecision = "approve_public" | "hold" | "suppress";
 export type OrganizerPolicyGapDecision = "accept" | "hold" | "reject";
 export type OrganizerEntityKind =
@@ -491,7 +483,7 @@ export interface OrganizerCurationSurface {
     supportsEventExtraction: boolean;
   };
   evidenceRefs: Array<{
-    type: "hostDiscoveryRun" | "seedClub" | "userReportedSearchResult" | "manualNote";
+    type: "hostDiscoveryRun" | "seedOrganizer" | "userReportedSearchResult" | "manualNote";
     ref: string | null;
     description: string;
   }>;
@@ -545,23 +537,23 @@ export interface AdminGetAccessApplicationDetailsResponse {
   application: AdminAccessApplicationDetails;
 }
 
-export interface AdminDecideClubClaimPayload {
+export interface AdminDecideOrganizerClaimPayload {
   requestId: string;
-  decision: ClubClaimDecision;
+  decision: OrganizerClaimDecision;
   decisionReason?: string | null;
 }
 
-export interface AdminDecideClubClaimResponse {
+export interface AdminDecideOrganizerClaimResponse {
   requestId: string;
-  clubId: string;
-  decision: ClubClaimDecision;
+  organizerId: string;
+  decision: OrganizerClaimDecision;
   status: "approved" | "rejected";
 }
 
-export interface AdminClubClaimListRow {
+export interface AdminOrganizerClaimListRow {
   requestId: string;
   targetPath: string;
-  clubId: string;
+  organizerId: string;
   requesterUid: string;
   requesterName: string;
   requesterRole: string;
@@ -571,16 +563,16 @@ export interface AdminClubClaimListRow {
   createdAt: string | null;
 }
 
-export interface AdminListClubClaimRequestsResponse {
+export interface AdminListOrganizerClaimRequestsResponse {
   generatedAt: string;
-  rows: AdminClubClaimListRow[];
+  rows: AdminOrganizerClaimListRow[];
 }
 
-export interface AdminGetClubClaimRequestDetailsPayload {
+export interface AdminGetOrganizerClaimRequestDetailsPayload {
   requestId: string;
 }
 
-export interface AdminClubClaimRequestDetails extends AdminClubClaimListRow {
+export interface AdminOrganizerClaimRequestDetails extends AdminOrganizerClaimListRow {
   businessEmail: string | null;
   businessPhone: string | null;
   proofUrls: string[];
@@ -590,7 +582,7 @@ export interface AdminClubClaimRequestDetails extends AdminClubClaimListRow {
     exists: boolean;
     profileComplete: boolean;
   };
-  club: {
+  organizer: {
     exists: boolean;
     name: string | null;
     claimState: string | null;
@@ -600,13 +592,13 @@ export interface AdminClubClaimRequestDetails extends AdminClubClaimListRow {
   };
 }
 
-export interface AdminGetClubClaimRequestDetailsResponse {
-  request: AdminClubClaimRequestDetails;
+export interface AdminGetOrganizerClaimRequestDetailsResponse {
+  request: AdminOrganizerClaimRequestDetails;
 }
 
-export interface AdminSetClubIndexStatusPayload {
-  clubId: string;
-  indexStatus: ClubIndexDecision;
+export interface AdminSetOrganizerIndexStatusPayload {
+  organizerId: string;
+  indexStatus: OrganizerIndexDecision;
   checklist: {
     sourceEvidenceVerified: boolean;
     mediaRightsVerified: boolean;
@@ -616,9 +608,9 @@ export interface AdminSetClubIndexStatusPayload {
   reviewNote?: string | null;
 }
 
-export interface AdminSetClubIndexStatusResponse {
-  clubId: string;
-  indexStatus: ClubIndexDecision;
+export interface AdminSetOrganizerIndexStatusResponse {
+  organizerId: string;
+  indexStatus: OrganizerIndexDecision;
   publishStatus: "qa" | "published";
   robots: "noindex, follow" | "index, follow";
 }
@@ -707,8 +699,8 @@ export type AdminCreateOrganizerDraftFromCandidatePayload =
 export type AdminCreateOrganizerDraftFromCandidateResponse =
   AdminCreateOrganizerDraftFromCandidateCallableResponse;
 
-export interface AdminClubDetails {
-  clubId: string;
+export interface AdminOrganizerDetails {
+  organizerId: string;
   name: string;
   description: string;
   location: string | null;
@@ -782,16 +774,16 @@ export interface AdminOrganizerOwnerLink {
   showUntil: string | null;
 }
 
-export interface AdminGetClubDetailsPayload {
-  clubId: string;
+export interface AdminGetOrganizerDetailsPayload {
+  organizerId: string;
 }
 
-export interface AdminGetClubDetailsResponse {
-  club: AdminClubDetails;
+export interface AdminGetOrganizerDetailsResponse {
+  organizer: AdminOrganizerDetails;
 }
 
-export interface AdminClubListRow {
-  clubId: string;
+export interface AdminOrganizerListRow {
+  organizerId: string;
   name: string;
   organizerType: OrganizerType;
   publicCategoryLabel: string | null;
@@ -814,7 +806,7 @@ export interface AdminClubListRow {
   searchIndexStatus: "missing" | "indexed";
 }
 
-export interface AdminListClubDetailsPayload {
+export interface AdminListOrganizerDetailsPayload {
   query?: string | null;
   citySlug?: string | null;
   citySlugs?: string[] | null;
@@ -823,13 +815,13 @@ export interface AdminListClubDetailsPayload {
   limit?: number;
 }
 
-export interface AdminListClubDetailsResponse {
+export interface AdminListOrganizerDetailsResponse {
   generatedAt: string;
-  rows: AdminClubListRow[];
+  rows: AdminOrganizerListRow[];
 }
 
-export interface AdminUpdateClubDetailsPayload {
-  clubId: string;
+export interface AdminUpdateOrganizerDetailsPayload {
+  organizerId: string;
   fields: {
     name?: string;
     description?: string;
@@ -875,8 +867,8 @@ export interface AdminUpdateClubDetailsPayload {
   reviewNote?: string | null;
 }
 
-export interface AdminUpdateClubDetailsResponse {
-  clubId: string;
+export interface AdminUpdateOrganizerDetailsResponse {
+  organizerId: string;
   updatedFieldCount: number;
 }
 
@@ -927,7 +919,7 @@ export interface AdminEventDetails {
   hostActivation?: {activatedAt: number; eventId: string} | null;
   hostPilotReview?: {realEvent: boolean; revision: number; reviewedAt: number} | null;
   eventId: string;
-  clubId: string;
+  organizerId: string;
   organizerName: string | null;
   title: string;
   startTime: string | null;
@@ -972,7 +964,7 @@ export interface AdminGetEventDetailsResponse {
 
 export interface AdminEventListRow {
   eventId: string;
-  clubId: string;
+  organizerId: string;
   organizerName: string | null;
   title: string;
   activityKind: AdminEventActivityKind;
@@ -994,7 +986,6 @@ export interface AdminExternalEventListRow {
   eventId: string;
   targetPath: string;
   canonicalHostId: string;
-  compatibilityClubId: string;
   title: string;
   startTime: string | null;
   endTime: string | null;
@@ -1053,7 +1044,7 @@ export interface AdminTakedownExternalEventResponse {
 
 export interface AdminListEventDetailsPayload {
   query?: string | null;
-  clubId?: string | null;
+  organizerId?: string | null;
   citySlug?: string | null;
   citySlugs?: string[] | null;
   activityKind?: AdminEventActivityKind | null;

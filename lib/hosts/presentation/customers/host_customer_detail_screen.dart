@@ -719,7 +719,7 @@ class _HostCustomerDetailScreenState
     unawaited(
       context.pushNamed(
         Routes.hostAppEventDetailScreen.name,
-        pathParameters: {'clubId': widget.organizerId, 'eventId': eventId},
+        pathParameters: {'organizerId': widget.organizerId, 'eventId': eventId},
       ),
     );
   }

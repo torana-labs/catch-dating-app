@@ -34,7 +34,7 @@ export async function readGroupProgressState(db: Firestore, tx: Transaction,
       event.organizerId !== context.organizerId ||
       (plan !== null && (!validateEventSuccessPlanDocument(plan) ||
         plan.eventId !== context.eventId ||
-        (plan.organizerId ?? plan.clubId) !== context.organizerId))) {
+        (plan.organizerId) !== context.organizerId))) {
     throw invalidSource();
   }
   const progress = progressSnap.data() ?? null;

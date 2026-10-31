@@ -131,7 +131,7 @@ void main() {
       test('fromJson handles missing fields gracefully', () {
         final restored = EventDraft.fromJson({
           'id': 'draft-3',
-          'clubId': 'club-3',
+          'organizerId': 'club-3',
           'savedAt': '2026-05-01T15:45:00.000',
         });
 

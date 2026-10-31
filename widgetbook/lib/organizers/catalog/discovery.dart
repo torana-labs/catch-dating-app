@@ -20,7 +20,7 @@ final _logoOrganizer = widgetbookOrganizerOrganizer.copyWith(
 )
 Widget organizerAvatarRailStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubAvatarRail',
+    title: 'OrganizerAvatarRail',
     catalogId: 'section.club.avatar_rail',
     children: [
       WidgetbookPageStateCard(
@@ -43,7 +43,7 @@ Widget organizerAvatarRailStates(BuildContext context) {
 )
 Widget organizerIndexRowStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubIndexRow',
+    title: 'OrganizerIndexRow',
     catalogId: 'card.club.index_row',
     children: [
       WidgetbookPageStateCard(
@@ -104,7 +104,7 @@ Widget avatarChipStates(BuildContext context) {
 )
 Widget organizerImageStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubImage',
+    title: 'OrganizerImage',
     catalogId: 'atom.club.image',
     children: [
       WidgetbookPageStateCard(

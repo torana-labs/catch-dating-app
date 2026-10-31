@@ -1,6 +1,6 @@
 {
   "eventId": "event-1",
-  "clubId": "club-1",
+  "organizerId": "club-1",
   "uid": "user-1",
   "moduleId": "guided_rotations",
   "label": "Round 1",

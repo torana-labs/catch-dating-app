@@ -256,7 +256,7 @@ export interface OrganizerCanonicalHostEntity {
     ownerAccountRequired: boolean;
     writeMode: string | null;
   };
-  legacyClubCompatibility: {
+  legacyOrganizerCompatibility: {
     collection: string;
     documentId: string;
     status: string;

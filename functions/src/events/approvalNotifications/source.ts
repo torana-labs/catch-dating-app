@@ -57,7 +57,7 @@ export async function readApplication(
     application.linkedUid !== uid ||
     application.targetKind !== "event" ||
     application.targetId !== eventId ||
-    application.organizerId !== (event.organizerId ?? event.clubId) ||
+    application.organizerId !== (event.organizerId) ||
     application.reviewStatus === "withdrawn" ||
     event.status !== "active" ||
     timestampMillis(event.startTime) <= now ||

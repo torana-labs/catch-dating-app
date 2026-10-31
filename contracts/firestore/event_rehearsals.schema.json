@@ -11,7 +11,6 @@
   "x-owner": "event rehearsal callables",
   "required": [
     "organizerId",
-    "clubId",
     "ownerUid",
     "sourceEventId",
     "sourceEventRevision",
@@ -37,10 +36,6 @@
   ],
   "properties": {
     "organizerId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
       "x-catch-ownership": "callable-owned"
     },

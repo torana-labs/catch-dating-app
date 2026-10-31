@@ -452,7 +452,7 @@ void main() {
       final legacy = EventSuccessPlan.fromJson({
         'id': 'event-1',
         'eventId': 'event-1',
-        'clubId': 'club-1',
+        'organizerId': 'club-1',
         'playbookId': EventSuccessPlaybookLibrary.socialRun.id,
         'selectedModuleIds': <String>[],
         'targetAttendeeCount': 22,

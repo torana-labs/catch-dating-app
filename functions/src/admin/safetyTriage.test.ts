@@ -425,7 +425,7 @@ test(
     const firestore = new FakeFirestore({
       "eventSafetyReports/event-1_user-1": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         reporterUserId: "user-1",
         feedbackId: "feedback-1",
         source: "event_success_feedback",
@@ -443,7 +443,7 @@ test(
 
     assert.equal(result.item.kind, "eventSafetyReport");
     assert.equal(result.item.eventId, "event-1");
-    assert.equal(result.item.clubId, "club-1");
+    assert.equal(result.item.organizerId, "club-1");
     assert.equal(result.item.primaryUserId, "user-1");
     assert.equal(result.item.assignment.ownerTeam, "Event safety");
     assert.equal(result.item.assignment.severity, "high");
@@ -472,7 +472,7 @@ test(
 
     assert.equal(result.item.kind, "eventAssistanceCase");
     assert.equal(result.item.eventId, "event-1");
-    assert.equal(result.item.clubId, "organizer-1");
+    assert.equal(result.item.organizerId, "organizer-1");
     assert.equal(result.item.assignment.ownerTeam, "Event safety");
     assert.equal(result.item.assignment.severity, "high");
     assert.equal(result.item.contextId, "response:guest-1");
@@ -586,7 +586,7 @@ test(
     const firestore = new FakeFirestore({
       "eventSafetyReports/event-1_user-1": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         reporterUserId: "user-1",
         feedbackId: "feedback-1",
         source: "event_success_feedback",

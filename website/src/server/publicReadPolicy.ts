@@ -42,9 +42,9 @@ export function publicEventAuthorized(id: unknown, raw: unknown): boolean {
   const data = object(raw);
   if (!publicDocumentId(id) || !data || synthetic(data) ||
       data.publicationState !== "published" || data.status !== "active") return false;
-  const organizerId = data.organizerId ?? data.clubId;
+  const organizerId = data.organizerId;
   return publicDocumentId(organizerId) &&
-    !(data.organizerId && data.clubId && data.organizerId !== data.clubId);
+    !(data.organizerId && data.organizerId !== data.organizerId);
 }
 
 export {publicJsonLd} from "../shared/next/publicJsonLd.ts";

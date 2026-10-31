@@ -304,7 +304,7 @@ function managerAuthorizer(db: Firestore): AuthorizeHostRosterSession {
       throw new HttpsError("not-found", "Event not found.");
     }
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-    if ((event.organizerId ?? event.clubId) !== organizerId ||
+    if ((event.organizerId) !== organizerId ||
         event.status === "cancelled") {
       throw new HttpsError("failed-precondition",
         "Roster intake event scope is no longer current.");

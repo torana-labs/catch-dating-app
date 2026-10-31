@@ -239,7 +239,7 @@ test("ready OTP links an imported external-ID guest at full capacity",
       60_000);
     const endTime = admin.firestore.Timestamp.fromMillis(Date.now() +
       3_600_000);
-    const event = {clubId: "organizer-1", organizerId: "organizer-1",
+    const event = {organizerId: "organizer-1",
       status: "active", startTime, endTime, capacityLimit: 1,
       priceInPaise: 0, publicRegistrationEnabled: true,
       eventFormat: {version: 1, activityKind: "running",
@@ -266,7 +266,7 @@ test("ready OTP links an imported external-ID guest at full capacity",
         policyVersion: policy.policyVersion, policyHash: policy.policyHash,
         migrationRevision: 1, state: "ready"},
       [`eventAttendees/${attendeeId}`]: {eventId: "event-1",
-        clubId: "organizer-1", organizerId: "organizer-1",
+        organizerId: "organizer-1",
         source: "hostImport", status: "registered", linkedUid: null,
         phoneE164: phone, externalReference: "guest-7",
         displayName: "Imported Guest"},
@@ -553,12 +553,11 @@ test("host import cannot replace a Catch booking's roster facts", async () => {
   const attendeeId = eventAttendeeId("event-1", "phone:+919876543210");
   const path = `eventAttendees/${attendeeId}`;
   const firestore = new FakeFirestore({
-    "events/event-1": {clubId: "organizer-1", organizerId: "organizer-1",
+    "events/event-1": {organizerId: "organizer-1",
       status: "active"},
     "organizers/organizer-1": {hostUserId: "host-1",
       ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
-    [path]: {eventId: "event-1", clubId: "organizer-1",
-      organizerId: "organizer-1", displayName: "Booked Guest",
+    [path]: {eventId: "event-1", organizerId: "organizer-1", displayName: "Booked Guest",
       source: "catchBooking", status: "registered",
       phoneE164: "+919876543210", email: "booked@example.com",
       revenueAmountMinor: 50000, revenueCurrency: "INR",
@@ -587,7 +586,7 @@ test("referenced host row cannot bypass a legacy phone-key booking",
     const bookingId = eventAttendeeId("event-1", "phone:+919876543210");
     const path = `eventAttendees/${bookingId}`;
     const firestore = new FakeFirestore({
-      "events/event-1": {clubId: "organizer-1", organizerId: "organizer-1",
+      "events/event-1": {organizerId: "organizer-1",
         status: "active"},
       "organizers/organizer-1": {hostUserId: "host-1",
         ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
@@ -615,8 +614,7 @@ test("phone-key upload cannot bypass an existing attendee reference",
     const now = admin.firestore.Timestamp.fromMillis(1000);
     const referencedId = eventAttendeeId("event-1", "external:ticket-a");
     const firestore = new FakeFirestore({
-      "events/event-1": {clubId: "organizer-1",
-        organizerId: "organizer-1", status: "active"},
+      "events/event-1": {organizerId: "organizer-1", status: "active"},
       "organizers/organizer-1": {hostUserId: "host-1",
         ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
       [`eventAttendees/${referencedId}`]: {eventId: "event-1",
@@ -645,8 +643,7 @@ test("email-only upload cannot overwrite an existing event attendee",
       "email:buyer@example.com");
     const attendeePath = `eventAttendees/${attendeeId}`;
     const firestore = new FakeFirestore({
-      "events/event-1": {clubId: "organizer-1",
-        organizerId: "organizer-1", status: "active"},
+      "events/event-1": {organizerId: "organizer-1", status: "active"},
       "organizers/organizer-1": {hostUserId: "host-1",
         ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
       [attendeePath]: {eventId: "event-1", organizerId: "organizer-1",
@@ -672,7 +669,7 @@ test("re-import cannot transfer a claimed attendee's verified endpoint",
   async () => {
     const now = admin.firestore.Timestamp.fromMillis(1000);
     const firestore = new FakeFirestore({
-      "events/event-1": {clubId: "organizer-1", organizerId: "organizer-1",
+      "events/event-1": {organizerId: "organizer-1",
         status: "active"},
       "organizers/organizer-1": {hostUserId: "host-1",
         ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
@@ -734,12 +731,10 @@ test("host import preserves provider and accountability facts on update",
     const attendeeId = eventAttendeeId("event-1", "external:guest-7");
     const attendeePath = `eventAttendees/${attendeeId}`;
     const firestore = new FakeFirestore({
-      "events/event-1": {clubId: "organizer-1",
-        organizerId: "organizer-1", status: "active"},
+      "events/event-1": {organizerId: "organizer-1", status: "active"},
       "organizers/organizer-1": {hostUserId: "host-1",
         ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
-      [attendeePath]: {eventId: "event-1", clubId: "organizer-1",
-        organizerId: "organizer-1", displayName: "Earlier Name",
+      [attendeePath]: {eventId: "event-1", organizerId: "organizer-1", displayName: "Earlier Name",
         searchName: "earlier name", source: "providerSync",
         status: "checkedIn", linkedUid: null,
         phoneE164: "+919876543210", email: "guest@example.com",
@@ -787,7 +782,7 @@ test("host import preserves provider and accountability facts on update",
 test("ready Host import reserves full batch or writes no attendee or receipt",
   async () => {
     const now = admin.firestore.Timestamp.fromMillis(1000);
-    const event = {clubId: "organizer-1", organizerId: "organizer-1",
+    const event = {organizerId: "organizer-1",
       status: "active", capacityLimit: 2, bookedCount: 0,
       constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}};
     const policy = deriveEventSeatPolicy(event);
@@ -835,7 +830,7 @@ test("ready Host import reserves full batch or writes no attendee or receipt",
 test("ready import rejects shared buyer phone without writing seats",
   async () => {
     const now = admin.firestore.Timestamp.fromMillis(1000);
-    const event = {clubId: "organizer-1", organizerId: "organizer-1",
+    const event = {organizerId: "organizer-1",
       status: "active", capacityLimit: 2, bookedCount: 0,
       constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}};
     const policy = deriveEventSeatPolicy(event);
@@ -883,7 +878,7 @@ test("pre-city import receipts replay but cannot acquire new city data",
   async () => {
     const now = admin.firestore.Timestamp.fromMillis(1000);
     const firestore = new FakeFirestore({
-      "events/event-1": {clubId: "organizer-1", organizerId: "organizer-1",
+      "events/event-1": {organizerId: "organizer-1",
         status: "active"},
       "organizers/organizer-1": {hostUserId: "host-1",
         ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
@@ -986,7 +981,6 @@ test("absolute attendance replays and preserves prior state", async () => {
   const now = admin.firestore.Timestamp.fromMillis(1_000);
   const firestore = new FakeFirestore({
     "events/event-1": {
-      clubId: "organizer-1",
       organizerId: "organizer-1",
       status: "active",
     },
@@ -1072,7 +1066,7 @@ test("absolute attendance replays and preserves prior state", async () => {
 test("ready Host attendance reserves and releases one canonical guest seat",
   async () => {
     const now = admin.firestore.Timestamp.fromMillis(1_000);
-    const event = {clubId: "organizer-1", organizerId: "organizer-1",
+    const event = {organizerId: "organizer-1",
       status: "active", capacityLimit: 1, checkedInCount: 0,
       constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}};
     const policy = deriveEventSeatPolicy(event);
@@ -1122,7 +1116,7 @@ test("ready Host attendance reserves and releases one canonical guest seat",
     }), deps);
     firestore.update("eventAttendees/attendee-1", {linkedUid: "user-1"});
     firestore.set("eventParticipations/event-1_user-1", {
-      eventId: "event-1", clubId: "organizer-1", uid: "user-1",
+      eventId: "event-1", organizerId: "organizer-1", uid: "user-1",
       status: "signedUp",
     });
     firestore.set(`eventSeatIdentityAliases/${seatIdentityAliasId(
@@ -1182,7 +1176,7 @@ test("roster import retries current event and manager authority before writes",
   async () => {
     for (const change of ["cancel", "revoke", "move"] as const) {
       const firestore = new FakeFirestore({
-        "events/event-1": {clubId: "organizer-1", organizerId: "organizer-1",
+        "events/event-1": {organizerId: "organizer-1",
           status: "active"},
         "organizers/organizer-1": {hostUserId: "host-1",
           ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
@@ -1225,7 +1219,7 @@ test("roster import retries current event and manager authority before writes",
 
 function sourceImportFixture() {
   const now = admin.firestore.Timestamp.fromMillis(1000);
-  const event = {clubId: "organizer-1", organizerId: "organizer-1",
+  const event = {organizerId: "organizer-1",
     status: "active", capacityLimit: 1, bookedCount: 0,
     constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}};
   const policy = deriveEventSeatPolicy(event);

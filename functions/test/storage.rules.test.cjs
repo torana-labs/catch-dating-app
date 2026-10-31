@@ -463,7 +463,6 @@ describe("storage.rules", () => {
       );
       await seedFirestore(["events", "event-1"], {
         organizerId: "organizer-1",
-        clubId: "organizer-1",
       });
 
       await assertSucceeds(
@@ -510,7 +509,6 @@ describe("storage.rules", () => {
       });
       await seedFirestore(["events", "event-1"], {
         organizerId: "organizer-1",
-        clubId: "organizer-1",
       });
       await seedStorageFile("users/runner-1/photos/0_123.jpg");
       await seedStorageFile("organizers/organizer-1/photos/0_123.jpg");

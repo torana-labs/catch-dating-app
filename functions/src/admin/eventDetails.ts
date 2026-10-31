@@ -3,7 +3,7 @@ import {onCall, CallableRequest, HttpsError} from
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {
-  ClubDocument,
+  OrganizerDocument,
   EventDocument,
   EventFormatSnapshot,
 } from "../shared/generated/firestoreAdminTypes";
@@ -91,7 +91,6 @@ export interface AdminEventDetailsSnapshot {
   hostPilotReview?: {realEvent: boolean; revision: number;
     reviewedAt: number} | null;
   eventId: string;
-  clubId: string;
   organizerId: string;
   organizerName: string | null;
   title: string;
@@ -135,7 +134,6 @@ export interface AdminEventDetailsSnapshot {
 
 export interface AdminEventListRow {
   eventId: string;
-  clubId: string;
   organizerId: string;
   organizerName: string | null;
   title: string;
@@ -203,7 +201,7 @@ export async function adminListEventDetailsHandler(
       searchTokens
     );
   }
-  const organizerId = data.organizerId ?? data.clubId;
+  const organizerId = data.organizerId;
   if (organizerId) query = query.where("organizerId", "==", organizerId);
   if (data.citySlug) {
     query = query.where("discoveryMarketId", "==", data.citySlug);
@@ -223,16 +221,16 @@ export async function adminListEventDetailsHandler(
     event: requireDoc<EventDocument>(doc, "EventDocument"),
   })).filter((row): row is {eventId: string;
     event: AdminRichEventDocument} => isAdminRichEvent(row.event));
-  const clubNames = await loadClubNames(
+  const organizerNames = await loadOrganizerNames(
     db,
-    events.map((row) => row.event.organizerId ?? row.event.clubId)
+    events.map((row) => row.event.organizerId)
   );
   const rows = events
     .map(({eventId, event}) =>
       publicEventListRow(
         eventId,
         event,
-        clubNames.get(event.organizerId ?? event.clubId) ?? null
+        organizerNames.get(event.organizerId) ?? null
       ))
     .filter((row) => eventListRowMatchesQuery(row, queryText))
     .sort((a, b) => compareEventRows(a, b, timeWindow))
@@ -269,14 +267,14 @@ export async function adminGetEventDetailsHandler(
   }
   const event = requireAdminRichEvent(
     requireDoc<EventDocument>(eventSnap, "EventDocument"));
-  const club = await loadClub(db, event.organizerId ?? event.clubId);
+  const organizer = await loadOrganizer(db, event.organizerId);
   const review = (await db.collection(HOST_PILOT_REVIEWS)
     .doc(data.eventId).get()).data() as
       HostPilotEventReviewDocument | undefined;
   const activation = (await db.collection(HOST_ACTIVATIONS)
-    .doc(event.organizerId ?? event.clubId).get()).data();
+    .doc(event.organizerId).get()).data();
   return {
-    event: {...publicEventDetails(data.eventId, event, club?.name ?? null),
+    event: {...publicEventDetails(data.eventId, event, organizer?.name ?? null),
       hostActivation: activation ? {activatedAt: activation.activatedAt,
         eventId: activation.eventId} : null,
       hostPilotReview: review ? {realEvent: review.realEvent,
@@ -349,17 +347,17 @@ export async function adminUpdateEventDetailsHandler(
         "Cancelled events cannot be edited from admin details."
       );
     }
-    const clubRef = db.collection("organizers")
-      .doc(before.organizerId ?? before.clubId);
+    const organizerRef = db.collection("organizers")
+      .doc(before.organizerId);
     const selectedPilotEventsSnap =
       rawPatch.crossPathsDiscoveryEnabled === true ?
         await tx.get(db.collection("events")
           .where("crossPathsDiscoveryEnabled", "==", true)
           .limit(crossPathsPilotMaximumEvents + 1)) :
         null;
-    const clubSnap = await tx.get(clubRef);
-    const club = clubSnap.exists ?
-      requireDoc<ClubDocument>(clubSnap, "ClubDocument") :
+    const organizerSnap = await tx.get(organizerRef);
+    const organizer = organizerSnap.exists ?
+      requireDoc<OrganizerDocument>(organizerSnap, "OrganizerDocument") :
       null;
     if (rawPatch.crossPathsDiscoveryEnabled === true) {
       assertCrossPathsPilotEventCanBeEnabled({
@@ -374,14 +372,14 @@ export async function adminUpdateEventDetailsHandler(
     let reviewed: HostPilotEventReviewDocument | undefined;
     if (pilotReview) {
       const restriction = await tx.get(db.collection("salesPrivacyRestrictions")
-        .doc(before.organizerId ?? before.clubId));
+        .doc(before.organizerId));
       if (restriction.exists) {
         throw new HttpsError("failed-precondition",
           "This organiser is restricted for private Sales processing.");
       }
       try {
         reviewed = nextPilotReview({eventId: data.eventId,
-          organizerId: before.organizerId ?? before.clubId,
+          organizerId: before.organizerId,
           realEvent: pilotReview.realEvent,
           expectedRevision: pilotReview.expectedRevision,
           current: previousReview?.data() as
@@ -399,13 +397,13 @@ export async function adminUpdateEventDetailsHandler(
       ...patch,
       ...eventDiscoveryProjection({
         event: nextEvent,
-        clubLocation: club?.location,
-        clubLocationMarketId: club?.locationMarketId,
+        organizerLocation: organizer?.location,
+        organizerLocationMarketId: organizer?.locationMarketId,
       }),
       adminSearch: buildEventAdminSearchProjection(
         data.eventId,
         nextEvent,
-        club,
+        organizer,
         deps.serverTimestamp(),
         "adminUpdateEventDetails"
       ),
@@ -417,7 +415,7 @@ export async function adminUpdateEventDetailsHandler(
       targetPath: eventRef.path,
       request,
       before: {
-        event: publicEventDetails(data.eventId, before, club?.name ?? null),
+        event: publicEventDetails(data.eventId, before, organizer?.name ?? null),
       },
       after: {
         eventId: data.eventId,
@@ -447,9 +445,7 @@ function publicEventListRow(
 ): AdminEventListRow {
   return {
     eventId,
-    clubId: event.clubId,
-
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     organizerName,
     title: eventTitleLabel(event),
     activityKind: event.eventFormat.activityKind,
@@ -484,9 +480,7 @@ function publicEventDetails(
 ): AdminEventDetailsSnapshot {
   return {
     eventId,
-    clubId: event.clubId,
-
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     organizerName,
     title: eventTitleLabel(event),
     startTime: timestampIso(event.startTime),
@@ -641,34 +635,34 @@ function copyDefined(
 /**
  * Loads a club document if present.
  * @param {FirebaseFirestore.Firestore} db Firestore database.
- * @param {string} clubId Club id.
- * @return {Promise<ClubDocument | null>} Club or null.
+ * @param {string} organizerId Club id.
+ * @return {Promise<OrganizerDocument | null>} Club or null.
  */
-async function loadClub(
+async function loadOrganizer(
   db: FirebaseFirestore.Firestore,
-  clubId: string
-): Promise<ClubDocument | null> {
-  const snap = await db.collection("organizers").doc(clubId).get();
-  return snap.exists ? requireDoc<ClubDocument>(snap, "ClubDocument") : null;
+  organizerId: string
+): Promise<OrganizerDocument | null> {
+  const snap = await db.collection("organizers").doc(organizerId).get();
+  return snap.exists ? requireDoc<OrganizerDocument>(snap, "OrganizerDocument") : null;
 }
 
 /**
  * Loads organizer names for list rows.
  * @param {FirebaseFirestore.Firestore} db Firestore database.
- * @param {string[]} clubIds Club ids.
+ * @param {string[]} organizerIds Club ids.
  * @return {Promise<Map<string, string>>} Club id to name.
  */
-async function loadClubNames(
+async function loadOrganizerNames(
   db: FirebaseFirestore.Firestore,
-  clubIds: string[]
+  organizerIds: string[]
 ): Promise<Map<string, string>> {
-  const uniqueIds = Array.from(new Set(clubIds.filter(Boolean))).slice(0, 100);
-  const entries = await Promise.all(uniqueIds.map(async (clubId) => {
-    const club = await loadClub(db, clubId);
-    return [clubId, club?.name ?? null] as const;
+  const uniqueIds = Array.from(new Set(organizerIds.filter(Boolean))).slice(0, 100);
+  const entries = await Promise.all(uniqueIds.map(async (organizerId) => {
+    const organizer = await loadOrganizer(db, organizerId);
+    return [organizerId, organizer?.name ?? null] as const;
   }));
-  return new Map(entries.flatMap(([clubId, name]) =>
-    name ? [[clubId, name] as const] : []
+  return new Map(entries.flatMap(([organizerId, name]) =>
+    name ? [[organizerId, name] as const] : []
   ));
 }
 
@@ -695,7 +689,6 @@ function normalizeAdminListEventDetailsPayload(value: unknown): unknown {
   return {
     ...data,
     query: normalizeNullableString(data.query),
-    clubId: normalizeNullableString(data.clubId),
     organizerId: normalizeNullableString(data.organizerId),
     citySlug: normalizeNullableMarketId(data.citySlug),
     citySlugs: normalizeCityMarketIds(data.citySlugs),
@@ -922,7 +915,7 @@ function eventListRowMatchesQuery(
   if (!query) return true;
   const haystack = [
     row.eventId,
-    row.clubId,
+    row.organizerId,
     row.organizerName,
     row.title,
     row.activityKind,

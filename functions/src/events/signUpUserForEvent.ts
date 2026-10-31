@@ -336,7 +336,7 @@ export async function signUpUserForEvent(
               "Guest seat identity needs reconciliation.");
           }
           guestLink = await prepareVerifiedUidGuestSeatLink({db, tx,
-            eventId, organizerId: event.organizerId ?? event.clubId,
+            eventId, organizerId: event.organizerId,
             attendeeId: matchingAttendees.docs[0].id,
             uid: userId, authTokenPhoneNumber: currentAuthPhone,
             now: admin.firestore.Timestamp.now()});
@@ -372,7 +372,7 @@ export async function signUpUserForEvent(
     } : reservedRoster;
     const membership = requiresCommunityMembership(policy) ?
       await readCommunityMembership({db, tx,
-        organizerId: event.organizerId ?? event.clubId, uid: userId}) : null;
+        organizerId: event.organizerId, uid: userId}) : null;
     assertPolicyAllowsSignup({
       policy,
       cohortId,
@@ -387,9 +387,7 @@ export async function signUpUserForEvent(
       tx, db, {
         uid: userId,
         eventId,
-        clubId: event.clubId,
-
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
         startTimeMillis: event.startTime.toMillis(),
         endTimeMillis: configuredEvent.endTime.toMillis(),
       });
@@ -397,7 +395,7 @@ export async function signUpUserForEvent(
     let seatPreparation: FirestoreSeatPreparation | null = null;
     let applySeatIdentity: (() => void) | null = null;
     const pairSeat = pairHold ? await preparePairSeatTransition({db, tx,
-      event, eventId, organizerId: event.organizerId ?? event.clubId,
+      event, eventId, organizerId: event.organizerId,
       requesterUid: userId, holdId: options.crossPathsPairHoldId!,
       expiresAtMillis: pairHold.expiresAt.toMillis(), nowMillis: Date.now(),
       operation: "confirmTemporaryHold",
@@ -409,7 +407,7 @@ export async function signUpUserForEvent(
       }
       const subject = {kind: "verifiedUid" as const, uid: userId};
       const preparedIdentity = await prepareCatchUidSeatIdentity({db, tx,
-        eventId, organizerId: event.organizerId ?? event.clubId,
+        eventId, organizerId: event.organizerId,
         uid: userId, currentAuthPhoneNumber: currentAuthPhone});
       const identity = preparedIdentity.identity;
       applySeatIdentity = preparedIdentity.apply;
@@ -443,8 +441,8 @@ export async function signUpUserForEvent(
       cohortCounts: incrementCount(event.cohortCounts ?? {}, cohortId),
       ...eventDiscoveryProjection({
         event,
-        clubLocation: event.discoveryCityName,
-        clubLocationMarketId: event.discoveryMarketId,
+        organizerLocation: event.discoveryCityName,
+        organizerLocationMarketId: event.discoveryMarketId,
         bookedCount: nextBookedCount,
       }),
     };
@@ -481,9 +479,7 @@ export async function signUpUserForEvent(
       ...eventParticipationPatch({
         exists: participationSnap.exists,
         eventId,
-        clubId: event.clubId,
-
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
         uid: userId,
         status: "signedUp",
         genderAtSignup: gender,
@@ -491,7 +487,7 @@ export async function signUpUserForEvent(
         paymentId,
       }),
       ...(membership ? {communityMembershipAtSignup: {
-        membershipId: communityMembershipId(event.organizerId ?? event.clubId,
+        membershipId: communityMembershipId(event.organizerId,
           userId), revision: membership.revision,
         decisionId: membership.lastDecisionId,
       }} : existingParticipation?.communityMembershipAtSignup ? {
@@ -513,9 +509,7 @@ export async function signUpUserForEvent(
       body: notificationCopy.body,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       eventId,
-      clubId: event.clubId,
-
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
     });
     if (
       pairHold &&

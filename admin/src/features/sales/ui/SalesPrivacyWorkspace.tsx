@@ -94,8 +94,8 @@ function PrivacyEntry({actorUid, organizerId, organizerName, api}: {
       {matches.data?.length === 0 ? <EmptyState>No matching hosts.</EmptyState> :
         null}
       {matches.data?.length ? <ul>{matches.data.map((row) =>
-        <li key={row.clubId}><AdminButton disabled={selectionLocked}
-          onClick={() => setSelected({id: row.clubId, name: row.name})}>
+        <li key={row.organizerId}><AdminButton disabled={selectionLocked}
+          onClick={() => setSelected({id: row.organizerId, name: row.name})}>
           {row.name}{row.cityName ? ` · ${row.cityName}` : ""}
         </AdminButton></li>)}</ul> : null}
     </Panel> : null}

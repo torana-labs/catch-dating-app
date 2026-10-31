@@ -121,7 +121,7 @@ export async function createOrganizerHandler(
       tx,
       db,
       {
-        clubId: organizerId,
+        organizerId: organizerId,
         canonicalPath,
         slug: publicSlug,
         citySlug: market.slug,

@@ -251,7 +251,7 @@ class _HostTodayPersonalizedLayoutState
         case HostTodaySuggestedAction.startDressRehearsal:
           await context.pushNamed<void>(
             Routes.hostEventRehearsalStartScreen.name,
-            pathParameters: {'clubId': organizerId},
+            pathParameters: {'organizerId': organizerId},
             queryParameters: const {'source': 'custom'},
           );
           if (mounted &&
@@ -262,7 +262,7 @@ class _HostTodayPersonalizedLayoutState
         case HostTodaySuggestedAction.openOrganizerPage:
           context.goNamed(
             Routes.hostOrganizerScreen.name,
-            queryParameters: {'clubId': organizerId},
+            queryParameters: {'organizerId': organizerId},
           );
         case HostTodaySuggestedAction.managePayouts:
           if (!ref
@@ -272,7 +272,7 @@ class _HostTodayPersonalizedLayoutState
           }
           await context.pushNamed<void>(
             Routes.hostOrganizerPaymentsScreen.name,
-            queryParameters: {'clubId': organizerId},
+            queryParameters: {'organizerId': organizerId},
           );
       }
     } on Object catch (error) {

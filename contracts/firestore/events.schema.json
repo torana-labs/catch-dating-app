@@ -18,7 +18,7 @@
     "demoOpsCommand"
   ],
   "required": [
-    "clubId",
+    "organizerId",
     "startTime",
     "bookedCount",
     "checkedInCount",
@@ -36,10 +36,6 @@
       "minLength": 1,
       "maxLength": 120,
       "description": "Organizer-authored event name. Legacy documents may omit it and use the client-derived fallback title.",
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
       "x-catch-ownership": "callable-owned"
     },
     "organizerId": {
@@ -510,7 +506,7 @@
       },
       "else": {
         "required": [
-          "clubId",
+          "organizerId",
           "startTime",
           "endTime",
           "meetingPoint",

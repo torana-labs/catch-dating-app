@@ -11,9 +11,9 @@ import {
   UserCheck,
 } from "lucide-react";
 import type {
-  AdminClubClaimListRow,
-  AdminClubClaimRequestDetails,
-  ClubClaimDecision,
+  AdminOrganizerClaimListRow,
+  AdminOrganizerClaimRequestDetails,
+  OrganizerClaimDecision,
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
@@ -199,8 +199,8 @@ function OrganizerClaimTable({
   onSelect,
   rows,
 }: {
-  onSelect: (row: AdminClubClaimListRow) => void;
-  rows: AdminClubClaimListRow[];
+  onSelect: (row: AdminOrganizerClaimListRow) => void;
+  rows: AdminOrganizerClaimListRow[];
 }) {
   if (rows.length === 0) {
     return (
@@ -232,7 +232,7 @@ function OrganizerClaimTable({
                 <span>{row.requesterRole} · {row.contact ?? "no contact"}</span>
               </AdminRowTitle>
             </td>
-            <td>{row.clubId}</td>
+            <td>{row.organizerId}</td>
             <td>{row.proofCount} proof link{row.proofCount === 1 ? "" : "s"}</td>
             <td>{organizerDetailPanels.formatDateTime(row.createdAt)}</td>
             <td>
@@ -252,9 +252,9 @@ function OrganizerClaimEvidencePanel({
   isLoading,
   selected,
 }: {
-  details: AdminClubClaimRequestDetails | null;
+  details: AdminOrganizerClaimRequestDetails | null;
   isLoading: boolean;
-  selected: AdminClubClaimListRow | null;
+  selected: AdminOrganizerClaimListRow | null;
 }) {
   return (
     <AdminEditorPanel
@@ -276,11 +276,11 @@ function OrganizerClaimEvidencePanel({
               details.requesterProfile.profileComplete ? "complete" : "incomplete" :
               "missing"}
           />
-          <StateRow label="Organizer" value={details.club.name ?? details.clubId} />
-          <StateRow label="Claim state" value={details.club.claimState} />
-          <StateRow label="Ownership" value={details.club.ownershipState} />
-          <StateRow label="Current owner" value={details.club.ownerUserId} />
-          <StateRow label="Canonical path" value={details.club.canonicalPath} />
+          <StateRow label="Organizer" value={details.organizer.name ?? details.organizerId} />
+          <StateRow label="Claim state" value={details.organizer.claimState} />
+          <StateRow label="Ownership" value={details.organizer.ownershipState} />
+          <StateRow label="Current owner" value={details.organizer.ownerUserId} />
+          <StateRow label="Canonical path" value={details.organizer.canonicalPath} />
           <StateRow
             label="Proof links"
             value={<OrganizerClaimProofLinks urls={details.proofUrls} />}
@@ -390,8 +390,8 @@ function OrganizerClaimDecisionPanel({
 }
 
 function decisionLabel(
-  inFlight: ClubClaimDecision | null,
-  decision: ClubClaimDecision
+  inFlight: OrganizerClaimDecision | null,
+  decision: OrganizerClaimDecision
 ): string {
   if (inFlight !== decision) return decision === "approve" ? "Approve" : "Reject";
   return decision === "approve" ? "Approving" : "Rejecting";

@@ -186,12 +186,12 @@ String? notificationRoute(ActivityNotification notification) {
   final organizerId = notification.organizerId ?? notification.clubId;
   if (notification.eventId case final eventId? when organizerId != null) {
     return Routes.eventDetailScreen.path
-        .replaceFirst(':clubId', organizerId)
+        .replaceFirst(':organizerId', organizerId)
         .replaceFirst(':eventId', eventId);
   }
   if (organizerId != null) {
     return Routes.organizerDetailScreen.path.replaceFirst(
-      ':clubId',
+      ':organizerId',
       organizerId,
     );
   }

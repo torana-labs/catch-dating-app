@@ -154,8 +154,7 @@ export async function submitEventSuccessConversationGraphHandler(
     .doc(eventSuccessConversationGraphId(data.eventId, uid));
   await graphRef.set({
     eventId: data.eventId,
-    clubId: context.event.clubId,
-    organizerId: context.event.organizerId ?? context.event.clubId,
+    organizerId: context.event.organizerId,
     uid,
     status,
     selectedUids: data.skipped ? [] : selectedUids,

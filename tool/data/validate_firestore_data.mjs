@@ -4,9 +4,8 @@ import path from "node:path";
 import {createRequire} from "node:module";
 import {fileURLToPath} from "node:url";
 import {
-  validateClubDocument,
   validateOrganizerDocument,
-  validateClubMembershipDocument,
+  validateOrganizerMembershipDocument,
   validateEventDocument,
   validateSwipeDocument,
 } from "../contracts/generated/schema_contract_validators.mjs";
@@ -163,7 +162,7 @@ export async function loadCollections(firestore, maxDocs, {includeScheduleLocks 
     "publicProfiles",
     "clubs",
     "organizers",
-    "clubMemberships",
+    "organizerMemberships",
     "events",
     "eventParticipations",
     "savedEvents",
@@ -178,8 +177,8 @@ export async function loadCollections(firestore, maxDocs, {includeScheduleLocks 
       maxDocs
     );
   }
-  result.clubScheduleLocks = includeScheduleLocks ?
-    await readQuery(firestore.collection("clubScheduleLocks"), maxDocs) :
+  result.organizerScheduleLocks = includeScheduleLocks ?
+    await readQuery(firestore.collection("organizerScheduleLocks"), maxDocs) :
     [];
   result.userEventScheduleLocks = includeScheduleLocks ?
     await readQuery(firestore.collection("userEventScheduleLocks"), maxDocs) :
@@ -230,13 +229,13 @@ export function validateAll(collections, currentReport, {checkScheduleLocks = fa
   const users = byId(collections.users);
   const hostProfiles = byId(collections.hostProfiles);
   const publicProfiles = byId(collections.publicProfiles);
-  const clubs = byId([...collections.clubs, ...collections.organizers]);
+  const organizers = byId([...collections.organizers, ...collections.organizers]);
   const events = byId(collections.events);
   const eventParticipations = byId(collections.eventParticipations);
   const matches = byId(collections.matches);
 
   for (const [name, docs] of Object.entries(collections)) {
-    const enabled = !["clubScheduleLocks", "userEventScheduleLocks"].includes(name) ||
+    const enabled = !["organizerScheduleLocks", "userEventScheduleLocks"].includes(name) ||
       checkScheduleLocks;
     const limitReached = enabled && docs.length >= currentReport.maxDocs;
     currentReport.summary.collections[name] = {
@@ -262,13 +261,13 @@ export function validateAll(collections, currentReport, {checkScheduleLocks = fa
     collections.publicProfiles,
     currentReport
   );
-  for (const doc of [...collections.clubs, ...collections.organizers]) {
-    validateClub(doc, users, currentReport);
+  for (const doc of [...collections.organizers, ...collections.organizers]) {
+    validateOrganizer(doc, users, currentReport);
   }
-  for (const doc of collections.clubMemberships) {
-    validateClubMembership(doc, users, clubs, currentReport);
+  for (const doc of collections.organizerMemberships) {
+    validateOrganizerMembership(doc, users, organizers, currentReport);
   }
-  for (const doc of collections.events) validateRun(doc, clubs, currentReport);
+  for (const doc of collections.events) validateRun(doc, organizers, currentReport);
   for (const doc of collections.eventParticipations) {
     validateEventParticipation(doc, users, events, currentReport);
   }
@@ -276,7 +275,7 @@ export function validateAll(collections, currentReport, {checkScheduleLocks = fa
     validateSavedEvent(doc, users, events, currentReport);
   }
   for (const doc of collections.reviews) {
-    validateReview(doc, users, clubs, events, currentReport);
+    validateReview(doc, users, organizers, events, currentReport);
   }
   for (const doc of collections.outgoing) {
     validateSwipe(doc, users, publicProfiles, events, eventParticipations,
@@ -289,9 +288,9 @@ export function validateAll(collections, currentReport, {checkScheduleLocks = fa
   for (const doc of collections.onboarding_drafts) {
     validateOnboardingDraft(doc, currentReport);
   }
-  validateClubMemberCountAggregates(
-    collections.clubs,
-    collections.clubMemberships,
+  validateOrganizerMemberCountAggregates(
+    collections.organizers,
+    collections.organizerMemberships,
     currentReport
   );
   validateRunAggregateCounts(
@@ -299,8 +298,8 @@ export function validateAll(collections, currentReport, {checkScheduleLocks = fa
     collections.eventParticipations,
     currentReport
   );
-  validateClubHostProfileProjections(
-    collections.clubs,
+  validateOrganizerHostProfileProjections(
+    collections.organizers,
     hostProfiles,
     currentReport
   );
@@ -413,10 +412,10 @@ function validateSyntheticPublicProfileIdentities(publicProfiles, currentReport)
   }
 }
 
-function validateClub(doc, users, currentReport) {
+function validateOrganizer(doc, users, currentReport) {
   const data = doc.data;
   validateSchema(doc, doc.path.startsWith("organizers/") ?
-    validateOrganizerDocument : validateClubDocument, currentReport);
+    validateOrganizerDocument : validateOrganizerDocument, currentReport);
   requireTimestamp(data, "createdAt", doc, currentReport);
 
   if (Number.isInteger(data.memberCount) && data.memberCount < 0) {
@@ -442,20 +441,20 @@ function isSyntheticPublicProfile(doc) {
     doc.id.startsWith("demo_");
 }
 
-function validateClubMembership(doc, users, clubs, currentReport) {
+function validateOrganizerMembership(doc, users, organizers, currentReport) {
   const data = doc.data;
-  validateSchema(doc, validateClubMembershipDocument, currentReport);
+  validateSchema(doc, validateOrganizerMembershipDocument, currentReport);
   requireTimestamp(data, "joinedAt", doc, currentReport);
   for (const field of ["leftAt", "deletedAt"]) {
     if (data[field] != null) requireTimestamp(data, field, doc, currentReport);
   }
-  if (data.clubId && data.uid && doc.id !== `${data.clubId}_${data.uid}`) {
+  if (data.organizerId && data.uid && doc.id !== `${data.organizerId}_${data.uid}`) {
     issue(currentReport, "error", doc.path, "membership-id-mismatch",
-      "document id must be {clubId}_{uid}.");
+      "document id must be {organizerId}_{uid}.");
   }
-  if (data.clubId && !clubs.has(data.clubId)) {
+  if (data.organizerId && !organizers.has(data.organizerId)) {
     issue(currentReport, "warning", doc.path, "missing-membership-club",
-      `clubId references missing clubs/${data.clubId}.`);
+      `organizerId references missing clubs/${data.organizerId}.`);
   }
   if (data.uid && !users.has(data.uid)) {
     issue(currentReport, "warning", doc.path, "missing-membership-user",
@@ -463,7 +462,7 @@ function validateClubMembership(doc, users, clubs, currentReport) {
   }
 }
 
-function validateRun(doc, clubs, currentReport) {
+function validateRun(doc, organizers, currentReport) {
   const data = doc.data;
   validateSchema(doc, validateEventDocument, currentReport);
   requireTimestamp(data, "startTime", doc, currentReport);
@@ -476,9 +475,9 @@ function validateRun(doc, clubs, currentReport) {
     validateEventMeetingLocation(data, doc, currentReport);
   }
 
-  if (data.clubId && !clubs.has(data.clubId)) {
+  if (data.organizerId && !organizers.has(data.organizerId)) {
     issue(currentReport, "error", doc.path, "missing-club",
-      `clubId references missing clubs/${data.clubId}.`);
+      `organizerId references missing clubs/${data.organizerId}.`);
   }
   if (isTimestamp(data.startTime) && isTimestamp(data.endTime) &&
       data.endTime.toMillis() <= data.startTime.toMillis()) {
@@ -594,7 +593,7 @@ function storagePathFromFirebaseUrl(value) {
 function validateEventParticipation(doc, users, events, currentReport) {
   const data = doc.data;
   requireString(data, "eventId", doc, currentReport);
-  requireString(data, "clubId", doc, currentReport);
+  requireString(data, "organizerId", doc, currentReport);
   requireString(data, "uid", doc, currentReport);
   requireString(data, "status", doc, currentReport);
   requireTimestamp(data, "createdAt", doc, currentReport);
@@ -613,9 +612,9 @@ function validateEventParticipation(doc, users, events, currentReport) {
   if (!event) {
     issue(currentReport, "warning", doc.path, "missing-participation-event",
       `eventId references missing events/${data.eventId}.`);
-  } else if (event.data.clubId !== data.clubId) {
+  } else if (event.data.organizerId !== data.organizerId) {
     issue(currentReport, "error", doc.path, "participation-club-mismatch",
-      "clubId does not match the parent event.");
+      "organizerId does not match the parent event.");
   }
   if (data.status === "attended" &&
       event &&
@@ -650,9 +649,9 @@ function validateSavedEvent(doc, users, events, currentReport) {
   }
 }
 
-function validateReview(doc, users, clubs, events, currentReport) {
+function validateReview(doc, users, organizers, events, currentReport) {
   const data = doc.data;
-  requireString(data, "clubId", doc, currentReport);
+  requireString(data, "organizerId", doc, currentReport);
   requireString(data, "reviewerUserId", doc, currentReport);
   requireString(data, "reviewerName", doc, currentReport);
   requireInteger(data, "rating", doc, currentReport);
@@ -663,9 +662,9 @@ function validateReview(doc, users, clubs, events, currentReport) {
     issue(currentReport, "error", doc.path, "invalid-rating",
       "rating must be between 1 and 5.");
   }
-  if (data.clubId && !clubs.has(data.clubId)) {
+  if (data.organizerId && !organizers.has(data.organizerId)) {
     issue(currentReport, "error", doc.path, "missing-review-club",
-      `clubId references missing clubs/${data.clubId}.`);
+      `organizerId references missing clubs/${data.organizerId}.`);
   }
   if (!data.eventId) {
     issue(currentReport, "warning", doc.path, "legacy-review-id",
@@ -680,9 +679,9 @@ function validateReview(doc, users, clubs, events, currentReport) {
     if (!event) {
       issue(currentReport, "error", doc.path, "missing-review-event",
         `eventId references missing events/${data.eventId}.`);
-    } else if (event.data.clubId !== data.clubId) {
+    } else if (event.data.organizerId !== data.organizerId) {
       issue(currentReport, "error", doc.path, "review-club-mismatch",
-        "Review eventId belongs to a different clubId.");
+        "Review eventId belongs to a different organizerId.");
     }
   }
   const reviewer = users.get(data.reviewerUserId);
@@ -800,24 +799,24 @@ function validateOnboardingDraft(doc, currentReport) {
   requireInteger(doc.data, "step", doc, currentReport);
 }
 
-function validateClubMemberCountAggregates(
-  clubs,
-  clubMemberships,
+function validateOrganizerMemberCountAggregates(
+  organizers,
+  organizerMemberships,
   currentReport
 ) {
   const activeCounts = new Map();
-  for (const doc of clubMemberships) {
+  for (const doc of organizerMemberships) {
     const data = doc.data;
-    if (data.status !== "active" || typeof data.clubId !== "string") continue;
-    activeCounts.set(data.clubId, (activeCounts.get(data.clubId) ?? 0) + 1);
+    if (data.status !== "active" || typeof data.organizerId !== "string") continue;
+    activeCounts.set(data.organizerId, (activeCounts.get(data.organizerId) ?? 0) + 1);
   }
 
-  for (const doc of clubs) {
+  for (const doc of organizers) {
     const expected = activeCounts.get(doc.id) ?? 0;
     if (doc.data.memberCount !== expected) {
       issue(currentReport, "error", doc.path, "member-count-drift",
         `memberCount is ${doc.data.memberCount}, but active ` +
-        `clubMemberships count is ${expected}.`);
+        `organizerMemberships count is ${expected}.`);
     }
   }
 }
@@ -856,8 +855,8 @@ function validateRunAggregateCounts(events, eventParticipations, currentReport) 
   }
 }
 
-function validateClubHostProfileProjections(clubs, hostProfiles, currentReport) {
-  for (const doc of clubs) {
+function validateOrganizerHostProfileProjections(organizers, hostProfiles, currentReport) {
+  for (const doc of organizers) {
     const data = doc.data;
     if (typeof data.hostUserId !== "string" || data.hostUserId.length === 0) {
       continue;
@@ -921,7 +920,7 @@ function validateSchedulePolicy(collections, currentReport, {checkScheduleLocks}
     events: collections.events.filter((doc) => !unscheduled.has(doc.id)),
     participations: collections.eventParticipations.filter((doc) =>
       !unscheduled.has(doc.data.eventId)),
-    clubScheduleLocks: collections.clubScheduleLocks,
+    organizerScheduleLocks: collections.organizerScheduleLocks,
     userEventScheduleLocks: collections.userEventScheduleLocks,
     checkLocks: checkScheduleLocks,
   });

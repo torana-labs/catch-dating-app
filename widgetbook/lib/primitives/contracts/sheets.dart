@@ -381,7 +381,7 @@ Widget catchDockSurfaceContractStates(BuildContext context) {
 )
 Widget organizerDetailDockContractStates(BuildContext context) {
   return WidgetbookContractFrame(
-    title: 'ClubDetailDock',
+    title: 'OrganizerDetailDock',
     contractId: 'catch.club_dock',
     states: const [
       'guest',

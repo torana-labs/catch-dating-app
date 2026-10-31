@@ -105,7 +105,7 @@ class _HostOrganizerInsightsSectionState
                 widget.onOpenEventDefaults ??
                 () => context.pushNamed(
                   Routes.hostOrganizerEventDefaultsScreen.name,
-                  queryParameters: {'clubId': widget.organizer.id},
+                  queryParameters: {'organizerId': widget.organizer.id},
                 ),
           ),
         ),
@@ -130,7 +130,7 @@ class _HostOrganizerInsightsSectionState
   void _openEventReport(String eventId) {
     context.pushNamed(
       Routes.hostAppEventManageScreen.name,
-      pathParameters: {'clubId': widget.organizer.id, 'eventId': eventId},
+      pathParameters: {'organizerId': widget.organizer.id, 'eventId': eventId},
       queryParameters: const {'section': 'report'},
     );
   }

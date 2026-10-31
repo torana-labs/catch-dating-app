@@ -118,8 +118,6 @@
     "lastVerifiedSource": {
       "type": "string",
       "enum": [
-        "adminUpdateClubDetails",
-        "adminSetClubIndexStatus",
         "adminUpdateOrganizerDetails",
         "adminSetOrganizerIndexStatus",
         "adminCreateOrganizerDraftFromCandidate",

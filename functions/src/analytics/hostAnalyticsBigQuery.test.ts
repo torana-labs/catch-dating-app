@@ -10,7 +10,7 @@ import {buildHostAnalyticsFromRecords, resolveAnalyticsRange} from
 import type {BigQueryClient} from "../shared/bigQuery";
 
 const range = {startDate: "2026-06-01", endDate: "2026-06-30"};
-const scope = {clubIds: ["org"], eventId: null};
+const scope = {organizerIds: ["org"], eventId: null};
 function clientFor(rows: Array<Record<string, unknown>>): BigQueryClient {
   return {
     async query<T>() {
@@ -24,7 +24,7 @@ test("optional booking clicks remain unknown " +
   "for absent/null warehouse data", async () => {
   for (const value of [null, undefined]) {
     const source = new BigQueryHostAnalyticsSource(clientFor([{
-      date: "2026-06-18", clubId: "org", eventId: null,
+      date: "2026-06-18", organizerId: "org", eventId: null,
       outboundBookingClicks: value, bookedCount: null, listingViews: "12",
     }]), "project.dataset.mart");
     const rows = await source.loadRows(range, scope);
@@ -33,7 +33,7 @@ test("optional booking clicks remain unknown " +
     assert.equal(rows[0].listingViews, 12);
     const now = new Date("2026-06-18T12:00:00Z");
     const report = buildHostAnalyticsFromRecords(
-      {clubs: [], events: [], martRows: rows},
+      {organizers: [], events: [], martRows: rows},
       resolveAnalyticsRange({rangePreset: "30d"}, now), now);
     assert.equal(report.summaryCards.find((card) =>
       card.id === "outboundBookingClicks")?.status, "missing");
@@ -61,7 +61,7 @@ test("optional-column SQL serializes the row " +
   assert.ok(sql.includes("ELSE NULL END AS outboundBookingClicks"));
   assert.doesNotMatch(sql, /SUM\(outbound_booking_clicks\)/);
   assert.ok(sql.includes("SUM(booked_count) AS bookedCount"));
-  assert.ok(sql.includes("club_id IN UNNEST(@clubIds)"));
+  assert.ok(sql.includes("club_id IN UNNEST(@organizerIds)"));
 });
 
 test("link clicks read the additive column as zero before it exists", () => {
@@ -77,16 +77,16 @@ test("owner link rows come from the link mart for the organizers in scope",
     const source = new BigQueryHostAnalyticsSource({
       async query<T>(sql: string, params: unknown) {
         queries.push({sql, params});
-        return [{clubId: "org", linkId: "tickets", trafficSource: "qr",
+        return [{organizerId: "org", linkId: "tickets", trafficSource: "qr",
           linkClicks: "3"}] as T[];
       },
       async insertRows() {},
     }, "project.dataset.mart", "project.dataset.links");
     assert.deepEqual(await source.loadLinkRows(range, ["org"]), [
-      {clubId: "org", linkId: "tickets", trafficSource: "qr", linkClicks: 3},
+      {organizerId: "org", linkId: "tickets", trafficSource: "qr", linkClicks: 3},
     ]);
     assert.ok(queries[0].sql.includes("FROM `project.dataset.links`"));
-    assert.ok(queries[0].sql.includes("club_id IN UNNEST(@clubIds)"));
+    assert.ok(queries[0].sql.includes("club_id IN UNNEST(@organizerIds)"));
     assert.deepEqual(await source.loadLinkRows(range, []), []);
     assert.equal(queries.length, 1);
     assert.match(hostAnalyticsLinkRowsSql("t"),

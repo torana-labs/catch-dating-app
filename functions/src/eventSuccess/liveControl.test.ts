@@ -210,15 +210,15 @@ test("revoked answer blocks publishing a prepared round", async () => {
   const consentPath = `eventAssignmentFeatureConsents/${
     assignmentFeatureConsentId(eventId, uid, featureId)}`;
   const store = new AudienceTestStore({
-    [`events/${eventId}`]: {organizerId: "org-1", clubId: "org-1"},
+    [`events/${eventId}`]: {organizerId: "org-1"},
     "organizers/org-1": {hostUserId: "host-1", hostUserIds: [],
       hostProfiles: []},
-    [`eventSuccessPlans/${eventId}`]: {eventId, clubId: "org-1",
+    [`eventSuccessPlans/${eventId}`]: {eventId, organizerId: "org-1",
       liveControlRevision: 4, assignmentDraftRevision: 1,
       publishedRotationRoundIndex: -1, assignmentFeatureRules: [rule],
       assignmentFeatureRevision: 1, assignmentFeatureConfigHash: "hash-1"},
     [`eventSuccessAssignmentDrafts/${eventId}_guided_rotations_${uid}`]: {
-      eventId, organizerId: "org-1", clubId: "org-1", uid,
+      eventId, organizerId: "org-1", uid,
       moduleId: "guided_rotations", roundIndex: 0,
       baseAssignmentRevision: 1,
       assignmentFeatureGuard: {revision: 1, configHash: "hash-1",

@@ -55,7 +55,7 @@ export function hasEventChatAdmission(eventId: string, organizerId: string,
   if (attendees.length > 1) return false;
   if (participation && (participation.eventId !== eventId ||
       participation.uid !== uid ||
-      (participation.organizerId ?? participation.clubId) !== organizerId ||
+      (participation.organizerId) !== organizerId ||
       !["signedUp", "attended"].includes(participation.status))) return false;
   const attendee = attendees[0];
   if (attendee && (attendee.eventId !== eventId ||

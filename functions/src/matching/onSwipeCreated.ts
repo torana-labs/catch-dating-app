@@ -144,7 +144,7 @@ export async function onSwipeCreatedHandler(
       const existingPairSnap = await matchRef.get();
       const existingPair = existingPairSnap.data() as
         MatchDocument | undefined;
-      if (existingPair?.conversationType === "clubHostInquiry") {
+      if (existingPair?.conversationType === "organizerHostInquiry") {
         // Some legacy Host inquiries used the same pair-only document id as a
         // dating match. Never convert that document (and its organizer chat
         // history) into a dating conversation. Use a separate deterministic
@@ -163,7 +163,7 @@ export async function onSwipeCreatedHandler(
             await resolvedMatchRef.update({
               eventIds: deps.arrayUnion(...sharedEventIds),
               conversationType: "match",
-              clubId: admin.firestore.FieldValue.delete(),
+              organizerId: admin.firestore.FieldValue.delete(),
             });
           }
         }
@@ -173,7 +173,7 @@ export async function onSwipeCreatedHandler(
         await matchRef.update({
           eventIds: deps.arrayUnion(...sharedEventIds),
           conversationType: "match",
-          clubId: admin.firestore.FieldValue.delete(),
+          organizerId: admin.firestore.FieldValue.delete(),
         });
       }
     } else {

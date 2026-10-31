@@ -181,7 +181,7 @@ export async function joinEventWaitlistHandler(
 
     assertPolicyAllowsMembership({policy,
       hasActiveCommunityMembership: await hasEventCommunityMembership({
-        db, tx, organizerId: event.organizerId ?? event.clubId, uid: userId,
+        db, tx, organizerId: event.organizerId, uid: userId,
         policy,
       }),
     });
@@ -189,9 +189,7 @@ export async function joinEventWaitlistHandler(
     await claimUserEventScheduleInTransaction(tx, db, {
       uid: userId,
       eventId,
-      clubId: event.clubId,
-
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       startTimeMillis: event.startTime.toMillis(),
       endTimeMillis: configuredEvent.endTime.toMillis(),
     });
@@ -207,9 +205,7 @@ export async function joinEventWaitlistHandler(
       ...eventParticipationPatch({
         exists: participationSnap.exists,
         eventId,
-        clubId: event.clubId,
-
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
         uid: userId,
         status: "waitlisted",
         genderAtSignup: user.gender,
@@ -321,9 +317,7 @@ export async function leaveEventWaitlistHandler(
     tx.set(participationRef, eventParticipationPatch({
       exists: participationSnap.exists,
       eventId,
-      clubId: event.clubId,
-
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       uid: userId,
       status: "cancelled",
     }), {merge: true});

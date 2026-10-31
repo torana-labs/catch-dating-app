@@ -46,8 +46,8 @@ Typed handoffs:
 
 - `hostCreateOrganizerScreen` — `/host/organizers/create-organizer`
 - `hostEventsScreen` — `/host/events`
-- `hostAppEventManageScreen` — `/host/organizers/:clubId/events/:eventId/manage`
-- `hostOrganizerDetailScreen` — `/host/organizers/:clubId`
+- `hostAppEventManageScreen` — `/host/organizers/:organizerId/events/:eventId/manage`
+- `hostOrganizerDetailScreen` — `/host/organizers/:organizerId`
 
 ## Key code owners
 

@@ -40,10 +40,10 @@ Owned routes:
 
 Typed handoffs:
 
-- `hostCreateEventScreen` — `/host/organizers/:clubId/create-event`
-- `hostCreateProgramScreen` — `/host/organizers/:clubId/create-program`
-- `hostAppEventManageScreen` — `/host/organizers/:clubId/events/:eventId/manage`
-- `hostAppEventDetailScreen` — `/host/organizers/:clubId/events/:eventId`
+- `hostCreateEventScreen` — `/host/organizers/:organizerId/create-event`
+- `hostCreateProgramScreen` — `/host/organizers/:organizerId/create-program`
+- `hostAppEventManageScreen` — `/host/organizers/:organizerId/events/:eventId/manage`
+- `hostAppEventDetailScreen` — `/host/organizers/:organizerId/events/:eventId`
 - `hostProgramWorkspaceScreen` — `/host/programs/:programId`
 
 ## Key code owners

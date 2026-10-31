@@ -305,7 +305,6 @@ export function buildSuvbotWorldPlan(
         doc: {
           ...marker,
           eventId: eventDocId,
-          clubId: ids.organizer,
           organizerId: ids.organizer,
           uid,
           status: testerAttends ? "attended" : "signedUp",
@@ -558,7 +557,6 @@ function castParticipationDoc(params: {
   return {
     ...params.marker,
     eventId: params.eventDocId,
-    clubId: params.organizerId,
     organizerId: params.organizerId,
     uid: params.uid,
     status: cancelled ? "cancelled" : checkedIn ? "attended" : "signedUp",
@@ -627,7 +625,6 @@ function worldEventDoc(params: {
     ...params.marker,
     name: event.name,
     publicationState: "published",
-    clubId: params.organizerId,
     organizerId: params.organizerId,
     eventOrigin: {
       mode: "catchNative",
@@ -690,8 +687,8 @@ function worldEventDoc(params: {
     ...base,
     ...eventDiscoveryProjection({
       event: base as unknown as EventDocument,
-      clubLocation: params.market.marketId,
-      clubLocationMarketId: params.market.marketId,
+      organizerLocation: params.market.marketId,
+      organizerLocationMarketId: params.market.marketId,
       bookedCount: booked.length,
     }),
   };
@@ -886,7 +883,7 @@ function castUserDoc(params: {
     prefsMessages: true,
     prefsEventReminders: true,
     prefsRunStatusUpdates: true,
-    prefsClubUpdates: true,
+    prefsOrganizerUpdates: true,
     prefsWeeklyDigest: false,
     prefsShowOnMap: false,
   };

@@ -59,9 +59,9 @@ export function publicEventAuthorized(id: unknown, raw: unknown): boolean {
   if (!publicDocumentId(id) || !data || synthetic(data) ||
       data.publicationState !== "published" ||
       data.status !== "active") return false;
-  const organizerId = data.organizerId ?? data.clubId;
+  const organizerId = data.organizerId;
   return publicDocumentId(organizerId) &&
-    !(data.organizerId && data.clubId && data.organizerId !== data.clubId);
+    !(data.organizerId && data.organizerId !== data.organizerId);
 }
 
 /** Public links must not carry embedded credentials or active schemes. */

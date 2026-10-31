@@ -35,7 +35,7 @@ const stamp = (at: number) => ({_seconds: Math.floor(at / 1000),
 export async function seedJoiningProgress(db: Firestore,
   context: ProgressContext, now: number, endAt: number) {
   const event = {...fixture("event_doc"), organizerId: context.organizerId,
-    clubId: context.organizerId, name: "Friday social",
+    name: "Friday social",
     startTime: stamp(now - 1000), endTime: stamp(endAt),
     eventFormat: {version: 1, activityKind: "barCrawl",
       interactionModel: "freeFormMixer"},
@@ -45,12 +45,11 @@ export async function seedJoiningProgress(db: Firestore,
         longitude: 75.8}}))};
   const schema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
-  const organizer = {...Object.fromEntries(Object.entries(fixture("club_doc"))
+  const organizer = {...Object.fromEntries(Object.entries(fixture("organizer_doc"))
     .filter(([key]) => key in schema.properties)), followerCount: 12,
   organizerPhotos: [], organizerType: "community"};
   const plan = {...fixture("event_success_plan_doc"),
-    eventId: context.eventId, clubId: context.organizerId,
-    organizerId: context.organizerId, status: "live"};
+    eventId: context.eventId, organizerId: context.organizerId, status: "live"};
   await db.runTransaction(async (tx) => {
     for (const [collection, id, value] of [
       ["events", context.eventId, event],

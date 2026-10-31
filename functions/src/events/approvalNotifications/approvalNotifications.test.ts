@@ -43,7 +43,6 @@ async function fixture() {
   for (const [path, value] of app.store.rows) db.write(path, value);
   db.write(`events/${eventId}`, {
     ...event,
-    clubId: org,
     organizerId: org,
     publicationState: "published",
   });

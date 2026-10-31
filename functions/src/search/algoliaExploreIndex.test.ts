@@ -1,16 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  buildClubSearchRecord,
+  buildOrganizerSearchRecord,
   buildEventSearchRecord,
-  clubSearchIndexSettings,
+  organizerSearchIndexSettings,
   eventSearchIndexSettings,
   syncAlgoliaEventIndexHandler,
 } from "./algoliaExploreIndex.js";
 import type {
-  ClubDocument,
-  EventDocument,
   OrganizerDocument,
+  EventDocument,
 } from "../shared/generated/firestoreAdminTypes.js";
 
 /**
@@ -27,10 +26,10 @@ function timestamp(iso: string) {
 
 /**
  * Builds a complete club document for search indexing tests.
- * @param {Partial<ClubDocument>} overrides Field overrides.
- * @return {ClubDocument} Club document.
+ * @param {Partial<OrganizerDocument>} overrides Field overrides.
+ * @return {OrganizerDocument} Club document.
  */
-function club(overrides: Partial<ClubDocument> = {}): ClubDocument {
+function organizer(overrides: Partial<OrganizerDocument> = {}): OrganizerDocument {
   return {
     name: "Saket Social Runners",
     description: "Run and coffee",
@@ -72,7 +71,7 @@ function organizer(
   overrides: Partial<OrganizerDocument> = {}
 ): OrganizerDocument {
   return {
-    ...club(),
+    ...organizer(),
     organizerType: "club",
     organizerPhotos: [],
     followerCount: 12,
@@ -87,7 +86,6 @@ function organizer(
  */
 function event(overrides: Partial<EventDocument> = {}): EventDocument {
   return {
-    clubId: "club-1",
     organizerId: "club-1",
     startTime: timestamp("2026-05-30T01:30:00.000Z"),
     endTime: timestamp("2026-05-30T02:30:00.000Z"),
@@ -139,8 +137,8 @@ function event(overrides: Partial<EventDocument> = {}): EventDocument {
   };
 }
 
-test("buildClubSearchRecord normalizes city facets", () => {
-  const record = buildClubSearchRecord("club-1", club());
+test("buildOrganizerSearchRecord normalizes city facets", () => {
+  const record = buildOrganizerSearchRecord("club-1", organizer());
 
   assert.equal(record?.objectID, "club-1");
   assert.equal(record?.location, "Indore");
@@ -149,9 +147,9 @@ test("buildClubSearchRecord normalizes city facets", () => {
   assert.equal(record?.memberCount, 12);
 });
 
-test("buildClubSearchRecord omits archived clubs", () => {
+test("buildOrganizerSearchRecord omits archived clubs", () => {
   assert.equal(
-    buildClubSearchRecord("club-1", club({archived: true})),
+    buildOrganizerSearchRecord("club-1", organizer({archived: true})),
     null
   );
 });
@@ -160,7 +158,7 @@ test("buildEventSearchRecord uses the organizer city and event time", () => {
   const record = buildEventSearchRecord("event-1", event(), organizer());
 
   assert.equal(record?.objectID, "event-1");
-  assert.equal(record?.clubName, "Saket Social Runners");
+  assert.equal(record?.organizerName, "Saket Social Runners");
   assert.equal(record?.discoveryCityName, "indore");
   assert.equal(record?.discoveryMarketId, "in-mp-indore");
   assert.equal(record?.startTimeEpoch, 1780104600);
@@ -189,7 +187,7 @@ test("private and malformed setup events never enter a visible organizer index",
   });
 
 test("index settings expose required filters", () => {
-  assert.deepEqual(clubSearchIndexSettings().attributesForFaceting, [
+  assert.deepEqual(organizerSearchIndexSettings().attributesForFaceting, [
     "filterOnly(locationMarketId)",
     "filterOnly(status)",
     "filterOnly(archived)",
@@ -197,7 +195,7 @@ test("index settings expose required filters", () => {
   assert.deepEqual(eventSearchIndexSettings().attributesForFaceting, [
     "filterOnly(discoveryMarketId)",
     "filterOnly(status)",
-    "filterOnly(clubId)",
+    "filterOnly(organizerId)",
   ]);
 });
 

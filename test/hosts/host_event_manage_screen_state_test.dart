@@ -122,7 +122,7 @@ void main() {
 
     expect(edit.destination, HostEventManageActionDestination.editEventRoute);
     expect(edit.pathParameters, {
-      'clubId': 'club-action',
+      'organizerId': 'club-action',
       'eventId': 'event-action',
     });
     expect(edit.event, event);

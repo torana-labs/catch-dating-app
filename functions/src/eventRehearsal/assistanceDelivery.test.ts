@@ -28,7 +28,7 @@ import {BRAND} from "../shared/generated/brand";
 
 function organizer(): OrganizerDocument {
   const fixture = JSON.parse(readFileSync(
-    "../contracts/fixtures/valid/club_doc.json", "utf8"));
+    "../contracts/fixtures/valid/organizer_doc.json", "utf8"));
   const schema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
   return {...Object.fromEntries(Object.entries(fixture).filter(([k]) =>
@@ -324,7 +324,7 @@ test("Firestore fences practice handoffs, retries, replies and reset", {
   const db = getEmulatorFirestore(); const id = randomUUID();
   const session = practiceSession();
   session.organizerId = "practice-delivery-" + id;
-  session.clubId = session.organizerId;
+  session.organizerId = session.organizerId;
   session.publicRehearsalId = "public-" + id;
   const sessionRef = db.collection("eventRehearsals").doc(id);
   const actors = buildRehearsalActors(id, 2, 1, session.virtualNow);

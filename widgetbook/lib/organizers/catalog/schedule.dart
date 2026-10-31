@@ -35,7 +35,7 @@ final _sameDayScheduleEvents = [
 )
 Widget organizerScheduleSectionStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubScheduleSection',
+    title: 'OrganizerScheduleSection',
     catalogId: 'section.club.schedule',
     children: [
       WidgetbookPageStateCard(

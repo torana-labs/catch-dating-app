@@ -13,7 +13,6 @@ export interface FcmParams {
   type: string;
   matchId?: string;
   eventId?: string;
-  clubId?: string;
   organizerId?: string;
   postId?: string;
   invitationId?: string;
@@ -36,7 +35,7 @@ export type ActivityNotificationType =
   | "waitlistOfferExpired"
   | "eventCancelled"
   | "eventUpdated"
-  | "clubUpdate"
+  | "organizerUpdate"
   | "organizerUpdate"
   | "formResponse"
   | "crossPathsInvitation"
@@ -53,7 +52,6 @@ export interface ActivityNotificationParams {
   createdAt: FirebaseFirestore.Timestamp | FirebaseFirestore.FieldValue;
   matchId?: string;
   eventId?: string;
-  clubId?: string;
   organizerId?: string;
   postId?: string;
   invitationId?: string;
@@ -71,7 +69,7 @@ export type NotificationPreference =
   | "messages"
   | "eventReminders"
   | "eventStatusUpdates"
-  | "clubUpdates"
+  | "organizerUpdates"
   | "crossPathsInvitations";
 
 export interface NotificationPreferenceDocument {
@@ -79,7 +77,7 @@ export interface NotificationPreferenceDocument {
   prefsMessages?: boolean;
   prefsEventReminders?: boolean;
   prefsRunStatusUpdates?: boolean;
-  prefsClubUpdates?: boolean;
+  prefsOrganizerUpdates?: boolean;
   prefsCrossPathsInvitations?: boolean;
 }
 
@@ -107,8 +105,8 @@ export function allowsPushPreference(
     return user.prefsEventReminders !== false;
   case "eventStatusUpdates":
     return user.prefsRunStatusUpdates !== false;
-  case "clubUpdates":
-    return user.prefsClubUpdates !== false;
+  case "organizerUpdates":
+    return user.prefsOrganizerUpdates !== false;
   case "crossPathsInvitations":
     return user.prefsCrossPathsInvitations === true;
   }
@@ -150,7 +148,6 @@ export function buildFcmMessage(params: FcmParams): admin.messaging.Message {
       type: params.type,
       matchId: params.matchId,
       eventId: params.eventId,
-      clubId: params.clubId,
       organizerId: params.organizerId,
       postId: params.postId,
       invitationId: params.invitationId,
@@ -362,7 +359,6 @@ function activityNotificationData(
     ...compactStringMap({
       matchId: params.matchId,
       eventId: params.eventId,
-      clubId: params.clubId,
       organizerId: params.organizerId,
       postId: params.postId,
       invitationId: params.invitationId,

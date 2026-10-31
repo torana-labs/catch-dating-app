@@ -1340,7 +1340,7 @@ function rotationEvent(
 
 function configuredEventFields(): FakeData {
   return {
-    clubId: "club-1",
+    organizerId: "club-1",
     startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
     endTime: fakeTimestamp("2026-05-21T09:00:00.000Z"),
     meetingPoint: "Court entrance",

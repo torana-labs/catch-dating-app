@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/club_memberships.schema.json",
+  "title": "OrganizerMembershipDocument",
+  "description": "Canonical club membership edge stored at organizerMemberships/{membershipId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerMemberships",
+  "x-firestore-path": "organizerMemberships/{membershipId}",
+  "x-document-id-field": "id",
+  "x-owner": "club membership callables; parent member count is trigger-owned",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "organizerId",
+    "uid",
+    "role",
+    "status",
+    "pushNotificationsEnabled",
+    "joinedAt",
+    "leftAt",
+    "deletedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "role": {
+      "$ref": "../shared/event_common.schema.json#/definitions/organizerMembershipRole",
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "$ref": "../shared/event_common.schema.json#/definitions/organizerMembershipStatus",
+      "x-catch-ownership": "callable-owned"
+    },
+    "pushNotificationsEnabled": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "joinedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "leftAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "deletedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    }
+  }
+}

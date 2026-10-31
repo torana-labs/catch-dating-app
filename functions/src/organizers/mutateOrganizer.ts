@@ -95,7 +95,7 @@ export async function updateOrganizerHandler(
         tx,
         db,
         {
-          clubId: data.organizerId,
+          organizerId: data.organizerId,
           canonicalPath: route.canonicalPath,
           slug: route.slug,
           citySlug: route.citySlug,

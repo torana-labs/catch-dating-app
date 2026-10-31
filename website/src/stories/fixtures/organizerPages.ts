@@ -58,12 +58,12 @@ function review(id: string, name: string, rating: number, days: number, comment:
   };
 }
 
-const demo = hostListings.find((listing) => listing.listingVariant === "appCreatedClub") ?? hostListings[0];
+const demo = hostListings.find((listing) => listing.listingVariant === "appCreatedOrganizer") ?? hostListings[0];
 const unclaimedDemo = hostListings.find((listing) => listing.listingVariant === "unclaimedScraped") ?? hostListings[0];
 
 /** The listing a page story routes and tracks with; its id matches the page's. */
 export function organizerStoryListing(page: OrganizerPageRecord): HostListing {
-  const base = page.profile.listingVariant === "appCreatedClub" ? demo : unclaimedDemo;
+  const base = page.profile.listingVariant === "appCreatedOrganizer" ? demo : unclaimedDemo;
   return {...base, id: page.organizerId, name: page.identity.name, slug: page.path.split("/")[2] ?? base.slug,
     path: page.path, legacyPaths: [], city: page.identity.city, citySlug: page.identity.citySlug, headline: page.identity.headline,
     description: page.identity.description, facts: page.profile.facts, sources: page.profile.sources};
@@ -126,7 +126,7 @@ export const claimedOrganizerPage: OrganizerPageRecord = {
   claim: {state: "verified", claimable: false, href: "/claim/lantern-lane-runners/", label: "Claimed"},
   capabilities,
   profile: {
-    listingVariant: "appCreatedClub",
+    listingVariant: "appCreatedOrganizer",
     facts: [
       {label: "Location", value: "Bandra West, Mumbai"},
       {label: "When", value: "Sundays 6:30 AM, Wednesdays 7:00 PM"},

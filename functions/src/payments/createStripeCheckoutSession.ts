@@ -152,9 +152,7 @@ export async function createStripeCheckoutSessionHandler(
   await assertNoUserEventScheduleConflict(db, {
     uid,
     eventId,
-    clubId: event.clubId,
-
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     startTimeMillis: event.startTime.toMillis(),
     endTimeMillis: event.endTime.toMillis(),
   });
@@ -197,7 +195,7 @@ export async function createStripeCheckoutSessionHandler(
     {excludeUid: uid}
   );
   const hasActiveCommunityMembership = await hasEventCommunityMembership({
-    db, organizerId: event.organizerId ?? event.clubId, uid, policy,
+    db, organizerId: event.organizerId, uid, policy,
   });
   // Pair holds are inventory, never community entitlement.
   assertPolicyAllowsMembership({policy, hasActiveCommunityMembership});
@@ -281,9 +279,7 @@ export async function createStripeCheckoutSessionHandler(
   const session = await deps.stripe().createCheckoutSession({
     paymentId: paymentRef.id,
     eventId,
-    clubId: event.clubId,
-
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     userId: uid,
     hostUserId,
     stripeAccountId: providerAccountId(hostAccount),

@@ -152,7 +152,7 @@ class FoundationTypographyTokens extends StatelessWidget {
                 CatchTextStyles.statCompact(context),
               ),
               _TypeSpec(
-                'clubMemberSeal',
+                'organizerMemberSeal',
                 '128',
                 CatchTextStyles.organizerMemberSeal(context),
               ),

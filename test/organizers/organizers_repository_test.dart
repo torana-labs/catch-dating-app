@@ -116,25 +116,25 @@ void main() {
       expect(decoded?.isAppDiscoverable, isFalse);
     });
 
-    test('watchClub emits the decoded club when the document exists', () async {
+    test('watchOrganizer emits the decoded club when the document exists', () async {
       final organizer = buildOrganizer();
       await _seedOrganizer(firestore, organizer);
 
       await expectLater(repository.watchOrganizer('club-1'), emits(organizer));
     });
 
-    test('watchClub emits null when the document is missing', () async {
+    test('watchOrganizer emits null when the document is missing', () async {
       await expectLater(repository.watchOrganizer('club-missing'), emits(null));
     });
 
-    test('fetchClub returns the decoded club when found', () async {
+    test('fetchOrganizer returns the decoded club when found', () async {
       final organizer = buildOrganizer();
       await _seedOrganizer(firestore, organizer);
 
       expect(await repository.fetchOrganizer('club-1'), organizer);
     });
 
-    test('fetchClub returns null when the document is missing', () async {
+    test('fetchOrganizer returns null when the document is missing', () async {
       expect(await repository.fetchOrganizer('club-missing'), isNull);
     });
 
@@ -154,7 +154,7 @@ void main() {
     });
 
     test(
-      'watchClubsByLocation filters by city and orders by createdAt',
+      'watchOrganizersByLocation filters by city and orders by createdAt',
       () async {
         final older = buildOrganizer(id: 'older', createdAt: DateTime(2025));
         final newer = buildOrganizer(
@@ -175,7 +175,7 @@ void main() {
       },
     );
 
-    test('watchClubsByLocation hides app-hidden organizer profiles', () async {
+    test('watchOrganizersByLocation hides app-hidden organizer profiles', () async {
       final visible = buildOrganizer(id: 'visible');
       final hidden = buildOrganizer(
         id: 'hidden',
@@ -191,7 +191,7 @@ void main() {
       );
     });
 
-    test('watchClubsByLocation hides synthetic organizer profiles', () async {
+    test('watchOrganizersByLocation hides synthetic organizer profiles', () async {
       final visible = buildOrganizer(id: 'visible');
       final synthetic = buildOrganizer(id: 'synthetic');
       await _seedOrganizer(firestore, visible);
@@ -207,7 +207,7 @@ void main() {
       );
     });
 
-    test('watchClubsByLocation caps the discovery stream', () async {
+    test('watchOrganizersByLocation caps the discovery stream', () async {
       for (var i = 0; i < ReadLimitPolicy.directoryPage + 5; i++) {
         await _seedOrganizer(
           firestore,
@@ -231,7 +231,7 @@ void main() {
       );
     });
 
-    test('watchClubsByLocationSortedByRating orders by rating', () async {
+    test('watchOrganizersByLocationSortedByRating orders by rating', () async {
       final lowerRated = buildOrganizer(
         id: 'club-low',
         location: 'in-dl-delhi-ncr',
@@ -251,7 +251,7 @@ void main() {
       );
     });
 
-    test('watchClubsByIds hides app-hidden search matches', () async {
+    test('watchOrganizersByIds hides app-hidden search matches', () async {
       final visible = buildOrganizer(id: 'visible');
       final hidden = buildOrganizer(
         id: 'hidden',
@@ -285,7 +285,7 @@ void main() {
       );
     });
 
-    test('watchClubsHostedBy filters by host user id', () async {
+    test('watchOrganizersHostedBy filters by host user id', () async {
       final hosted = buildOrganizer(id: 'hosted');
       final coHosted = buildOrganizer(
         id: 'co-hosted',
@@ -303,7 +303,7 @@ void main() {
       );
     });
 
-    test('watchClubsOwnedBy filters out co-hosted clubs', () async {
+    test('watchOrganizersOwnedBy filters out co-hosted clubs', () async {
       final owned = buildOrganizer(
         id: 'owned',
         ownerUserId: 'host-1',
@@ -324,7 +324,7 @@ void main() {
       );
     });
 
-    test('createClub delegates creation to the organizer callable', () async {
+    test('createOrganizer delegates creation to the organizer callable', () async {
       final callable =
           functions.httpsCallable('createOrganizer') as TestHttpsCallable;
       callable.resultData = {'organizerId': 'club-42'};
@@ -352,7 +352,7 @@ void main() {
       ]);
     });
 
-    test('createClub passes contact fields through to the callable', () async {
+    test('createOrganizer passes contact fields through to the callable', () async {
       final callable =
           functions.httpsCallable('createOrganizer') as TestHttpsCallable;
       callable.resultData = {'organizerId': 'club-42'};
@@ -382,7 +382,7 @@ void main() {
       );
     });
 
-    test('updateClub delegates field patches to the callable', () async {
+    test('updateOrganizer delegates field patches to the callable', () async {
       await repository.updateOrganizer(
         clubId: 'club-1',
         patch: UpdateOrganizerPatch(name: 'New Name', area: 'New Area'),
@@ -399,7 +399,7 @@ void main() {
     });
 
     test(
-      'updateClub delegates nullable media fields to the callable',
+      'updateOrganizer delegates nullable media fields to the callable',
       () async {
         await repository.updateOrganizer(
           clubId: 'club-1',
@@ -419,7 +419,7 @@ void main() {
       },
     );
 
-    test('joinClub delegates membership to the callable', () async {
+    test('joinOrganizer delegates membership to the callable', () async {
       await repository.joinOrganizer('club-1');
 
       expect(functions.callables['followOrganizer']?.calls, [
@@ -428,7 +428,7 @@ void main() {
       expect(functions.callables.containsKey('unfollowOrganizer'), isFalse);
     });
 
-    test('leaveClub delegates membership to the callable', () async {
+    test('leaveOrganizer delegates membership to the callable', () async {
       await repository.leaveOrganizer('club-1');
 
       expect(functions.callables['unfollowOrganizer']?.calls, [

@@ -72,27 +72,27 @@ export async function buildEventAdminSearchRepairPlan(
   options = {}
 ) {
   const serverTimestamp = options.serverTimestamp ?? "SERVER_TIMESTAMP";
-  const [eventsSnap, clubsSnap] = await Promise.all([
+  const [eventsSnap, organizersSnap] = await Promise.all([
     firestore.collection("events").get(),
     firestore.collection("clubs").get(),
   ]);
-  const clubs = new Map(
-    clubsSnap.docs.map((doc) => [doc.id, doc.data()])
+  const organizers = new Map(
+    organizersSnap.docs.map((doc) => [doc.id, doc.data()])
   );
   const repairs = [];
   const warnings = [];
 
   for (const eventDoc of eventsSnap.docs) {
     const event = eventDoc.data();
-    const clubId = typeof event.clubId === "string" ? event.clubId : null;
-    const club = clubId ? clubs.get(clubId) ?? null : null;
-    const warning = warningForEventClub(eventDoc, clubId, club);
+    const organizerId = typeof event.organizerId === "string" ? event.organizerId : null;
+    const organizer = organizerId ? organizers.get(organizerId) ?? null : null;
+    const warning = warningForEventOrganizer(eventDoc, organizerId, organizer);
     if (warning) warnings.push(warning);
 
     const expectedAdminSearch = buildEventAdminSearchProjection(
       eventDoc.id,
       event,
-      club,
+      organizer,
       serverTimestamp,
       "adminEventSearchBackfill"
     );
@@ -103,7 +103,7 @@ export async function buildEventAdminSearchRepairPlan(
       repairs.push({
         path: eventDoc.ref.path,
         eventId: eventDoc.id,
-        clubId,
+        organizerId,
         current,
         expected,
         patch: {adminSearch: expectedAdminSearch},
@@ -116,7 +116,7 @@ export async function buildEventAdminSearchRepairPlan(
     repairs,
     summary: {
       eventsScanned: eventsSnap.size,
-      clubsScanned: clubsSnap.size,
+      organizersScanned: organizersSnap.size,
       repairsNeeded: repairs.length,
       missingSearch: summaryRepairs.filter((repair) =>
         repair.current.tokens.length === 0
@@ -150,10 +150,10 @@ export function pickEventAdminSearchComparable(adminSearch) {
   return {tokens, sortKey};
 }
 
-function warningForEventClub(eventDoc, clubId, club) {
-  if (!clubId) return `${eventDoc.ref.path} has no clubId.`;
-  if (!club) {
-    return `${eventDoc.ref.path} references missing clubs/${clubId}.`;
+function warningForEventOrganizer(eventDoc, organizerId, organizer) {
+  if (!organizerId) return `${eventDoc.ref.path} has no organizerId.`;
+  if (!organizer) {
+    return `${eventDoc.ref.path} references missing clubs/${organizerId}.`;
   }
   return null;
 }
@@ -193,7 +193,7 @@ Options:
 function compactSummary(summary) {
   return {
     eventsScanned: summary.eventsScanned,
-    clubsScanned: summary.clubsScanned,
+    organizersScanned: summary.organizersScanned,
     repairsNeeded: summary.repairsNeeded,
     missingSearch: summary.missingSearch,
     staleSearch: summary.staleSearch,
@@ -205,7 +205,7 @@ function compactSummary(summary) {
 function printSummary(summary, {summaryOnly = false} = {}) {
   console.log("Event admin search repair plan");
   console.log(`Events scanned: ${summary.eventsScanned}`);
-  console.log(`Clubs scanned: ${summary.clubsScanned}`);
+  console.log(`Clubs scanned: ${summary.organizersScanned}`);
   console.log(`Repairs needed: ${summary.repairsNeeded}`);
   console.log(`Missing search projections: ${summary.missingSearch}`);
   console.log(`Stale search projections: ${summary.staleSearch}`);

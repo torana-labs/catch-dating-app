@@ -177,7 +177,7 @@ export class SmsPreferenceStore {
         "Event preference unavailable.");
     }
     const context = {mode: "live" as const, eventId: scope.eventId,
-      organizerId: event.organizerId ?? event.clubId};
+      organizerId: event.organizerId};
     const source = guestSourceFactsFromSnapshots(context, scope.attendeeId,
       eventSnap, attendeeSnap);
     const id = smsPermissionId(context, scope.attendeeId, this.senderId);

@@ -23,8 +23,7 @@ function setup() {
   const raw = JSON.parse(readFileSync(resolve(__dirname,
     "../../../../contracts/fixtures/valid/event_doc.json"), "utf8"));
   const start = 1_900_000_000_000;
-  const event = {...raw, organizerId: "org1", clubId: "org1",
-    startTime: Timestamp.fromMillis(start),
+  const event = {...raw, organizerId: "org1", startTime: Timestamp.fromMillis(start),
     endTime: Timestamp.fromMillis(start + 60 * 60_000),
     eventCityId: "in-mp-indore", eventMarketId: "in-mp-indore",
     eventLocalDate: "2030-03-17", eventLocalStartTime: "12:00",

@@ -36,7 +36,7 @@ export function attendanceEventAuthority(actorUid: string,
       !validateOrganizerDocument(organizer) ||
       (plan !== null && (!validateEventSuccessPlanDocument(plan) ||
         plan.eventId !== context.eventId ||
-        (plan.organizerId ?? plan.clubId) !== context.organizerId))) {
+        (plan.organizerId) !== context.organizerId))) {
     throw invalidSource();
   }
   if (!isOrganizerManager(organizer as unknown as OrganizerDocument,

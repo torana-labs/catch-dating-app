@@ -295,7 +295,7 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
       onChanged={(value) => setSelectedCanonicalId(value ?? "")} {...selectOptions([
         {value: "", label: "Choose a matching organizer"},
         ...controller.canonicalMatches.data.map((item) => ({
-          value: item.clubId,
+          value: item.organizerId,
           label: `${item.name} · ${item.cityName || "Location unknown"} · ${labelFor(item.publishStatus)}`,
         })),
       ])} /> : null}

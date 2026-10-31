@@ -15,7 +15,7 @@ import 'scope.dart';
 )
 Widget organizerDetailBodyComposition(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubDetailBody',
+    title: 'OrganizerDetailBody',
     catalogId: 'screen.club.detail.sections.body',
     children: [
       WidgetbookPageStateCard(
@@ -65,7 +65,7 @@ Widget organizerDetailBodyComposition(BuildContext context) {
 )
 Widget organizerDetailReadOnlyPreviewComposition(BuildContext context) {
   return const WidgetbookScrollCatalogFrame(
-    title: 'ClubDetailReadOnlyPreview',
+    title: 'OrganizerDetailReadOnlyPreview',
     catalogId: 'screen.club.detail.sections.read_only_preview',
     children: [
       WidgetbookPageStateCard(

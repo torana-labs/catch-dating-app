@@ -54,8 +54,7 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
           previews.push(preview);
         }});
     try {
-      await ref("events", eventId).set({organizerId, clubId: organizerId,
-        name: "Room", status: "active"});
+      await ref("events", eventId).set({organizerId, name: "Room", status: "active"});
       await ref("organizers", organizerId).set({ownerUserId: host,
         hostUserId: host, hostUserIds: [], hostProfiles: []});
       await ref("users", host).set({displayName: "Host",
@@ -66,8 +65,7 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
       await ref("users", person).collection("pushInstallations")
         .doc("synthetic").set({appRole: "consumer", token: "synthetic-token"});
       await ref("eventParticipations", `${eventId}_${person}`).set({
-        eventId, organizerId, clubId: organizerId,
-        uid: person, status: "signedUp"});
+        eventId, organizerId, uid: person, status: "signedUp"});
       await change(host, "open", 0);
       await change(host, "join", 0);
       await change(person, "join", 0);

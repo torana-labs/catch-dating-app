@@ -48,7 +48,7 @@ export function OverviewRouteScreen({
 
   return (
     <OverviewScreen
-      analyticsClubId={controller.analyticsClubId}
+      analyticsOrganizerId={controller.analyticsOrganizerId}
       analyticsEndDate={controller.analyticsEndDate}
       analyticsError={controller.analyticsError}
       analyticsEventId={controller.analyticsEventId}
@@ -64,7 +64,7 @@ export function OverviewRouteScreen({
       overview={controller.overview}
       overviewError={controller.overviewError}
       overviewLoadedAt={controller.overviewLoadedAt}
-      onAnalyticsClubIdChange={controller.setAnalyticsClubId}
+      onAnalyticsOrganizerIdChange={controller.setAnalyticsOrganizerId}
       onAnalyticsEndDateChange={controller.setAnalyticsEndDate}
       onAnalyticsEventIdChange={controller.setAnalyticsEventId}
       onAnalyticsGranularityChange={controller.setAnalyticsGranularity}

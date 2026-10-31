@@ -24,7 +24,7 @@ export async function publicHostMembershipQuoteTerms(params: {
 }): Promise<PublicMemberQuoteTerms | null> {
   const {event, nowMillis} = params;
   const context = await readHostMembershipContext({db: params.db,
-    tx: params.tx, organizerId: event.organizerId ?? event.clubId,
+    tx: params.tx, organizerId: event.organizerId,
     uid: params.uid, eventId: params.eventId, nowMillis});
   const entitlement = evaluateHostMembershipContext(context,
     event.priceInPaise ?? 0, nowMillis);
@@ -53,7 +53,7 @@ export async function recordPublicMemberBenefitUse(params: {
   const list = event.priceInPaise ?? 0;
   if (params.paidAmountPaise >= list) return;
   const context = await readHostMembershipContext({db,
-    organizerId: event.organizerId ?? event.clubId, uid, eventId, nowMillis});
+    organizerId: event.organizerId, uid, eventId, nowMillis});
   const membership = context.membership;
   if (!membership) return;
   await db.collection(collections.benefitUses)

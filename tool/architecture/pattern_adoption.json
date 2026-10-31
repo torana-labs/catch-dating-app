@@ -1589,7 +1589,7 @@
           "reason": "The feature-local overlap and focus wrapper is now the shared CatchRootScreenPageScrollView."
         },
         {
-          "symbol": "HostClubPreviewPane",
+          "symbol": "HostOrganizerPreviewPane",
           "path": "lib/hosts/presentation/host_operations/host_club_preview.dart",
           "reason": "The second-click preview adapter was replaced by direct composition of the canonical consumer Club Detail slivers."
         }

@@ -564,7 +564,7 @@ function AdminRouteApp() {
       return;
     }
     if (targetId && destination === "organizers") {
-      navigate(targetPath?.startsWith("clubClaimRequests/") ?
+      navigate(targetPath?.startsWith("organizerClaimRequests/") ?
         `/organizers/claims/${encodeURIComponent(targetId)}` :
         `/organizers/${encodeURIComponent(targetId)}`);
       return;
@@ -818,7 +818,7 @@ function AdminRouteApp() {
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Organizers" />}>
             <OrganizerPublishingScreen
               activeWorkspace={route.organizerWorkspace}
-              selectedClubId={route.params.clubId ?? null}
+              selectedOrganizerId={route.params.organizerId ?? null}
               onBackToList={() => navigate(adminPathForNav("organizers"))}
               onBackToClaims={() => navigate(`${adminPathForNav("organizers")}/claims`)}
               onSelectClaimRequestId={(requestId) => {
@@ -826,8 +826,8 @@ function AdminRouteApp() {
                   `${adminPathForNav("organizers")}/claims/${encodeURIComponent(requestId)}`
                 );
               }}
-              onSelectClubId={(clubId) => {
-                navigate(`${adminPathForNav("organizers")}/${encodeURIComponent(clubId)}`);
+              onSelectOrganizerId={(organizerId) => {
+                navigate(`${adminPathForNav("organizers")}/${encodeURIComponent(organizerId)}`);
               }}
               onWorkspaceChange={(workspace) => {
                 navigate(workspace === "claims" ?

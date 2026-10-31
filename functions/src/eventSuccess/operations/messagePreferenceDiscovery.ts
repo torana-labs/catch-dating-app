@@ -21,7 +21,7 @@ export async function readMessagePreferenceDiscovery(db: Firestore,
       "Event message preferences unavailable.");
   }
   const context = {mode: "live" as const, eventId: scope.eventId,
-    organizerId: event.organizerId ?? event.clubId};
+    organizerId: event.organizerId};
   const source = guestSourceFactsFromSnapshots(context, scope.attendeeId,
     eventSnap, attendeeSnap);
   const [runtimeSnap, planSnap] = await tx.getAll(

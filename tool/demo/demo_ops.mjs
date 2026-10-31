@@ -39,7 +39,7 @@ import {
 import {
   applyMemberCountRepairPlan,
   buildMemberCountRepairPlan,
-} from "../data/recompute_club_member_counts.mjs";
+} from "../data/recompute_organizer_member_counts.mjs";
 import {
   DEFAULT_PERSONA_CATALOG_PATH,
   DEFAULT_PHOTO_ACTIVITY_TAXONOMY_PATH,
@@ -532,14 +532,14 @@ async function runWritePlan({db, args, projectId, title, plan, repair = false}) 
 
 async function repairAggregates(db) {
   const eventPlan = await buildEventAggregateRepairPlan(db);
-  const clubPlan = await buildMemberCountRepairPlan(db);
+  const organizerPlan = await buildMemberCountRepairPlan(db);
   await applyEventAggregateRepairPlan(db, eventPlan);
-  await applyMemberCountRepairPlan(db, clubPlan);
+  await applyMemberCountRepairPlan(db, organizerPlan);
   return {
     eventRepairs: eventPlan.summary.repairsNeeded,
     eventWarnings: eventPlan.summary.warnings.length,
-    clubRepairs: clubPlan.summary.repairsNeeded,
-    clubWarnings: clubPlan.summary.warnings.length,
+    organizerRepairs: organizerPlan.summary.repairsNeeded,
+    organizerWarnings: organizerPlan.summary.warnings.length,
   };
 }
 

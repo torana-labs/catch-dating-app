@@ -24,7 +24,6 @@ function privateEvent(): Row {
     defaults: {revision: 1},
   });
   return {
-    clubId: organizerId,
     organizerId,
     name: basics.name,
     eventCityId: basics.eventCityId,
@@ -117,7 +116,7 @@ for (const collection of [
 
 test("malformed private event fails before commitment scans", async () => {
   for (const patch of [
-    {clubId: "foreign"},
+    {organizerId: "foreign"},
     {eventOrigin: {source: "external"}},
     {publicationState: "published"},
     {bookedCount: 1},

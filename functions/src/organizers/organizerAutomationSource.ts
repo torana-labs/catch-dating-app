@@ -78,7 +78,7 @@ export async function readOrganizerAutomationEvent(
     const endAt = event?.endTime;
     if (
       !event || !endAt || !Number.isFinite(endAt.toMillis()) ||
-      (event.organizerId ?? event.clubId) !== edge.organizerId ||
+      (event.organizerId) !== edge.organizerId ||
       event.status === "cancelled"
     ) {
       return null;
@@ -209,7 +209,7 @@ export async function readOrganizerAutomationEventTx(
     const endAt = event?.endTime;
     if (
       !event || !endAt || !Number.isFinite(endAt.toMillis()) ||
-      (event.organizerId ?? event.clubId) !== edge.organizerId ||
+      (event.organizerId) !== edge.organizerId ||
       event.status === "cancelled"
     ) {
       return null;

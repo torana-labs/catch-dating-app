@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 
-export type ClubMembershipRole = "owner" | "host" | "member";
-export type ClubMembershipStatus = "active" | "left" | "deleted";
+export type OrganizerMembershipRole = "owner" | "host" | "member";
+export type OrganizerMembershipStatus = "active" | "left" | "deleted";
 export type EventParticipationStatus =
   "signedUp" | "waitlisted" | "attended" | "cancelled" | "deleted";
 
@@ -9,8 +9,7 @@ export interface EventParticipationSnapshot {
   ref: FirebaseFirestore.DocumentReference;
   data: {
     eventId: string;
-    clubId: string;
-    organizerId?: string;
+    organizerId: string;
     uid: string;
     status: EventParticipationStatus;
     genderAtSignup?: string;
@@ -20,12 +19,12 @@ export interface EventParticipationSnapshot {
 
 /**
  * Builds the deterministic club membership document id.
- * @param {string} clubId Club id.
+ * @param {string} organizerId Club id.
  * @param {string} uid User id.
  * @return {string} Membership document id.
  */
-export function clubMembershipId(clubId: string, uid: string): string {
-  return `${clubId}_${uid}`;
+export function organizerMembershipId(organizerId: string, uid: string): string {
+  return `${organizerId}_${uid}`;
 }
 
 /**
@@ -191,18 +190,18 @@ export function participantUids(
 /**
  * Creates the patch used when a membership is active.
  * @param {object} params Membership fields.
- * @param {string} params.clubId Club id.
+ * @param {string} params.organizerId Club id.
  * @param {string} params.uid User id.
- * @param {ClubMembershipRole} params.role Membership role.
+ * @param {OrganizerMembershipRole} params.role Membership role.
  * @return {Record<string, unknown>} Firestore patch.
  */
-export function activeClubMembershipPatch(params: {
-  clubId: string;
+export function activeOrganizerMembershipPatch(params: {
+  organizerId: string;
   uid: string;
-  role: ClubMembershipRole;
+  role: OrganizerMembershipRole;
 }) {
   return {
-    clubId: params.clubId,
+    organizerId: params.organizerId,
     uid: params.uid,
     role: params.role,
     status: "active" as const,
@@ -217,7 +216,7 @@ export function activeClubMembershipPatch(params: {
  * Creates the patch used when a membership is left.
  * @return {Record<string, unknown>} Firestore patch.
  */
-export function leftClubMembershipPatch() {
+export function leftOrganizerMembershipPatch() {
   return {
     status: "left" as const,
     leftAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -229,7 +228,7 @@ export function leftClubMembershipPatch() {
  * @param {object} params Participation fields.
  * @param {boolean} params.exists Whether the edge document already exists.
  * @param {string} params.eventId Event id.
- * @param {string} params.clubId Club id.
+ * @param {string} params.organizerId Club id.
  * @param {string} params.uid User id.
  * @param {EventParticipationStatus} params.status New participation status.
  * @param {string=} params.genderAtSignup Optional signup-time gender snapshot.
@@ -240,8 +239,7 @@ export function leftClubMembershipPatch() {
 export function eventParticipationPatch(params: {
   exists: boolean;
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   uid: string;
   status: EventParticipationStatus;
   genderAtSignup?: string;
@@ -251,8 +249,7 @@ export function eventParticipationPatch(params: {
   const now = admin.firestore.FieldValue.serverTimestamp();
   const patch: Record<string, unknown> = {
     eventId: params.eventId,
-    clubId: params.clubId,
-    organizerId: params.organizerId ?? params.clubId,
+    organizerId: params.organizerId,
     uid: params.uid,
     status: params.status,
     updatedAt: now,

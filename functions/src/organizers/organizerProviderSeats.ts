@@ -73,10 +73,10 @@ export async function prepareProviderSeatChanges(params: {
     const oldActive = old !== undefined && ACTIVE.has(old.status);
     if (old && (old.eventId !== eventId ||
         old.organizerId !== organizerId ||
-        old.clubId !== event.clubId) ||
+        old.organizerId !== event.organizerId) ||
         document.eventId !== eventId ||
         document.organizerId !== organizerId ||
-        document.clubId !== event.clubId) {
+        document.organizerId !== event.organizerId) {
       fail("Provider attendee tenant changed.");
     }
     if (old && old.source !== "providerSync" &&

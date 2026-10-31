@@ -55,7 +55,7 @@ export function externalEventContribution(
 /** Organizers whose pages may show this event: current and previous. */
 export function catchEventOrganizerIds(...rows: Raw[]): string[] {
   return [...new Set(rows.flatMap((row) =>
-    [stringOrNull(row?.organizerId), stringOrNull(row?.clubId)])
+    [stringOrNull(row?.organizerId), stringOrNull(row?.organizerId)])
     .filter((id): id is string => Boolean(id)))];
 }
 

@@ -1308,7 +1308,7 @@
     "x-owner": "product",
     "x-surface": "chats.presentation.widgets.suvbot_action_bar"
   },
-  "organizersOrganizerDetailScreenBodyOrganizerid": "clubId",
+  "organizersOrganizerDetailScreenBodyOrganizerid": "organizerId",
   "@organizersOrganizerDetailScreenBodyOrganizerid": {
     "description": "Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (body).",
     "x-audience": "consumer",
@@ -2422,7 +2422,7 @@
     "x-owner": "product",
     "x-surface": "events.presentation.event_detail_screen"
   },
-  "eventsEventDetailScreenBodyOrganizerid": "clubId",
+  "eventsEventDetailScreenBodyOrganizerid": "organizerId",
   "@eventsEventDetailScreenBodyOrganizerid": {
     "description": "Product copy used by lib/events/presentation/event_detail_screen.dart (body).",
     "x-audience": "consumer",

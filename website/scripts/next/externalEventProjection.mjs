@@ -12,7 +12,6 @@ export function projectExternalEventDocument(event) {
   const sourceLabel = platformLabel(primaryLink?.platform ?? event.externalSource?.platform);
   return {
     canonicalHostId: event.canonicalHostId,
-    compatibilityClubId: event.compatibilityClubId,
     projection: {
       id: event.eventId,
       title: event.title,

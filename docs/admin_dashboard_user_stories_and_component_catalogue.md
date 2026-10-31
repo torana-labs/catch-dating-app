@@ -82,7 +82,7 @@ Files inspected:
 - `admin/src/features/data-quality/ui/DataQualityScreen.tsx`
 - `admin/src/stories/AdminRoutes.stories.tsx`
 - `design/admin/components.json`
-- `functions/src/admin/**` and `functions/src/clubs/clubClaims.ts` for API
+- `functions/src/admin/**` and `functions/src/clubs/organizerClaims.ts` for API
   ownership context
 - the admin and analytics dashboard spec, now
   [in catch-knowledge](https://github.com/torana-labs/catch-knowledge/blob/main/plans/admin-analytics-dashboard.md)
@@ -122,9 +122,9 @@ and the new canonical Organizers publishing workspace. Event Intake now owns its
 admin read/write callables, generated bridge artifact, and guarded live
 dashboard publish path. Organizers is now the first
 fully real tab aimed at production supply bootstrapping: list rows come from
-canonical `clubs/{id}` documents through `adminListClubDetails`, editing uses
-audited partial `adminUpdateClubDetails` patches, and publishing uses
-`adminSetClubIndexStatus` with a visible checklist. Its Indore + Mumbai default
+canonical `clubs/{id}` documents through `adminListOrganizerDetails`, editing uses
+audited partial `adminUpdateOrganizerDetails` patches, and publishing uses
+`adminSetOrganizerIndexStatus` with a visible checklist. Its Indore + Mumbai default
 is backend filtered through a bounded `citySlugs` payload instead of relying on
 client-side filtering after a generic list fetch. Events has moved beyond the
 old analytics/intake/marketing registry: the root Events tab is now a canonical
@@ -549,11 +549,11 @@ Current adherence:
 
 - Good: the tab is feature-owned under `features/organizers`; it starts from a
   searchable/filterable canonical organizer directory backed by
-  `adminListClubDetails`; selecting a row loads `clubs/{id}` through
-  `adminGetClubDetails`; editing builds minimal audited partial patches for
-  `adminUpdateClubDetails`; the UI shows before/after diff, validation,
+  `adminListOrganizerDetails`; selecting a row loads `clubs/{id}` through
+  `adminGetOrganizerDetails`; editing builds minimal audited partial patches for
+  `adminUpdateOrganizerDetails`; the UI shows before/after diff, validation,
   publish checklist, and public preview link; publish state goes through
-  `adminSetClubIndexStatus`.
+  `adminSetOrganizerIndexStatus`.
 - Good: save validation, route/search readiness, and publish blockers are
   consolidated into one `Readiness and blockers` summary. The UI asks for a
   review note only when there are pending save changes or a publishing
@@ -568,13 +568,13 @@ Current adherence:
   index-ready publish. This prevents two `clubs` documents from owning the same
   `publicPage.canonicalPath` and gives website routing an explicit allocation
   record.
-- Good: `adminListClubDetails` now uses `clubs/{id}.adminSearch.tokens` for
+- Good: `adminListOrganizerDetails` now uses `clubs/{id}.adminSearch.tokens` for
   token-backed large-list search when an operator enters a query. Admin save and
   index-ready publishing rebuild that projection from canonical organizer
   fields, and the list exposes missing search-index state.
 - Good: client-side filters no longer re-run the operator query against the
   visible table row fields, so backend matches from URL, Instagram, or other
-  admin-search tokens are not dropped after `adminListClubDetails` returns.
+  admin-search tokens are not dropped after `adminListOrganizerDetails` returns.
 - Good: the launch-city default sends `citySlugs: ["indore", "mumbai"]` to the
   backend, avoiding incomplete client-filtered batches once the organizer
   collection grows.

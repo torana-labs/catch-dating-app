@@ -34,7 +34,7 @@ Current implementation roots:
 Owned routes:
 
 - `hostInboxScreen` — `/host/inbox`
-- `hostOrganizerMessagingScreen` — `/host/organizer/:clubId/messaging`
+- `hostOrganizerMessagingScreen` — `/host/organizer/:organizerId/messaging`
 
 Typed handoffs:
 

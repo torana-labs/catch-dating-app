@@ -24,7 +24,7 @@ class EventSuccessArrivalMission {
     return EventSuccessArrivalMission(
       id: json['id'] as String,
       eventId: json['eventId'] as String,
-      clubId: json['clubId'] as String,
+      clubId: json['organizerId'] as String,
       observerUid: json['observerUid'] as String,
       targetUid: json['targetUid'] as String,
       targetDisplayName: json['targetDisplayName'] as String,
@@ -70,7 +70,7 @@ class EventSuccessArrivalMission {
 
   Map<String, dynamic> toJson() => {
     'eventId': eventId,
-    'clubId': clubId,
+    'organizerId': clubId,
     'observerUid': observerUid,
     'targetUid': targetUid,
     'targetDisplayName': targetDisplayName,

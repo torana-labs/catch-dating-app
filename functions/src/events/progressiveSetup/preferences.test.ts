@@ -176,13 +176,12 @@ test("replay rechecks manager and deleted-account authority", async () => {
 
 test("private preferences reject wrong event authority and exhausted revisions",
   async () => {
-    for (const patch of [{clubId: "foreign"}, {organizerId: "foreign"},
+    for (const patch of [{organizerId: "foreign"}, {organizerId: "foreign"},
       {publicationState: "published"}, {status: "cancelled"},
       {setupRevision: 1_000_000_000}]) {
       const h = await setup();
       h.rows.set("events/event1", {...h.rows.get("events/event1"), ...patch});
-      await assert.rejects(h.save(), isCode("clubId" in patch ||
-        "organizerId" in patch ? "not-found" : "failed-precondition"));
+      await assert.rejects(h.save(), isCode("organizerId" in patch ? "not-found" : "failed-precondition"));
       assert.equal(h.rows.get("eventSetupPreferences/event1"), undefined);
     }
   });

@@ -389,7 +389,7 @@ class _HostSendsHistory extends ConsumerWidget {
                       ? null
                       : () => context.pushNamed(
                           Routes.hostOrganizerMessagingScreen.name,
-                          pathParameters: {'clubId': organizerId},
+                          pathParameters: {'organizerId': organizerId},
                         ),
                 ),
             ],

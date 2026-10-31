@@ -675,10 +675,6 @@
         }
       }
     },
-    "clubLifecycleStatus": {
-      "type": "string",
-      "enum": ["active", "archived"]
-    },
     "organizerLifecycleStatus": {
       "type": "string",
       "enum": ["active", "archived"]
@@ -695,15 +691,15 @@
       ],
       "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
     },
-    "clubMembershipRole": {
+    "organizerMembershipRole": {
       "type": "string",
       "enum": ["owner", "host", "member"]
     },
-    "clubHostRole": {
+    "organizerHostRole": {
       "type": "string",
       "enum": ["owner", "host"]
     },
-    "clubHostProfile": {
+    "organizerHostProfile": {
       "type": "object",
       "additionalProperties": false,
       "required": ["uid", "displayName", "avatarUrl", "role"],
@@ -720,11 +716,11 @@
           "$ref": "#/definitions/urlOrNull"
         },
         "role": {
-          "$ref": "#/definitions/clubHostRole"
+          "$ref": "#/definitions/organizerHostRole"
         }
       }
     },
-    "clubMembershipStatus": {
+    "organizerMembershipStatus": {
       "type": "string",
       "enum": ["active", "left", "deleted"]
     },
@@ -1063,7 +1059,7 @@
         "attendeePrompt": {"type": ["string", "null"], "maxLength": 300}
       }
     },
-    "clubHostDefaults": {
+    "organizerHostDefaults": {
       "type": "object",
       "additionalProperties": false,
       "properties": {

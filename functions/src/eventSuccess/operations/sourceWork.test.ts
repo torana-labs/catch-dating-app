@@ -262,9 +262,9 @@ test("all source collections derive their event or guest scope on deletion",
       value: Record<string, unknown>; attendeeId?: string | null;
       scope?: SourceWorkInput["scope"]; documentId?: string;
     }> = {
-      events: {value: {clubId: h.context.organizerId}, attendeeId: null},
+      events: {value: {organizerId: h.context.organizerId}, attendeeId: null},
       eventAttendees: {value: {eventId: h.context.eventId,
-        clubId: h.context.organizerId}, attendeeId: h.context.eventId},
+        organizerId: h.context.organizerId}, attendeeId: h.context.eventId},
       eventStaffGrants: {value: {eventId: h.context.eventId,
         organizerId: h.context.organizerId}, attendeeId: null},
       eventSuccessPlans: {value: {eventId: h.context.eventId,

@@ -1124,7 +1124,7 @@
           "owner": "route_screen",
           "codeValue": "invalidate",
           "cardinality": "singleton",
-          "scopeKeys": ["routeInstanceId", "clubId", "eventId", "failureStateVersion"],
+          "scopeKeys": ["routeInstanceId", "organizerId", "eventId", "failureStateVersion"],
           "outcomes": [
             {
               "kind": "surface_state",

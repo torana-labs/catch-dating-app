@@ -426,7 +426,7 @@ async function loadEventContext(params: {
       await assertNoUserEventScheduleConflict(db, {
         uid: viewerUid,
         eventId,
-        clubId: event.clubId,
+        organizerId: event.organizerId,
         startTimeMillis: startMillis,
         endTimeMillis: event.endTime.toMillis(),
       });
@@ -729,7 +729,7 @@ function suggestionProjection(params: {
     },
     event: {
       eventId: pair.eventContext.eventId,
-      organizerId: event.organizerId ?? event.clubId ?? null,
+      organizerId: event.organizerId ?? null,
       startTime: event.startTime.toDate().toISOString(),
       endTime: event.endTime.toDate().toISOString(),
       meetingPoint: event.meetingPoint,

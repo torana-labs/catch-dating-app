@@ -410,7 +410,7 @@ Organizers workspace invokes `adminGetOrganizerDetails`,
 `adminListOrganizerDetails`, and `adminUpdateOrganizerDetails` and presents
 `organizers/{id}` as the source collection.
 
-Internal `AdminClub*` adapter types may remain during the released-client
+Internal `AdminOrganizer*` adapter types may remain during the released-client
 window, but they are compatibility types only. React code must not add a new
 `clubs/{id}` authority, club-named callable, or product-facing generic club
 label. Retirement follows `docs/migrations/clubs_to_organizers.md`.
@@ -543,7 +543,7 @@ assembled from its sources (`assembleOrganizerDetailFromSources`,
 `assembleEventDetailFromSources`) under the same publication rules, so a
 withdrawn page stays withdrawn either way. Those source reads are one to three
 path reads, that organizer's events (at most 200 per kind, Catch events also
-by legacy `clubId`), three trust reads for recommendations and bounded reviews
+by legacy `organizerId`), three trust reads for recommendations and bounded reviews
 for an organizer page, and two document gets, the organizer plus a
 path-uniqueness read and bounded reviews for an event page.
 `node functions/scripts/backfill-public-pages.cjs --project <id> --check`
@@ -866,7 +866,7 @@ Marketing owns `/marketing` (default Posts), `/marketing/posts`,
 `/marketing/drafts/{draftId}/{source|copy|compliance|export}`.
 
 URL-owned detail families are `/safety/{targetPath}`, `/access/{uid}`,
-`/organizers/{clubId}`, `/organizers/claims/{requestId}`, `/events/{eventId}`,
+`/organizers/{organizerId}`, `/organizers/claims/{requestId}`, `/events/{eventId}`,
 `/events/external/{candidateId}`,
 `/growth/signals/{signalId}`, `/finance/issues/{issueId}`,
 `/quality/signals/{signalId}`, and `/admin-roles/{uid}`. A missing direct record
@@ -1193,7 +1193,7 @@ that follow:
 - `npm --workspace catch-marketing run build`
 - `node --test website/scripts/checkOrganizerBuildOutputs.test.mjs website/scripts/generateOrganizerListings.test.mjs website/scripts/postbuild.test.mjs`
 - `node website/scripts/checkOrganizerBuildOutputs.mjs`
-- `git diff --check -- website package.json packages/web-config firebase.json .github/workflows/marketing-website.yml contracts/callables/request_organizer_claim_payload.schema.json contracts/callables/create_public_organizer_review_payload.schema.json contracts/callables/list_public_organizer_reviews_payload.schema.json contracts/callables/record_organizer_analytics_event_payload.schema.json contracts/firestore/organizers.schema.json functions/src/clubs/clubClaims.ts functions/src/reviews/mutateReview.ts functions/src/analytics/organizerAnalyticsEvents.ts`
+- `git diff --check -- website package.json packages/web-config firebase.json .github/workflows/marketing-website.yml contracts/callables/request_organizer_claim_payload.schema.json contracts/callables/create_public_organizer_review_payload.schema.json contracts/callables/list_public_organizer_reviews_payload.schema.json contracts/callables/record_organizer_analytics_event_payload.schema.json contracts/firestore/organizers.schema.json functions/src/clubs/organizerClaims.ts functions/src/reviews/mutateReview.ts functions/src/analytics/organizerAnalyticsEvents.ts`
 
 The original marketing build passed. It reported a single JS bundle of 484.71 KB
 raw, 139.82 KB gzip, a 92.02 KB CSS bundle, and a 2.1 MB public source map. The
@@ -1211,7 +1211,7 @@ Current verification:
 - `find website/dist/assets -maxdepth 1 -type f -name '*.map' -print`
 - `node tool/contracts/generate_schema_contracts.mjs --check`
 - `npm --prefix functions run build`
-- `node --test functions/lib/clubs/clubClaims.test.js functions/lib/reviews/mutateReview.test.js functions/lib/analytics/organizerAnalyticsEvents.test.js`
+- `node --test functions/lib/clubs/organizerClaims.test.js functions/lib/reviews/mutateReview.test.js functions/lib/analytics/organizerAnalyticsEvents.test.js`
 
 Current build output reports `index-BKnP8e8u.js` at 487.92 KB raw / 143.12 KB
 gzip and `index-C-RDtpwQ.css` at 92.02 KB raw / 14.41 KB gzip. No public

@@ -286,7 +286,7 @@ export async function handoffAutomationMessage(params: {
     }
     const eventDoc = eventSnap?.data() as EventDocument | undefined;
     if (recipe.eventId &&
-        (!eventDoc || (eventDoc.organizerId ?? eventDoc.clubId) !==
+        (!eventDoc || (eventDoc.organizerId) !==
           rule.organizerId)) {
       throw new HttpsError(
         "failed-precondition", "Automation message event missing.");
@@ -450,8 +450,7 @@ export async function handoffAutomationMessage(params: {
       if (!inviteLinkSnap?.exists) {
         tx.create(inviteLinkRef!, {
           eventId: recipe.eventId,
-          clubId: eventDoc.clubId,
-          organizerId: eventDoc.organizerId ?? eventDoc.clubId,
+          organizerId: eventDoc.organizerId,
           hostUid: liveRule.updatedByUid,
           label: liveRule.name.slice(0, 80),
           source: "formAutomation",
@@ -488,7 +487,7 @@ export async function handoffAutomationMessage(params: {
       if (!inviteSecretSnap?.exists) {
         tx.create(inviteSecretRef!, {
           eventId: recipe.eventId,
-          organizerId: eventDoc.organizerId ?? eventDoc.clubId,
+          organizerId: eventDoc.organizerId,
           token: inviteToken,
           tokenHash: inviteLinkTokenHash(inviteToken),
           tokenVersion: 2,

@@ -32,7 +32,7 @@ final class EventSuccessStandings {
     return EventSuccessStandings(
       id: json['id'] as String,
       eventId: json['eventId'] as String,
-      clubId: json['clubId'] as String,
+      clubId: json['organizerId'] as String,
       unitOutcome: unitOutcome,
       revision: json['revision'] as int,
       latestRoundIndex: json['latestRoundIndex'] as int,
@@ -80,7 +80,7 @@ final class EventSuccessStandings {
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
-    'clubId': clubId,
+    'organizerId': clubId,
     'unitOutcome': unitOutcome.name,
     'revision': revision,
     'latestRoundIndex': latestRoundIndex,

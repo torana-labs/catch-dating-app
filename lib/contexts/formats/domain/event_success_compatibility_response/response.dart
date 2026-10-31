@@ -17,7 +17,7 @@ final class EventSuccessCompatibilityResponse {
     return EventSuccessCompatibilityResponse(
       id: json['id'] as String,
       eventId: json['eventId'] as String,
-      clubId: json['clubId'] as String,
+      clubId: json['organizerId'] as String,
       uid: json['uid'] as String,
       answerIds: (json['answerIds'] as List<dynamic>? ?? const [])
           .whereType<String>()
@@ -37,7 +37,7 @@ final class EventSuccessCompatibilityResponse {
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
-    'clubId': clubId,
+    'organizerId': clubId,
     'uid': uid,
     'answerIds': answerIds,
     'createdAt': firestoreTimestampFromDateTime(createdAt),

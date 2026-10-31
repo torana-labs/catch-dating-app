@@ -9,7 +9,7 @@ import {
 test("creates a Razorpay Route linked account without persisting KYC data",
   async () => {
     const firestore = new FakeFirestore({
-      "clubHostClaims/host-1": {clubIds: ["club-1"]},
+      "organizerHostClaims/host-1": {organizerIds: ["club-1"]},
     });
     const accountInputs: Record<string, unknown>[] = [];
     const stakeholderInputs: Record<string, unknown>[] = [];
@@ -104,7 +104,7 @@ test("creates a Razorpay Route linked account without persisting KYC data",
 test("retries continue the checkpointed Route account and product",
   async () => {
     const firestore = new FakeFirestore({
-      "clubHostClaims/host-1": {clubIds: ["club-1"]},
+      "organizerHostClaims/host-1": {organizerIds: ["club-1"]},
     });
     let accountCreates = 0;
     let productRequests = 0;

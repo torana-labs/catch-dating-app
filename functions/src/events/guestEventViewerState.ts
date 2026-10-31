@@ -50,7 +50,7 @@ export async function readGuestEventViewerState(params: {
     await assertCurrentPublicGuest({...params, tx});
     const {event, organizer} = await readPublicEventSource({db, tx, eventId});
     const publicEvent = isEventPubliclyAccessible(event);
-    const organizerId = event.organizerId ?? event.clubId;
+    const organizerId = event.organizerId;
     const guest: Guest = {action: "unavailable", publicFormId: null,
       applicationStatus: null, offerGrantId: null, publicPaymentId: null,
       offerPaymentId: null,
@@ -99,7 +99,7 @@ export async function readGuestEventViewerState(params: {
       undefined;
     if (participation && validateEventParticipationDocument(participation) &&
         participation.eventId === eventId && participation.uid === uid &&
-        participation.clubId === event.clubId &&
+        participation.organizerId === event.organizerId &&
         (participation.organizerId === undefined ||
           participation.organizerId === organizerId) &&
         ["signedUp", "attended"].includes(participation.status)) {
@@ -119,7 +119,7 @@ export async function readGuestEventViewerState(params: {
       undefined;
     if (attendee && (!validateEventAttendeeDocument(attendee) ||
         attendee.eventId !== eventId || attendee.linkedUid !== uid ||
-        (attendee.organizerId ?? attendee.clubId) !== organizerId)) {
+        (attendee.organizerId) !== organizerId)) {
       return viewer;
     }
     if (attendee) {

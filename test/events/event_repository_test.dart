@@ -136,7 +136,7 @@ void main() {
         expect(decoded?.meetingPoint, 'Carter Road');
         expect(encoded.containsKey('id'), isFalse);
         expect(encoded['organizerId'], 'club-1');
-        expect(encoded.containsKey('clubId'), isFalse);
+        expect(encoded.containsKey('organizerId'), isFalse);
         expect(encoded['constraints'], {
           'minAge': 21,
           'maxAge': 99,
@@ -196,7 +196,7 @@ void main() {
     });
 
     test(
-      'watchEventsForClub filters by club id and orders by start time',
+      'watchEventsForOrganizer filters by club id and orders by start time',
       () async {
         final later = buildEvent(
           id: 'later',
@@ -222,7 +222,7 @@ void main() {
       },
     );
 
-    test('watchEventsForClub excludes synthetic QA events', () async {
+    test('watchEventsForOrganizer excludes synthetic QA events', () async {
       final real = buildEvent(id: 'real', clubId: 'club-2');
       final synthetic = buildEvent(
         id: 'synthetic',
@@ -386,7 +386,7 @@ void main() {
     );
 
     test(
-      'watchEventsForClubs merges hosted clubs in start-time order',
+      'watchEventsForOrganizers merges hosted clubs in start-time order',
       () async {
         final later = buildEvent(
           id: 'later',
@@ -554,7 +554,7 @@ void main() {
     });
 
     test(
-      'fetchUpcomingEventsForClubs returns empty without querying for no clubs',
+      'fetchUpcomingEventsForOrganizers returns empty without querying for no clubs',
       () async {
         await _seedEvent(firestore, buildEvent());
         expect(
@@ -565,7 +565,7 @@ void main() {
     );
 
     test(
-      'fetchUpcomingEventsForClubs filters upcoming events and limits results',
+      'fetchUpcomingEventsForOrganizers filters upcoming events and limits results',
       () async {
         final event = buildEvent(clubId: 'club-3');
         await _seedEvent(firestore, event);
@@ -591,7 +591,7 @@ void main() {
     );
 
     test(
-      'fetchUpcomingEventsForClubs queries beyond the whereIn club cap',
+      'fetchUpcomingEventsForOrganizers queries beyond the whereIn club cap',
       () async {
         final early = buildEvent(
           id: 'early',
@@ -632,7 +632,7 @@ void main() {
           {
             'eventId': 'event-42',
             'name': event.name,
-            'clubId': event.clubId,
+            'organizerId': event.clubId,
             'organizerId': event.organizerId,
             'startTimeMillis': event.startTime.millisecondsSinceEpoch,
             'endTimeMillis': event.endTime.millisecondsSinceEpoch,

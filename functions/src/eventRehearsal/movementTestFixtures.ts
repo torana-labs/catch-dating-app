@@ -19,7 +19,7 @@ export type Command = NonNullable<Control["movement"]>;
 export function harness(now = Date.now(), id: string = randomUUID()) {
   const session = practiceSession(now);
   const fixture = JSON.parse(readFileSync(
-    "../contracts/fixtures/valid/club_doc.json", "utf8"));
+    "../contracts/fixtures/valid/organizer_doc.json", "utf8"));
   const schema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
   const organizer = {...Object.fromEntries(Object.entries(fixture).filter(

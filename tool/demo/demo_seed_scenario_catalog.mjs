@@ -48,8 +48,8 @@ function validateScenarioConfig(config, filePath) {
 function validateSeedWorld(seedWorld, label) {
   const numericFields = [
     "usersPerCity",
-    "clubsPerCity",
-    "eventsPerClub",
+    "organizersPerCity",
+    "eventsPerOrganizer",
     "anchorsPerRun",
   ];
   if (!Array.isArray(seedWorld.cities) || seedWorld.cities.length === 0) {

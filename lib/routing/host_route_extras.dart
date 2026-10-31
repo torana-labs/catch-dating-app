@@ -20,7 +20,7 @@ HostSavedAudience? _routeAudienceExtra(GoRouterState state) =>
 
 String? _routeOrganizerQueryId(GoRouterState state) =>
     state.uri.queryParameters['organizerId'] ??
-    state.uri.queryParameters['clubId'];
+    state.uri.queryParameters['organizerId'];
 
 /// Tear-off redirects keep the legacy redirect tables to one line per path.
 String? _customersUriRedirect(BuildContext _, GoRouterState state) =>
@@ -105,7 +105,7 @@ String? _organizerAudienceUriRedirect(BuildContext _, GoRouterState state) {
     Routes.hostOrganizerPaymentsScreen,
     Routes.hostOrganizerMembershipsScreen,
   }.where((route) => route.name == setting).firstOrNull;
-  if (route != null && state.uri.queryParameters['clubId'] != null) {
+  if (route != null && state.uri.queryParameters['organizerId'] != null) {
     return state.uri
         .replace(
           path: route.path,

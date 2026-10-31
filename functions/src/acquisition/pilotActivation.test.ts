@@ -12,7 +12,7 @@ function fixture() {
   const rows = new Map<string, Record<string, unknown>>([
     ["eventAttendees/a", after], ["hostPilotEventReviews/e", {...review}],
     ["organizers/o", {}], ["events/e", {
-      clubId: "o", organizerId: "o", publicationState: "published",
+      organizerId: "o", publicationState: "published",
       status: "active", startTime: time(100), endTime: time(1000),
       eventFormat: {version: 1, activityKind: "running",
         interactionModel: "hostLedProgram"}, capacityLimit: 20,

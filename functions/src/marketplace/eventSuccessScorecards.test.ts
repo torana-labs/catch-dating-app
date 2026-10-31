@@ -17,14 +17,14 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
   const scorecard = buildEventSuccessScorecard({
     eventId: "event-1",
     event: {
-      clubId: "club-1",
+      organizerId: "club-1",
       bookedCount: 10,
       checkedInCount: 8,
     } as EventDocument,
     feedback: [
       {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "user-1",
         welcomeRating: 5,
         structureRating: 4,
@@ -33,7 +33,7 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
       },
       {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "user-2",
         welcomeRating: 3,
         structureRating: 2,
@@ -46,8 +46,8 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
       match("match-2", null),
       match("match-3", "LAST_MESSAGE_AT" as never, {status: "blocked"}),
       match("host-inquiry", "LAST_MESSAGE_AT" as never, {
-        conversationType: "clubHostInquiry",
-        clubId: "club-1",
+        conversationType: "organizerHostInquiry",
+        organizerId: "club-1",
       }),
     ],
     catchAggregates: {
@@ -60,7 +60,6 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
 
   assert.deepEqual(scorecard, {
     eventId: "event-1",
-    clubId: "club-1",
     organizerId: "club-1",
     bookedCount: 10,
     checkedInCount: 8,
@@ -159,13 +158,13 @@ test("buildEventSuccessScorecard exposes safety count after sample", () => {
   const scorecard = buildEventSuccessScorecard({
     eventId: "event-1",
     event: {
-      clubId: "club-1",
+      organizerId: "club-1",
       bookedCount: 10,
       checkedInCount: 8,
     } as EventDocument,
     feedback: Array.from({length: 5}, (_, index) => ({
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       uid: `user-${index}`,
       welcomeRating: 5,
       structureRating: 4,
@@ -182,7 +181,7 @@ test("buildEventSuccessScorecard exposes safety count after sample", () => {
 test("buildEventHostFunnelMetrics computes the operating funnel", () => {
   const funnel = buildEventHostFunnelMetrics({
     event: {
-      clubId: "club-1",
+      organizerId: "club-1",
       bookedCount: 6,
       checkedInCount: 4,
     } as EventDocument,
@@ -202,22 +201,22 @@ test("buildEventHostFunnelMetrics computes the operating funnel", () => {
       }),
     ] as never,
     waitlistOffers: [
-      {eventId: "event-1", clubId: "club-1", uid: "runner-2", status: "active"},
+      {eventId: "event-1", organizerId: "club-1", uid: "runner-2", status: "active"},
       {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "runner-3",
         status: "accepted",
       },
       {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "runner-4",
         status: "declined",
       },
       {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "runner-5",
         status: "expired",
       },
@@ -237,8 +236,8 @@ test("buildEventHostFunnelMetrics computes the operating funnel", () => {
       match("match-2", null),
       match("match-3", null, {status: "blocked"}),
       match("host-inquiry", "LAST_MESSAGE_AT" as never, {
-        conversationType: "clubHostInquiry",
-        clubId: "club-1",
+        conversationType: "organizerHostInquiry",
+        organizerId: "club-1",
       }),
     ],
     catchAggregates: {
@@ -323,7 +322,7 @@ test(
     await refreshEventSuccessScorecard("event-1", {
       firestore: () => fakeFirestore({
         "events/event-1": {
-          clubId: "club-1",
+          organizerId: "club-1",
           bookedCount: 4,
           checkedInCount: 3,
         },
@@ -375,7 +374,6 @@ test(
 
     assert.deepEqual(writes["eventSuccessScorecards/event-1"], {
       eventId: "event-1",
-      clubId: "club-1",
       organizerId: "club-1",
       bookedCount: 4,
       checkedInCount: 3,
@@ -440,27 +438,27 @@ test(
     await refreshEventSuccessScorecard("event-2", {
       firestore: () => fakeFirestore({
         "events/event-2": {
-          clubId: "club-1",
+          organizerId: "club-1",
           bookedCount: 2,
           checkedInCount: 2,
         },
         // Current event roster.
         "eventParticipations/event-2_user-1": {
           eventId: "event-2",
-          clubId: "club-1",
+          organizerId: "club-1",
           uid: "user-1",
           status: "attended",
         },
         "eventParticipations/event-2_user-2": {
           eventId: "event-2",
-          clubId: "club-1",
+          organizerId: "club-1",
           uid: "user-2",
           status: "attended",
         },
         // user-1 also attended a different event at the same club -> repeat.
         "eventParticipations/event-1_user-1": {
           eventId: "event-1",
-          clubId: "club-1",
+          organizerId: "club-1",
           uid: "user-1",
           status: "attended",
         },
@@ -468,7 +466,7 @@ test(
         // repeat for club-1.
         "eventParticipations/event-9_user-2": {
           eventId: "event-9",
-          clubId: "club-2",
+          organizerId: "club-2",
           uid: "user-2",
           status: "attended",
         },
@@ -491,7 +489,7 @@ test(
     await refreshEventSuccessScorecard("event-1", {
       firestore: () => fakeFirestore({
         "events/event-1": {
-          clubId: "club-1",
+          organizerId: "club-1",
           bookedCount: 2,
           checkedInCount: 2,
         },
@@ -506,7 +504,7 @@ test(
         ),
         "eventInviteLinks/link-1": {
           eventId: "event-1",
-          clubId: "club-1",
+          organizerId: "club-1",
         },
         "matches/dating": match("dating", "LAST_MESSAGE_AT" as never, {
           user1Id: "user-1",
@@ -520,8 +518,8 @@ test(
             user1Id: "user-1",
             user2Id: "host-1",
             participantIds: ["user-1", "host-1"],
-            conversationType: "clubHostInquiry",
-            clubId: "club-1",
+            conversationType: "organizerHostInquiry",
+            organizerId: "club-1",
           }
         ),
       }, writes),
@@ -549,7 +547,7 @@ test("writeEventSafetyReportIfNeeded stores safety review", async () => {
     "event-1_user-1",
     {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       uid: "user-1",
       welcomeRating: 3,
       structureRating: 2,
@@ -573,7 +571,7 @@ test("writeEventSafetyReportIfNeeded stores safety review", async () => {
 
   assert.deepEqual(writes["eventSafetyReports/event-1_user-1"], {
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     reporterUserId: "user-1",
     feedbackId: "event-1_user-1",
     source: "event_success_feedback",
@@ -610,7 +608,7 @@ function participation(
 ): Record<string, unknown> {
   return {
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid,
     status,
     ...overrides,

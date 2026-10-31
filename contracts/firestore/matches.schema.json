@@ -117,13 +117,9 @@
       "type": "string",
       "enum": [
         "match",
-        "clubHostInquiry",
+        "organizerHostInquiry",
         "crossPathsEventPlan"
       ],
-      "x-catch-ownership": "trigger-owned"
-    },
-    "clubId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
       "x-catch-ownership": "trigger-owned"
     },
     "organizerId": {

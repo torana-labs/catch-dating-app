@@ -302,7 +302,7 @@ class _WingmanTestHttpsCallable extends Fake implements HttpsCallable {
           )
           .set({
             'eventId': eventId,
-            'clubId': 'club-1',
+            'organizerId': 'club-1',
             'requesterUid': requesterUid,
             'targetUid': payload['targetUid'],
             'status': 'active',

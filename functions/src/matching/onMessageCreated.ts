@@ -135,8 +135,8 @@ export async function onMessageCreatedHandler(
       PublicProfileDocument | undefined;
     let senderName = senderProfile?.name ?? "New message";
     actorAvatarUrl = notificationProfileAvatar(senderProfile);
-    if (match.conversationType === "clubHostInquiry") {
-      const organizerId = match.organizerId ?? match.clubId;
+    if (match.conversationType === "organizerHostInquiry") {
+      const organizerId = match.organizerId;
       // Never guess Host identity from lexically sorted participant ids.
       const organizerSnap = organizerId ? await tx.get(
         db.collection("organizers").doc(organizerId)

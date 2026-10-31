@@ -2075,27 +2075,27 @@
       "routes": [
         {
           "id": "eventDetailScreen",
-          "path": "/organizers/:clubId/events/:eventId",
+          "path": "/organizers/:organizerId/events/:eventId",
           "role": "primary"
         },
         {
           "id": "calendarEventDetailScreen",
-          "path": "/calendar/organizers/:clubId/events/:eventId",
+          "path": "/calendar/organizers/:organizerId/events/:eventId",
           "role": "alias"
         },
         {
           "id": "savedEventDetailScreen",
-          "path": "/saved-events/organizers/:clubId/events/:eventId",
+          "path": "/saved-events/organizers/:organizerId/events/:eventId",
           "role": "alias"
         },
         {
           "id": "dashboardEventDetailScreen",
-          "path": "/dashboard/organizers/:clubId/events/:eventId",
+          "path": "/dashboard/organizers/:organizerId/events/:eventId",
           "role": "alias"
         },
         {
           "id": "hostAppEventDetailScreen",
-          "path": "/host/organizers/:clubId/events/:eventId",
+          "path": "/host/organizers/:organizerId/events/:eventId",
           "role": "host"
         }
       ],
@@ -3069,7 +3069,7 @@
       "routes": [
         {
           "id": "organizerDetailScreen",
-          "path": "/organizers/:clubId",
+          "path": "/organizers/:organizerId",
           "role": "primary"
         }
       ],
@@ -3114,7 +3114,7 @@
           "id": "claude.catch-club-detail",
           "kind": "claude",
           "status": "available",
-          "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-club-detail/ClubDetailV2.dc.html",
+          "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-club-detail/OrganizerDetailV2.dc.html",
           "notes": "Claude Design Club Detail V2 template; export canonical PNG refs before enforcing pixel comparison."
         },
         {
@@ -3210,7 +3210,7 @@
           "id": "loading",
           "kind": "loading",
           "status": "captured",
-          "source": "AsyncLoading from organizerDetailViewModelProvider renders ClubDetailLoadingBody with hero, stats, host, about, tag, and upcoming-section skeletons unless initialOrganizer is available.",
+          "source": "AsyncLoading from organizerDetailViewModelProvider renders OrganizerDetailLoadingBody with hero, stats, host, about, tag, and upcoming-section skeletons unless initialOrganizer is available.",
           "captureIds": [
             "club_detail_loading",
             "club_detail_initial_loading"
@@ -3293,7 +3293,7 @@
           "id": "guest_join",
           "kind": "permission",
           "status": "captured",
-          "source": "Anonymous state renders Sign in to join and routes to auth with /clubs/:clubId as the from parameter.",
+          "source": "Anonymous state renders Sign in to join and routes to auth with /clubs/:organizerId as the from parameter.",
           "captureIds": [
             "club_detail_guest"
           ],
@@ -3413,7 +3413,7 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "ClubHero"
+              "OrganizerHero"
             ],
             "flutter": {
               "file": "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart",
@@ -3645,14 +3645,14 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "ClubDock"
+              "OrganizerDock"
             ],
             "flutter": {
               "file": "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart",
               "symbol": "OrganizerMembershipDock"
             },
             "currentOwner": "OrganizerDetailScreen",
-            "targetOwner": "screen-local membership dock adapter over provider-free CatchClubDock",
+            "targetOwner": "screen-local membership dock adapter over provider-free CatchOrganizerDock",
             "dependencies": [
               "catch.button",
               "catch.icon_button"
@@ -3669,7 +3669,7 @@
             "previewIds": [
               "OrganizerDetailDock/Dock states"
             ],
-            "migration": "Decision closed: keep provider-backed OrganizerMembershipDock screen-local and consumer-only. Host Club Detail suppresses this dock, so provider-free CatchClubDock promotion is intentionally deferred until another host/member surface proves the same action dock contract."
+            "migration": "Decision closed: keep provider-backed OrganizerMembershipDock screen-local and consumer-only. Host Club Detail suppresses this dock, so provider-free CatchOrganizerDock promotion is intentionally deferred until another host/member surface proves the same action dock contract."
           }
         ]
       },
@@ -3677,7 +3677,7 @@
         {
           "id": "DS-CLUB-DETAIL-001",
           "status": "closed",
-          "nextAction": "Closed by the consumer-only dock decision: Host Club Detail reuses the shared public club profile body and suppresses the membership dock, so provider-backed OrganizerMembershipDock remains screen-local and CatchClubDock promotion is deferred until another host/member action-dock contract exists."
+          "nextAction": "Closed by the consumer-only dock decision: Host Club Detail reuses the shared public club profile body and suppresses the membership dock, so provider-backed OrganizerMembershipDock remains screen-local and CatchOrganizerDock promotion is deferred until another host/member action-dock contract exists."
         },
         {
           "id": "DS-CLUB-DETAIL-002",
@@ -5473,7 +5473,7 @@
             "layer": "section",
             "claudeComponents": [
               "NotificationCard",
-              "ClubAvatar"
+              "OrganizerAvatar"
             ],
             "flutter": {
               "file": "lib/dashboard/presentation/widgets/organizer_posts_home_section.dart",
@@ -5559,7 +5559,7 @@
       "routes": [
         {
           "id": "eventSuccessCompanionScreen",
-          "path": "/organizers/:clubId/events/:eventId/companion",
+          "path": "/organizers/:organizerId/events/:eventId/companion",
           "role": "primary"
         }
       ],
@@ -11552,7 +11552,7 @@
           "id": "update_club_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "_HostInlineClubSaveState disables editor actions and shows pending state while OrganizersRepository.updateOrganizer is in flight.",
+          "source": "_HostInlineOrganizerSaveState disables editor actions and shows pending state while OrganizersRepository.updateOrganizer is in flight.",
           "nextAction": "Covered by host_clubs_inline_edit_pending through HostOrganizerEditController.updateOrganizerMutation.",
           "previewIds": [
             "HostOrganizersScreen/Route states"
@@ -11565,7 +11565,7 @@
           "id": "update_club_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "_HostInlineClubSaveState catches update failures and renders CatchBanner.error with AppErrorContext.club copy.",
+          "source": "_HostInlineOrganizerSaveState catches update failures and renders CatchBanner.error with AppErrorContext.club copy.",
           "nextAction": "Covered by host_clubs_inline_edit_error and host_clubs_inline_edit_offline through HostOrganizerEditController.updateOrganizerMutation.",
           "previewIds": [
             "HostOrganizersScreen/Route states"
@@ -12107,7 +12107,7 @@
             "layer": "section",
             "claudeComponents": [
               "CatchRootScreenScaffold.withPrimaryRail",
-              "ClubSwitcher"
+              "OrganizerSwitcher"
             ],
             "flutter": {
               "file": "packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart",
@@ -12169,8 +12169,8 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostClubProfileEditor",
-              "HostClubMetaRow"
+              "HostOrganizerProfileEditor",
+              "HostOrganizerMetaRow"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations/host_organizer_edit_body.dart",
@@ -12614,7 +12614,7 @@
         {
           "id": "DS-HOST-CLUBS-002",
           "status": "closed",
-          "nextAction": "Selected club, selected tab, and owner/co-host role capability live in HostOrganizersScreenState. The organizer Edit tab is the only club editor and owns identity, contact, logo/photos, policy defaults, Event Success defaults, payouts, and host team. The former /host/clubs/:clubId/edit location is not mounted. Inline edit, media, defaults, and payout actions have controller mutations; Host Team sheet/dialog states are public; HostOrganizerInsightsState owns analytics query and retry target identity. Broader provider-free section extraction remains part of GOAL-DS-002."
+          "nextAction": "Selected club, selected tab, and owner/co-host role capability live in HostOrganizersScreenState. The organizer Edit tab is the only club editor and owns identity, contact, logo/photos, policy defaults, Event Success defaults, payouts, and host team. The former /host/clubs/:organizerId/edit location is not mounted. Inline edit, media, defaults, and payout actions have controller mutations; Host Team sheet/dialog states are public; HostOrganizerInsightsState owns analytics query and retry target identity. Broader provider-free section extraction remains part of GOAL-DS-002."
         },
         {
           "id": "DS-HOST-CLUBS-003",
@@ -12679,7 +12679,7 @@
       "routes": [
         {
           "id": "hostOrganizerDetailScreen",
-          "path": "/host/organizers/:clubId",
+          "path": "/host/organizers/:organizerId",
           "role": "primary"
         }
       ],
@@ -12755,7 +12755,7 @@
           "kind": "claude",
           "status": "available",
           "notes": "Canonical Host Club Detail owner/public-view reference exported, masked, manifest-registered, and wired to the host_club_detail_public capture for advisory comparison. 2026-06-25 public-view passes align the photo fixture, one-line title scale, next-event address, next-run banner, 4-up stats, body section order, activity chips, capture font loading, asset prewarm, floating hero chrome, stat value fit, regular-weight About copy, and split generic-tag wraps. The advisory compare improved from 28.94% mismatch / 44.44 meanDelta to 17.87% / 19.52; hero-edge mask calibration moved the registered comparison within threshold at 15.82% / 15.22. Host controls remain out of this public-preview route unless a future design variant adds them.",
-          "path": "design/source_packs/host-v2/templates/catch-club-detail/ClubDetailV2.dc.html"
+          "path": "design/source_packs/host-v2/templates/catch-club-detail/OrganizerDetailV2.dc.html"
         },
         {
           "id": "generated.host-club-detail-reference",
@@ -12839,7 +12839,7 @@
           "id": "loading_without_initial_club",
           "kind": "loading",
           "status": "captured",
-          "source": "HostOrganizerDetailScreenState maps organizerDetailViewModelProvider loading with no route extra to ClubDetailLoadingBody with hero, stats, host, about, tag, and upcoming-section skeletons.",
+          "source": "HostOrganizerDetailScreenState maps organizerDetailViewModelProvider loading with no route extra to OrganizerDetailLoadingBody with hero, stats, host, about, tag, and upcoming-section skeletons.",
           "tests": [
             "test/organizers/organizers_controllers_test.dart",
             "test/organizers/organizers_flow_test.dart"
@@ -12952,7 +12952,7 @@
           "id": "event_navigation_host_route",
           "kind": "populated",
           "status": "tested",
-          "source": "OrganizerDetailScreen passes a route-level onEventSelected callback into OrganizerDetailBody. In host app role, schedule taps route to hostAppEventDetailScreen with the clubId/eventId params preserved.",
+          "source": "OrganizerDetailScreen passes a route-level onEventSelected callback into OrganizerDetailBody. In host app role, schedule taps route to hostAppEventDetailScreen with the organizerId/eventId params preserved.",
           "tests": [
             "test/organizers/organizers_flow_test.dart"
           ],
@@ -13010,7 +13010,7 @@
           "id": "host_controls_missing",
           "kind": "populated",
           "status": "captured",
-          "source": "The current Host Club Detail contract is public-preview-only: HostClubManagementPanel, Add event, Edit club, payouts, and team controls stay in Host Home and Host Clubs.",
+          "source": "The current Host Club Detail contract is public-preview-only: HostOrganizerManagementPanel, Add event, Edit club, payouts, and team controls stay in Host Home and Host Clubs.",
           "nextAction": "Add a new host-control variant only if the design contract moves operations onto this route.",
           "previewIds": [
             "OrganizerDetailScreen/Public preview states"
@@ -13274,7 +13274,7 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "ClubOverview",
+              "OrganizerOverview",
               "OrganizerTagList",
               "OrganizerPhotoRail",
               "OrganizerContactSection"
@@ -13366,7 +13366,7 @@
             "status": "planned",
             "layer": "section",
             "claudeComponents": [
-              "HostClubDetailActions"
+              "HostOrganizerDetailActions"
             ],
             "flutter": {
               "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
@@ -13396,8 +13396,8 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostClubDetailAccessState",
-              "HostClubDetailErrorState"
+              "HostOrganizerDetailAccessState",
+              "HostOrganizerDetailErrorState"
             ],
             "flutter": {
               "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
@@ -13432,7 +13432,7 @@
         {
           "id": "DS-HOST-CLUB-DETAIL-002",
           "status": "closed",
-          "nextAction": "HostOrganizerDetailScreenState owns branch selection, initial data fallback, host ownership/public-preview mode, dock suppression, and load-error retry intent typing. HostOrganizerDetailError carries HostOrganizerDetailRetryIntent.reloadDetail, and OrganizerDetailScreen executes that typed retry through _retryHostClubDetail before invalidating organizerDetailViewModelProvider. Schedule routing, host profile/message actions, contact launches, and share side effects are also wired through typed callbacks."
+          "nextAction": "HostOrganizerDetailScreenState owns branch selection, initial data fallback, host ownership/public-preview mode, dock suppression, and load-error retry intent typing. HostOrganizerDetailError carries HostOrganizerDetailRetryIntent.reloadDetail, and OrganizerDetailScreen executes that typed retry through _retryHostOrganizerDetail before invalidating organizerDetailViewModelProvider. Schedule routing, host profile/message actions, contact launches, and share side effects are also wired through typed callbacks."
         },
         {
           "id": "DS-HOST-CLUB-DETAIL-003",
@@ -13478,7 +13478,7 @@
       "routes": [
         {
           "id": "hostCreateEventScreen",
-          "path": "/host/organizers/:clubId/create-event",
+          "path": "/host/organizers/:organizerId/create-event",
           "role": "primary"
         }
       ],
@@ -14893,7 +14893,7 @@
       "routes": [
         {
           "id": "hostAppEventManageScreen",
-          "path": "/host/organizers/:clubId/events/:eventId/manage",
+          "path": "/host/organizers/:organizerId/events/:eventId/manage",
           "role": "primary"
         },
         {
@@ -14903,12 +14903,12 @@
         },
         {
           "id": "hostAppAttendanceSheet",
-          "path": "/host/organizers/:clubId/events/:eventId/attendance",
+          "path": "/host/organizers/:organizerId/events/:eventId/attendance",
           "role": "host"
         },
         {
           "id": "hostAppEventSuccessScreen",
-          "path": "/host/organizers/:clubId/events/:eventId/success",
+          "path": "/host/organizers/:organizerId/events/:eventId/success",
           "role": "host"
         }
       ],
@@ -17668,7 +17668,7 @@
         },
         {
           "id": "hostOrganizerMessagingScreen",
-          "path": "/host/organizer/:clubId/messaging",
+          "path": "/host/organizer/:organizerId/messaging",
           "role": "host"
         }
       ],
@@ -23340,7 +23340,7 @@
           "kind": "claude",
           "status": "available",
           "notes": "Canonical Host Create Club basics reference exported, masked, manifest-registered, and wired to the create_club_basics capture for advisory comparison. Remaining wizard steps and mutation/success variants still need canonical references.",
-          "path": "design/source_packs/host-v2/templates/hosts-create-club/HostCreateClub.dc.html"
+          "path": "design/source_packs/host-v2/templates/hosts-create-club/HostCreateOrganizer.dc.html"
         },
         {
           "id": "generated.host-club-create-basics-reference",
@@ -23705,7 +23705,7 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostClubStepHeader"
+              "HostOrganizerStepHeader"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart",
@@ -23803,7 +23803,7 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "CreateClubFooter"
+              "CreateOrganizerFooter"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/widgets/host_stepper_dock.dart",
@@ -23884,7 +23884,7 @@
       "routes": [
         {
           "id": "hostAppEditEventScreen",
-          "path": "/host/organizers/:clubId/events/:eventId/edit",
+          "path": "/host/organizers/:organizerId/events/:eventId/edit",
           "role": "primary"
         }
       ],
@@ -25271,7 +25271,7 @@
           "id": "row_navigation_targets",
           "kind": "populated",
           "status": "tested",
-          "source": "NotificationsListState derives chat, event detail, or club detail paths from matchId, eventId+clubId, or clubId before ActivitySection renders provider-free rows.",
+          "source": "NotificationsListState derives chat, event detail, or club detail paths from matchId, eventId+organizerId, or organizerId before ActivitySection renders provider-free rows.",
           "tests": [
             "test/dashboard/dashboard_screen_test.dart"
           ],
@@ -27937,12 +27937,12 @@
       "routes": [
         {
           "id": "hostEventRehearsalStartScreen",
-          "path": "/host/organizers/:clubId/rehearsals/new",
+          "path": "/host/organizers/:organizerId/rehearsals/new",
           "role": "host"
         },
         {
           "id": "hostEventRehearsalScreen",
-          "path": "/host/organizers/:clubId/rehearsals/:sessionId",
+          "path": "/host/organizers/:organizerId/rehearsals/:sessionId",
           "role": "host"
         }
       ],
@@ -28312,7 +28312,7 @@
       "routes": [
         {
           "id": "hostCreateProgramScreen",
-          "path": "/host/organizers/:clubId/create-program",
+          "path": "/host/organizers/:organizerId/create-program",
           "role": "primary"
         }
       ],
@@ -31071,7 +31071,7 @@
       "routes": [
         {
           "id": "hostAppEventMomentsScreen",
-          "path": "/host/organizers/:clubId/events/:eventId/moments",
+          "path": "/host/organizers/:organizerId/events/:eventId/moments",
           "role": "primary"
         }
       ],

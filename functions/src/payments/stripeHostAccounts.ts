@@ -5,7 +5,7 @@ import {
 } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import type {
-  ClubHostClaimDocument,
+  OrganizerHostClaimDocument,
   HostPaymentAccountDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -73,7 +73,7 @@ export async function createStripeHostOnboardingLinkHandler(
 
   const [userSnap, hostClaimSnap, existing] = await Promise.all([
     db.collection("users").doc(uid).get(),
-    db.collection("clubHostClaims").doc(uid).get(),
+    db.collection("organizerHostClaims").doc(uid).get(),
     findHostPaymentAccount(db, uid, "stripe"),
   ]);
   if (!userSnap.exists) {
@@ -90,9 +90,9 @@ export async function createStripeHostOnboardingLinkHandler(
     userSnap,
     "UserProfileDocument"
   );
-  requireDoc<ClubHostClaimDocument>(
+  requireDoc<OrganizerHostClaimDocument>(
     hostClaimSnap,
-    "ClubHostClaimDocument"
+    "OrganizerHostClaimDocument"
   );
   const stripe = deps.stripe();
   const existingAccount = existing.account;

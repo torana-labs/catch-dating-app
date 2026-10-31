@@ -34,7 +34,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     expect(find.byIcon(CatchIcons.forward), findsNothing);
   });
 
-  testWidgets('ClubsContent renders personal rail and mixed discovery cards', (
+  testWidgets('OrganizersContent renders personal rail and mixed discovery cards', (
     tester,
   ) async {
     await _pumpOrganizersSlivers(tester, [

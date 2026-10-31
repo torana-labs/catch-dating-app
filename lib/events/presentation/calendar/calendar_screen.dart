@@ -188,7 +188,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   void _openEventDetail(BuildContext context, Event event) {
     context.pushNamed(
       Routes.calendarEventDetailScreen.name,
-      pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+      pathParameters: {'organizerId': event.clubId, 'eventId': event.id},
       extra: event,
     );
   }

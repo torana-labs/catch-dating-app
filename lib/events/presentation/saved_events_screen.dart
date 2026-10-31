@@ -137,7 +137,7 @@ class SavedEventsScreen extends ConsumerWidget {
   void _openEventDetail(BuildContext context, Event event) {
     context.pushNamed(
       Routes.savedEventDetailScreen.name,
-      pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+      pathParameters: {'organizerId': event.clubId, 'eventId': event.id},
       extra: event,
     );
   }

@@ -675,7 +675,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
 
   void _reviewWhatsappSenderSetup(Organizer organizer) => context.pushNamed(
     Routes.hostOrganizerMessagingScreen.name,
-    pathParameters: {'clubId': organizer.id},
+    pathParameters: {'organizerId': organizer.id},
   );
 
   Future<void> _addCustomer(

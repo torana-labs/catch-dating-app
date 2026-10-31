@@ -52,7 +52,7 @@ interface EventSuccessLiveControlDeps {
 
 interface LivePlanDocument {
   eventId?: string;
-  clubId?: string;
+  organizerId?: string;
   activeStepIndex?: number;
   liveControlRevision?: number;
   assignmentDraftRevision?: number;

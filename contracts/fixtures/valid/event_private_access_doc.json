@@ -1,6 +1,6 @@
 {
   "eventId": "event-1",
-  "clubId": "club-1",
+  "organizerId": "club-1",
   "inviteCode": "CATCH-DELHI",
   "createdAt": {
     "_seconds": 1778800000,

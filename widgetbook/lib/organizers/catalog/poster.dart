@@ -86,7 +86,7 @@ Widget catchOrganizerPosterStates(BuildContext context) {
 )
 Widget organizerPlaceholderCoverStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubPlaceholderCover',
+    title: 'OrganizerPlaceholderCover',
     catalogId: 'card.organizer.poster_artwork',
     children: [
       WidgetbookPageStateCard(

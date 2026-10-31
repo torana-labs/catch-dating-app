@@ -3411,20 +3411,6 @@
       ]
     },
     {
-      "collectionGroup": "eventParticipations",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "clubId",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "hostApprovalStatus",
-          "mode": "ASCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "providerSyncRuns",
       "queryScope": "COLLECTION",
       "fields": [
@@ -3483,38 +3469,6 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "clubId",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "startTime",
-          "mode": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "events",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "clubId",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "startTime",
-          "mode": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "events",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
           "fieldPath": "organizerId",
           "mode": "ASCENDING"
         },
@@ -3584,28 +3538,6 @@
       "fields": [
         {
           "fieldPath": "organizerId",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "endTime",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "mode": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "events",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "clubId",
           "mode": "ASCENDING"
         },
         {
@@ -3663,7 +3595,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "clubId",
+          "fieldPath": "organizerId",
           "mode": "ASCENDING"
         },
         {
@@ -3681,7 +3613,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "clubId",
+          "fieldPath": "organizerId",
           "mode": "ASCENDING"
         },
         {
@@ -3827,7 +3759,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "clubId",
+          "fieldPath": "organizerId",
           "mode": "ASCENDING"
         },
         {
@@ -3841,7 +3773,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "clubId",
+          "fieldPath": "organizerId",
           "mode": "ASCENDING"
         },
         {
@@ -4463,7 +4395,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "clubId",
+          "fieldPath": "organizerId",
           "mode": "ASCENDING"
         },
         {
@@ -4477,7 +4409,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "clubId",
+          "fieldPath": "organizerId",
           "mode": "ASCENDING"
         },
         {
@@ -4491,7 +4423,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "clubId",
+          "fieldPath": "organizerId",
           "mode": "ASCENDING"
         },
         {
@@ -6535,20 +6467,6 @@
         {
           "fieldPath": "__name__",
           "mode": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "reviews",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "organizerId",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "mode": "DESCENDING"
         }
       ]
     },

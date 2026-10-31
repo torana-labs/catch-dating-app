@@ -60,7 +60,7 @@ test("createStripeCheckoutSessionHandler creates trusted destination checkout",
 
     assert.equal(capturedInput?.paymentId, "payment_1");
     assert.equal(capturedInput?.eventId, "event-1");
-    assert.equal(capturedInput?.clubId, "club-1");
+    assert.equal(capturedInput?.organizerId, "club-1");
     assert.equal(capturedInput?.userId, "runner-1");
     assert.equal(capturedInput?.hostUserId, "host-1");
     assert.equal(capturedInput?.stripeAccountId, "acct_host_123");
@@ -216,7 +216,6 @@ function buildEventDoc(
   overrides: Partial<EventDocument> = {}
 ): EventDocument {
   return {
-    clubId: "club-1",
     organizerId: "organizer-1",
     eventOrigin: catchNativeEventOrigin(),
     startTime: timestamp("2026-05-02T01:30:00.000Z"),

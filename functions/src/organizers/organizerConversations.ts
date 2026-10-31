@@ -204,7 +204,7 @@ async function startOrganizerConversationCore(
         matchSnap,
         "MatchDocument"
       );
-      if (match.conversationType !== "clubHostInquiry" ||
+      if (match.conversationType !== "organizerHostInquiry" ||
           match.organizerId !== data.organizerId) {
         throw new HttpsError(
           "failed-precondition",
@@ -235,7 +235,7 @@ async function startOrganizerConversationCore(
       status: "active",
       blockedBy: null,
       blockedAt: null,
-      conversationType: "clubHostInquiry",
+      conversationType: "organizerHostInquiry",
       organizerId: data.organizerId,
     };
     tx.create(matchRef, matchDoc);

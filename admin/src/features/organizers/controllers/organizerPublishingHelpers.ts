@@ -1,8 +1,8 @@
 import type {
-  AdminClubDetails,
+  AdminOrganizerDetails,
   AdminOrganizerOwnerLink,
-  AdminSetClubIndexStatusPayload,
-  AdminUpdateClubDetailsPayload,
+  AdminSetOrganizerIndexStatusPayload,
+  AdminUpdateOrganizerDetailsPayload,
   OrganizerAppVisibility,
   OrganizerOwnerLinkIcon,
   OrganizerType,
@@ -16,7 +16,7 @@ import {
 } from "../../../shared/config/launchMarkets";
 
 export interface OrganizerPublishingFormState {
-  clubId: string;
+  organizerId: string;
   name: string;
   description: string;
   location: string;
@@ -245,40 +245,40 @@ export function updateOrganizerLaunchMarket(
 }
 
 export function formFromOrganizerProfile(
-  club: AdminClubDetails
+  organizer: AdminOrganizerDetails
 ): OrganizerPublishingFormState {
   return {
-    clubId: club.clubId,
-    name: club.name,
-    description: club.description,
-    location: club.location ?? "",
-    area: club.area,
-    tagsText: listToText(club.tags),
-    instagramHandle: club.instagramHandle ?? "",
-    phoneNumber: club.phoneNumber ?? "",
-    email: club.email ?? "",
-    imageUrl: club.imageUrl ?? "",
-    profileImageUrl: club.profileImageUrl ?? "",
-    organizerType: club.organizerType,
-    publicCategoryLabel: club.publicCategoryLabel ?? "",
-    cityName: club.cityName ?? "",
-    regionName: club.regionName ?? "",
-    countryCode: club.countryCode ?? "",
-    countryName: club.countryName ?? "",
-    appVisibility: club.appVisibility ?? "hidden",
-    publicPageSlug: club.publicPage.slug ?? "",
-    publicPageCitySlug: club.publicPage.citySlug ?? "",
-    canonicalPath: club.publicPage.canonicalPath ?? "",
-    publishStatus: club.publicPage.publishStatus ?? "qa",
-    seoTitle: club.publicPage.seoTitle ?? "",
-    seoDescription: club.publicPage.seoDescription ?? "",
-    sourceConfidence: club.provenance.sourceConfidence ?? "seedOnly",
-    verificationStatus: club.provenance.verificationStatus ?? "unverified",
-    headline: club.publicProfile.headline ?? "",
-    summary: club.publicProfile.summary ?? "",
-    sourceSummary: club.publicProfile.sourceSummary ?? "",
-    formatsText: listToText(club.publicProfile.formats),
-    ownerLinks: club.ownerLinks.map(ownerLinkDraft),
+    organizerId: organizer.organizerId,
+    name: organizer.name,
+    description: organizer.description,
+    location: organizer.location ?? "",
+    area: organizer.area,
+    tagsText: listToText(organizer.tags),
+    instagramHandle: organizer.instagramHandle ?? "",
+    phoneNumber: organizer.phoneNumber ?? "",
+    email: organizer.email ?? "",
+    imageUrl: organizer.imageUrl ?? "",
+    profileImageUrl: organizer.profileImageUrl ?? "",
+    organizerType: organizer.organizerType,
+    publicCategoryLabel: organizer.publicCategoryLabel ?? "",
+    cityName: organizer.cityName ?? "",
+    regionName: organizer.regionName ?? "",
+    countryCode: organizer.countryCode ?? "",
+    countryName: organizer.countryName ?? "",
+    appVisibility: organizer.appVisibility ?? "hidden",
+    publicPageSlug: organizer.publicPage.slug ?? "",
+    publicPageCitySlug: organizer.publicPage.citySlug ?? "",
+    canonicalPath: organizer.publicPage.canonicalPath ?? "",
+    publishStatus: organizer.publicPage.publishStatus ?? "qa",
+    seoTitle: organizer.publicPage.seoTitle ?? "",
+    seoDescription: organizer.publicPage.seoDescription ?? "",
+    sourceConfidence: organizer.provenance.sourceConfidence ?? "seedOnly",
+    verificationStatus: organizer.provenance.verificationStatus ?? "unverified",
+    headline: organizer.publicProfile.headline ?? "",
+    summary: organizer.publicProfile.summary ?? "",
+    sourceSummary: organizer.publicProfile.sourceSummary ?? "",
+    formatsText: listToText(organizer.publicProfile.formats),
+    ownerLinks: organizer.ownerLinks.map(ownerLinkDraft),
     reviewNote: "",
   };
 }
@@ -338,20 +338,20 @@ function isoFromLocalDateTime(value: string): string | null {
 }
 
 export function diffOrganizerProfile(
-  club: AdminClubDetails | null,
+  organizer: AdminOrganizerDetails | null,
   form: OrganizerPublishingFormState | null
 ): OrganizerDiffRow[] {
-  if (!club || !form) return [];
-  const original = formFromOrganizerProfile(club);
+  if (!organizer || !form) return [];
+  const original = formFromOrganizerProfile(organizer);
   return diffFields(original, form);
 }
 
 export function buildOrganizerSavePayload(
-  club: AdminClubDetails,
+  organizer: AdminOrganizerDetails,
   form: OrganizerPublishingFormState
-): AdminUpdateClubDetailsPayload {
-  const original = formFromOrganizerProfile(club);
-  const fields: AdminUpdateClubDetailsPayload["fields"] = {};
+): AdminUpdateOrganizerDetailsPayload {
+  const original = formFromOrganizerProfile(organizer);
+  const fields: AdminUpdateOrganizerDetailsPayload["fields"] = {};
 
   addChanged(fields, "name", original.name, form.name);
   addChanged(fields, "description", original.description, form.description);
@@ -392,7 +392,7 @@ export function buildOrganizerSavePayload(
   addChanged(fields, "appVisibility", original.appVisibility, form.appVisibility);
 
   const publicPage: NonNullable<
-    AdminUpdateClubDetailsPayload["fields"]["publicPage"]
+    AdminUpdateOrganizerDetailsPayload["fields"]["publicPage"]
   > = {};
   addChanged(publicPage, "slug", original.publicPageSlug, form.publicPageSlug);
   addChanged(
@@ -418,7 +418,7 @@ export function buildOrganizerSavePayload(
   if (Object.keys(publicPage).length > 0) fields.publicPage = publicPage;
 
   const provenance: NonNullable<
-    AdminUpdateClubDetailsPayload["fields"]["provenance"]
+    AdminUpdateOrganizerDetailsPayload["fields"]["provenance"]
   > = {};
   addChanged(
     provenance,
@@ -435,7 +435,7 @@ export function buildOrganizerSavePayload(
   if (Object.keys(provenance).length > 0) fields.provenance = provenance;
 
   const publicProfile: NonNullable<
-    AdminUpdateClubDetailsPayload["fields"]["publicProfile"]
+    AdminUpdateOrganizerDetailsPayload["fields"]["publicProfile"]
   > = {};
   addChanged(publicProfile, "headline", original.headline, nullableText(form.headline));
   addChanged(publicProfile, "summary", original.summary, nullableText(form.summary));
@@ -457,7 +457,7 @@ export function buildOrganizerSavePayload(
   }
 
   return {
-    clubId: form.clubId.trim(),
+    organizerId: form.organizerId.trim(),
     reviewNote: nullableText(form.reviewNote),
     fields,
   };
@@ -466,9 +466,9 @@ export function buildOrganizerSavePayload(
 export function buildOrganizerPublishPayload(
   form: OrganizerPublishingFormState,
   checklist: PublishChecklistState
-): AdminSetClubIndexStatusPayload {
+): AdminSetOrganizerIndexStatusPayload {
   return {
-    clubId: form.clubId.trim(),
+    organizerId: form.organizerId.trim(),
     indexStatus: "indexReady",
     checklist,
     reviewNote: nullableText(form.reviewNote),

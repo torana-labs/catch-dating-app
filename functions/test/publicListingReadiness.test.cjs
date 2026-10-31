@@ -19,7 +19,7 @@ async function project(data) {
 }
 function organizer(managed = false) {
   const data = JSON.parse(fs.readFileSync(path.join(root,
-    "contracts/fixtures/valid/club_doc.json"), "utf8"));
+    "contracts/fixtures/valid/organizer_doc.json"), "utf8"));
   delete data.memberCount;
   Object.assign(data, {organizerType: "eventProducer", organizerPhotos: [], followerCount: 0,
     hostUserId: managed ? "owner" : null, ownerUserId: managed ? "owner" : null,

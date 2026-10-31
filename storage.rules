@@ -235,10 +235,10 @@ service firebase.storage {
             !firestore.get(
               /databases/(default)/documents/events/$(eventId)
             ).data.keys().hasAny(['organizerId'])
-            && canWriteClubMedia(
+            && canWriteOrganizerMedia(
               firestore.get(
                 /databases/(default)/documents/events/$(eventId)
-              ).data.clubId
+              ).data.organizerId
             )
           )
         );

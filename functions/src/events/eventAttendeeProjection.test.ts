@@ -111,7 +111,6 @@ function participation(
     FirebaseFirestore.Timestamp;
   return {
     eventId: "event-1",
-    clubId: "organizer-1",
     organizerId: "organizer-1",
     uid: "user-1",
     status: "signedUp",
@@ -217,7 +216,6 @@ test(
         "publicProfiles/user-1": {name: "Asha"},
         [`eventAttendees/${attendeeId}`]: {
           eventId: "event-1",
-          clubId: "organizer-1",
           organizerId: "organizer-1",
           displayName: "Imported Asha",
           searchName: "imported asha",
@@ -267,7 +265,7 @@ test("ready projection follows current reserved source without changing seats",
     const uid = "user-1";
     const key = "uid_1";
     const current = participation({organizerId: undefined});
-    const event = {clubId: "organizer-1", capacityLimit: 20,
+    const event = {organizerId: "organizer-1", capacityLimit: 20,
       status: "active", constraints: {minAge: 0, maxAge: 99}};
     const policy = deriveEventSeatPolicy(event);
     const reservationId = createHash("sha256")

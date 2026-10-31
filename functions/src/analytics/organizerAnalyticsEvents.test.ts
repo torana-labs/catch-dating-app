@@ -79,7 +79,7 @@ test("recordOrganizerAnalyticsEvent writes a BigQuery row", async () => {
 
   await recordOrganizerAnalyticsEventHandler(
     callableRequest({
-      clubId: "club-1",
+      organizerId: "club-1",
       eventName: "eventView",
       eventId: "event-1",
       pagePath: "/organizers/saket-run-club/",
@@ -156,14 +156,14 @@ test("recordOrganizerAnalyticsEvent rejects mismatched scope", async () => {
   await assert.rejects(
     () => recordOrganizerAnalyticsEventHandler(
       callableRequest({
-        clubId: "club-1",
+        organizerId: "club-1",
         eventId: "event-2",
         eventName: "eventView",
         pagePath: "/organizers/saket-run-club/",
       }),
       deps(new FakeFirestore({
         ...baseDocs(),
-        "events/event-2": {clubId: "club-2"},
+        "events/event-2": {organizerId: "club-2"},
       }), new FakeBigQuery())
     ),
     (error: unknown) =>
@@ -178,13 +178,13 @@ test("recordOrganizerAnalyticsEvent rejects unpublished pages", async () => {
   await assert.rejects(
     () => recordOrganizerAnalyticsEventHandler(
       callableRequest({
-        clubId: "club-1",
+        organizerId: "club-1",
         eventName: "listingView",
         pagePath: "/organizers/saket-run-club/",
       }),
       deps(new FakeFirestore({
         ...baseDocs(),
-        "organizers/club-1": clubDoc({
+        "organizers/club-1": organizerDoc({
           publishStatus: "qa",
           robots: "noindex, follow",
         }),
@@ -202,7 +202,7 @@ test("recordOrganizerAnalyticsEvent rejects noncanonical paths", async () => {
   await assert.rejects(
     () => recordOrganizerAnalyticsEventHandler(
       callableRequest({
-        clubId: "club-1",
+        organizerId: "club-1",
         eventName: "listingView",
         pagePath: "/organizers/other-club/",
       }),
@@ -221,7 +221,7 @@ test("recordOrganizerAnalyticsEvent accepts search appearances", async () => {
 
   await recordOrganizerAnalyticsEventHandler(
     callableRequest({
-      clubId: "club-1",
+      organizerId: "club-1",
       eventName: "searchAppearance",
       pagePath: "/organizers/?q=saket",
     }),
@@ -235,7 +235,7 @@ test("recordOrganizerAnalyticsEvent rejects rate-limited clients", async () => {
   await assert.rejects(
     () => recordOrganizerAnalyticsEventHandler(
       callableRequest({
-        clubId: "club-1",
+        organizerId: "club-1",
         eventName: "listingView",
         pagePath: "/organizers/saket-run-club/",
       }),
@@ -259,7 +259,7 @@ for (const overrides of [
       callableRequest({organizerId: "club-1", eventId: "event-1",
         eventName: "eventView", pagePath: "/events/event-1/"}),
       deps(new FakeFirestore({...baseDocs(), "events/event-1": {
-        clubId: "club-1", ...overrides,
+        organizerId: "club-1", ...overrides,
       }}), bigQuery)
     ), {code: "failed-precondition"});
     assert.equal(bigQuery.inserted.length, 0);
@@ -307,7 +307,7 @@ test("organizer preview excludes visitor metrics", async () => {
   request.auth = {uid: "owner-1", token: {}} as CallableRequest["auth"];
   assert.deepEqual(await recordOrganizerAnalyticsEventHandler(request,
     deps(new FakeFirestore({...baseDocs(), "organizers/club-1": {
-      ...clubDoc(), ownerUserId: "owner-1",
+      ...organizerDoc(), ownerUserId: "owner-1",
     }}), bigQuery)), {accepted: true});
   assert.equal(bigQuery.inserted.length, 0);
 });
@@ -354,7 +354,7 @@ for (const status of ["active", "removed"]) {
 }
 
 for (const payload of [
-  {organizerId: "club-1", clubId: "club-2"},
+  {organizerId: "club-1"},
   {organizerId: "club-1/private"},
   {organizerId: "club-1", eventId: "event-1/private"},
 ]) {
@@ -395,22 +395,22 @@ function deps(
 
 function baseDocs(): Record<string, FakeData> {
   return {
-    "organizers/club-1": clubDoc(),
+    "organizers/club-1": organizerDoc(),
     "events/event-1": {
-      clubId: "club-1", publicationState: "published", status: "active",
+      organizerId: "club-1", publicationState: "published", status: "active",
     },
   };
 }
 
 function linkDocs(): Record<string, FakeData> {
-  return {...baseDocs(), "organizers/club-1": {...clubDoc(), ownerLinks: [
+  return {...baseDocs(), "organizers/club-1": {...organizerDoc(), ownerLinks: [
     {id: "tickets", label: "Tickets", subtitle: null,
       url: "https://www.district.in/saket", icon: "tickets", pinned: false,
       showUntil: null},
   ]}};
 }
 
-function clubDoc(publicPageOverrides: FakeData = {}): FakeData {
+function organizerDoc(publicPageOverrides: FakeData = {}): FakeData {
   return {
     name: "Saket Run Club",
     status: "active",

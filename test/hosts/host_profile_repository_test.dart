@@ -20,7 +20,7 @@ void main() {
             'bio': 'Runs intimate events.',
             'status': 'pending',
             'verified': true,
-            'linkedClubIds': ['club-1', '', 'club-2'],
+            'linkedOrganizerIds': ['club-1', '', 'club-2'],
             'createdAt': Timestamp.fromDate(createdAt),
             'updatedAt': Timestamp.fromDate(updatedAt),
           });

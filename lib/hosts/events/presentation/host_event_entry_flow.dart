@@ -54,7 +54,7 @@ Future<void> runHostEventEntryFlow({
       if (state.organizerId != organizer.id || !context.mounted) return;
       await context.pushNamed(
         Routes.hostCreateProgramScreen.name,
-        pathParameters: {'clubId': organizer.id},
+        pathParameters: {'organizerId': organizer.id},
       );
     case HostEventEntryIntent.resumePrivateEvent:
       final eventId = selection.savedEventId;
@@ -79,7 +79,7 @@ Future<void> _openCreateEvent({
 }) async {
   await context.pushNamed(
     Routes.hostCreateEventScreen.name,
-    pathParameters: {'clubId': organizer.id},
+    pathParameters: {'organizerId': organizer.id},
     extra: HostCreateEventRouteArguments(
       initialOrganizer: organizer,
       initialDraft: initialDraft,
@@ -103,7 +103,7 @@ Future<void> _openRepeatEvent({
   final prefill = CreateEventPrefill.repeat(event: event, createdAt: createdAt);
   await context.pushNamed(
     Routes.hostCreateEventScreen.name,
-    pathParameters: {'clubId': organizer.id},
+    pathParameters: {'organizerId': organizer.id},
     extra: HostCreateEventRouteArguments(
       initialOrganizer: organizer,
       initialPrefill: prefill,

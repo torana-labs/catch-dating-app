@@ -92,7 +92,7 @@ class RecommendCard extends StatelessWidget {
       clockTime: TimeOfDay.fromDateTime(event.startTime),
       onTap: () => context.pushNamed(
         Routes.dashboardEventDetailScreen.name,
-        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+        pathParameters: {'organizerId': event.clubId, 'eventId': event.id},
         extra: event,
       ),
     );

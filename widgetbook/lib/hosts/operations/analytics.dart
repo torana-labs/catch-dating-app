@@ -38,7 +38,7 @@ Widget hostAnalyticsPeriodStates(BuildContext context) =>
 )
 Widget hostInsightsScorecardStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostClubInsightsSection',
+    title: 'HostOrganizerInsightsSection',
     contractId: 'screen.host.clubs.insights',
     children: [
       WidgetbookPageStateCard(

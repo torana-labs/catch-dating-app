@@ -90,7 +90,7 @@
         "Badges on dark or media surfaces use EventSuccessDarkPill's translucent light fill, light hairline, and light ink.",
         "Numeric overlays accept an integer, hide at zero, and cap at 99+ through CatchCountBadge.",
         "Quiet unsaved status remains unboxed as a status dot plus supporting copy.",
-        "ClubRatingPill and CatchCornerSash are removed because neither has a current production adopter."
+        "OrganizerRatingPill and CatchCornerSash are removed because neither has a current production adopter."
       ],
       "reviewQuestions": [
         {
@@ -138,10 +138,10 @@
         {
           "id": "B5",
           "prompt": "What should happen to the unused rating pill and card-edge sash?",
-          "recommendation": "Discard ClubRatingPill; retain CatchCornerSash only if a real adopter is named.",
-          "selectedOption": "Discard ClubRatingPill; retain CatchCornerSash only if a real adopter is named.",
+          "recommendation": "Discard OrganizerRatingPill; retain CatchCornerSash only if a real adopter is named.",
+          "selectedOption": "Discard OrganizerRatingPill; retain CatchCornerSash only if a real adopter is named.",
           "options": [
-            "Discard ClubRatingPill; retain CatchCornerSash only if a real adopter is named.",
+            "Discard OrganizerRatingPill; retain CatchCornerSash only if a real adopter is named.",
             "Keep both as supported primitives.",
             "Discard both."
           ]
@@ -176,7 +176,7 @@
           "rationale": "Retain the typed trust semantics and localized icon/copy mapping while routing its chrome through the canonical badge grammar."
         },
         {
-          "symbol": "ClubHostRoleBadge",
+          "symbol": "OrganizerHostRoleBadge",
           "disposition": "discard",
           "preview": "not-applicable",
           "rationale": "User reviewed the rendered retirement gallery on 2026-09-23 and approved removal: no production caller remains outside the retired set and no design extraction is requested."
@@ -221,7 +221,7 @@
           "rationale": "No real production adopter was named during approval, so the unused sash is removed rather than retained as speculative core API."
         },
         {
-          "symbol": "ClubRatingPill",
+          "symbol": "OrganizerRatingPill",
           "disposition": "discard",
           "preview": "not-applicable",
           "rationale": "It has no current production adopter; rating metadata can use the canonical badge grammar if the concept returns."
@@ -4001,7 +4001,7 @@
           "rationale": "One feature adapter over the existing CatchStepHeader; no new primitive concept."
         },
         {
-          "symbol": "CreateClubStepHeader",
+          "symbol": "CreateOrganizerStepHeader",
           "disposition": "unify",
           "target": "HostWizardStepHeader",
           "preview": "not-applicable",

@@ -135,7 +135,7 @@ Future<void> _seedParticipation(
       .doc(eventParticipationId(eventId: eventId, uid: uid))
       .set({
         'eventId': eventId,
-        'clubId': 'club-1',
+        'organizerId': 'club-1',
         'uid': uid,
         'status': status,
         'createdAt': now,

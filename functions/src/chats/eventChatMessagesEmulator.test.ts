@@ -60,12 +60,10 @@ test("event messages fence retries, protect replies and expire typing",
       ...[host, person, stranger].flatMap((uid) =>
         [ref("users", uid), ref("deletedUsers", uid)])];
     try {
-      await ref("events", eventId).set({organizerId, clubId: organizerId,
-        name: "Demo event", status: "active"});
+      await ref("events", eventId).set({organizerId, name: "Demo event", status: "active"});
       await ref("organizers", organizerId).set({ownerUserId: host,
         hostUserId: host, hostUserIds: [], hostProfiles: []});
-      await participation.set({eventId, organizerId, clubId: organizerId,
-        uid: person, status: "signedUp"});
+      await participation.set({eventId, organizerId, uid: person, status: "signedUp"});
       for (const uid of [host, person]) {
         await ref("users", uid).set({
           displayName: uid === host ? "Host" : "Sara",

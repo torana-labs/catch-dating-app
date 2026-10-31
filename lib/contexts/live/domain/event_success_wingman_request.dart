@@ -31,7 +31,7 @@ final class EventSuccessWingmanRequest {
     return EventSuccessWingmanRequest(
       id: json['id'] as String,
       eventId: json['eventId'] as String,
-      clubId: json['clubId'] as String,
+      clubId: json['organizerId'] as String,
       requesterUid: json['requesterUid'] as String,
       targetUid: json['targetUid'] as String,
       status: EventSuccessWingmanRequestStatus.fromJson(json['status']),
@@ -64,7 +64,7 @@ final class EventSuccessWingmanRequest {
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
-    'clubId': clubId,
+    'organizerId': clubId,
     'requesterUid': requesterUid,
     'targetUid': targetUid,
     'status': status.name,

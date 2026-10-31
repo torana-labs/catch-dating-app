@@ -146,25 +146,25 @@ class FakeFirestore {
 function harness(overrides: Record<string, FakeData | undefined> = {}) {
   const firestore = new FakeFirestore({
     "events/event-1": {
-      clubId: "club-1",
+      organizerId: "club-1",
       status: "active",
       endTime: ts("2026-05-02T02:30:00.000Z"),
     },
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["wingman_requests"],
       wingmanRequestsEnabled: true,
     },
     "eventParticipations/event-1_runner-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       uid: "runner-1",
       status: "attended",
     },
     "eventParticipations/event-1_runner-2": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       uid: "runner-2",
       status: "attended",
       genderAtSignup: "woman",
@@ -207,7 +207,7 @@ test("fetch wingman candidates filters eligibility and blocks", async () => {
   const {deps, rateLimitCalls} = harness({
     "eventParticipations/event-1_runner-3": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       uid: "runner-3",
       status: "attended",
       genderAtSignup: "woman",
@@ -215,7 +215,7 @@ test("fetch wingman candidates filters eligibility and blocks", async () => {
     },
     "eventParticipations/event-1_runner-4": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       uid: "runner-4",
       status: "signedUp",
       genderAtSignup: "woman",
@@ -363,7 +363,7 @@ test("submit wingman request writes server-owned request", async () => {
     "runner-1:submitEventSuccessWingmanRequest",
   ]);
   assert.equal(saved?.eventId, "event-1");
-  assert.equal(saved?.clubId, "club-1");
+  assert.equal(saved?.organizerId, "club-1");
   assert.equal(saved?.requesterUid, "runner-1");
   assert.equal(saved?.targetUid, "runner-2");
   assert.equal(saved?.status, "active");
@@ -395,7 +395,7 @@ test("withdraw wingman request withdraws caller request", async () => {
   const {firestore, deps, rateLimitCalls} = harness({
     "eventSuccessWingmanRequests/event-1_runner-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       requesterUid: "runner-1",
       targetUid: "runner-2",
       status: "active",

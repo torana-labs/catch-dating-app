@@ -75,7 +75,7 @@ GoRouterState hostWorkspaceAncestorState(
 ) {
   final parameters = {
     ...state.pathParameters,
-    'clubId': ?state.uri.queryParameters['organizerId'],
+    'organizerId': ?state.uri.queryParameters['organizerId'],
     'audienceId': ?state.uri.queryParameters['_parentAudienceId'],
     'contactId':
         ?(state.uri.queryParameters['_parentContactId'] ??
@@ -110,7 +110,7 @@ String hostWorkspaceParentLocation(
   final parent = routes.where((route) => route.name == parentId.name).single;
   final parameters = {
     ...state.pathParameters,
-    'clubId': ?state.uri.queryParameters['organizerId'],
+    'organizerId': ?state.uri.queryParameters['organizerId'],
     'audienceId': ?state.uri.queryParameters['_parentAudienceId'],
     'contactId':
         ?(state.uri.queryParameters['_parentContactId'] ??

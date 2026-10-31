@@ -303,7 +303,7 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
             ),
         ];
         patch['imageUrl'] = photos.isEmpty ? null : photos.first.url;
-        patch['clubPhotos'] = photos
+        patch['organizerPhotos'] = photos
             .map((photo) => photo.toJson())
             .toList(growable: false);
       }

@@ -63,7 +63,7 @@ export async function readMembership(db: Firestore, tx: Transaction,
       !validateOrganizerDocument(organizer) ||
       (plan !== null && (!validateEventSuccessPlanDocument(plan) ||
         plan.eventId !== context.eventId ||
-        (plan.organizerId ?? plan.clubId) !== context.organizerId))) {
+        (plan.organizerId) !== context.organizerId))) {
     throw invalidSource();
   }
   if (!event.eventFormat) throw invalidSource();

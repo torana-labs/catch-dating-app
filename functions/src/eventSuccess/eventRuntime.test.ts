@@ -198,7 +198,6 @@ function timestamp(iso = "2026-08-11T10:00:00.000Z") {
 
 function event(overrides: FakeData = {}): FakeData {
   return {
-    clubId: "organizer-1",
     organizerId: "organizer-1",
     startTime: timestamp("2026-08-11T12:00:00.000Z"),
     endTime: timestamp("2026-08-11T15:00:00.000Z"),
@@ -239,7 +238,6 @@ function organizer(): FakeData {
 function attendee(overrides: FakeData = {}): FakeData {
   return {
     eventId: "event-1",
-    clubId: "organizer-1",
     organizerId: "organizer-1",
     displayName: "Asha Shah",
     searchName: "asha shah",
@@ -267,7 +265,6 @@ function attendee(overrides: FakeData = {}): FakeData {
 function participant(overrides: FakeData = {}): FakeData {
   return {
     eventId: "event-1",
-    clubId: "organizer-1",
     organizerId: "organizer-1",
     uid: "runner-1",
     eventAttendeeId: "attendee-1",
@@ -461,7 +458,7 @@ test("bootstrap returns bounded event and own state", async () => {
   assert.equal(result.participant?.eventAttendeeId, "attendee-1");
   assert.equal(result.participant?.attendanceStatus, "checkedIn");
   assert.equal(result.participant?.eventId, "event-1");
-  assert.equal(result.participant?.clubId, "organizer-1");
+  assert.equal(result.participant?.organizerId, "organizer-1");
   assert.equal(result.participant?.organizerId, "organizer-1");
   assert.deepEqual(result.participant?.requiredDataRequest, {
     revision: 1,
@@ -720,7 +717,7 @@ test("ready Catch reservation can claim runtime before display projection",
     const docs: Record<string, FakeData> = {
       "events/event-1": currentEvent,
       "eventParticipations/event-1_runner-1": {eventId: "event-1",
-        clubId: "organizer-1", uid, status: "signedUp"},
+        organizerId: "organizer-1", uid, status: "signedUp"},
       "eventSeatMigrationFences/event-1": {eventId: "event-1",
         migrationRevision: 1, state: "ready"},
       "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 20,
@@ -1176,7 +1173,6 @@ test("Host approval binds only a candidate from the same event", async () => {
     }),
     "eventRuntimeClaimRequests/event-1_runner-1": {
       eventId: "event-1",
-      clubId: "organizer-1",
       organizerId: "organizer-1",
       uid: "runner-1",
       displayName: "Asha Shah",

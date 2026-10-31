@@ -209,13 +209,13 @@
       "description": "Generator for seeded demo environments (tool/demo/seed_demo_data.mjs). It casts the world's people; its event patterns are relative to the seed time.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["description", "cities", "usersPerCity", "clubsPerCity", "eventsPerClub", "anchorsPerRun", "preferPaidEvents", "eventPatterns", "recommendedCommands"],
+      "required": ["description", "cities", "usersPerCity", "organizersPerCity", "eventsPerOrganizer", "anchorsPerRun", "preferPaidEvents", "eventPatterns", "recommendedCommands"],
       "properties": {
         "description": {"$ref": "#/$defs/text"},
         "cities": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/slug"}},
         "usersPerCity": {"type": "integer", "minimum": 1},
-        "clubsPerCity": {"type": "integer", "minimum": 1},
-        "eventsPerClub": {"type": "integer", "minimum": 1},
+        "organizersPerCity": {"type": "integer", "minimum": 1},
+        "eventsPerOrganizer": {"type": "integer", "minimum": 1},
         "anchorsPerRun": {"type": "integer", "minimum": 0},
         "preferPaidEvents": {"type": "boolean"},
         "eventPatterns": {

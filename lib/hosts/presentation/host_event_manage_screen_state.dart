@@ -77,7 +77,7 @@ class HostEventManageActionEffect {
       HostEventManageActionIntent.editEvent => HostEventManageActionEffect(
         destination: HostEventManageActionDestination.editEventRoute,
         event: event,
-        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+        pathParameters: {'organizerId': event.clubId, 'eventId': event.id},
       ),
       HostEventManageActionIntent.cancelEvent => HostEventManageActionEffect(
         destination: HostEventManageActionDestination.cancelConfirmation,

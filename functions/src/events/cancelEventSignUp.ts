@@ -83,8 +83,7 @@ interface PromotionPush {
   title: string;
   body: string;
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
 }
 
 interface CancelEventSignUpDeps {
@@ -117,7 +116,7 @@ const defaultDeps: CancelEventSignUpDeps = {
       body: push.body,
       type: "waitlistPromotion",
       eventId: push.eventId,
-      clubId: push.clubId,
+      organizerId: push.organizerId,
     });
   },
 };
@@ -264,7 +263,7 @@ export async function cancelEventSignUpHandler(
     if (seatMode === "ready") {
       const currentAuthPhone = await deps.loadCurrentAuthPhone(userId);
       const preparedIdentity = await prepareCatchUidSeatIdentity({db, tx,
-        eventId, organizerId: event.organizerId ?? event.clubId, uid: userId,
+        eventId, organizerId: event.organizerId, uid: userId,
         currentAuthPhoneNumber: currentAuthPhone});
       const guests = await tx.get(db.collection("eventAttendees")
         .where("eventId", "==", eventId)
@@ -282,7 +281,7 @@ export async function cancelEventSignUpHandler(
       if (independentGuests.length === 1) {
         const guestIdentity = await new FirestoreSeatIdentityAuthority()
           .resolve({db, tx, eventId,
-            organizerId: event.organizerId ?? event.clubId,
+            organizerId: event.organizerId,
             subject: {kind: "importAttendee",
               attendeeId: independentGuests[0].id}});
         if (!guestIdentity || guestIdentity.key !==
@@ -372,7 +371,7 @@ export async function cancelEventSignUpHandler(
           cohortId: wCohort,
           roster: nextRoster,
           hasActiveCommunityMembership: await hasEventCommunityMembership({
-            db, tx, organizerId: event.organizerId ?? event.clubId,
+            db, tx, organizerId: event.organizerId,
             uid: waitlistUserId, policy,
           }),
         });
@@ -388,9 +387,7 @@ export async function cancelEventSignUpHandler(
           await prepareUserEventScheduleClaimInTransaction(tx, db, {
             uid: waitlistUserId,
             eventId,
-            clubId: event.clubId,
-
-            organizerId: event.organizerId ?? event.clubId,
+            organizerId: event.organizerId,
             startTimeMillis: event.startTime.toMillis(),
             endTimeMillis: scheduledEvent.endTime.toMillis(),
           });
@@ -421,9 +418,7 @@ export async function cancelEventSignUpHandler(
       promotedParticipationPatch = eventParticipationPatch({
         exists: true,
         eventId,
-        clubId: event.clubId,
-
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
         uid: waitlistUserId,
         status: "signedUp",
         genderAtSignup: wGender,
@@ -439,9 +434,7 @@ export async function cancelEventSignUpHandler(
         .doc(promotedOfferId);
       promotedOfferPatch = {
         eventId,
-        clubId: event.clubId,
-
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
         uid: waitlistUserId,
         cohortAtOffer: wCohort,
         status: "accepted",
@@ -482,7 +475,7 @@ export async function cancelEventSignUpHandler(
         throw new HttpsError("failed-precondition",
           "Event seat authority is unavailable.");
       }
-      const organizerId = event.organizerId ?? event.clubId;
+      const organizerId = event.organizerId;
       const uids = promotedUid ? [userId, promotedUid] : [userId];
       const preparedIdentities = await Promise.all(uids.map(async (uid) =>
         prepareCatchUidSeatIdentity({db, tx, eventId, organizerId, uid,
@@ -530,17 +523,15 @@ export async function cancelEventSignUpHandler(
       waitlistedCohortCounts: newWaitlistedCohortCounts,
       ...eventDiscoveryProjection({
         event,
-        clubLocation: event.discoveryCityName,
-        clubLocationMarketId: event.discoveryMarketId,
+        organizerLocation: event.discoveryCityName,
+        organizerLocationMarketId: event.discoveryMarketId,
         bookedCount: nextBookedCount,
       }),
     });
     tx.set(participationRef, eventParticipationPatch({
       exists: participationSnap.exists,
       eventId,
-      clubId: event.clubId,
-
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       uid: userId,
       status: "cancelled",
       genderAtSignup: cancellerGender,
@@ -569,9 +560,7 @@ export async function cancelEventSignUpHandler(
         body: promotedNotification.body,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         eventId,
-        clubId: event.clubId,
-
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
       });
       if (promotedNotification.token) {
         promotionPushes.push({
@@ -579,9 +568,7 @@ export async function cancelEventSignUpHandler(
           title: promotedNotification.title,
           body: promotedNotification.body,
           eventId,
-          clubId: event.clubId,
-
-          organizerId: event.organizerId ?? event.clubId,
+          organizerId: event.organizerId,
         });
       }
     }
@@ -597,7 +584,7 @@ export async function cancelEventSignUpHandler(
       // side effect below from running.
       logger.error("Failed to send waitlist promotion notification", {
         eventId,
-        clubId: promotionPush.clubId,
+        organizerId: promotionPush.organizerId,
         error: notificationError,
         reasonMessage: notificationError instanceof Error ?
           notificationError.message :

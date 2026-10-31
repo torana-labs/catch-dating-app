@@ -60,10 +60,10 @@ void main() {
             ),
             routes: [
               GoRoute(
-                path: ':clubId',
+                path: ':organizerId',
                 name: Routes.organizerDetailScreen.name,
                 builder: (_, state) => Text(
-                  'Club ${state.pathParameters['clubId']}',
+                  'Club ${state.pathParameters['organizerId']}',
                   textDirection: TextDirection.ltr,
                 ),
               ),
@@ -111,7 +111,7 @@ void main() {
       final organizer = _buildOrganizer();
       final router = GoRouter(
         initialLocation: Routes.organizerDetailScreen.path.replaceFirst(
-          ':clubId',
+          ':organizerId',
           organizer.id,
         ),
         routes: [
@@ -127,10 +127,10 @@ void main() {
             builder: (_, _) => const ExploreScreen(),
             routes: [
               GoRoute(
-                path: ':clubId',
+                path: ':organizerId',
                 name: Routes.organizerDetailScreen.name,
                 builder: (_, state) => OrganizerDetailScreen(
-                  clubId: state.pathParameters['clubId']!,
+                  clubId: state.pathParameters['organizerId']!,
                   initialOrganizer: state.extra is Organizer
                       ? state.extra! as Organizer
                       : null,
@@ -249,7 +249,7 @@ void main() {
       final event = _buildEvent(id: 'event-7', clubId: organizer.id);
       final router = GoRouter(
         initialLocation: Routes.hostOrganizerDetailScreen.path.replaceFirst(
-          ':clubId',
+          ':organizerId',
           organizer.id,
         ),
         routes: [
@@ -257,13 +257,13 @@ void main() {
             path: Routes.hostOrganizerDetailScreen.path,
             name: Routes.hostOrganizerDetailScreen.name,
             builder: (_, state) =>
-                OrganizerDetailScreen(clubId: state.pathParameters['clubId']!),
+                OrganizerDetailScreen(clubId: state.pathParameters['organizerId']!),
           ),
           GoRoute(
             path: Routes.hostAppEventDetailScreen.path,
             name: Routes.hostAppEventDetailScreen.name,
             builder: (_, state) => Text(
-              'Host event ${state.pathParameters['clubId']}/'
+              'Host event ${state.pathParameters['organizerId']}/'
               '${state.pathParameters['eventId']}',
               textDirection: TextDirection.ltr,
             ),

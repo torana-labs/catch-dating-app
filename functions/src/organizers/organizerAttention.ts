@@ -164,7 +164,7 @@ export async function loadOrganizerAttentionSources(
       .orderBy("endTime")
       .orderBy(admin.firestore.FieldPath.documentId())
       .limit(maxAttentionSourceRows + 1).get(),
-    events.where("clubId", "==", organizerId)
+    events.where("organizerId", "==", organizerId)
       .where("status", "==", "active")
       .where("endTime", ">", now)
       .orderBy("endTime")
@@ -175,7 +175,7 @@ export async function loadOrganizerAttentionSources(
       .where("hostApprovalStatus", "==", "pending")
       .limit(maxAttentionSourceRows + 1).get(),
     db.collection("eventParticipations")
-      .where("clubId", "==", organizerId)
+      .where("organizerId", "==", organizerId)
       .where("hostApprovalStatus", "==", "pending")
       .limit(maxAttentionSourceRows + 1).get(),
     db.collection("eventAssistanceCases")

@@ -134,8 +134,8 @@ test("flags feature row groups that manually assign sibling field dividers", () 
   const findings = scanSourceForSectionDividers({
     relativePath: "lib/hosts/presentation/host_operations/host_organizer_team_screen.dart",
     source: [
-      "class HostTeamClubRows extends StatelessWidget {",
-      "  const HostTeamClubRows({required this.clubs});",
+      "class HostTeamOrganizerRows extends StatelessWidget {",
+      "  const HostTeamOrganizerRows({required this.clubs});",
       "  final List<Club> clubs;",
       "  @override",
       "  Widget build(BuildContext context) => Column(children: [",

@@ -2,9 +2,8 @@ import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {defineSecret} from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import type {
-  ClubDocument,
-  EventDocument,
   OrganizerDocument,
+  EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {eventOrganizerRef} from "../shared/eventOrganizers";
 import {isEventPubliclyAccessible} from "../events/eventPublicationAccess";
@@ -31,7 +30,7 @@ const defaultDeps: AlgoliaExploreIndexDeps = {
   writeApiKey: () => algoliaWriteApiKey.value(),
 };
 
-export interface AlgoliaClubSearchRecord {
+export interface AlgoliaOrganizerSearchRecord {
   objectID: string;
   type: "club" | "organizer";
   name: string;
@@ -44,7 +43,7 @@ export interface AlgoliaClubSearchRecord {
   organizerType?: OrganizerDocument["organizerType"];
   rating: number;
   reviewCount: number;
-  status: ClubDocument["status"];
+  status: OrganizerDocument["status"];
   archived: boolean;
   locationMarketId: string;
   nextEventAtEpoch: number | null;
@@ -54,9 +53,8 @@ export interface AlgoliaClubSearchRecord {
 export interface AlgoliaEventSearchRecord {
   objectID: string;
   type: "event";
-  clubId: string;
   organizerId: string;
-  clubName: string;
+  organizerName: string;
   meetingPoint: string;
   locationDetails: string | null;
   description: string;
@@ -73,7 +71,7 @@ export interface AlgoliaEventSearchRecord {
  * Builds the settings needed by the club search index.
  * @return {Record<string, unknown>} Algolia settings payload.
  */
-export function clubSearchIndexSettings(): Record<string, unknown> {
+export function organizerSearchIndexSettings(): Record<string, unknown> {
   return {
     searchableAttributes: [
       "name",
@@ -102,7 +100,7 @@ export function clubSearchIndexSettings(): Record<string, unknown> {
 export function eventSearchIndexSettings(): Record<string, unknown> {
   return {
     searchableAttributes: [
-      "clubName",
+      "organizerName",
       "meetingPoint",
       "locationDetails",
       "description",
@@ -111,7 +109,7 @@ export function eventSearchIndexSettings(): Record<string, unknown> {
     attributesForFaceting: [
       "filterOnly(discoveryMarketId)",
       "filterOnly(status)",
-      "filterOnly(clubId)",
+      "filterOnly(organizerId)",
     ],
     customRanking: [
       "asc(startTimeEpoch)",
@@ -121,44 +119,44 @@ export function eventSearchIndexSettings(): Record<string, unknown> {
 
 /**
  * Converts a Firestore club document into an Algolia club record.
- * @param {string} clubId Firestore club id.
- * @param {ClubDocument} club Club document data.
- * @return {AlgoliaClubSearchRecord | null} Algolia record, or null if hidden.
+ * @param {string} organizerId Firestore club id.
+ * @param {OrganizerDocument} club Club document data.
+ * @return {AlgoliaOrganizerSearchRecord | null} Algolia record, or null if hidden.
  */
-export function buildClubSearchRecord(
-  clubId: string,
-  club: ClubDocument
-): AlgoliaClubSearchRecord | null {
+export function buildOrganizerSearchRecord(
+  organizerId: string,
+  organizer: OrganizerDocument
+): AlgoliaOrganizerSearchRecord | null {
   const locationMarketId = normalizeSearchMarketId(
-    club.locationMarketId ?? club.location
+    organizer.locationMarketId ?? organizer.location
   );
   if (
-    club.status !== "active" ||
-    club.archived ||
-    club.appVisibility === "hidden" ||
+    organizer.status !== "active" ||
+    organizer.archived ||
+    organizer.appVisibility === "hidden" ||
     !locationMarketId ||
-    club.name.trim().length === 0
+    organizer.name.trim().length === 0
   ) {
     return null;
   }
 
   return {
-    objectID: clubId,
+    objectID: organizerId,
     type: "club",
-    name: club.name,
-    description: club.description,
-    location: club.cityName ?? club.location,
+    name: organizer.name,
+    description: organizer.description,
+    location: organizer.cityName ?? organizer.location,
     locationMarketId,
-    area: club.area,
-    hostName: club.hostName ?? club.name,
-    tags: Array.isArray(club.tags) ? club.tags : [],
-    memberCount: finiteNumberOrZero(club.memberCount),
-    rating: finiteNumberOrZero(club.rating),
-    reviewCount: finiteNumberOrZero(club.reviewCount),
-    status: club.status,
-    archived: club.archived,
-    nextEventAtEpoch: timestampEpochSeconds(club.nextEventAt),
-    nextEventLabel: club.nextEventLabel ?? null,
+    area: organizer.area,
+    hostName: organizer.hostName ?? organizer.name,
+    tags: Array.isArray(organizer.tags) ? organizer.tags : [],
+    memberCount: finiteNumberOrZero(organizer.memberCount),
+    rating: finiteNumberOrZero(organizer.rating),
+    reviewCount: finiteNumberOrZero(organizer.reviewCount),
+    status: organizer.status,
+    archived: organizer.archived,
+    nextEventAtEpoch: timestampEpochSeconds(organizer.nextEventAt),
+    nextEventLabel: organizer.nextEventLabel ?? null,
   };
 }
 
@@ -166,12 +164,12 @@ export function buildClubSearchRecord(
 export function buildOrganizerSearchRecord(
   organizerId: string,
   organizer: OrganizerDocument
-): AlgoliaClubSearchRecord | null {
+): AlgoliaOrganizerSearchRecord | null {
   const legacyShape = {
     ...organizer,
     memberCount: organizer.followerCount,
-  } as ClubDocument;
-  const record = buildClubSearchRecord(organizerId, legacyShape);
+  } as OrganizerDocument;
+  const record = buildOrganizerSearchRecord(organizerId, legacyShape);
   return record ? {
     ...record,
     type: "organizer",
@@ -189,21 +187,21 @@ export function buildOrganizerSearchRecord(
 export function buildEventSearchRecord(
   eventId: string,
   event: EventDocument,
-  club: OrganizerDocument
+  organizer: OrganizerDocument
 ): AlgoliaEventSearchRecord | null {
   if (!isEventPubliclyAccessible(event)) return null;
   const startTimeEpoch = timestampEpochSeconds(event.startTime);
   const discoveryMarketId = normalizeSearchMarketId(
-    event.discoveryMarketId ?? club.locationMarketId ?? club.location
+    event.discoveryMarketId ?? organizer.locationMarketId ?? organizer.location
   );
   const discoveryCityName = normalizedSearchText(event.discoveryCityName) ??
-    normalizedSearchText(club.publicPage?.citySlug) ??
+    normalizedSearchText(organizer.publicPage?.citySlug) ??
     discoveryMarketId;
   if (
     event.status !== "active" ||
-    club.status !== "active" ||
-    club.archived ||
-    club.appVisibility === "hidden" ||
+    organizer.status !== "active" ||
+    organizer.archived ||
+    organizer.appVisibility === "hidden" ||
     !discoveryMarketId ||
     !discoveryCityName ||
     startTimeEpoch == null ||
@@ -216,10 +214,8 @@ export function buildEventSearchRecord(
   return {
     objectID: eventId,
     type: "event",
-    clubId: event.clubId,
-
-    organizerId: event.organizerId ?? event.clubId,
-    clubName: club.name,
+    organizerId: event.organizerId,
+    organizerName: organizer.name,
     meetingPoint: event.meetingPoint,
     locationDetails: event.locationDetails ?? null,
     description: event.description,

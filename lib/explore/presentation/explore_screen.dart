@@ -209,7 +209,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           );
       context.pushNamed(
         Routes.eventDetailScreen.name,
-        pathParameters: {'clubId': item.event.clubId, 'eventId': item.event.id},
+        pathParameters: {'organizerId': item.event.clubId, 'eventId': item.event.id},
         extra: EventDetailRouteExtra(
           initialEvent: item.event,
           presentationMode: EventDetailPresentationMode.spotlightDark,
@@ -262,7 +262,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           );
       context.pushNamed(
         Routes.eventDetailScreen.name,
-        pathParameters: {'clubId': item.event.clubId, 'eventId': item.event.id},
+        pathParameters: {'organizerId': item.event.clubId, 'eventId': item.event.id},
         extra: EventDetailRouteExtra(
           initialEvent: item.event,
           transition: EventDetailRouteTransition.ticketCard,
@@ -366,7 +366,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     void openOrganizer(Organizer organizer) {
       context.pushNamed(
         Routes.organizerDetailScreen.name,
-        pathParameters: {'clubId': organizer.id},
+        pathParameters: {'organizerId': organizer.id},
         extra: organizer,
       );
     }

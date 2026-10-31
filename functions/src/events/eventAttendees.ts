@@ -130,9 +130,7 @@ async function prepareAttendanceSeatChange(params: {
       .doc(eventParticipationId(eventId, params.linkedUid)))).data() : null;
   if (participation && (participation.eventId !== eventId ||
       participation.uid !== params.linkedUid ||
-      (participation.organizerId ?? participation.clubId) !== organizerId ||
-      participation.clubId !== undefined &&
-        participation.clubId !== organizerId ||
+      (participation.organizerId) !== organizerId ||
       participation.organizerId !== undefined &&
         participation.organizerId !== organizerId)) {
     throw new HttpsError("failed-precondition",
@@ -371,7 +369,7 @@ export async function importEventAttendeesForHost(
       typeof prepareFirestoreBatchSeatImport>> | null = null;
     let readyLedgerOccupied = 0;
     if (seatMode === "ready") {
-      const organizerId = event.organizerId ?? event.clubId;
+      const organizerId = event.organizerId;
       const seatTx = new FirestoreSeatTransaction(db, tx);
       const ledger = await seatTx.ledger(payload.eventId);
       const policy = deriveEventSeatPolicy(event);
@@ -451,8 +449,7 @@ export async function importEventAttendeesForHost(
         // such as provider identity or post-event accountability results.
         ...existing,
         eventId: payload.eventId,
-        clubId: event.clubId,
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
         displayName: row.displayName,
         searchName: row.searchName,
         source: existing?.source ?? source,
@@ -507,8 +504,7 @@ export async function importEventAttendeesForHost(
       errors.length > 0 ? "partial" : "completed";
     const receipt: EventAttendeeImportDocument = {
       eventId: payload.eventId,
-      clubId: event.clubId,
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       uploadedBy: hostUid,
       importKey: payload.importKey,
       fileName: payload.fileName,
@@ -597,7 +593,7 @@ export async function markEventAttendeeAttendanceHandler(
     const nextStatus = attended ? "checkedIn" : "registered";
     const seatChange = seatMode === "ready" ?
       await prepareAttendanceSeatChange({db, tx, eventId: payload.eventId,
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
         event,
         attendeeId: payload.attendeeId, previous: attendee.status,
         next: nextStatus, source: attendee.source,
@@ -740,7 +736,7 @@ export async function setEventAttendeeAttendanceHandler(
       restoredStatus;
     const seatChange = seatMode === "ready" ?
       await prepareAttendanceSeatChange({db, tx, eventId: payload.eventId,
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
         event,
         attendeeId: payload.attendeeId, previous: attendee.status,
         next: changed ? nextStatus : attendee.status,
@@ -768,7 +764,7 @@ export async function setEventAttendeeAttendanceHandler(
     }
     tx.create(receiptRef, {
       eventId: payload.eventId,
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       attendeeId: payload.attendeeId,
       actorUid: hostUid,
       clientOperationId: payload.clientOperationId,
@@ -842,7 +838,7 @@ export async function registerPublicEventHandler(
         "This event is not open for public registration.");
     }
     const event = requirePublicConfiguredEvent(candidate);
-    const organizerId = event.organizerId ?? event.clubId;
+    const organizerId = event.organizerId;
     const seatMode = await readSeatMigrationWriterFence({db, tx,
       eventId: payload.eventId});
     const phoneMatches = seatMode === "ready" ? await tx.get(db
@@ -997,7 +993,6 @@ export async function registerPublicEventHandler(
     });
     const document: EventAttendeeDocument = {
       eventId: payload.eventId,
-      clubId: event.clubId,
       organizerId,
       displayName,
       searchName: displayName.toLocaleLowerCase("en"),

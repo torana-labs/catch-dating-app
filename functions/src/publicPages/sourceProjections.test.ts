@@ -49,7 +49,7 @@ test("bookings and public event edits rebuild; private fields do not", () => {
   assert.equal(catchEventContribution(id, {...data,
     publicationState: "unpublished"}, now), null);
   assert.deepEqual(catchEventOrganizerIds({organizerId: "a"},
-    {organizerId: "b", clubId: "b"}), ["a", "b"]);
+    {organizerId: "b"}), ["a", "b"]);
 });
 
 test("imported event takedowns rebuild their organizer's pages", () => {

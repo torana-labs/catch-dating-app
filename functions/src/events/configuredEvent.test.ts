@@ -12,7 +12,7 @@ const time = (millis: number) => ({
 
 function event(overrides: Record<string, unknown> = {}): EventDocument {
   return {
-    clubId: "club-1",
+    organizerId: "club-1",
     startTime: time(1_000),
     endTime: time(2_000),
     meetingPoint: "Park gate",

@@ -73,7 +73,7 @@ test("a Catch user's paid admission is also their app booking", async () => {
 
 test("an active edge without a seat blocks admission for refund", async () => {
   const h = await catchUserFixture();
-  h.store.put(edge, {eventId, uid, clubId: "x", status: "signedUp"});
+  h.store.put(edge, {eventId, uid, organizerId: "x", status: "signedUp"});
   assert.equal(await h.finalize(), "refundPending");
   assert.equal(h.store.get(edge)?.paymentId, undefined);
 });

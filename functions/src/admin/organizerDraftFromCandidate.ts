@@ -200,7 +200,7 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
       tx,
       db,
       {
-        clubId: organizerId,
+        organizerId: organizerId,
         canonicalPath,
         slug: data.publicSlug,
         citySlug: market.slug,

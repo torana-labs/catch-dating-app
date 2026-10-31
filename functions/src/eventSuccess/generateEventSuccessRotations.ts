@@ -106,7 +106,7 @@ interface EventSuccessRotationsDeps {
 
 interface EventSuccessPlanDocument {
   eventId?: string;
-  clubId?: string;
+  organizerId?: string;
   selectedModuleIds?: unknown;
   assignmentFeatureRules?: AssignmentFeatureRule[];
   assignmentFeatureRevision?: number;
@@ -218,7 +218,6 @@ interface GeneratedSitOutSlot {
 
 interface GeneratedAssignment {
   eventId: string;
-  clubId: string;
   organizerId: string;
   uid: string;
   moduleId: string;
@@ -323,7 +322,7 @@ export async function prepareEventSuccessRotationDraft(
     );
   const featureSnapshots = await loadAuthorizedAssignmentFeatures({db,
     eventId: input.eventId,
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     eligibleUids: participants.map((person) => person.uid),
     rules: featureRules});
   const topology = {
@@ -349,7 +348,7 @@ export async function prepareEventSuccessRotationDraft(
   }
   const layout = await loadSelectedEventSuccessLayout(
     db,
-    event.organizerId ?? event.clubId,
+    event.organizerId,
     plan
   );
   const rounds = buildRotationRounds({
@@ -367,7 +366,7 @@ export async function prepareEventSuccessRotationDraft(
     topology,
     layout,
     softFeatures: {eventId: input.eventId,
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       rules: featureRules, snapshots: featureSnapshots},
   });
   const publishedRoundIndex = integerOr(
@@ -380,8 +379,7 @@ export async function prepareEventSuccessRotationDraft(
   );
   const assignments = hasTargetRound ? buildAssignments({
     eventId: input.eventId,
-    clubId: event.clubId,
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     participants,
     rounds,
     eventStartMillis: event.startTime.toMillis(),
@@ -398,7 +396,7 @@ export async function prepareEventSuccessRotationDraft(
   );
   if (featureRules.length) {
     const audit = buildAssignmentFeatureAudit({eventId: input.eventId,
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       configHash: plan.assignmentFeatureConfigHash ?? "",
       snapshots: featureSnapshots});
     for (const assignment of assignments.values()) {
@@ -414,7 +412,7 @@ export async function prepareEventSuccessRotationDraft(
     assignments,
     now: deps.serverTimestamp(),
     featureGuard: featureRules.length ? {
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       rules: featureRules, snapshots: featureSnapshots,
       revision: plan.assignmentFeatureRevision ?? 0,
       configHash: plan.assignmentFeatureConfigHash ?? "",
@@ -488,7 +486,7 @@ export async function overrideEventSuccessRotationsHandler(
   }
   const layout = await loadSelectedEventSuccessLayout(
     db,
-    event.organizerId ?? event.clubId,
+    event.organizerId,
     plan
   );
   const rounds = buildOverrideRounds({
@@ -513,9 +511,7 @@ export async function overrideEventSuccessRotationsHandler(
   });
   const assignments = buildAssignments({
     eventId: payload.eventId,
-    clubId: event.clubId,
-
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     participants,
     rounds,
     eventStartMillis: event.startTime.toMillis(),
@@ -623,7 +619,7 @@ async function loadRotationEventContext(
     throw new HttpsError("failed-precondition",
       "Event-success plan does not match this event.");
   }
-  if (plan.clubId !== undefined && plan.clubId !== event.clubId) {
+  if (plan.organizerId !== undefined && plan.organizerId !== event.organizerId) {
     throw new HttpsError("failed-precondition",
       "Event-success plan does not match this club.");
   }
@@ -1133,7 +1129,7 @@ function toRotationPair(
  * Builds assignment documents from rotation rounds.
  * @param {object} params Assignment inputs.
  * @param {string} params.eventId Event id.
- * @param {string} params.clubId Club id.
+ * @param {string} params.organizerId Club id.
  * @param {Array<object>} params.participants Participants.
  * @param {Array<object>} params.rounds Rotation rounds.
  * @param {number} params.eventStartMillis Event start time in millis.
@@ -1144,8 +1140,7 @@ function toRotationPair(
  */
 function buildAssignments(params: {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   participants: RotationParticipant[];
   rounds: RotationRound[];
   eventStartMillis: number;
@@ -1268,8 +1263,7 @@ function buildAssignments(params: {
     const docId = assignmentId(params.eventId, uid);
     assignments.set(docId, {
       eventId: params.eventId,
-      clubId: params.clubId,
-      organizerId: params.organizerId ?? params.clubId,
+      organizerId: params.organizerId,
       uid,
       moduleId: GUIDED_ROTATIONS_MODULE_ID,
       label: "Guided rotations",
@@ -1493,7 +1487,6 @@ async function writeAssignmentDrafts(params: {
         params.db.collection("eventSuccessAssignmentDrafts").doc(docId),
         {
           eventId: params.eventId,
-          clubId: assignment.clubId,
           organizerId: assignment.organizerId,
           uid: assignment.uid,
           moduleId: GUIDED_ROTATIONS_MODULE_ID,

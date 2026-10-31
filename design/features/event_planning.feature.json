@@ -71,7 +71,7 @@
           "owner": "calendar_screen",
           "codeValue": "organizerNameLookupProvider",
           "cardinality": "singleton",
-          "scopeKeys": ["clubIdSet", "lookupGeneration"],
+          "scopeKeys": ["organizerIdSet", "lookupGeneration"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["club_names_loading_error", "planned_events"]}],
           "description": "Retries the secondary organizer-name lookup without discarding the already loaded event agenda."
         },
@@ -257,7 +257,7 @@
           "owner": "saved_events_screen",
           "codeValue": "organizerNameLookupProvider",
           "cardinality": "singleton",
-          "scopeKeys": ["clubIdSet", "lookupGeneration"],
+          "scopeKeys": ["organizerIdSet", "lookupGeneration"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["club_names_loading_error", "populated_saved_events"]}],
           "description": "Retries organizer-name enrichment without discarding loaded saved-event rows."
         },

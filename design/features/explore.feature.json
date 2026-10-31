@@ -77,7 +77,7 @@
           "catch.top_bar"
         ],
         "dataContracts": [
-          "contracts/firestore/club_memberships.schema.json",
+          "contracts/firestore/organizer_memberships.schema.json",
           "contracts/firestore/organizers.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/firestore/external_events.schema.json",

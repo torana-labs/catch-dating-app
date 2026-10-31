@@ -7,12 +7,6 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "clubId": {
-      "anyOf": [
-        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-        {"type": "null"}
-      ]
-    },
     "organizerId": {
       "anyOf": [
         {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},

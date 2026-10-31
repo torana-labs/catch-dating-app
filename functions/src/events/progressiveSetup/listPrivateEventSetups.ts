@@ -100,7 +100,7 @@ export function projectPrivateEventSetupSummary(
   const timezone = event.eventTimezone;
   const setupRevision = event.setupRevision;
   if (!validateEventDocument(event) ||
-      event.organizerId !== organizerId || event.clubId !== organizerId ||
+      event.organizerId !== organizerId ||
       event.publicationState !== "private" ||
       event.status !== (scope === "cancelled" ? "cancelled" : "active") ||
       !ID.test(doc.id) || !Number.isSafeInteger(setupRevision) ||

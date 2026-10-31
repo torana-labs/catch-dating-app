@@ -16,7 +16,7 @@ abstract final class SettingsKeys {
   static const eventStatusUpdatesSwitch = ValueKey(
     'settings.eventStatusUpdates.switch',
   );
-  static const organizerUpdatesSwitch = ValueKey('settings.clubUpdates.switch');
+  static const organizerUpdatesSwitch = ValueKey('settings.organizerUpdates.switch');
   static const weeklyDigestSwitch = ValueKey('settings.weeklyDigest.switch');
   static const reviewHistoryRow = ValueKey('settings.reviewHistory.row');
   static const paymentHistoryRow = ValueKey('settings.paymentHistory.row');

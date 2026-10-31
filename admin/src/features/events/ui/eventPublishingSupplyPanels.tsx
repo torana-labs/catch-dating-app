@@ -155,7 +155,7 @@ function ExternalEventSupplyTable({
             <td>
               <AdminRowTitle compact>
                 <span>{row.canonicalHostId}</span>
-                <span>compat: {row.compatibilityClubId}</span>
+                <span>compat: {row.canonicalHostId}</span>
               </AdminRowTitle>
             </td>
             <td>
@@ -233,7 +233,7 @@ function ExternalEventSupplyDetail({
       </CatchAdminSearchCandidateHeader>
       <QualityList>
         <StateRow label="Canonical organizer" value={event.canonicalHostId} />
-        <StateRow label="Compatibility club" value={event.compatibilityClubId} />
+        <StateRow label="Compatibility club" value={event.canonicalHostId} />
         <StateRow label="City" value={event.citySlug} />
         <StateRow label="Starts" value={eventPublishingEditorPanels.formatDateTime(event.startTime)} />
         <StateRow label="Ends" value={eventPublishingEditorPanels.formatDateTime(event.endTime)} />

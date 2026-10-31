@@ -336,10 +336,10 @@ test("Firestore serializes Host rehearsal commands, guest replies and reset", {
   const id = randomUUID();
   const session = practiceSession();
   session.organizerId = "practice-owner-" + id;
-  session.clubId = session.organizerId;
+  session.organizerId = session.organizerId;
   session.publicRehearsalId = "public-" + id;
   const fixture = JSON.parse(readFileSync(
-    "../contracts/fixtures/valid/club_doc.json", "utf8"));
+    "../contracts/fixtures/valid/organizer_doc.json", "utf8"));
   const organizerSchema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
   const organizer = {...Object.fromEntries(Object.entries(fixture).filter((
@@ -651,10 +651,10 @@ test("Firestore automates a 50-guest rehearsal in the existing callables", {
   const id = randomUUID();
   const session = {...practiceSession(), actorCount: 50};
   session.organizerId = "practice-owner-" + id;
-  session.clubId = session.organizerId;
+  session.organizerId = session.organizerId;
   session.publicRehearsalId = "public-" + id;
   const fixture = JSON.parse(readFileSync(
-    "../contracts/fixtures/valid/club_doc.json", "utf8"));
+    "../contracts/fixtures/valid/organizer_doc.json", "utf8"));
   const schema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
   await db.collection("organizers").doc(session.organizerId).set({

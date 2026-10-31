@@ -20,7 +20,7 @@ import 'preview.dart';
 )
 Widget organizerBasicsStepCatalogStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'ClubBasicsStep',
+    title: 'OrganizerBasicsStep',
     contractId: 'component.host.club.basics_step',
     children: [
       WidgetbookPageStateCard(
@@ -44,7 +44,7 @@ Widget organizerBasicsStepCatalogStates(BuildContext context) {
 )
 Widget organizerDetailsStepCatalogStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'ClubDetailsStep',
+    title: 'OrganizerDetailsStep',
     contractId: 'component.host.club.details_step',
     children: [
       WidgetbookPageStateCard(
@@ -62,7 +62,7 @@ Widget organizerDetailsStepCatalogStates(BuildContext context) {
 )
 Widget createOrganizerContactFieldsCatalogStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'CreateClubContactSection',
+    title: 'CreateOrganizerContactSection',
     contractId: 'component.host.club.contact_fields',
     children: [
       WidgetbookPageStateCard(
@@ -82,7 +82,7 @@ Widget createOrganizerContactFieldsCatalogStates(BuildContext context) {
 )
 Widget createOrganizerPhotosPickerCatalogStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'CreateClubPhotosPicker',
+    title: 'CreateOrganizerPhotosPicker',
     contractId: 'component.host.club.photos_picker',
     children: [
       WidgetbookPageStateCard(
@@ -172,7 +172,7 @@ Widget orderedPhotoManagerCatalogState(BuildContext context) {
 )
 Widget hostOrganizerMediaRailCatalogStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostClubMediaRail',
+    title: 'HostOrganizerMediaRail',
     contractId: 'component.host.club.photos_picker',
     children: [
       WidgetbookPageStateCard(
@@ -211,7 +211,7 @@ Widget hostOrganizerMediaRailCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host organizer',
 )
 Widget hostOrganizerLogoManagerHeaderStates(BuildContext context) =>
-    widgetbookHostComponentStates('HostClubLogoManagerHeader', [
+    widgetbookHostComponentStates('HostOrganizerLogoManagerHeader', [
       (
         'logo picked',
         HostOrganizerLogoManagerHeader(
@@ -238,7 +238,7 @@ Widget hostOrganizerLogoManagerHeaderStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host organizer',
 )
 Widget hostOrganizerMediaManagerDockStates(BuildContext context) =>
-    widgetbookHostComponentStates('HostClubMediaManagerDock', [
+    widgetbookHostComponentStates('HostOrganizerMediaManagerDock', [
       (
         'ready to save',
         HostOrganizerMediaManagerDock(
@@ -255,7 +255,7 @@ Widget hostOrganizerMediaManagerDockStates(BuildContext context) =>
 )
 Widget createOrganizerProfileImagePickerCatalogStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'CreateClubProfileImagePicker',
+    title: 'CreateOrganizerProfileImagePicker',
     contractId: 'component.host.club.profile_image_picker',
     children: [
       WidgetbookPageStateCard(
@@ -289,7 +289,7 @@ Widget createOrganizerProfileImagePickerCatalogStates(BuildContext context) {
 )
 Widget organizerProfileImageTileCatalogStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'ClubProfileImageTile',
+    title: 'OrganizerProfileImageTile',
     contractId: 'component.host.club.profile_image_tile',
     children: [
       WidgetbookPageStateCard(

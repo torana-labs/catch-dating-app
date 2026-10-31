@@ -112,9 +112,9 @@ export function guestSourceFactsFromSnapshots(context: Guest["context"],
   const event = eventSnapshot.data();
   const attendee = attendeeSnapshot.data();
   if (!event || !attendee ||
-      (event.organizerId ?? event.clubId) !== context.organizerId ||
+      (event.organizerId) !== context.organizerId ||
       attendee.eventId !== context.eventId ||
-      (attendee.organizerId ?? attendee.clubId) !== context.organizerId ||
+      (attendee.organizerId) !== context.organizerId ||
       !["active", "cancelled"].includes(event.status) ||
       !["invited", "registered", "waitlisted", "checkedIn", "cancelled"]
         .includes(attendee.status)) throw unavailable();

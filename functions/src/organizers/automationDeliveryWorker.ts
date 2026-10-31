@@ -384,7 +384,7 @@ function automationSenderGate(params: {
   }
   if (params.recipe.eventId) {
     if (!params.event ||
-        (params.event.organizerId ?? params.event.clubId) !==
+        (params.event.organizerId) !==
           params.organizerId ||
         params.event.status !== "active") {
       return "providerBlocked";

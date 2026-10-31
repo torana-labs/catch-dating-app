@@ -25,7 +25,7 @@ import 'role_theme.dart';
 )
 Widget hostOrganizerDetailPublicPreviewStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostClubDetailScreen',
+    title: 'HostOrganizerDetailScreen',
     contractId: 'screen.host.club.detail',
     children: [
       WidgetbookPageStateCard(

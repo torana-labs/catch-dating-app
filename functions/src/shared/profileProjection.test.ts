@@ -69,7 +69,7 @@ function completeUser(
     prefsMessages: true,
     prefsEventReminders: true,
     prefsRunStatusUpdates: true,
-    prefsClubUpdates: true,
+    prefsOrganizerUpdates: true,
     prefsWeeklyDigest: false,
     prefsShowOnMap: true,
     ...overrides,

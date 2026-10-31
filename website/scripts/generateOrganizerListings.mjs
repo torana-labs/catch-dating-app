@@ -206,10 +206,10 @@ function appCreatedDemoListings() {
 }
 
 function listingFromDemoWorld(world, moment) {
-  const club = world.organizer;
-  const market = marketForIdOrAlias(club.city);
-  if (!market) fail(`${world.id} organizer city ${club.city} is not a known market.`);
-  const slug = slugForName(club.name);
+  const organizer = world.organizer;
+  const market = marketForIdOrAlias(organizer.city);
+  if (!market) fail(`${world.id} organizer city ${organizer.city} is not a known market.`);
+  const slug = slugForName(organizer.name);
   const citySlug = market.slug;
   const city = market.cityLabel;
   const path = `/organizers/${citySlug}/${slug}/`;
@@ -232,10 +232,10 @@ function listingFromDemoWorld(world, moment) {
   );
 
   return {
-    id: club.id,
-    listingVariant: "appCreatedClub",
+    id: organizer.id,
+    listingVariant: "appCreatedOrganizer",
     dataOrigin: "catchDemo",
-    name: club.name,
+    name: organizer.name,
     slug,
     city,
     citySlug,
@@ -246,29 +246,29 @@ function listingFromDemoWorld(world, moment) {
     status: "claimed",
     indexing: "noindex, follow",
     sourceConfidence: "first_party",
-    headline: `${club.name} in ${city}`,
-    description: club.description,
+    headline: `${organizer.name} in ${city}`,
+    description: organizer.description,
     sourceSummary:
-      `${club.name} is a first-party Catch demo club with app-created events, ` +
+      `${organizer.name} is a first-party Catch demo club with app-created events, ` +
       "verified event reviews, host identity, and event-success metrics.",
     logo: {
       mode: "monogram",
-      text: initialsForName(club.name),
+      text: initialsForName(organizer.name),
       status: "app_created",
     },
-    formats: titleCaseList(club.tags ?? []),
+    formats: titleCaseList(organizer.tags ?? []),
     facts: [
-      {label: "Location", value: `${club.area}, ${city}`},
+      {label: "Location", value: `${organizer.area}, ${city}`},
       {label: "Host", value: world.host.displayName},
-      {label: "Members", value: String(club.memberCount)},
-      {label: "Rating", value: `${club.rating.toFixed(1)} from ${club.reviewCount} reviews`},
+      {label: "Members", value: String(organizer.memberCount)},
+      {label: "Rating", value: `${organizer.rating.toFixed(1)} from ${organizer.reviewCount} reviews`},
       {label: "Next event", value: nextEvent?.date ?? "Demo event schedule"},
       {label: "Built in Catch", value: "App-created club"},
     ],
     metrics: {
-      memberCount: club.memberCount,
-      rating: club.rating,
-      reviewCount: club.reviewCount,
+      memberCount: organizer.memberCount,
+      rating: organizer.rating,
+      reviewCount: organizer.reviewCount,
       nextEventAt: nextEvent?.startTime ?? null,
       nextEventLabel: nextEvent?.title ?? null,
     },
@@ -302,11 +302,11 @@ function listingFromDemoWorld(world, moment) {
     capabilities: listingCapabilities(authority, publicApi),
     lastVerifiedAt: dateLabel({_seconds: now.getTime() / 1000}),
     searchText: searchText([
-      club.name,
+      organizer.name,
       city,
-      club.area,
+      organizer.area,
       world.host.displayName,
-      ...(club.tags ?? []),
+      ...(organizer.tags ?? []),
       ...events.flatMap((event) => [event.title, event.activityKind]),
     ]),
   };
@@ -346,7 +346,7 @@ function demoWorldEvents(world, moment, now) {
 
 // Reviews written by the moment, newest first.
 function demoWorldReviews(world, now) {
-  const club = world.organizer;
+  const organizer = world.organizer;
   return world.events
     .flatMap((event) => (event.reviews ?? []).map((review) => ({event, review})))
     .map(({event, review}) => ({
@@ -359,7 +359,7 @@ function demoWorldReviews(world, now) {
     .map(({event, review, createdAt}, index) => {
       const persona = personaForPerson(world, review.personId);
       return {
-        id: `${club.id}-verified-review-${index + 1}`,
+        id: `${organizer.id}-verified-review-${index + 1}`,
         eventId: event.id,
         reviewerName: review.anonymous ?
           "Anonymous attendee" :

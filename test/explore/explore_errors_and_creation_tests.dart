@@ -80,7 +80,7 @@ void _registerExploreErrorsAndCreationTests() {
           builder: (_, _) => const ExploreMapScreen(enableNetworkTiles: false),
         ),
         GoRoute(
-          path: '/events/:clubId/:eventId',
+          path: '/events/:organizerId/:eventId',
           name: Routes.eventDetailScreen.name,
           builder: (_, state) {
             final extra = state.extra as EventDetailRouteExtra?;
@@ -491,7 +491,7 @@ void _registerExploreErrorsAndCreationTests() {
   });
 
   testWidgets(
-    'OrganizerDetailScreen uses initialClub while live data is still loading',
+    'OrganizerDetailScreen uses initialOrganizer while live data is still loading',
     (tester) async {
       final organizer = buildOrganizer(name: 'Initial Club');
       final controller = StreamController<Organizer?>.broadcast();

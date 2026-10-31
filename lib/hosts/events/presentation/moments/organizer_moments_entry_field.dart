@@ -28,7 +28,7 @@ class OrganizerMomentsEntryField extends StatelessWidget {
         emphasis: CatchFieldEmphasis.title,
         onTap: () => context.pushNamed(
           Routes.hostAppEventMomentsScreen.name,
-          pathParameters: {'clubId': clubId, 'eventId': event.id},
+          pathParameters: {'organizerId': clubId, 'eventId': event.id},
           extra: event,
         ),
       ),

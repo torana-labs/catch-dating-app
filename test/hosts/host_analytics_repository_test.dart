@@ -20,7 +20,7 @@ void main() {
     ).toCallableRequest().toJson();
 
     expect(request, {
-      'clubId': 'club-1',
+      'organizerId': 'club-1',
       'eventId': 'event-1',
       'rangePreset': 'custom',
       'startDate': '2026-06-01',
@@ -39,7 +39,7 @@ void main() {
     ).toCallableRequest().toJson();
 
     expect(request, {
-      'clubId': 'club-1',
+      'organizerId': 'club-1',
       'rangePreset': '90d',
       'granularity': 'month',
     });
@@ -55,7 +55,7 @@ void main() {
     final request = query.toCallableRequest().toJson();
 
     expect(request, {
-      'clubId': 'club-1',
+      'organizerId': 'club-1',
       'rangePreset': '12m',
       'granularity': 'month',
       'timezone': 'Asia/Kolkata',
@@ -134,7 +134,7 @@ void main() {
   test('HostAnalyticsEventRow parses full backend event metrics', () {
     final row = HostAnalyticsEventRow.fromMap({
       'eventId': 'event-1',
-      'clubId': 'club-1',
+      'organizerId': 'club-1',
       'title': 'Morning miles',
       'startTime': '2026-06-18T02:30:00.000Z',
       'status': 'completed',

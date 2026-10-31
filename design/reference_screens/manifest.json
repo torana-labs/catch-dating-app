@@ -492,7 +492,7 @@
       "source": {
         "kind": "claude",
         "id": "claude.catch-club-detail",
-        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-club-detail/ClubDetailV2.dc.html",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-club-detail/OrganizerDetailV2.dc.html",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + sips crop",
         "viewport": {
@@ -1296,7 +1296,7 @@
       "source": {
         "kind": "claude",
         "id": "claude.host-club-create",
-        "path": "design/source_packs/host-v2/templates/hosts-create-club/HostCreateClub.dc.html",
+        "path": "design/source_packs/host-v2/templates/hosts-create-club/HostCreateOrganizer.dc.html",
         "packManifest": "design/source_packs/host-v2/source-pack.json",
         "sha256": "d52db9768c75ff703219af3497b80bfc12801f739bccacc12b9634788e4f8920",
         "exportedAt": "2026-06-22",
@@ -1815,7 +1815,7 @@
       "source": {
         "kind": "claude",
         "id": "claude.host-club-detail",
-        "path": "design/source_packs/host-v2/templates/catch-club-detail/ClubDetailV2.dc.html",
+        "path": "design/source_packs/host-v2/templates/catch-club-detail/OrganizerDetailV2.dc.html",
         "packManifest": "design/source_packs/host-v2/source-pack.json",
         "sha256": "4438d4620690852306c11e647b3e78f8cb18a2e51ec311ea7d97865eb37350f5",
         "exportedAt": "2026-06-22",

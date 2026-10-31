@@ -50,7 +50,7 @@ test("repair plan covers both projections and audits external events",
           claim: {state: "unclaimed"},
         },
       },
-      clubs: {
+      organizers: {
         managed: {
           ownership: {state: "userCreated"},
           claim: {state: "claimed"},
@@ -61,7 +61,7 @@ test("repair plan covers both projections and audits external events",
     const plan = await buildOrganizerSupplyCapabilityRepairPlan(firestore);
 
     assert.deepEqual(plan.summary, {
-      scannedByCollection: {organizers: 1, clubs: 1},
+      scannedByCollection: {organizers: 1},
       externalEventsScanned: 0,
       repairsNeeded: 2,
       alreadyCurrent: 0,
@@ -74,7 +74,7 @@ test("repair plan covers both projections and audits external events",
       false
     );
     assert.equal(
-      firestore.data.clubs.managed.supplyCapabilities.bookable,
+      firestore.data.organizers.managed.supplyCapabilities.bookable,
       true
     );
   });

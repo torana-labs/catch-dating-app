@@ -53,7 +53,7 @@ export type OverviewQueueDestination =
   | "finance";
 
 export function OverviewScreen({
-  analyticsClubId,
+  analyticsOrganizerId,
   analyticsEndDate,
   analyticsError = null,
   analyticsEventId,
@@ -70,7 +70,7 @@ export function OverviewScreen({
   overviewError = null,
   overviewLoadedAt = null,
   onOpenQueue,
-  onAnalyticsClubIdChange,
+  onAnalyticsOrganizerIdChange,
   onAnalyticsEndDateChange,
   onAnalyticsEventIdChange,
   onAnalyticsGranularityChange,
@@ -81,7 +81,7 @@ export function OverviewScreen({
   onRefreshAnalytics,
   onRefreshOverview,
 }: {
-  analyticsClubId: string;
+  analyticsOrganizerId: string;
   analyticsEndDate: string;
   analyticsError?: string | null;
   analyticsEventId: string;
@@ -101,7 +101,7 @@ export function OverviewScreen({
     destination: OverviewQueueDestination,
     targetPath?: string | null
   ) => void;
-  onAnalyticsClubIdChange: (value: string) => void;
+  onAnalyticsOrganizerIdChange: (value: string) => void;
   onAnalyticsEndDateChange: (value: string) => void;
   onAnalyticsEventIdChange: (value: string) => void;
   onAnalyticsGranularityChange: (value: OverviewAnalyticsGranularity) => void;
@@ -152,7 +152,7 @@ export function OverviewScreen({
 
       {canLoadAnalytics && hostAnalytics ? (
         <HostAnalyticsDigest
-          analyticsClubId={analyticsClubId}
+          analyticsOrganizerId={analyticsOrganizerId}
           analyticsEndDate={analyticsEndDate}
           analyticsError={analyticsError}
           analyticsEventId={analyticsEventId}
@@ -162,7 +162,7 @@ export function OverviewScreen({
           analyticsStartDate={analyticsStartDate}
           hostAnalytics={hostAnalytics}
           isLoading={analyticsRefreshing}
-          onAnalyticsClubIdChange={onAnalyticsClubIdChange}
+          onAnalyticsOrganizerIdChange={onAnalyticsOrganizerIdChange}
           onAnalyticsEndDateChange={onAnalyticsEndDateChange}
           onAnalyticsEventIdChange={onAnalyticsEventIdChange}
           onAnalyticsGranularityChange={onAnalyticsGranularityChange}
@@ -228,12 +228,12 @@ function ownerDigestCards(overview: AdminOverviewResponse): OwnerDigestCardModel
       destination: "organizers",
       icon: Users,
       totals: [
-        {label: "Pending claims", value: metricValue(overview, "pendingClubClaims")},
+        {label: "Pending claims", value: metricValue(overview, "pendingOrganizerClaims")},
         {label: "Index review pages", value: metricValue(overview, "indexReviewPages")},
       ],
       previewRows: [
-        ...overview.queues.clubClaimRequests,
-        ...overview.queues.clubIndexReviews,
+        ...overview.queues.organizerClaimRequests,
+        ...overview.queues.organizerIndexReviews,
       ],
     },
     {
@@ -324,7 +324,7 @@ function DigestQueueRow({
 }
 
 function HostAnalyticsDigest({
-  analyticsClubId,
+  analyticsOrganizerId,
   analyticsEndDate,
   analyticsError,
   analyticsEventId,
@@ -334,7 +334,7 @@ function HostAnalyticsDigest({
   analyticsStartDate,
   hostAnalytics,
   isLoading,
-  onAnalyticsClubIdChange,
+  onAnalyticsOrganizerIdChange,
   onAnalyticsEndDateChange,
   onAnalyticsEventIdChange,
   onAnalyticsGranularityChange,
@@ -343,7 +343,7 @@ function HostAnalyticsDigest({
   onClearAnalyticsScope,
   onRefresh,
 }: {
-  analyticsClubId: string;
+  analyticsOrganizerId: string;
   analyticsEndDate: string;
   analyticsError: string | null;
   analyticsEventId: string;
@@ -353,7 +353,7 @@ function HostAnalyticsDigest({
   analyticsStartDate: string;
   hostAnalytics: HostAnalyticsResponse;
   isLoading: boolean;
-  onAnalyticsClubIdChange: (value: string) => void;
+  onAnalyticsOrganizerIdChange: (value: string) => void;
   onAnalyticsEndDateChange: (value: string) => void;
   onAnalyticsEventIdChange: (value: string) => void;
   onAnalyticsGranularityChange: (value: OverviewAnalyticsGranularity) => void;
@@ -427,9 +427,9 @@ function HostAnalyticsDigest({
           <CatchField
             recipe="input"
             title="Organizer ID"
-            onChanged={onAnalyticsClubIdChange}
+            onChanged={onAnalyticsOrganizerIdChange}
             inputHint="all organizers"
-            value={analyticsClubId}
+            value={analyticsOrganizerId}
           />
           <CatchField
             recipe="input"
@@ -439,7 +439,7 @@ function HostAnalyticsDigest({
             value={analyticsEventId}
           />
           <AdminButton
-            disabled={!analyticsClubId.trim() && !analyticsEventId.trim()}
+            disabled={!analyticsOrganizerId.trim() && !analyticsEventId.trim()}
             onClick={onClearAnalyticsScope}
           >
             Clear scope

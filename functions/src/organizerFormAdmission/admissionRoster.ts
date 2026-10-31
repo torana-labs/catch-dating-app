@@ -11,7 +11,7 @@ export function newFormAttendee(eventId: string, organizerId: string,
     "Guest";
   const linkedUid = response.respondentUid === contact.linkedUid ?
     response.respondentUid : null;
-  return {eventId, clubId: organizerId, organizerId,
+  return {eventId, organizerId,
     displayName, searchName: displayName.toLocaleLowerCase("en"),
     source: "hostManual", status: "registered",
     linkedUid,

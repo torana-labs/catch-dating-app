@@ -97,7 +97,7 @@ export async function getEventOperatorAccessHandler(
   const scheduledEvent = requireScheduledEvent(event);
   return {
     eventId: data.eventId,
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     title: eventTitleLabel(scheduledEvent),
     startAtMillis: scheduledEvent.startTime.toMillis(),
     endAtMillis: scheduledEvent.endTime.toMillis(),
@@ -167,13 +167,13 @@ export async function grantEventStaffHandler(
       "Organizer managers already have event access."
     );
   }
-  const organizerId = event.organizerId ?? event.clubId;
+  const organizerId = event.organizerId;
   const ref = db.collection("eventStaffGrants").doc(
     eventStaffGrantId(data.eventId, authUser.uid)
   );
   await db.runTransaction(async (tx) => {
     const fresh = await requireEventManager(db, data.eventId, actorUid, tx);
-    if ((fresh.event.organizerId ?? fresh.event.clubId) !== organizerId ||
+    if ((fresh.event.organizerId) !== organizerId ||
         isEventOrganizerManager(fresh.organizer, fresh.event, authUser.uid)) {
       throw new HttpsError("aborted", "Event staff authority changed.");
     }

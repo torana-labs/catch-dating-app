@@ -2,7 +2,7 @@ import {hashValue} from "../../../platform/canonical-json.mjs";
 
 // schema.org JSON-LD helpers shared by the platform adapters. Every normalized
 // value is copied from the page; nothing is inferred.
-const ORGANIZER_TYPES = Object.freeze(["Organization", "LocalBusiness", "SportsClub", "SportsOrganization",
+const ORGANIZER_TYPES = Object.freeze(["Organization", "LocalBusiness", "SportsOrganizer", "SportsOrganization",
   "NGO", "EducationalOrganization", "PerformingGroup", "MusicGroup", "TheaterGroup"]);
 
 /** Every node whose `@type` includes one of `types`, from blocks, `@graph` and item lists. */

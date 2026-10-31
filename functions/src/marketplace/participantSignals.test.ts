@@ -148,7 +148,7 @@ test("buildAttendanceSignalFact distinguishes attend and removal", () => {
   assert.equal(
     buildAttendanceSignalFact({
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       uid: "user-1",
       attended: true,
       sourceId: "attendance-1",
@@ -158,7 +158,7 @@ test("buildAttendanceSignalFact distinguishes attend and removal", () => {
   assert.equal(
     buildAttendanceSignalFact({
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       uid: "user-1",
       attended: false,
       sourceId: "attendance-2",

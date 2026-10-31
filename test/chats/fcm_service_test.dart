@@ -28,7 +28,7 @@ void main() {
       expect(
         eventCompanionRouteFromMessageData({
           'type': 'eventCompanionReady',
-          'clubId': 'club-1',
+          'organizerId': 'club-1',
           'eventId': 'event-7',
         }),
         '/organizers/club-1/events/event-7/companion',
@@ -39,7 +39,7 @@ void main() {
       expect(
         eventCompanionRouteFromMessageData({
           'type': 'eventReminder',
-          'clubId': 'club-1',
+          'organizerId': 'club-1',
           'eventId': 'event-7',
         }),
         isNull,
@@ -91,7 +91,7 @@ void main() {
       expect(
         routeFromMessageData({
           'type': 'eventCompanionReady',
-          'clubId': 'club-1',
+          'organizerId': 'club-1',
           'eventId': 'event-7',
         }),
         '/organizers/club-1/events/event-7/companion',
@@ -121,9 +121,9 @@ void main() {
                     Text('Room ${state.pathParameters['eventId']}'),
               ),
               GoRoute(
-                path: 'organizers/:clubId/events/:eventId/companion',
+                path: 'organizers/:organizerId/events/:eventId/companion',
                 builder: (context, state) => Text(
-                  'Companion ${state.pathParameters['clubId']} '
+                  'Companion ${state.pathParameters['organizerId']} '
                   '${state.pathParameters['eventId']}',
                 ),
               ),
@@ -153,7 +153,7 @@ void main() {
 
       navigateToMessageRoute(router, {
         'type': 'eventCompanionReady',
-        'clubId': 'club-1',
+        'organizerId': 'club-1',
         'eventId': 'event-7',
       });
       await pumpFeatureUi(tester);

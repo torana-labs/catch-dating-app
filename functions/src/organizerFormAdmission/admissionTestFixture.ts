@@ -131,7 +131,7 @@ export class Store {
 
 export function fixture() {
   const store = new Store();
-  const event = {clubId: org, organizerId: org, status: "active",
+  const event = {organizerId: org, status: "active",
     startTime: ts(5_000_000),
     capacityLimit: 2, bookedCount: 0,
     eventPolicy: {version: 2, admission: {capacityLimit: 2}}};

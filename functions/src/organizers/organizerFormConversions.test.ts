@@ -358,8 +358,7 @@ for (const status of ["completed", "pending", "failed"] as const) {
       const h = conversionFixture("crmContact");
       await h.convert();
       h.records("organizerFormConversionReceipts")[0][1].status = status;
-      h.store.docs["events/event1"] = {organizerId: "org1", clubId: "org1",
-        status: "published", eventFormat: {activityKind: "singlesMixer"}};
+      h.store.docs["events/event1"] = {organizerId: "org1", status: "published", eventFormat: {activityKind: "singlesMixer"}};
       h.store.beforeCommit = async () => {
         h.withdraw();
       };
@@ -378,8 +377,7 @@ for (const change of ["withdraw", "revoke", "delete", "move"] as const) {
     async () => {
       const h = conversionFixture("crmContact");
       await h.convert();
-      h.store.docs["events/event1"] = {organizerId: "org1", clubId: "org1",
-        status: "published", eventFormat: {activityKind: "singlesMixer"}};
+      h.store.docs["events/event1"] = {organizerId: "org1", status: "published", eventFormat: {activityKind: "singlesMixer"}};
       h.store.docs["organizers/other"] = {ownerUserId: "manager",
         hostUserIds: [], hostProfiles: []};
       const original = h.store.runTransaction.bind(h.store);
@@ -463,7 +461,7 @@ test("Firestore conversion authority, receipts and attendee handoff",
         await db.recursiveDelete(db.collection(name));
       }
       const h = conversionFixture("crmContact");
-      const event = {organizerId: "org1", clubId: "org1", status: "active",
+      const event = {organizerId: "org1", status: "active",
         eventFormat: {activityKind: "singlesMixer"},
         capacityLimit: 2, bookedCount: 0,
         constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}};

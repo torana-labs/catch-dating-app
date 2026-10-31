@@ -113,8 +113,7 @@ export async function createEventRosterHandoffHandler(
   const provider = externalRosterProvider(event);
   const handoff: EventRosterHandoffDocument = {
     eventId: payload.eventId,
-    clubId: event.clubId,
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     hostUid,
     tokenHash,
     provider,

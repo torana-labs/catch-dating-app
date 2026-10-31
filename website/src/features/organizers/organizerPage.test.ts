@@ -20,7 +20,7 @@ describe("organizerPageRecord", () => {
     expect(record.links[0].showUntil).toBe("2026-11-14T12:00:00.000Z");
     expect(record.identity).toEqual(claimedOrganizerPage.identity);
     expect(record.reviewSummary).toEqual(claimedOrganizerPage.reviewSummary);
-    expect(record.profile).toMatchObject({listingVariant: "appCreatedClub", host: {name: "Kabir Rao"}});
+    expect(record.profile).toMatchObject({listingVariant: "appCreatedOrganizer", host: {name: "Kabir Rao"}});
     expect(record).not.toHaveProperty("listing");
     expect(record).not.toHaveProperty("recommendedOrganizers");
   });

@@ -145,7 +145,7 @@ void main() {
     );
   });
 
-  test('HostClubCreate route intents carry typed callback payloads', () {
+  test('HostOrganizerCreate route intents carry typed callback payloads', () {
     const reorderIntent = HostOrganizerCreateReorderOrganizerPhotoIntent(
       fromIndex: 1,
       toIndex: 3,

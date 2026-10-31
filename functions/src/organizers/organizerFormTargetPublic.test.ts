@@ -25,7 +25,7 @@ function fixture() {
       timezone: {value: "Asia/Kolkata", source: "event"},
       organizerDefaultsRevision: null, organizerDefaultsHash: "a".repeat(64),
     },
-    clubId: "org", startTime: Timestamp.fromMillis(1_000_000),
+    startTime: Timestamp.fromMillis(1_000_000),
     bookedCount: 0, checkedInCount: 0, waitlistedCount: 0, status: "active",
     cancelledAt: null, cancellationReason: null, genderCounts: {},
     cohortCounts: {}, waitlistedCohortCounts: {},
@@ -48,7 +48,7 @@ function fixture() {
 
 test("public fixed-event forms close without disclosing unavailable targets",
   async () => {
-    for (const change of [null, {clubId: "foreign"}, {status: "cancelled"},
+    for (const change of [null, {organizerId: "foreign"}, {status: "cancelled"},
       {startTime: now}, {startTime: Timestamp.fromMillis(1)},
       {publicationState: "invalid"}]) {
       const h = fixture();

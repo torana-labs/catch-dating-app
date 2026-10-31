@@ -141,7 +141,7 @@ export async function buildResetPlan(
     }
   }
   if (scope === "all") {
-    await collectQuery(db.collection("clubMemberships")
+    await collectQuery(db.collection("organizerMemberships")
       .where("uid", "==", uid), collect);
   }
   if (scope === "all" || scope === "bookings") {
@@ -346,8 +346,8 @@ export async function repairDemoEventAggregates(
       ...next,
       ...eventDiscoveryProjection({
         event: next as EventDocument,
-        clubLocation: event.discoveryMarketId,
-        clubLocationMarketId: event.discoveryMarketId,
+        organizerLocation: event.discoveryMarketId,
+        organizerLocationMarketId: event.discoveryMarketId,
         bookedCount: booked.length,
       }),
     };

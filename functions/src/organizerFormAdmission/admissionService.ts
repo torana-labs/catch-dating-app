@@ -143,7 +143,7 @@ function catchAttendee(eventId: string, organizerId: string, uid: string,
   now: FirebaseFirestore.Timestamp): EventAttendeeDocument {
   const displayName = profile?.name?.trim() || uid;
   const checkedIn = participation.status === "attended";
-  return {eventId, clubId: organizerId, organizerId,
+  return {eventId, organizerId,
     displayName, searchName: displayName.toLocaleLowerCase("en"),
     source: "catchBooking", status: checkedIn ? "checkedIn" : "registered",
     linkedUid: uid, phoneE164: null, email: null,
@@ -333,7 +333,7 @@ async function executeAdmission(
           ID.test(response.respondentUid)) ||
         (["phoneVerified", "catchAccount"].includes(response.identityKind) &&
           !response.respondentUid) ||
-        event.clubId !== payload.organizerId ||
+        event.organizerId !== payload.organizerId ||
         event.organizerId !== undefined &&
           event.organizerId !== payload.organizerId) {
       unavailable("Current form, CRM or event source is unavailable.");
@@ -502,7 +502,7 @@ async function executeAdmission(
         const part = participationRaw as
           EventParticipationDocument | undefined;
         if (part && part.eventId === payload.eventId &&
-            part.clubId === payload.organizerId &&
+            part.organizerId === payload.organizerId &&
             (part.organizerId === undefined ||
               part.organizerId === payload.organizerId) &&
             ["signedUp", "attended"].includes(part.status) &&

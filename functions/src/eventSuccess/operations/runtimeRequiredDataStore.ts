@@ -224,7 +224,7 @@ export class EventRuntimeRequiredDataStore {
           !validateEventSuccessPlanDocument(planValue))) throw invalidSource();
     const typedEvent = event as unknown as EventDocument;
     const typedAttendee = attendee as unknown as EventAttendeeDocument;
-    const organizerId = typedEvent.organizerId ?? typedEvent.clubId;
+    const organizerId = typedEvent.organizerId;
     if (organizerId !== context.organizerId ||
         typedAttendee.eventId !== context.eventId ||
         typedAttendee.organizerId !== context.organizerId ||

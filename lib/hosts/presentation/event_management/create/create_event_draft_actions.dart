@@ -103,7 +103,7 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
     if (picked.intent == HostEventEntryIntent.createProgram) {
       await context.pushNamed(
         Routes.hostCreateProgramScreen.name,
-        pathParameters: {'clubId': widget.organizer.id},
+        pathParameters: {'organizerId': widget.organizer.id},
       );
       return;
     }

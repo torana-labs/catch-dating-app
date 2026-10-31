@@ -176,7 +176,7 @@ void main() {
           router.state.uri.path,
           expected.path
               .replaceAll(':eventId', 'event')
-              .replaceAll(':clubId', 'organizer'),
+              .replaceAll(':organizerId', 'organizer'),
         );
         expect(router.state.uri.queryParameters['organizerId'], 'organizer');
         expect(tester.state<_DraftState>(manage), same(manageState));
@@ -373,7 +373,7 @@ class _DraftState extends State<_Draft> {
           TextButton(
             onPressed: () => context.pushNamed(
               Routes.hostEventRosterScreen.name,
-              pathParameters: {'clubId': 'organizer', 'eventId': 'event'},
+              pathParameters: {'organizerId': 'organizer', 'eventId': 'event'},
               queryParameters: {'organizerId': 'organizer'},
             ),
             child: const Text('Open Guests'),

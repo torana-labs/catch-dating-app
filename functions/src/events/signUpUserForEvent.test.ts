@@ -217,7 +217,7 @@ function reservationPath(key: string): string {
 
 function event(overrides: FakeData = {}): FakeData {
   return {
-    clubId: "club-1",
+    organizerId: "club-1",
     eventOrigin: catchNativeEventOrigin(),
     startTime: admin.firestore.Timestamp.fromMillis(
       Date.parse("2026-05-02T01:30:00.000Z")
@@ -344,7 +344,7 @@ test("signUpUserForEvent writes a signup activity notification", async () => {
     "Your 5 km event from Carter Road is confirmed."
   );
   assert.equal(notification?.eventId, "event-1");
-  assert.equal(notification?.clubId, "club-1");
+  assert.equal(notification?.organizerId, "club-1");
   assert.equal(notification?.readAt, null);
   assert.equal(participation?.status, "signedUp");
   assert.equal(
@@ -540,7 +540,7 @@ for (const mode of ["legacy", "ready-free", "ready-paid",
         "users/runner-1": user(),
         "eventParticipations/event-1_attendee-1": {
           eventId: "event-1",
-          clubId: "club-1",
+          organizerId: "club-1",
           uid: "attendee-1",
           status: "signedUp",
         },
@@ -634,7 +634,7 @@ test("signUpUserForEvent writes a waitlist promotion notification", async (
     "users/runner-1": user(),
     "eventParticipations/event-1_runner-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       uid: "runner-1",
       status: "waitlisted",
     },
@@ -655,7 +655,7 @@ test("signUpUserForEvent writes a waitlist promotion notification", async (
     "A spot opened for your 5 km event from Carter Road."
   );
   assert.equal(notification?.eventId, "event-1");
-  assert.equal(notification?.clubId, "club-1");
+  assert.equal(notification?.organizerId, "club-1");
   assert.equal(notification?.readAt, null);
 });
 
@@ -751,7 +751,7 @@ test("signUpUserForEvent rejects overlapping user bookings", async () => {
   const db = firestore({
     "events/event-1": event(),
     "events/event-2": event({
-      clubId: "club-2",
+      organizerId: "club-2",
       startTime: admin.firestore.Timestamp.fromMillis(
         Date.parse("2026-05-02T02:00:00.000Z")
       ),
@@ -762,7 +762,7 @@ test("signUpUserForEvent rejects overlapping user bookings", async () => {
     "users/runner-1": user(),
     "eventParticipations/event-2_runner-1": {
       eventId: "event-2",
-      clubId: "club-2",
+      organizerId: "club-2",
       uid: "runner-1",
       status: "signedUp",
     },
@@ -781,7 +781,7 @@ test("signUpUserForEvent allows adjacent user bookings", async () => {
   const db = firestore({
     "events/event-1": event(),
     "events/event-2": event({
-      clubId: "club-2",
+      organizerId: "club-2",
       startTime: admin.firestore.Timestamp.fromMillis(
         Date.parse("2026-05-02T02:30:00.000Z")
       ),
@@ -792,7 +792,7 @@ test("signUpUserForEvent allows adjacent user bookings", async () => {
     "users/runner-1": user(),
     "eventParticipations/event-2_runner-1": {
       eventId: "event-2",
-      clubId: "club-2",
+      organizerId: "club-2",
       uid: "runner-1",
       status: "signedUp",
     },
@@ -927,7 +927,7 @@ test("a stale approved preflight cannot admit a declined request", async () => {
   (manual.admission as FakeData).manualApprovalRequired = true;
   const records = {"events/event-1": event({eventPolicy: manual}),
     "users/runner-1": user(), "eventParticipations/event-1_runner-1": {
-      eventId: "event-1", clubId: "club-1", uid: "runner-1",
+      eventId: "event-1", organizerId: "club-1", uid: "runner-1",
       status: "cancelled", hostApprovalStatus: "declined"}};
   const db = firestore(records);
   await assert.rejects(signUpUserForEvent(db, "event-1", "runner-1",
@@ -943,7 +943,7 @@ test("current persisted approval supplies the transactional review check",
     (manual.admission as FakeData).manualApprovalRequired = true;
     const records = {"events/event-1": event({eventPolicy: manual}),
       "users/runner-1": user(), "eventParticipations/event-1_runner-1": {
-        eventId: "event-1", clubId: "club-1", uid: "runner-1",
+        eventId: "event-1", organizerId: "club-1", uid: "runner-1",
         status: "waitlisted", hostApprovalStatus: "approved"}};
     const db = firestore(records);
     await signUpUserForEvent(db, "event-1", "runner-1");

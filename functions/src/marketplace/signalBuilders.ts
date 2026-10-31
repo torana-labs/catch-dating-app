@@ -10,7 +10,7 @@ import {
 
 interface EventSuccessFeedbackLike {
   eventId: string;
-  clubId: string;
+  organizerId: string;
   uid: string;
   safetyConcern?: boolean;
   createdAt?: FirebaseFirestore.Timestamp;
@@ -220,13 +220,12 @@ export function buildChatSignalFacts(params: {
  */
 export function buildAttendanceSignalFact(params: {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   uid: string;
   attended: boolean;
   sourceId: string;
 }): ParticipantSignalFactInput {
-  const {eventId, clubId, organizerId, uid, attended, sourceId} = params;
+  const {eventId, organizerId, uid, attended, sourceId} = params;
   const type = attended ? "event_attended" : "event_attendance_removed";
   return {
     id: participantSignalFactId(type, uid, sourceId),
@@ -235,8 +234,7 @@ export function buildAttendanceSignalFact(params: {
     source: "attendance",
     direction: "self",
     eventId,
-    clubId,
-    organizerId: organizerId ?? clubId,
+    organizerId: organizerId,
     visibility: "aggregateSafe",
   };
 }
@@ -262,7 +260,7 @@ export function buildFeedbackSignalFact(
     source: "event_feedback",
     direction: "self",
     eventId: feedback.eventId,
-    clubId: feedback.clubId,
+    organizerId: feedback.organizerId,
     visibility: "aggregateSafe",
     occurredAt: feedback.createdAt,
     metadata: {

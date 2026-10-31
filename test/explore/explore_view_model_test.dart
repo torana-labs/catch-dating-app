@@ -1423,7 +1423,7 @@ void main() {
     });
 
     test(
-      'matchesExploreClubSearchQuery matches name, area, host, and tags',
+      'matchesExploreOrganizerSearchQuery matches name, area, host, and tags',
       () {
         final bandraOrganizer = buildOrganizer();
         final hostOrganizer = buildOrganizer(
@@ -1563,7 +1563,7 @@ void main() {
       expect(filtered.map((organizer) => organizer.id), ['club-distance-only']);
     });
 
-    test('clubMatchesScopeFilters short-circuits the tag check for events', () {
+    test('organizerMatchesScopeFilters short-circuits the tag check for events', () {
       // Default tags are ['social'] — the club does not carry 'running'.
       final organizer = buildOrganizer(id: 'club-social');
       const filters = ExploreFilterSelection(activityTag: 'running');

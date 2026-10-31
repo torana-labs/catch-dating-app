@@ -20,6 +20,6 @@ export type {
   CatchActivityKind,
 } from "./components/activityArtwork";
 export {activityArtworkTokenValues, resolveActivityArtworkToken} from "./components/activityArtworkTokens";
-export {clubMonogram, clubPlaceholderCover, clubPlaceholderCoverLayout} from "./components/clubCoverArtwork";
-export type {ClubPlaceholderCoverInput, ClubPlaceholderCoverLayout} from "./components/clubCoverArtwork";
+export {organizerMonogram, organizerPlaceholderCover, organizerPlaceholderCoverLayout} from "./components/organizerCoverArtwork";
+export type {OrganizerPlaceholderCoverInput, OrganizerPlaceholderCoverLayout} from "./components/organizerCoverArtwork";
 export {catchFormatOf} from "./components/palette";

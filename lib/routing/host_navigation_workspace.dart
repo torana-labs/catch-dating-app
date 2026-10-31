@@ -388,7 +388,7 @@ void openHostOrganizerSetting(
   BuildContext context,
   Routes setting,
   String clubId,
-) => context.pushNamed(setting.name, queryParameters: {'clubId': clubId});
+) => context.pushNamed(setting.name, queryParameters: {'organizerId': clubId});
 
 /// A route can be loaded directly, without a Navigator page for its parent.
 /// Prefer the owning workspace's Back policy; otherwise preserve the URI context.

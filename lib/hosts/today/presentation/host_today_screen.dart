@@ -331,7 +331,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
   void _startRehearsal(Organizer organizer, {String? sourceEventId}) {
     context.pushNamed(
       Routes.hostEventRehearsalStartScreen.name,
-      pathParameters: {'clubId': organizer.id},
+      pathParameters: {'organizerId': organizer.id},
       queryParameters: {
         'eventId': ?sourceEventId,
         if (sourceEventId == null) 'source': 'custom',
@@ -389,7 +389,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
       case HostAttentionDestinationRoute.hostOrganizerPayments:
         context.pushNamed(
           Routes.hostOrganizerPaymentsScreen.name,
-          queryParameters: {'clubId': organizer.id},
+          queryParameters: {'organizerId': organizer.id},
         );
         return;
       case HostAttentionDestinationRoute.hostAudienceForms:

@@ -194,7 +194,7 @@ class _HostEventRehearsalStartScreenState
     if (!mounted) return;
     context.goNamed(
       Routes.hostEventRehearsalScreen.name,
-      pathParameters: {'clubId': widget.clubId, 'sessionId': created.sessionId},
+      pathParameters: {'organizerId': widget.clubId, 'sessionId': created.sessionId},
     );
   }
 }

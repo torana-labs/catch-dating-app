@@ -35,13 +35,9 @@
     "scope": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["organizerIds", "clubIds", "eventIds"],
+      "required": ["organizerIds", "eventIds"],
       "properties": {
         "organizerIds": {
-          "type": "array",
-          "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
-        },
-        "clubIds": {
           "type": "array",
           "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
         },
@@ -49,7 +45,6 @@
           "type": "array",
           "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
         },
-        "clubName": {"type": ["string", "null"], "maxLength": 160},
         "organizerName": {"type": ["string", "null"], "maxLength": 160},
         "eventTitle": {"type": ["string", "null"], "maxLength": 160}
       }
@@ -82,7 +77,7 @@
         "additionalProperties": false,
         "required": [
           "eventId",
-          "clubId",
+          "organizerId",
           "title",
           "startTime",
           "status",
@@ -109,7 +104,6 @@
         ],
         "properties": {
           "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-          "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
           "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
           "title": {"type": "string", "minLength": 1, "maxLength": 160},
           "startTime": {"type": "string", "format": "date-time"},

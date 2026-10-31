@@ -3,8 +3,8 @@ import {validateAdminCallableRequest, validateAdminCallableResponse} from
 import {httpsCallable} from "firebase/functions";
 import {functions} from "../../../shared/api/firebaseFunctions";
 import {dataMode} from "../../../shared/api/dataMode";
-import {listClubDetails} from "../../../shared/api/adminApi";
-import type {AdminClubListRow} from "../../../shared/types/adminTypes";
+import {listOrganizerDetails} from "../../../shared/api/adminApi";
+import type {AdminOrganizerListRow} from "../../../shared/types/adminTypes";
 import type {
   SalesAccount, SalesAccountDetail, SalesAccountSummary, SalesActivity,
   SalesCreateAccountInput, SalesCreateCustomFieldInput, SalesCustomFieldDefinition,
@@ -146,8 +146,8 @@ export async function listSalesAccounts(
   return pageRows(rows, input.cursor, input.limit ?? 25);
 }
 
-export async function searchCanonicalOrganizers(query: string): Promise<AdminClubListRow[]> {
-  const response = await listClubDetails({query, limit: 25});
+export async function searchCanonicalOrganizers(query: string): Promise<AdminOrganizerListRow[]> {
+  const response = await listOrganizerDetails({query, limit: 25});
   return response.rows;
 }
 

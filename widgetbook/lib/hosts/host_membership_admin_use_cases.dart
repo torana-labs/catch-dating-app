@@ -89,7 +89,7 @@ Widget hostMembershipsCardStates(BuildContext context) =>
 )
 Widget hostOrganizerMembershipsScreenLoaded(BuildContext context) =>
     WidgetbookPageCatalogFrame(
-      title: 'HostClubMembershipsScreen',
+      title: 'HostOrganizerMembershipsScreen',
       contractId: 'screen.host.clubs',
       children: [
         WidgetbookPageStateCard(

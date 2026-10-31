@@ -257,7 +257,7 @@ test("Firestore movement uses parent receipts, current authority and reset", {
   const db = getEmulatorFirestore();
   const h = harness(); h.arrive(); h.arrive(1);
   h.session.organizerId = "movement-" + h.id;
-  h.session.clubId = h.session.organizerId;
+  h.session.organizerId = h.session.organizerId;
   const sessionRef = db.collection("eventRehearsals").doc(h.id);
   const orgRef = db.collection("organizers").doc(h.session.organizerId);
   const batch = db.batch();

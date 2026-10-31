@@ -60,7 +60,7 @@ export function getClaimListingLookupFromLocation(
   routeListing: string | null | undefined = null
 ) {
   const params = new URLSearchParams(location.search);
-  const idOrSlug = params.get("listing") ?? params.get("clubId");
+  const idOrSlug = params.get("listing") ?? params.get("organizerId");
   const pathParts = location.pathname.split("/").filter(Boolean);
   const pathSlug = normalizedLookup(routeListing) ??
     (pathParts[0] === "claim" ? normalizedLookup(pathParts[1]) : null);

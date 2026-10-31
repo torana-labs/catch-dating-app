@@ -2,7 +2,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {act, renderHook, waitFor} from "@testing-library/react";
 import type {PropsWithChildren} from "react";
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import type {AdminClubListRow} from "../../../shared/types/adminTypes";
+import type {AdminOrganizerListRow} from "../../../shared/types/adminTypes";
 import {
   buildOrganizerListPayload,
   countBlockingIssues,
@@ -21,8 +21,8 @@ const repository = vi.hoisted(() => ({
 
 vi.mock("../api/organizerPublishingRepository", () => repository);
 
-const readyRow: AdminClubListRow = {
-  clubId: "afterfly",
+const readyRow: AdminOrganizerListRow = {
+  organizerId: "afterfly",
   name: "AFTER FLY",
   organizerType: "eventProducer",
   publicCategoryLabel: "Event organizer",
@@ -57,17 +57,17 @@ describe("useOrganizerPublishingController", () => {
     Object.values(repository).forEach((mock) => mock.mockReset());
     repository.listOrganizerProfiles.mockResolvedValue({
       generatedAt: "2026-07-13T00:00:00.000Z",
-      rows: [readyRow, {...readyRow, clubId: "draft", publishStatus: "draft"}],
+      rows: [readyRow, {...readyRow, organizerId: "draft", publishStatus: "draft"}],
     });
   });
 
   it("loads the directory and hands selection to route ownership", async () => {
-    const onSelectClubId = vi.fn();
+    const onSelectOrganizerId = vi.fn();
     const {result} = renderHook(
       () => useOrganizerPublishingController({
         onError: vi.fn(),
         onNotice: vi.fn(),
-        onSelectClubId,
+        onSelectOrganizerId,
       }),
       {wrapper: createWrapper()}
     );
@@ -75,7 +75,7 @@ describe("useOrganizerPublishingController", () => {
     await waitFor(() => expect(result.current.isListLoading).toBe(false));
     expect(result.current.rows).toHaveLength(2);
     act(() => result.current.selectOrganizer("afterfly"));
-    expect(onSelectClubId).toHaveBeenCalledWith("afterfly");
+    expect(onSelectOrganizerId).toHaveBeenCalledWith("afterfly");
   });
 
   it("classifies publish debt and builds server-filter payloads", () => {
@@ -95,12 +95,12 @@ describe("useOrganizerPublishingController", () => {
   it("keeps route/search issue filters and validation counters explicit", () => {
     const routeIssue = {
       ...readyRow,
-      clubId: "route-issue",
+      organizerId: "route-issue",
       routeReservationStatus: "missing" as const,
     };
     const searchIssue = {
       ...readyRow,
-      clubId: "search-issue",
+      organizerId: "search-issue",
       searchIndexStatus: "missing" as const,
     };
     expect(filterOrganizerRows([readyRow, routeIssue, searchIssue], "routeIssues"))

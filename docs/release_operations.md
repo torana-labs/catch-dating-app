@@ -1114,7 +1114,7 @@ firebase functions:secrets:get ALGOLIA_WRITE_API_KEY --project "$search_project"
 
 Index names default to `organizers` and `events`. Only override them with
 `ALGOLIA_ORGANIZERS_INDEX` or `ALGOLIA_EVENTS_INDEX` if an environment needs
-different index names. `ALGOLIA_CLUBS_INDEX` is a temporary compatibility
+different index names. `ALGOLIA_ORGANIZERS_INDEX` is a temporary compatibility
 fallback and must not be used in new environment configuration. These are not
 secrets.
 
@@ -2268,7 +2268,7 @@ merging the held client does not authorize those actions. Callable reachability
 alone does not prove the manifest-import wire contract is compatible.
 
 The 2026-07-10 event-scoped Host inquiry change is a concrete two-phase case:
-deploy the updated `startClubHostConversation` Function and generated payload
+deploy the updated `startOrganizerHostConversation` Function and generated payload
 contract before distributing the new client. The client contains a narrow
 compatibility retry that removes `eventId` only when the older callable returns
 the exact `eventId ... additional properties` validation diagnostic. That
@@ -2447,7 +2447,7 @@ firebase firestore:indexes --project catch-dating-app-64e51 --pretty
 ```
 
 Read-only index listings on 2026-05-26 showed dev, staging, and prod still had
-only the legacy `events` indexes (`status/startTime` and `clubId/startTime`).
+only the legacy `events` indexes (`status/startTime` and `organizerId/startTime`).
 Deploy `firestore:indexes` and wait for every discovery index to become
 `READY` before enabling an app build that relies on the direct event query.
 

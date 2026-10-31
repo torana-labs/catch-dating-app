@@ -12,7 +12,7 @@ import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
 import {preparePublishedEventPatch, publicationRegistrationPatch} from
   "./publicationReadiness";
-import {claimClubScheduleInTransaction} from "../scheduleConflicts";
+import {claimOrganizerScheduleInTransaction} from "../scheduleConflicts";
 import {
   assertReceipt, authorizeSetupManager, hashRequest,
   receiptFor, requireRevision, ProgressiveSetupDependencies,
@@ -50,8 +50,7 @@ export async function setEventPublication(params: {
     const organizer = authorizeSetupManager(organizerSnap, deletedSnap,
       actorUid);
     const event = eventSnap.data();
-    if (!event || event.organizerId !== command.organizerId ||
-        event.clubId !== command.organizerId) {
+    if (!event || event.organizerId !== command.organizerId) {
       throw new HttpsError("not-found", "Event not found.");
     }
     if (receiptSnap.exists) {
@@ -100,9 +99,8 @@ export async function setEventPublication(params: {
     }
     if (operation === "publish") {
       // This helper performs the final reads before writing schedule locks.
-      await claimClubScheduleInTransaction(tx, db, {
-        organizerId: command.organizerId, clubId: command.organizerId,
-        eventId: command.eventId,
+      await claimOrganizerScheduleInTransaction(tx, db, {
+        organizerId: command.organizerId, eventId: command.eventId,
         startTimeMillis: event.startTime.toMillis(),
         endTimeMillis: event.endTime.toMillis(),
       });

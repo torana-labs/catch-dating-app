@@ -351,7 +351,7 @@ function callableRequest(
   } as CallableRequest<unknown>;
 }
 
-function clubDoc(overrides: FakeData = {}): FakeData {
+function organizerDoc(overrides: FakeData = {}): FakeData {
   return {
     name: "AFTER FLY",
     location: "in-mp-indore",
@@ -367,7 +367,6 @@ function eventDoc(overrides: FakeData = {}): FakeData {
     overrides.startTime : new Date("2026-07-04T01:30:00.000Z");
   return {
     organizerId: "afterfly",
-    clubId: "afterfly",
     startTime,
     endTime: new Date(startTime.getTime() + 2 * 60 * 60 * 1000),
     meetingPoint: "Nehru Park gate",
@@ -425,10 +424,9 @@ function assertHttpsCode(error: unknown, code: string): boolean {
 
 test("adminListEventDetailsHandler returns canonical event rows", async () => {
   const h = harness({
-    "organizers/afterfly": clubDoc(),
+    "organizers/afterfly": organizerDoc(),
     "events/afterfly-social-run-1": eventDoc(),
     "events/bandra-run-1": eventDoc({
-      clubId: "bandra-runners",
       organizerId: "bandra-runners",
       meetingPoint: "Bandra Bandstand",
       discoveryCityName: "mumbai",
@@ -440,7 +438,7 @@ test("adminListEventDetailsHandler returns canonical event rows", async () => {
         updatedBySource: "adminEventSearchBackfill",
       },
     }),
-    "organizers/bandra-runners": clubDoc({
+    "organizers/bandra-runners": organizerDoc({
       name: "Bandra Runners",
       location: "in-mh-mumbai",
       locationCityId: "in-mh-mumbai",
@@ -470,10 +468,9 @@ test(
   "adminListEventDetailsHandler supports bounded launch-city filters",
   async () => {
     const h = harness({
-      "organizers/afterfly": clubDoc(),
+      "organizers/afterfly": organizerDoc(),
       "events/afterfly-social-run-1": eventDoc(),
       "events/bandra-run-1": eventDoc({
-        clubId: "bandra-runners",
         organizerId: "bandra-runners",
         meetingPoint: "Bandra Bandstand",
         discoveryCityName: "mumbai",
@@ -486,7 +483,6 @@ test(
         },
       }),
       "events/delhi-run-1": eventDoc({
-        clubId: "delhi-runners",
         organizerId: "delhi-runners",
         meetingPoint: "Lodhi Garden",
         discoveryCityName: "delhi",
@@ -498,7 +494,7 @@ test(
           updatedBySource: "adminEventSearchBackfill",
         },
       }),
-      "organizers/bandra-runners": clubDoc({
+      "organizers/bandra-runners": organizerDoc({
         name: "Bandra Runners",
         location: "in-mh-mumbai",
         locationCityId: "in-mh-mumbai",
@@ -524,7 +520,7 @@ test(
 
 test("adminListEventDetailsHandler applies upcoming time windows", async () => {
   const h = harness({
-    "organizers/afterfly": clubDoc(),
+    "organizers/afterfly": organizerDoc(),
     "events/afterfly-old-run-1": eventDoc({
       startTime: new Date("2020-01-01T01:30:00.000Z"),
       discoveryCityName: "indore",
@@ -548,7 +544,6 @@ test("adminListEventDetailsHandler applies upcoming time windows", async () => {
       },
     }),
     "events/bandra-future-run-1": eventDoc({
-      clubId: "bandra-runners",
       organizerId: "bandra-runners",
       startTime: new Date("2099-01-02T01:30:00.000Z"),
       discoveryCityName: "mumbai",
@@ -590,7 +585,7 @@ test("adminListEventDetailsHandler applies upcoming time windows", async () => {
 
 test("adminGetEventDetailsHandler returns editable event details", async () => {
   const h = harness({
-    "organizers/afterfly": clubDoc(),
+    "organizers/afterfly": organizerDoc(),
     "events/afterfly-social-run-1": eventDoc(),
   });
 
@@ -611,7 +606,7 @@ test("adminGetEventDetailsHandler returns editable event details", async () => {
 
 test("rich admin details skip incomplete private basics", async () => {
   const h = harness({
-    "organizers/afterfly": clubDoc(),
+    "organizers/afterfly": organizerDoc(),
     "events/private-1": eventDoc({
       name: "September meetup",
       publicationState: "private",
@@ -635,7 +630,7 @@ test(
   "admin owners can select a bounded upcoming Mumbai pilot event",
   async () => {
     const h = harness({
-      "organizers/bandra-runners": clubDoc({
+      "organizers/bandra-runners": organizerDoc({
         name: "Bandra Runners",
         location: "in-mh-mumbai",
         locationCityId: "in-mh-mumbai",
@@ -643,7 +638,6 @@ test(
         cityName: "Mumbai",
       }),
       "events/bandra-run-1": eventDoc({
-        clubId: "bandra-runners",
         organizerId: "bandra-runners",
         discoveryCityName: "mumbai",
         discoveryMarketId: "in-mh-mumbai",
@@ -672,7 +666,7 @@ test(
   "admin owners can select a Mumbai event with bounded pair inventory",
   async () => {
     const h = harness({
-      "organizers/bandra-runners": clubDoc({
+      "organizers/bandra-runners": organizerDoc({
         name: "Bandra Runners",
         location: "in-mh-mumbai",
         locationCityId: "in-mh-mumbai",
@@ -680,7 +674,6 @@ test(
         cityName: "Mumbai",
       }),
       "events/bandra-run-1": eventDoc({
-        clubId: "bandra-runners",
         organizerId: "bandra-runners",
         discoveryCityName: "mumbai",
         discoveryMarketId: "in-mh-mumbai",
@@ -736,7 +729,7 @@ test(
 
 test("support cannot change the Cross Paths selected-event gate", async () => {
   const h = harness({
-    "organizers/bandra-runners": clubDoc(),
+    "organizers/bandra-runners": organizerDoc(),
     "events/bandra-run-1": eventDoc({
       discoveryMarketId: "in-mh-mumbai",
     }),
@@ -767,7 +760,7 @@ test(
       }),
     ]));
     const overBroad = harness({
-      "organizers/bandra-runners": clubDoc(),
+      "organizers/bandra-runners": organizerDoc(),
       ...selected,
       "events/bandra-run-1": eventDoc({
         discoveryMarketId: "in-mh-mumbai",
@@ -786,7 +779,7 @@ test(
     );
 
     const nonMumbai = harness({
-      "organizers/afterfly": clubDoc(),
+      "organizers/afterfly": organizerDoc(),
       "events/afterfly-social-run-1": eventDoc(),
     });
     await assert.rejects(
@@ -805,7 +798,7 @@ test(
 
 test("adminUpdateEventDetailsHandler saves audited safe fields", async () => {
   const h = harness({
-    "organizers/afterfly": clubDoc(),
+    "organizers/afterfly": organizerDoc(),
     "events/afterfly-social-run-1": eventDoc({
       eventFormat: {
         version: 1,
@@ -884,7 +877,7 @@ test("adminUpdateEventDetailsHandler saves audited safe fields", async () => {
 
 test("adminUpdateEventDetailsHandler rejects cancelled events", async () => {
   const h = harness({
-    "organizers/afterfly": clubDoc(),
+    "organizers/afterfly": organizerDoc(),
     "events/afterfly-social-run-1": eventDoc({status: "cancelled"}),
   });
 
@@ -903,7 +896,7 @@ test("adminUpdateEventDetailsHandler rejects cancelled events", async () => {
 
 test("adminUpdateEventDetailsHandler requires review notes", async () => {
   const h = harness({
-    "organizers/afterfly": clubDoc(),
+    "organizers/afterfly": organizerDoc(),
     "events/afterfly-social-run-1": eventDoc(),
   });
 
@@ -921,7 +914,7 @@ test("adminUpdateEventDetailsHandler requires review notes", async () => {
 
 test("adminGetEventDetailsHandler denies viewer-only admins", async () => {
   const h = harness({
-    "organizers/afterfly": clubDoc(),
+    "organizers/afterfly": organizerDoc(),
     "events/afterfly-social-run-1": eventDoc(),
   });
 
@@ -938,7 +931,7 @@ test("adminGetEventDetailsHandler denies viewer-only admins", async () => {
 
 test("real pilot review is private, audited and rejects stale staff decisions",
   async () => {
-    const h = harness({"organizers/afterfly": clubDoc(),
+    const h = harness({"organizers/afterfly": organizerDoc(),
       "events/afterfly-social-run-1": eventDoc()});
     const data = {eventId: "afterfly-social-run-1", reviewNote: "Real pilot",
       fields: {hostPilotReview: {realEvent: true, expectedRevision: 0}}};
@@ -958,7 +951,7 @@ test("real pilot review is private, audited and rejects stale staff decisions",
 
 test("pilot review cannot recreate data after a Sales privacy restriction",
   async () => {
-    const h = harness({"organizers/afterfly": clubDoc(),
+    const h = harness({"organizers/afterfly": organizerDoc(),
       "events/afterfly-social-run-1": eventDoc(),
       "salesPrivacyRestrictions/afterfly": {}});
     await assert.rejects(adminUpdateEventDetailsHandler(

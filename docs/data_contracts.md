@@ -1647,8 +1647,8 @@ mapping, rollout, parity, and recovery procedure is owned by
 
 New contracts use `organizerId`, `organizerTeamMemberships`,
 `organizerFollows`, `organizerClaimRequests`, `organizerScheduleLocks`, and
-`organizers/{organizerId}/posts`. Legacy `clubs`, `clubMemberships`,
-`clubClaimRequests`, `clubScheduleLocks`, `clubId`, and club-media projections
+`organizers/{organizerId}/posts`. Legacy `clubs`, `organizerMemberships`,
+`organizerClaimRequests`, `organizerScheduleLocks`, `organizerId`, and club-media projections
 are not local contracts, callable aliases, rule paths, or client fallbacks.
 Production canonical parity completed on 2026-07-22; because the application
 has not launched, the owner approved local compatibility retirement rather than
@@ -2106,7 +2106,7 @@ readers/search projections and integrated privacy checks are complete.
 
 The offer picker uses `listOfferEventTargets` for both private and already
 published owned events, including valid rich legacy events. The bounded index
-uses canonical `clubId`, status, start time and document ID; contradictory
+uses canonical `organizerId`, status, start time and document ID; contradictory
 organizer ownership fails. This list exposes no payment settings.
 `getEventOfferConfiguration` separately reads manager-only current terms for
 the selected event and suggests expiry from the server clock and event policy.
@@ -2188,7 +2188,7 @@ requires publication-ready scheduling and admission values at creation.
 | Fields | Ownership / requirement | Entry point and detail behavior |
 |---|---|---|
 | `name` | Host; required for new events (legacy records may omit) | Event name; detail uses authored name, legacy title fallback only for old records. |
-| `clubId`, `organizerId` | Required organizer context | Organizer selection/route; resolved organizer identity, never raw ID inputs. |
+| `organizerId`, `organizerId` | Required organizer context | Organizer selection/route; resolved organizer identity, never raw ID inputs. |
 | `startTime` | Required schedule | Date/time; private flow resolves civil input through chosen timezone. Detail uses stored timezone when present; legacy records retain their existing clock interpretation. |
 | `endTime` | Required before publication | Duration/end time; private draft can clear it. No rich guest page for incomplete private records. |
 | `eventCityId`, `eventMarketId`, `eventLocalDate`, `eventLocalStartTime`, `eventTimezone` | Required progressive schedule context | City/timezone/date/time controls; market and instant derived. These progressive fields are not retroactively required on legacy events. |
@@ -2294,7 +2294,7 @@ generated constants/validators where useful.
 published/legacy schema branch. Private drafts continue to use their private
 setup response model; they are not decoded as a published Event. Projection
 specs retain explicit compatibility defaults, legacy nullable coordinate/counter
-mirrors, timestamp conversions, and the organizerId/clubId read fallback.
+mirrors, timestamp conversions, and the organizerId/organizerId read fallback.
 Derived behavior lives in companion extensions. New persisted fields still need
 an explicit projection decision; generation does not expose every server field.
 
@@ -4193,7 +4193,7 @@ direct writes are denied. The callable verifies organizer-manager authority,
 validates optional linked events against the same organizer, enforces the
 rolling three-posts-per-seven-days quota, writes the canonical post, and fans
 out durable `organizerUpdate` activity notifications to active followers.
-`createClubPost` and the nested club post are compatibility shadows.
+`createOrganizerPost` and the nested club post are compatibility shadows.
 Manager Sends history reads the same organizer-scoped collection through
 `listOrganizerCampaigns` and returns post identity, audience, status, optional
 linked event and timestamps without returning the message body.
@@ -4397,7 +4397,7 @@ host locks:
 | `reviews/{reviewId}.ownerResponse` | `setReviewResponse` | Server-owned owner response rendered by app and website review surfaces. |
 
 `organizerTeamMemberships` owns active owner and manager seats. Legacy
-`clubHostClaims` remains only long enough to support released club callables;
+`organizerHostClaims` remains only long enough to support released club callables;
 it is not organizer claim authority.
 
 ## Event Policy Applicability

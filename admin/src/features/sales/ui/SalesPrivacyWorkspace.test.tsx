@@ -73,7 +73,7 @@ it("keeps sample privacy mutations unavailable", () => {
 });
 
 it("finds a canonical organizer after its Sales account is absent", async () => {
-  mocks.search.mockResolvedValue([{clubId: "org-a", name: "Sample Harbor",
+  mocks.search.mockResolvedValue([{organizerId: "org-a", name: "Sample Harbor",
     cityName: "Example City"}]);
   const api = fixture();
   fireEvent.change(screen.getByLabelText("Host name"),

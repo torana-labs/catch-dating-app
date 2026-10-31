@@ -1250,7 +1250,7 @@ async function contactCatchReplyTimeline(params: {
   if (params.linkedUid === null) return {entries: [], truncated: false};
   const matchSnapshot = await params.db.collection("matches")
     .where("organizerId", "==", params.organizerId)
-    .where("conversationType", "==", "clubHostInquiry")
+    .where("conversationType", "==", "organizerHostInquiry")
     .where("participantIds", "array-contains", params.linkedUid)
     .orderBy("lastMessageAt", "desc")
     .orderBy(admin.firestore.FieldPath.documentId(), "desc")
@@ -1262,7 +1262,7 @@ async function contactCatchReplyTimeline(params: {
       data: document.data() as MatchDocument,
     }))
     .filter((match) => match.data.organizerId === params.organizerId &&
-      match.data.conversationType === "clubHostInquiry" &&
+      match.data.conversationType === "organizerHostInquiry" &&
       match.data.participantIds.includes(params.linkedUid!));
   const perMatch = await Promise.all(matches.map(async (match) => {
     const snapshot = await params.db.collection("matches").doc(match.id)

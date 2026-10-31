@@ -150,7 +150,7 @@ class CreateEventController extends _$CreateEventController {
   }) async {
     final normalizedOrganizerId = _requireNonBlank(
       clubId,
-      fieldName: 'clubId',
+      fieldName: 'organizerId',
       code: 'event-club-required',
     );
     final normalizedName = _requireNonBlank(

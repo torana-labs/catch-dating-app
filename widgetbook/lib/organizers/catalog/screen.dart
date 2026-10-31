@@ -33,7 +33,7 @@ final widgetbookOrganizerViewer = UserProfile(
 )
 Widget organizerDetailScreenStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubDetailScreen',
+    title: 'OrganizerDetailScreen',
     catalogId: 'screen.club.detail',
     children: [
       WidgetbookPageStateCard(

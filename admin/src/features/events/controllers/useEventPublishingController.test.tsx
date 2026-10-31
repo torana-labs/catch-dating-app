@@ -449,7 +449,7 @@ describe("useEventPublishingController", () => {
   it("applies time, capacity, launch-market, search, and review filters", () => {
     const base: AdminEventListRow = {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       organizerName: "Sunday Club",
       title: "Sunday Table",
       activityKind: "singlesMixer",

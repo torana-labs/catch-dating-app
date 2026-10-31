@@ -78,7 +78,7 @@ function target(doc: FirebaseFirestore.QueryDocumentSnapshot,
   const event: Record<string, unknown> = doc.data();
   const startTimeMillis = timestampMillis(event.startTime);
   if (!ID.test(doc.id) || !validateEventDocument(event) ||
-      event.clubId !== organizerId ||
+      event.organizerId !== organizerId ||
       event.organizerId !== undefined &&
         event.organizerId !== organizerId ||
       event.status !== "active" || startTimeMillis === null ||
@@ -144,9 +144,9 @@ export async function listOfferEventTargets(params: {
       tx.get(db.collection("deletedUsers").doc(actorUid)),
     ]);
     authorizeSetupManager(organizer, deleted, actorUid);
-    // clubId is required on both rich legacy and new private event documents.
+    // organizerId is required on both rich legacy and new private event documents.
     let query = db.collection("events")
-      .where("clubId", "==", command.organizerId)
+      .where("organizerId", "==", command.organizerId)
       .where("status", "==", "active")
       .where("startTime", ">=", admin.firestore.Timestamp.fromMillis(
         asOfMillis))

@@ -31,8 +31,8 @@ test("extractCheckRateLimitActions reads literal actions and whether each passes
 test("scanFunctionRateLimits flags checkRateLimit actions missing entries", () => {
   const root = createFixture({
     "functions/src/shared/rateLimit.ts": mechanism,
-    "functions/src/clubs/createClub.ts": `
-      await checkRateLimit(db, uid, "createClub", {maxRequests: 3, windowMs: 60 * 1000});
+    "functions/src/clubs/createOrganizer.ts": `
+      await checkRateLimit(db, uid, "createOrganizer", {maxRequests: 3, windowMs: 60 * 1000});
       await checkRateLimit(db, uid, "missingLimit");
     `,
   });
@@ -47,9 +47,9 @@ test("scanFunctionRateLimits flags checkRateLimit actions missing entries", () =
 test("scanFunctionRateLimits passes when actions have explicit entries", () => {
   const root = createFixture({
     "functions/src/shared/rateLimit.ts": mechanism,
-    "functions/src/clubs/createClub.ts": `
+    "functions/src/clubs/createOrganizer.ts": `
       const limit = {maxRequests: 3, windowMs: 60 * 1000};
-      await checkRateLimit(db, uid, "createClub", limit);
+      await checkRateLimit(db, uid, "createOrganizer", limit);
     `,
   });
 
@@ -60,14 +60,14 @@ test("scanFunctionRateLimits flags a per-action table in the shared mechanism mo
   for (const table of [
     "export const RATE_LIMITS: Record<string, RateLimitConfig> = {};",
     `const LIMITS = {
-      createClub: {maxRequests: 3, windowMs: 60 * 1000},
-      joinClub: {maxRequests: 10, windowMs: 60 * 1000},
+      createOrganizer: {maxRequests: 3, windowMs: 60 * 1000},
+      joinOrganizer: {maxRequests: 10, windowMs: 60 * 1000},
     };`,
   ]) {
     const root = createFixture({
       "functions/src/shared/rateLimit.ts": mechanism + table,
-      "functions/src/clubs/createClub.ts": `
-        await checkRateLimit(db, uid, "createClub", {maxRequests: 3, windowMs: 60 * 1000});
+      "functions/src/clubs/createOrganizer.ts": `
+        await checkRateLimit(db, uid, "createOrganizer", {maxRequests: 3, windowMs: 60 * 1000});
       `,
     });
     assert.deepEqual(scanFunctionRateLimits({root}).findings.map((finding) => finding.rule),

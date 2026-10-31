@@ -23,12 +23,12 @@ function baseOrganizer(): Data {
     path.join(repoRoot, "contracts/firestore/organizers.schema.json"),
     "utf8"
   ));
-  const club = JSON.parse(readFileSync(
-    path.join(repoRoot, "contracts/fixtures/valid/club_doc.json"),
+  const organizer = JSON.parse(readFileSync(
+    path.join(repoRoot, "contracts/fixtures/valid/organizer_doc.json"),
     "utf8"
   ));
   return {
-    ...Object.fromEntries(Object.entries(club)
+    ...Object.fromEntries(Object.entries(organizer)
       .filter(([key]) => key in schema.properties)),
     followerCount: 0,
     organizerPhotos: [],

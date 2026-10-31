@@ -47,7 +47,7 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 )
 Widget hostTeamRouteStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostClubTeamScreen',
+    title: 'HostOrganizerTeamScreen',
     contractId: 'screen.host.clubs',
     children: [
       WidgetbookPageStateCard(
@@ -306,7 +306,7 @@ Widget hostTeamProfessionalProfilePreviewStates(BuildContext context) {
 )
 Widget hostTeamHostedOrganizersStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostTeamHostedClubsSection',
+    title: 'HostTeamHostedOrganizersSection',
     contractId: 'section.host.team.hosted_clubs',
     children: [
       WidgetbookPageStateCard(

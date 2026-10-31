@@ -184,7 +184,7 @@ const setup: NonNullable<CreateEventRehearsalCallablePayload["setup"]> = {
 function storeWithRoster(count = 2) {
   const start = admin.firestore.Timestamp.fromMillis(Date.now());
   const fixture = JSON.parse(readFileSync(
-    "../contracts/fixtures/valid/club_doc.json", "utf8"));
+    "../contracts/fixtures/valid/organizer_doc.json", "utf8"));
   const schema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
   return new Store({
@@ -198,7 +198,6 @@ function storeWithRoster(count = 2) {
     },
     "events/event-1": {
       organizerId: "org-1",
-      clubId: "org-1",
       name: "Real event",
       startTime: start,
       endTime: admin.firestore.Timestamp.fromMillis(

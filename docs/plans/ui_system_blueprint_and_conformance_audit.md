@@ -856,7 +856,7 @@ source:
    - Existing roles map onto the steps:
      - `display` (44px) becomes `displayL`.
      - `headlineS` (26px) becomes `displayXs`.
-     - `clubDisplay` and `eventDisplay` merge into these variants, which
+     - `organizerDisplay` and `eventDisplay` merge into these variants, which
        settles CAT-235 as its option C. Their step s (22px) and step m (27px)
        become `displayXs`, step l (32px) becomes `displayS`, and step xl
        (38px) becomes `displayM`. That keeps the hero's collapsed and expanded
@@ -1684,7 +1684,7 @@ pass:
 |---|---|---|
 | `catch.organizer_poster` | `CatchOrganizerPoster` (+ `OrganizerPosterLayout`/`Treatment`) | `CatchPoster` in `catch_ui` (L3) with `CatchPosterVariant` and `CatchPosterTone`; members become `OrganizerCard` and `OrganizerPlaceholderCover` |
 | `catch.event_card` | `CatchEventCard.ticket` | `EventCard` (L5 Card) rendering `CatchTicket` |
-| `catch.club_cover` | `CatchClubCover` | `OrganizerCover` (L5 Cover) |
+| `catch.club_cover` | `CatchOrganizerCover` | `OrganizerCover` (L5 Cover) |
 | `catch.map_preview` | `CatchMapPreview` | `MapPreview` (L5 Preview) |
 | `catch.cover_story` | `CatchCoverStory` | `FeaturedEventPoster` (L5 Poster), a `CatchPoster` binding if its anatomy matches |
 | `catch.chat_composer` | `ChatInputBar` (self-declared naming exception) | `ChatInput` (L5 Input); exception removed |
@@ -1842,7 +1842,7 @@ Slice 4a (2026-10-18): hosts, minus the files below; the ratchet fell from
 (`HostCustomerHistorySection`, `CreateEventConsequenceSection`), the
 spoke-route resolver that selects loading, error and data states is
 `HostOrganizerSpokeAsyncBoundary`, and `StepperFooter` is `HostStepperDock`. The
-pass-through `HostClubOrganizerOverview` was deleted in favour of the
+pass-through `HostOrganizerOverview` was deleted in favour of the
 `HostOrganizerMetricGrid` it wrapped. Renaming `host_analytics.dart`, a
 938-line file on the source-size ratchet, required splitting it (a renamed
 file cannot re-enter the legacy baseline): the trend section and bar tile moved
@@ -1862,7 +1862,7 @@ any ancestor whose type name contained `FormSchema`; its question fields now
 return through `CatchFieldLanes.single`, the canonical single-row boundary,
 and the name exemption is deleted from the lint. The moved files brought 16
 private widget classes to the gate: that boundary was deleted,
-`_HostClubMediaRoleBadge` and `_HostManualSendReplanSheet` were inlined, and
+`_HostOrganizerMediaRoleBadge` and `_HostManualSendReplanSheet` were inlined, and
 13 became public, previewed widgets (for example `HostCrmAudienceCard`,
 `HostManualSendTaskSheet`, `HostDismissedMergeCandidateCard`). `host_club_edit_tab.dart` (1,298 lines,
 on the size ratchet) split into `host_club_edit_body.dart` (705),

@@ -671,15 +671,15 @@ void main() {
       );
       expect(
         Routes.hostEventRehearsalStartScreen.path,
-        '/host/organizers/:clubId/rehearsals/new',
+        '/host/organizers/:organizerId/rehearsals/new',
       );
       expect(
         Routes.hostEventRehearsalScreen.path,
-        '/host/organizers/:clubId/rehearsals/:sessionId',
+        '/host/organizers/:organizerId/rehearsals/:sessionId',
       );
       expect(
         Routes.hostOrganizerMessagingScreen.path,
-        '/host/organizer/:clubId/messaging',
+        '/host/organizer/:organizerId/messaging',
       );
 
       for (final route in [
@@ -696,7 +696,7 @@ void main() {
     test('organizer route forwards stable edit field query keys', () {
       final screen = hostOrganizerScreenForUri(
         Uri.parse(
-          '/host/organizer?clubId=club-1&tab=insights&editField=description',
+          '/host/organizer?organizerId=club-1&tab=insights&editField=description',
         ),
       );
 
@@ -709,13 +709,13 @@ void main() {
     test('redirects the retired Organizer Audience tab into Audience', () {
       expect(
         hostOrganizerAudienceRedirect(
-          Uri.parse('/host/organizer?clubId=club-1&tab=audience'),
+          Uri.parse('/host/organizer?organizerId=club-1&tab=audience'),
         ),
         '/host/audience?organizerId=club-1',
       );
       expect(
         hostOrganizerAudienceRedirect(
-          Uri.parse('/host/organizer?clubId=club-1&tab=insights'),
+          Uri.parse('/host/organizer?organizerId=club-1&tab=insights'),
         ),
         isNull,
       );
@@ -749,7 +749,7 @@ void main() {
             redirect: (_, state) => hostOrganizerIndexRedirect(state.uri),
             routes: [
               GoRoute(
-                path: ':clubId',
+                path: ':organizerId',
                 builder: (_, _) => const Text('Club route'),
                 routes: [
                   GoRoute(

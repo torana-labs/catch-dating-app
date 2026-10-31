@@ -47,7 +47,7 @@ export class EventPlanChangeSourceReader implements
         change.sourceId !== request.source.sourceId ||
         change.eventId !== request.context.eventId ||
         change.organizerId !== request.context.organizerId ||
-        (event.organizerId ?? event.clubId) !== request.context.organizerId ||
+        (event.organizerId) !== request.context.organizerId ||
         event.planChangeRevision !== change.revision ||
         attendee.eventId !== request.context.eventId ||
         attendee.organizerId !== request.context.organizerId ||
@@ -115,8 +115,8 @@ export class PostEventFollowUpSourceReader implements
       Math.max(completedAt, eventEnd);
     if (planSnap.id !== request.context.eventId ||
         plan.eventId !== request.context.eventId ||
-        (plan.organizerId ?? plan.clubId) !== request.context.organizerId ||
-        (event.organizerId ?? event.clubId) !== request.context.organizerId ||
+        (plan.organizerId) !== request.context.organizerId ||
+        (event.organizerId) !== request.context.organizerId ||
         attendee.eventId !== request.context.eventId ||
         attendee.organizerId !== request.context.organizerId ||
         attendee.status !== "checkedIn" ||

@@ -152,7 +152,7 @@ void main() {
 
     test('organizer and legacy club request DTOs match schemas', () {
       _expectValid(
-        'CreateClubCallablePayload',
+        'CreateOrganizerCallablePayload',
         const CreateClubCallableRequest(
           clubId: 'AbCdEfGhIjKlMnOpQrSt',
           name: 'Cubbon Runners',
@@ -172,15 +172,15 @@ void main() {
         }).toCallableJson(clubId: 'club-1'),
       );
       _expectValid(
-        'ClubMembershipCallablePayload',
+        'OrganizerMembershipCallablePayload',
         const ClubMembershipCallableRequest(clubId: 'club-1').toJson(),
       );
       _expectValid(
-        'DeleteClubCallablePayload',
+        'DeleteOrganizerCallablePayload',
         const DeleteClubCallableRequest(clubId: 'club-1').toJson(),
       );
       _expectValid(
-        'SetClubNotificationPreferenceCallablePayload',
+        'SetOrganizerNotificationPreferenceCallablePayload',
         const SetClubNotificationPreferenceCallableRequest(
           clubId: 'club-1',
           enabled: true,
@@ -337,7 +337,7 @@ void main() {
       for (final malformed in <Map<String, Object?>>[
         {},
         {'organizerId': ''},
-        {'clubId': 'club-delhi-runners'},
+        {'organizerId': 'club-delhi-runners'},
       ]) {
         expect(
           () => CreateOrganizerCallableResponse.fromCallableData(malformed),

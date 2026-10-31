@@ -35,10 +35,10 @@ export function projectLivePublicCatchEvent(id: string, raw: unknown,
   const data = record(raw);
   // Filter before reading rich fields: a private draft need not have them.
   if (!data || data.publicationState !== "published" || data.status !== "active") return null;
-  const organizerId = text(data.organizerId || data.clubId);
+  const organizerId = text(data.organizerId);
   if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$/u.test(id) ||
       !/^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$/u.test(organizerId) ||
-      data.organizerId && data.clubId && data.organizerId !== data.clubId) return null;
+      data.organizerId && data.organizerId !== data.organizerId) return null;
   const start = millis(data.startTime);
   const end = millis(data.endTime);
   const venue = record(data.meetingLocation);

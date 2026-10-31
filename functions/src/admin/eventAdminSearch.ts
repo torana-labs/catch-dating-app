@@ -1,5 +1,5 @@
 import type {
-  ClubDocument,
+  OrganizerDocument,
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
 export {eventFormatLabel, eventTitleLabel} from "../shared/eventLabels";
@@ -39,7 +39,7 @@ export interface EventAdminSearchProjection {
  * Builds a deterministic admin search projection for a canonical event.
  * @param {string} eventId Firestore event document id.
  * @param {EventDocument} event Canonical event document.
- * @param {ClubDocument | null} club Optional organizer document.
+ * @param {OrganizerDocument | null} club Optional organizer document.
  * @param {FirebaseFirestore.FieldValue} updatedAt Server timestamp marker.
  * @param {EventAdminSearchSource} updatedBySource Projection source.
  * @return {EventAdminSearchProjection} Rebuildable search projection.
@@ -47,11 +47,11 @@ export interface EventAdminSearchProjection {
 export function buildEventAdminSearchProjection(
   eventId: string,
   event: EventDocument,
-  club: ClubDocument | null,
+  organizer: OrganizerDocument | null,
   updatedAt: FirebaseFirestore.FieldValue,
   updatedBySource: EventAdminSearchSource
 ): EventAdminSearchProjection {
-  const sourceText = eventSearchSourceText(eventId, event, club);
+  const sourceText = eventSearchSourceText(eventId, event, organizer);
   return {
     tokens: buildSearchTokens(sourceText, true, maxAdminSearchTokens),
     sortKey: firstSearchToken(event.name?.trim()) ??
@@ -94,21 +94,21 @@ export function eventWithAdminFieldsForSearch(
  * Collects high-signal event and organizer fields for search.
  * @param {string} eventId Firestore event document id.
  * @param {EventDocument} event Canonical event document.
- * @param {ClubDocument | null} club Optional organizer document.
+ * @param {OrganizerDocument | null} club Optional organizer document.
  * @return {string[]} Search source strings in priority order.
  */
 function eventSearchSourceText(
   eventId: string,
   event: EventDocument,
-  club: ClubDocument | null
+  organizer: OrganizerDocument | null
 ): string[] {
   return compactStrings([
     eventId,
-    event.clubId,
-    club?.name,
-    club?.cityName,
-    club?.location,
-    club?.locationMarketId,
+    event.organizerId,
+    organizer?.name,
+    organizer?.cityName,
+    organizer?.location,
+    organizer?.locationMarketId,
     event.eventFormat ? eventFormatLabel(event.eventFormat) : null,
     event.eventFormat?.activityKind,
     event.eventFormat?.interactionModel,

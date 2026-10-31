@@ -518,7 +518,7 @@
             "publicationState": "published",
             "currency": "INR",
             "eventTimezone": "Asia/Kolkata",
-            "clubId": "next-proof"
+            "organizerId": "next-proof"
           }
         },
         {
@@ -875,8 +875,7 @@
             "organizerId": "next-proof",
             "publicationState": "published",
             "currency": "INR",
-            "eventTimezone": "Asia/Kolkata",
-            "clubId": "someone-else"
+            "eventTimezone": "Asia/Kolkata"
           }
         },
         {
@@ -976,7 +975,6 @@
             "schemaVersion": 1,
             "eventId": "ext-public",
             "canonicalHostId": "next-proof",
-            "compatibilityClubId": "next-proof",
             "title": "Takeoff: Run + Rave",
             "description": "Reviewed external event listing.",
             "startTime": {
@@ -1094,7 +1092,6 @@
             "schemaVersion": 1,
             "eventId": "ext-taken-down",
             "canonicalHostId": "next-proof",
-            "compatibilityClubId": "next-proof",
             "title": "Takeoff: Run + Rave",
             "description": "Reviewed external event listing.",
             "startTime": {
@@ -1212,7 +1209,6 @@
             "schemaVersion": 1,
             "eventId": "ext-synthetic",
             "canonicalHostId": "next-proof",
-            "compatibilityClubId": "next-proof",
             "title": "Takeoff: Run + Rave",
             "description": "Reviewed external event listing.",
             "startTime": {
@@ -1331,7 +1327,6 @@
             "schemaVersion": 1,
             "eventId": "ext-catch-booking",
             "canonicalHostId": "next-proof",
-            "compatibilityClubId": "next-proof",
             "title": "Takeoff: Run + Rave",
             "description": "Reviewed external event listing.",
             "startTime": {

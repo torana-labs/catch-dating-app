@@ -242,7 +242,6 @@ test("the callable denies organizer staff without management authority",
     const firestore = new FakeFirestore({
       "events/event-1": {
         organizerId: "organizer-1",
-        clubId: "organizer-1",
         startTime: timestamp(cutoff),
       },
       "organizers/organizer-1": {

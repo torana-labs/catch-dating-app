@@ -192,10 +192,10 @@ export async function readPublicOrganizerTrackingSettingsHandler(
     if (!event.exists) throw new HttpsError("not-found", "Event not found.");
     const value = event.data()!;
     const ownerId = nativeEvent.exists ?
-      value.organizerId ?? value.clubId : value.canonicalHostId;
+      value.organizerId : value.canonicalHostId;
     if (ownerId !== organizerId ||
-        (nativeEvent.exists && value.organizerId && value.clubId &&
-         value.organizerId !== value.clubId)) {
+        (nativeEvent.exists && value.organizerId &&
+         value.organizerId !== value.organizerId)) {
       throw new HttpsError("permission-denied",
         "Event organizer does not match.");
     }

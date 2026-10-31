@@ -2233,14 +2233,14 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerScheduleLockDocument.ts",
   },
   {
-    name: "ClubMembershipDocument",
-    source: "firestore/club_memberships.schema.json",
-    typeOutput: "functions/src/shared/generated/clubMembershipDocument.ts",
+    name: "OrganizerMembershipDocument",
+    source: "firestore/organizer_memberships.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerMembershipDocument.ts",
   },
   {
-    name: "ClubHostClaimDocument",
-    source: "firestore/club_host_claims.schema.json",
-    typeOutput: "functions/src/shared/generated/clubHostClaimDocument.ts",
+    name: "OrganizerHostClaimDocument",
+    source: "firestore/organizer_host_claims.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerHostClaimDocument.ts",
   },
   {
     name: "EventDocument",
@@ -3678,10 +3678,10 @@ const schemaSpecs = [
       "functions/src/shared/generated/userAnalyticsCallableResponse.ts",
   },
   {
-    name: "AddClubHostCallablePayload",
-    source: "callables/add_club_host_payload.schema.json",
+    name: "AddOrganizerHostCallablePayload",
+    source: "callables/add_organizer_host_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/addClubHostCallablePayload.ts",
+      "functions/src/shared/generated/addOrganizerHostCallablePayload.ts",
   },
   {
     name: "OrganizerFollowCallablePayload",
@@ -3717,10 +3717,10 @@ const schemaSpecs = [
       "transferOrganizerOwnershipCallablePayload.ts",
   },
   {
-    name: "RemoveClubHostCallablePayload",
-    source: "callables/remove_club_host_payload.schema.json",
+    name: "RemoveOrganizerHostCallablePayload",
+    source: "callables/remove_organizer_host_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/removeClubHostCallablePayload.ts",
+      "functions/src/shared/generated/removeOrganizerHostCallablePayload.ts",
   },
   {
     name: "AdminDecideOrganizerIntakeCallablePayload",
@@ -3928,10 +3928,10 @@ const schemaSpecs = [
       "functions/src/shared/generated/adminDecideOrganizerPolicyGapCallablePayload.ts",
   },
   {
-    name: "AdminSetClubIndexStatusCallablePayload",
-    source: "callables/admin_set_club_index_status_payload.schema.json",
+    name: "AdminSetOrganizerIndexStatusCallablePayload",
+    source: "callables/admin_set_organizer_index_status_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/adminSetClubIndexStatusCallablePayload.ts",
+      "functions/src/shared/generated/adminSetOrganizerIndexStatusCallablePayload.ts",
   },
   {
     name: "AdminListCrossPathsShowcaseCandidatesCallablePayload",
@@ -4141,10 +4141,10 @@ const schemaSpecs = [
       "functions/src/shared/generated/adminTakedownExternalEventCallablePayload.ts",
   },
   {
-    name: "StartClubHostConversationCallablePayload",
-    source: "callables/start_club_host_conversation_payload.schema.json",
+    name: "StartOrganizerHostConversationCallablePayload",
+    source: "callables/start_organizer_host_conversation_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/startClubHostConversationCallablePayload.ts",
+      "functions/src/shared/generated/startOrganizerHostConversationCallablePayload.ts",
   },
   {
     name: "StartOrganizerConversationCallablePayload",
@@ -4162,10 +4162,10 @@ const schemaSpecs = [
       "startOrganizerContactConversationCallablePayload.ts",
   },
   {
-    name: "ClubMembershipCallablePayload",
-    source: "callables/club_membership_payload.schema.json",
+    name: "OrganizerMembershipCallablePayload",
+    source: "callables/organizer_membership_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/clubMembershipCallablePayload.ts",
+      "functions/src/shared/generated/organizerMembershipCallablePayload.ts",
   },
   {
     name: "EventOfferAuthorityRow",
@@ -6703,12 +6703,12 @@ const FIRESTORE_ADMIN_EMBEDDED_SPECS = [
   {
     name: "ClubHostDefaults",
     source: "shared/event_common.schema.json",
-    pointer: "/definitions/clubHostDefaults",
+    pointer: "/definitions/organizerHostDefaults",
   },
   {
     name: "ClubHostProfile",
     source: "shared/event_common.schema.json",
-    pointer: "/definitions/clubHostProfile",
+    pointer: "/definitions/organizerHostProfile",
   },
   {
     name: "EventConstraints",
@@ -9646,7 +9646,7 @@ function tryEmitDartCallableClass(spec, schema) {
   }
 
   // BlockUserCallablePayload → BlockUserCallableRequest
-  // CreateClubCallablePayload → CreateClubCallableRequest
+  // CreateOrganizerCallablePayload → CreateOrganizerCallableRequest
   const className = spec.name.replace(/Payload$/, "Request");
   const required = new Set(schema.required ?? []);
 

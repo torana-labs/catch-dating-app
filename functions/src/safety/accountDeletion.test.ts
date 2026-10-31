@@ -145,8 +145,8 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
           },
         },
       },
-      "clubMemberships/club-1_runner-1": {
-        clubId: "club-1",
+      "organizerMemberships/club-1_runner-1": {
+        organizerId: "club-1",
         uid: "runner-1",
         role: "member",
         status: "active",
@@ -212,12 +212,12 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       },
       "eventParticipations/event-1_runner-1": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "runner-1",
         status: "signedUp",
         genderAtSignup: "woman",
       },
-      "events/event-1": {clubId: "club-1", bookedCount: 1},
+      "events/event-1": {organizerId: "club-1", bookedCount: 1},
       "eventAttendees/attendee-1": {
         eventId: "event-1",
         organizerId: "club-1",
@@ -661,8 +661,8 @@ test("requestAccountDeletionHandler short-circuits when already deleted",
         },
         "users/runner-1": {deleted: true},
         // A stale active membership must NOT be re-cleaned / re-decremented.
-        "clubMemberships/club-1_runner-1": {
-          clubId: "club-1",
+        "organizerMemberships/club-1_runner-1": {
+          organizerId: "club-1",
           uid: "runner-1",
           status: "active",
         },
@@ -982,7 +982,7 @@ function readySeatSeed(options: {host?: boolean; catchMirror?: boolean;
   status?: "signedUp" | "attended"} = {}): Record<string, FakeDocumentData> {
   const uid = "runner1";
   const key = "canonical_runner1";
-  const event = {clubId: "org1", organizerId: "org1", status: "active",
+  const event = {organizerId: "org1", status: "active",
     capacityLimit: 5, constraints: {}, bookedCount: 1,
     genderCounts: {woman: 1}, checkedInCount: options.status === "attended" ?
       1 : 0, waitlistedCount: 0};
@@ -990,7 +990,7 @@ function readySeatSeed(options: {host?: boolean; catchMirror?: boolean;
   const seed: Record<string, FakeDocumentData> = {
     "events/event1": event,
     "eventParticipations/event1_runner1": {eventId: "event1",
-      clubId: "org1", organizerId: "org1", uid,
+      organizerId: "org1", uid,
       status: options.status ?? "signedUp", genderAtSignup: "woman"},
     "eventSeatMigrationFences/event1": {eventId: "event1",
       migrationRevision: 1, state: "ready"},

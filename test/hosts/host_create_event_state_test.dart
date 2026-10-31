@@ -171,7 +171,7 @@ void main() {
       CreateEventSuccessNavigationDestination.manageEventRoute,
     );
     expect(manageEffect.pathParameters, {
-      'clubId': 'club-1',
+      'organizerId': 'club-1',
       'eventId': 'event-created',
     });
     expect(manageEffect.extra, event);

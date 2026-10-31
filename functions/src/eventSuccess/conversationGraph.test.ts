@@ -111,7 +111,6 @@ function timestamp(iso: string) {
 
 function event(overrides: FakeData = {}): FakeData {
   return {
-    clubId: "club-1",
     organizerId: "organizer-1",
     status: "active",
     startTime: timestamp("2026-08-11T12:00:00.000Z"),
@@ -130,7 +129,7 @@ function event(overrides: FakeData = {}): FakeData {
 }
 
 function participation(uid: string, status = "attended"): FakeData {
-  return {eventId: "event-1", clubId: "club-1", uid, status};
+  return {eventId: "event-1", organizerId: "club-1", uid, status};
 }
 
 function request(data: FakeData): CallableRequest<unknown> {
@@ -283,7 +282,6 @@ test(
       "eventSuccessConversationGraphs/event-1_runner-1"
     ), {
       eventId: "event-1",
-      clubId: "club-1",
       organizerId: "organizer-1",
       uid: "runner-1",
       status: "submitted",

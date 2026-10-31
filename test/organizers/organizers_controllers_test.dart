@@ -923,7 +923,7 @@ void main() {
       expect(fakeImageUploadRepository.uploadedOrganizerPhotoImages, photos);
       final fields = fakeRepository.lastUpdatedFields!;
       expect(fields['imageUrl'], fakeImageUploadRepository.uploadResult);
-      final clubPhotos = fields['clubPhotos'] as List<Object?>;
+      final clubPhotos = fields['organizerPhotos'] as List<Object?>;
       expect(clubPhotos, hasLength(2));
       expect(
         clubPhotos.cast<Map<String, Object?>>().map(
@@ -1057,7 +1057,7 @@ void main() {
       expect(fakeImageUploadRepository.lastUploadUid, 'cohost-1');
       expect(fakeRepository.lastUpdatedOrganizerId, organizer.id);
       final fields = fakeRepository.lastUpdatedFields!;
-      expect(fields.keys, unorderedEquals(['imageUrl', 'clubPhotos']));
+      expect(fields.keys, unorderedEquals(['imageUrl', 'organizerPhotos']));
       expect(fields['imageUrl'], 'https://example.com/new.jpg');
     });
 

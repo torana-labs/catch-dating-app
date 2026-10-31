@@ -252,7 +252,7 @@ function assertHttpsCode(error: unknown, code: string): boolean {
 
 function baseDocs(overrides: Record<string, FakeData | undefined> = {}) {
   return {
-    "organizers/club-1": clubDoc(),
+    "organizers/club-1": organizerDoc(),
     "users/runner-1": {
       name: "Runner One",
       firstName: "Runner",
@@ -269,7 +269,7 @@ function baseDocs(overrides: Record<string, FakeData | undefined> = {}) {
   };
 }
 
-function clubDoc(publicPageOverrides: FakeData = {}): FakeData {
+function organizerDoc(publicPageOverrides: FakeData = {}): FakeData {
   return {
     name: "Club One",
     hostUserId: "host-1",
@@ -437,7 +437,7 @@ test("createPublicOrganizerReviewHandler rejects missing organizer",
 test("createPublicOrganizerReviewHandler rejects unpublished pages",
   async () => {
     const h = harness(baseDocs({
-      "organizers/club-1": clubDoc({
+      "organizers/club-1": organizerDoc({
         publishStatus: "qa",
         robots: "noindex, follow",
       }),
@@ -462,7 +462,7 @@ test("createPublicOrganizerReviewHandler rejects unpublished pages",
 test("ineligible canonical organizer rejects public reviews",
   async () => {
     const h = harness(baseDocs({
-      "organizers/club-1": clubDoc({
+      "organizers/club-1": organizerDoc({
         publishStatus: "qa",
         robots: "noindex, follow",
       }),
@@ -515,7 +515,7 @@ test("createPublicOrganizerReviewHandler rejects noncanonical paths",
 test("listPublicOrganizerReviewsHandler rejects unpublished pages",
   async () => {
     const h = harness(baseDocs({
-      "organizers/club-1": clubDoc({
+      "organizers/club-1": organizerDoc({
         publishStatus: "suppressed",
         robots: "noindex, follow",
       }),

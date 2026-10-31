@@ -23,7 +23,7 @@ duplication and taxonomy drift:
 - Known near-duplicate families visible from names alone:
   `ChatShareCard`/`OrganizerShareCard`/`EventShareCard`, `DarkPill` vs
   `EventSuccessDarkPill`, `CountdownBeatPill`/`CountdownCuePill`,
-  `DashboardFocusLoadingCard`/`DashboardStrideLoadingCard`/`ClubDirectorySkeletonCard`.
+  `DashboardFocusLoadingCard`/`DashboardStrideLoadingCard`/`OrganizerDirectorySkeletonCard`.
 
 This spec defines a **deterministic pipeline** that finds duplicate/near-
 duplicate widgets mechanically and packages them into small, reviewable
@@ -408,7 +408,7 @@ If Phase C is skipped/fails (§6.5), the registry records
   | `ChatShareCardSheet` / `CatchShareCardSheet` | ranked pairs (containment) |
   | `*ShareCard` (3 members) | name family |
   | `CountdownBeatPill` / `CountdownCuePill` | name family (structurally distinct — verified) |
-  | `Dashboard*LoadingCard` / `ClubDirectorySkeletonCard` | name family + ranked pairs |
+  | `Dashboard*LoadingCard` / `OrganizerDirectorySkeletonCard` | name family + ranked pairs |
 
   A miss in the *expected* column is a bug; a hit through an additional
   detector is fine. Do not force edges to satisfy this table.

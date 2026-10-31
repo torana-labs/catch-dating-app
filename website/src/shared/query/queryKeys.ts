@@ -47,8 +47,8 @@ export const websiteQueryKeys = {
     submit: () => [...websiteQueryKeys.all, "host-applications", "submit"] as const,
   },
   reviews: {
-    listing: (clubId: string) =>
-      [...websiteQueryKeys.all, "reviews", "listing", clubId] as const,
+    listing: (organizerId: string) =>
+      [...websiteQueryKeys.all, "reviews", "listing", organizerId] as const,
   },
   waitlist: {
     submit: (variant: string) =>

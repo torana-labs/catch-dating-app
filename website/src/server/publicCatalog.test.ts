@@ -74,7 +74,7 @@ function fakeReader(world: World) {
 }
 
 function organizer(id: string, patch: (data: Row) => void = () => undefined): Row {
-  const data = contractFixture("club_doc.json");
+  const data = contractFixture("organizer_doc.json");
   delete data.memberCount;
   Object.assign(data, {name: `Organizer ${id}`, organizerType: "eventProducer", organizerPhotos: [], followerCount: 0,
     hostUserId: null, ownerUserId: null, hostName: null, hostAvatarUrl: null, hostUserIds: [], hostProfiles: [],
@@ -88,7 +88,7 @@ function organizer(id: string, patch: (data: Row) => void = () => undefined): Ro
 
 const at = (ms: number) => ({toMillis: () => ms});
 function catchEvent(organizerId: string, patch: Row = {}): Row {
-  return {name: "Sunday social run", organizerId, clubId: organizerId, publicationState: "published", status: "active",
+  return {name: "Sunday social run", organizerId, publicationState: "published", status: "active",
     eventFormat: {activityKind: "socialRun"}, startTime: at(readAt + 86_400_000), endTime: at(readAt + 93_600_000),
     eventTimezone: "Asia/Kolkata", meetingLocation: {name: "Bandra"}, currency: "INR", priceInPaise: 0,
     capacityLimit: 30, bookedCount: 6, publicRegistrationEnabled: true, publicRegistrationMode: "free",
@@ -167,7 +167,7 @@ describe("per-route reads", () => {
     expect(detail?.catalog.listings.map((listing) => listing.id)).toEqual(["alpha", "delta", "gamma"]);
     for (const read of reads.filter((entry) => entry.collection !== "organizers")) {
       expect(read.filters.some((filter) =>
-        ["organizerId", "clubId", "canonicalHostId"].includes(filter.field) && filter.value === "alpha")).toBe(true);
+        ["organizerId", "organizerId", "canonicalHostId"].includes(filter.field) && filter.value === "alpha")).toBe(true);
     }
     expect(reads.filter((entry) => entry.collection === "organizers")
       .every((entry) => entry.filters.length > 1)).toBe(true);

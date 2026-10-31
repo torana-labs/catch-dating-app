@@ -211,7 +211,7 @@ class CreateOrganizerController extends _$CreateOrganizerController {
         final patch = <String, Object?>{};
         if (uploadedPrimaryPhoto != null) {
           patch['imageUrl'] = uploadedPrimaryPhoto;
-          patch['clubPhotos'] = clubPhotos
+          patch['organizerPhotos'] = clubPhotos
               .map((photo) => photo.toJson())
               .toList(growable: false);
         }

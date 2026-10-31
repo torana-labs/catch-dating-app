@@ -68,8 +68,7 @@ function fixture(conversionStatus: "completed" | "pending" = "completed",
     [`eventSetupPreferences/${eventId}`]: {organizerId, eventId,
       revision: 1, paymentTerms: eventPaymentTermsFromPreferences(
         preferences, 1), preferences},
-    [`events/${eventId}`]: {organizerId, clubId: organizerId,
-      status: "active", startTime: time(now + 3_600_000)},
+    [`events/${eventId}`]: {organizerId, status: "active", startTime: time(now + 3_600_000)},
   }, {[`events/${eventId}`]: new Timestamp(1_800_000_000, 123_456_000)});
 }
 
@@ -147,7 +146,7 @@ test("private payment projection rejects malformed or foreign snapshots",
     actor, input}));
     const foreign = fixture();
     foreign.docs[`events/${eventId}`] = {...foreign.docs[`events/${eventId}`],
-      clubId: "another-organizer"};
+      organizerId: "another-organizer"};
     await assert.rejects(() => previewEventOffers({repository:
       new FirestoreEventOfferRepository(foreign.asFirestore(), () => now),
     actor, input}));

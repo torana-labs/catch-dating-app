@@ -265,7 +265,7 @@ class HostAnalyticsEventRow {
   factory HostAnalyticsEventRow.fromMap(Map<Object?, Object?> map) {
     return HostAnalyticsEventRow(
       eventId: _string(map['eventId']),
-      clubId: _string(map['clubId']),
+      clubId: _string(map['organizerId']),
       title: _string(map['title']),
       startTime: _dateTime(map['startTime']),
       status: _string(map['status'], fallback: 'unknown'),

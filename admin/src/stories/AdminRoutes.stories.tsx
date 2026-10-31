@@ -30,7 +30,7 @@ import {DataQualityWorkspace} from "../features/data-quality/ui/DataQualityScree
 import {
   sampleEventDetails,
   sampleExternalEventRows,
-  sampleClubDetails,
+  sampleOrganizerDetails,
   sampleUserAnalyticsReport,
 } from "../shared/api/sampleData";
 import type {EventPublishingController} from "../features/events/controllers/useEventPublishingController";
@@ -87,8 +87,8 @@ import type {SafetyTriageController} from "../features/safety/controllers/useSaf
 import {SafetyTriageWorkspace} from "../features/safety/ui/SafetyTriageScreen";
 import {
   type AccessApplicationDecision,
-  type AdminClubDetails,
-  type AdminClubListRow,
+  type AdminOrganizerDetails,
+  type AdminOrganizerListRow,
   type AdminEventDetails,
   type AdminEventListRow,
   type AdminAccessApplicationDetails,
@@ -464,14 +464,14 @@ const marketingOpsController: MarketingOpsController = {
     noop();
   },
 };
-const organizerPublishingRows: AdminClubListRow[] =
-  Object.values(sampleClubDetails).map(organizerListRowFromDetails);
-const organizerPublishingClub = sampleClubDetails.afterfly ?? null;
-const organizerPublishingForm = organizerPublishingClub ?
-  formFromOrganizerProfile(organizerPublishingClub) :
+const organizerPublishingRows: AdminOrganizerListRow[] =
+  Object.values(sampleOrganizerDetails).map(organizerListRowFromDetails);
+const organizerPublishingOrganizer = sampleOrganizerDetails.afterfly ?? null;
+const organizerPublishingForm = organizerPublishingOrganizer ?
+  formFromOrganizerProfile(organizerPublishingOrganizer) :
   null;
 const organizerPublishingDiffRows = diffOrganizerProfile(
-  organizerPublishingClub,
+  organizerPublishingOrganizer,
   organizerPublishingForm
 );
 const organizerPublishingController: OrganizerPublishingController = {
@@ -479,8 +479,8 @@ const organizerPublishingController: OrganizerPublishingController = {
     noop();
   },
   checklist: emptyPublishChecklist,
-  club: organizerPublishingClub,
-  clubId: organizerPublishingClub?.clubId ?? "",
+  organizer: organizerPublishingOrganizer,
+  organizerId: organizerPublishingOrganizer?.organizerId ?? "",
   completeChecklist: false,
   diffRows: organizerPublishingDiffRows,
   filter: "launchCities",
@@ -507,13 +507,13 @@ const organizerPublishingController: OrganizerPublishingController = {
   saveAndPublish: async () => {
     noop();
   },
-  selectOrganizer: (_clubId) => {
+  selectOrganizer: (_organizerId) => {
     noop();
   },
   setChecklist: (_value) => {
     noop();
   },
-  setClubId: (_value) => {
+  setOrganizerId: (_value) => {
     noop();
   },
   setFilter: (_value) => {
@@ -556,7 +556,7 @@ const safetySelectedDetail: NonNullable<SafetyTriageController["selectedDetail"]
     queue: "reports",
     severity: "high",
   },
-  clubId: null,
+  organizerId: null,
   contextId: "local-preview/context",
   createdAt: safetySelected?.createdAt ?? null,
   eventId: null,
@@ -972,7 +972,7 @@ const growthRows: GrowthSignalRow[] = [
     detail: "Launch demand created this week across Indore and Mumbai.",
   },
   {
-    id: "pendingClubClaims",
+    id: "pendingOrganizerClaims",
     stage: "supply",
     label: "Pending club claims",
     value: 9,
@@ -1339,7 +1339,7 @@ function eventListRowFromDetails(event: AdminEventDetails): AdminEventListRow {
     bookedCount: event.bookedCount,
     capacityLimit: event.capacityLimit,
     citySlug: event.discovery.citySlug,
-    clubId: event.clubId,
+    organizerId: event.organizerId,
     crossPathsDiscoveryEnabled: event.crossPathsDiscoveryEnabled,
     currency: event.currency,
     eventId: event.eventId,
@@ -1353,31 +1353,31 @@ function eventListRowFromDetails(event: AdminEventDetails): AdminEventListRow {
   };
 }
 
-function organizerListRowFromDetails(club: AdminClubDetails): AdminClubListRow {
+function organizerListRowFromDetails(organizer: AdminOrganizerDetails): AdminOrganizerListRow {
   return {
-    appVisibility: club.appVisibility,
-    canonicalPath: club.publicPage.canonicalPath,
-    cityName: club.cityName ?? club.area,
-    citySlug: club.location ?? club.publicPage.citySlug,
-    claimState: club.claimState,
-    clubId: club.clubId,
-    countryCode: club.countryCode,
-    organizerType: club.organizerType,
-    publicCategoryLabel: club.publicCategoryLabel,
-    displayCategory: club.displayCategory,
-    indexStatus: club.publicPage.indexStatus,
-    name: club.name,
-    ownershipState: club.ownershipState,
-    publishStatus: club.publicPage.publishStatus,
-    regionName: club.regionName,
-    robots: club.publicPage.robots,
-    routeReservationStatus: club.publicPage.canonicalPath ? "reserved" : "missing",
-    routeStatus: club.publicPage.canonicalPath ? "valid" : "missing",
-    searchIndexStatus: club.publicPage.indexStatus === "indexed" ?
+    appVisibility: organizer.appVisibility,
+    canonicalPath: organizer.publicPage.canonicalPath,
+    cityName: organizer.cityName ?? organizer.area,
+    citySlug: organizer.location ?? organizer.publicPage.citySlug,
+    claimState: organizer.claimState,
+    organizerId: organizer.organizerId,
+    countryCode: organizer.countryCode,
+    organizerType: organizer.organizerType,
+    publicCategoryLabel: organizer.publicCategoryLabel,
+    displayCategory: organizer.displayCategory,
+    indexStatus: organizer.publicPage.indexStatus,
+    name: organizer.name,
+    ownershipState: organizer.ownershipState,
+    publishStatus: organizer.publicPage.publishStatus,
+    regionName: organizer.regionName,
+    robots: organizer.publicPage.robots,
+    routeReservationStatus: organizer.publicPage.canonicalPath ? "reserved" : "missing",
+    routeStatus: organizer.publicPage.canonicalPath ? "valid" : "missing",
+    searchIndexStatus: organizer.publicPage.indexStatus === "indexed" ?
       "indexed" :
       "missing",
-    sourceConfidence: club.provenance.sourceConfidence,
-    verificationStatus: club.provenance.verificationStatus,
+    sourceConfidence: organizer.provenance.sourceConfidence,
+    verificationStatus: organizer.provenance.verificationStatus,
   };
 }
 
@@ -1451,7 +1451,7 @@ const renderOrganizerPublishingWorkspace = () => (
 function OrganizerPublishingBlockedDraftPreview() {
   const [form, setForm] = useState(organizerPublishingForm);
   const [checklist, setChecklist] = useState(emptyPublishChecklist);
-  const diffRows = diffOrganizerProfile(organizerPublishingClub, form);
+  const diffRows = diffOrganizerProfile(organizerPublishingOrganizer, form);
   const controller: OrganizerPublishingController = {
     ...organizerPublishingController,
     checklist,
@@ -1975,7 +1975,7 @@ export const OverviewRouteStory: Story = {
   render: () => (
     <AdminWorkspace>
       <OverviewScreen
-        analyticsClubId=""
+        analyticsOrganizerId=""
         analyticsEndDate="2026-07-03"
         analyticsEventId=""
         analyticsGranularity="day"
@@ -1984,7 +1984,7 @@ export const OverviewRouteStory: Story = {
         hostAnalytics={hostAnalytics}
         isLoading={false}
         overview={overview}
-        onAnalyticsClubIdChange={noop}
+        onAnalyticsOrganizerIdChange={noop}
         onAnalyticsEndDateChange={noop}
         onAnalyticsEventIdChange={noop}
         onAnalyticsGranularityChange={setGranularity}

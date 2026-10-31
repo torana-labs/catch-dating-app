@@ -28,7 +28,7 @@
     "prefsMessages",
     "prefsEventReminders",
     "prefsRunStatusUpdates",
-    "prefsClubUpdates",
+    "prefsOrganizerUpdates",
     "prefsWeeklyDigest",
     "prefsShowOnMap"
   ],
@@ -266,7 +266,7 @@
       "type": "boolean",
       "x-catch-ownership": "client-writable"
     },
-    "prefsClubUpdates": {
+    "prefsOrganizerUpdates": {
       "type": "boolean",
       "x-catch-ownership": "client-writable"
     },

@@ -311,7 +311,7 @@ class _HostOrganizerTeamScreenState
       context.goNamed(
         Routes.hostOrganizerScreen.name,
         queryParameters: {
-          'clubId': navigation.organizer.id,
+          'organizerId': navigation.organizer.id,
           'tab': HostOrganizerTab.edit.name,
         },
       );
@@ -319,7 +319,7 @@ class _HostOrganizerTeamScreenState
     }
     context.pushNamed(
       Routes.hostOrganizerDetailScreen.name,
-      pathParameters: {'clubId': navigation.organizer.id},
+      pathParameters: {'organizerId': navigation.organizer.id},
       extra: navigation.organizer,
     );
   }
@@ -332,7 +332,7 @@ class _HostOrganizerTeamScreenState
     context.goNamed(
       Routes.hostOrganizerScreen.name,
       queryParameters: {
-        'clubId': widget.clubId,
+        'organizerId': widget.clubId,
         'tab': HostOrganizerTab.edit.name,
       },
     );

@@ -19,14 +19,14 @@ function richEvent(): Row {
   const source = JSON.parse(readFileSync(
     join(__dirname, "../../../contracts/fixtures/valid/event_doc.json"),
     "utf8")) as Row;
-  return {...source, clubId: "org1", organizerId: "org1",
+  return {...source, organizerId: "org1",
     publicationState: "published",
     startTime: Timestamp.fromMillis(NOW),
     endTime: Timestamp.fromMillis(NOW + 3_600_000)};
 }
 
 function privateEvent(): Row {
-  return {clubId: "org1", organizerId: "org1", name: "Event",
+  return {organizerId: "org1", name: "Event",
     startTime: Timestamp.fromMillis(NOW), status: "active",
     publicationState: "private", setupRevision: 3,
     publicRegistrationEnabled: false, eventCityId: "city1",
@@ -263,7 +263,7 @@ test("replay rechecks current manager and event tenant", async () => {
     }
     if (kind === "tenant") {
       h.rows.set("events/event1", {...h.rows.get("events/event1"),
-        clubId: "other"});
+        organizerId: "other"});
     }
     if (kind === "deleted") {
       h.rows.set("deletedUsers/host1", {});

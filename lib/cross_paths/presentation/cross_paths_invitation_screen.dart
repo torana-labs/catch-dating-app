@@ -481,7 +481,7 @@ class _PairHoldPanelState extends ConsumerState<_PairHoldPanel> {
               onPressed: () => context.pushNamed(
                 Routes.eventDetailScreen.name,
                 pathParameters: {
-                  'clubId': widget.event.clubId,
+                  'organizerId': widget.event.clubId,
                   'eventId': widget.event.id,
                 },
                 extra: widget.event,

@@ -243,7 +243,7 @@ export class FirestoreEventOfferRepository implements OfferRepository {
         const event = await read("events", eventId) as
             EventDocument | undefined;
         if (!event || data.organizerId !==
-            (event.organizerId ?? event.clubId)) {
+            (event.organizerId)) {
           throw new OfferDomainError("conflict",
             "Event payment terms have a foreign organizer.");
         }
@@ -396,16 +396,16 @@ export class FirestoreEventOfferRepository implements OfferRepository {
           const startsAtMillis = data.startTime?.toMillis();
           if (!Number.isSafeInteger(startsAtMillis) ||
               startsAtMillis! <= 0 ||
-              typeof data.clubId !== "string" ||
+              typeof data.organizerId !== "string" ||
               data.organizerId !== undefined &&
-                data.organizerId !== data.clubId ||
+                data.organizerId !== data.organizerId ||
               !["active", "cancelled"].includes(data.status) ||
               !Number.isSafeInteger(sourceRevision) ||
               sourceRevision! < 1) {
             throw new OfferDomainError("conflict",
               "Stored event is malformed.");
           }
-          return {organizerId: data.organizerId ?? data.clubId,
+          return {organizerId: data.organizerId,
             eventId, startsAtMillis: startsAtMillis!,
             cancelled: data.status === "cancelled",
             sourceRevision: sourceRevision!};
@@ -421,7 +421,7 @@ export class FirestoreEventOfferRepository implements OfferRepository {
           const event = eventData as EventDocument | undefined;
           const contact = contactData as OrganizerContactDocument | undefined;
           if (!event || !contact ||
-              (event.organizerId ?? event.clubId) !== offer.organizerId ||
+              (event.organizerId) !== offer.organizerId ||
               contact.organizerId !== offer.organizerId) {
             throw new OfferDomainError("denied",
               "Offer event or contact is unavailable.");

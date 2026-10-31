@@ -228,7 +228,6 @@ function externalEventDoc(overrides: FakeData = {}): FakeData {
     schemaVersion: 1,
     eventId: "ext-afterfly-future-run",
     canonicalHostId: "afterfly",
-    compatibilityClubId: "afterfly",
     title: "Takeoff run",
     description: "Read-only external run.",
     startTime: new Date("2099-01-01T12:30:00.000Z"),
@@ -320,7 +319,6 @@ test(
       "externalEvents/ext-bandra-future-run": externalEventDoc({
         eventId: "ext-bandra-future-run",
         canonicalHostId: "bandra-runners",
-        compatibilityClubId: "bandra-runners",
         title: "Bandra sunset run",
         startTime: new Date("2099-01-02T12:30:00.000Z"),
         discovery: {

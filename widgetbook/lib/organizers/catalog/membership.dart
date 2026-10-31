@@ -13,7 +13,7 @@ import 'scope.dart';
 )
 Widget membershipTrailingControllerStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubJoinAction',
+    title: 'OrganizerJoinAction',
     catalogId: 'atom.club.membership_trailing_controller',
     children: [
       WidgetbookPageStateCard(
@@ -43,7 +43,7 @@ Widget membershipTrailingControllerStates(BuildContext context) {
 )
 Widget membershipTrailingStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubJoinButton',
+    title: 'OrganizerJoinButton',
     catalogId: 'atom.club.membership_trailing',
     children: [
       WidgetbookPageStateCard(
