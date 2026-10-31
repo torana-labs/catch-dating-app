@@ -57,8 +57,8 @@ resource "google_secret_manager_secret" "form_payment" {
   }
 }
 
-# The partner OAuth application's config: the runtime reads one pinned
-# version (FORM_RAZORPAY_PARTNER_CONFIG_VERSION) and nothing else.
+# The partner OAuth application's config: the runtime reads its newest
+# version, and any exact version a payment record pinned, and nothing else.
 resource "google_secret_manager_secret_iam_member" "form_partner_runtime_access" {
   for_each = var.form_payment_environments
 

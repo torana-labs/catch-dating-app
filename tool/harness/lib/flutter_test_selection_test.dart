@@ -549,6 +549,12 @@ void main() {
       'apps/host/ios/Runner/Info.plist',
       'firestore.rules',
       'package-lock.json',
+      'infra/firebase/terraform.tfvars',
+      'fastlane/Fastfile',
+      'Gemfile.lock',
+      'packages/brand/brand.json',
+      'packages/web-config/generated/catch-tokens.css',
+      'packages/web-ui/src/components/CatchBadge.module.css',
     };
     expect(selected(probedPlan({...external, 'lib/a.dart'})), [
       'test/a_test.dart',

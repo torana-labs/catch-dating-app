@@ -595,7 +595,10 @@ to different build targets; both remain required while CocoaPods is in use.
 GitHub-native Dependabot is the sole routine dependency-update service. It
 checks npm, Pub, and GitHub Actions each Wednesday, groups compatible minor and
 patch updates into at most one open pull request per ecosystem, and keeps
-security updates grouped separately. Major versions are deliberately excluded:
+security updates grouped separately. Functions npm updates come on the first of
+each month instead, because a merged Functions lockfile change redeploys every
+Function that loads a changed package; security updates still open
+immediately. Major versions are deliberately excluded:
 each major upgrade needs its own impact review and full selected CI evidence.
 
 Dependabot pull requests merge without a click.
@@ -1326,11 +1329,18 @@ How a run works:
     or Storage-rules stage when its file changed.
   - A Function that loads modules dynamically redeploys whenever Functions
     source or the Operations files copied into its build change.
-  - Dependency, build or backend `firebase.json` changes, or a missing tag,
-    deploy everything. In `functions/package.json` only package fields and the
+  - A `functions/package-lock.json` change redeploys the Functions whose
+    imports reach a changed package, comparing each imported package with
+    everything its dependencies resolve to in the lockfile. A change under a
+    package `index.ts` loads for every Function (`firebase-admin`,
+    `firebase-functions`), or under a package the build runs (TypeScript),
+    deploys everything. ESLint is not a build package: without `--fix` it only
+    reads source. Dependency ranges in `functions/package.json` count only
+    through the lockfile.
+  - Other build or backend `firebase.json` changes, or a missing tag, deploy
+    everything. In `functions/package.json` only package fields and the
     scripts a deploy runs (install and build lifecycle, `firebase.json`
-    predeploy hooks) count; test and tooling scripts deploy nothing. Any
-    `functions/package-lock.json` change deploys everything.
+    predeploy hooks) count; test and tooling scripts deploy nothing.
   - Dormant targets stay excluded.
 - The job builds Functions and materializes non-secret parameters from the
   environment's GitHub variables. It deploys new indexes and waits until they
@@ -1363,6 +1373,13 @@ When it runs:
 - **Manual runs:** use Actions → Deploy backend → Run workflow for `prod`, `dev`
   or `staging`. Tick `full` to redeploy every stage and Function, for example
   after a manual or partial deploy you are unsure about.
+- **Configuration changes:** a changed GitHub variable or switch alters no
+  source, so the plan deploys nothing for it. Run the workflow with
+  `functions` set to the comma-separated Functions that read the parameter
+  (`grep` its `define*` name and the exports that import it). Only those deploy,
+  each from the run's commit, with the environment's current variables. Rules
+  are not checked and the record does not move, so the next normal run still
+  deploys everything changed since the recorded commit.
 
 A manual `./tool/deploy_firebase_targets.sh` deploy leaves the tag unchanged.
 The next run redeploys whatever changed since the tag, which is safe. Recovery
@@ -1475,7 +1492,8 @@ After a prod deploy that includes the webhook:
 5. From an Instagram account with a role on the Meta app, send a message to
    @catch_dates. The webhook acknowledges it and logs nothing on success.
 6. Set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` in `prod` and `prod-backend`,
-   then deploy prod again.
+   then run Deploy backend for `prod` with `functions` set to
+   `instagramClaimWebhook,getOrganizerClaimVerificationOptions,startOrganizerClaimVerification,confirmOrganizerClaimVerification`.
 
 Access level. Meta's App Review table says an app serving only a business you
 own needs Standard Access. Its webhook setup page lists Advanced Access for

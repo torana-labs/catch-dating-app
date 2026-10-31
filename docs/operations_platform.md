@@ -229,7 +229,8 @@ overwritten. Every request records its `origin`.
   stay on the intent; only the organizer name, link, city and notes travel.
 - **Message nominations.** A sales associate or partner forwards organizers to
   Catch's WhatsApp number from their phone: a profile shared from Instagram, a
-  Luma link, a website or an `@handle`. Staff register who may do this with
+  Luma link, a website or an `@handle`. Staff register who may do this, by
+  WhatsApp number or Instagram username, in Admin → Intake with
   `adminSetSupplyNominator` (roles `admin`, `adminOwner`), which checks the
   account holds a sales role or a current partner membership and stores the
   number only as the WhatsApp endpoint hash plus its last four digits
