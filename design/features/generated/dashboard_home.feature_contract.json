@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
-  "sourceDigest": "sha256:5da84cb6447fece07ca7d9e3c9ca5bd4fe6bd634fba75086c945d9c28dfcb4ef",
+  "sourceDigest": "sha256:c516ae9249cb381a52f9202ff1b055edfa3ef22910a0700b012a3c3871fb5df8",
   "resolvedDigest": "sha256:4f29980c9dc527ab0aeac3848ebd27faa4191cce98279429c90decf34feba462",
   "feature": {
     "id": "feature.dashboard_home",
@@ -74,8 +74,7 @@
         "dataContracts": [
           "contracts/client_writes/mark_notification_read.schema.json",
           "contracts/firestore/activity_notifications.schema.json",
-          "contracts/firestore/club_memberships.schema.json",
-          "contracts/firestore/club_posts.schema.json",
+          "contracts/firestore/organizer_memberships.schema.json",
           "contracts/firestore/organizer_posts.schema.json",
           "contracts/firestore/event_participations.schema.json",
           "contracts/firestore/events.schema.json",

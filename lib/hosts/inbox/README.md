@@ -89,7 +89,6 @@ Typed handoffs:
 - `contracts/callables/send_organizer_whatsapp_reply_payload.schema.json`
 - `contracts/callables/send_organizer_whatsapp_test_payload.schema.json`
 - `contracts/callables/upsert_organizer_campaign_payload.schema.json`
-- `contracts/firestore/organizers.schema.json`
 - `contracts/firestore/event_broadcasts.schema.json`
 - `contracts/firestore/event_participations.schema.json`
 - `contracts/firestore/events.schema.json`
@@ -103,6 +102,7 @@ Typed handoffs:
 - `contracts/firestore/organizer_whatsapp_messages.schema.json`
 - `contracts/firestore/organizer_whatsapp_reply_operations.schema.json`
 - `contracts/firestore/organizer_whatsapp_threads.schema.json`
+- `contracts/firestore/organizers.schema.json`
 
 ## Focused tests
 

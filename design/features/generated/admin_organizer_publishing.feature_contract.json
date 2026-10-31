@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/admin_organizer_publishing.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:65bfedbd8da43540e84fc1dad060c18b9a383ae5e51ac8f9ca97594c32a1328f",
+  "sourceDigest": "sha256:74119968c6163af8d6a54d387de42d5321b827661068d5e1d54eeb3c5bef7b93",
   "resolvedDigest": "sha256:eda9604ceca62d7ce6c41e743e1ebe7f68d808961d15342a7c2445c2e52ee0a7",
   "feature": {
     "id": "feature.admin_organizer_publishing",
@@ -69,8 +69,8 @@
           "contracts/callables/admin_list_organizer_details_payload.schema.json",
           "contracts/callables/admin_get_organizer_details_payload.schema.json",
           "contracts/callables/admin_update_organizer_details_payload.schema.json",
-          "contracts/callables/admin_set_club_index_status_payload.schema.json",
-          "contracts/callables/admin_decide_club_claim_payload.schema.json",
+          "contracts/callables/admin_set_organizer_index_status_payload.schema.json",
+          "contracts/callables/admin_decide_organizer_claim_payload.schema.json",
           "contracts/firestore/organizers.schema.json",
           "contracts/firestore/organizer_claim_requests.schema.json"
         ],

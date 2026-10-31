@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
-  "sourceDigest": "sha256:09d9c1a550a82890442f2d1ade2b2dfd908ccee68c7dad529e8357ac475510ec",
+  "sourceDigest": "sha256:739c2c62bd043d42a998517373820a306bf2931452454fe484c55ab1aaf2d3fc",
   "resolvedDigest": "sha256:4886538d560ffd3efc55059fccdcfaec295390525269d81b990f0f7cd0c88a63",
   "feature": {
     "id": "feature.host_event_manage",
@@ -62,7 +62,7 @@
           "contracts/callables/create_event_invite_link_payload.schema.json",
           "contracts/callables/disable_event_invite_link_payload.schema.json",
           "contracts/callables/mark_event_attendance_payload.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/event_invite_links.schema.json",
           "contracts/firestore/event_participations.schema.json",
           "contracts/firestore/event_success_assignments.schema.json",
@@ -3611,7 +3611,7 @@
           "contracts/callables/place_details_payload.schema.json",
           "contracts/callables/places_autocomplete_payload.schema.json",
           "contracts/callables/update_event_payload.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/event_private_access.schema.json",
           "contracts/firestore/events.schema.json"
         ]

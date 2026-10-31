@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/member_chat.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:d1ceb8f9ed770e130c766f08a698d78da6a7263cf711ab058abf83595240148b",
+  "sourceDigest": "sha256:a10bde743a17699fbea0a7898a7ac0afdf4bcb17813a7c5d4b198f2e82833d65",
   "resolvedDigest": "sha256:6f7eed20673c03928dc080d5077453db6861b181f8fe52084dae3aa2dc21f2fd",
   "feature": {
     "id": "feature.member_chat",
@@ -1800,7 +1800,7 @@
           "contracts/client_writes/create_chat_message.schema.json",
           "contracts/client_writes/reset_match_unread_count.schema.json",
           "contracts/firestore/chat_messages.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/firestore/matches.schema.json",
           "contracts/firestore/public_profiles.schema.json",

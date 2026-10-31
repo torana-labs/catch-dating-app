@@ -4,7 +4,7 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "6e5c6b875e9607bb12acc6292ef1a60b5217a9c2e97d2f7e2fd763926420081c",
+    "routeContractSha256": "ddf4efcec8d72a7ff55c9645f5697d4cb17161e449fc8fb2ff7712e310f5b9d8",
     "goRouteCount": 129,
     "shellBranchCount": 9,
     "enumRouteCount": 114,
@@ -1893,7 +1893,7 @@
   ],
   "imperativePageRoutes": [
     {
-      "siteId": "material-page:lib/dashboard/presentation/widgets/dashboard_full.dart:03ec1c068682af42cd0066319469baec07744e2aa8ced4c703f0c061bf6b4048:1",
+      "siteId": "material-page:lib/dashboard/presentation/widgets/dashboard_full.dart:5a18a6fade793a58b6b9ff85beabe26e813802af7ac8fb4fa198198a90e8f946:1",
       "routeExpression": "MaterialPageRoute<void>(fullscreenDialog:true,builder:(routeContext)=>EventCheckInCelebrationScreen(event:event,onViewEvent:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.eventDetailScreen.name,pathParameters:{'organizerId':event.organizerId,'eventId':event.id},extra:event);},onBackHome:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.dashboardScreen.name);}))",
       "sourcePath": "lib/dashboard/presentation/widgets/dashboard_full.dart",
       "ordinal": 1,

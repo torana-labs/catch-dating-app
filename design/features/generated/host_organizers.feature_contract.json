@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:b7236d7f90cafd8d8c6a694e89f59b82640693c453b51829ab91b11b5c275f56",
+  "sourceDigest": "sha256:12f7e71fade2f8536d5abc34406c507acc52e15669c97f70e76077459a93c3eb",
   "resolvedDigest": "sha256:9c73454bb9ec8ab8979c70728d0a2034923d62ec37e8ea5fef1138cf5760ae59",
   "feature": {
     "id": "feature.host_organizers",
@@ -181,14 +181,13 @@
           "contracts/callables/transfer_organizer_ownership_payload.schema.json",
           "contracts/callables/update_organizer_payload.schema.json",
           "contracts/callable_responses/get_organizer_crm_summary_response.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/event_attendees.schema.json",
           "contracts/firestore/host_analytics_snapshots.schema.json",
           "contracts/firestore/host_payment_accounts.schema.json",
           "contracts/firestore/host_profiles.schema.json",
           "contracts/firestore/organizer_team_memberships.schema.json",
           "contracts/firestore/organizer_communication_preferences.schema.json",
-          "contracts/firestore/organizers.schema.json",
           "contracts/storage/organizer_logo_images.schema.json",
           "contracts/storage/organizer_photos.schema.json"
         ]
