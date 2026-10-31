@@ -15,33 +15,38 @@ export function organizerListingReadiness({id, path = `organizers/${id}`, data})
       Object.entries(expectedSupply).every(([key, value]) => storedSupply[key] === value));
   const valid = canonical && validateOrganizerDocument(data) && supplyValid;
   const page = data?.publicPage;
-  const publicEligible = valid && !data.archived && data.status !== "archived" &&
+  // Approval publishes a listing claimable and noindex; indexing waits until
+  // its organizer is verified, so claims need only a live page.
+  const published = valid && !data.archived && data.status !== "archived" &&
     data.claim?.state !== "suppressed" && page?.publishStatus === "published" &&
-    ["indexReady", "indexed"].includes(page.indexStatus) &&
-    page.robots === "index, follow" &&
     /^\/organizers\/(?:[a-z0-9-]+\/){1,2}$/u.test(page.canonicalPath);
+  const publicEligible = published &&
+    ["indexReady", "indexed"].includes(page.indexStatus) &&
+    page.robots === "index, follow";
   const ownerBound = Boolean(data?.ownerUserId || data?.hostUserId ||
     data?.hostUserIds?.length || data?.hostProfiles?.length ||
     data?.ownership?.ownerUserId || data?.ownership?.primaryHostUserId ||
     data?.ownership?.hostUserIds?.length);
-  const claimReady = publicEligible && !ownerBound &&
+  const claimReady = published && !ownerBound &&
     data.ownership?.state === "programmatic" && data.claim?.state === "unclaimed";
-  const reason = !canonical ? "A canonical organizer document is required." :
-    !valid ? "The canonical organizer document does not match its contract." :
-    !publicEligible ? "A published, index-ready organizer page is required." :
-    "The canonical organizer target was verified in this Firestore snapshot.";
+  const invalid = !canonical ? "A canonical organizer document is required." :
+    !valid ? "The canonical organizer document does not match its contract." : null;
+  const verified = "The canonical organizer target was verified in this Firestore snapshot.";
+  const claimReason = invalid ?? (!published ? "A published organizer page is required." : verified);
+  const reviewReason = invalid ??
+    (!publicEligible ? "A published, index-ready organizer page is required." : verified);
   return {
     documentValid: Boolean(valid),
     publicEligible: Boolean(publicEligible),
     publicApi: {
       state: claimReady ? "enabled" : "disabled",
-      reason: claimReady ? reason : !publicEligible ? reason :
+      reason: claimReady || !published ? claimReason :
         "This organizer is not accepting new ownership requests.",
-      claimTargetSyncStatus: publicEligible ? "in_sync" : "unknown",
+      claimTargetSyncStatus: published ? "in_sync" : "unknown",
     },
     publicReviewTarget: {
       state: publicEligible ? "enabled" : "disabled",
-      reason,
+      reason: reviewReason,
     },
   };
 }
