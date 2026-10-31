@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_rebuild_inbox_response.schema.json",
+  "title": "AdminRebuildInboxCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source",
+    "scanned",
+    "written",
+    "nextCursor"
+  ],
+  "properties": {
+    "source": {
+      "type": "string",
+      "enum": [
+        "supplyIntakeRequest",
+        "organizerClaimRequest",
+        "salesInboundIntent",
+        "accessApplication",
+        "externalEvent",
+        "people"
+      ]
+    },
+    "scanned": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "written": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

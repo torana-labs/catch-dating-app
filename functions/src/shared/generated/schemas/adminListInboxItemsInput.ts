@@ -1,0 +1,83 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const adminListInboxItemsCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_inbox_items_payload.schema.json",
+  "title": "AdminListInboxItemsCallablePayload",
+  "description": "One page of the Admin inbox: items waiting on a person, oldest first, with real totals per scope and type.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "type",
+    "city",
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "scope": {
+      "type": "string",
+      "enum": [
+        "waiting",
+        "mine",
+        "snoozed",
+        "done",
+        "working"
+      ]
+    },
+    "type": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "listing",
+            "event",
+            "claim",
+            "enquiry",
+            "access",
+            "stuck"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "city": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminListInboxItems"
+  ]
+} as const;
