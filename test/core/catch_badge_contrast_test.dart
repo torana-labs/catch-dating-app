@@ -42,7 +42,7 @@ void main() {
             CatchBadge.functional(label: 'functional $tone', tone: tone),
             CatchBadge.status(label: 'status $tone', tone: tone),
           ],
-          const CatchBadge.privacy(label: 'privacy', icon: Icons.lock),
+          CatchBadge.privacy(label: 'privacy', icon: CatchIcons.locked),
           const CatchBadge.optional(label: 'optional'),
           const CatchBadge.optional(label: 'optional error', hasError: true),
           for (final pigment in [

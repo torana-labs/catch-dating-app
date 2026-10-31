@@ -527,7 +527,7 @@ class _BadgePalette {
     if (accentColor != null) {
       return _BadgePalette(
         background: accentColor.withValues(alpha: CatchOpacity.subtleFill),
-        foreground: _pigmentInk(accentColor, t),
+        foreground: accentColor,
         border: accentColor.withValues(alpha: CatchOpacity.subtleBorder),
       );
     }

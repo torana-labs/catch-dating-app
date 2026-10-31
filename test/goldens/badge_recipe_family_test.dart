@@ -28,10 +28,10 @@ void main() {
                   CatchBadgeTone.warning,
                   CatchBadgeTone.gold,
                 ])
-                  ('$tone', CatchBadge(label: 'Small label', tone: tone)),
+                  (tone.name, CatchBadge(label: 'Small label', tone: tone)),
                 for (final tone in [CatchBadgeTone.danger, CatchBadgeTone.gold])
                   (
-                    '$tone status',
+                    '${tone.name} status',
                     CatchBadge.status(label: 'Status', tone: tone),
                   ),
                 ('functional', const CatchBadge.functional(label: 'Confirmed')),
