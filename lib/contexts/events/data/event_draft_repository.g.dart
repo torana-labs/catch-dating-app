@@ -98,7 +98,7 @@ final class OrganizerEventDraftsProvider
   @override
   FutureOr<List<EventDraft>> create(Ref ref) {
     final argument = this.argument as String;
-    return organizerEventDrafts(ref, clubId: argument);
+    return organizerEventDrafts(ref, organizerId: argument);
   }
 
   @override
@@ -113,7 +113,7 @@ final class OrganizerEventDraftsProvider
 }
 
 String _$organizerEventDraftsHash() =>
-    r'7ffb64a62a63f8a25f252bd4f18045d3b664d2ae';
+    r'14bb6e65bd3ba7eb57b7341de83f8743bdb56148';
 
 final class OrganizerEventDraftsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<EventDraft>>, String> {
@@ -126,8 +126,8 @@ final class OrganizerEventDraftsFamily extends $Family
         isAutoDispose: true,
       );
 
-  OrganizerEventDraftsProvider call({required String clubId}) =>
-      OrganizerEventDraftsProvider._(argument: clubId, from: this);
+  OrganizerEventDraftsProvider call({required String organizerId}) =>
+      OrganizerEventDraftsProvider._(argument: organizerId, from: this);
 
   @override
   String toString() => r'organizerEventDraftsProvider';

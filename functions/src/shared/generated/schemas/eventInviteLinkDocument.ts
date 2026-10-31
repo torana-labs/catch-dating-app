@@ -15,7 +15,7 @@ export const eventInviteLinkDocumentSchema: Record<string, unknown> = {
   "x-owner": "event invite link callables and event-success scorecard recomputation",
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "hostUid",
     "label",
     "source",
@@ -34,12 +34,6 @@ export const eventInviteLinkDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

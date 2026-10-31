@@ -6,7 +6,7 @@ import type {EventParticipationDocument as Participation,
   "../shared/generated/firestoreAdminTypes";
 
 const participation = (status: Participation["status"]) =>
-  ({eventId: "event", organizerId: "org", clubId: "org", uid: "person",
+  ({eventId: "event", organizerId: "org", uid: "person",
     status}) as Participation;
 const attendee = (status: Attendee["status"]) =>
   ({eventId: "event", organizerId: "org", linkedUid: "person",

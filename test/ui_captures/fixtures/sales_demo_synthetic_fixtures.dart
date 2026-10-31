@@ -610,7 +610,7 @@ class SalesDemoSyntheticFixtures {
   }) {
     return event_test.buildEvent(
       id: id,
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: startTime,
       endTime: endTime,
       meetingPoint: meetingPoint,
@@ -645,7 +645,7 @@ class SalesDemoSyntheticFixtures {
     final scheduledDate = eventDate ?? setupEvent.startTime;
     return EventDraft(
       id: id,
-      clubId: organizer.id,
+      organizerId: organizer.id,
       savedAt: savedAt,
       name:
           '${resolvedScenario.organizer.name} ${setupEvent.activityKind.label}',
@@ -745,7 +745,7 @@ class SalesDemoSyntheticFixtures {
       for (final indexed in eventList.indexed)
         Review(
           id: 'review-${indexed.$2.id}',
-          organizerId: indexed.$2.clubId,
+          organizerId: indexed.$2.organizerId,
           eventId: indexed.$2.id,
           reviewerUserId: reviewerUserId,
           reviewerName: reviewerName,

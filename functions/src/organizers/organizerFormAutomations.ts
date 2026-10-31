@@ -1286,7 +1286,7 @@ async function validateAutomationInput(
     if (
       data.trigger !== "eventAttended" ||
       !event ||
-      (event.organizerId ?? event.clubId) !== data.organizerId
+      (event.organizerId) !== data.organizerId
     ) {
       throw new HttpsError(
         "invalid-argument",
@@ -1358,7 +1358,7 @@ async function validateAutomationInput(
         null;
       if (
         !event ||
-        (event.organizerId ?? event.clubId) !== data.organizerId
+        (event.organizerId) !== data.organizerId
       ) {
         throw new HttpsError(
           "invalid-argument",

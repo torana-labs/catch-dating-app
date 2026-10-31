@@ -153,17 +153,13 @@ export async function readOrganizerScope(
     listing.capabilities.publicReviews.readState === "enabled";
   const events = db.collection("events");
   const external = db.collection("externalEvents");
-  const [peers, byOrganizer, byClub, externalEvents, reviews, reviewCounts,
+  const [peers, byOrganizer, externalEvents, reviews, reviewCounts,
     recommendationCandidates] = await Promise.all([
     db.collection("organizers")
       .where("publicPage.publishStatus", "==", "published")
       .where("publicPage.canonicalPath", "==", listing.path)
       .limit(3).get(),
-    // Events that still carry only the legacy clubId match too.
     readBounded(events.where("organizerId", "==", organizerId)
-      .where("publicationState", "==", "published"),
-    eventReadBound, "events", organizerId),
-    readBounded(events.where("clubId", "==", organizerId)
       .where("publicationState", "==", "published"),
     eventReadBound, "events", organizerId),
     readBounded(external.where("canonicalHostId", "==", organizerId)
@@ -181,8 +177,7 @@ export async function readOrganizerScope(
   sources.pathConflict = peers.docs.some((doc) => doc.id !== organizerId &&
     projectPublicOrganizer(doc.id, doc.data(), liveMarkets)?.path ===
       listing.path);
-  const catchEvents = [...new Map([...byOrganizer, ...byClub]
-    .map((doc) => [doc.id, doc])).values()];
+  const catchEvents = [...byOrganizer];
   // An id published as both kinds is ambiguous, so its event page is
   // withheld, as the website reader withholds it.
   const [externalTwins, catchTwins] = await Promise.all([

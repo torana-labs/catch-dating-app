@@ -33,7 +33,7 @@ class NotificationFirestore extends FakeFirestore {
 }
 
 function setup(event: Record<string, unknown> = {
-  organizerId: "canonical-org", clubId: "legacy-org",
+  organizerId: "canonical-org",
 }) {
   const db = new NotificationFirestore({
     "events/evt": {status: "active", startTime: NOW + 900_000,
@@ -77,7 +77,7 @@ test("provisioned event reminder encodes the Consumer's canonical route",
   });
 
 test("only absent canonical organizer permits legacy fallback", async () => {
-  const h = setup({clubId: "legacy-org"});
+  const h = setup({organizerId: "legacy-org"});
   await h.provisionAndSweep();
   assert.deepEqual(h.messages[0].data, fixture.legacy);
   assert.equal(h.activity()[0].organizerId, "legacy-org");
@@ -88,7 +88,7 @@ for (const invalid of [null, 7, "", " ", ".", "..", "a/b", "a\\b",
   "org\n", "org\r", "org\t"]) {
   test(`invalid canonical organizer ${JSON.stringify(invalid)} withholds FCM`,
     async () => {
-      const h = setup({organizerId: invalid, clubId: "legacy-org"});
+      const h = setup({organizerId: invalid});
       await h.provisionAndSweep();
       assert.deepEqual(h.messages, []);
       assert.equal(h.activity().length, 1);
@@ -97,7 +97,7 @@ for (const invalid of [null, 7, "", " ", ".", "..", "a/b", "a\\b",
     });
 }
 
-for (const event of [{}, {clubId: "unsafe/legacy"}]) {
+for (const event of [{}, {organizerId: "unsafe/legacy"}]) {
   test(`unroutable legacy context ${JSON.stringify(event)} retains activity`,
     async () => {
       const h = setup(event);

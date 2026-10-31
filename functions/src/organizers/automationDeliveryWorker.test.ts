@@ -278,7 +278,6 @@ test("a recipe with an event destination mints a per-occurrence invite " +
     },
     "events/ev-1": {
       organizerId: "org-1",
-      clubId: "org-1",
       status: "active",
       startTime: ts(NOW_MS + 86_400_000),
       endTime: ts(NOW_MS + 90_000_000),
@@ -453,7 +452,6 @@ test("a moved event end defers the claim to the live due time",
       },
       "events/ev-1": {
         organizerId: "org-1",
-        clubId: "org-1",
         status: "active",
         startTime: ts(attendedAt - 3_600_000),
         endTime: ts(movedEnd),

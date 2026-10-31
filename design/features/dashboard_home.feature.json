@@ -58,8 +58,7 @@
         "dataContracts": [
           "contracts/client_writes/mark_notification_read.schema.json",
           "contracts/firestore/activity_notifications.schema.json",
-          "contracts/firestore/club_memberships.schema.json",
-          "contracts/firestore/club_posts.schema.json",
+          "contracts/firestore/organizer_memberships.schema.json",
           "contracts/firestore/organizer_posts.schema.json",
           "contracts/firestore/event_participations.schema.json",
           "contracts/firestore/events.schema.json",
@@ -221,7 +220,7 @@
               "id": "dashboard.club_post_opened_and_marked_read"
             }
           ],
-          "description": "Marks the selected legacy club or organizer follower-post notification read and routes through organizerId with clubId fallback, including an optional linked event."
+          "description": "Marks the selected legacy club or organizer follower-post notification read and routes through organizerId with organizerId fallback, including an optional linked event."
         },
         {
           "id": "open_event",

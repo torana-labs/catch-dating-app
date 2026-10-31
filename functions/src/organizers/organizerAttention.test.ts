@@ -213,7 +213,6 @@ test("private basics do not create waitlist or payout obligations", () => {
   const sources = sourceFixture();
   sources.events = [row("event-1", {
     name: "Sunday Social Run",
-    clubId: "organizer-1",
     organizerId: "organizer-1",
     startTime: timestamp(nowMillis + hourMillis),
     status: "active",
@@ -1059,7 +1058,6 @@ function event(overrides: {
   const endMillis = overrides.endMillis ?? nowMillis + 3 * hourMillis;
   return {
     name: "Sunday Social Run",
-    clubId: "organizer-1",
     organizerId: "organizer-1",
     startTime: timestamp(startMillis),
     endTime: timestamp(endMillis),
@@ -1098,7 +1096,6 @@ function organizer(): OrganizerDocument {
 function eventParticipation(): EventParticipationDocument {
   return {
     eventId: "event-1",
-    clubId: "organizer-1",
     organizerId: "organizer-1",
     uid: "requester-1",
     status: "waitlisted",

@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
 import 'package:catch_dating_app/events/shared/event_check_in_qr_scanner.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,7 +17,7 @@ void main() {
     final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'run-1',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().add(const Duration(hours: 3)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 1,
@@ -54,7 +53,7 @@ void main() {
     final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'check-in-run-1',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().add(const Duration(minutes: 5)),
       endTime: DateTime.now().add(const Duration(hours: 1)),
       meetingPoint: 'Carter Road Amphitheatre',

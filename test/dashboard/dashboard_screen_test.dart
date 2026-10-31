@@ -388,7 +388,7 @@ void main() {
       final user = buildUser(uid: 'host-1');
       final hostedRun = buildEvent(
         id: 'hosted-event',
-        clubId: 'club-host',
+        organizerId: 'club-host',
         startTime: now.subtract(const Duration(minutes: 5)),
         endTime: now.add(const Duration(minutes: 55)),
       );
@@ -549,10 +549,10 @@ void main() {
         _activityNotification(
           id: 'club-post-1',
           uid: user.uid,
-          type: ActivityNotificationType.clubUpdate,
+          type: ActivityNotificationType.organizerUpdate,
           title: 'New update from Race Course Road Runners',
           body: 'Meet ten minutes early at the main gate.',
-          clubId: joinedOrganizer.id,
+          organizerId: joinedOrganizer.id,
           postId: 'post-1',
           eventId: 'event-1',
         ),
@@ -993,7 +993,6 @@ ActivityNotification _activityNotification({
   ActivityNotificationType type = ActivityNotificationType.match,
   String title = "It's a catch",
   String body = 'You and Runner Two matched. Say hi!',
-  String? clubId,
   String? organizerId,
   String? postId,
   String? eventId,
@@ -1010,7 +1009,6 @@ ActivityNotification _activityNotification({
     readAt: readAt,
     matchId: type == ActivityNotificationType.match ? 'match-1' : null,
     eventId: eventId,
-    clubId: clubId,
     organizerId: organizerId,
     postId: postId,
   );

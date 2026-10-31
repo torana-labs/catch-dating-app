@@ -21,10 +21,10 @@ class FakeTimestamp {
 function baseOrganizer() {
   const schema = JSON.parse(fs.readFileSync(
     path.join(repoRoot, "contracts/firestore/organizers.schema.json"), "utf8"));
-  const club = JSON.parse(fs.readFileSync(
-    path.join(repoRoot, "contracts/fixtures/valid/club_doc.json"), "utf8"));
+  const organizer = JSON.parse(fs.readFileSync(
+    path.join(repoRoot, "contracts/fixtures/valid/organizer_doc.json"), "utf8"));
   return {
-    ...Object.fromEntries(Object.entries(club)
+    ...Object.fromEntries(Object.entries(organizer)
       .filter(([key]) => key in schema.properties)),
     followerCount: 0,
     organizerPhotos: [],

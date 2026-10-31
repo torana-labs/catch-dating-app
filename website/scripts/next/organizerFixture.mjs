@@ -1,6 +1,6 @@
 import fs from "node:fs";
 export function organizerFixture() {
-const data = JSON.parse(fs.readFileSync(new URL("../../../contracts/fixtures/valid/club_doc.json", import.meta.url), "utf8"));
+const data = JSON.parse(fs.readFileSync(new URL("../../../contracts/fixtures/valid/organizer_doc.json", import.meta.url), "utf8"));
 delete data.memberCount;
 Object.assign(data, {name: "Next proof organizer", organizerType: "eventProducer", organizerPhotos: [], followerCount: 0,
   hostUserId: null, ownerUserId: null, hostName: null, hostAvatarUrl: null,

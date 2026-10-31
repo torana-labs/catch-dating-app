@@ -138,7 +138,7 @@ class _CreateOrganizerScreenState extends ConsumerState<CreateOrganizerScreen> {
   bool _showValidationErrors = false;
   String? _selectedCity;
   OrganizerType _organizerType = OrganizerType.club;
-  final _clubPhotos = <_OrganizerPhotoDraft>[];
+  final _organizerPhotos = <_OrganizerPhotoDraft>[];
   var _organizerPhotosTouched = false;
   var _nextPickedOrganizerPhotoId = 0;
   PickedOrganizerProfileImage? _profileImage;

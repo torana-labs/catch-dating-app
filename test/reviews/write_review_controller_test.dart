@@ -17,7 +17,7 @@ void main() {
     await container
         .read(writeReviewControllerProvider.notifier)
         .submit(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           eventId: 'event-1',
           reviewerUserId: 'runner-1',
           reviewerName: 'Runner One',
@@ -40,7 +40,7 @@ void main() {
     await container
         .read(writeReviewControllerProvider.notifier)
         .submit(
-          clubId: existing.organizerId,
+          organizerId: existing.organizerId,
           eventId: existing.eventId!,
           reviewerUserId: existing.reviewerUserId!,
           reviewerName: existing.reviewerName,
@@ -62,7 +62,7 @@ void main() {
     final controller = container.read(writeReviewControllerProvider.notifier);
 
     final first = controller.submit(
-      clubId: 'club-1',
+      organizerId: 'club-1',
       eventId: 'event-1',
       reviewerUserId: 'runner-1',
       reviewerName: 'Runner One',
@@ -70,7 +70,7 @@ void main() {
       comment: 'Frozen comment',
     );
     final duplicate = controller.submit(
-      clubId: 'club-1',
+      organizerId: 'club-1',
       eventId: 'event-1',
       reviewerUserId: 'runner-1',
       reviewerName: 'Runner One',
@@ -87,7 +87,7 @@ void main() {
 
     repository.writeCompleter = null;
     await controller.submit(
-      clubId: 'club-1',
+      organizerId: 'club-1',
       eventId: 'event-1',
       reviewerUserId: 'runner-1',
       reviewerName: 'Runner One',
@@ -105,7 +105,7 @@ void main() {
       container
           .read(writeReviewControllerProvider.notifier)
           .submit(
-            clubId: 'club-1',
+            organizerId: 'club-1',
             eventId: 'event-1',
             reviewerUserId: 'runner-1',
             reviewerName: 'Runner One',

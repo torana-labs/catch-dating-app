@@ -326,7 +326,7 @@ class ImageUploadRepository {
 
   Future<UploadedImage> uploadOrganizerPhoto({
     String? uid,
-    required String clubId,
+    required String organizerId,
     required int position,
     required XFile image,
     String? mediaId,
@@ -335,7 +335,7 @@ class ImageUploadRepository {
   }) {
     final resolvedMediaId = mediaId ?? createMediaId();
     return uploadWithMetadata(
-      storagePath: 'organizers/$clubId/media/$resolvedMediaId/original',
+      storagePath: 'organizers/$organizerId/media/$resolvedMediaId/original',
       image: image,
       purpose: ImageUploadPurpose.organizerPhoto,
       onProgress: onProgress,
@@ -345,12 +345,12 @@ class ImageUploadRepository {
 
   Future<String> uploadOrganizerCover({
     required String uid,
-    required String clubId,
+    required String organizerId,
     required XFile image,
   }) async {
     final upload = await uploadOrganizerPhoto(
       uid: uid,
-      clubId: clubId,
+      organizerId: organizerId,
       position: 0,
       image: image,
     );
@@ -359,7 +359,7 @@ class ImageUploadRepository {
 
   Future<UploadedImage> uploadOrganizerLogo({
     String? uid,
-    required String clubId,
+    required String organizerId,
     required XFile image,
     String? mediaId,
     ValueChanged<ImageUploadProgress>? onProgress,
@@ -367,7 +367,7 @@ class ImageUploadRepository {
   }) {
     final resolvedMediaId = mediaId ?? createMediaId();
     return uploadWithMetadata(
-      storagePath: 'organizers/$clubId/logo/$resolvedMediaId/original',
+      storagePath: 'organizers/$organizerId/logo/$resolvedMediaId/original',
       image: image,
       purpose: ImageUploadPurpose.organizerLogo,
       onProgress: onProgress,
@@ -377,12 +377,12 @@ class ImageUploadRepository {
 
   Future<String> uploadOrganizerProfileImage({
     required String uid,
-    required String clubId,
+    required String organizerId,
     required XFile image,
   }) async {
     final upload = await uploadOrganizerLogo(
       uid: uid,
-      clubId: clubId,
+      organizerId: organizerId,
       image: image,
     );
     return upload.url;
@@ -390,7 +390,7 @@ class ImageUploadRepository {
 
   Future<String> uploadEventPhoto({
     String? uid,
-    String? clubId,
+    String? organizerId,
     required String eventId,
     int position = 0,
     required XFile image,

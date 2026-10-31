@@ -53,12 +53,12 @@ for (const {status, attendedAt, attendance} of [
     h.event.eventPolicy = eventPolicyFromEvent(h.event as unknown as
       EventDocument);
     Object.assign(h.event, eventDiscoveryProjection({
-      event: h.event as unknown as EventDocument, clubLocation: "mumbai",
-      clubLocationMarketId: "in-mh-mumbai", bookedCount: 0}));
+      event: h.event as unknown as EventDocument, organizerLocation: "mumbai",
+      organizerLocationMarketId: "in-mh-mumbai", bookedCount: 0}));
     assert.ok(validateEventDocument(h.event),
       JSON.stringify(validateEventDocument.errors));
-    const participation = {eventId, clubId: h.event.clubId,
-      organizerId: h.event.organizerId, uid, status,
+    const participation = {eventId, organizerId: h.event.organizerId, uid,
+      status,
       createdAt: Timestamp.fromMillis(now - 2000),
       updatedAt: Timestamp.fromMillis(now - 1000),
       signedUpAt: Timestamp.fromMillis(now - 2000), waitlistedAt: null,

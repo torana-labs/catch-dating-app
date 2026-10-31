@@ -38,10 +38,10 @@ class OrganizerMembershipRepository {
   );
 
   Stream<List<OrganizerMembership>> watchActiveMembershipsForOrganizer({
-    required String clubId,
+    required String organizerId,
   }) => withBackendErrorStream(
     () => _membershipsRef
-        .where('organizerId', isEqualTo: clubId)
+        .where('organizerId', isEqualTo: organizerId)
         .where('status', isEqualTo: OrganizerMembershipStatus.active.name)
         .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
@@ -54,11 +54,11 @@ class OrganizerMembershipRepository {
   );
 
   Stream<OrganizerMembership?> watchMembership({
-    required String clubId,
+    required String organizerId,
     required String uid,
   }) => withBackendErrorStream(
     () => _membershipsRef
-        .where('organizerId', isEqualTo: clubId)
+        .where('organizerId', isEqualTo: organizerId)
         .where('uid', isEqualTo: uid)
         .limit(ReadLimitPolicy.lookup)
         .snapshots()
@@ -81,7 +81,7 @@ class OrganizerMembershipRepository {
     final unfollowedAt = data['unfollowedAt'];
     return OrganizerMembership(
       id: doc.id,
-      clubId: data['organizerId'] as String,
+      organizerId: data['organizerId'] as String,
       uid: data['uid'] as String,
       role: OrganizerMembershipRole.member,
       status: data['status'] == 'active'
@@ -114,19 +114,19 @@ Stream<List<OrganizerMembership>> watchActiveOrganizerMembershipsForUser(
 @riverpod
 Stream<List<OrganizerMembership>> watchActiveOrganizerMembershipsForOrganizer(
   Ref ref,
-  String clubId,
+  String organizerId,
 ) => ref
     .watch(organizerMembershipRepositoryProvider)
-    .watchActiveMembershipsForOrganizer(clubId: clubId);
+    .watchActiveMembershipsForOrganizer(organizerId: organizerId);
 
 @riverpod
 Stream<OrganizerMembership?> watchOrganizerMembership(
   Ref ref,
-  String clubId,
+  String organizerId,
   String uid,
 ) => ref
     .watch(organizerMembershipRepositoryProvider)
-    .watchMembership(clubId: clubId, uid: uid);
+    .watchMembership(organizerId: organizerId, uid: uid);
 
 @riverpod
 AsyncValue<Set<String>> currentUserFollowedOrganizerIds(Ref ref) {
@@ -156,6 +156,6 @@ AsyncValue<Set<String>> currentUserFollowedOrganizerIds(Ref ref) {
   return AsyncData({
     for (final membership
         in membershipsAsync.asData?.value ?? const <OrganizerMembership>[])
-      membership.clubId,
+      membership.organizerId,
   });
 }

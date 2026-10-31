@@ -334,7 +334,7 @@ final class WatchEventsForOrganizerProvider
 }
 
 String _$watchEventsForOrganizerHash() =>
-    r'e16359b6bc8880382311443547de40231fe30bc6';
+    r'2b5c059bcf5b541893d4cb335477704e1ab369bb';
 
 final class WatchEventsForOrganizerFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Event>>, String> {
@@ -347,8 +347,8 @@ final class WatchEventsForOrganizerFamily extends $Family
         isAutoDispose: true,
       );
 
-  WatchEventsForOrganizerProvider call(String clubId) =>
-      WatchEventsForOrganizerProvider._(argument: clubId, from: this);
+  WatchEventsForOrganizerProvider call(String organizerId) =>
+      WatchEventsForOrganizerProvider._(argument: organizerId, from: this);
 
   @override
   String toString() => r'watchEventsForOrganizerProvider';

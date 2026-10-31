@@ -13,7 +13,7 @@ import 'fixtures.dart';
 )
 Widget organizerReviewsSectionStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubReviewsSection',
+    title: 'OrganizerReviewsSection',
     catalogId: 'section.club.reviews',
     children: [
       WidgetbookPageStateCard(

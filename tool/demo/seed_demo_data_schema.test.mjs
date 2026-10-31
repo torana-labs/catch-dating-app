@@ -15,10 +15,10 @@ test("seed document validation accepts valid profile and event docs", () => {
     docs: [
       {path: "users/runner-1", data: validUserProfileDoc()},
       {path: "publicProfiles/runner-1", data: validPublicProfileDoc()},
-      {path: "clubs/club-1", data: validClubDoc()},
+      {path: "organizers/club-1", data: validOrganizerDoc()},
       {
-        path: "clubMemberships/club-1_runner-1",
-        data: validClubMembershipDoc(),
+        path: "organizerMemberships/club-1_runner-1",
+        data: validOrganizerMembershipDoc(),
       },
       {path: "events/event-1", data: validEventDoc()},
       {
@@ -32,8 +32,8 @@ test("seed document validation accepts valid profile and event docs", () => {
   assert.deepEqual(result, {
     users: 1,
     publicProfiles: 1,
-    clubs: 1,
-    clubMemberships: 1,
+    organizers: 1,
+    organizerMemberships: 1,
     events: 1,
     eventParticipations: 1,
     eventSuccessPlans: 0,
@@ -43,7 +43,7 @@ test("seed document validation accepts valid profile and event docs", () => {
     eventSuccessAssignments: 0,
     eventSuccessFeedback: 0,
     eventSuccessScorecards: 0,
-    clubScheduleLocks: 0,
+    organizerScheduleLocks: 0,
     userEventScheduleLocks: 0,
     savedEvents: 1,
     payments: 0,
@@ -224,8 +224,8 @@ test("seed document validation accepts schedule locks and seed manifests", () =>
   const result = validateSeedDocuments({
     docs: [
       {
-        path: "clubScheduleLocks/club-1_494080",
-        data: validClubScheduleLockDoc(),
+        path: "organizerScheduleLocks/club-1_494080",
+        data: validOrganizerScheduleLockDoc(),
       },
       {
         path: "userEventScheduleLocks/runner-1_494080",
@@ -235,7 +235,7 @@ test("seed document validation accepts schedule locks and seed manifests", () =>
     manifest: validSeedEventManifestDoc(),
   });
 
-  assert.equal(result.clubScheduleLocks, 1);
+  assert.equal(result.organizerScheduleLocks, 1);
   assert.equal(result.userEventScheduleLocks, 1);
   assert.equal(result.seedManifests, 1);
 });
@@ -305,12 +305,12 @@ test("seed document validation rejects stale schedule lock owners", () => {
     () => validateSeedDocuments({
       docs: [
         {
-          path: "clubScheduleLocks/club-1_494080",
-          data: {...validClubScheduleLockDoc(), ownerType: "user"},
+          path: "organizerScheduleLocks/club-1_494080",
+          data: {...validOrganizerScheduleLockDoc(), ownerType: "user"},
         },
       ],
     }),
-    /clubScheduleLocks\/club-1_494080 failed schema validation/
+    /organizerScheduleLocks\/club-1_494080 failed schema validation/
   );
 });
 
@@ -410,7 +410,7 @@ function validActivityNotificationDoc() {
     readAt: null,
     matchId: "runner-1_runner-2",
     eventId: "event-1",
-    clubId: null,
+    organizerId: null,
     actorUid: "runner-2",
     actorName: "Runner Two",
   };
@@ -455,7 +455,7 @@ function validUserProfileDoc() {
     prefsMessages: true,
     prefsEventReminders: true,
     prefsRunStatusUpdates: true,
-    prefsClubUpdates: true,
+    prefsOrganizerUpdates: true,
     prefsWeeklyDigest: false,
     prefsShowOnMap: true,
   };
@@ -488,8 +488,11 @@ function validPublicProfileDoc() {
   };
 }
 
-function validClubDoc() {
+function validOrganizerDoc() {
   return {
+    organizerType: "club",
+    organizerPhotos: [],
+    followerCount: 0,
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
@@ -533,12 +536,12 @@ function validClubDoc() {
   };
 }
 
-function validClubMembershipDoc() {
+function validOrganizerMembershipDoc() {
   return {
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid: "runner-1",
     role: "member",
     status: "active",
@@ -554,7 +557,7 @@ function validEventDoc() {
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
-    clubId: "club-1",
+    organizerId: "club-1",
     startTime: fakeTimestamp("2026-05-20T01:30:00.000Z"),
     endTime: fakeTimestamp("2026-05-20T02:40:00.000Z"),
     meetingPoint: "Race Course Road gate",
@@ -626,7 +629,7 @@ function validEventParticipationDoc() {
     seedPrefix: "demo_test",
     scenario: "schema-test",
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid: "runner-1",
     status: "signedUp",
     createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
@@ -658,7 +661,7 @@ function validEventSuccessPlanDoc() {
     seedPrefix: "demo_test",
     scenario: "schema-test",
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     playbookId: "algorithmic_mixer_reveal",
     selectedModuleIds: [
       "qr_check_in",
@@ -701,7 +704,7 @@ function validEventSuccessPreferenceDoc() {
     seedPrefix: "demo_test",
     scenario: "schema-test",
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid: "runner-1",
     microPodsOptedOut: false,
     guidedRotationsOptedOut: false,
@@ -716,7 +719,7 @@ function validEventSuccessCompatibilityResponseDoc() {
     seedPrefix: "demo_test",
     scenario: "schema-test",
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid: "runner-1",
     answerIds: [
       "event_energy_easy_conversation",
@@ -733,7 +736,7 @@ function validEventSuccessWingmanRequestDoc() {
     seedPrefix: "demo_test",
     scenario: "schema-test",
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     requesterUid: "runner-1",
     targetUid: "runner-2",
     status: "active",
@@ -750,7 +753,7 @@ function validEventSuccessAssignmentDoc() {
     seedPrefix: "demo_test",
     scenario: "schema-test",
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid: "runner-1",
     moduleId: "guided_rotations",
     label: "Live reveal rotations",
@@ -779,7 +782,7 @@ function validEventSuccessFeedbackDoc() {
     seedPrefix: "demo_test",
     scenario: "schema-test",
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid: "runner-1",
     welcomeRating: 5,
     structureRating: 4,
@@ -797,7 +800,7 @@ function validEventSuccessScorecardDoc() {
     seedPrefix: "demo_test",
     scenario: "schema-test",
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     bookedCount: 12,
     checkedInCount: 10,
     feedbackCount: 6,
@@ -844,16 +847,16 @@ function validEventSuccessScorecardDoc() {
   };
 }
 
-function validClubScheduleLockDoc() {
+function validOrganizerScheduleLockDoc() {
   return {
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
-    ownerType: "club",
+    ownerType: "organizer",
     ownerId: "club-1",
     slot: 494080,
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     startTimeMillis: 1778889600000,
     endTimeMillis: 1778893800000,
   };
@@ -868,7 +871,7 @@ function validUserEventScheduleLockDoc() {
     ownerId: "runner-1",
     slot: 494080,
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid: "runner-1",
     startTimeMillis: 1778889600000,
     endTimeMillis: 1778893800000,

@@ -197,7 +197,7 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
     salesOwnerUid = listing.submittedBy.role === "associate" && listing.submittedBy.uid ?
       listing.submittedBy.uid : adminContext.uid;
     await (deps.reserveCanonicalRoute ?? reserveOrganizerCanonicalRoute)(tx, db, {
-      clubId: organizerId, canonicalPath: `/organizers/${data.publicSlug}/`, slug: data.publicSlug,
+      organizerId: organizerId, canonicalPath: `/organizers/${data.publicSlug}/`, slug: data.publicSlug,
       citySlug: market.slug, adminUid: adminContext.uid, source: "adminApproveOrganizerListing",
       serverTimestamp: deps.serverTimestamp,
     });

@@ -15,7 +15,7 @@ export const eventSafetyReportDocumentSchema: Record<string, unknown> = {
   "x-owner": "onEventSuccessFeedbackWritten trigger",
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "reporterUserId",
     "feedbackId",
     "source",
@@ -25,12 +25,6 @@ export const eventSafetyReportDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

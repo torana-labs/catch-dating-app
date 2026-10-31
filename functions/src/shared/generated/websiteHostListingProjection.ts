@@ -9,7 +9,7 @@ import type {OrganizerSupplyCapabilities} from "./organizerSupplyCapabilities";
  */
 export interface WebsiteHostListingProjection {
   id: string;
-  listingVariant: "unclaimedScraped" | "appCreatedClub";
+  listingVariant: "unclaimedScraped" | "appCreatedOrganizer";
   dataOrigin: "scrapedSeed" | "catchDemo" | "organizerIntake";
   name: string;
   slug: string;

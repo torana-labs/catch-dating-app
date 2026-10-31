@@ -58,7 +58,7 @@ void main() {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: HostEventRehearsalScreen(
-              clubId: repository.snapshot.session.organizerId,
+              organizerId: repository.snapshot.session.organizerId,
               sessionId: repository.snapshot.session.id,
             ),
           ),
@@ -118,7 +118,6 @@ void main() {
                       EventAttendee(
                         id: id,
                         eventId: 'event-1',
-                        clubId: 'organizer-1',
                         organizerId: 'organizer-1',
                         displayName: id == 'guest-1' ? 'Asha Menon' : 'Sam Rao',
                         searchName: id,

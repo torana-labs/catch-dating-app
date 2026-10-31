@@ -331,7 +331,7 @@ export function buildCrossPathsDemoDocuments({
     path: `events/${eventId}`,
     data: {
       crossPathsDiscoveryEnabled: true,
-      ...(organizerId ? {clubId: organizerId, organizerId} : {}),
+      ...(organizerId ? {organizerId} : {}),
     },
   }, ...users.map((user) => ({
     path: `users/${user.uid}`,
@@ -343,7 +343,7 @@ export function buildCrossPathsDemoDocuments({
     },
   })), ...(organizerId ? users.map((user) => ({
     path: `eventParticipations/${eventId}_${user.uid}`,
-    data: {clubId: organizerId},
+    data: {organizerId: organizerId},
   })) : [])];
 
   for (const candidate of candidates) {
@@ -667,8 +667,8 @@ function buildDedicatedCrossPathsEventDocs({
   };
   Object.assign(event, helpers.eventDiscoveryProjection({
     event,
-    clubLocation: event.discoveryCityName ?? event.cityName ?? event.city,
-    clubLocationMarketId:
+    organizerLocation: event.discoveryCityName ?? event.cityName ?? event.city,
+    organizerLocationMarketId:
       event.discoveryMarketId ?? event.locationMarketId ?? event.city,
     bookedCount: people.length,
   }));
@@ -688,7 +688,7 @@ function buildDedicatedCrossPathsEventDocs({
       seedPrefix,
       scenario: "cross-paths",
       eventId,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       uid: person.uid,
       status: "signedUp",
       createdAt: signedUpAt,

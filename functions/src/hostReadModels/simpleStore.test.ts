@@ -16,7 +16,7 @@ function form() {
     secret: "must-not-enter-view", draftDefinition: {privateAnswer: "private"}};
 }
 function event() {
-  return {clubId: "org", organizerId: "org", name: "Mixer", startTime: now,
+  return {organizerId: "org", name: "Mixer", startTime: now,
     status: "active", publicationState: "private", setupRevision: 1,
     publicRegistrationEnabled: false, eventCityId: "city",
     eventMarketId: "market",

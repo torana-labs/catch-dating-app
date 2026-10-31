@@ -12,8 +12,8 @@ ChatThreadPreview preview(
     id: id,
     user1Id: 'host',
     user2Id: uid,
-    clubId: org,
-    conversationType: MatchConversationType.clubHostInquiry,
+    organizerId: org,
+    conversationType: MatchConversationType.organizerHostInquiry,
     createdAt: DateTime(2026, 9, 10),
     eventIds: events,
   );

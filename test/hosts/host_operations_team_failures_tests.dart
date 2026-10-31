@@ -183,7 +183,7 @@ void _registerHostOperationsTeamFailuresTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOrganizerLiveGuideScreen(clubId: ownedOrganizer.id),
+      HostOrganizerLiveGuideScreen(organizerId: ownedOrganizer.id),
       overrides: [
         ..._hostOrganizerOverrides(owned: [ownedOrganizer]),
         organizersRepositoryProvider.overrideWith((ref) => repository),
@@ -307,7 +307,7 @@ void _registerHostOperationsTeamFailuresTests() {
 
       await _pumpHostScreen(
         tester,
-        HostOrganizerEventDefaultsScreen(clubId: ownedOrganizer.id),
+        HostOrganizerEventDefaultsScreen(organizerId: ownedOrganizer.id),
         overrides: [
           ..._hostOrganizerOverrides(owned: [ownedOrganizer]),
           watchHostPaymentAccountsProvider(
@@ -400,7 +400,7 @@ void _registerHostOperationsTeamFailuresTests() {
 
       await _pumpHostScreen(
         tester,
-        const HostOrganizerTeamScreen(clubId: 'owned-club'),
+        const HostOrganizerTeamScreen(organizerId: 'owned-club'),
         overrides: [
           ..._hostOrganizerOverrides(owned: [ownedOrganizer]),
           watchHostProfileProvider(
@@ -433,7 +433,7 @@ void _registerHostOperationsTeamFailuresTests() {
 
     await _pumpHostScreen(
       tester,
-      const HostOrganizerTeamScreen(clubId: 'owned-club'),
+      const HostOrganizerTeamScreen(organizerId: 'owned-club'),
       overrides: [
         ..._hostOrganizerOverrides(owned: [_hostTeamOrganizerWithoutProfile()]),
         watchHostProfileProvider(
@@ -496,7 +496,7 @@ void _registerHostOperationsTeamFailuresTests() {
 
       await _pumpHostScreen(
         tester,
-        const HostOrganizerTeamScreen(clubId: 'owned-club'),
+        const HostOrganizerTeamScreen(organizerId: 'owned-club'),
         overrides: [
           ..._hostOrganizerOverrides(
             owned: [_hostTeamOrganizerWithoutProfile()],
@@ -535,7 +535,7 @@ void _registerHostOperationsTeamFailuresTests() {
 
     await _pumpHostScreen(
       tester,
-      const HostOrganizerTeamScreen(clubId: 'owned-club'),
+      const HostOrganizerTeamScreen(organizerId: 'owned-club'),
       overrides: [
         ..._hostOrganizerOverrides(owned: [_hostTeamOrganizer()]),
         watchHostProfileProvider(
@@ -582,7 +582,7 @@ void _registerHostOperationsTeamFailuresTests() {
 
       await _pumpHostScreen(
         tester,
-        const HostOrganizerTeamScreen(clubId: 'owned-club'),
+        const HostOrganizerTeamScreen(organizerId: 'owned-club'),
         overrides: [
           ..._hostOrganizerOverrides(owned: [_hostTeamOrganizer()]),
           watchHostProfileProvider(
@@ -613,7 +613,7 @@ void _registerHostOperationsTeamFailuresTests() {
     (tester) async {
       await _pumpHostScreen(
         tester,
-        const HostOrganizerTeamScreen(clubId: 'owned-club'),
+        const HostOrganizerTeamScreen(organizerId: 'owned-club'),
         overrides: _hostOrganizerOverrides(owned: [_hostTeamOrganizer()]),
       );
 
@@ -641,7 +641,7 @@ void _registerHostOperationsTeamFailuresTests() {
 
     await _pumpHostScreen(
       tester,
-      const HostOrganizerTeamScreen(clubId: 'owned-club'),
+      const HostOrganizerTeamScreen(organizerId: 'owned-club'),
       overrides: _hostOrganizerOverrides(
         owned: [ownedOrganizer],
         hosted: [hostedOrganizer],
@@ -717,7 +717,7 @@ void _registerHostOperationsTeamFailuresTests() {
       );
       await _pumpHostScreen(
         tester,
-        const HostOrganizerTeamScreen(clubId: 'owned-club'),
+        const HostOrganizerTeamScreen(organizerId: 'owned-club'),
         overrides: [
           ..._hostOrganizerOverrides(owned: [_hostTeamOrganizer()]),
           watchHostProfileProvider(
@@ -780,7 +780,7 @@ void _registerHostOperationsTeamFailuresTests() {
 
     await _pumpHostScreen(
       tester,
-      const HostOrganizerTeamScreen(clubId: 'owned-club'),
+      const HostOrganizerTeamScreen(organizerId: 'owned-club'),
       overrides: [
         ..._hostOrganizerOverrides(owned: [_hostTeamOrganizer()]),
         watchHostProfileProvider(

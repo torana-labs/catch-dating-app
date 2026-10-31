@@ -35,7 +35,7 @@ void main() {
       );
       final qaEvent = event_test.buildEvent(
         id: 'cross_paths_mumbai_qa_run_mumbai_01_01',
-        clubId: organizer.id,
+        organizerId: organizer.id,
         synthetic: true,
         seedPrefix: 'cross_paths_mumbai_qa',
         startTime: DateTime.now().add(const Duration(days: 1)),

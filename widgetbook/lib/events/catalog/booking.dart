@@ -194,7 +194,7 @@ Widget eventDetailDockStates(BuildContext context) {
             child: EventDetailDock(
               event: widgetbookEvent,
               userProfile: widgetbookEventsViewer,
-              clubId: widgetbookEventsOrganizerId,
+              organizerId: widgetbookEventsOrganizerId,
               participation: null,
               now: widgetbookEventsNow,
               darkSurface: darkSurface,
@@ -224,7 +224,7 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
             child: EventDetailBody(
               event: widgetbookEvent,
               userProfile: widgetbookEventsViewer,
-              clubId: widgetbookEventsOrganizerId,
+              organizerId: widgetbookEventsOrganizerId,
               reviews: const [],
               isAuthenticated: true,
               sectionVisibility: eventDetailSectionVisibilityStateFrom(
@@ -281,7 +281,7 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
             child: EventDetailBody(
               event: widgetbookEvent,
               userProfile: widgetbookEventsViewer,
-              clubId: widgetbookEventsOrganizerId,
+              organizerId: widgetbookEventsOrganizerId,
               reviews: widgetbookEventsReviews,
               isAuthenticated: true,
               sectionVisibility: eventDetailSectionVisibilityStateFrom(
@@ -335,7 +335,7 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
             child: EventDetailBody(
               event: widgetbookEvent,
               userProfile: widgetbookEventsViewer,
-              clubId: widgetbookEventsOrganizerId,
+              organizerId: widgetbookEventsOrganizerId,
               reviews: widgetbookEventsReviews,
               isAuthenticated: true,
               sectionVisibility: eventDetailSectionVisibilityStateFrom(

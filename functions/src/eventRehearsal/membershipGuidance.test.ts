@@ -34,7 +34,7 @@ function harness(now = 1_000_000, id = "practice-guidance") {
       paceGroups: ["easy", "fast"].map((id, sortOrder) =>
         ({id, label: id, sortOrder}))}};
   const fixture = JSON.parse(readFileSync(
-    "../contracts/fixtures/valid/club_doc.json", "utf8"));
+    "../contracts/fixtures/valid/organizer_doc.json", "utf8"));
   const schema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
   const organizer = {...Object.fromEntries(Object.entries(fixture).filter(
@@ -264,7 +264,6 @@ test("Firestore group messages follow handover in Host and guest projections", {
   const id = randomUUID();
   const h = harness(Date.now(), id);
   h.session.organizerId = "guidance-" + id;
-  h.session.clubId = h.session.organizerId;
   h.session.publicRehearsalId = "public-" + id;
   h.session.viewerTokenHash = createHash("sha256")
     .update(h.session.publicRehearsalId).digest("hex");

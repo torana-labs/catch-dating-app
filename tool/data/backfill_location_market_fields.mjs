@@ -69,10 +69,10 @@ export async function buildLocationMarketBackfillPlan(
   firestore,
   {includeConfig = true, includeProfiles = true} = {}
 ) {
-  const [configDoc, clubsSnap, usersSnap, publicProfilesSnap] =
+  const [configDoc, organizersSnap, usersSnap, publicProfilesSnap] =
     await Promise.all([
       includeConfig ? firestore.collection("config").doc("cities").get() : null,
-      firestore.collection("clubs").get(),
+      firestore.collection("organizers").get(),
       includeProfiles ? firestore.collection("users").get() : emptySnapshot(),
       includeProfiles ?
         firestore.collection("publicProfiles").get() :
@@ -94,14 +94,14 @@ export async function buildLocationMarketBackfillPlan(
     }
   }
 
-  for (const doc of clubsSnap.docs) {
-    const club = doc.data();
-    const market = marketForClub(club);
+  for (const doc of organizersSnap.docs) {
+    const organizer = doc.data();
+    const market = marketForOrganizer(organizer);
     if (!market) {
       warnings.push(`${doc.ref.path} has no resolvable location market.`);
       continue;
     }
-    const patch = changedPatch(club, {
+    const patch = changedPatch(organizer, {
       location: market.marketId,
       locationCityId: market.cityId,
       locationMarketId: market.marketId,
@@ -109,7 +109,7 @@ export async function buildLocationMarketBackfillPlan(
       regionName: market.regionName,
       countryCode: market.countryIsoCode,
       countryName: market.countryName,
-      ...(club.publicPage && !stringOrNull(club.publicPage.citySlug) ? {
+      ...(organizer.publicPage && !stringOrNull(organizer.publicPage.citySlug) ? {
         "publicPage.citySlug": market.slug,
       } : {}),
     });
@@ -150,7 +150,7 @@ export async function buildLocationMarketBackfillPlan(
     repairs,
     summary: {
       configChecked: includeConfig,
-      clubsScanned: clubsSnap.size,
+      organizersScanned: organizersSnap.size,
       usersScanned: usersSnap.size,
       publicProfilesScanned: publicProfilesSnap.size,
       repairsNeeded: repairs.length,
@@ -175,11 +175,11 @@ export async function applyLocationMarketBackfillPlan(firestore, plan) {
   }
 }
 
-function marketForClub(club) {
-  return marketForIdOrAlias(club.locationMarketId) ??
-    marketForIdOrAlias(club.location) ??
-    marketForIdOrAlias(club.publicPage?.citySlug) ??
-    marketForIdOrAlias(club.cityName);
+function marketForOrganizer(organizer) {
+  return marketForIdOrAlias(organizer.locationMarketId) ??
+    marketForIdOrAlias(organizer.location) ??
+    marketForIdOrAlias(organizer.publicPage?.citySlug) ??
+    marketForIdOrAlias(organizer.cityName);
 }
 
 function profileCityPatch(profile) {
@@ -231,7 +231,7 @@ function parseArgs(argv) {
 function compactSummary(summary) {
   return {
     configChecked: summary.configChecked,
-    clubsScanned: summary.clubsScanned,
+    organizersScanned: summary.organizersScanned,
     usersScanned: summary.usersScanned,
     publicProfilesScanned: summary.publicProfilesScanned,
     repairsNeeded: summary.repairsNeeded,
@@ -243,7 +243,7 @@ function compactSummary(summary) {
 function printSummary(summary, {summaryOnly = false} = {}) {
   console.log("Location market backfill plan");
   console.log(`Config checked: ${summary.configChecked ? "yes" : "no"}`);
-  console.log(`Clubs scanned: ${summary.clubsScanned}`);
+  console.log(`Clubs scanned: ${summary.organizersScanned}`);
   console.log(`Users scanned: ${summary.usersScanned}`);
   console.log(`Public profiles scanned: ${summary.publicProfilesScanned}`);
   console.log(`Repairs needed: ${summary.repairsNeeded}`);

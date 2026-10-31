@@ -170,7 +170,7 @@ class FakeFirestore {
 function harness(overrides: Record<string, FakeData | undefined> = {}) {
   const firestore = new FakeFirestore({
     "events/event-1": {
-      clubId: "club-1",
+      organizerId: "club-1",
       status: "active",
       startTime: ts("2026-05-02T01:40:00.000Z"),
       endTime: ts("2026-05-02T02:40:00.000Z"),
@@ -180,7 +180,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
     },
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       selectedModuleIds: ["first_hello_check_in"],
     },
     [`eventVenueSessions/${venueSessionId}`]: {
@@ -192,7 +192,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
     },
     "eventParticipations/event-1_runner-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       uid: "runner-1",
       status: "signedUp",
       genderAtSignup: "man",
@@ -201,7 +201,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
     },
     "eventParticipations/event-1_runner-2": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       uid: "runner-2",
       status: "attended",
       genderAtSignup: "woman",
@@ -273,7 +273,7 @@ test("start First Hello writes a private arrival mission", async () => {
     "runner-1:startEventSuccessFirstHelloMission",
   ]);
   assert.equal(mission?.eventId, "event-1");
-  assert.equal(mission?.clubId, "club-1");
+  assert.equal(mission?.organizerId, "club-1");
   assert.equal(mission?.observerUid, "runner-1");
   assert.equal(mission?.targetUid, "runner-2");
   assert.equal(mission?.targetDisplayName, "Rhea");
@@ -388,7 +388,7 @@ test(
     const {deps} = harness({
       "eventParticipations/event-1_runner-2": {
         eventId: "event-1",
-        clubId: "club-1",
+        organizerId: "club-1",
         uid: "runner-2",
         status: "signedUp",
         genderAtSignup: "woman",
@@ -416,7 +416,7 @@ test("complete First Hello marks attendance", async () => {
   const {firestore, deps, rateLimitCalls, recordedSignals} = harness({
     "eventSuccessArrivalMissions/event-1_runner-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       observerUid: "runner-1",
       targetUid: "runner-2",
       targetDisplayName: "Rhea",
@@ -474,7 +474,7 @@ test("complete First Hello rejects invalid answers", async () => {
   const {deps} = harness({
     "eventSuccessArrivalMissions/event-1_runner-1": {
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       observerUid: "runner-1",
       targetUid: "runner-2",
       targetDisplayName: "Rhea",

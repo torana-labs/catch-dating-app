@@ -25,7 +25,7 @@ const schemaEventSuccessScorecardDocumentSchema = <String, Object?>{
   ],
   'required': <Object?>[
     'eventId',
-    'clubId',
+    'organizerId',
     'bookedCount',
     'checkedInCount',
     'feedbackCount',
@@ -44,12 +44,6 @@ const schemaEventSuccessScorecardDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-      'x-catch-ownership': 'trigger-owned',
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

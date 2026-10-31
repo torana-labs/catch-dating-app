@@ -93,8 +93,8 @@ async function submittedPilot(rsvp: boolean) {
   const store = new AudienceTestStore({"organizers/org-1": {
     ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: [],
     name: "Pilot organizer", imageUrl: null,
-  }, "events/event-1": {organizerId: "org-1", clubId: "org-1",
-    status: "published", eventFormat: {activityKind: "singlesMixer"}}});
+  }, "events/event-1": {organizerId: "org-1", status: "published",
+    eventFormat: {activityKind: "singlesMixer"}}});
   const deps = {firestore: () => store.asFirestore(), timestamp: () => now,
     checkRateLimit: async () => undefined, identitySecret: () =>
       "fixture-secret-".repeat(4),

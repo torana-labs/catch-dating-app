@@ -204,7 +204,6 @@ export interface GetEventRuntimeBootstrapCallableResponse {
       | "cancelled"
       | null;
     eventId: string;
-    clubId: string;
     organizerId: string;
     /**
      * @maxItems 10

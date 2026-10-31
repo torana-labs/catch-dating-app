@@ -173,7 +173,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
           await ref
               .read(hostOrganizerPostControllerProvider)
               .createPost(
-                clubId: organizer.id,
+                organizerId: organizer.id,
                 requestId: requestId,
                 text: text,
               );
@@ -389,7 +389,7 @@ class _HostSendsHistory extends ConsumerWidget {
                       ? null
                       : () => context.pushNamed(
                           Routes.hostOrganizerMessagingScreen.name,
-                          pathParameters: {'clubId': organizerId},
+                          pathParameters: {'organizerId': organizerId},
                         ),
                 ),
             ],

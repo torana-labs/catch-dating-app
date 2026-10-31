@@ -87,7 +87,7 @@ class Query {
 
 function privateEvent(start: number): Row {
   return {
-    clubId: "org1", organizerId: "org1", name: "New event",
+    organizerId: "org1", name: "New event",
     startTime: Timestamp.fromMillis(start),
     status: "active", publicationState: "private", setupRevision: 1,
     publicRegistrationEnabled: false,
@@ -111,7 +111,7 @@ function richEvent(start: number): Row {
   const source = JSON.parse(readFileSync(
     resolve(__dirname, "../../../../contracts/fixtures/valid/event_doc.json"),
     "utf8")) as Row;
-  return {...source, clubId: "org1",
+  return {...source, organizerId: "org1",
     startTime: Timestamp.fromMillis(start),
     endTime: Timestamp.fromMillis(start + 3_600_000)};
 }
@@ -145,7 +145,7 @@ test("one owner list includes private, published and rich legacy events",
     store.rows.set("events/c", {...richEvent(NOW + 3_000),
       name: undefined});
     store.rows.set("events/foreign", {...richEvent(NOW + 4_000),
-      clubId: "other"});
+      organizerId: "other"});
     store.rows.set("events/past", privateEvent(NOW - 1_000));
     store.rows.set("events/cancelled", {...privateEvent(NOW + 5_000),
       status: "cancelled"});
@@ -196,12 +196,8 @@ test("foreign cursor, manager and deleted account fail", async () => {
     (error) => code(error, "failed-precondition"));
 });
 
-test("contradictory owner and malformed matching rows reject", async () => {
+test("malformed matching rows reject", async () => {
   const store = setup();
-  store.rows.set("events/a", {...privateEvent(NOW + 1_000),
-    organizerId: "other"});
-  await assert.rejects(list(store, {organizerId: "org1"}),
-    (error) => code(error, "failed-precondition"));
   store.rows.set("events/a", {...richEvent(NOW + 1_000),
     capacityLimit: undefined});
   await assert.rejects(list(store, {organizerId: "org1"}),

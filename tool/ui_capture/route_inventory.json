@@ -4,7 +4,7 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "6e5c6b875e9607bb12acc6292ef1a60b5217a9c2e97d2f7e2fd763926420081c",
+    "routeContractSha256": "ddf4efcec8d72a7ff55c9645f5697d4cb17161e449fc8fb2ff7712e310f5b9d8",
     "goRouteCount": 129,
     "shellBranchCount": 9,
     "enumRouteCount": 114,
@@ -99,14 +99,14 @@
     },
     {
       "id": "calendarEventDetailScreen",
-      "path": "/calendar/organizers/:clubId/events/:eventId",
+      "path": "/calendar/organizers/:organizerId/events/:eventId",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/calendar/organizers/:clubId/events/:eventId",
+      "runtimePath": "/calendar/organizers/:organizerId/events/:eventId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.calendarEventDetailScreen.path",
       "renderKind": "builder",
@@ -132,14 +132,14 @@
     },
     {
       "id": "savedEventDetailScreen",
-      "path": "/saved-events/organizers/:clubId/events/:eventId",
+      "path": "/saved-events/organizers/:organizerId/events/:eventId",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/saved-events/organizers/:clubId/events/:eventId",
+      "runtimePath": "/saved-events/organizers/:organizerId/events/:eventId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.savedEventDetailScreen.path",
       "renderKind": "builder",
@@ -165,14 +165,14 @@
     },
     {
       "id": "dashboardEventDetailScreen",
-      "path": "/dashboard/organizers/:clubId/events/:eventId",
+      "path": "/dashboard/organizers/:organizerId/events/:eventId",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/dashboard/organizers/:clubId/events/:eventId",
+      "runtimePath": "/dashboard/organizers/:organizerId/events/:eventId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.dashboardEventDetailScreen.path",
       "renderKind": "builder",
@@ -346,15 +346,15 @@
     },
     {
       "id": "organizerDetailScreen",
-      "path": "/organizers/:clubId",
+      "path": "/organizers/:organizerId",
       "pathParameters": [
-        "clubId"
+        "organizerId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/organizers/:clubId",
+      "runtimePath": "/organizers/:organizerId",
       "runtimeParentId": "exploreScreen",
-      "runtimePathExpression": "':clubId'",
+      "runtimePathExpression": "':organizerId'",
       "renderKind": "pageBuilder",
       "presentationExpression": "_organizerDetailPage",
       "presentationTarget": "_organizerDetailPage",
@@ -363,14 +363,14 @@
     },
     {
       "id": "eventDetailScreen",
-      "path": "/organizers/:clubId/events/:eventId",
+      "path": "/organizers/:organizerId/events/:eventId",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/organizers/:clubId/events/:eventId",
+      "runtimePath": "/organizers/:organizerId/events/:eventId",
       "runtimeParentId": "organizerDetailScreen",
       "runtimePathExpression": "'events/:eventId'",
       "renderKind": "pageBuilder",
@@ -381,18 +381,18 @@
     },
     {
       "id": "eventSuccessCompanionScreen",
-      "path": "/organizers/:clubId/events/:eventId/companion",
+      "path": "/organizers/:organizerId/events/:eventId/companion",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/organizers/:clubId/events/:eventId/companion",
+      "runtimePath": "/organizers/:organizerId/events/:eventId/companion",
       "runtimeParentId": "eventDetailScreen",
       "runtimePathExpression": "'companion'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>EventSuccessCompanionRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state))",
+      "presentationExpression": "(context,state)=>EventSuccessCompanionRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state))",
       "presentationTarget": "EventSuccessCompanionRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -739,36 +739,36 @@
     },
     {
       "id": "hostEventRosterScreen",
-      "path": "/host/organizers/:clubId/events/:eventId/guests",
+      "path": "/host/organizers/:organizerId/events/:eventId/guests",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizers/:clubId/events/:eventId/guests",
+      "runtimePath": "/host/organizers/:organizerId/events/:eventId/guests",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostEventRosterScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:HostEventManageSection.guests)",
+      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:HostEventManageSection.guests)",
       "presentationTarget": "HostEventManageRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
       "id": "hostEventPublicationScreen",
-      "path": "/host/organizers/:clubId/events/:eventId/publication",
+      "path": "/host/organizers/:organizerId/events/:eventId/publication",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizers/:clubId/events/:eventId/publication",
+      "runtimePath": "/host/organizers/:organizerId/events/:eventId/publication",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostEventPublicationScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventPublicationRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!)",
+      "presentationExpression": "(context,state)=>HostEventPublicationRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!)",
       "presentationTarget": "HostEventPublicationRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1427,17 +1427,17 @@
     },
     {
       "id": "hostCreateProgramScreen",
-      "path": "/host/organizers/:clubId/create-program",
+      "path": "/host/organizers/:organizerId/create-program",
       "pathParameters": [
-        "clubId"
+        "organizerId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizers/:clubId/create-program",
+      "runtimePath": "/host/organizers/:organizerId/create-program",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostCreateProgramScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>ProgramCreateScreen(organizerId:state.pathParameters['clubId']!)",
+      "presentationExpression": "(context,state)=>ProgramCreateScreen(organizerId:state.pathParameters['organizerId']!)",
       "presentationTarget": "ProgramCreateScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1561,17 +1561,17 @@
     },
     {
       "id": "hostOrganizerMessagingScreen",
-      "path": "/host/organizer/:clubId/messaging",
+      "path": "/host/organizer/:organizerId/messaging",
       "pathParameters": [
-        "clubId"
+        "organizerId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizer/:clubId/messaging",
+      "runtimePath": "/host/organizer/:organizerId/messaging",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerMessagingScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostMessagingSetupScreen(clubId:state.pathParameters['clubId']!)",
+      "presentationExpression": "(context,state)=>HostMessagingSetupScreen(organizerId:state.pathParameters['organizerId']!)",
       "presentationTarget": "HostMessagingSetupScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1601,7 +1601,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerEventDefaultsScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostOrganizerEventDefaultsScreen(clubId:state.uri.queryParameters['clubId']??'')",
+      "presentationExpression": "(context,state)=>HostOrganizerEventDefaultsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
       "presentationTarget": "HostOrganizerEventDefaultsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1616,7 +1616,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerLiveGuideScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostOrganizerLiveGuideScreen(clubId:state.uri.queryParameters['clubId']??'')",
+      "presentationExpression": "(context,state)=>HostOrganizerLiveGuideScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
       "presentationTarget": "HostOrganizerLiveGuideScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1631,7 +1631,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerTeamScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostOrganizerTeamScreen(clubId:state.uri.queryParameters['clubId']??'')",
+      "presentationExpression": "(context,state)=>HostOrganizerTeamScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
       "presentationTarget": "HostOrganizerTeamScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1646,7 +1646,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerPaymentsScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostOrganizerPaymentsScreen(clubId:state.uri.queryParameters['clubId']??'')",
+      "presentationExpression": "(context,state)=>HostOrganizerPaymentsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
       "presentationTarget": "HostOrganizerPaymentsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1661,24 +1661,24 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerMembershipsScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostOrganizerMembershipsScreen(clubId:state.uri.queryParameters['clubId']??'')",
+      "presentationExpression": "(context,state)=>HostOrganizerMembershipsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
       "presentationTarget": "HostOrganizerMembershipsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
       "id": "hostOrganizerDetailScreen",
-      "path": "/host/organizers/:clubId",
+      "path": "/host/organizers/:organizerId",
       "pathParameters": [
-        "clubId"
+        "organizerId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizers/:clubId",
+      "runtimePath": "/host/organizers/:organizerId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerDetailScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>OrganizerDetailScreen(clubId:state.pathParameters['clubId']!,initialOrganizer:_organizerDetailInitialOrganizer(state))",
+      "presentationExpression": "(context,state)=>OrganizerDetailScreen(organizerId:state.pathParameters['organizerId']!,initialOrganizer:_organizerDetailInitialOrganizer(state))",
       "presentationTarget": "OrganizerDetailScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1700,66 +1700,66 @@
     },
     {
       "id": "hostCreateEventScreen",
-      "path": "/host/organizers/:clubId/create-event",
+      "path": "/host/organizers/:organizerId/create-event",
       "pathParameters": [
-        "clubId"
+        "organizerId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizers/:clubId/create-event",
+      "runtimePath": "/host/organizers/:organizerId/create-event",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostCreateEventScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state){final extra=state.extra;return HostCreateEventRouteScreen(clubId:state.pathParameters['clubId']!,initialOrganizer:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialOrganizer,final Organizer organizer=>organizer,_=>null},initialPrefill:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialPrefill,_=>null},initialDraft:extra is HostCreateEventRouteArguments?extra.initialDraft:null,initialSavedEventId:extra is HostCreateEventRouteArguments?extra.initialSavedEventId:null,externalBookingMode:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.externalBookingMode,_=>false},initialRosterImportPlan:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialRosterImportPlan,_=>null},promptForDrafts:extra is HostCreateEventRouteArguments?extra.promptForDrafts:true,returnToResponsesOnSave:extra is HostCreateEventRouteArguments?extra.returnToResponsesOnSave:false);}",
+      "presentationExpression": "(context,state){final extra=state.extra;return HostCreateEventRouteScreen(organizerId:state.pathParameters['organizerId']!,initialOrganizer:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialOrganizer,final Organizer organizer=>organizer,_=>null},initialPrefill:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialPrefill,_=>null},initialDraft:extra is HostCreateEventRouteArguments?extra.initialDraft:null,initialSavedEventId:extra is HostCreateEventRouteArguments?extra.initialSavedEventId:null,externalBookingMode:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.externalBookingMode,_=>false},initialRosterImportPlan:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialRosterImportPlan,_=>null},promptForDrafts:extra is HostCreateEventRouteArguments?extra.promptForDrafts:true,returnToResponsesOnSave:extra is HostCreateEventRouteArguments?extra.returnToResponsesOnSave:false);}",
       "presentationTarget": "HostCreateEventRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
       "id": "hostEventRehearsalStartScreen",
-      "path": "/host/organizers/:clubId/rehearsals/new",
+      "path": "/host/organizers/:organizerId/rehearsals/new",
       "pathParameters": [
-        "clubId"
+        "organizerId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizers/:clubId/rehearsals/new",
+      "runtimePath": "/host/organizers/:organizerId/rehearsals/new",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostEventRehearsalStartScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventRehearsalStartScreen(clubId:state.pathParameters['clubId']!,sourceEventId:state.uri.queryParameters['eventId'],startFromOrganizerDefaults:state.uri.queryParameters['source']=='custom')",
+      "presentationExpression": "(context,state)=>HostEventRehearsalStartScreen(organizerId:state.pathParameters['organizerId']!,sourceEventId:state.uri.queryParameters['eventId'],startFromOrganizerDefaults:state.uri.queryParameters['source']=='custom')",
       "presentationTarget": "HostEventRehearsalStartScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
       "id": "hostEventRehearsalScreen",
-      "path": "/host/organizers/:clubId/rehearsals/:sessionId",
+      "path": "/host/organizers/:organizerId/rehearsals/:sessionId",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "sessionId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizers/:clubId/rehearsals/:sessionId",
+      "runtimePath": "/host/organizers/:organizerId/rehearsals/:sessionId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostEventRehearsalScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventRehearsalScreen(clubId:state.pathParameters['clubId']!,sessionId:state.pathParameters['sessionId']!)",
+      "presentationExpression": "(context,state)=>HostEventRehearsalScreen(organizerId:state.pathParameters['organizerId']!,sessionId:state.pathParameters['sessionId']!)",
       "presentationTarget": "HostEventRehearsalScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
       "id": "hostAppEventDetailScreen",
-      "path": "/host/organizers/:clubId/events/:eventId",
+      "path": "/host/organizers/:organizerId/events/:eventId",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizers/:clubId/events/:eventId",
+      "runtimePath": "/host/organizers/:organizerId/events/:eventId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostAppEventDetailScreen.path",
       "renderKind": "builder",
@@ -1770,86 +1770,86 @@
     },
     {
       "id": "hostAppEventManageScreen",
-      "path": "/host/organizers/:clubId/events/:eventId/manage",
+      "path": "/host/organizers/:organizerId/events/:eventId/manage",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizers/:clubId/events/:eventId/manage",
+      "runtimePath": "/host/organizers/:organizerId/events/:eventId/manage",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostAppEventManageScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:_hostManageSectionFromState(state))",
+      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:_hostManageSectionFromState(state))",
       "presentationTarget": "HostEventManageRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
       "id": "hostAppEditEventScreen",
-      "path": "/host/organizers/:clubId/events/:eventId/edit",
+      "path": "/host/organizers/:organizerId/events/:eventId/edit",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizers/:clubId/events/:eventId/edit",
+      "runtimePath": "/host/organizers/:organizerId/events/:eventId/edit",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostAppEditEventScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>EditHostedEventRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state))",
+      "presentationExpression": "(context,state)=>EditHostedEventRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state))",
       "presentationTarget": "EditHostedEventRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
       "id": "hostAppAttendanceSheet",
-      "path": "/host/organizers/:clubId/events/:eventId/attendance",
+      "path": "/host/organizers/:organizerId/events/:eventId/attendance",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizers/:clubId/events/:eventId/attendance",
+      "runtimePath": "/host/organizers/:organizerId/events/:eventId/attendance",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostAppAttendanceSheet.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:HostEventManageSection.live)",
+      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:HostEventManageSection.live)",
       "presentationTarget": "HostEventManageRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
       "id": "hostAppEventSuccessScreen",
-      "path": "/host/organizers/:clubId/events/:eventId/success",
+      "path": "/host/organizers/:organizerId/events/:eventId/success",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizers/:clubId/events/:eventId/success",
+      "runtimePath": "/host/organizers/:organizerId/events/:eventId/success",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostAppEventSuccessScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:_hostManageSectionFromState(state))",
+      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:_hostManageSectionFromState(state))",
       "presentationTarget": "HostEventManageRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
       "id": "hostAppEventMomentsScreen",
-      "path": "/host/organizers/:clubId/events/:eventId/moments",
+      "path": "/host/organizers/:organizerId/events/:eventId/moments",
       "pathParameters": [
-        "clubId",
+        "organizerId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/organizers/:clubId/events/:eventId/moments",
+      "runtimePath": "/host/organizers/:organizerId/events/:eventId/moments",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostAppEventMomentsScreen.path",
       "renderKind": "builder",
@@ -1893,11 +1893,11 @@
   ],
   "imperativePageRoutes": [
     {
-      "siteId": "material-page:lib/dashboard/presentation/widgets/dashboard_full.dart:03ec1c068682af42cd0066319469baec07744e2aa8ced4c703f0c061bf6b4048:1",
-      "routeExpression": "MaterialPageRoute<void>(fullscreenDialog:true,builder:(routeContext)=>EventCheckInCelebrationScreen(event:event,onViewEvent:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.eventDetailScreen.name,pathParameters:{'clubId':event.clubId,'eventId':event.id},extra:event);},onBackHome:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.dashboardScreen.name);}))",
+      "siteId": "material-page:lib/dashboard/presentation/widgets/dashboard_full.dart:5a18a6fade793a58b6b9ff85beabe26e813802af7ac8fb4fa198198a90e8f946:1",
+      "routeExpression": "MaterialPageRoute<void>(fullscreenDialog:true,builder:(routeContext)=>EventCheckInCelebrationScreen(event:event,onViewEvent:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.eventDetailScreen.name,pathParameters:{'organizerId':event.organizerId,'eventId':event.id},extra:event);},onBackHome:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.dashboardScreen.name);}))",
       "sourcePath": "lib/dashboard/presentation/widgets/dashboard_full.dart",
       "ordinal": 1,
-      "presentationExpression": "(routeContext)=>EventCheckInCelebrationScreen(event:event,onViewEvent:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.eventDetailScreen.name,pathParameters:{'clubId':event.clubId,'eventId':event.id},extra:event);},onBackHome:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.dashboardScreen.name);})",
+      "presentationExpression": "(routeContext)=>EventCheckInCelebrationScreen(event:event,onViewEvent:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.eventDetailScreen.name,pathParameters:{'organizerId':event.organizerId,'eventId':event.id},extra:event);},onBackHome:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.dashboardScreen.name);})",
       "presentationTarget": "EventCheckInCelebrationScreen",
       "fullscreenDialogExpression": "true"
     },

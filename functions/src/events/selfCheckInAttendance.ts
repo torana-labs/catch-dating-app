@@ -89,7 +89,6 @@ export async function selfCheckInAttendanceHandler(
     .doc(redemptionId);
 
   let inviteLinkId: string | null | undefined;
-  let signalClubId: string | null = null;
   let signalOrganizerId: string | null = null;
   let changed = false;
   await db.runTransaction(async (tx) => {
@@ -145,20 +144,18 @@ export async function selfCheckInAttendanceHandler(
     tx.set(participationRef, eventParticipationPatch({
       exists: participationSnap.exists,
       eventId,
-      clubId: event.clubId,
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       uid: userId,
       status: "attended",
       genderAtSignup: participation.genderAtSignup ?? undefined,
       cohortAtSignup: participation.cohortAtSignup ?? undefined,
       paymentId: participation.paymentId ?? undefined,
     }), {merge: true});
-    signalClubId = event.clubId;
-    signalOrganizerId = event.organizerId ?? event.clubId;
+    signalOrganizerId = event.organizerId;
     changed = true;
   });
 
-  if (changed && signalClubId != null && signalOrganizerId != null) {
+  if (changed && signalOrganizerId != null) {
     await deps.incrementInviteLink?.({
       db,
       inviteLinkId,
@@ -167,7 +164,6 @@ export async function selfCheckInAttendanceHandler(
     await deps.recordSignalFacts?.(db, [
       buildAttendanceSignalFact({
         eventId,
-        clubId: signalClubId,
         organizerId: signalOrganizerId,
         uid: userId,
         attended: true,

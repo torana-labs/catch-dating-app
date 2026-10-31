@@ -52,7 +52,7 @@ async function formTargetFailure(params: FormTargetRead):
   const ref = params.db.collection("events").doc(params.targetId);
   const snap = params.tx ? await params.tx.get(ref) : await ref.get();
   const event = snap.data();
-  if (!snap.exists || !event || event.clubId !== params.organizerId ||
+  if (!snap.exists || !event || event.organizerId !== params.organizerId ||
       event.organizerId !== undefined &&
         event.organizerId !== params.organizerId) return "not-found";
   const start = typeof event.startTime?.toMillis === "function" ?

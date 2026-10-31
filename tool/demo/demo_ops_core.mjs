@@ -5,7 +5,7 @@ import {createRequire} from "node:module";
 import {fileURLToPath} from "node:url";
 import {
   assertNoUserEventScheduleConflictInFirestore,
-  buildClubScheduleLockDocs,
+  buildOrganizerScheduleLockDocs,
   buildUserEventScheduleLockDocs,
 } from "../demo/demo_schedule_policy.mjs";
 export {
@@ -179,7 +179,7 @@ export function buildParticipationDoc({
     data: {
       ...marker,
       eventId: event.id,
-      clubId: event.data.clubId,
+      organizerId: event.data.organizerId,
       uid,
       status,
       createdAt: timestampFromDate(admin, createdAt),
@@ -327,7 +327,7 @@ export async function buildPromoteWaitlistPlan({
         readAt: null,
         matchId: null,
         eventId,
-        clubId: event.data.clubId,
+        organizerId: event.data.organizerId,
         actorUid: null,
         actorName: null,
       },
@@ -464,7 +464,7 @@ export async function buildHostAccountPlan({
     seedPrefix,
     now,
   });
-  const clubId = `${seedPrefix}_host_club_${user.uid}`;
+  const organizerId = `${seedPrefix}_host_club_${user.uid}`;
   const eventId = `${seedPrefix}_host_run_${user.uid}_01`;
   const city = user.data.city ?? "mumbai";
   const hostName = publicName(profile.data, user.data);
@@ -478,16 +478,16 @@ export async function buildHostAccountPlan({
   });
   const docs = [
     {
-      path: `clubHostClaims/${user.uid}`,
+      path: `organizerHostClaims/${user.uid}`,
       data: {
         ...marker,
         uid: user.uid,
-        clubId: clubId,
+        organizerId: organizerId,
         createdAt: timestampFromDate(admin, now),
       },
     },
     {
-      path: `clubs/${clubId}`,
+      path: `clubs/${organizerId}`,
       data: {
         ...marker,
         name: `${hostName} Club`,
@@ -524,10 +524,10 @@ export async function buildHostAccountPlan({
       },
     },
     {
-      path: `clubMemberships/${clubId}_${user.uid}`,
+      path: `organizerMemberships/${organizerId}_${user.uid}`,
       data: {
         ...marker,
-        clubId,
+        organizerId,
         uid: user.uid,
         role: "owner",
         status: "active",
@@ -541,7 +541,7 @@ export async function buildHostAccountPlan({
       path: `events/${eventId}`,
       data: {
         ...marker,
-        clubId: clubId,
+        organizerId: organizerId,
         startTime: timestampFromDate(admin, offsetDate(now, {days: 2})),
         endTime: timestampFromDate(admin, offsetDate(now, {days: 2, hours: 1})),
         meetingPoint: eventLocation.name,
@@ -567,7 +567,7 @@ export async function buildHostAccountPlan({
       },
     },
   ];
-  docs.push(...buildClubScheduleLockDocs({
+  docs.push(...buildOrganizerScheduleLockDocs({
     event: {
       id: eventId,
       data: docs.find((doc) => doc.path === `events/${eventId}`).data,
@@ -579,7 +579,7 @@ export async function buildHostAccountPlan({
     phone: user.phoneNumber,
     uid: user.uid,
     eventId,
-    clubId: clubId,
+    organizerId: organizerId,
     docs,
     aggregateRepairRecommended: true,
   };
@@ -622,7 +622,7 @@ export async function buildCheckInEventPlan({
   const city = user.data.city ?? "mumbai";
   const name = publicName(profile.data, user.data);
   const hostAvatarUrl = firstPhoto(profile.data);
-  const clubId = `${seedPrefix}_checkin_club_${user.uid}`;
+  const organizerId = `${seedPrefix}_checkin_club_${user.uid}`;
   const eventId = `${seedPrefix}_checkin_run_${user.uid}`;
   const startTime = offsetDate(now, {minutes: 5});
   const endTime = offsetDate(now, {minutes: 50});
@@ -631,7 +631,7 @@ export async function buildCheckInEventPlan({
     path: `events/${eventId}`,
     data: {
       ...marker,
-      clubId: clubId,
+      organizerId: organizerId,
       startTime: timestampFromDate(admin, startTime),
       endTime: timestampFromDate(admin, endTime),
       meetingPoint: eventLocation.name,
@@ -660,16 +660,16 @@ export async function buildCheckInEventPlan({
   };
   const docs = [
     {
-      path: `clubHostClaims/${user.uid}`,
+      path: `organizerHostClaims/${user.uid}`,
       data: {
         ...marker,
         uid: user.uid,
-        clubId: clubId,
+        organizerId: organizerId,
         createdAt: timestampFromDate(admin, now),
       },
     },
     {
-      path: `clubs/${clubId}`,
+      path: `clubs/${organizerId}`,
       data: {
         ...marker,
         name: `${name} Check-In Club`,
@@ -706,10 +706,10 @@ export async function buildCheckInEventPlan({
       },
     },
     {
-      path: `clubMemberships/${clubId}_${user.uid}`,
+      path: `organizerMemberships/${organizerId}_${user.uid}`,
       data: {
         ...marker,
-        clubId,
+        organizerId,
         uid: user.uid,
         role: "owner",
         status: "active",
@@ -723,7 +723,7 @@ export async function buildCheckInEventPlan({
       path: event.path,
       data: event.data,
     },
-    ...buildClubScheduleLockDocs({event}),
+    ...buildOrganizerScheduleLockDocs({event}),
     ...await buildParticipationDocsWithLocks({
       db,
       admin,
@@ -742,7 +742,7 @@ export async function buildCheckInEventPlan({
     phone: user.phoneNumber,
     uid: user.uid,
     eventId,
-    clubId: clubId,
+    organizerId: organizerId,
     latitude: lat,
     longitude: lng,
     checkInWindowOpensAt: offsetDate(startTime, {minutes: -10}).toISOString(),
@@ -1004,13 +1004,13 @@ export async function buildLaunchCleanupPlan({
     "publicProfiles",
     "clubs",
     "organizers",
-    "clubMemberships",
-    "clubHostClaims",
+    "organizerMemberships",
+    "organizerHostClaims",
     "events",
     "eventParticipations",
     "eventCrossPathsConsents",
     "crossPathsShowcaseEligibility",
-    "clubScheduleLocks",
+    "organizerScheduleLocks",
     "userEventScheduleLocks",
     "savedEvents",
     "payments",
@@ -1059,7 +1059,7 @@ export async function buildLaunchCleanupPlan({
         hasDemoPrefix(doc.id, seedPrefixes) ||
         hasDemoPrefix(data.matchId, seedPrefixes) ||
         hasDemoPrefix(data.eventId, seedPrefixes) ||
-        hasDemoPrefix(data.clubId, seedPrefixes)) &&
+        hasDemoPrefix(data.organizerId, seedPrefixes)) &&
         !belongsToKeptSeed(data, doc.id, keepSeedPrefixes) &&
         !hasDemoPrefix(userDoc.id, keepSeedPrefixes)) {
         paths.add(doc.ref.path);
@@ -1115,7 +1115,7 @@ export async function buildStaleEventCleanupPlan({
 
   for (const collectionName of [
     "eventParticipations",
-    "clubScheduleLocks",
+    "organizerScheduleLocks",
     "userEventScheduleLocks",
     "savedEvents",
     "payments",
@@ -1182,7 +1182,6 @@ function belongsToKeptSeed(data, docId, keepSeedPrefixes) {
     "uid",
     "targetId",
     "eventId",
-    "clubId",
     "organizerId",
     "matchId",
   ]) {

@@ -32,7 +32,7 @@ Match _buildMatch({
   MatchStatus status = MatchStatus.active,
   Map<String, int> unreadCounts = const {},
   MatchConversationType conversationType = MatchConversationType.match,
-  String? clubId,
+  String? organizerId,
 }) {
   return Match(
     id: id,
@@ -46,7 +46,7 @@ Match _buildMatch({
     status: status,
     unreadCounts: unreadCounts,
     conversationType: conversationType,
-    clubId: clubId,
+    organizerId: organizerId,
   );
 }
 
@@ -243,8 +243,8 @@ void main() {
           lastMessageAt: DateTime(2025, 1, 1, 8),
           lastMessagePreview: 'Older club A message',
           lastMessageSenderId: 'runner-2',
-          conversationType: MatchConversationType.clubHostInquiry,
-          clubId: 'club-a',
+          conversationType: MatchConversationType.organizerHostInquiry,
+          organizerId: 'club-a',
         ),
         _buildMatch(
           id: 'club-a-newer',
@@ -254,8 +254,8 @@ void main() {
           lastMessagePreview: 'Newer club A message',
           lastMessageSenderId: 'runner-2',
           unreadCounts: const {'runner-1': 4},
-          conversationType: MatchConversationType.clubHostInquiry,
-          clubId: 'club-a',
+          conversationType: MatchConversationType.organizerHostInquiry,
+          organizerId: 'club-a',
         ),
         _buildMatch(
           id: 'club-a-event-2-newest',
@@ -265,8 +265,8 @@ void main() {
           lastMessagePreview: 'Newest event A2 message',
           lastMessageSenderId: 'runner-2',
           unreadCounts: const {'runner-1': 2},
-          conversationType: MatchConversationType.clubHostInquiry,
-          clubId: 'club-a',
+          conversationType: MatchConversationType.organizerHostInquiry,
+          organizerId: 'club-a',
         ),
         _buildMatch(
           id: 'club-b',
@@ -275,8 +275,8 @@ void main() {
           lastMessageAt: DateTime(2025, 1, 3, 8),
           lastMessagePreview: 'Club B message',
           lastMessageSenderId: 'runner-2',
-          conversationType: MatchConversationType.clubHostInquiry,
-          clubId: 'club-b',
+          conversationType: MatchConversationType.organizerHostInquiry,
+          organizerId: 'club-b',
         ),
       ], 'runner-1');
 
@@ -300,22 +300,22 @@ void main() {
         _buildMatch(
           id: 'general-inquiry',
           createdAt: DateTime(2025),
-          conversationType: MatchConversationType.clubHostInquiry,
-          clubId: 'club:general',
+          conversationType: MatchConversationType.organizerHostInquiry,
+          organizerId: 'club:general',
         ),
         _buildMatch(
           id: 'event-named-general',
           eventIds: const ['general'],
           createdAt: DateTime(2025, 1, 2),
-          conversationType: MatchConversationType.clubHostInquiry,
-          clubId: 'club:general',
+          conversationType: MatchConversationType.organizerHostInquiry,
+          organizerId: 'club:general',
         ),
         _buildMatch(
           id: 'delimiter-event',
           eventIds: const ['event:with:colons'],
           createdAt: DateTime(2025, 1, 3),
-          conversationType: MatchConversationType.clubHostInquiry,
-          clubId: 'club:general',
+          conversationType: MatchConversationType.organizerHostInquiry,
+          organizerId: 'club:general',
         ),
       ], 'runner-1');
 

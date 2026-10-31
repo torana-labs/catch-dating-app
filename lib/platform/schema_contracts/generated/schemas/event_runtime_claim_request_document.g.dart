@@ -17,7 +17,6 @@ const schemaEventRuntimeClaimRequestDocumentSchema = <String, Object?>{
   'x-owner': 'runtime claim and Host approval callables; no client writes',
   'required': <Object?>[
     'eventId',
-    'clubId',
     'organizerId',
     'uid',
     'displayName',
@@ -32,11 +31,6 @@ const schemaEventRuntimeClaimRequestDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

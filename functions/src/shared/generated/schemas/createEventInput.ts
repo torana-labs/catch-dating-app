@@ -48,12 +48,6 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
       ],
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
     },
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "description": "Deprecated compatibility alias for organizerId."
-    },
     "startTimeMillis": {
       "type": "integer"
     },

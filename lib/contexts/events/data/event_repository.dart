@@ -163,13 +163,13 @@ class EventRepository with EventRepositoryActions {
   );
 
   Stream<List<Event>> watchEventsForOrganizer({
-    required String clubId,
+    required String organizerId,
   }) => withBackendErrorStream(
     // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
     () => _db
         .collection(_collectionPath)
         .where('publicationState', isEqualTo: 'published')
-        .where('organizerId', isEqualTo: clubId)
+        .where('organizerId', isEqualTo: organizerId)
         .orderBy('startTime')
         .limit(ReadLimitPolicy.historyPage)
         .snapshots()
@@ -402,8 +402,9 @@ Stream<List<EventInviteLink>> watchEventInviteLinks(Ref ref, String eventId) =>
     ref.watch(eventRepositoryProvider).watchInviteLinks(eventId);
 
 @riverpod
-Stream<List<Event>> watchEventsForOrganizer(Ref ref, String clubId) =>
-    ref.watch(eventRepositoryProvider).watchEventsForOrganizer(clubId: clubId);
+Stream<List<Event>> watchEventsForOrganizer(Ref ref, String organizerId) => ref
+    .watch(eventRepositoryProvider)
+    .watchEventsForOrganizer(organizerId: organizerId);
 
 @riverpod
 Stream<EventVenueSession> eventVenueSession(Ref ref, String eventId) async* {

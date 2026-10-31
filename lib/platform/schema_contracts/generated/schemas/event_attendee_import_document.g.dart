@@ -17,7 +17,6 @@ const schemaEventAttendeeImportDocumentSchema = <String, Object?>{
   'x-owner': 'importEventAttendees callable',
   'required': <Object?>[
     'eventId',
-    'clubId',
     'organizerId',
     'uploadedBy',
     'importKey',
@@ -36,11 +35,6 @@ const schemaEventAttendeeImportDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

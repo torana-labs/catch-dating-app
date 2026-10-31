@@ -236,7 +236,7 @@
         "prefsRunStatusUpdates": {
           "type": "boolean"
         },
-        "prefsClubUpdates": {
+        "prefsOrganizerUpdates": {
           "type": "boolean"
         },
         "prefsWeeklyDigest": {

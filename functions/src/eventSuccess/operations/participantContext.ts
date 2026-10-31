@@ -21,7 +21,7 @@ export async function readParticipantContext(db: Firestore, uid: string,
   return db.runTransaction(async (tx) => {
     const eventSnap = await tx.get(db.collection("events").doc(eventId));
     const event = eventSnap.data();
-    const organizerId = event?.organizerId ?? event?.clubId;
+    const organizerId = event?.organizerId;
     if (!event || typeof organizerId !== "string" || !organizerId ||
         !["active", "cancelled"].includes(event.status)) {
       throw unavailable();

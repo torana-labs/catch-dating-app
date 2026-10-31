@@ -62,13 +62,12 @@
           "catch.top_bar"
         ],
         "dataContracts": [
-          "contracts/callables/club_membership_payload.schema.json",
-          "contracts/callables/set_club_notification_preference_payload.schema.json",
-          "contracts/callables/start_club_host_conversation_payload.schema.json",
-          "contracts/firestore/club_memberships.schema.json",
-          "contracts/firestore/clubs.schema.json",
-          "contracts/firestore/events.schema.json",
-          "contracts/firestore/organizers.schema.json"
+          "contracts/callables/organizer_membership_payload.schema.json",
+          "contracts/callables/set_organizer_notification_preference_payload.schema.json",
+          "contracts/callables/start_organizer_host_conversation_payload.schema.json",
+          "contracts/firestore/organizer_memberships.schema.json",
+          "contracts/firestore/organizers.schema.json",
+          "contracts/firestore/events.schema.json"
         ]
       },
       "dimensions": {
@@ -123,7 +122,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "failureStateVersion"
           ],
           "outcomes": [
@@ -147,7 +146,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "viewerSessionId"
           ],
           "outcomes": [
@@ -168,7 +167,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "membershipVersion"
           ],
           "outcomes": [
@@ -194,7 +193,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "membershipVersion"
           ],
           "outcomes": [
@@ -220,7 +219,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "notificationPreferenceVersion"
           ],
           "outcomes": [
@@ -238,7 +237,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "shareAttemptId"
           ],
           "outcomes": [
@@ -256,7 +255,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "eventId"
           ],
           "outcomes": [
@@ -277,7 +276,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "hostUid"
           ],
           "outcomes": [
@@ -298,7 +297,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "hostUid"
           ],
           "outcomes": [
@@ -323,7 +322,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "contactKind"
           ],
           "outcomes": [
@@ -626,10 +625,9 @@
           "catch.top_bar"
         ],
         "dataContracts": [
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/events.schema.json",
-          "contracts/firestore/organizer_team_memberships.schema.json",
-          "contracts/firestore/organizers.schema.json"
+          "contracts/firestore/organizer_team_memberships.schema.json"
         ]
       },
       "dimensions": {
@@ -690,7 +688,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "failureStateVersion"
           ],
           "outcomes": [
@@ -712,7 +710,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "shareAttemptId"
           ],
           "outcomes": [
@@ -730,7 +728,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "eventId"
           ],
           "outcomes": [
@@ -751,7 +749,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "hostUid"
           ],
           "outcomes": [
@@ -772,7 +770,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "contactKind"
           ],
           "outcomes": [

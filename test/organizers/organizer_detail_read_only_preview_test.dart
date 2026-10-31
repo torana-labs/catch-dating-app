@@ -78,7 +78,7 @@ void main() {
       organizer: organizer,
       isHost: true,
       isMember: true,
-      upcomingEvents: [buildEvent(clubId: organizer.id)],
+      upcomingEvents: [buildEvent(organizerId: organizer.id)],
       reviews: const [],
       userProfile: null,
       uid: 'host-1',

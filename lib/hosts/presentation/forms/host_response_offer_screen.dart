@@ -87,7 +87,7 @@ class _HostResponseOfferScreenState
     try {
       final eventId = await context.pushNamed<String>(
         Routes.hostCreateEventScreen.name,
-        pathParameters: {'clubId': widget.organizerId},
+        pathParameters: {'organizerId': widget.organizerId},
         extra: const HostCreateEventRouteArguments(
           returnToResponsesOnSave: true,
         ),

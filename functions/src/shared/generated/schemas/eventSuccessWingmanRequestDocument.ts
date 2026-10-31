@@ -23,7 +23,7 @@ export const eventSuccessWingmanRequestDocumentSchema: Record<string, unknown> =
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "requesterUid",
     "targetUid",
     "status",
@@ -33,12 +33,6 @@ export const eventSuccessWingmanRequestDocumentSchema: Record<string, unknown> =
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

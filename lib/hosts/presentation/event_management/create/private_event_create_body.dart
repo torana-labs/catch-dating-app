@@ -297,7 +297,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         localStartTime: summary.localStartTime,
         timezone: EventSetupValue.set(summary.timezone),
       );
-      final drafts = await controller.loadDrafts(clubId: widget.organizer.id);
+      final drafts = await controller.loadDrafts(
+        organizerId: widget.organizer.id,
+      );
       if (!mounted) {
         return;
       }
@@ -683,7 +685,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     final draft = privateEventDraftSnapshot(
       old: _activeDraft,
       draftId: _localDraftId,
-      clubId: widget.organizer.id,
+      organizerId: widget.organizer.id,
       name: _nameController.text.trim(),
       cityId: _city?.effectiveCityId ?? _savedCity?.cityId,
       marketId: _city?.effectiveMarketId ?? _savedCity?.marketId,
@@ -704,6 +706,8 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         .read(createEventDraftControllerProvider.notifier)
         .saveDraft(draft);
     _activeDraft = draft;
-    ref.invalidate(organizerEventDraftsProvider(clubId: widget.organizer.id));
+    ref.invalidate(
+      organizerEventDraftsProvider(organizerId: widget.organizer.id),
+    );
   }
 }

@@ -34,29 +34,30 @@ void _registerExploreDiscoveryWidgetsTests() {
     expect(find.byIcon(CatchIcons.forward), findsNothing);
   });
 
-  testWidgets('ClubsContent renders personal rail and mixed discovery cards', (
-    tester,
-  ) async {
-    await _pumpOrganizersSlivers(tester, [
-      _exploreBodySliverGroup(
-        includeOrganizerDirectory: false,
-        organizersViewModel: ExploreViewModel(
-          joinedOrganizers: [
-            buildOrganizer(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
-          ],
-          allOrganizers: [
-            buildOrganizer(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
-            buildOrganizer(id: 'discover-1'),
-          ],
-          joinedOrganizerIds: {'joined-1'},
+  testWidgets(
+    'OrganizersContent renders personal rail and mixed discovery cards',
+    (tester) async {
+      await _pumpOrganizersSlivers(tester, [
+        _exploreBodySliverGroup(
+          includeOrganizerDirectory: false,
+          organizersViewModel: ExploreViewModel(
+            joinedOrganizers: [
+              buildOrganizer(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
+            ],
+            allOrganizers: [
+              buildOrganizer(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
+              buildOrganizer(id: 'discover-1'),
+            ],
+            joinedOrganizerIds: {'joined-1'},
+          ),
         ),
-      ),
-    ]);
+      ]);
 
-    expect(find.text('Your organizers'), findsOneWidget);
-    expect(find.text('Organizer directory'), findsNothing);
-    expect(find.text('You host'), findsNothing);
-  });
+      expect(find.text('Your organizers'), findsOneWidget);
+      expect(find.text('Organizer directory'), findsNothing);
+      expect(find.text('You host'), findsNothing);
+    },
+  );
 
   testWidgets('Explore body keeps joined rail and club directory together', (
     tester,
@@ -100,7 +101,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     final organizer = buildOrganizer(id: 'cursor-club', name: 'Cursor Club');
     final event = event_test.buildEvent(
       id: 'cursor-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().add(const Duration(days: 1)),
     );
     var loadMoreCalls = 0;
@@ -152,7 +153,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     );
     final featuredEvent = event_test.buildEvent(
       id: 'event-featured',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: eventDay.add(const Duration(hours: 10)),
       meetingPoint: 'People Plaza',
       bookedCount: 8,
@@ -160,7 +161,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     );
     final bodyEvent = event_test.buildEvent(
       id: 'event-body',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: eventDay.add(const Duration(hours: 14)),
       meetingPoint: 'Library steps',
       bookedCount: 8,
@@ -242,17 +243,17 @@ void _registerExploreDiscoveryWidgetsTests() {
       );
       final first = event_test.buildEvent(
         id: 'group-first',
-        clubId: eventOrganizer.id,
+        organizerId: eventOrganizer.id,
         startTime: today.add(const Duration(hours: 10)),
       );
       final second = event_test.buildEvent(
         id: 'group-second',
-        clubId: eventOrganizer.id,
+        organizerId: eventOrganizer.id,
         startTime: today.add(const Duration(hours: 11)),
       );
       final nextDay = event_test.buildEvent(
         id: 'group-next-day',
-        clubId: eventOrganizer.id,
+        organizerId: eventOrganizer.id,
         startTime: today.add(const Duration(days: 1, hours: 10)),
       );
       final external =
@@ -333,7 +334,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     final organizer = buildOrganizer(id: 'inline-header-club');
     final event = event_test.buildEvent(
       id: 'inline-header-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: today.add(const Duration(hours: 10)),
     );
 
@@ -395,7 +396,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     ];
     final event = event_test.buildEvent(
       id: 'boundary-event',
-      clubId: eventOrganizer.id,
+      organizerId: eventOrganizer.id,
       startTime: today.add(const Duration(hours: 10)),
     );
 
@@ -470,14 +471,14 @@ void _registerExploreDiscoveryWidgetsTests() {
     final organizer = buildOrganizer(id: 'club-feed-only', name: 'Pace Social');
     final featuredEvent = event_test.buildEvent(
       id: 'event-feed-featured',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       meetingPoint: 'People Plaza',
       bookedCount: 8,
       capacityLimit: 12,
     );
     final bodyEvent = event_test.buildEvent(
       id: 'event-feed-only',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().add(const Duration(hours: 4)),
       meetingPoint: 'People Plaza',
       bookedCount: 8,
@@ -530,7 +531,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     final organizer = buildOrganizer(id: 'club-cover', name: 'Pace Social');
     final event = event_test.buildEvent(
       id: 'event-cover',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       bookedCount: 8,
       capacityLimit: 12,
     );
@@ -585,7 +586,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     );
     final event = event_test.buildEvent(
       id: 'event-cover-safe',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       meetingPoint: 'People Plaza',
     );
     final item = ExploreEventItem(

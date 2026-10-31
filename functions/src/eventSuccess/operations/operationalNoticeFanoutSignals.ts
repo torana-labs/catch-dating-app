@@ -36,10 +36,10 @@ export async function enqueuePostEventFollowUpFanout(db: Firestore,
   }
   const event = (await db.collection("events").doc(documentId).get()).data();
   const organizerId = validateEventDocument(event) ?
-    event.organizerId ?? event.clubId : null;
+    event.organizerId : null;
   if (!validateEventDocument(event) ||
       organizerId == null || organizerId !==
-        (value.organizerId ?? value.clubId)) return null;
+        (value.organizerId)) return null;
   const context = {mode: "live" as const, eventId: documentId,
     organizerId};
   const revision = value.liveControlRevision!;

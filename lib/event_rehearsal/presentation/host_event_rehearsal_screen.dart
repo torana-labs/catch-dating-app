@@ -38,11 +38,11 @@ part 'host_event_rehearsal_screen_actions.dart';
 class HostEventRehearsalScreen extends ConsumerStatefulWidget {
   const HostEventRehearsalScreen({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     required this.sessionId,
   });
 
-  final String clubId;
+  final String organizerId;
   final String sessionId;
 
   @override

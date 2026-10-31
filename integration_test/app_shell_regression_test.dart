@@ -20,7 +20,7 @@ void main() {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
     final organizer = organizer_helpers.buildOrganizer();
     final event = event_helpers.buildEvent(
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().add(const Duration(hours: 3)),
     );
     final reporter = RecordingAnalyticsReporter();
@@ -59,7 +59,7 @@ void main() {
     final organizer = organizer_helpers.buildOrganizer();
     final attendedRun = event_helpers.buildEvent(
       id: 'attended-run-1',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().subtract(const Duration(hours: 11)),
       endTime: DateTime.now().subtract(const Duration(hours: 10)),
       checkedInCount: 2,

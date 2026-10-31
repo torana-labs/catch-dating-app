@@ -165,7 +165,7 @@ export async function createOrganizerPostHandler(
           "Publish the event before linking a follower update.");
       }
       const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-      if ((event.organizerId ?? event.clubId) !== data.organizerId) {
+      if ((event.organizerId) !== data.organizerId) {
         throw new HttpsError(
           "failed-precondition",
           "Linked event must belong to this organizer."

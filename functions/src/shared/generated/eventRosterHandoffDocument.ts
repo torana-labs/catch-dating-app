@@ -7,7 +7,6 @@
  */
 export interface EventRosterHandoffDocument {
   eventId: string;
-  clubId: string;
   organizerId: string;
   hostUid: string;
   tokenHash: string;

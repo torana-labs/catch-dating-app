@@ -601,10 +601,10 @@ void _registerExploreOrganizerDetailTests() {
                 Scaffold(body: Center(child: childBuilder(context, organizer))),
           ),
           GoRoute(
-            path: '/detail/:clubId',
+            path: '/detail/:organizerId',
             name: Routes.organizerDetailScreen.name,
             builder: (_, state) => Text(
-              'Detail ${state.pathParameters['clubId']}',
+              'Detail ${state.pathParameters['organizerId']}',
               textDirection: TextDirection.ltr,
             ),
           ),
@@ -643,7 +643,7 @@ void _registerExploreOrganizerDetailTests() {
         isJoined: true,
         onTap: () => context.pushNamed(
           Routes.organizerDetailScreen.name,
-          pathParameters: {'clubId': organizer.id},
+          pathParameters: {'organizerId': organizer.id},
           extra: organizer,
         ),
       ),
@@ -655,7 +655,7 @@ void _registerExploreOrganizerDetailTests() {
         showLiveBadge: true,
         onTap: () => context.pushNamed(
           Routes.organizerDetailScreen.name,
-          pathParameters: {'clubId': organizer.id},
+          pathParameters: {'organizerId': organizer.id},
           extra: organizer,
         ),
       ),
@@ -751,7 +751,7 @@ void _registerExploreOrganizerDetailTests() {
             body: OrganizerDetailBody(
               state: OrganizerDetailBodyState.fromDomain(
                 organizer: organizer,
-                upcomingEvents: [buildEvent(clubId: organizer.id)],
+                upcomingEvents: [buildEvent(organizerId: organizer.id)],
                 userProfile: buildUser(uid: 'host-1'),
                 uid: 'host-1',
                 isHost: true,

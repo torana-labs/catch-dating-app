@@ -206,7 +206,7 @@ void main() {
     final router = await mount(tester);
     await tester.tap(find.byKey(const ValueKey('host-today-suggested-action')));
     await pumpFeatureUi(tester);
-    expect(router.state.uri.queryParameters['clubId'], scope.organizerId);
+    expect(router.state.uri.queryParameters['organizerId'], scope.organizerId);
     expect(find.text('Organizer ${scope.organizerId}'), findsOneWidget);
   });
 
@@ -354,7 +354,8 @@ class _TestTodayFeed extends HostTodayFeedController {
 
   HostTodayFeedData _data() => HostTodayFeedData(
     activeEvents: [
-      if (statuses.value == HostTodayStatus.content) buildEvent(clubId: 'org'),
+      if (statuses.value == HostTodayStatus.content)
+        buildEvent(organizerId: 'org'),
     ],
     pastEvents: const [],
   );

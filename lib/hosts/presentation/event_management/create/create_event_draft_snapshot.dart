@@ -154,12 +154,12 @@ class CreateEventDraftSnapshot {
 
   EventDraft toDraft({
     required String id,
-    required String clubId,
+    required String organizerId,
     required DateTime savedAt,
   }) {
     return EventDraft(
       id: id,
-      clubId: clubId,
+      organizerId: organizerId,
       savedAt: savedAt,
       name: name,
       distance: distance,

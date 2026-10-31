@@ -225,7 +225,7 @@ test("basics edit preserves venue city and existing plan dependencies",
   async () => {
     for (const patch of [{meetingPoint: "Existing venue"},
       {eventSuccessPlanId: "existing-plan"}, {endTime: {}},
-      {clubId: "foreign"}]) {
+      {organizerId: "foreign"}]) {
       const h = setup();
       const created = await createPrivateEventSetup({actorUid: "host1",
         command: {organizerId: "org1", requestId: "guard-create", basics},

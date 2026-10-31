@@ -164,7 +164,7 @@ class HostSendIntentMenu extends ConsumerWidget {
             variant: CatchButtonVariant.secondary,
             onPressed: () => context.pushNamed(
               Routes.hostOrganizerMessagingScreen.name,
-              pathParameters: {'clubId': organizer.id},
+              pathParameters: {'organizerId': organizer.id},
             ),
           ),
         ],

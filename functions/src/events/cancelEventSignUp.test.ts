@@ -359,7 +359,6 @@ test("cancelEventSignUpHandler promotes free waitlist users", async () => {
     title: "You're in",
     body: "A spot opened for your 5 km event from Carter Road.",
     eventId: "event-1",
-    clubId: "club-1",
     organizerId: "club-1",
   }]);
 });
@@ -679,7 +678,7 @@ function harness(
     title: string;
     body: string;
     eventId: string;
-    clubId: string;
+    organizerId: string;
   }> = [];
   return {
     firestore,
@@ -726,7 +725,7 @@ function harness(
         title: string;
         body: string;
         eventId: string;
-        clubId: string;
+        organizerId: string;
       }) => {
         notifications.push(push);
         if (options.sendNotificationError) {
@@ -748,7 +747,7 @@ function request(uid: string): CallableRequest<unknown> {
 
 function event(overrides: FakeData = {}): FakeData {
   return {
-    clubId: "club-1",
+    organizerId: "club-1",
     startTime: admin.firestore.Timestamp.fromMillis(
       Date.parse("2026-05-02T01:30:00.000Z")
     ),
@@ -796,7 +795,7 @@ function user(overrides: FakeData = {}): FakeData {
 function participation(uid: string, status: string): FakeData {
   return {
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid,
     status,
     genderAtSignup: uid === "runner-2" ? "woman" : "man",

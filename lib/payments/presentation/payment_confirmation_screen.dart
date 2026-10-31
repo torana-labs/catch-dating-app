@@ -120,7 +120,7 @@ class PaymentPendingBody extends ConsumerWidget {
           context.goNamed(Routes.paymentHistoryScreen.name),
       onBackToEvent: () => context.goNamed(
         Routes.eventDetailScreen.name,
-        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+        pathParameters: {'organizerId': event.organizerId, 'eventId': event.id},
         extra: event,
       ),
     );
@@ -457,7 +457,7 @@ class PaymentConfirmedBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final organizerAsync = ref.watch(watchOrganizerProvider(event.clubId));
+    final organizerAsync = ref.watch(watchOrganizerProvider(event.organizerId));
     final organizerName = catchAsyncStateFromAsyncValue(
       organizerAsync,
     ).value?.name;
@@ -488,7 +488,7 @@ class PaymentConfirmedBody extends ConsumerWidget {
       ),
       onViewEvent: () => context.goNamed(
         Routes.eventDetailScreen.name,
-        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+        pathParameters: {'organizerId': event.organizerId, 'eventId': event.id},
         extra: event,
       ),
       onBackHome: () => context.goNamed(Routes.dashboardScreen.name),

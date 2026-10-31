@@ -5,21 +5,21 @@ import test from "node:test";
 import {
   schemaErrorMessages,
   validateActivityNotificationDocument,
-  validateArchiveClubCallablePayload,
+  validateArchiveOrganizerCallablePayload,
   validateBlockUserCallablePayload,
   validateBlockDocument,
   validateCancelEventCallablePayload,
   validateChatMessageDocument,
   validateConfigCitiesDocument,
   validateCreateEventCallablePayload,
-  validateCreateClubCallablePayload,
-  validateCreateClubCallableResponse,
+  validateCreateOrganizerCallablePayload,
+  validateCreateOrganizerCallableResponse,
   validateCreateEventReviewCallablePayload,
   validateCreateChatMessageClientWrite,
   validateCreateProfileDecisionClientWrite,
   validateCreateSavedEventClientWrite,
   validateDeleteEventCallablePayload,
-  validateDeleteClubCallablePayload,
+  validateDeleteOrganizerCallablePayload,
   validateDeleteEventReviewCallablePayload,
   validateDeleteSavedEventClientWrite,
   validateDeletedUserTombstoneDocument,
@@ -45,11 +45,11 @@ import {
   validateReportUserCallablePayload,
   validateReviewDocument,
   validateResetMatchUnreadCountClientWrite,
-  validateClubHostClaimDocument,
-  validateClubScheduleLockDocument,
+  validateOrganizerHostClaimDocument,
+  validateOrganizerScheduleLockDocument,
   validateEventIdCallablePayload,
-  validateClubDocument,
-  validateClubMembershipDocument,
+  validateOrganizerDocument,
+  validateOrganizerMembershipDocument,
   validateEventDocument,
   validateExternalEventDocument,
   validateEventParticipationDocument,
@@ -65,13 +65,13 @@ import {
   validateSubmitEventSuccessWingmanRequestCallablePayload,
   validateSavedEventDocument,
   validateSeedEventManifestDocument,
-  validateClubMembershipCallablePayload,
+  validateOrganizerMembershipCallablePayload,
   validateSelfCheckInAttendanceCallablePayload,
-  validateSetClubNotificationPreferenceCallablePayload,
+  validateSetOrganizerNotificationPreferenceCallablePayload,
   validateSwipeDocument,
   validateUpdateUserProfileCallablePayload,
   validateUpdateEventCallablePayload,
-  validateUpdateClubCallablePayload,
+  validateUpdateOrganizerCallablePayload,
   validateUpdateEventReviewCallablePayload,
   validateUnblockUserCallablePayload,
   validateUserEventScheduleLockDocument,
@@ -189,16 +189,16 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/public_profile_doc.json")
   );
   assertValid(
-    validateClubDocument as Validator,
-    readFixture("fixtures/valid/club_doc.json")
+    validateOrganizerDocument as Validator,
+    readFixture("fixtures/valid/organizer_doc.json")
   );
   assertValid(
-    validateClubMembershipDocument as Validator,
-    readFixture("fixtures/valid/club_membership_doc.json")
+    validateOrganizerMembershipDocument as Validator,
+    readFixture("fixtures/valid/organizer_membership_doc.json")
   );
   assertValid(
-    validateClubHostClaimDocument as Validator,
-    readFixture("fixtures/valid/club_host_claim_doc.json")
+    validateOrganizerHostClaimDocument as Validator,
+    readFixture("fixtures/valid/organizer_host_claim_doc.json")
   );
   assertValid(
     validateEventDocument as Validator,
@@ -251,8 +251,8 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/event_safety_report_doc.json")
   );
   assertValid(
-    validateClubScheduleLockDocument as Validator,
-    readFixture("fixtures/valid/club_schedule_lock_doc.json")
+    validateOrganizerScheduleLockDocument as Validator,
+    readFixture("fixtures/valid/organizer_schedule_lock_doc.json")
   );
   assertValid(
     validateUserEventScheduleLockDocument as Validator,
@@ -319,33 +319,33 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/update_user_profile_patch.json")
   );
   assertValid(
-    validateCreateClubCallablePayload as Validator,
-    readFixture("fixtures/valid/create_club_payload.json")
+    validateCreateOrganizerCallablePayload as Validator,
+    readFixture("fixtures/valid/create_organizer_payload.json")
   );
   assertValid(
-    validateCreateClubCallableResponse as Validator,
-    readFixture("fixtures/valid/create_club_response.json")
+    validateCreateOrganizerCallableResponse as Validator,
+    readFixture("fixtures/valid/create_organizer_response.json")
   );
   assertValid(
-    validateUpdateClubCallablePayload as Validator,
-    readFixture("fixtures/valid/update_club_payload.json")
+    validateUpdateOrganizerCallablePayload as Validator,
+    readFixture("fixtures/valid/update_organizer_payload.json")
   );
   assertValid(
-    validateArchiveClubCallablePayload as Validator,
-    readFixture("fixtures/valid/archive_club_payload.json")
+    validateArchiveOrganizerCallablePayload as Validator,
+    readFixture("fixtures/valid/archive_organizer_payload.json")
   );
   assertValid(
-    validateDeleteClubCallablePayload as Validator,
-    readFixture("fixtures/valid/delete_club_payload.json")
+    validateDeleteOrganizerCallablePayload as Validator,
+    readFixture("fixtures/valid/delete_organizer_payload.json")
   );
   assertValid(
-    validateClubMembershipCallablePayload as Validator,
-    readFixture("fixtures/valid/club_membership_payload.json")
+    validateOrganizerMembershipCallablePayload as Validator,
+    readFixture("fixtures/valid/organizer_membership_payload.json")
   );
   assertValid(
-    validateSetClubNotificationPreferenceCallablePayload as Validator,
+    validateSetOrganizerNotificationPreferenceCallablePayload as Validator,
     readFixture(
-      "fixtures/valid/set_club_notification_preference_payload.json"
+      "fixtures/valid/set_organizer_notification_preference_payload.json"
     )
   );
   assertValid(
@@ -498,12 +498,12 @@ test("generated schema validators reject invalid contract fixtures", () => {
     readFixture("fixtures/invalid/swipe_doc_invalid_reaction_target.json")
   );
   assertInvalid(
-    validateClubScheduleLockDocument as Validator,
-    readFixture("fixtures/invalid/club_schedule_lock_invalid_owner.json")
+    validateOrganizerScheduleLockDocument as Validator,
+    readFixture("fixtures/invalid/organizer_schedule_lock_invalid_owner.json")
   );
   assertInvalid(
-    validateUpdateClubCallablePayload as Validator,
-    readFixture("fixtures/invalid/update_club_empty_fields.json")
+    validateUpdateOrganizerCallablePayload as Validator,
+    readFixture("fixtures/invalid/update_organizer_empty_fields.json")
   );
   assertInvalid(
     validateUpdateEventCallablePayload as Validator,

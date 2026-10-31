@@ -470,7 +470,6 @@ export interface EventRuntimeFeedback {
 
 export interface EventRuntimeContext {
   eventId: string;
-  clubId: string;
   organizerId: string;
   uid: string;
 }
@@ -829,7 +828,6 @@ export async function saveEventRuntimeCompatibilityAnswers(
   const existing = await getDoc(ref);
   await setDoc(ref, {
     eventId: context.eventId,
-    clubId: context.clubId,
     organizerId: context.organizerId,
     uid: context.uid,
     answerIds,
@@ -857,7 +855,7 @@ export async function saveEventRuntimeFeedback(
   const existing = await getDoc(ref);
   await setDoc(ref, {
     eventId: context.eventId,
-    clubId: context.clubId,
+    organizerId: context.organizerId,
     uid: context.uid,
     ...feedback,
     createdAt: existing.data()?.createdAt ?? serverTimestamp(),

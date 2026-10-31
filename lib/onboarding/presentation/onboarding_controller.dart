@@ -428,7 +428,7 @@ class OnboardingController extends _$OnboardingController {
             profileComplete: false,
             prefsNewCatches: false,
             prefsRunStatusUpdates: false,
-            prefsClubUpdates: false,
+            prefsOrganizerUpdates: false,
             prefsShowOnMap: false,
           ),
         );

@@ -57,7 +57,7 @@ class _DashboardFullSliverBodyState
     ];
     final organizerNamesAsync = ref.watch(
       organizerNameLookupProvider(
-        OrganizerNameLookupQuery(focusEvents.map((event) => event.clubId)),
+        OrganizerNameLookupQuery(focusEvents.map((event) => event.organizerId)),
       ),
     );
     final organizerNames = catchAsyncStateFromAsyncValue(
@@ -83,7 +83,8 @@ class _DashboardFullSliverBodyState
               pendingReviewEvent: widget.viewModel.pendingReviewEvent,
               now: ref.watch(dashboardNowProvider),
               onWindowImpression: _logWindowImpression,
-              organizerNameBuilder: (event) => organizerNames?[event.clubId],
+              organizerNameBuilder: (event) =>
+                  organizerNames?[event.organizerId],
               checkInState: EventFocusCheckInState(
                 isPending: checkInMutation.isPending,
                 error: checkInMutation.hasError
@@ -165,10 +166,10 @@ class _DashboardFullSliverBodyState
       context.l10n.dashboardDashboardFullVisiblecopyOpenPost,
     );
     final parameters = <String, Object>{};
-    final clubId = notification.organizerId ?? notification.clubId;
+    final organizerId = notification.organizerId ?? notification.organizerId;
     final eventId = notification.eventId;
-    if (clubId != null) {
-      parameters[AnalyticsParameters.clubId] = clubId;
+    if (organizerId != null) {
+      parameters[AnalyticsParameters.organizerId] = organizerId;
     }
     if (eventId != null) {
       parameters[AnalyticsParameters.eventId] = eventId;
@@ -194,7 +195,7 @@ class _DashboardFullSliverBodyState
     );
     context.pushNamed(
       Routes.dashboardEventDetailScreen.name,
-      pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+      pathParameters: {'organizerId': event.organizerId, 'eventId': event.id},
       extra: event,
     );
   }
@@ -246,7 +247,7 @@ class _DashboardFullSliverBodyState
     );
     showWriteReviewSheet(
       context: context,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       eventId: event.id,
       reviewer: widget.user,
     );
@@ -292,7 +293,10 @@ class _DashboardFullSliverBodyState
                 Navigator.of(routeContext).pop();
                 GoRouter.of(context).goNamed(
                   Routes.eventDetailScreen.name,
-                  pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+                  pathParameters: {
+                    'organizerId': event.organizerId,
+                    'eventId': event.id,
+                  },
                   extra: event,
                 );
               },

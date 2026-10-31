@@ -55,7 +55,7 @@ part 'event_detail_screen_actions.dart';
 class EventDetailScreen extends ConsumerStatefulWidget {
   const EventDetailScreen({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     required this.eventId,
     this.initialEvent,
     this.inviteCode,
@@ -66,7 +66,7 @@ class EventDetailScreen extends ConsumerStatefulWidget {
     this.enableMapNetworkTiles = true,
   });
 
-  final String clubId;
+  final String organizerId;
   final String eventId;
   final Event? initialEvent;
   final String? inviteCode;
@@ -131,7 +131,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
     final vmState = _catchAsyncState(vmAsync);
     final uidState = _catchAsyncState(uidAsync);
     final vm = vmState.value;
-    final resolvedOrganizerId = vm?.event.clubId ?? widget.clubId;
+    final resolvedOrganizerId = vm?.event.organizerId ?? widget.organizerId;
     final organizerAsync = ref.watch(
       fetchOrganizerProvider(resolvedOrganizerId),
     );
@@ -139,7 +139,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
     final isHostApp = AppConfig.appRole.isHost;
 
     if (vm != null) {
-      if (vm.event.clubId != widget.clubId) {
+      if (vm.event.organizerId != widget.organizerId) {
         return CatchScaffold.workspace(
           body: SafeArea(
             child: CatchErrorState(
@@ -313,7 +313,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
         body: EventDetailBody(
           event: vm.event,
           userProfile: vm.userProfile,
-          clubId: widget.clubId,
+          organizerId: widget.organizerId,
           reviews: vm.reviews,
           isAuthenticated: vm.isAuthenticated,
           sectionVisibility: sectionVisibility,
@@ -334,7 +334,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
           onToggleSaved: () => _toggleSavedEvent(
             context,
             event: vm.event,
-            clubId: widget.clubId,
+            organizerId: widget.organizerId,
             userProfile: vm.userProfile,
             isAuthenticated: vm.isAuthenticated,
             isSaved: vm.isSaved,
@@ -354,29 +354,29 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
             Routes.eventSuccessCompanionScreen.name,
             pathParameters: {
               context.l10n.eventsEventDetailScreenBodyOrganizerid:
-                  widget.clubId,
+                  widget.organizerId,
               context.l10n.eventsEventDetailScreenBodyEventid: vm.event.id,
             },
             extra: vm.event,
           ),
           onRetryCompanion: () =>
               ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
-          onViewOrganizer: (clubId) => context.pushNamed(
+          onViewOrganizer: (organizerId) => context.pushNamed(
             eventDetailOrganizerRouteFor(isHostApp: isHostApp).name,
             pathParameters: {
-              context.l10n.eventsEventDetailScreenBodyOrganizerid: clubId,
+              context.l10n.eventsEventDetailScreenBodyOrganizerid: organizerId,
             },
           ),
-          onMessageHost: (clubId, hostUid) => unawaited(
+          onMessageHost: (organizerId, hostUid) => unawaited(
             _messageHost(
               context,
-              clubId: clubId,
+              organizerId: organizerId,
               hostUid: hostUid,
               eventId: widget.eventId,
             ),
           ),
           onRetryHosts: () =>
-              ref.invalidate(fetchOrganizerProvider(vm.event.clubId)),
+              ref.invalidate(fetchOrganizerProvider(vm.event.organizerId)),
           inviteCode: widget.inviteCode,
           inviteLinkId: widget.inviteLinkId,
           now: now,
@@ -427,7 +427,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
             ? _EventDetailBottomNavigationBar(
                 event: vm.event,
                 userProfile: vm.userProfile,
-                clubId: widget.clubId,
+                organizerId: widget.organizerId,
                 isAuthenticated: vm.isAuthenticated,
                 isSaved: vm.isSaved,
                 isHosted: vm.isHost,
@@ -447,7 +447,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                     .eventsEventDetailScreenLabelCompleteBookingProfile,
                 onGuestBook: () => _openEventSignIn(
                   context,
-                  clubId: widget.clubId,
+                  organizerId: widget.organizerId,
                   eventId: vm.event.id,
                   inviteCode: widget.inviteCode,
                   inviteLinkId: widget.inviteLinkId,
@@ -455,7 +455,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                 onCompleteProfile: () => _openEventProfileCompletion(
                   context,
                   event: vm.event,
-                  clubId: widget.clubId,
+                  organizerId: widget.organizerId,
                   eventId: vm.event.id,
                 ),
               )
@@ -496,7 +496,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
         body: EventDetailBody(
           event: event,
           userProfile: null,
-          clubId: widget.clubId,
+          organizerId: widget.organizerId,
           reviews: const [],
           isAuthenticated: false,
           sectionVisibility: sectionVisibility,
@@ -511,7 +511,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
           onAddToCalendar: (_) {},
           onToggleSaved: () => _openEventSignIn(
             context,
-            clubId: widget.clubId,
+            organizerId: widget.organizerId,
             eventId: event.id,
             inviteCode: widget.inviteCode,
             inviteLinkId: widget.inviteLinkId,
@@ -529,22 +529,22 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
           onOpenCompanion: () {},
           onRetryCompanion: () =>
               ref.invalidate(watchEventSuccessPlanProvider(event.id)),
-          onViewOrganizer: (clubId) => context.pushNamed(
+          onViewOrganizer: (organizerId) => context.pushNamed(
             Routes.organizerDetailScreen.name,
             pathParameters: {
-              context.l10n.eventsEventDetailScreenBodyOrganizerid: clubId,
+              context.l10n.eventsEventDetailScreenBodyOrganizerid: organizerId,
             },
           ),
-          onMessageHost: (clubId, hostUid) => unawaited(
+          onMessageHost: (organizerId, hostUid) => unawaited(
             _messageHost(
               context,
-              clubId: clubId,
+              organizerId: organizerId,
               hostUid: hostUid,
               eventId: widget.eventId,
             ),
           ),
           onRetryHosts: () =>
-              ref.invalidate(fetchOrganizerProvider(widget.clubId)),
+              ref.invalidate(fetchOrganizerProvider(widget.organizerId)),
           inviteCode: widget.inviteCode,
           inviteLinkId: widget.inviteLinkId,
           now: now,
@@ -564,7 +564,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
             ? _EventDetailBottomNavigationBar(
                 event: event,
                 userProfile: null,
-                clubId: widget.clubId,
+                organizerId: widget.organizerId,
                 isAuthenticated: false,
                 participation: null,
                 organizerCapabilities: organizerState.value!.supplyCapabilities,
@@ -577,7 +577,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                     .eventsEventDetailScreenLabelCompleteBookingProfile,
                 onGuestBook: () => _openEventSignIn(
                   context,
-                  clubId: widget.clubId,
+                  organizerId: widget.organizerId,
                   eventId: event.id,
                   inviteCode: widget.inviteCode,
                   inviteLinkId: widget.inviteLinkId,
@@ -622,14 +622,14 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
   bool get _initialEventMatchesRoute =>
       widget.initialEvent != null &&
       widget.initialEvent!.id == widget.eventId &&
-      widget.initialEvent!.clubId == widget.clubId;
+      widget.initialEvent!.organizerId == widget.organizerId;
 }
 
 class _EventDetailBottomNavigationBar extends StatelessWidget {
   const _EventDetailBottomNavigationBar({
     required this.event,
     required this.userProfile,
-    required this.clubId,
+    required this.organizerId,
     required this.isAuthenticated,
     this.isSaved = false,
     this.isHosted = false,
@@ -647,7 +647,7 @@ class _EventDetailBottomNavigationBar extends StatelessWidget {
 
   final Event event;
   final UserProfile? userProfile;
-  final String clubId;
+  final String organizerId;
   final bool isAuthenticated;
   final bool isSaved;
   final bool isHosted;
@@ -682,7 +682,7 @@ class _EventDetailBottomNavigationBar extends StatelessWidget {
     return EventDetailDock(
       event: event,
       userProfile: userProfile!,
-      clubId: clubId,
+      organizerId: organizerId,
       participation: participation,
       organizerCapabilities: organizerCapabilities,
       isSaved: isSaved,

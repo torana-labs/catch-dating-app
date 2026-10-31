@@ -42,10 +42,10 @@ const schemaModerationFlagDocumentSchema = <String, Object?>{
       'type': 'string',
       'enum': <Object?>[
         'profile_photo',
-        'club_image',
+        'organizer_image',
         'chat_message',
         'user_bio',
-        'club_description',
+        'organizer_description',
         'review_comment',
       ],
       'x-catch-ownership': 'trigger-owned',

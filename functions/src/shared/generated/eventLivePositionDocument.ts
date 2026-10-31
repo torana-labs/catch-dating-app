@@ -7,7 +7,6 @@
  */
 export interface EventLivePositionDocument {
   eventId: string;
-  clubId: string;
   organizerId: string;
   uid: string;
   role: "host" | "operator";

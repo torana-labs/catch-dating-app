@@ -3,7 +3,6 @@
     "session": {
       "id": "practice-room",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -544,7 +543,6 @@
     "session": {
       "id": "practice-room",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -1147,7 +1145,6 @@
     "session": {
       "id": "practice-room",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -1862,7 +1859,6 @@
     "session": {
       "id": "practice-room",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -2650,7 +2646,6 @@
     "session": {
       "id": "practice-room",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -3446,7 +3441,6 @@
     "session": {
       "id": "practice-room",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -4237,7 +4231,6 @@
     "session": {
       "id": "practice-room",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -5049,7 +5042,6 @@
     "session": {
       "id": "practice-room",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -5849,7 +5841,6 @@
     "session": {
       "id": "practice-room",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,

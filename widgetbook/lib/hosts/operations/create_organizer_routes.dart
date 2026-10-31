@@ -64,7 +64,7 @@ PickedOrganizerProfileImage _createOrganizerProfileImage() {
 )
 Widget hostCreateOrganizerRouteAndWizardStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostCreateClubScreen',
+    title: 'HostCreateOrganizerScreen',
     contractId: 'screen.host.club.create',
     children: [
       WidgetbookPageStateCard(
@@ -339,7 +339,7 @@ class _HostCreateOrganizerMutationPreviewState
 )
 Widget createOrganizerScreenCatalogStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'CreateClubScreen',
+    title: 'CreateOrganizerScreen',
     contractId: 'screen.host.club.create.form',
     children: [
       WidgetbookPageStateCard(

@@ -53,8 +53,7 @@ export interface StripeAccountLinkSnapshot {
 export interface StripeCheckoutSessionCreateInput {
   paymentId: string;
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   userId: string;
   hostUserId: string;
   stripeAccountId: string;
@@ -481,7 +480,7 @@ function stripeMetadata(
   return {
     paymentId: input.paymentId,
     eventId: input.eventId,
-    clubId: input.clubId,
+    organizerId: input.organizerId,
     ...(input.organizerId ? {organizerId: input.organizerId} : {}),
     userId: input.userId,
     hostUserId: input.hostUserId,

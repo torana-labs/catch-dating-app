@@ -64,9 +64,9 @@ are 2026-06-16 snapshots.
 
 HostCard (High, blocks event-detail) · Callout (High) · Field+FieldGroup unified row
 w/ floating label (High) · OptionGroup `onFilter`/`filterBadge` (High; ExploreFilterRail
-uses the DS-forbidden `trailing:` filter) · ClubDock pinned stateful dock incl. owner
+uses the DS-forbidden `trailing:` filter) · OrganizerDock pinned stateful dock incl. owner
 state (High) · CrossPathsCard (High — decision: target surface or intentional drop) ·
-JourneySteps shared primitive (Med) · TicketStub `card` variant (Med) · ClubHero
+JourneySteps shared primitive (Med) · TicketStub `card` variant (Med) · OrganizerHero
 `full`/`masthead` variants (Med) · CoverStory dark cover (Med) · shared
 HostRow/ContactRow/PhotoStrip/Roster\*/LiveConsole/RotationCard (Med/High — exist only
 as file-private widgets) · OptionCard (Low).
@@ -131,7 +131,7 @@ data exists; optionally flatten GOOD TO KNOW from cards to box-free hairline row
   TicketStub card; extract shared HostRow/ContactRow/PhotoStrip/Roster\*.
 - **Wave 3 — Drifted primitives by severity** (PersonAvatar, ProfileHero scrim, ReviewRow,
   StrideCard, DashboardEventCard, DateTicket, RangeSlider, forms…).
-- **Wave 4 — Composite screens** (ClubDock + club-detail dock, host roster +
+- **Wave 4 — Composite screens** (OrganizerDock + club-detail dock, host roster +
   LiveConsole/RotationCard, Explore decision, dashboard CoverStory, onboarding).
 - **Wave 5 — Document intentional drift + final §5 rules pass + golden refresh.**
 
@@ -145,13 +145,13 @@ skin-in-place. Analyze-clean project-wide; explore (57) + clubs (62) + routing (
   filter rail, Expanded(CustomScrollView(feed)) ]` reusing `buildExploreBodySlivers` + the existing
   empty/skeleton states — with a floating **bottom-left map pill** (`CatchCountPill`, "Map · N").
 - **New `ExploreMapScreen`** (`explore_map_screen.dart`) + route `/clubs/map` (static child registered
-  before `:clubId`, `parentNavigatorKey: root` so it's full-screen above the tab dock). The pill does
+  before `:organizerId`, `parentNavigatorKey: root` so it's full-screen above the tab dock). The pill does
   `context.pushNamed(Routes.exploreMapScreen.name)`; the map shows the same feed events as pins
   (`exploreMapViewModelFromFeed`), cycles the distance ring, and opens an event on pin-tap.
 - **Test re-baseline:** deleted 5 retired-interaction tests (open-map-drag, peek summary, wrist-lift
   motion reveal, selected-pin half-sheet, closed-feed-below-lid); fixed 2 chrome/feed tests for the
   new `Column` layout; added a map-pill→route nav test; cleaned 4 now-unused imports + 2 helpers.
-  Also fixed 3 **pre-existing** `OrganizerDetailBody` failures (this session's earlier `_ClubHostRow`
+  Also fixed 3 **pre-existing** `OrganizerDetailBody` failures (this session's earlier `_OrganizerHostRow`
   restructure dropped "Hosted by X" → name + `OWNER ·`/`HOST ·` mono meta; tests still asserted the
   old copy — updated to the displayName + `textContaining('… · ')`).
 - **Explore refinements — LANDED (both, this batch).** (1) **CoverStory swap:** the feed's
@@ -311,7 +311,7 @@ data-threading into the hero); series kicker (no `Event` series/recurrence field
   banner (tinted wash or neutral hairline) + leading glyph + title/body (`calloutFill` token).
 - **`CatchOptionCard`** (Wave 2) — `lib/core/widgets/catch_option_card.dart`: descriptive
   selectable choice card (check/circle + ink-border selected + ink wash).
-- **`CatchClubDock` + `OrganizerMembershipDock`** (Wave 2 primitive **+ Wave 4 screen**) —
+- **`CatchOrganizerDock` + `OrganizerMembershipDock`** (Wave 2 primitive **+ Wave 4 screen**) —
   `lib/organizers/presentation/detail/widgets/catch_club_dock.dart`: the 4-state pinned club
   dock (guest/visitor/member/owner) with count block, activity-pigmented Join CTA,
   accent-filled notifications bell (fixes the raw-Material-colorScheme bell drift), quiet
@@ -328,7 +328,7 @@ data-threading into the hero); series kicker (no `Event` series/recurrence field
 - Added `CatchIcons.checkCircle/circle`.
 
 ### Phase status (end of session)
-- **Wave 2 (missing primitives):** Callout · OptionCard · JourneySteps · ClubDock built
+- **Wave 2 (missing primitives):** Callout · OptionCard · JourneySteps · OrganizerDock built
   (4 of the catalogue's missing primitives, all reusable + analyze-clean). Remaining as
   larger separate efforts: TicketStub `card` variant and extracting shared
   HostRow/ContactRow/PhotoStrip/Roster\* out of their screen files.
@@ -339,7 +339,7 @@ data-threading into the hero); series kicker (no `Event` series/recurrence field
   sold-out/note/tail states, ContactRow mono-eyebrow structural half, stepper bordered
   ± discs, PhotoStripField add-first/cover.
 - **Wave 4 (screens):** event-detail slice assembled + verified; club-detail rebuilt onto
-  the pinned ClubDock; dashboard event-focus cards activity-tinted + JourneySteps. Remaining
+  the pinned OrganizerDock; dashboard event-focus cards activity-tinted + JourneySteps. Remaining
   larger screen efforts: onboarding single-title fold (spans 9 pages + the header), host
   roster → shared `CatchRoster*` + `LiveConsole`/`RotationCard`, the Explore map+sheet
   reconciliation, and the dark dashboard CoverStory.
@@ -370,7 +370,7 @@ tests green, goldens regenerated):**
   (was the sans `statusLabel`).
 - **ContactRow** (club detail) glyph + value → ink (contact info never takes the
   action/activity color); value → `t-title-s`; trailing → `arrow-up-right`.
-- **HostRow** (`_ClubHostRow`) → 40px avatar, condensed `t-name` (dropped the "Hosted by"
+- **HostRow** (`_OrganizerHostRow`) → 40px avatar, condensed `t-name` (dropped the "Hosted by"
   prefix), owner verified seal-check, mono role meta line (replaced the role-badge pill).
 
 **Wave 2 + Wave 3 — batch 3 (analyze-clean, 0 issues; tests green; goldens regenerated):**
@@ -387,7 +387,7 @@ sold-out states; ContactRow's mono channel eyebrow + hairline-circled glyph (str
 half); remaining form drift (field-label voice, stepper value/ends, PhotoStripField
 add-first/cover). **EventTicket "Full"** is intentionally surfaced via `EventStatusPill`
 (not a danger-red capacity-line split) — documented, not a gap. **Wave 2** remaining:
-Callout, OptionCard, ClubDock, TicketStub card, shared HostRow/ContactRow/PhotoStrip/
+Callout, OptionCard, OrganizerDock, TicketStub card, shared HostRow/ContactRow/PhotoStrip/
 Roster\*. **Wave 4** (composite screens) not started.
 
 (The previously-noted pre-existing `app_shell_test_harness.dart:872` analyze error has been

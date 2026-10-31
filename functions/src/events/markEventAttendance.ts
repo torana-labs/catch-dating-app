@@ -158,9 +158,7 @@ export async function markEventAttendanceHandler(
     tx.set(participationRef, eventParticipationPatch({
       exists: participationSnap.exists,
       eventId,
-      clubId: event.clubId,
-
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       uid: userId,
       status: alreadyAttended ? "signedUp" : "attended",
     }), {merge: true});
@@ -181,9 +179,7 @@ export async function markEventAttendanceHandler(
   await deps.recordSignalFacts(db, [
     buildAttendanceSignalFact({
       eventId,
-      clubId: event.clubId,
-
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       uid: userId,
       attended,
       sourceId: `host_attendance_${eventId}_${userId}_${attended}`,

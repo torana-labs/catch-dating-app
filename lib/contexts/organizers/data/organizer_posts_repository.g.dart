@@ -110,7 +110,7 @@ final class WatchOrganizerPostRemainingWeeklyQuotaProvider
 }
 
 String _$watchOrganizerPostRemainingWeeklyQuotaHash() =>
-    r'3c466b39b3b0c8844962fcad907b96c9d588b600';
+    r'ed28d6de89a206529583434f30a8fa1ccc9427c1';
 
 final class WatchOrganizerPostRemainingWeeklyQuotaFamily extends $Family
     with $FunctionalFamilyOverride<Stream<int>, String> {
@@ -123,9 +123,9 @@ final class WatchOrganizerPostRemainingWeeklyQuotaFamily extends $Family
         isAutoDispose: true,
       );
 
-  WatchOrganizerPostRemainingWeeklyQuotaProvider call(String clubId) =>
+  WatchOrganizerPostRemainingWeeklyQuotaProvider call(String organizerId) =>
       WatchOrganizerPostRemainingWeeklyQuotaProvider._(
-        argument: clubId,
+        argument: organizerId,
         from: this,
       );
 

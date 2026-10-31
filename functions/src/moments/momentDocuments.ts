@@ -229,7 +229,7 @@ export async function loadAnchorFacts(
         cancelled: data.status !== "active",
         timeZone: readString(data.timezone) ?? undefined,
         organizerId: readString(data.organizerId) ??
-          readString(data.clubId),
+          readString(data.organizerId),
       },
       functions: {},
       travelLegs: {},

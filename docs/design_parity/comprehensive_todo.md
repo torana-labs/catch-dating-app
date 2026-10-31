@@ -172,7 +172,7 @@ or an independent feature contract. Its domain state and route intents remain te
   approved state-specific reference exports replace them.
 - The former Host Edit Club visual reference is retained as historical evidence.
   The standalone route and screen are retired; the old
-  `/host/clubs/:clubId/edit` location is not mounted. The selected organizer
+  `/host/clubs/:organizerId/edit` location is not mounted. The selected organizer
   Edit tab owns identity, contact, logo/photos, policy defaults, and Event
   Success defaults.
 - Host Edit Event owner edit was refreshed against the registered Claude
@@ -583,7 +583,7 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
   skeletons.
 - [x] Club Detail no-fallback loading now uses club-profile-shaped hero,
   stats, host, about, tag, and upcoming-section skeletons; credible
-  `initialClub` fallback still renders the real body.
+  `initialOrganizer` fallback still renders the real body.
 - [x] Event Map and Event Location Map loading now use map-shaped skeletons;
   the route location map preserves floating controls and a directions-card
   placeholder.
@@ -1274,8 +1274,8 @@ tests, captures, Widgetbook, Git, and CI.
     `ChatEventContextHeader`, `MessageBubble`, `ChatInput`,
     `ChatListTile`, and `BookingConflictSheet`.
   - The inventory now classifies additional source-backed Claude aliases that
-    are not yet standalone/formal contracts: `CheckoutSheet`, `ClubDock`,
-    `ClubHero`, `ClubPolaroid`, `ContactRow`, `LiveConsole`, `MetricGrid`,
+    are not yet standalone/formal contracts: `CheckoutSheet`, `OrganizerDock`,
+    `OrganizerHero`, `OrganizerPolaroid`, `ContactRow`, `LiveConsole`, `MetricGrid`,
     `PhotoGrid`, `ProfilePhoto`, `ProfilePrompt`, and `RotationCard`.
 - [ ] `TODO-DS-005` Classify every local Flutter primitive absent from Claude
   Design as keep, rename, deprecate, or needs-design-review.
@@ -1300,7 +1300,7 @@ tests, captures, Widgetbook, Git, and CI.
   to 41.87% mismatch / 36.74 meanDelta. The section/component registry split is
   now explicit: CoverStory, CountPill, OrganizerCover, IndexRow, and
   DateTicket/EventTicket roles map to registered component contracts, while
-  ClubPolaroid, filter rail,
+  OrganizerPolaroid, filter rail,
   activity grid, feed, chrome, map launcher, map route, and empty/error surfaces
   are registered screen-local sections. Deterministic captures now cover
   signed-in joined clubs, filter-empty, offline, unclaimed-host, selected-pin,
@@ -1485,14 +1485,14 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
 - [ ] `explore.discovery` (21 state contracts, 1 open evidence gap)
   - captured: `loading`, `club_source_error`, `event_feed_error`, `empty_city`, `no_search_results`, `discovery_feed`, `search_query`, `filters_active`, `anonymous_guest`, `unclaimed_host_projection`, `map_route`, `pins_ready`, `selected_pin`, `large_pan_scope`, `map_loading`, `map_error`, `offline`, `text_scale_2`, `reduced_motion`
   - implemented/previewed: `no_exact_pins`, `zero_radius_results`
-  - DP-EXPLORE-001: Closed by the screen-local Explore section registry plus formal component mappings for `catch.cover_story`, `catch.count_pill`, `catch.club_cover`, `catch.index_row`, and `catch.event_card`; the unwired Cross Paths proposal is retired until a consent-safe relationship source exists, while ClubPolaroid remains section-local.
+  - DP-EXPLORE-001: Closed by the screen-local Explore section registry plus formal component mappings for `catch.cover_story`, `catch.count_pill`, `catch.club_cover`, `catch.index_row`, and `catch.event_card`; the unwired Cross Paths proposal is retired until a consent-safe relationship source exists, while OrganizerPolaroid remains section-local.
   - DP-EXPLORE-002: Closed by deterministic captures for signed-in joined clubs, filter-empty/no-filter results, explicit offline copy, unclaimed host projection, selected-pin map, and distance-ring map variants. Map masks and provider-wave cleanup remain tracked separately.
   - DP-EXPLORE-003: Closed by advisory comparison of `explore_search_query` against the Claude Explore discovery-feed reference; remaining visual divergence is tracked as reference/pixel follow-up, not as missing registry/capture coverage.
   - DS-EXPLORE-004: Closed by `ExploreDiscoveryScreenState`, which maps route provider-wave inputs into map launcher, body branch, and empty-state display state before `ExploreScreen` renders visual slivers.
   - DS-EXPLORE-005: Add deterministic captures for `no_exact_pins` and `zero_radius_results`, plus focused test evidence for `no_exact_pins`, `offline`, `text_scale_2`, and `reduced_motion`; the generated Explore feature contract carries these six explicit evidence exceptions until then.
 - [x] `club.detail` (13 state follow-ups, 0 open gaps)
   - captured: `loading`, `not_found`, `fatal_error`, `member_default`, `visitor_not_member`, `guest_join`, `host_public_view`, `empty_schedule`, `join_leave_pending`, `join_leave_failed`, `offline`, `text_scale_2`, `reduced_motion`
-  - DP-CLUB-DETAIL-001: Closed by the consumer-only dock decision; shared public Club Detail sections are reused by Host Club Detail, while provider-backed `OrganizerMembershipDock` stays screen-local and `CatchClubDock` promotion is deferred until another host/member action-dock contract exists.
+  - DP-CLUB-DETAIL-001: Closed by the consumer-only dock decision; shared public Club Detail sections are reused by Host Club Detail, while provider-backed `OrganizerMembershipDock` stays screen-local and `CatchOrganizerDock` promotion is deferred until another host/member action-dock contract exists.
   - DP-CLUB-DETAIL-002: Closed by `OrganizerDetailBodyState`; route async/loading/error/not-found, initial-club fallback, next-event selection, host-message eligibility, contact actions, event-route target, review visibility, and membership dock state are derived outside visual sections.
   - DS-CLUB-DETAIL-003: Closed by provider-free `OrganizerHostSection`, `OrganizerHostRow`, `OrganizerContactSection`, and `OrganizerPhotoRail` files plus direct Widgetbook states and widget catalog entries.
   - DP-CLUB-DETAIL-003: Closed by `club_detail_loading`, `club_detail_initial_loading`, and `club_detail_empty_schedule` captures plus the existing exported/masked Club Detail member reference.
@@ -1584,7 +1584,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - tested: `cohost_club_edit_limited`, `multiple_clubs_switcher`, `inline_text_edit`, `payouts_not_setup`, `host_team_add_sheet`, `host_team_confirm_dialogs`, `host_team_controller_mutations`, `host_club_insights_state`, `preview_route_callback`, `preview_tab`
   - captured: `uid_missing`, `organizer_overview`, `host_clubs_loading`, `host_clubs_error`, `host_clubs_offline`, `no_host_clubs`, `cohost_club_edit_limited`, `inline_text_edit`, `update_club_pending`, `update_club_error`, `payouts_ready_or_restricted`, `payout_mutation`, `host_team`, `host_team_mutation`, `insights_loading`, `insights_report`, `insights_error`, `preview_tab`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
   - DS-HOST-CLUBS-001: Closed. Signed-out, default organizer overview, co-host, empty, loading, generic/offline load errors, analytics loading/error/offline/report, payout provider loading/ready/restricted/error/offline, inline editor pending/error/offline, payout action pending/error/offline, host-team mutation pending/error/offline, text-scale, reduced-motion, light/dark, and preview tab variants are captured. Additional pixel variants depend on future Claude exports because the local bundle exposes only the organizer baseline for this screen.
-  - DS-HOST-CLUBS-002: Closed. `HostOrganizersScreenState` owns selected club, selected tab, owner/co-host role capability, and deterministic initial expanded editor state. `_HostClubsScaffold` defaults to the Organizer overview and routes its public preview, payout, settings, edit, and insights actions into existing typed callbacks/tabs. Inline edit and payout actions now have controller mutations; `HostTeamAddHostSheet` is public and Widgetbook covers ready, pending, error, and offline add-host states; `HostTeamHostActionDialog` is public and Widgetbook covers remove-host and transfer-ownership confirmations; `HostOrganizerInsightsState` owns analytics query derivation, custom date bounds, event scope, and retry target identity.
+  - DS-HOST-CLUBS-002: Closed. `HostOrganizersScreenState` owns selected club, selected tab, owner/co-host role capability, and deterministic initial expanded editor state. `_HostOrganizersScaffold` defaults to the Organizer overview and routes its public preview, payout, settings, edit, and insights actions into existing typed callbacks/tabs. Inline edit and payout actions now have controller mutations; `HostTeamAddHostSheet` is public and Widgetbook covers ready, pending, error, and offline add-host states; `HostTeamHostActionDialog` is public and Widgetbook covers remove-host and transfer-ownership confirmations; `HostOrganizerInsightsState` owns analytics query derivation, custom date bounds, event scope, and retry target identity.
   - DS-HOST-CLUBS-004: Reopened for the standalone-host workspace. Private-to-public publication coaching and cross-event CRM readiness move the deterministic 2026-08-10 `host_clubs_management` capture to mismatch 20.09%, mean delta 25.94, max delta 240, masked 260416. `HOST-STANDALONE-ORGANIZER-WORKSPACE-001` bounds that intentional expansion without changing canonical thresholds; close it after a reviewed standalone-host reference replaces or reconciles the older organizer composition. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future design exports.
   - DS-HOST-CLUBS-005: `feature.host_organizers` compiles all 49 states and 29 actions across one coordinated organizer workspace. Add focused tests for 31 registered states, deterministic captures for 14 preview-only states, and one dedicated `host_team_offline` Widgetbook scenario to retire its 46 evidence exceptions.
 - [x] `host.club.detail` (19 state follow-ups, 0 open gaps)
@@ -1593,7 +1593,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - tested: `event_navigation_host_route`, `loading_with_initial_club`, `load_error`, `club_not_found`, `host_public_view`, `host_schedule_hosted`, `membership_dock_suppressed`, `share_action`, `state_adapter_branching`
   - captured: `host_public_view`, `loading_without_initial_club`, `loading_with_initial_club`, `load_error`, `offline`, `club_not_found`, `host_not_on_team`, `host_signed_out`, `host_schedule_empty`, `host_schedule_hosted`, `host_controls_missing`, `reviews_authenticated`, `contact_links`, `share_action`, `membership_dock_suppressed`, `text_scale_2`, `reduced_motion`, `light_dark`
   - DS-HOST-CLUB-DETAIL-001: Closed for the current public-preview contract. Flutter captures cover public preview, initial fallback loading, full loading, generic error, offline, not-found, non-host-team preview, signed-out preview, empty schedule, text-scale, reduced-motion, and light/dark; the registered public-view reference comparison is within threshold. Reopen only if design adds distinct hosted schedule/share/contact/review or host-control variants.
-  - DS-HOST-CLUB-DETAIL-002: Closed. `HostOrganizerDetailScreenState` owns branch selection, initial data fallback, host ownership/public-preview mode, dock suppression, and load-error retry intent typing. `HostOrganizerDetailError` carries `HostOrganizerDetailRetryIntent.reloadDetail`, and `OrganizerDetailScreen` executes that typed retry through `_retryHostClubDetail` before invalidating `organizerDetailViewModelProvider`. The screen also wires typed callbacks for schedule routing, host profile/message actions, contact launches, and share side effects.
+  - DS-HOST-CLUB-DETAIL-002: Closed. `HostOrganizerDetailScreenState` owns branch selection, initial data fallback, host ownership/public-preview mode, dock suppression, and load-error retry intent typing. `HostOrganizerDetailError` carries `HostOrganizerDetailRetryIntent.reloadDetail`, and `OrganizerDetailScreen` executes that typed retry through `_retryHostOrganizerDetail` before invalidating `organizerDetailViewModelProvider`. The screen also wires typed callbacks for schedule routing, host profile/message actions, contact launches, and share side effects.
   - DS-HOST-CLUB-DETAIL-003: Closed for the current contract: Host Club Detail remains public-preview-only, while Edit club, Add event, payouts, and host-team controls remain in Host Home and Host Clubs. Reopen only if the design contract adds a dedicated host-controls variant.
   - DS-HOST-CLUB-DETAIL-004: Closed. Host Club Detail owner/public-view reference and masks are exported and registered; Flutter state captures now exist for the main route variants. Public-view visual parity improved from 28.94% / 44.44 to 17.87% / 19.52 after fixture, hero, stats, section-order, capture-font, asset-prewarm, floating hero chrome, stat value fit, regular-weight About copy, and split generic-tag wrap work, then the hero-edge mask calibration moved the registered comparison within threshold at 15.82% mismatch / 15.22 meanDelta, maxDelta 240, masked 180280. Add host-control references only if the design contract moves operations onto this route.
 - [ ] `host.event.create` (31 registered states, 1 evidence gap, 2 reference-blocked gaps)
@@ -1664,7 +1664,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - captured: `profile_offline`, `create_profile_mutation`, `save_profile_mutation`, `profile_editor_sheet`, `clubs_offline`, `sign_out_action`, `text_scale_2`, `reduced_motion`, `light_dark`
   - previewed: route auth/profile/clubs states, profile summary rows including create-pending, clubs loading/error/empty/populated rows, Edit/Preview tab rail, text scale, reduced motion, and dark theme.
   - DP-HOST-SETTINGS-001: Closed for app code. Deterministic captures now cover inline profile editing, create/save mutation pending/error/offline, sign-out error/offline, and profile/club offline provider states. Direct HostAccount.dc.html source is found, but the 2026-06-25 stable temp bundle, current runtime, CDP, and original-source Chrome attempts either produced placeholder boxes or hung before a valid PNG. Remaining reference work is blocked on source/runtime repair or an alternate export path, masks, and pixel comparison.
-  - DP-HOST-SETTINGS-002: Closed for app code. `HostSettingsState`, `HostSettingsProfileState`, and `HostSettingsClubsState` now adapt profile/club provider waves, club-backed fallback identity, loading, error, missing, empty, and content branches before `HostSettingsProfileSection` and `HostSettingsClubsSection` render. `HostProfileController` owns profile create/save mutations shared with Host Profile. Remaining payout/admin ownership is a product IA decision before code changes.
+  - DP-HOST-SETTINGS-002: Closed for app code. `HostSettingsState`, `HostSettingsProfileState`, and `HostSettingsOrganizersState` now adapt profile/club provider waves, club-backed fallback identity, loading, error, missing, empty, and content branches before `HostSettingsProfileSection` and `HostSettingsOrganizersSection` render. `HostProfileController` owns profile create/save mutations shared with Host Profile. Remaining payout/admin ownership is a product IA decision before code changes.
 - [ ] `host.profile` (15 state follow-ups, 2 open gaps)
   - implemented: `uid_missing`, `profile_loading`, `profile_error`, `profile_edit_state_adapter`, `profile_controller_mutations`, `missing_profile`, `populated_profile`, `validation_error`, `save_success`, `status_variants`
   - tested: `create_profile_mutation`, `create_profile_error`, `save_error`

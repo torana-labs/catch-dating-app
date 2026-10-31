@@ -1,0 +1,13 @@
+{
+  "organizerId": "club-1",
+  "uid": "runner-1",
+  "role": "member",
+  "status": "active",
+  "pushNotificationsEnabled": true,
+  "joinedAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "leftAt": null,
+  "deletedAt": null
+}

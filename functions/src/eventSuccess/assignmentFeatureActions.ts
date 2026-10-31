@@ -106,10 +106,11 @@ export async function listEventAssignmentFeatureChoicesHandler(
       const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
       const plan = requireDoc<EventSuccessPlanDocument>(planSnap,
         "EventSuccessPlanDocument");
-      const organizerId = event.organizerId ?? event.clubId;
+      const organizerId = event.organizerId;
       const rules = validateAssignmentFeatureRules(
         plan.assignmentFeatureRules ?? []);
-      if (plan.eventId === data.eventId && plan.clubId === event.clubId &&
+      if (plan.eventId === data.eventId &&
+          plan.organizerId === event.organizerId &&
           event.status !== "cancelled") {
         const versionIds = [...new Set(rules.map((rule) =>
           rule.versionId))];
@@ -224,7 +225,7 @@ export async function previewEventAssignmentFeaturesHandler(
   const organizerSnap = await eventOrganizerRef(db, event).get();
   const organizer = requireEventOrganizer(organizerSnap, event);
   if (!isEventOrganizerManager(organizer, event, uid)) throw unavailable();
-  if (plan.eventId !== data.eventId || plan.clubId !== event.clubId ||
+  if (plan.eventId !== data.eventId || plan.organizerId !== event.organizerId ||
       event.status === "cancelled" ||
       plan.structureConfig?.topology === "sequence") {
     throw new HttpsError("failed-precondition",
@@ -232,7 +233,7 @@ export async function previewEventAssignmentFeaturesHandler(
   }
   const savedRules = validateAssignmentFeatureRules(
     plan.assignmentFeatureRules ?? []);
-  const organizerId = event.organizerId ?? event.clubId;
+  const organizerId = event.organizerId;
   const formIds = [...new Set([...(data.sourceFormIds ?? []),
     ...rules.map((rule) => rule.formId)])];
   if (formIds.length > 8) throw unavailable();
@@ -340,7 +341,7 @@ export async function configureEventAssignmentFeaturesHandler(
     const organizer = requireEventOrganizer(organizerSnap, event);
     if (!isEventOrganizerManager(organizer, event, uid)) throw unavailable();
     if (event.status === "cancelled" || plan.eventId !== data.eventId ||
-        plan.clubId !== event.clubId || plan.status !== "setup" ||
+        plan.organizerId !== event.organizerId || plan.status !== "setup" ||
         plan.structureConfig?.topology === "sequence") {
       throw new HttpsError("failed-precondition",
         "This event cannot use structured matching configuration.");
@@ -359,7 +360,7 @@ export async function configureEventAssignmentFeaturesHandler(
     const byVersion = new Map(versions.filter((snap) => snap.exists)
       .map((snap) => [snap.id, requireDoc<Version>(snap,
         "OrganizerFormVersionDocument")]));
-    const organizerId = event.organizerId ?? event.clubId;
+    const organizerId = event.organizerId;
     if (rules.some((rule) => {
       const version = byVersion.get(rule.versionId);
       return !version || !assignmentFeatureRuleMatchesVersion(
@@ -446,8 +447,9 @@ export async function setEventAssignmentFeatureConsentHandler(
       "EventSuccessPlanDocument");
     const response = requireDoc<Response>(responseSnap,
       "OrganizerFormResponseDocument");
-    const organizerId = event.organizerId ?? event.clubId;
-    if (plan.eventId !== data.eventId || plan.clubId !== event.clubId ||
+    const organizerId = event.organizerId;
+    if (plan.eventId !== data.eventId ||
+        plan.organizerId !== event.organizerId ||
         event.status === "cancelled" || response.respondentUid !== uid ||
         response.identity.phoneE164 !== phone ||
         response.status !== "submitted" || response.withdrawnAt !== null) {

@@ -199,9 +199,7 @@ export async function decideEventJoinRequestHandler(
         ...eventParticipationPatch({
           exists: participationSnap.exists,
           eventId,
-          clubId: event.clubId,
-
-          organizerId: event.organizerId ?? event.clubId,
+          organizerId: event.organizerId,
           uid: userId,
           status: "cancelled",
           genderAtSignup: requester.gender,
@@ -261,7 +259,7 @@ export async function decideEventJoinRequestHandler(
       roster,
       hasHostApproval: true,
       hasActiveCommunityMembership: await hasEventCommunityMembership({
-        db, tx, organizerId: event.organizerId ?? event.clubId, uid: userId,
+        db, tx, organizerId: event.organizerId, uid: userId,
         policy,
       }),
     });
@@ -330,7 +328,7 @@ function queueRequestDecisionNotification(params: {
     body: copy.body,
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
     eventId: params.eventId,
-    clubId: params.event.clubId,
+    organizerId: params.event.organizerId,
   });
   if (allowsPushPreference(params.requester, "eventStatusUpdates") &&
       params.requester.fcmToken) {
@@ -340,7 +338,7 @@ function queueRequestDecisionNotification(params: {
       body: copy.body,
       type: "eventUpdated",
       eventId: params.eventId,
-      clubId: params.event.clubId,
+      organizerId: params.event.organizerId,
     });
   }
 }

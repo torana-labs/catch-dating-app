@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/organizers/shared/organizer_action_keys.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -102,7 +101,7 @@ void main() {
     final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'run-1',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 2,

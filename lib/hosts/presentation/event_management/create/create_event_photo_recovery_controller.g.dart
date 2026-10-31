@@ -73,7 +73,7 @@ final class CreateEventPhotoRecoveryControllerProvider
 }
 
 String _$createEventPhotoRecoveryControllerHash() =>
-    r'b720e6cc9537d65691903772836c3b8b50e89828';
+    r'13e2a31760470d27757c60bdac3d0cd9ca3f74ec';
 
 /// One organizer's creation/reentry flow, reset on every authentication session
 /// change. The shared journal owns durable recovery and execution leases.

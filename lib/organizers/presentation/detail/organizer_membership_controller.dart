@@ -18,23 +18,26 @@ class OrganizerMembershipController extends _$OrganizerMembershipController {
   @override
   void build() {}
 
-  Future<void> join(String clubId) async {
+  Future<void> join(String organizerId) async {
     requireSignedInUid(ref, action: 'follow an organizer');
-    await ref.read(organizersRepositoryProvider).joinOrganizer(clubId);
+    await ref.read(organizersRepositoryProvider).joinOrganizer(organizerId);
   }
 
-  Future<void> leave(String clubId) async {
+  Future<void> leave(String organizerId) async {
     requireSignedInUid(ref, action: 'unfollow an organizer');
-    await ref.read(organizersRepositoryProvider).leaveOrganizer(clubId);
+    await ref.read(organizersRepositoryProvider).leaveOrganizer(organizerId);
   }
 
   Future<void> setPushNotifications({
-    required String clubId,
+    required String organizerId,
     required bool enabled,
   }) async {
     requireSignedInUid(ref, action: 'update organizer notifications');
     await ref
         .read(organizersRepositoryProvider)
-        .setOrganizerPushNotifications(clubId: clubId, enabled: enabled);
+        .setOrganizerPushNotifications(
+          organizerId: organizerId,
+          enabled: enabled,
+        );
   }
 }

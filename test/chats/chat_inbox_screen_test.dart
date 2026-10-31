@@ -102,7 +102,7 @@ Match _buildMatch({
   String? lastMessageSenderId,
   Map<String, int> unreadCounts = const {},
   MatchConversationType conversationType = MatchConversationType.match,
-  String? clubId,
+  String? organizerId,
 }) {
   return Match(
     id: id,
@@ -115,7 +115,7 @@ Match _buildMatch({
     lastMessageSenderId: lastMessageSenderId,
     unreadCounts: unreadCounts,
     conversationType: conversationType,
-    clubId: clubId,
+    organizerId: organizerId,
   );
 }
 
@@ -174,14 +174,14 @@ void main() {
         match: _buildMatch(
           id: 'host-unread',
           unreadCounts: const {'host-1': 3},
-          conversationType: MatchConversationType.clubHostInquiry,
+          conversationType: MatchConversationType.organizerHostInquiry,
         ),
         unreadCount: 3,
       );
       final read = _previewForStateTest(
         match: _buildMatch(
           id: 'host-read',
-          conversationType: MatchConversationType.clubHostInquiry,
+          conversationType: MatchConversationType.organizerHostInquiry,
         ),
       );
 
@@ -229,7 +229,7 @@ void main() {
               _previewForStateTest(
                 match: _buildMatch(
                   id: 'host-read',
-                  conversationType: MatchConversationType.clubHostInquiry,
+                  conversationType: MatchConversationType.organizerHostInquiry,
                 ),
               ),
             ],
@@ -702,8 +702,8 @@ void main() {
       lastMessageAt: DateTime(2026, 4, 23, 12),
       lastMessagePreview: 'Is there parking near the start?',
       lastMessageSenderId: 'guest-1',
-      conversationType: MatchConversationType.clubHostInquiry,
-      clubId: 'club-1',
+      conversationType: MatchConversationType.organizerHostInquiry,
+      organizerId: 'club-1',
     );
     final secondHostInquiry = _buildMatch(
       id: 'second-host-inquiry',
@@ -712,8 +712,8 @@ void main() {
       lastMessageAt: DateTime(2026, 4, 23, 11),
       lastMessagePreview: 'Can I bring a friend?',
       lastMessageSenderId: 'guest-2',
-      conversationType: MatchConversationType.clubHostInquiry,
-      clubId: 'club-1',
+      conversationType: MatchConversationType.organizerHostInquiry,
+      organizerId: 'club-1',
     );
     final datingMatch = _buildMatch(
       id: 'dating-match',
@@ -782,7 +782,7 @@ void main() {
       lastMessagePreview: 'Is there parking near the start?',
       lastMessageSenderId: 'guest-1',
       unreadCounts: const {'host-1': 1},
-      conversationType: MatchConversationType.clubHostInquiry,
+      conversationType: MatchConversationType.organizerHostInquiry,
     );
     final readInquiry = _buildMatch(
       id: 'host-read-inquiry',
@@ -791,7 +791,7 @@ void main() {
       lastMessageAt: DateTime(2026, 4, 23, 11),
       lastMessagePreview: 'Do I need ID at check-in?',
       lastMessageSenderId: 'guest-2',
-      conversationType: MatchConversationType.clubHostInquiry,
+      conversationType: MatchConversationType.organizerHostInquiry,
     );
     final inquiries = [unreadInquiry, readInquiry];
     final matchRepository = _FakeMatchRepository(matches: inquiries);
@@ -847,7 +847,7 @@ void main() {
       lastMessageAt: DateTime(2026, 4, 23, 12),
       lastMessagePreview: 'Is there parking near the start?',
       lastMessageSenderId: 'guest-1',
-      conversationType: MatchConversationType.clubHostInquiry,
+      conversationType: MatchConversationType.organizerHostInquiry,
     );
     final matchRepository = _FakeMatchRepository(matches: [hostInquiry]);
     final conversationRepository = _FakeConversationRepository();
@@ -895,7 +895,7 @@ void main() {
       lastMessageAt: DateTime(2026, 4, 23, 12),
       lastMessagePreview: 'Is there parking near the start?',
       lastMessageSenderId: 'guest-1',
-      conversationType: MatchConversationType.clubHostInquiry,
+      conversationType: MatchConversationType.organizerHostInquiry,
     );
     final matchRepository = _FakeMatchRepository(matches: [hostInquiry]);
     final conversationRepository = _FakeConversationRepository();
@@ -954,7 +954,7 @@ void main() {
       lastMessageAt: DateTime(2026, 4, 23, 12),
       lastMessagePreview: 'Is there parking near the start?',
       lastMessageSenderId: 'guest-1',
-      conversationType: MatchConversationType.clubHostInquiry,
+      conversationType: MatchConversationType.organizerHostInquiry,
     );
     final datingMatch = _buildMatch(
       id: 'dating-match',

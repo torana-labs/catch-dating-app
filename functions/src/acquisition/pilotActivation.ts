@@ -86,7 +86,7 @@ export async function recordHostPilotActivation(input: {
         row.organizerId !== after.organizerId ||
         millis(row.checkedInAt) !== checkedInAt ||
         !isPublicConfiguredEvent(event) || event.status !== "active" ||
-        (event.organizerId ?? event.clubId) !== after.organizerId ||
+        (event.organizerId) !== after.organizerId ||
         review?.schemaVersion !== 1 || review.realEvent !== true ||
         review.eventId !== after.eventId ||
         review.organizerId !== after.organizerId ||

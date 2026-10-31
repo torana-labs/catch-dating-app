@@ -30,7 +30,7 @@ export function referencedMediaStoragePaths(
   if (!isRecord(value)) return new Set();
   const candidates: unknown[] = owner.kind === "organizer" ? [
     value.organizerPhotos,
-    value.clubPhotos,
+    value.organizerPhotos,
     value.logoPhoto,
   ] : [value.eventPhotos];
   const paths = new Set<string>();

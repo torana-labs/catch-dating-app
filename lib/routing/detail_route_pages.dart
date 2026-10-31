@@ -48,7 +48,7 @@ Page<void> _organizerDetailPage(BuildContext _, GoRouterState state) {
     key: state.pageKey,
     name: state.name,
     child: OrganizerDetailScreen(
-      clubId: state.pathParameters['clubId']!,
+      organizerId: state.pathParameters['organizerId']!,
       initialOrganizer: _organizerDetailInitialOrganizer(state),
     ),
     transitionDuration: CatchMotion.calendarScroll,

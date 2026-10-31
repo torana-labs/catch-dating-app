@@ -2,24 +2,24 @@ import {
   decideOrganizerClaim as decideOrganizerClaimRequest,
   getOrganizerClaimRequestDetails as getOrganizerClaimRequest,
   listOrganizerClaimRequests as listOrganizerClaimRequestRows,
-  listClubDetails,
-  loadClubDetails,
-  saveClubDetails,
+  listOrganizerDetails,
+  loadOrganizerDetails,
+  saveOrganizerDetails,
   setOrganizerIndexStatus as setOrganizerIndexStatusRequest,
 } from "../../../shared/api/adminApi";
 import type {
-  AdminDecideClubClaimPayload,
-  AdminDecideClubClaimResponse,
-  AdminGetClubClaimRequestDetailsPayload,
-  AdminGetClubClaimRequestDetailsResponse,
-  AdminGetClubDetailsPayload,
-  AdminGetClubDetailsResponse,
-  AdminListClubDetailsPayload,
-  AdminListClubDetailsResponse,
-  AdminSetClubIndexStatusPayload,
-  AdminSetClubIndexStatusResponse,
-  AdminUpdateClubDetailsPayload,
-  AdminUpdateClubDetailsResponse,
+  AdminDecideOrganizerClaimPayload,
+  AdminDecideOrganizerClaimResponse,
+  AdminGetOrganizerClaimRequestDetailsPayload,
+  AdminGetOrganizerClaimRequestDetailsResponse,
+  AdminGetOrganizerDetailsPayload,
+  AdminGetOrganizerDetailsResponse,
+  AdminListOrganizerDetailsPayload,
+  AdminListOrganizerDetailsResponse,
+  AdminSetOrganizerIndexStatusPayload,
+  AdminSetOrganizerIndexStatusResponse,
+  AdminUpdateOrganizerDetailsPayload,
+  AdminUpdateOrganizerDetailsResponse,
 } from "../../../shared/types/adminTypes";
 
 export function listOrganizerClaimRequests() {
@@ -27,37 +27,37 @@ export function listOrganizerClaimRequests() {
 }
 
 export function loadOrganizerClaimRequest(
-  payload: AdminGetClubClaimRequestDetailsPayload
-): Promise<AdminGetClubClaimRequestDetailsResponse> {
+  payload: AdminGetOrganizerClaimRequestDetailsPayload
+): Promise<AdminGetOrganizerClaimRequestDetailsResponse> {
   return getOrganizerClaimRequest(payload);
 }
 
 export function decideOrganizerClaim(
-  payload: AdminDecideClubClaimPayload
-): Promise<AdminDecideClubClaimResponse> {
+  payload: AdminDecideOrganizerClaimPayload
+): Promise<AdminDecideOrganizerClaimResponse> {
   return decideOrganizerClaimRequest(payload);
 }
 
 export function listOrganizerProfiles(
-  payload: AdminListClubDetailsPayload = {}
-): Promise<AdminListClubDetailsResponse> {
-  return listClubDetails(payload);
+  payload: AdminListOrganizerDetailsPayload = {}
+): Promise<AdminListOrganizerDetailsResponse> {
+  return listOrganizerDetails(payload);
 }
 
 export function loadOrganizerProfile(
-  payload: AdminGetClubDetailsPayload
-): Promise<AdminGetClubDetailsResponse> {
-  return loadClubDetails(payload);
+  payload: AdminGetOrganizerDetailsPayload
+): Promise<AdminGetOrganizerDetailsResponse> {
+  return loadOrganizerDetails(payload);
 }
 
 export function saveOrganizerProfile(
-  payload: AdminUpdateClubDetailsPayload
-): Promise<AdminUpdateClubDetailsResponse> {
-  return saveClubDetails(payload);
+  payload: AdminUpdateOrganizerDetailsPayload
+): Promise<AdminUpdateOrganizerDetailsResponse> {
+  return saveOrganizerDetails(payload);
 }
 
 export function publishOrganizerProfile(
-  payload: AdminSetClubIndexStatusPayload
-): Promise<AdminSetClubIndexStatusResponse> {
+  payload: AdminSetOrganizerIndexStatusPayload
+): Promise<AdminSetOrganizerIndexStatusResponse> {
   return setOrganizerIndexStatusRequest(payload);
 }

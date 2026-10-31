@@ -6,8 +6,7 @@ import {requestMissingRuntimeData} from "./runtimeRequiredDataTrigger";
 
 const stamp = {_seconds: 1_800_000_000, _nanoseconds: 0};
 function participant(overrides: Record<string, unknown> = {}) {
-  return {eventId: "event-1", clubId: "organizer-1",
-    organizerId: "organizer-1", uid: "guest-1",
+  return {eventId: "event-1", organizerId: "organizer-1", uid: "guest-1",
     eventAttendeeId: "attendee-1", identityVersion: 1,
     claimMethod: "verifiedPhone", accessStatus: "needsInput",
     requiredFieldIds: ["displayName", "paceBand"],

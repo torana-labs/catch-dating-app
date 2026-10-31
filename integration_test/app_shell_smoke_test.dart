@@ -132,7 +132,7 @@ void main() {
     );
     final nextRun = event_helpers.buildEvent(
       id: 'run-1',
-      clubId: joinedOrganizer.id,
+      organizerId: joinedOrganizer.id,
       startTime: DateTime.now().add(const Duration(hours: 3)),
       bookedCount: 1,
     );

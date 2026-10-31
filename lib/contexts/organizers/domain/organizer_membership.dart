@@ -2,7 +2,7 @@
 // Regenerate with: node tool/contracts/generate_domain_classes.mjs
 // Then run: dart run build_runner build
 //
-// Data shape emitted from contracts/firestore/club_memberships.schema.json.
+// Data shape emitted from contracts/firestore/organizer_memberships.schema.json.
 // Derived behavior, if any, lives in a hand-written companion extension file.
 import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -23,7 +23,7 @@ enum OrganizerMembershipStatus { active, left, deleted }
 abstract class OrganizerMembership with _$OrganizerMembership {
   const factory OrganizerMembership({
     @JsonKey(includeToJson: false) required String id,
-    required String clubId,
+    required String organizerId,
     required String uid,
     required OrganizerMembershipRole role,
     required OrganizerMembershipStatus status,

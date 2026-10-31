@@ -83,8 +83,8 @@ export const adminQueryKeys = {
   },
   organizers: {
     list: (query: string) => [...adminQueryKeys.all, "organizers", "list", query] as const,
-    detail: (clubId: string) =>
-      [...adminQueryKeys.all, "organizers", "detail", clubId] as const,
+    detail: (organizerId: string) =>
+      [...adminQueryKeys.all, "organizers", "detail", organizerId] as const,
     claims: () => [...adminQueryKeys.all, "organizers", "claims"] as const,
     claimDetail: (requestId: string) =>
       [...adminQueryKeys.all, "organizers", "claims", requestId] as const,

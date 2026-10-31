@@ -10,10 +10,10 @@ export interface ModerationFlagDocument {
   flagType: "explicit_photo" | "banned_text" | "underage_content";
   source:
     | "profile_photo"
-    | "club_image"
+    | "organizer_image"
     | "chat_message"
     | "user_bio"
-    | "club_description"
+    | "organizer_description"
     | "review_comment";
   status: "pending" | "reviewed" | "dismissed";
   /**

@@ -21,11 +21,10 @@ const rule = {featureId: "feature-1", formId: "form-1",
 
 function fixture() {
   const store = new AudienceTestStore({
-    "events/event-1": {organizerId: "org-1", clubId: "org-1",
-      status: "active"},
+    "events/event-1": {organizerId: "org-1", status: "active"},
     "organizers/org-1": {hostUserId: "host-1", hostUserIds: [],
       hostProfiles: []},
-    "eventSuccessPlans/event-1": {eventId: "event-1", clubId: "org-1",
+    "eventSuccessPlans/event-1": {eventId: "event-1", organizerId: "org-1",
       status: "setup", structureConfig: {topology: "set"}},
     "organizerFormVersions/version-1": {organizerId: "org-1",
       formId: "form-1", publishedAt: stamp,

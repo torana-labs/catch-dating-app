@@ -73,38 +73,38 @@ export async function buildMediaHygienePlan({
   bucket,
   env,
 }) {
-  const [clubsSnap, eventsSnap, claimsSnap, legacyFiles] = await Promise.all([
+  const [organizersSnap, eventsSnap, claimsSnap, legacyFiles] = await Promise.all([
     firestore.collection("clubs").get(),
     firestore.collection("events").get(),
-    firestore.collection("clubHostClaims").get(),
-    listLegacyClubFiles(bucket),
+    firestore.collection("organizerHostClaims").get(),
+    listLegacyOrganizerFiles(bucket),
   ]);
 
-  const clubs = new Map(
-    clubsSnap.docs.map((doc) => [doc.id, {id: doc.id, ref: doc.ref, data: doc.data()}])
+  const organizers = new Map(
+    organizersSnap.docs.map((doc) => [doc.id, {id: doc.id, ref: doc.ref, data: doc.data()}])
   );
-  const ownerClubIds = new Map();
-  for (const club of clubs.values()) {
-    const ownerUid = ownerUidForClub(club.data);
+  const ownerOrganizerIds = new Map();
+  for (const organizer of organizers.values()) {
+    const ownerUid = ownerUidForOrganizer(organizer.data);
     if (!ownerUid) continue;
-    const clubIds = ownerClubIds.get(ownerUid) ?? [];
-    clubIds.push(club.id);
-    ownerClubIds.set(ownerUid, clubIds);
+    const organizerIds = ownerOrganizerIds.get(ownerUid) ?? [];
+    organizerIds.push(organizer.id);
+    ownerOrganizerIds.set(ownerUid, organizerIds);
   }
 
   const references = [];
-  for (const club of clubs.values()) {
+  for (const organizer of organizers.values()) {
     for (const field of ["imageUrl", "profileImageUrl"]) {
-      const value = club.data[field];
+      const value = organizer.data[field];
       if (typeof value !== "string" || value.length === 0) continue;
       references.push(referenceForUrl({
         collection: "clubs",
-        docId: club.id,
-        docPath: club.ref.path,
+        docId: organizer.id,
+        docPath: organizer.ref.path,
         field,
         url: value,
         objectPath: storagePathFromUrl(value, bucket.name),
-        ownerUid: ownerUidForClub(club.data),
+        ownerUid: ownerUidForOrganizer(organizer.data),
       }));
     }
   }
@@ -113,8 +113,8 @@ export async function buildMediaHygienePlan({
     const event = eventDoc.data();
     const value = event.photoUrl;
     if (typeof value !== "string" || value.length === 0) continue;
-    const clubId = typeof event.clubId === "string" ? event.clubId : null;
-    const club = clubId ? clubs.get(clubId) : null;
+    const organizerId = typeof event.organizerId === "string" ? event.organizerId : null;
+    const organizer = organizerId ? organizers.get(organizerId) : null;
     references.push(referenceForUrl({
       collection: "events",
       docId: eventDoc.id,
@@ -122,8 +122,8 @@ export async function buildMediaHygienePlan({
       field: "photoUrl",
       url: value,
       objectPath: storagePathFromUrl(value, bucket.name),
-      ownerUid: club ? ownerUidForClub(club.data) : null,
-      clubId,
+      ownerUid: organizer ? ownerUidForOrganizer(organizer.data) : null,
+      organizerId,
     }));
   }
 
@@ -149,24 +149,24 @@ export async function buildMediaHygienePlan({
   const claims = new Map(claimsSnap.docs.map((doc) => [doc.id, doc.data()]));
   const claimRepairs = [];
   const claimWarnings = [];
-  for (const [ownerUid, clubIds] of ownerClubIds) {
-    if (clubIds.length !== 1) {
+  for (const [ownerUid, organizerIds] of ownerOrganizerIds) {
+    if (organizerIds.length !== 1) {
       const current = claims.get(ownerUid);
       claimWarnings.push({
         uid: ownerUid,
-        currentClaimClubId: current?.clubId ?? null,
-        clubs: clubIds.map((clubId) => clubSummary(clubs.get(clubId))),
+        currentClaimOrganizerId: current?.organizerId ?? null,
+        organizers: organizerIds.map((organizerId) => organizerSummary(organizers.get(organizerId))),
         message: "Owner has multiple clubs; not auto-repairing singleton claim.",
       });
       continue;
     }
-    const clubId = clubIds[0];
+    const organizerId = organizerIds[0];
     const current = claims.get(ownerUid);
-    if (!current || current.uid !== ownerUid || current.clubId !== clubId) {
+    if (!current || current.uid !== ownerUid || current.organizerId !== organizerId) {
       claimRepairs.push({
         uid: ownerUid,
-        expectedClubId: clubId,
-        currentClubId: current?.clubId ?? null,
+        expectedOrganizerId: organizerId,
+        currentOrganizerId: current?.organizerId ?? null,
         action: current ? "update" : "create",
       });
     }
@@ -174,11 +174,11 @@ export async function buildMediaHygienePlan({
   const staleClaims = claimsSnap.docs
     .filter((doc) => {
       const data = doc.data();
-      return typeof data.clubId === "string" && !clubs.has(data.clubId);
+      return typeof data.organizerId === "string" && !organizers.has(data.organizerId);
     })
     .map((doc) => ({
       uid: doc.id,
-      clubId: doc.data().clubId,
+      organizerId: doc.data().organizerId,
       action: "delete",
     }));
 
@@ -192,9 +192,9 @@ export async function buildMediaHygienePlan({
       env: env.name,
       projectId: env.projectId,
       storageBucket: bucket.name,
-      clubsScanned: clubsSnap.size,
+      organizersScanned: organizersSnap.size,
       eventsScanned: eventsSnap.size,
-      clubHostClaimsScanned: claimsSnap.size,
+      organizerHostClaimsScanned: claimsSnap.size,
       mediaReferences: summarizeReferences(references),
       legacyMediaReferences: mediaRepairs,
       unreferencedLegacyObjects,
@@ -260,12 +260,12 @@ export async function applyMediaHygienePlan({
     for (const repair of plan.claimRepairs.slice(i, i + 450)) {
       const data = {
         uid: repair.uid,
-        clubId: repair.expectedClubId,
+        organizerId: repair.expectedOrganizerId,
       };
       if (repair.action === "create") {
         data.createdAt = admin.firestore.FieldValue.serverTimestamp();
       }
-      batch.set(firestore.collection("clubHostClaims").doc(repair.uid), data, {
+      batch.set(firestore.collection("organizerHostClaims").doc(repair.uid), data, {
         merge: true,
       });
       claimWrites += 1;
@@ -276,7 +276,7 @@ export async function applyMediaHygienePlan({
   for (let i = 0; i < plan.staleClaims.length; i += 450) {
     const batch = firestore.batch();
     for (const claim of plan.staleClaims.slice(i, i + 450)) {
-      batch.delete(firestore.collection("clubHostClaims").doc(claim.uid));
+      batch.delete(firestore.collection("organizerHostClaims").doc(claim.uid));
       staleClaimsDeleted += 1;
     }
     await batch.commit();
@@ -292,7 +292,7 @@ export async function applyMediaHygienePlan({
   };
 }
 
-async function listLegacyClubFiles(bucket) {
+async function listLegacyOrganizerFiles(bucket) {
   const [files] = await bucket.getFiles({prefix: "clubs/"});
   return files.filter((file) => !file.name.endsWith("/"));
 }
@@ -305,7 +305,7 @@ function referenceForUrl({
   url,
   objectPath,
   ownerUid,
-  clubId = null,
+  organizerId = null,
 }) {
   let state = "external";
   if (objectPath?.startsWith("clubs/")) state = "legacy";
@@ -323,7 +323,7 @@ function referenceForUrl({
     state,
     objectPath,
     ownerUid,
-    clubId,
+    organizerId,
     url,
   };
 }
@@ -379,8 +379,8 @@ function hostedDestinationForReference(ref) {
     return `users/${ref.ownerUid}/hostedMedia/club_${safeToken(ref.docId)}_` +
       `${kind}_legacy_${base}_${shortHash(ref.objectPath)}${extension}`;
   }
-  const clubId = ref.clubId ?? "unknown-club";
-  return `users/${ref.ownerUid}/hostedMedia/event_${safeToken(clubId)}_` +
+  const organizerId = ref.organizerId ?? "unknown-club";
+  return `users/${ref.ownerUid}/hostedMedia/event_${safeToken(organizerId)}_` +
     `${safeToken(ref.docId)}_legacy_${base}_${shortHash(ref.objectPath)}` +
     extension;
 }
@@ -390,32 +390,32 @@ function downloadUrlForObject({bucketName, objectPath, token}) {
     `${bucketName}/o/${encodeURIComponent(objectPath)}?alt=media&token=${token}`;
 }
 
-function ownerUidForClub(club) {
-  if (typeof club.ownerUserId === "string" && club.ownerUserId.length > 0) {
-    return club.ownerUserId;
+function ownerUidForOrganizer(organizer) {
+  if (typeof organizer.ownerUserId === "string" && organizer.ownerUserId.length > 0) {
+    return organizer.ownerUserId;
   }
-  if (typeof club.hostUserId === "string" && club.hostUserId.length > 0) {
-    return club.hostUserId;
+  if (typeof organizer.hostUserId === "string" && organizer.hostUserId.length > 0) {
+    return organizer.hostUserId;
   }
-  if (Array.isArray(club.hostUserIds) &&
-      typeof club.hostUserIds[0] === "string") {
-    return club.hostUserIds[0];
+  if (Array.isArray(organizer.hostUserIds) &&
+      typeof organizer.hostUserIds[0] === "string") {
+    return organizer.hostUserIds[0];
   }
   return null;
 }
 
-function clubSummary(club) {
+function organizerSummary(organizer) {
   return {
-    id: club?.id ?? null,
-    name: typeof club?.data?.name === "string" ? club.data.name : null,
-    status: typeof club?.data?.status === "string" ? club.data.status : null,
-    archived: club?.data?.archived === true,
-    ownerUserId: ownerUidForClub(club?.data ?? {}),
-    hostUserId: typeof club?.data?.hostUserId === "string" ?
-      club.data.hostUserId :
+    id: organizer?.id ?? null,
+    name: typeof organizer?.data?.name === "string" ? organizer.data.name : null,
+    status: typeof organizer?.data?.status === "string" ? organizer.data.status : null,
+    archived: organizer?.data?.archived === true,
+    ownerUserId: ownerUidForOrganizer(organizer?.data ?? {}),
+    hostUserId: typeof organizer?.data?.hostUserId === "string" ?
+      organizer.data.hostUserId :
       null,
-    hostUserIds: Array.isArray(club?.data?.hostUserIds) ?
-      club.data.hostUserIds.filter((uid) => typeof uid === "string") :
+    hostUserIds: Array.isArray(organizer?.data?.hostUserIds) ?
+      organizer.data.hostUserIds.filter((uid) => typeof uid === "string") :
       [],
   };
 }
@@ -497,8 +497,8 @@ Current canonical club/event media path:
   users/{uid}/hostedMedia/{fileName}
 
 Retired legacy paths:
-  clubs/{clubId}/{fileName}
-  clubs/{clubId}/events/{eventId}/{fileName}
+  clubs/{organizerId}/{fileName}
+  clubs/{organizerId}/events/{eventId}/{fileName}
 
 Options:
   --env <dev|staging|prod>  Audit one environment. Repeatable.

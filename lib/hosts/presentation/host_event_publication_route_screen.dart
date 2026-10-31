@@ -5,10 +5,10 @@ part of 'host_event_manage_screen.dart';
 class HostEventPublicationRouteScreen extends ConsumerWidget {
   const HostEventPublicationRouteScreen({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     required this.eventId,
   });
-  final String clubId;
+  final String organizerId;
   final String eventId;
 
   @override
@@ -17,7 +17,7 @@ class HostEventPublicationRouteScreen extends ConsumerWidget {
       value: _hostEventManageRouteData(
         uid: catchAsyncStateFromAsyncValue(ref.watch(uidProvider)),
         organizer: catchAsyncStateFromAsyncValue(
-          ref.watch(fetchOrganizerProvider(clubId)),
+          ref.watch(fetchOrganizerProvider(organizerId)),
         ),
         event: catchAsyncStateFromAsyncValue(
           ref.watch(watchEventProvider(eventId)),
@@ -26,7 +26,7 @@ class HostEventPublicationRouteScreen extends ConsumerWidget {
       ),
       onRetry: () {
         ref.invalidate(uidProvider);
-        ref.invalidate(fetchOrganizerProvider(clubId));
+        ref.invalidate(fetchOrganizerProvider(organizerId));
         ref.invalidate(watchEventProvider(eventId));
       },
       loadingBuilder: (_) => const HostEventPublicationStateScaffold(

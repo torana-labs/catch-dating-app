@@ -332,7 +332,7 @@
   },
   {
     "id": "club-sales-sunday-table",
-    "listingVariant": "appCreatedClub",
+    "listingVariant": "appCreatedOrganizer",
     "dataOrigin": "catchDemo",
     "name": "Sunday Table Club",
     "slug": "sunday-table-club",

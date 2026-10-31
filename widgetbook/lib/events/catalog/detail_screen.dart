@@ -49,7 +49,7 @@ Widget eventDetailScreenStates(BuildContext context) {
         child: _RouteFrame(
           value: const AsyncLoading<EventDetailViewModel?>(),
           child: EventDetailScreen(
-            clubId: widgetbookEventsOrganizerId,
+            organizerId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -60,7 +60,7 @@ Widget eventDetailScreenStates(BuildContext context) {
         child: _RouteFrame(
           value: const AsyncData<EventDetailViewModel?>(null),
           child: EventDetailScreen(
-            clubId: widgetbookEventsOrganizerId,
+            organizerId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -74,7 +74,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             StackTrace.empty,
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsOrganizerId,
+            organizerId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -87,7 +87,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             _eventVm(widgetbookEvent, participation: widgetbookEventsSignedUp),
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsOrganizerId,
+            organizerId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -100,7 +100,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             _eventVm(widgetbookEvent, isAuthenticated: false, isSaved: false),
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsOrganizerId,
+            organizerId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -113,7 +113,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             _eventVm(widgetbookEvent, userProfile: _hostViewer, isHost: true),
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsOrganizerId,
+            organizerId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -127,7 +127,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             StackTrace.empty,
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsOrganizerId,
+            organizerId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
           ),
@@ -140,7 +140,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             _eventVm(widgetbookEvent, participation: widgetbookEventsSignedUp),
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsOrganizerId,
+            organizerId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
             presentationMode: EventDetailPresentationMode.ticket,
@@ -154,7 +154,7 @@ Widget eventDetailScreenStates(BuildContext context) {
             _eventVm(widgetbookEvent, participation: widgetbookEventsSignedUp),
           ),
           child: EventDetailScreen(
-            clubId: widgetbookEventsOrganizerId,
+            organizerId: widgetbookEventsOrganizerId,
             eventId: widgetbookEvent.id,
             enableMapNetworkTiles: false,
             presentationMode: EventDetailPresentationMode.spotlightDark,
@@ -175,7 +175,7 @@ Widget eventDetailScreenStates(BuildContext context) {
               ),
             ),
             child: EventDetailScreen(
-              clubId: widgetbookEventsOrganizerId,
+              organizerId: widgetbookEventsOrganizerId,
               eventId: widgetbookEvent.id,
               enableMapNetworkTiles: false,
             ),
@@ -194,7 +194,7 @@ Widget eventDetailScreenStates(BuildContext context) {
               ),
             ),
             child: EventDetailScreen(
-              clubId: widgetbookEventsOrganizerId,
+              organizerId: widgetbookEventsOrganizerId,
               eventId: widgetbookEvent.id,
               enableMapNetworkTiles: false,
             ),

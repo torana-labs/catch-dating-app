@@ -15,7 +15,7 @@ import 'preview.dart';
 )
 Widget organizerShareCardStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubShareCard',
+    title: 'OrganizerShareCard',
     catalogId: 'card.club.share',
     children: [
       WidgetbookPageStateCard(
@@ -39,7 +39,7 @@ Widget organizerShareCardStates(BuildContext context) {
 )
 Widget organizerShareArtworkStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubShareCover',
+    title: 'OrganizerShareCover',
     catalogId: 'card.club.share.artwork',
     children: [
       WidgetbookPageStateCard(

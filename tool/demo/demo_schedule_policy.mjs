@@ -12,7 +12,7 @@ const businessRules = JSON.parse(
 
 const MINUTE_MS = 60 * 1000;
 const USER_SCHEDULE_STATUSES = new Set(["signedUp", "waitlisted", "attended"]);
-const CLUB_LOCK_COLLECTION = "clubScheduleLocks";
+const ORGANIZER_LOCK_COLLECTION = "organizerScheduleLocks";
 const USER_EVENT_LOCK_COLLECTION = "userEventScheduleLocks";
 
 export const EVENT_MAX_DURATION_MINUTES =
@@ -23,7 +23,7 @@ export const EVENT_SCHEDULE_LOCK_SLOT_MINUTES =
 export function scheduleComplianceIssues({
   events,
   participations = [],
-  clubScheduleLocks = [],
+  organizerScheduleLocks = [],
   userEventScheduleLocks = [],
   checkLocks = false,
 }) {
@@ -43,17 +43,17 @@ export function scheduleComplianceIssues({
     }
   }
 
-  const activeEventsByClub = groupBy(
+  const activeEventsByOrganizer = groupBy(
     [...eventWindows.values()].filter((event) => event.status !== "cancelled"),
-    (event) => event.clubId
+    (event) => event.organizerId
   );
-  for (const clubEvents of activeEventsByClub.values()) {
-    forEachOverlappingPair(clubEvents, (first, second) => {
+  for (const organizerEvents of activeEventsByOrganizer.values()) {
+    forEachOverlappingPair(organizerEvents, (first, second) => {
       issues.push({
         code: "club-schedule-overlap",
         path: `events/${second.eventId}`,
         message:
-          `Club ${second.clubId} has overlapping events ` +
+          `Club ${second.organizerId} has overlapping events ` +
           `${first.eventId} and ${second.eventId}.`,
       });
     });
@@ -83,7 +83,7 @@ export function scheduleComplianceIssues({
     scheduledParticipations.push({
       uid: data.uid,
       eventId: data.eventId,
-      clubId: data.clubId ?? event.clubId,
+      organizerId: data.organizerId ?? event.organizerId,
       startTimeMillis: event.startTimeMillis,
       endTimeMillis: event.endTimeMillis,
       path: participation.path ?? `eventParticipations/${participation.id ?? `${data.eventId}_${data.uid}`}`,
@@ -107,7 +107,7 @@ export function scheduleComplianceIssues({
     issues.push(...scheduleLockIssues({
       eventWindows,
       scheduledParticipations,
-      clubScheduleLocks,
+      organizerScheduleLocks,
       userEventScheduleLocks,
     }));
   }
@@ -125,19 +125,19 @@ export function assertScheduleCompliance(params) {
   }
 }
 
-export function buildClubScheduleLockDocs({event}) {
+export function buildOrganizerScheduleLockDocs({event}) {
   const window = eventWindow(event);
   if (window.status === "cancelled") return [];
   validateEventWindow(window);
   return scheduleSlots(window).map((slot) => ({
-    path: `${CLUB_LOCK_COLLECTION}/${window.clubId}_${slot}`,
+    path: `${ORGANIZER_LOCK_COLLECTION}/${window.organizerId}_${slot}`,
     data: {
       ...demoMarkerFor(window.data),
       ownerType: "club",
-      ownerId: window.clubId,
+      ownerId: window.organizerId,
       slot,
       eventId: window.eventId,
-      clubId: window.clubId,
+      organizerId: window.organizerId,
       startTimeMillis: window.startTimeMillis,
       endTimeMillis: window.endTimeMillis,
     },
@@ -158,7 +158,7 @@ export function buildUserEventScheduleLockDocs({event, participation}) {
       ownerId: data.uid,
       slot,
       eventId: window.eventId,
-      clubId: data.clubId ?? window.clubId,
+      organizerId: data.organizerId ?? window.organizerId,
       uid: data.uid,
       startTimeMillis: window.startTimeMillis,
       endTimeMillis: window.endTimeMillis,
@@ -170,7 +170,7 @@ export function buildScheduleLockDocs({events, participations}) {
   const eventById = new Map(events.map((event) => [event.id, event]));
   const docs = [];
   for (const event of events) {
-    docs.push(...buildClubScheduleLockDocs({event}));
+    docs.push(...buildOrganizerScheduleLockDocs({event}));
   }
   for (const participation of participations) {
     const data = participation.data ?? participation.doc ?? participation;
@@ -218,7 +218,7 @@ export async function assertNoUserEventScheduleConflictInFirestore({
 function scheduleLockIssues({
   eventWindows,
   scheduledParticipations,
-  clubScheduleLocks,
+  organizerScheduleLocks,
   userEventScheduleLocks,
 }) {
   const issues = [];
@@ -226,9 +226,9 @@ function scheduleLockIssues({
   for (const event of eventWindows.values()) {
     if (event.status === "cancelled") continue;
     for (const slot of scheduleSlots(event)) {
-      expected.set(`${CLUB_LOCK_COLLECTION}/${event.clubId}_${slot}`, {
+      expected.set(`${ORGANIZER_LOCK_COLLECTION}/${event.organizerId}_${slot}`, {
         ownerType: "club",
-        ownerId: event.clubId,
+        ownerId: event.organizerId,
         slot,
         eventId: event.eventId,
       });
@@ -246,7 +246,7 @@ function scheduleLockIssues({
   }
 
   const actual = new Map([
-    ...clubScheduleLocks.map((doc) => [doc.path, doc]),
+    ...organizerScheduleLocks.map((doc) => [doc.path, doc]),
     ...userEventScheduleLocks.map((doc) => [doc.path, doc]),
   ]);
   for (const [pathValue, expectedData] of expected.entries()) {
@@ -284,14 +284,14 @@ function scheduleLockIssues({
 function eventWindow(event) {
   const data = event.data ?? event.doc ?? event;
   const eventId = event.id ?? data.id;
-  const clubId = event.clubId ?? data.clubId;
+  const organizerId = event.organizerId ?? data.organizerId;
   if (typeof eventId !== "string") throw new Error("event id must be a string.");
-  if (typeof clubId !== "string") {
-    throw new Error(`events/${eventId} clubId must be a string.`);
+  if (typeof organizerId !== "string") {
+    throw new Error(`events/${eventId} organizerId must be a string.`);
   }
   return {
     eventId,
-    clubId,
+    organizerId,
     status: data.status ?? "active",
     data,
     path: event.path ?? `events/${eventId}`,

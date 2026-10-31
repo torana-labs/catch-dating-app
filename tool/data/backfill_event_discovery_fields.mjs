@@ -85,12 +85,12 @@ export async function buildEventDiscoveryProjectionRepairPlan(
   firestore,
   eventDiscoveryProjection
 ) {
-  const [eventsSnap, clubsSnap] = await Promise.all([
+  const [eventsSnap, organizersSnap] = await Promise.all([
     firestore.collection("events").get(),
-    firestore.collection("clubs").get(),
+    firestore.collection("organizers").get(),
   ]);
-  const clubs = new Map(
-    clubsSnap.docs.map((doc) => [doc.id, doc.data()])
+  const organizers = new Map(
+    organizersSnap.docs.map((doc) => [doc.id, doc.data()])
   );
   const repairs = [];
   const warnings = [];
@@ -98,21 +98,21 @@ export async function buildEventDiscoveryProjectionRepairPlan(
   for (const eventDoc of eventsSnap.docs) {
     const event = eventDoc.data();
     const {
-      clubLocation,
-      clubLocationMarketId,
+      organizerLocation,
+      organizerLocationMarketId,
       warning,
-    } = citySourceForEvent(eventDoc, event, clubs);
+    } = citySourceForEvent(eventDoc, event, organizers);
     if (warning) warnings.push(warning);
 
     const expected = pickDiscoveryProjection(
-      eventDiscoveryProjection({event, clubLocation, clubLocationMarketId})
+      eventDiscoveryProjection({event, organizerLocation, organizerLocationMarketId})
     );
     const current = pickDiscoveryProjection(event);
     if (!isDeepStrictEqual(current, expected)) {
       repairs.push({
         path: eventDoc.ref.path,
         eventId: eventDoc.id,
-        clubId: typeof event.clubId === "string" ? event.clubId : null,
+        organizerId: typeof event.organizerId === "string" ? event.organizerId : null,
         current,
         expected,
       });
@@ -123,7 +123,7 @@ export async function buildEventDiscoveryProjectionRepairPlan(
     repairs,
     summary: {
       eventsScanned: eventsSnap.size,
-      clubsScanned: clubsSnap.size,
+      organizersScanned: organizersSnap.size,
       repairsNeeded: repairs.length,
       warnings,
       repairs,
@@ -150,38 +150,38 @@ export function pickDiscoveryProjection(data) {
   );
 }
 
-function citySourceForEvent(eventDoc, event, clubs) {
-  const clubId = typeof event.clubId === "string" ? event.clubId : null;
-  const club = clubId ? clubs.get(clubId) : null;
-  const clubLocationMarketId = stringOrNull(club?.locationMarketId);
-  const clubLocation = stringOrNull(club?.location);
-  if (clubLocationMarketId || clubLocation) {
+function citySourceForEvent(eventDoc, event, organizers) {
+  const organizerId = typeof event.organizerId === "string" ? event.organizerId : null;
+  const organizer = organizerId ? organizers.get(organizerId) : null;
+  const organizerLocationMarketId = stringOrNull(organizer?.locationMarketId);
+  const organizerLocation = stringOrNull(organizer?.location);
+  if (organizerLocationMarketId || organizerLocation) {
     return {
-      clubLocation,
-      clubLocationMarketId,
+      organizerLocation,
+      organizerLocationMarketId,
       warning: null,
     };
   }
 
   const fallbackMarketId = stringOrNull(event.discoveryMarketId);
   const fallbackCity = stringOrNull(event.discoveryCityName);
-  const missingClubWarning = clubId ?
-    `${eventDoc.ref.path} references missing clubs/${clubId}; ` +
+  const missingOrganizerWarning = organizerId ?
+    `${eventDoc.ref.path} references missing clubs/${organizerId}; ` +
       "using existing discovery market fallback." :
-    `${eventDoc.ref.path} has no clubId; ` +
+    `${eventDoc.ref.path} has no organizerId; ` +
       "using existing discovery market fallback.";
   if (fallbackMarketId || fallbackCity) {
     return {
-      clubLocation: fallbackCity,
-      clubLocationMarketId: fallbackMarketId,
-      warning: missingClubWarning,
+      organizerLocation: fallbackCity,
+      organizerLocationMarketId: fallbackMarketId,
+      warning: missingOrganizerWarning,
     };
   }
 
   return {
-    clubLocation: null,
-    clubLocationMarketId: null,
-    warning: `${missingClubWarning} Event will not be discoverable by market ` +
+    organizerLocation: null,
+    organizerLocationMarketId: null,
+    warning: `${missingOrganizerWarning} Event will not be discoverable by market ` +
       "until its club link is repaired.",
   };
 }
@@ -230,7 +230,7 @@ function compactSummary(summary) {
   ).length;
   return {
     eventsScanned: summary.eventsScanned,
-    clubsScanned: summary.clubsScanned,
+    organizersScanned: summary.organizersScanned,
     repairsNeeded: summary.repairsNeeded,
     marketlessRepairs,
     warningCount: summary.warnings.length,
@@ -241,7 +241,7 @@ function compactSummary(summary) {
 function printSummary(summary, {summaryOnly = false} = {}) {
   console.log("Event discovery projection repair plan");
   console.log(`Events scanned: ${summary.eventsScanned}`);
-  console.log(`Clubs scanned: ${summary.clubsScanned}`);
+  console.log(`Clubs scanned: ${summary.organizersScanned}`);
   console.log(`Repairs needed: ${summary.repairsNeeded}`);
 
   if (!summaryOnly && summary.repairs.length > 0) {

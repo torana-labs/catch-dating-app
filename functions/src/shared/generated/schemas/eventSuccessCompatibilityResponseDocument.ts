@@ -23,7 +23,7 @@ export const eventSuccessCompatibilityResponseDocumentSchema: Record<string, unk
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "uid",
     "answerIds",
     "createdAt",
@@ -31,12 +31,6 @@ export const eventSuccessCompatibilityResponseDocumentSchema: Record<string, unk
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

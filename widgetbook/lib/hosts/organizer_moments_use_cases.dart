@@ -94,7 +94,7 @@ Widget organizerMomentsEntryField(BuildContext context) {
         label: 'manage entry',
         child: WidgetbookUtilityDeviceFrame(
           child: OrganizerMomentsEntryField(
-            clubId: widgetbookOrganizerOrganizer.id,
+            organizerId: widgetbookOrganizerOrganizer.id,
             event: widgetbookOrganizerEvent(
               id: 'preview_event',
               startTime: DateTime(2026, 10, 3, 18),

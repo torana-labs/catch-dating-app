@@ -195,15 +195,9 @@ export const matchDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "enum": [
         "match",
-        "clubHostInquiry",
+        "organizerHostInquiry",
         "crossPathsEventPlan"
       ],
-      "x-catch-ownership": "trigger-owned"
-    },
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
       "x-catch-ownership": "trigger-owned"
     },
     "organizerId": {

@@ -73,7 +73,7 @@ interface FirstHelloDeps {
 
 interface EventSuccessPlanDocument {
   eventId?: string;
-  clubId?: string;
+  organizerId?: string;
   selectedModuleIds?: unknown;
 }
 
@@ -84,7 +84,6 @@ interface FirstHelloAnswerOption {
 
 interface FirstHelloMissionDocument {
   eventId: string;
-  clubId: string;
   organizerId: string;
   observerUid: string;
   targetUid: string;
@@ -163,7 +162,7 @@ export async function startEventSuccessFirstHelloMissionHandler(
   ]);
 
   const event = requireFirstHelloEvent(eventSnap);
-  requireFirstHelloPlan(planSnap, data.eventId, event.clubId);
+  requireFirstHelloPlan(planSnap, data.eventId, event.organizerId);
   const viewer = await loadEventSuccessRosterParticipant(
     db,
     data.eventId,
@@ -220,9 +219,7 @@ export async function startEventSuccessFirstHelloMissionHandler(
   const now = deps.serverTimestamp();
   const mission = buildFirstHelloMission({
     eventId: data.eventId,
-    clubId: event.clubId,
-
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     observerUid,
     target,
     venueSessionId: claims.sessionId,
@@ -307,7 +304,7 @@ export async function completeEventSuccessFirstHelloMissionHandler(
     .collection("eventSuccessArrivalMissions")
     .doc(firstHelloMissionId(data.eventId, observerUid));
 
-  let signalClubId: string | null = null;
+  let signalOrganizerId: string | null = null;
   let wasMarkedAttended = false;
 
   await db.runTransaction(async (tx) => {
@@ -326,7 +323,7 @@ export async function completeEventSuccessFirstHelloMissionHandler(
     ]);
 
     const event = requireFirstHelloEvent(eventSnap);
-    requireFirstHelloPlan(planSnap, data.eventId, event.clubId);
+    requireFirstHelloPlan(planSnap, data.eventId, event.organizerId);
     const participation = participationSnap.exists ?
       requireSignedUpParticipant(participationSnap, observerUid) : null;
     const runtimeParticipant = participation ? null :
@@ -346,7 +343,7 @@ export async function completeEventSuccessFirstHelloMissionHandler(
       observerUid,
       ["registered", "checkedIn"]
     ) : null;
-    signalClubId = event.clubId;
+    signalOrganizerId = event.organizerId;
 
     if (participation?.status === "attended" ||
         runtimeAttendee?.status === "checkedIn") {
@@ -440,8 +437,7 @@ export async function completeEventSuccessFirstHelloMissionHandler(
       tx.set(participationRef, eventParticipationPatch({
         exists: participationSnap.exists,
         eventId: data.eventId,
-        clubId: event.clubId,
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
         uid: observerUid,
         status: "attended",
         genderAtSignup: participation.genderAtSignup ?? undefined,
@@ -469,11 +465,11 @@ export async function completeEventSuccessFirstHelloMissionHandler(
     wasMarkedAttended = true;
   });
 
-  if (wasMarkedAttended && signalClubId != null) {
+  if (wasMarkedAttended && signalOrganizerId != null) {
     await deps.recordSignalFacts?.(db, [
       buildAttendanceSignalFact({
         eventId: data.eventId,
-        clubId: signalClubId,
+        organizerId: signalOrganizerId,
         uid: observerUid,
         attended: true,
         sourceId: `first_hello_${data.eventId}_${observerUid}`,
@@ -607,7 +603,7 @@ function firstHelloPreferenceRank(
  * Builds a persisted First Hello mission.
  * @param {object} params Mission inputs.
  * @param {string} params.eventId Event id.
- * @param {string} params.clubId Club id.
+ * @param {string} params.organizerId Club id.
  * @param {string} params.observerUid Caller user id.
  * @param {FirstHelloCandidate} params.target Selected target.
  * @param {FirebaseFirestore.FieldValue} params.now Server timestamp.
@@ -615,8 +611,7 @@ function firstHelloPreferenceRank(
  */
 function buildFirstHelloMission(params: {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   observerUid: string;
   target: FirstHelloCandidate;
   venueSessionId: string;
@@ -625,8 +620,7 @@ function buildFirstHelloMission(params: {
 }): FirstHelloMissionDocument {
   return {
     eventId: params.eventId,
-    clubId: params.clubId,
-    organizerId: params.organizerId ?? params.clubId,
+    organizerId: params.organizerId,
     observerUid: params.observerUid,
     venueSessionId: params.venueSessionId,
     venueSessionRedemptionId: params.venueSessionRedemptionId,
@@ -665,12 +659,12 @@ function requireFirstHelloEvent(snap: FirebaseFirestore.DocumentSnapshot):
  * Requires a saved event-success plan with First Hello enabled.
  * @param {FirebaseFirestore.DocumentSnapshot} snap Plan snapshot.
  * @param {string} eventId Event id.
- * @param {string} clubId Club id.
+ * @param {string} organizerId Club id.
  */
 function requireFirstHelloPlan(
   snap: FirebaseFirestore.DocumentSnapshot,
   eventId: string,
-  clubId: string
+  organizerId: string
 ) {
   if (!snap.exists) {
     throw new HttpsError(
@@ -684,7 +678,7 @@ function requireFirstHelloPlan(
   );
   if (
     (plan.eventId !== undefined && plan.eventId !== eventId) ||
-    (plan.clubId !== undefined && plan.clubId !== clubId) ||
+    (plan.organizerId !== undefined && plan.organizerId !== organizerId) ||
     !moduleSelected(plan.selectedModuleIds, FIRST_HELLO_MODULE_ID)
   ) {
     throw new HttpsError(

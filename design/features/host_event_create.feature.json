@@ -49,7 +49,7 @@
         "dataContracts": [
           "contracts/callables/place_details_payload.schema.json",
           "contracts/callables/places_autocomplete_payload.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/event_success_preferences.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/storage/event_photos.schema.json"
@@ -92,7 +92,7 @@
           "owner": "route_screen",
           "codeValue": "reloadOrganizer",
           "cardinality": "singleton",
-          "scopeKeys": ["routeInstanceId", "clubId", "failureStateVersion"],
+          "scopeKeys": ["routeInstanceId", "organizerId", "failureStateVersion"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["club_fetch_loading", "initial_club_extra", "club_fetch_error", "club_not_found", "unauthorized_host"]}],
           "description": "Reloads the organizer needed to authorize and start the create route."
         },
@@ -128,7 +128,7 @@
           "owner": "create_screen",
           "codeValue": "_pickEventPhotos",
           "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId", "clubId", "remainingPhotoSlots"],
+          "scopeKeys": ["routeInstanceId", "organizerId", "remainingPhotoSlots"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["event_photos", "offline"]}],
           "description": "Selects up to the remaining event-photo limit for ordered upload on submission."
         },
@@ -182,7 +182,7 @@
           "owner": "create_screen",
           "codeValue": "_pickLocation",
           "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId", "clubId", "locationSelectionVersion"],
+          "scopeKeys": ["routeInstanceId", "organizerId", "locationSelectionVersion"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["location_picker_selected", "location_picker_offline_search"]}],
           "description": "Opens the meeting-location picker with the current pin or city/device hint."
         },
@@ -299,7 +299,7 @@
           "owner": "draft_controller",
           "codeValue": "saveDraft",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "clubId", "draftId", "draftSignature"],
+          "scopeKeys": ["viewerUid", "organizerId", "draftId", "draftSignature"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["draft_save_update", "offline"]}],
           "description": "Creates or updates the viewer's device-local draft for this organizer."
         },
@@ -308,7 +308,7 @@
           "owner": "draft_actions",
           "codeValue": "_restoreFromDraft",
           "cardinality": "unbounded",
-          "scopeKeys": ["viewerUid", "clubId", "draftId"],
+          "scopeKeys": ["viewerUid", "organizerId", "draftId"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["draft_picker_restore"]}],
           "description": "Restores a selected local draft into all compatible wizard fields."
         },
@@ -317,7 +317,7 @@
           "owner": "draft_picker",
           "codeValue": "createEvent",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "clubId", "pickerInstanceId"],
+          "scopeKeys": ["viewerUid", "organizerId", "pickerInstanceId"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["basics_default"]}],
           "description": "Starts the single Create event path from the combined sheet."
         },
@@ -326,7 +326,7 @@
           "owner": "draft_controller",
           "codeValue": "deleteDraft",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "clubId", "draftId"],
+          "scopeKeys": ["viewerUid", "organizerId", "draftId"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["draft_delete"]}],
           "description": "Deletes one confirmed device-local draft."
         },
@@ -344,7 +344,7 @@
           "owner": "create_screen",
           "codeValue": "showCreateEventUnsavedChangesDialog",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "clubId", "routeInstanceId", "draftSignature"],
+          "scopeKeys": ["viewerUid", "organizerId", "routeInstanceId", "draftSignature"],
           "outcomes": [{"kind": "side_effect", "id": "host_event_create.draft_saved_and_dismissed"}],
           "description": "Saves the current draft and closes the flow from the unsaved-changes dialog."
         },
@@ -362,7 +362,7 @@
           "owner": "submit_controller",
           "codeValue": "submit",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "clubId", "draftSignature"],
+          "scopeKeys": ["viewerUid", "organizerId", "draftSignature"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["submit_pending", "submit_error", "success_manage", "offline"]}],
           "description": "Validates, creates the event, uploads ordered photos, and removes a restored draft only after successful submission."
         },
@@ -371,7 +371,7 @@
           "owner": "wizard_state",
           "codeValue": "manageEvent",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "clubId", "eventId"],
+          "scopeKeys": ["viewerUid", "organizerId", "eventId"],
           "outcomes": [{"kind": "route", "authority": {"registry": "flutter_screens", "id": "screen.host.event.manage"}}],
           "description": "Replaces the success surface with Host Event Manage for the newly created event."
         },
@@ -380,7 +380,7 @@
           "owner": "wizard_state",
           "codeValue": "backToOrganizer",
           "cardinality": "singleton",
-          "scopeKeys": ["routeInstanceId", "clubId", "eventId"],
+          "scopeKeys": ["routeInstanceId", "organizerId", "eventId"],
           "outcomes": [{"kind": "side_effect", "id": "host_event_create.success_dismissed_to_caller"}],
           "description": "Pops the successful create flow back to whichever host surface launched it."
         },

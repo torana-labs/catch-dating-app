@@ -17,7 +17,7 @@ const schemaEventInviteLinkDocumentSchema = <String, Object?>{
   'x-owner': 'event invite link callables and event-success scorecard recomputation',
   'required': <Object?>[
     'eventId',
-    'clubId',
+    'organizerId',
     'hostUid',
     'label',
     'source',
@@ -36,12 +36,6 @@ const schemaEventInviteLinkDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-      'x-catch-ownership': 'callable-owned',
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

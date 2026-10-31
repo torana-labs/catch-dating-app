@@ -10,17 +10,17 @@ enum Routes {
   onboardingScreen('/onboarding', AppRouteAudience.consumer),
   calendarScreen('/calendar', AppRouteAudience.consumer),
   calendarEventDetailScreen(
-    '/calendar/organizers/:clubId/events/:eventId',
+    '/calendar/organizers/:organizerId/events/:eventId',
     AppRouteAudience.consumer,
   ),
   savedEventsScreen('/saved-events', AppRouteAudience.consumer),
   savedEventDetailScreen(
-    '/saved-events/organizers/:clubId/events/:eventId',
+    '/saved-events/organizers/:organizerId/events/:eventId',
     AppRouteAudience.consumer,
   ),
   filtersScreen('/filters', AppRouteAudience.consumer),
   dashboardEventDetailScreen(
-    '/dashboard/organizers/:clubId/events/:eventId',
+    '/dashboard/organizers/:organizerId/events/:eventId',
     AppRouteAudience.consumer,
   ),
   eventChatScreen('/events/:eventId/chat', AppRouteAudience.shared),
@@ -45,13 +45,13 @@ enum Routes {
   ),
   exploreScreen('/organizers', AppRouteAudience.consumer),
   exploreMapScreen('/organizers/map', AppRouteAudience.consumer),
-  organizerDetailScreen('/organizers/:clubId', AppRouteAudience.consumer),
+  organizerDetailScreen('/organizers/:organizerId', AppRouteAudience.consumer),
   eventDetailScreen(
-    '/organizers/:clubId/events/:eventId',
+    '/organizers/:organizerId/events/:eventId',
     AppRouteAudience.consumer,
   ),
   eventSuccessCompanionScreen(
-    '/organizers/:clubId/events/:eventId/companion',
+    '/organizers/:organizerId/events/:eventId/companion',
     AppRouteAudience.consumer,
   ),
   swipeHubScreen('/catches', AppRouteAudience.consumer),
@@ -77,11 +77,11 @@ enum Routes {
   hostAudienceScreen('/host/audience', AppRouteAudience.host),
   hostNewMessageScreen('/host/inbox/new', AppRouteAudience.host),
   hostEventRosterScreen(
-    '/host/organizers/:clubId/events/:eventId/guests',
+    '/host/organizers/:organizerId/events/:eventId/guests',
     AppRouteAudience.host,
   ),
   hostEventPublicationScreen(
-    '/host/organizers/:clubId/events/:eventId/publication',
+    '/host/organizers/:organizerId/events/:eventId/publication',
     AppRouteAudience.host,
   ),
   hostResponseOfferScreen(
@@ -194,7 +194,7 @@ enum Routes {
   // Compatibility redirect for existing program-index links.
   hostProgramsScreen('/host/programs', AppRouteAudience.host),
   hostCreateProgramScreen(
-    '/host/organizers/:clubId/create-program',
+    '/host/organizers/:organizerId/create-program',
     AppRouteAudience.host,
   ),
   hostProgramWorkspaceScreen(
@@ -223,7 +223,7 @@ enum Routes {
   ),
   hostOrganizerScreen('/host/organizer', AppRouteAudience.host),
   hostOrganizerMessagingScreen(
-    '/host/organizer/:clubId/messaging',
+    '/host/organizer/:organizerId/messaging',
     AppRouteAudience.host,
   ),
   hostOrganizersScreen('/host/organizers', AppRouteAudience.host),
@@ -244,45 +244,48 @@ enum Routes {
     '/host/organizers/memberships',
     AppRouteAudience.host,
   ),
-  hostOrganizerDetailScreen('/host/organizers/:clubId', AppRouteAudience.host),
+  hostOrganizerDetailScreen(
+    '/host/organizers/:organizerId',
+    AppRouteAudience.host,
+  ),
   hostCreateOrganizerScreen(
     '/host/organizers/create-organizer',
     AppRouteAudience.host,
   ),
   hostCreateEventScreen(
-    '/host/organizers/:clubId/create-event',
+    '/host/organizers/:organizerId/create-event',
     AppRouteAudience.host,
   ),
   hostEventRehearsalStartScreen(
-    '/host/organizers/:clubId/rehearsals/new',
+    '/host/organizers/:organizerId/rehearsals/new',
     AppRouteAudience.host,
   ),
   hostEventRehearsalScreen(
-    '/host/organizers/:clubId/rehearsals/:sessionId',
+    '/host/organizers/:organizerId/rehearsals/:sessionId',
     AppRouteAudience.host,
   ),
   hostAppEventDetailScreen(
-    '/host/organizers/:clubId/events/:eventId',
+    '/host/organizers/:organizerId/events/:eventId',
     AppRouteAudience.host,
   ),
   hostAppEventManageScreen(
-    '/host/organizers/:clubId/events/:eventId/manage',
+    '/host/organizers/:organizerId/events/:eventId/manage',
     AppRouteAudience.host,
   ),
   hostAppEditEventScreen(
-    '/host/organizers/:clubId/events/:eventId/edit',
+    '/host/organizers/:organizerId/events/:eventId/edit',
     AppRouteAudience.host,
   ),
   hostAppAttendanceSheet(
-    '/host/organizers/:clubId/events/:eventId/attendance',
+    '/host/organizers/:organizerId/events/:eventId/attendance',
     AppRouteAudience.host,
   ),
   hostAppEventSuccessScreen(
-    '/host/organizers/:clubId/events/:eventId/success',
+    '/host/organizers/:organizerId/events/:eventId/success',
     AppRouteAudience.host,
   ),
   hostAppEventMomentsScreen(
-    '/host/organizers/:clubId/events/:eventId/moments',
+    '/host/organizers/:organizerId/events/:eventId/moments',
     AppRouteAudience.host,
   ),
   hostInboxScreen('/host/inbox', AppRouteAudience.host),

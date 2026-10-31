@@ -109,7 +109,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -396,7 +395,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -929,7 +927,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -1480,7 +1477,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -2060,7 +2056,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -2643,7 +2638,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -3211,7 +3205,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -3610,7 +3603,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -4083,7 +4075,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -4483,7 +4474,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -4899,7 +4889,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -5466,7 +5455,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -5771,7 +5759,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -6323,7 +6310,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,
@@ -6900,7 +6886,6 @@
     "session": {
       "id": "session-1",
       "organizerId": "organizer-1",
-      "clubId": "organizer-1",
       "ownerUid": "host-1",
       "sourceEventId": null,
       "sourceEventRevision": null,

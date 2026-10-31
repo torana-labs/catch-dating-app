@@ -170,7 +170,7 @@ void main() {
       final plan = EventSuccessPlan.fromDraft(
         id: event.id,
         eventId: event.id,
-        clubId: event.clubId,
+        organizerId: event.organizerId,
         draft: draft,
         createdAt: story.clock('planning'),
         updatedAt: story.clock('live'),

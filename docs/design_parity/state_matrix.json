@@ -1531,7 +1531,7 @@
                 "test/organizers/organizers_controllers_test.dart",
                 "test/organizers/organizers_flow_test.dart"
               ],
-              "notes": "Core club/events/auth loading renders ClubDetailLoadingBody with hero, stats, host, about, tag, and upcoming-section skeletons unless initialClub placeholder data is available; club_detail_loading and club_detail_initial_loading capture both branches."
+              "notes": "Core club/events/auth loading renders OrganizerDetailLoadingBody with hero, stats, host, about, tag, and upcoming-section skeletons unless initialOrganizer placeholder data is available; club_detail_loading and club_detail_initial_loading capture both branches."
             },
             {
               "id": "not_found",
@@ -1607,7 +1607,7 @@
               "tests": [
                 "test/organizers/organizers_flow_test.dart"
               ],
-              "notes": "Guest Join CTA opens auth with /clubs/:clubId as the return route."
+              "notes": "Guest Join CTA opens auth with /clubs/:organizerId as the return route."
             },
             {
               "id": "host_public_view",
@@ -1704,7 +1704,7 @@
             {
               "id": "DP-CLUB-DETAIL-001",
               "status": "closed",
-              "nextAction": "Closed by the consumer-only dock decision: shared public Club Detail sections are reused by Host Club Detail, while provider-backed OrganizerMembershipDock stays screen-local and CatchClubDock promotion is deferred until another host/member action-dock contract exists."
+              "nextAction": "Closed by the consumer-only dock decision: shared public Club Detail sections are reused by Host Club Detail, while provider-backed OrganizerMembershipDock stays screen-local and CatchOrganizerDock promotion is deferred until another host/member action-dock contract exists."
             },
             {
               "id": "DP-CLUB-DETAIL-002",
@@ -5670,7 +5670,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "CatchFormTextRow<UpdateOrganizerPatch> descriptors expand Identity and Contact rows and run saves through HostOrganizerEditController.updateClubMutation. Captures cover an expanded text field with pending, generic error, and offline save states.",
+              "notes": "CatchFormTextRow<UpdateOrganizerPatch> descriptors expand Identity and Contact rows and run saves through HostOrganizerEditController.updateOrganizerMutation. Captures cover an expanded text field with pending, generic error, and offline save states.",
               "previewIds": [
                 "HostOrganizersScreen/Route states"
               ],
@@ -5722,7 +5722,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "Owner-only event-policy and activity-aware Event Success defaults now live on the Event defaults and Live event guide spokes. HostOrganizerDefaultsSaver serializes optimistic functional updates and coalesces rapid changes before HostOrganizerEditController.updateClubMutation persists the full OrganizerHostDefaults value.",
+              "notes": "Owner-only event-policy and activity-aware Event Success defaults now live on the Event defaults and Live event guide spokes. HostOrganizerDefaultsSaver serializes optimistic functional updates and coalesces rapid changes before HostOrganizerEditController.updateOrganizerMutation persists the full OrganizerHostDefaults value.",
               "previewIds": [
                 "HostOrganizerEventDefaultsScreen/Owner loaded",
                 "HostOrganizerLiveGuideScreen/Owner loaded"
@@ -5777,7 +5777,7 @@
               "id": "update_club_pending",
               "kind": "mutation",
               "status": "captured",
-              "notes": "HostOrganizerEditController.updateClubMutation disables expanded editor actions and shows pending state while the updateClub callable is in flight. Deterministic captures cover pending inline saves.",
+              "notes": "HostOrganizerEditController.updateOrganizerMutation disables expanded editor actions and shows pending state while the updateOrganizer callable is in flight. Deterministic captures cover pending inline saves.",
               "previewIds": [
                 "HostOrganizersScreen/Route states"
               ],
@@ -5789,7 +5789,7 @@
               "id": "update_club_error",
               "kind": "mutation",
               "status": "captured",
-              "notes": "HostOrganizerEditController.updateClubMutation failures keep the expanded editor open and render CatchBanner.error with AppErrorContext.club copy. Captures cover generic and offline save failures.",
+              "notes": "HostOrganizerEditController.updateOrganizerMutation failures keep the expanded editor open and render CatchBanner.error with AppErrorContext.club copy. Captures cover generic and offline save failures.",
               "previewIds": [
                 "HostOrganizersScreen/Route states"
               ],
@@ -5934,7 +5934,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "_HostClubPreviewPane renders club description and receives a typed public-preview route callback from _HostClubsScaffold. Coordinate with screen.host.club.detail so public-preview display state shares fixtures.",
+              "notes": "_HostOrganizerPreviewPane renders club description and receives a typed public-preview route callback from _HostOrganizersScaffold. Coordinate with screen.host.club.detail so public-preview display state shares fixtures.",
               "previewIds": [
                 "HostOrganizersScreen/Route states"
               ],
@@ -6234,7 +6234,7 @@
             {
               "id": "DS-HOST-CLUBS-002",
               "status": "closed",
-              "nextAction": "Selected club, selected tab, and owner/co-host role capability live in HostOrganizersScreenState. _HostClubsScaffold defaults to the Organizer overview and routes its public preview, payout/edit, insights, settings, and club-switch actions through typed callbacks. Inline edit and payout actions now have controller mutations; Host Team sheet/dialog states are public; HostOrganizerInsightsState owns analytics query and retry target identity. Broader provider-free section extraction remains part of GOAL-DS-002."
+              "nextAction": "Selected club, selected tab, and owner/co-host role capability live in HostOrganizersScreenState. _HostOrganizersScaffold defaults to the Organizer overview and routes its public preview, payout/edit, insights, settings, and club-switch actions through typed callbacks. Inline edit and payout actions now have controller mutations; Host Team sheet/dialog states are public; HostOrganizerInsightsState owns analytics query and retry target identity. Broader provider-free section extraction remains part of GOAL-DS-002."
             },
             {
               "id": "DS-HOST-CLUBS-003",
@@ -6301,7 +6301,7 @@
               "id": "loading_without_initial_club",
               "kind": "loading",
               "status": "captured",
-              "notes": "HostOrganizerDetailScreenState maps organizerDetailViewModelProvider loading with no route extra to ClubDetailLoadingBody with hero, stats, host, about, tag, and upcoming-section skeletons. Use the deterministic capture as the baseline for future skeleton visual parity edits.",
+              "notes": "HostOrganizerDetailScreenState maps organizerDetailViewModelProvider loading with no route extra to OrganizerDetailLoadingBody with hero, stats, host, about, tag, and upcoming-section skeletons. Use the deterministic capture as the baseline for future skeleton visual parity edits.",
               "tests": [
                 "test/organizers/organizers_controllers_test.dart",
                 "test/organizers/organizers_flow_test.dart"
@@ -6321,7 +6321,7 @@
                 "test/organizers/organizers_controllers_test.dart",
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "HostOrganizerDetailScreenState maps loading plus initialClub to public-preview content so host navigation keeps credible club content while live data loads. Decide whether this fallback needs a visible refreshing indicator before pixel comparison.",
+              "notes": "HostOrganizerDetailScreenState maps loading plus initialOrganizer to public-preview content so host navigation keeps credible club content while live data loads. Decide whether this fallback needs a visible refreshing indicator before pixel comparison.",
               "previewIds": [
                 "OrganizerDetailScreen/Public preview states"
               ],
@@ -6410,7 +6410,7 @@
               "tests": [
                 "test/organizers/organizers_flow_test.dart"
               ],
-              "notes": "OrganizerDetailScreen passes a route-level onEventSelected callback into OrganizerDetailBody. In host app role, schedule taps route to hostAppEventDetailScreen with the clubId/eventId params preserved.",
+              "notes": "OrganizerDetailScreen passes a route-level onEventSelected callback into OrganizerDetailBody. In host app role, schedule taps route to hostAppEventDetailScreen with the organizerId/eventId params preserved.",
               "previewIds": [
                 "OrganizerDetailScreen/Public preview states"
               ]
@@ -6461,7 +6461,7 @@
               "id": "host_controls_missing",
               "kind": "populated",
               "status": "captured",
-              "notes": "The current Host Club Detail contract is public-preview-only: HostClubManagementPanel, Add event, Edit club, payouts, and team controls stay in Host Home and Host Clubs. Add a new host-control variant only if the design contract moves operations onto this route.",
+              "notes": "The current Host Club Detail contract is public-preview-only: HostOrganizerManagementPanel, Add event, Edit club, payouts, and team controls stay in Host Home and Host Clubs. Add a new host-control variant only if the design contract moves operations onto this route.",
               "previewIds": [
                 "OrganizerDetailScreen/Public preview states"
               ],
@@ -6567,7 +6567,7 @@
             {
               "id": "DS-HOST-CLUB-DETAIL-002",
               "status": "closed",
-              "nextAction": "HostOrganizerDetailScreenState owns branch selection, initial data fallback, host ownership/public-preview mode, dock suppression, and load-error retry intent typing. HostOrganizerDetailError carries HostOrganizerDetailRetryIntent.reloadDetail, and OrganizerDetailScreen executes that typed retry through _retryHostClubDetail before invalidating organizerDetailViewModelProvider. Schedule routing, host profile/message actions, contact launches, and share side effects are also wired through typed callbacks."
+              "nextAction": "HostOrganizerDetailScreenState owns branch selection, initial data fallback, host ownership/public-preview mode, dock suppression, and load-error retry intent typing. HostOrganizerDetailError carries HostOrganizerDetailRetryIntent.reloadDetail, and OrganizerDetailScreen executes that typed retry through _retryHostOrganizerDetail before invalidating organizerDetailViewModelProvider. Schedule routing, host profile/message actions, contact launches, and share side effects are also wired through typed callbacks."
             },
             {
               "id": "DS-HOST-CLUB-DETAIL-003",
@@ -8628,7 +8628,7 @@
               "id": "host_query_filtering",
               "kind": "populated",
               "status": "tested",
-              "notes": "ChatsListViewModel filters host app data to matches where match.isClubHostInquiry is true; mixed host-inquiry and consumer-dating matches are covered by a host-specific test. collapseMatchesByOtherUser uses a typed club, optional-event, and attendee key: same-event duplicates collapse, different event inquiries remain distinct, and General never aliases an event id.",
+              "notes": "ChatsListViewModel filters host app data to matches where match.isOrganizerHostInquiry is true; mixed host-inquiry and consumer-dating matches are covered by a host-specific test. collapseMatchesByOtherUser uses a typed club, optional-event, and attendee key: same-event duplicates collapse, different event inquiries remain distinct, and General never aliases an event id.",
               "previewIds": [
                 "HostInboxScreen/Event-scoped states"
               ],
@@ -11360,7 +11360,7 @@
               "tests": [
                 "test/dashboard/dashboard_screen_test.dart"
               ],
-              "notes": "NotificationsListState derives chat, event detail, or club detail paths from matchId, eventId+clubId, or clubId before ActivitySection renders provider-free rows.",
+              "notes": "NotificationsListState derives chat, event detail, or club detail paths from matchId, eventId+organizerId, or organizerId before ActivitySection renders provider-free rows.",
               "previewIds": [
                 "NotificationRow/Row states"
               ]

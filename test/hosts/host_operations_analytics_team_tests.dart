@@ -76,7 +76,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       ownerUserId: _hostUid,
     );
     final previewEvent = buildEvent(
-      clubId: ownedOrganizer.id,
+      organizerId: ownedOrganizer.id,
       startTime: DateTime(2030, 7, 20, 7),
     );
 
@@ -434,7 +434,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
         id: 'media-summary',
         ownerUserId: _hostUid,
         profileImageUrl: 'https://example.test/logo.png',
-        clubPhotos: [
+        organizerPhotos: [
           _uploadedOrganizerPhoto('one', position: 0),
           _uploadedOrganizerPhoto('two', position: 1),
         ],
@@ -681,8 +681,8 @@ void _registerHostOperationsAnalyticsTeamTests() {
             organizer: organizer,
             currentUid: _hostUid,
             isOwner: true,
-            onOpenSettingsRoute: (route, clubId) =>
-                destinations.add((route, clubId)),
+            onOpenSettingsRoute: (route, organizerId) =>
+                destinations.add((route, organizerId)),
           ),
         ),
       ),
@@ -721,7 +721,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOrganizerEventDefaultsScreen(clubId: organizer.id),
+      HostOrganizerEventDefaultsScreen(organizerId: organizer.id),
       overrides: overrides,
     );
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
@@ -745,7 +745,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOrganizerLiveGuideScreen(clubId: organizer.id),
+      HostOrganizerLiveGuideScreen(organizerId: organizer.id),
       overrides: overrides,
     );
     expect(find.byType(CatchToggleInput), findsNothing);
@@ -753,14 +753,14 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOrganizerTeamScreen(clubId: organizer.id),
+      HostOrganizerTeamScreen(organizerId: organizer.id),
       overrides: overrides,
     );
     expect(find.text('Add host'), findsNothing);
 
     await _pumpHostScreen(
       tester,
-      HostOrganizerPaymentsScreen(clubId: organizer.id),
+      HostOrganizerPaymentsScreen(organizerId: organizer.id),
       overrides: overrides,
     );
     expect(find.text('Owner'), findsOneWidget);
@@ -774,7 +774,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     final organizer = buildOrganizer(
       id: 'media-remove',
       ownerUserId: _hostUid,
-      clubPhotos: [_uploadedOrganizerPhoto('one', position: 0)],
+      organizerPhotos: [_uploadedOrganizerPhoto('one', position: 0)],
     );
 
     await _pumpHostOrganizerEditTab(
@@ -808,7 +808,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     final organizer = buildOrganizer(
       id: 'media-reorder',
       ownerUserId: _hostUid,
-      clubPhotos: [
+      organizerPhotos: [
         _uploadedOrganizerPhoto('one', position: 0),
         _uploadedOrganizerPhoto('two', position: 1),
       ],

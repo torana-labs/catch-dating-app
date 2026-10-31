@@ -17,18 +17,12 @@ const schemaEventPrivateAccessDocumentSchema = <String, Object?>{
   'x-owner': 'createEvent callable; readable only by the host of the linked event',
   'required': <Object?>[
     'eventId',
-    'clubId',
+    'organizerId',
     'inviteCode',
     'createdAt',
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-      'x-catch-ownership': 'callable-owned',
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

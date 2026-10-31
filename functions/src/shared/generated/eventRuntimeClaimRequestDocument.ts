@@ -7,7 +7,6 @@
  */
 export interface EventRuntimeClaimRequestDocument {
   eventId: string;
-  clubId: string;
   organizerId: string;
   uid: string;
   displayName: string;

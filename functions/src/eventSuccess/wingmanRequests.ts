@@ -47,7 +47,7 @@ interface WingmanRequestDeps {
 
 interface EventSuccessPlanDocument {
   eventId?: string;
-  clubId?: string;
+  organizerId?: string;
   selectedModuleIds?: unknown;
   wingmanRequestsEnabled?: boolean;
 }
@@ -110,7 +110,7 @@ export async function fetchEventSuccessWingmanCandidatesHandler(
   ]);
 
   const event = requireActiveWingmanEvent(eventSnap, deps.nowMillis());
-  requireWingmanPlan(planSnap, data.eventId, event.clubId);
+  requireWingmanPlan(planSnap, data.eventId, event.organizerId);
   const viewer = await loadEventSuccessRosterParticipant(
     db,
     data.eventId,
@@ -219,7 +219,7 @@ export async function submitEventSuccessWingmanRequestHandler(
       eventSnap,
       deps.nowMillis()
     );
-    requireWingmanPlan(planSnap, data.eventId, event.clubId);
+    requireWingmanPlan(planSnap, data.eventId, event.organizerId);
     await requireCheckedInEventSuccessParticipant(
       tx,
       db,
@@ -245,9 +245,7 @@ export async function submitEventSuccessWingmanRequestHandler(
     const now = deps.serverTimestamp();
     tx.set(requestRef, {
       eventId: data.eventId,
-      clubId: event.clubId,
-
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       requesterUid,
       targetUid: data.targetUid,
       status: "active",
@@ -390,12 +388,12 @@ function requireActiveWingmanEvent(
  * Requires a saved event-success plan with wingman requests enabled.
  * @param {FirebaseFirestore.DocumentSnapshot} snap Plan snapshot.
  * @param {string} eventId Event id.
- * @param {string} clubId Club id.
+ * @param {string} organizerId Club id.
  */
 function requireWingmanPlan(
   snap: FirebaseFirestore.DocumentSnapshot,
   eventId: string,
-  clubId: string
+  organizerId: string
 ) {
   if (!snap.exists) {
     throw new HttpsError(
@@ -409,7 +407,7 @@ function requireWingmanPlan(
   );
   if (
     (plan.eventId !== undefined && plan.eventId !== eventId) ||
-    (plan.clubId !== undefined && plan.clubId !== clubId) ||
+    (plan.organizerId !== undefined && plan.organizerId !== organizerId) ||
     plan.wingmanRequestsEnabled === false ||
     !moduleSelected(plan.selectedModuleIds, WINGMAN_REQUESTS_MODULE_ID)
   ) {

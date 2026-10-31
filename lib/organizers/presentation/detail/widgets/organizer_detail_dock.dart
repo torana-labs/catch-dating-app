@@ -331,7 +331,7 @@ class OrganizerMembershipDock extends ConsumerWidget {
               (tx) async => tx
                   .get(organizerMembershipControllerProvider.notifier)
                   .setPushNotifications(
-                    clubId: organizer.id,
+                    organizerId: organizer.id,
                     enabled: !pushNotificationsEnabled,
                   ),
             ),

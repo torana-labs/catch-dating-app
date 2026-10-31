@@ -419,7 +419,7 @@ function SafetyDetailPanel({
               <StateRow label="Primary user" value={detail.primaryUserId} />
               <StateRow label="Secondary user" value={detail.secondaryUserId} />
               <StateRow label="Event" value={detail.eventId} />
-              <StateRow label="Club" value={detail.clubId} />
+              <StateRow label="Club" value={detail.organizerId} />
               <StateRow label="Source" value={detail.source} />
               <StateRow label="Context" value={detail.contextId} />
               <StateRow

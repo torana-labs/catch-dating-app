@@ -548,7 +548,7 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
         'prefsRunStatusUpdates': <String, Object?>{
           'type': 'boolean',
         },
-        'prefsClubUpdates': <String, Object?>{
+        'prefsOrganizerUpdates': <String, Object?>{
           'type': 'boolean',
         },
         'prefsWeeklyDigest': <String, Object?>{

@@ -11,7 +11,6 @@
   "x-owner": "createEventRosterHandoff and ingestEventRosterWebhook",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "hostUid",
     "tokenHash",
@@ -23,7 +22,6 @@
   ],
   "properties": {
     "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "hostUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "tokenHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},

@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/add_organizer_host_payload.schema.json",
+  "title": "AddOrganizerHostCallablePayload",
+  "description": "Callable payload accepted by addOrganizerHost.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId"],
+  "oneOf": [
+    {"required": ["uid"]},
+    {"required": ["phoneNumber"]}
+  ],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "phoneNumber": {"type": "string", "minLength": 6, "maxLength": 32}
+  }
+}

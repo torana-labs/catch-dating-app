@@ -695,7 +695,6 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
             'accessStatus',
             'attendanceStatus',
             'eventId',
-            'clubId',
             'organizerId',
             'requiredFieldIds',
             'completedFieldIds',
@@ -736,11 +735,6 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
               ],
             },
             'eventId': <String, Object?>{
-              'type': 'string',
-              'minLength': 1,
-              'maxLength': 180,
-            },
-            'clubId': <String, Object?>{
               'type': 'string',
               'minLength': 1,
               'maxLength': 180,

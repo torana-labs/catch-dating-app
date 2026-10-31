@@ -7,8 +7,7 @@
  */
 export interface EventInviteLinkDocument {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   hostUid: string;
   label: string;
   source: string | null;

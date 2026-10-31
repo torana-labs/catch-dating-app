@@ -12,7 +12,7 @@ import {createHash} from "crypto";
 const eventId = "eventA";
 const organizerId = "organizerA";
 const importId = "importA";
-const event = {clubId: organizerId, organizerId,
+const event = {organizerId,
   status: "active", capacityLimit: 3, constraints: {}};
 const policy = deriveEventSeatPolicy(event);
 

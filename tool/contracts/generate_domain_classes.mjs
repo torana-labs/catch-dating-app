@@ -283,7 +283,7 @@ const SPECS = [
           }
         },
         {
-          "name": "clubId",
+          "name": "organizerId",
           "dartType": "String",
           "forceRequired": true,
           "jsonKey": {
@@ -628,7 +628,7 @@ const SPECS = [
   },
   {
     className: "OrganizerMembership",
-    schema: "firestore/club_memberships.schema.json",
+    schema: "firestore/organizer_memberships.schema.json",
     output: "lib/contexts/organizers/domain/organizer_membership.dart",
     imports: [IMPORT_CONVERTERS],
     extensionFile: "lib/contexts/organizers/domain/organizer_membership_extensions.dart",
@@ -642,7 +642,7 @@ const SPECS = [
         fields: [
           {name: "id", dartType: "String", synthetic: true,
             forceRequired: true, jsonKey: {includeToJson: false}},
-          {name: "clubId", dartType: "String"},
+          {name: "organizerId", dartType: "String"},
           {name: "uid", dartType: "String"},
           {name: "role", enumType: "OrganizerMembershipRole"},
           {name: "status", enumType: "OrganizerMembershipStatus"},

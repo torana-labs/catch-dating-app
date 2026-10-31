@@ -635,7 +635,7 @@ state mapper plus section composition.
 
 ## Open Decisions
 
-1. Whether feature-level Claude components such as `ProfileHero`, `ClubHero`,
+1. Whether feature-level Claude components such as `ProfileHero`, `OrganizerHero`,
    `DashboardEventCard`, and `LiveConsole` are reusable components or
    screen-specific sections.
 2. How strict to make raw-value lints at each phase.

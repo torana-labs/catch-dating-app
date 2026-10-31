@@ -13,14 +13,14 @@ import 'scope.dart';
 )
 Widget membershipTrailingControllerStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubJoinAction',
+    title: 'OrganizerJoinAction',
     catalogId: 'atom.club.membership_trailing_controller',
     children: [
       WidgetbookPageStateCard(
         label: 'joinable controller',
         child: WidgetbookOrganizerOrganizerDirectoryPreviewScope(
           child: OrganizerJoinAction(
-            clubId: widgetbookOrganizerOrganizer.id,
+            organizerId: widgetbookOrganizerOrganizer.id,
             isJoined: false,
           ),
         ),
@@ -28,7 +28,7 @@ Widget membershipTrailingControllerStates(BuildContext context) {
       const WidgetbookPageStateCard(
         label: 'joined controller',
         child: OrganizerJoinAction(
-          clubId: widgetbookOrganizerOrganizerId,
+          organizerId: widgetbookOrganizerOrganizerId,
           isJoined: true,
         ),
       ),
@@ -43,7 +43,7 @@ Widget membershipTrailingControllerStates(BuildContext context) {
 )
 Widget membershipTrailingStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubJoinButton',
+    title: 'OrganizerJoinButton',
     catalogId: 'atom.club.membership_trailing',
     children: [
       WidgetbookPageStateCard(

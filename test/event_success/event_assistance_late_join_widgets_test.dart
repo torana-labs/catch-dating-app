@@ -63,7 +63,7 @@ void main() {
                   child: EventAssistanceLiveSettingsSection(
                     event: buildEvent(
                       id: scope.eventId,
-                      clubId: scope.organizerId,
+                      organizerId: scope.organizerId,
                     ),
                   ),
                 ),
@@ -175,7 +175,7 @@ void main() {
                 child: EventAssistanceLiveSettingsSection(
                   event: buildEvent(
                     id: scope.eventId,
-                    clubId: scope.organizerId,
+                    organizerId: scope.organizerId,
                   ),
                 ),
               ),

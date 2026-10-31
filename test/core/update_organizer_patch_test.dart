@@ -23,7 +23,7 @@ void main() {
         hostAvatarUrl: 'https://example.test/avatar.png',
         imageUrl: 'https://example.test/cover.png',
         profileImageUrl: 'https://example.test/profile.png',
-        clubPhotos: [_uploadedPhoto(id: 'club-photo-1')],
+        organizerPhotos: [_uploadedPhoto(id: 'club-photo-1')],
         logoPhoto: _uploadedPhoto(id: 'club-logo-1'),
         tags: const ['social'],
         instagramHandle: 'x',
@@ -85,7 +85,7 @@ void main() {
             .schemaContractsByName['UpdateOrganizerCallablePayload']!,
       );
       expect(
-        schema.validate(patch.toCallableJson(clubId: 'club-1')).isValid,
+        schema.validate(patch.toCallableJson(organizerId: 'club-1')).isValid,
         isTrue,
       );
     });
@@ -97,7 +97,7 @@ void main() {
             .schemaContractsByName['UpdateOrganizerCallablePayload']!,
       );
       expect(
-        schema.validate(patch.toCallableJson(clubId: 'club-1')).isValid,
+        schema.validate(patch.toCallableJson(organizerId: 'club-1')).isValid,
         isTrue,
       );
     });

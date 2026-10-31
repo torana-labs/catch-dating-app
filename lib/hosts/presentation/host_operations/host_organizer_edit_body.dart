@@ -21,7 +21,7 @@ abstract final class HostOrganizerMediaKeys {
 }
 
 typedef HostOrganizerSettingsNavigation =
-    void Function(Routes route, String clubId);
+    void Function(Routes route, String organizerId);
 
 class HostOrganizerEditBody extends ConsumerStatefulWidget {
   const HostOrganizerEditBody({
@@ -64,7 +64,7 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
         (tx) => tx
             .get(hostOrganizerEditControllerProvider)
             .updateOrganizer(
-              clubId: widget.organizer.id,
+              organizerId: widget.organizer.id,
               patch: UpdateOrganizerPatch(publicListingEnabled: enabled),
             ),
       );
@@ -92,7 +92,8 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
     } else if (oldWidget.initialExpandedField != widget.initialExpandedField) {
       _setExpandedField(widget.initialExpandedField);
     }
-    if (oldWidget.organizer.clubPhotos != widget.organizer.clubPhotos ||
+    if (oldWidget.organizer.organizerPhotos !=
+            widget.organizer.organizerPhotos ||
         oldWidget.organizer.profileImageUrl !=
             widget.organizer.profileImageUrl ||
         oldWidget.organizer.logoPhoto != widget.organizer.logoPhoto) {
@@ -126,7 +127,7 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
   void _resetMediaFromOrganizer() {
     final drafts = <_HostOrganizerMediaDraft>[
       for (final photo in [
-        ...widget.organizer.clubPhotos,
+        ...widget.organizer.organizerPhotos,
       ]..sort((a, b) => a.position.compareTo(b.position)))
         _HostExistingOrganizerMediaDraft(photo),
     ];
@@ -684,7 +685,7 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
       ref,
       (tx) => tx
           .get(hostOrganizerEditControllerProvider)
-          .updateOrganizer(clubId: widget.organizer.id, patch: patch),
+          .updateOrganizer(organizerId: widget.organizer.id, patch: patch),
     );
     return true;
   }

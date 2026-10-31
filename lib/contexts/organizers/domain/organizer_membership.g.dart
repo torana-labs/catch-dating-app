@@ -9,7 +9,7 @@ part of 'organizer_membership.dart';
 _OrganizerMembership _$OrganizerMembershipFromJson(Map<String, dynamic> json) =>
     _OrganizerMembership(
       id: json['id'] as String,
-      clubId: json['clubId'] as String,
+      organizerId: json['organizerId'] as String,
       uid: json['uid'] as String,
       role: $enumDecode(_$OrganizerMembershipRoleEnumMap, json['role']),
       status: $enumDecode(_$OrganizerMembershipStatusEnumMap, json['status']),
@@ -23,7 +23,7 @@ _OrganizerMembership _$OrganizerMembershipFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$OrganizerMembershipToJson(
   _OrganizerMembership instance,
 ) => <String, dynamic>{
-  'clubId': instance.clubId,
+  'organizerId': instance.organizerId,
   'uid': instance.uid,
   'role': _$OrganizerMembershipRoleEnumMap[instance.role]!,
   'status': _$OrganizerMembershipStatusEnumMap[instance.status]!,

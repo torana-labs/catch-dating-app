@@ -156,7 +156,7 @@ export async function adminGetOverviewHandler(
     openEventSafetyReports,
     restrictedEventAssistance,
     pendingAccessApplications,
-    pendingClubClaimRequests,
+    pendingOrganizerClaimRequests,
     indexReviewPages,
     activeHosts,
     activeEvents,
@@ -168,8 +168,8 @@ export async function adminGetOverviewHandler(
     moderationFlags,
     eventSafetyReports,
     accessApplications,
-    clubClaimRequests,
-    clubIndexReviews,
+    organizerClaimRequests,
+    organizerIndexReviews,
     paymentIssues,
   ] = await Promise.all([
     countAuthUsersCreatedSince(deps.auth(), today),
@@ -238,9 +238,9 @@ export async function adminGetOverviewHandler(
       "organizerClaimRequests",
       "status",
       "pending",
-      "clubClaimRequest"
+      "organizerClaimRequest"
     ),
-    listClubIndexReviewItems(db),
+    listOrganizerIndexReviewItems(db),
     listPaymentIssueItems(db),
   ]);
 
@@ -275,9 +275,9 @@ export async function adminGetOverviewHandler(
         pendingAccessApplications
       ),
       metric(
-        "pendingClubClaims",
+        "pendingOrganizerClaims",
         "Pending organizer claims",
-        pendingClubClaimRequests
+        pendingOrganizerClaimRequests
       ),
       metric("indexReviewPages", "Index review pages", indexReviewPages),
       metric("activeHosts", "Active organizer team seats", activeHosts),
@@ -299,8 +299,8 @@ export async function adminGetOverviewHandler(
         ...eventSafetyReports,
       ].slice(0, 5),
       accessApplications,
-      clubClaimRequests,
-      clubIndexReviews,
+      organizerClaimRequests,
+      organizerIndexReviews,
       paymentIssues,
     },
     dataQuality: [
@@ -454,7 +454,7 @@ async function listRestrictedEventAssistanceCases(
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
  * @return {Promise<AdminQueueItem[]>} Index review rows.
  */
-async function listClubIndexReviewItems(
+async function listOrganizerIndexReviewItems(
   db: FirebaseFirestore.Firestore
 ): Promise<AdminQueueItem[]> {
   const snapshot = await db.collection("organizers")
@@ -463,7 +463,8 @@ async function listClubIndexReviewItems(
     .limit(5)
     .get();
   return snapshot.docs.map((doc) =>
-    normalizeQueueItem("clubIndexReview", `organizers/${doc.id}`, doc.data())
+    normalizeQueueItem("organizerIndexReview", `organizers/${doc.id}`,
+      doc.data())
   );
 }
 
@@ -538,7 +539,7 @@ export function normalizeQueueItem(
       title: `Event ${stringValue(data.eventId) ?? "unknown"}`,
       detail: [
         `organizer ${stringValue(data.organizerId) ??
-          stringValue(data.clubId) ?? "unknown"}`,
+          stringValue(data.organizerId) ?? "unknown"}`,
         `reporter ${stringValue(data.reporterUserId) ?? "unknown"}`,
       ].join(" - "),
       status,
@@ -577,14 +578,14 @@ export function normalizeQueueItem(
       targetPath,
     };
   }
-  if (kind === "clubClaimRequest") {
+  if (kind === "organizerClaimRequest") {
     return {
       id: targetPath,
       title: stringValue(data.requesterName) ??
         stringValue(data.requesterUid) ??
         "Organizer claim",
       detail: [
-        `club ${stringValue(data.clubId) ?? "unknown"}`,
+        `club ${stringValue(data.organizerId) ?? "unknown"}`,
         stringValue(data.requesterRole),
         stringValue(data.businessEmail) ??
           stringValue(data.businessPhone) ??
@@ -596,7 +597,7 @@ export function normalizeQueueItem(
       targetPath,
     };
   }
-  if (kind === "clubIndexReview") {
+  if (kind === "organizerIndexReview") {
     const publicPage = objectValue(data.publicPage);
     const provenance = objectValue(data.provenance);
     return {

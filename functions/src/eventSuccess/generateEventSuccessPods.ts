@@ -81,7 +81,7 @@ interface EventSuccessPodsDeps {
 
 interface EventSuccessPlanDocument {
   eventId?: string;
-  clubId?: string;
+  organizerId?: string;
   selectedModuleIds?: unknown;
   assignmentFeatureRules?: AssignmentFeatureRule[];
   assignmentFeatureRevision?: number;
@@ -166,7 +166,6 @@ interface GeneratedGroupRotationSlot {
 
 interface GeneratedAssignment {
   eventId: string;
-  clubId: string;
   organizerId: string;
   uid: string;
   moduleId: string;
@@ -279,7 +278,8 @@ export async function generateEventSuccessPodsHandler(
     throw new HttpsError("failed-precondition",
       "Event-success plan does not match this event.");
   }
-  if (plan.clubId !== undefined && plan.clubId !== event.clubId) {
+  if (plan.organizerId !== undefined &&
+      plan.organizerId !== event.organizerId) {
     throw new HttpsError("failed-precondition",
       "Event-success plan does not match this club.");
   }
@@ -314,7 +314,7 @@ export async function generateEventSuccessPodsHandler(
 
   const featureRules = plan.assignmentFeatureRules ?? [];
   const featureSnapshots = await loadAuthorizedAssignmentFeatures({db,
-    eventId, organizerId: event.organizerId ?? event.clubId,
+    eventId, organizerId: event.organizerId,
     eligibleUids: eligibleParticipants.map((person) => person.uid),
     rules: featureRules});
 
@@ -349,14 +349,12 @@ export async function generateEventSuccessPodsHandler(
     constraints,
     rotationPolicy,
     timing,
-    softFeatures: {eventId, organizerId: event.organizerId ?? event.clubId,
+    softFeatures: {eventId, organizerId: event.organizerId,
       rules: featureRules, snapshots: featureSnapshots},
   });
   const assignments = buildAssignments({
     eventId,
-    clubId: event.clubId,
-
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     unitKind: topology.unitKind,
     groups: builtPods.groups,
     groupRounds: builtPods.groupRounds,
@@ -367,13 +365,13 @@ export async function generateEventSuccessPodsHandler(
   });
   const layout = await loadSelectedEventSuccessLayout(
     db,
-    event.organizerId ?? event.clubId,
+    event.organizerId,
     plan
   );
   applyEventSuccessSpatialLayout(assignments, layout, plan, 0);
   if (featureRules.length) {
     const audit = buildAssignmentFeatureAudit({eventId,
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       configHash: plan.assignmentFeatureConfigHash ?? "",
       snapshots: featureSnapshots});
     for (const assignment of assignments.values()) {
@@ -381,7 +379,7 @@ export async function generateEventSuccessPodsHandler(
     }
   }
   await writeAssignments(db, eventId, assignments, featureRules.length ? {
-    organizerId: event.organizerId ?? event.clubId, rules: featureRules,
+    organizerId: event.organizerId, rules: featureRules,
     snapshots: featureSnapshots,
     revision: plan.assignmentFeatureRevision ?? 0,
     configHash: plan.assignmentFeatureConfigHash ?? "",
@@ -458,9 +456,7 @@ export async function overrideEventSuccessGroupsHandler(
   });
   const assignments = buildAssignments({
     eventId: payload.eventId,
-    clubId: event.clubId,
-
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     unitKind: topology.unitKind,
     groups: topology.rotationsEnabled ? [] : rounds[0].groups,
     groupRounds: topology.rotationsEnabled ? rounds : [],
@@ -548,7 +544,8 @@ async function loadGroupEventContext(
     throw new HttpsError("failed-precondition",
       "Event-success plan does not match this event.");
   }
-  if (plan.clubId !== undefined && plan.clubId !== event.clubId) {
+  if (plan.organizerId !== undefined &&
+      plan.organizerId !== event.organizerId) {
     throw new HttpsError("failed-precondition",
       "Event-success plan does not match this club.");
   }
@@ -930,7 +927,7 @@ function chunk<T>(values: T[], size: number): T[][] {
  * Builds assignment documents for each participant in each generated pod.
  * @param {object} params Assignment build params.
  * @param {string} params.eventId Event id.
- * @param {string} params.clubId Club id.
+ * @param {string} params.organizerId Club id.
  * @param {AssignmentGroup[]} params.groups Pod groups.
  * @param {AssignmentGroupRound[]} params.groupRounds Rotations.
  * @param {FirebaseFirestore.FieldValue} params.now Server timestamp field.
@@ -938,8 +935,7 @@ function chunk<T>(values: T[], size: number): T[][] {
  */
 function buildAssignments(params: {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   unitKind: EventSuccessUnitKind;
   groups: AssignmentGroup[];
   groupRounds: AssignmentGroupRound[];
@@ -955,8 +951,7 @@ function buildAssignments(params: {
   ) {
     return buildGroupRotationAssignments({
       eventId: params.eventId,
-      clubId: params.clubId,
-      organizerId: params.organizerId ?? params.clubId,
+      organizerId: params.organizerId,
       unitKind: params.unitKind,
       groupRounds: params.groupRounds,
       rotationIntervalMinutes: params.rotationIntervalMinutes,
@@ -978,8 +973,7 @@ function buildAssignments(params: {
       const docId = assignmentId(params.eventId, participant.uid);
       assignments.set(docId, {
         eventId: params.eventId,
-        clubId: params.clubId,
-        organizerId: params.organizerId ?? params.clubId,
+        organizerId: params.organizerId,
         uid: participant.uid,
         moduleId: MICRO_PODS_MODULE_ID,
         label,
@@ -1015,8 +1009,7 @@ function buildAssignments(params: {
  */
 function buildGroupRotationAssignments(params: {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   unitKind: EventSuccessUnitKind;
   groupRounds: AssignmentGroupRound[];
   rotationIntervalMinutes: number;
@@ -1095,8 +1088,7 @@ function buildGroupRotationAssignments(params: {
     const docId = assignmentId(params.eventId, uid);
     assignments.set(docId, {
       eventId: params.eventId,
-      clubId: params.clubId,
-      organizerId: params.organizerId ?? params.clubId,
+      organizerId: params.organizerId,
       uid,
       moduleId: MICRO_PODS_MODULE_ID,
       label: `${unitSingularLabel(params.unitKind)} rotations`,

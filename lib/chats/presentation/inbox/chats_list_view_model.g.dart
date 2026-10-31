@@ -109,4 +109,4 @@ final class ChatsListViewModelProvider
 }
 
 String _$chatsListViewModelHash() =>
-    r'ef4c34799a2e6c49eab926ebb9f1497bdce8e5ad';
+    r'6b2fa7585929862c89cf16b49d493a21dcde5223';

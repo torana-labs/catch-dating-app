@@ -768,7 +768,6 @@
         "functions/src/events/eventAttendees.ts",
         "functions/src/events/eventAttendees.test.ts",
         "functions/src/shared/organizerHosts.ts",
-        "functions/src/shared/clubHosts.ts",
         "functions/src/shared/organizerHosts.test.ts",
         "functions/src/organizers/manageOrganizerTeam.ts",
         "functions/src/profiles/syncPublicProfile.ts",

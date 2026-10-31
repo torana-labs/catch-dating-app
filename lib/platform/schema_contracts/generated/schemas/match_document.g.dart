@@ -197,15 +197,9 @@ const schemaMatchDocumentSchema = <String, Object?>{
       'type': 'string',
       'enum': <Object?>[
         'match',
-        'clubHostInquiry',
+        'organizerHostInquiry',
         'crossPathsEventPlan',
       ],
-      'x-catch-ownership': 'trigger-owned',
-    },
-    'clubId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
       'x-catch-ownership': 'trigger-owned',
     },
     'organizerId': <String, Object?>{

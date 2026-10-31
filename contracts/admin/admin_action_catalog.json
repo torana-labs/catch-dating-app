@@ -806,7 +806,7 @@
         "adminOwner",
         "support"
       ],
-      "requestSchema": "contracts/callables/admin_list_club_claim_requests_payload.schema.json",
+      "requestSchema": "contracts/callables/admin_list_organizer_claim_requests_payload.schema.json",
       "summary": "List the bounded organizer-claim review queue.",
       "example": {}
     },
@@ -824,7 +824,7 @@
         "adminOwner",
         "support"
       ],
-      "requestSchema": "contracts/callables/admin_get_club_claim_request_details_payload.schema.json",
+      "requestSchema": "contracts/callables/admin_get_organizer_claim_request_details_payload.schema.json",
       "summary": "Load one organizer-claim request and its proof references.",
       "example": {
         "requestId": "example-claim"
@@ -846,7 +846,7 @@
       ],
       "confirmation": "action-and-target",
       "targetField": "requestId",
-      "requestSchema": "contracts/callables/admin_decide_club_claim_payload.schema.json",
+      "requestSchema": "contracts/callables/admin_decide_organizer_claim_payload.schema.json",
       "summary": "Approve or reject one organizer claim request.",
       "example": {
         "requestId": "example-claim",
@@ -935,11 +935,11 @@
         "support"
       ],
       "confirmation": "action-and-target",
-      "targetField": "clubId",
-      "requestSchema": "contracts/callables/admin_set_club_index_status_payload.schema.json",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_set_organizer_index_status_payload.schema.json",
       "summary": "Set one organizer compatibility profile's index-readiness state.",
       "example": {
-        "clubId": "example-organizer",
+        "organizerId": "example-organizer",
         "indexStatus": "noindex",
         "checklist": {
           "sourceEvidenceVerified": true,

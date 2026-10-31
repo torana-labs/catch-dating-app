@@ -3245,6 +3245,11 @@
           "tool": "architecture:organizer-rename",
           "stage": "manual",
           "docAnchor": "docs/app_architecture.md#organizer-domain-cutover"
+        },
+        {
+          "tool": "architecture:wire-organizer-rename",
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#organizer-domain-cutover"
         }
       ]
     },

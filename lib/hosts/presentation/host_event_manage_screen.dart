@@ -165,7 +165,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             accessState: privateAccessState,
             inviteLinksState: inviteLinksState,
             inviteLink: hostEventInviteUrl(
-              clubId: organizer.id,
+              organizerId: organizer.id,
               eventId: event.id,
               inviteCode: privateAccessState?.value?.inviteCode,
             ),
@@ -192,7 +192,10 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       onManagePublication: event.setupRevision != null
           ? () => context.pushNamed(
               Routes.hostEventPublicationScreen.name,
-              pathParameters: {'clubId': organizer.id, 'eventId': event.id},
+              pathParameters: {
+                'organizerId': organizer.id,
+                'eventId': event.id,
+              },
               extra: organizer,
             )
           : null,
@@ -257,7 +260,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             ),
             HostGuestIntakeField(
               eventId: event.id,
-              organizerId: event.clubId,
+              organizerId: event.organizerId,
               bookingProvider: event.eventOrigin?.provider,
               suggestedRevenueAmountMinor: event.priceInPaise,
               revenueCurrency: event.currency,
@@ -315,11 +318,11 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               emphasis: CatchFieldEmphasis.title,
               onTap: () => context.pushNamed(
                 Routes.hostEventRehearsalStartScreen.name,
-                pathParameters: {'clubId': organizer.id},
+                pathParameters: {'organizerId': organizer.id},
                 queryParameters: {'eventId': event.id},
               ),
             ),
-            OrganizerMomentsEntryField(clubId: organizer.id, event: event),
+            OrganizerMomentsEntryField(organizerId: organizer.id, event: event),
           ],
         ),
         gapH20,
@@ -421,7 +424,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       ],
       HostOperationalRosterSection(
         eventId: event.id,
-        organizerId: event.clubId,
+        organizerId: event.organizerId,
         allowManualGuest: screenState.phase == HostEventWorkspacePhase.runtime,
         allowAttendanceChanges:
             screenState.phase != HostEventWorkspacePhase.recap,
@@ -508,7 +511,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       context.pushNamed(
         Routes.hostEventRosterScreen.name,
         pathParameters: {
-          'clubId': widget.organizer.id,
+          'organizerId': widget.organizer.id,
           'eventId': widget.event.id,
         },
         extra: widget.event,

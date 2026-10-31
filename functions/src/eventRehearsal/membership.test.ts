@@ -19,7 +19,7 @@ import {buildRehearsalActors, applyRehearsalBehavior as behavior,
 
 function organizer(): OrganizerDocument {
   const fixture = JSON.parse(readFileSync(
-    "../contracts/fixtures/valid/club_doc.json", "utf8"));
+    "../contracts/fixtures/valid/organizer_doc.json", "utf8"));
   const schema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
   return {...Object.fromEntries(Object.entries(fixture).filter(([k]) =>
@@ -236,7 +236,6 @@ test("Firestore membership retries, cohosts, reset and guest isolation", {
   const id = randomUUID();
   const h = harness(Date.now(), id);
   h.session.organizerId = "membership-" + id;
-  h.session.clubId = h.session.organizerId;
   h.session.publicRehearsalId = "public-" + id;
   h.session.viewerTokenHash = createHash("sha256")
     .update(h.session.publicRehearsalId).digest("hex");

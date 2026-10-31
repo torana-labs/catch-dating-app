@@ -93,6 +93,6 @@ void _registerOrganizerMediaReliabilityTests() {
       'photo-two',
       'photo-two',
     ]);
-    expect(fakeRepository.lastUpdatedFields?['clubPhotos'], hasLength(2));
+    expect(fakeRepository.lastUpdatedFields?['organizerPhotos'], hasLength(2));
   });
 }

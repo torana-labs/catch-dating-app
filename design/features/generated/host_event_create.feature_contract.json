@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-15",
-  "sourceDigest": "sha256:2c8f7d64e72e4789e9620c92b0ee7bac2d5659f551ba5b42a598fe26717bcf37",
+  "sourceDigest": "sha256:3060a0ad17e8c9c129808aab70f498acaf60c5eafe4648da264dfcf658655490",
   "resolvedDigest": "sha256:3d56cc89b38064a1e2b4754d69438b60811f36fa8ae228df72d52d2dd0eb2349",
   "feature": {
     "id": "feature.host_event_create",
@@ -113,7 +113,7 @@
         "dataContracts": [
           "contracts/callables/place_details_payload.schema.json",
           "contracts/callables/places_autocomplete_payload.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/event_success_preferences.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/storage/event_photos.schema.json"
@@ -233,7 +233,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "failureStateVersion"
           ],
           "outcomes": [
@@ -327,7 +327,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "remainingPhotoSlots"
           ],
           "outcomes": [
@@ -452,7 +452,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "locationSelectionVersion"
           ],
           "outcomes": [
@@ -725,7 +725,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "draftId",
             "draftSignature"
           ],
@@ -748,7 +748,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "draftId"
           ],
           "outcomes": [
@@ -769,7 +769,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "pickerInstanceId"
           ],
           "outcomes": [
@@ -790,7 +790,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "draftId"
           ],
           "outcomes": [
@@ -831,7 +831,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "routeInstanceId",
             "draftSignature"
           ],
@@ -869,7 +869,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "draftSignature"
           ],
           "outcomes": [
@@ -893,7 +893,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "eventId"
           ],
           "outcomes": [
@@ -915,7 +915,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
-            "clubId",
+            "organizerId",
             "eventId"
           ],
           "outcomes": [
@@ -4463,7 +4463,7 @@
           "routes": [
             {
               "id": "hostCreateEventScreen",
-              "path": "/host/organizers/:clubId/create-event",
+              "path": "/host/organizers/:organizerId/create-event",
               "role": "primary"
             }
           ]

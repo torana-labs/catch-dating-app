@@ -39,7 +39,7 @@ test("cleanup rejects a path outside the exact owning namespace", () => {
 
 test("legacy organizer media remains eligible for lifecycle cleanup", () => {
   assert.deepEqual([...referencedMediaStoragePaths({
-    clubPhotos: [{storagePath: "clubs/org-1/photos/0_old.jpg"}],
+    organizerPhotos: [{storagePath: "clubs/org-1/photos/0_old.jpg"}],
     logoPhoto: {
       storagePath: "organizers/org-1/logo/old.jpg",
       thumbnailStoragePath:

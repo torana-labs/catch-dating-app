@@ -116,7 +116,7 @@ export interface UpdateUserProfileCallablePayload {
     prefsMessages?: boolean;
     prefsEventReminders?: boolean;
     prefsRunStatusUpdates?: boolean;
-    prefsClubUpdates?: boolean;
+    prefsOrganizerUpdates?: boolean;
     prefsWeeklyDigest?: boolean;
     prefsShowOnMap?: boolean;
     prefsShowInCrossPaths?: boolean;

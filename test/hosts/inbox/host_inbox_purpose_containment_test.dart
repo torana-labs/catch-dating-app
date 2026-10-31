@@ -105,7 +105,7 @@ class _Conversations extends Fake implements ConversationRepository {
 
 void main() {
   const unavailable = 'Program conversations unavailable';
-  final event = buildEvent(id: 'event', clubId: 'org');
+  final event = buildEvent(id: 'event', organizerId: 'org');
 
   Future<
     ({

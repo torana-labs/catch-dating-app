@@ -27,8 +27,8 @@ function doc(docPath, data) {
 }
 function collections(overrides = {}) {
   return Object.fromEntries(["users", "hostProfiles", "publicProfiles", "clubs",
-    "organizers", "clubMemberships", "events", "eventParticipations", "savedEvents",
-    "reviews", "matches", "onboarding_drafts", "clubScheduleLocks",
+    "organizers", "organizerMemberships", "events", "eventParticipations", "savedEvents",
+    "reviews", "matches", "onboarding_drafts", "organizerScheduleLocks",
     "userEventScheduleLocks", "outgoing", "messages"]
     .map((name) => [name, overrides[name] ?? []]));
 }
@@ -53,7 +53,7 @@ function findings(report, docPath) {
   return report.issues.filter((item) => item.path === docPath);
 }
 function privateEvent() {
-  return {clubId: "club-1", organizerId: "club-1", name: "Private basics",
+  return {organizerId: "club-1", name: "Private basics",
     startTime: {_seconds: 1792328400, _nanoseconds: 123456789},
     status: "active", publicationState: "private", setupRevision: 1,
     publicRegistrationEnabled: false, cancelledAt: null, cancellationReason: null,
@@ -65,27 +65,27 @@ function privateEvent() {
       timezone: {value: "Asia/Kolkata", source: "event"}, organizerDefaultsRevision: null,
       organizerDefaultsHash: "a".repeat(64)}};
 }
-const club = () => doc("clubs/club-1", {...fixture("club_doc.json"), memberCount: 0});
+const organizer = () => doc("clubs/club-1", {...fixture("organizer_doc.json"), memberCount: 0});
 
 test("generated membership contract accepts owner and rejects unknown roles and missing fields", () => {
-  const membershipPath = "clubMemberships/club-1_runner-1";
+  const membershipPath = "organizerMemberships/club-1_runner-1";
   for (const role of ["owner", "host", "member"]) {
-    const data = {...fixture("club_membership_doc.json"), role};
-    assert.equal(findings(reportFor({clubMemberships: [doc(membershipPath, data)]}), membershipPath)
+    const data = {...fixture("organizer_membership_doc.json"), role};
+    assert.equal(findings(reportFor({organizerMemberships: [doc(membershipPath, data)]}), membershipPath)
       .filter((item) => item.severity === "error").length, 0);
   }
   for (const patch of [{role: "admin"}, {role: null}, {pushNotificationsEnabled: undefined}]) {
-    const data = {...fixture("club_membership_doc.json"), ...patch};
-    assert.ok(reportFor({clubMemberships: [doc(membershipPath, data)]}).issues
+    const data = {...fixture("organizer_membership_doc.json"), ...patch};
+    assert.ok(reportFor({organizerMemberships: [doc(membershipPath, data)]}).issues
       .some((item) => item.code === "schema-contract"));
   }
 });
 
 test("nullable unclaimed hosts follow generated contracts without hiding invalid host types", () => {
-  for (const collection of ["clubs", "organizers"]) {
-    const data = {...fixture("club_doc.json"), hostUserId: null, hostName: null,
+  for (const collection of ["organizers"]) {
+    const data = {...fixture("organizer_doc.json"), hostUserId: null, hostName: null,
       hostAvatarUrl: null, ownerUserId: null, hostUserIds: [], hostProfiles: [], memberCount: 0,
-      ...(collection === "organizers" ? {organizerPhotos: [], followerCount: 0, organizerType: "club"} : {})};
+      organizerPhotos: [], followerCount: 0, organizerType: "club"};
     const docPath = `${collection}/club-1`;
     assert.deepEqual(findings(reportFor({[collection]: [doc(docPath, data)]}), docPath), []);
     assert.ok(findings(reportFor({[collection]: [doc(docPath, {...data, hostUserId: 123})]}), docPath)
@@ -96,11 +96,11 @@ test("nullable unclaimed hosts follow generated contracts without hiding invalid
 test("private drafts may omit rich fields but preserve required basics and supplied field validation", () => {
   const valid = privateEvent();
   for (const extra of [{}, {meetingPoint: "A named venue"}]) {
-    assert.deepEqual(findings(reportFor({clubs: [club()], events: [doc("events/e1", {...valid, ...extra})]}), "events/e1"), []);
+    assert.deepEqual(findings(reportFor({organizers: [organizer()], events: [doc("events/e1", {...valid, ...extra})]}), "events/e1"), []);
   }
   for (const patch of [{name: undefined}, {setupDefaults: undefined}, {endTime: null},
     {capacityLimit: -1}, {meetingLocation: {name: "Broken"}}, {publicRegistrationEnabled: true}]) {
-    assert.ok(findings(reportFor({clubs: [club()], events: [doc("events/e1", {...valid, ...patch})]}), "events/e1")
+    assert.ok(findings(reportFor({organizers: [organizer()], events: [doc("events/e1", {...valid, ...patch})]}), "events/e1")
       .some((item) => item.code === "schema-contract"));
   }
   assert.ok(reportFor({events: [doc("events/e1", valid)]}).issues.some((item) => item.code === "missing-club"));
@@ -110,11 +110,11 @@ test("published and legacy events still require rich fields and enforce aggregat
   for (const publicationState of [undefined, "published"]) {
     const data = {...fixture("event_doc.json"), publicationState};
     delete data.meetingPoint;
-    assert.ok(reportFor({clubs: [club()], events: [doc("events/e1", data)]}).issues
+    assert.ok(reportFor({organizers: [organizer()], events: [doc("events/e1", data)]}).issues
       .some((item) => item.code === "schema-contract"));
   }
   const data = {...fixture("event_doc.json"), meetingPoint: "Wrong mirror"};
-  const report = reportFor({clubs: [club()], events: [doc("events/e1", data)]});
+  const report = reportFor({organizers: [organizer()], events: [doc("events/e1", data)]});
   for (const code of ["event-location-mirror-mismatch", "event-count-drift", "event-gender-count-drift"]) {
     assert.ok(report.issues.some((item) => item.code === code), code);
   }
@@ -124,7 +124,7 @@ test("canonical decisions enforce path identity, event existence and attendance 
   const data = fixture("swipe_doc.json");
   const canonical = `profileDecisions/${data.swiperId}/outgoing/${data.targetId}`;
   const legacy = `swipes/${data.swiperId}/outgoing/${data.targetId}`;
-  const base = {clubs: [club()], events: [doc(`events/${data.eventId}`, fixture("event_doc.json"))]};
+  const base = {organizers: [organizer()], events: [doc(`events/${data.eventId}`, fixture("event_doc.json"))]};
   const report = reportFor({...base, outgoing: [doc(canonical, data), doc(legacy, data),
     doc("profileDecisions/wrong/outgoing/wrong", data), doc("other/a/outgoing/b", {})]});
   assert.ok(findings(report, canonical).some((item) => item.code === "swipe-event-attendance-mismatch"));
@@ -139,7 +139,7 @@ test("canonical decisions enforce path identity, event existence and attendance 
 });
 
 test("unscheduled drafts still reject scheduled participation", () => {
-  const report = reportFor({clubs: [club()], events: [doc("events/e1", privateEvent())],
+  const report = reportFor({organizers: [organizer()], events: [doc("events/e1", privateEvent())],
     eventParticipations: [doc("eventParticipations/e1_u1", {eventId: "e1", uid: "u1", status: "signedUp"})]});
   assert.ok(report.issues.some((item) => item.code === "participation-event-unscheduled"));
   assert.ok(report.issues.some((item) => item.code === "event-count-drift"));
@@ -147,10 +147,10 @@ test("unscheduled drafts still reject scheduled participation", () => {
 
 test("denominators expose capped queries and metadata includes only allowlisted states", () => {
   const data = {...privateEvent(), status: "sensitive-free-text", seedPrefix: "private-marker", synthetic: true};
-  const report = reportFor({clubs: [club()], events: [doc("events/e1", data)]}, 1);
+  const report = reportFor({organizers: [organizer()], events: [doc("events/e1", data)]}, 1);
   assert.equal(report.summary.completeWithinCap, false);
   assert.equal(report.summary.collections.events.limitReached, true);
-  assert.equal(report.summary.collections.clubScheduleLocks.enabled, false);
+  assert.equal(report.summary.collections.organizerScheduleLocks.enabled, false);
   assert.deepEqual(report.documentStates["events/e1"], {collection: "events", synthetic: true,
     hasSeedMarker: true, status: "unrecognized", publicationState: "private",
     hasEndTime: false, hasMeetingLocation: false, hasSetupRevision: true});
@@ -169,7 +169,7 @@ test("collection loader stays read-only and bounded and includes canonical organ
   assert.ok(queries.some((item) => item.kind === "collection" && item.name === "organizers"));
   assert.ok(queries.some((item) => item.kind === "group" && item.name === "outgoing"));
   assert.ok(queries.every((item) => item.value === 17));
-  assert.deepEqual(result.clubScheduleLocks, []);
+  assert.deepEqual(result.organizerScheduleLocks, []);
 });
 
 function runOffline(rows, args, {blockOutput = false} = {}) {
@@ -202,9 +202,9 @@ function runOffline(rows, args, {blockOutput = false} = {}) {
 }
 
 test("failing report larger than 64 KiB saves parseable JSON and reconciles every total", (t) => {
-  const rows = Array.from({length: 350}, (_, index) => ({path: `clubMemberships/club-1_user-${index}`,
-    data: {...fixture("club_membership_doc.json"), uid: `user-${index}`, role: "invalid"}}));
-  const result = runOffline({clubMemberships: rows}, []);
+  const rows = Array.from({length: 350}, (_, index) => ({path: `organizerMemberships/club-1_user-${index}`,
+    data: {...fixture("organizer_membership_doc.json"), uid: `user-${index}`, role: "invalid"}}));
+  const result = runOffline({organizerMemberships: rows}, []);
   assert.equal(result.status, 1, result.stderr);
   assert.ok(Buffer.byteLength(result.saved) > 65536);
   assert.deepEqual(JSON.parse(result.stdout), JSON.parse(result.saved));
@@ -232,31 +232,31 @@ test("warning-only reports preserve exit policy and explicit file output failure
 
 test("missing schedule locks reconcile into zero-document collection denominators", () => {
   const data = {...fixture("event_doc.json"), bookedCount: 0, genderCounts: {}, cohortCounts: {}};
-  const report = reportFor({clubs: [club()], events: [doc("events/e1", data)]}, 5000,
+  const report = reportFor({organizers: [organizer()], events: [doc("events/e1", data)]}, 5000,
     {checkScheduleLocks: true});
   const missing = report.issues.filter((item) => item.code === "missing-schedule-lock");
   assert.ok(missing.length > 0);
-  assert.equal(report.summary.collections.clubScheduleLocks.errors, missing.length);
-  assert.equal(report.summary.collections.clubScheduleLocks.scannedDocuments, 0);
-  assert.equal(report.summary.collections.clubScheduleLocks.documentsWithIssues, 0);
-  assert.equal(report.summary.collections.clubScheduleLocks.enabled, true);
+  assert.equal(report.summary.collections.organizerScheduleLocks.errors, missing.length);
+  assert.equal(report.summary.collections.organizerScheduleLocks.scannedDocuments, 0);
+  assert.equal(report.summary.collections.organizerScheduleLocks.documentsWithIssues, 0);
+  assert.equal(report.summary.collections.organizerScheduleLocks.enabled, true);
 });
 
 test("complete published and legacy fixtures remain valid and wrong time ordering still fails", () => {
   for (const publicationState of [undefined, "published"]) {
     const data = {...fixture("event_doc.json"), bookedCount: 0, genderCounts: {}, cohortCounts: {}, publicationState};
-    assert.deepEqual(findings(reportFor({clubs: [club()], events: [doc("events/e1", data)]}), "events/e1"), []);
+    assert.deepEqual(findings(reportFor({organizers: [organizer()], events: [doc("events/e1", data)]}), "events/e1"), []);
     data.endTime = {_seconds: data.startTime._seconds - 60, _nanoseconds: 0};
-    assert.ok(findings(reportFor({clubs: [club()], events: [doc("events/e1", data)]}), "events/e1")
+    assert.ok(findings(reportFor({organizers: [organizer()], events: [doc("events/e1", data)]}), "events/e1")
       .some((item) => item.code === "invalid-event-time"));
   }
 });
 
 test("serialized timestamp maps cannot impersonate native Firestore Timestamp values", () => {
-  const membership = doc("clubMemberships/club-1_runner-1", fixture("club_membership_doc.json"));
+  const membership = doc("organizerMemberships/club-1_runner-1", fixture("organizer_membership_doc.json"));
   const event = doc("events/e1", privateEvent());
   const decision = doc("profileDecisions/a/outgoing/b", {...fixture("swipe_doc.json"), swiperId: "a", targetId: "b"});
-  const cases = [["clubMemberships", membership, "joinedAt"], ["clubs", club(), "createdAt"],
+  const cases = [["organizerMemberships", membership, "joinedAt"], ["organizers", organizer(), "createdAt"],
     ["events", event, "startTime"], ["outgoing", decision, "createdAt"]];
   for (const [collection, record, field] of cases) {
     record.data[field] = new Timestamp(1792328400, 123456789);

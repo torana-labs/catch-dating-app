@@ -30,8 +30,8 @@ const spend = (overrides: Record<string, unknown> = {}) => ({kind: "spend",
 function store() {
   return new AudienceTestStore({
     "events/event": {organizerId: "org"},
-    "events/legacy": {clubId: "org"},
-    "events/foreign": {organizerId: "foreign", clubId: "org"},
+    "events/legacy": {organizerId: "org"},
+    "events/foreign": {organizerId: "foreign"},
     "organizerContacts/person": contact("uid"),
     "organizerContacts/no-spend": contact("no-spend"),
     "organizerContacts/unverified": {...contact("unverified"),

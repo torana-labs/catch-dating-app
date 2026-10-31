@@ -7,12 +7,12 @@ import {
 
 test("buildEventDiscoveryProjectionRepairPlan projects event discovery fields", async () => {
   const firestore = fakeFirestore({
-    clubs: {
+    organizers: {
       "club-1": {location: "Mumbai", locationMarketId: "in-mh-mumbai"},
     },
     events: {
       "event-1": {
-        clubId: "club-1",
+        organizerId: "club-1",
         capacityLimit: 2,
         bookedCount: 1,
         eventFormat: {activityKind: "tempoRun"},
@@ -21,7 +21,7 @@ test("buildEventDiscoveryProjectionRepairPlan projects event discovery fields", 
         discoveryAvailability: "full",
       },
       "event-2": {
-        clubId: "club-1",
+        organizerId: "club-1",
         capacityLimit: 4,
         bookedCount: 0,
         eventFormat: {activityKind: "socialRun"},
@@ -51,7 +51,7 @@ test("buildEventDiscoveryProjectionRepairPlan projects event discovery fields", 
     {
       path: "events/event-1",
       eventId: "event-1",
-      clubId: "club-1",
+      organizerId: "club-1",
       current: {
         discoveryCityName: "old-city",
         discoveryMarketId: "old-market",
@@ -89,10 +89,10 @@ test("buildEventDiscoveryProjectionRepairPlan projects event discovery fields", 
 
 test("buildEventDiscoveryProjectionRepairPlan falls back to current city when club is missing", async () => {
   const firestore = fakeFirestore({
-    clubs: {},
+    organizers: {},
     events: {
       "event-1": {
-        clubId: "missing",
+        organizerId: "missing",
         capacityLimit: 1,
         bookedCount: 1,
         discoveryCityName: "mumbai",
@@ -116,10 +116,10 @@ test("buildEventDiscoveryProjectionRepairPlan falls back to current city when cl
 
 test("applyEventDiscoveryProjectionRepairPlan writes planned projection patches", async () => {
   const firestore = fakeFirestore({
-    clubs: {},
+    organizers: {},
     events: {
-      "event-1": {clubId: "club-1", discoveryAvailability: "full"},
-      "event-2": {clubId: "club-2", discoveryAvailability: "open"},
+      "event-1": {organizerId: "club-1", discoveryAvailability: "full"},
+      "event-2": {organizerId: "club-2", discoveryAvailability: "open"},
     },
   });
 
@@ -137,23 +137,23 @@ test("applyEventDiscoveryProjectionRepairPlan writes planned projection patches"
   });
 
   assert.deepEqual(firestore.data.events["event-1"], {
-    clubId: "club-1",
+    organizerId: "club-1",
     discoveryCityName: "mumbai",
     discoveryMarketId: "in-mh-mumbai",
     discoveryAvailability: "open",
   });
   assert.deepEqual(firestore.data.events["event-2"], {
-    clubId: "club-2",
+    organizerId: "club-2",
     discoveryAvailability: "open",
   });
 });
 
-function fakeProjection({event, clubLocation, clubLocationMarketId}) {
+function fakeProjection({event, organizerLocation, organizerLocationMarketId}) {
   const bookedCount = event.bookedCount ?? 0;
   const capacityLimit = event.capacityLimit ?? 0;
   return {
-    discoveryCityName: clubLocation?.trim().toLowerCase() ?? null,
-    discoveryMarketId: clubLocationMarketId ?? null,
+    discoveryCityName: organizerLocation?.trim().toLowerCase() ?? null,
+    discoveryMarketId: organizerLocationMarketId ?? null,
     discoveryActivityKind: event.eventFormat?.activityKind ?? "socialRun",
     discoveryGeoCell: null,
     discoveryHasOpenSpots: event.status !== "cancelled" &&

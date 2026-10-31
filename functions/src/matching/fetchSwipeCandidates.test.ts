@@ -135,7 +135,7 @@ class FakeFirestore {
 function harness(overrides: Record<string, FakeData | undefined> = {}) {
   const firestore = new FakeFirestore({
     "events/event-1": {
-      clubId: "club-1",
+      organizerId: "club-1",
       status: "active",
       endTime: ts("2026-05-02T02:30:00.000Z"),
     },
@@ -275,7 +275,7 @@ test("fails closed outside the window or without attendance", async () => {
 function participation(uid: string, attendedAt: string): FakeData {
   return {
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid,
     status: "attended",
     createdAt: ts(attendedAt),

@@ -15,7 +15,6 @@ export const eventSuccessAssignmentDraftDocumentSchema: Record<string, unknown> 
   "x-owner": "event-success assignment preparation",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uid",
     "moduleId",
@@ -27,12 +26,6 @@ export const eventSuccessAssignmentDraftDocumentSchema: Record<string, unknown> 
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
@@ -88,7 +81,7 @@ export const eventSuccessAssignmentDraftDocumentSchema: Record<string, unknown> 
       ],
       "required": [
         "eventId",
-        "clubId",
+        "organizerId",
         "uid",
         "moduleId",
         "label",
@@ -100,12 +93,6 @@ export const eventSuccessAssignmentDraftDocumentSchema: Record<string, unknown> 
       ],
       "properties": {
         "eventId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180,
-          "x-catch-ownership": "callable-owned"
-        },
-        "clubId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 180,

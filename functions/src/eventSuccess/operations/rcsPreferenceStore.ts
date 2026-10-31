@@ -170,7 +170,7 @@ export class RcsPreferenceStore {
       throw new HttpsError("permission-denied", "RCS preference unavailable.");
     }
     const context = {mode: "live" as const, eventId: scope.eventId,
-      organizerId: event.organizerId ?? event.clubId};
+      organizerId: event.organizerId};
     const source = guestSourceFactsFromSnapshots(context, scope.attendeeId,
       eventSnap, attendeeSnap);
     const id = rcsPermissionId(context, scope.attendeeId, scope.senderId);

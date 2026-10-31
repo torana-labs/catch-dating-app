@@ -39,7 +39,7 @@ void main() {
           builder: catchNoticeOverlayBuilder,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const HostMessagingSetupScreen(clubId: organizerId),
+          home: const HostMessagingSetupScreen(organizerId: organizerId),
         ),
       ),
     );

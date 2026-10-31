@@ -25,7 +25,7 @@ import {BRAND} from "../shared/generated/brand";
 
 function organizer(): OrganizerDocument {
   const fixture = JSON.parse(readFileSync(
-    "../contracts/fixtures/valid/club_doc.json", "utf8"));
+    "../contracts/fixtures/valid/organizer_doc.json", "utf8"));
   const schema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
   return {...Object.fromEntries(Object.entries(fixture).filter(([k]) =>
@@ -183,7 +183,6 @@ test("Firestore help uses exact Host receipts and reset cleanup", {
   const id = randomUUID();
   const session = practiceSession();
   session.organizerId = "practice-help-" + id;
-  session.clubId = session.organizerId;
   session.publicRehearsalId = "public-" + id;
   session.viewerTokenHash = createHash("sha256")
     .update(session.publicRehearsalId).digest("hex");

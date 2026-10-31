@@ -51,7 +51,7 @@ Future<void> _seedParticipation(
   final participation = EventParticipation(
     id: eventParticipationId(eventId: event.id, uid: uid),
     eventId: event.id,
-    clubId: event.clubId,
+    organizerId: event.organizerId,
     uid: uid,
     status: status,
     createdAt: now,

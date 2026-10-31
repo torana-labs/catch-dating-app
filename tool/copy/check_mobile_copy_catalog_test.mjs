@@ -27,8 +27,8 @@ assert.ok(
 );
 
 const identifierShaped = structuredClone(valid);
-identifierShaped.hostsExampleVisiblecopyClubid = "clubId";
-identifierShaped["@hostsExampleVisiblecopyClubid"] = {
+identifierShaped.hostsExampleVisiblecopyOrganizerid = "organizerId";
+identifierShaped["@hostsExampleVisiblecopyOrganizerid"] = {
   description: "Identifier accidentally migrated into visible copy.",
   "x-audience": "host",
   "x-owner": "engineering",
@@ -41,7 +41,7 @@ assert.ok(
 );
 assert.deepEqual(
   validateMobileCopyCatalog(identifierShaped, {
-    identifierAllowlist: new Set(["hostsExampleVisiblecopyClubid"]),
+    identifierAllowlist: new Set(["hostsExampleVisiblecopyOrganizerid"]),
   }),
   [],
 );

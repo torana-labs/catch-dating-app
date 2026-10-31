@@ -23,7 +23,7 @@ const activityKindByCategory = Object.freeze({
   racket_sport_social: "racketSportSocial",
   singles_event_operator: "singlesEvent",
   social_run_club: "socialRun",
-  supper_club: "supperClub",
+  supper_club: "supperOrganizer",
   venue_led_social: "venueLedSocial",
   walks_experiences: "walksExperiences",
 });

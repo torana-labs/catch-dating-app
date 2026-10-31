@@ -63,14 +63,14 @@ const DEFAULT_DAILY_CAP = 4;
 const ACTIVITY_TYPES: ReadonlySet<string> = new Set([
   "message", "match", "eventReminder", "eventSignup", "waitlistPromotion",
   "waitlistOffer", "waitlistOfferExpiring", "waitlistOfferExpired",
-  "eventCancelled", "eventUpdated", "clubUpdate", "organizerUpdate",
+  "eventCancelled", "eventUpdated", "organizerUpdate",
   "formResponse", "crossPathsInvitation", "crossPathsInvitationAccepted",
   "crossPathsInvitationDeclined", "crossPathsPlanCancelled",
 ]);
 
 const PREFERENCE_KEYS: ReadonlySet<string> = new Set([
   "matches", "messages", "eventReminders", "eventStatusUpdates",
-  "clubUpdates", "crossPathsInvitations",
+  "organizerUpdates", "crossPathsInvitations",
 ]);
 
 export function buildMomentRunnerDeps(
@@ -299,7 +299,7 @@ async function sendPush(
       .get()).data();
     const candidate = event &&
       Object.prototype.hasOwnProperty.call(event, "organizerId") ?
-      event.organizerId : event?.clubId;
+      event.organizerId : event?.organizerId;
     if (routeSafeId(candidate)) organizerId = candidate;
   }
   const eventContext = params.scope.kind === "event" &&

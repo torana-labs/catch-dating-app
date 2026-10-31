@@ -318,7 +318,7 @@ void main() {
     final access = EventPrivateAccess(
       id: 'private-access-1',
       eventId: 'event-1',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       inviteCode: ' SOCIAL2026 ',
       createdAt: DateTime(2026),
     );
@@ -493,7 +493,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       EditHostedEventScreen(
-        organizer: buildOrganizer(id: event.clubId),
+        organizer: buildOrganizer(id: event.organizerId),
         event: event,
         now: () => DateTime(2026, 5, 21, 9),
       ),
@@ -635,7 +635,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       EditHostedEventScreen(
-        organizer: buildOrganizer(id: event.clubId),
+        organizer: buildOrganizer(id: event.organizerId),
         event: event,
         now: () => DateTime(2026, 5, 21, 9),
       ),
@@ -699,7 +699,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       EditHostedEventScreen(
-        organizer: buildOrganizer(id: event.clubId),
+        organizer: buildOrganizer(id: event.organizerId),
         event: event,
         now: () => DateTime(2026, 5, 21, 9),
       ),
@@ -755,7 +755,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       EditHostedEventScreen(
-        organizer: buildOrganizer(id: event.clubId),
+        organizer: buildOrganizer(id: event.organizerId),
         event: event,
         now: () => DateTime(2026, 5, 21, 9),
       ),
@@ -803,7 +803,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       EditHostedEventScreen(
-        organizer: buildOrganizer(id: event.clubId),
+        organizer: buildOrganizer(id: event.organizerId),
         event: event,
         now: () => DateTime(2026, 5, 21, 9),
       ),

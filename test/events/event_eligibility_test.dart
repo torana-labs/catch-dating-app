@@ -21,7 +21,7 @@ void main() {
     final start = startTime ?? DateTime.now().add(const Duration(hours: 2));
     return Event(
       id: 'event-1',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
       meetingPoint: 'Start line',

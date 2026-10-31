@@ -121,7 +121,7 @@ extension on EventSuccessAssignment {
     return EventSuccessAssignment(
       id: id,
       eventId: eventId,
-      clubId: clubId,
+      organizerId: organizerId,
       uid: this.uid,
       moduleId: moduleId,
       label: label,
@@ -150,7 +150,7 @@ EventSuccessAssignment _assignment({
       uid: uid,
     ),
     eventId: event.id,
-    clubId: event.clubId,
+    organizerId: event.organizerId,
     uid: uid,
     moduleId: EventSuccessModuleCatalog.microPods.id,
     label: label,
@@ -178,7 +178,7 @@ EventSuccessAssignment _rotationAssignment({
       uid: uid,
     ),
     eventId: event.id,
-    clubId: event.clubId,
+    organizerId: event.organizerId,
     uid: uid,
     moduleId: EventSuccessModuleCatalog.guidedRotations.id,
     label: 'Guided rotations',
@@ -212,7 +212,7 @@ EventSuccessWingmanRequest _wingmanRequest({
   return EventSuccessWingmanRequest(
     id: eventSuccessWingmanRequestId(eventId: event.id, uid: requesterUid),
     eventId: event.id,
-    clubId: event.clubId,
+    organizerId: event.organizerId,
     requesterUid: requesterUid,
     targetUid: targetUid,
     status: EventSuccessWingmanRequestStatus.active,
@@ -232,7 +232,6 @@ EventAttendee _accountabilityAttendee({
   return EventAttendee(
     id: id,
     eventId: event.id,
-    clubId: event.clubId,
     organizerId: event.organizerId,
     displayName: displayName,
     searchName: displayName.toLowerCase(),
@@ -302,7 +301,7 @@ class _WingmanTestHttpsCallable extends Fake implements HttpsCallable {
           )
           .set({
             'eventId': eventId,
-            'clubId': 'club-1',
+            'organizerId': 'club-1',
             'requesterUid': requesterUid,
             'targetUid': payload['targetUid'],
             'status': 'active',

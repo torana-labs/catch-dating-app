@@ -51,7 +51,7 @@ export const adminRoutes: AdminRoute[] = [
   route("/organizer-intake/*", "organizer-intake", {title: "Organizer intake"}),
   route("/safety/:targetPath", "safety", {title: "Safety case"}),
   route("/access/:applicationUid", "access"),
-  route("/organizers/:clubId", "organizers"),
+  route("/organizers/:organizerId", "organizers"),
   route("/organizers/claims/*", "organizers", {organizerWorkspace: "claims"}),
   route("/organizers/claims/:claimRequestId", "organizers", {organizerWorkspace: "claims"}),
   route("/events/:eventId", "events", {title: "Event detail"}),

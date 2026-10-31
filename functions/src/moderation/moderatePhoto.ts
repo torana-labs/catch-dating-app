@@ -23,8 +23,8 @@
  *   - `users/{uid}/hostedMedia/{fileName}` — legacy hosted club/event media
  *   - `organizers/{organizerId}/photos/{fileName}` — organizer gallery photos
  *   - `organizers/{organizerId}/logo/{fileName}` — organizer logos
- *   - `clubs/{clubId}/photos/{fileName}` — club gallery photos
- *   - `clubs/{clubId}/logo/{fileName}` — club logos
+ *   - `clubs/{organizerId}/photos/{fileName}` — club gallery photos
+ *   - `clubs/{organizerId}/logo/{fileName}` — club logos
  *   - `events/{eventId}/photos/{fileName}` — event photos
  *   - `matches/{matchId}/images/{messageId}` — chat images
  *
@@ -269,7 +269,7 @@ export const moderatePhotoOnUpload = onObjectFinalized(
         flagType: "explicit_photo" as const,
         source: (
           isProfilePhoto ? "profile_photo" :
-            isChatImage ? "chat_message" : "club_image"
+            isChatImage ? "chat_message" : "organizer_image"
         ) as ModerationFlagDocument["source"],
         status: "pending" as const,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),

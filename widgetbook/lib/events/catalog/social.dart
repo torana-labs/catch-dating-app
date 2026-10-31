@@ -30,7 +30,7 @@ final _emptyEvent = widgetbookEventDetailFixture(
 final _attended = EventParticipation(
   id: '${widgetbookEventsPastEvent.id}_$widgetbookEventsViewerUid',
   eventId: widgetbookEventsPastEvent.id,
-  clubId: widgetbookEventsOrganizerId,
+  organizerId: widgetbookEventsOrganizerId,
   uid: widgetbookEventsViewerUid,
   status: EventParticipationStatus.attended,
   createdAt: widgetbookEventsNow.subtract(const Duration(days: 4)),
@@ -57,7 +57,7 @@ Widget eventDetailSocialSectionStates(BuildContext context) {
           roster: widgetbookEventsRoster(),
           child: EventDetailSocialSection(
             event: widgetbookEvent,
-            clubId: widgetbookEventsOrganizerId,
+            organizerId: widgetbookEventsOrganizerId,
             reviews: const [],
             userProfile: null,
             state: eventDetailSocialStateFrom(
@@ -80,7 +80,7 @@ Widget eventDetailSocialSectionStates(BuildContext context) {
           roster: widgetbookEventsRoster(),
           child: EventDetailSocialSection(
             event: widgetbookEvent,
-            clubId: widgetbookEventsOrganizerId,
+            organizerId: widgetbookEventsOrganizerId,
             reviews: const [],
             userProfile: widgetbookEventsViewer,
             state: eventDetailSocialStateFrom(
@@ -103,7 +103,7 @@ Widget eventDetailSocialSectionStates(BuildContext context) {
           roster: EventParticipationRoster.empty(),
           child: EventDetailSocialSection(
             event: _emptyEvent,
-            clubId: widgetbookEventsOrganizerId,
+            organizerId: widgetbookEventsOrganizerId,
             reviews: const [],
             userProfile: widgetbookEventsViewer,
             state: eventDetailSocialStateFrom(
@@ -130,7 +130,7 @@ Widget eventDetailSocialSectionStates(BuildContext context) {
           avatarItems: widgetbookEventsAvatarItems,
           child: EventDetailSocialSection(
             event: widgetbookEventsPastEvent,
-            clubId: widgetbookEventsOrganizerId,
+            organizerId: widgetbookEventsOrganizerId,
             reviews: widgetbookEventsReviews,
             userProfile: widgetbookEventsViewer,
             state: eventDetailSocialStateFrom(
@@ -193,7 +193,7 @@ Widget eventDetailHostSectionStates(BuildContext context) {
           child: EventDetailHostsSection(
             event: widgetbookEvent,
             state: const EventDetailHostState.content(
-              clubId: widgetbookEventsOrganizerId,
+              organizerId: widgetbookEventsOrganizerId,
               hostUid: 'host-mira',
               hostName: 'Mira Shah',
               photoUrl:

@@ -42,12 +42,12 @@ test("manager moderation fences old access and requires a fresh rejoin",
       {eventId, targetUid: person, action, expectedRevision: revision,
         requestId}), deps);
     try {
-      await ref("events", eventId).set({organizerId, clubId: organizerId,
-        name: "Room", status: "active"});
+      await ref("events", eventId).set({organizerId, name: "Room",
+        status: "active"});
       await ref("organizers", organizerId).set({ownerUserId: host,
         hostUserId: host, hostUserIds: [], hostProfiles: []});
-      await participation.set({eventId, organizerId, clubId: organizerId,
-        uid: person, status: "signedUp"});
+      await participation.set({eventId, organizerId, uid: person,
+        status: "signedUp"});
       await ref("users", person).set({displayName: "Participant",
         profileRevision: 1, profileComplete: false,
         profileClaimedAt: Timestamp.now(), prefsShowInCrossPaths: false});

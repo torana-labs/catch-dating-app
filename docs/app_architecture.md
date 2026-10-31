@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.94.0
-updated: 2026-10-30
+version: 1.95.0
+updated: 2026-10-31
 owner: app_architecture
 status: active
 ---
@@ -155,7 +155,7 @@ as one organizer subtype. Primary repository reads use `organizers`,
 `organizerFollows`, and organizer-named callables; events carry
 `organizerId`; organizer media uploads use `organizers/{id}`; public/detail and
 Hosts routes use `/organizers` and `/host/organizers`. The retired
-`/host/clubs` and `/host/organizers/:clubId/edit` locations are not mounted or
+`/host/clubs` and `/host/organizers/:organizerId/edit` locations are not mounted or
 redirected. Current Flutter repositories never fall back to the legacy `clubs`
 collection; a canonical read failure remains visible and recoverable through
 the shared async error policy.
@@ -189,16 +189,21 @@ and authority for passed external events is a named app-team dependency. Until
 that dedicated flow exists, the app may expose eligibility in domain state but
 must not route the user into a generic or fabricated review workflow.
 
-`lib/organizers/` is the canonical import surface. Flutter code names say
-organizer: Dart types, providers, files, folders, route names and localization
+`lib/organizers/` is the canonical import surface. Organizer is the name end
+to end: Dart types, providers, files, folders, route names and localization
 keys (`Organizer`, `OrganizersRepository`, `lib/organizers/`,
-`Routes.hostOrganizersScreen`). Club stays in Dart only as the `club` subtype
-(`OrganizerType.club`, run clubs, stored enum values) and in the names the
-generated schema contracts still declare (`clubId`, `clubPhotos`, the legacy
-club callable requests), which rename with those contracts.
-`contracts:organizer-nomenclature` fails on any other club name in Flutter
-code; `tool/architecture/rename_to_organizer.mjs` is the codemod that renames
-one.
+`Routes.hostOrganizersScreen`), and on the wire the contracts, Firestore fields
+and collections, rules, indexes, callables, Functions and web code
+(`organizerId`, `organizerMemberships`, `OrganizerCover`). A record carries one
+organizer id; there is no club alias beside it. Club stays only as the `club`
+subtype (`OrganizerType.club`, run clubs), in copy and URLs about real clubs
+(`/host/clubs/`), in the BigQuery warehouse columns (`club_id`, which need a
+table migration), and in the clubs-to-organizers migration record.
+`contracts:organizer-nomenclature` fails on any other club name in Dart,
+contracts, TypeScript or file names. Two committed codemods made the rename and
+prove their commits with `--verify`: `tool/architecture/rename_to_organizer.mjs`
+for Dart names and `tool/architecture/rename_wire_to_organizer.mjs` for the
+wire, which collapses a club field into its organizer twin.
 
 1. Inside a bounded context the folders are `domain`, `data`, `actions` and
    `parts` (see [Bounded Context Contract](#bounded-context-contract)). Legacy
@@ -451,7 +456,8 @@ PRs:
 3. **Finish.** Sort `lib/core/` into platform, kernel, pages and context parts,
    and rename Club to Organizer in Flutter code with a committed codemod whose
    `--verify` mode proves the rename commit is its exact output. Wire names
-   (contracts, Functions, rules, route parameters) follow end to end.
+   (contracts, Functions, rules, route parameters) follow end to end with a
+   second codemod.
 
 The baseline is empty when this phase ends.
 
@@ -4625,7 +4631,7 @@ Widget build(BuildContext context) {
           : null,
     );
     final hostState = eventDetailHostStateFrom(
-      clubState: _catchAsyncState(ref.watch(fetchOrganizerProvider(widget.clubId))),
+      organizerState: _catchAsyncState(ref.watch(fetchOrganizerProvider(widget.organizerId))),
       currentUid: vm.userProfile?.uid,
       canMessageHost:
           sectionVisibility.showConsumerActions && vm.isAuthenticated,
@@ -4673,7 +4679,7 @@ Widget build(BuildContext context) {
       body: EventDetailBody(
         event: vm.event,
         userProfile: vm.userProfile,
-        clubId: widget.clubId,
+        organizerId: widget.organizerId,
         reviews: vm.reviews,
         isAuthenticated: vm.isAuthenticated,
         sectionVisibility: sectionVisibility,
@@ -4695,7 +4701,7 @@ Widget build(BuildContext context) {
           context,
           ref,
           event: vm.event,
-          clubId: widget.clubId,
+          organizerId: widget.organizerId,
           userProfile: vm.userProfile,
           isAuthenticated: vm.isAuthenticated,
           isSaved: vm.isSaved,
@@ -4711,19 +4717,19 @@ Widget build(BuildContext context) {
             : null,
         onOpenCompanion: () => context.pushNamed(
           Routes.eventSuccessCompanionScreen.name,
-          pathParameters: {'clubId': widget.clubId, 'eventId': vm.event.id},
+          pathParameters: {'organizerId': widget.organizerId, 'eventId': vm.event.id},
           extra: vm.event,
         ),
         onRetryCompanion: () =>
             ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
-        onViewClub: (clubId) => context.pushNamed(
+        onViewOrganizer: (organizerId) => context.pushNamed(
           Routes.organizerDetailScreen.name,
-          pathParameters: {'clubId': clubId},
+          pathParameters: {'organizerId': organizerId},
         ),
-        onMessageHost: (clubId, hostUid) => unawaited(
-          _messageHost(context, ref, clubId: clubId, hostUid: hostUid),
+        onMessageHost: (organizerId, hostUid) => unawaited(
+          _messageHost(context, ref, organizerId: organizerId, hostUid: hostUid),
         ),
-        onRetryHosts: () => ref.invalidate(fetchOrganizerProvider(widget.clubId)),
+        onRetryHosts: () => ref.invalidate(fetchOrganizerProvider(widget.organizerId)),
         inviteCode: widget.inviteCode,
         inviteLinkId: widget.inviteLinkId,
         now: now,
@@ -4733,7 +4739,7 @@ Widget build(BuildContext context) {
       bottomNavigationBar: _eventDetailBottomNavigationBar(
         event: vm.event,
         userProfile: vm.userProfile,
-        clubId: widget.clubId,
+        organizerId: widget.organizerId,
         isAuthenticated: vm.isAuthenticated,
         participation: vm.participation,
         inviteCode: widget.inviteCode,
@@ -4743,7 +4749,7 @@ Widget build(BuildContext context) {
         sectionVisibility: sectionVisibility,
         onGuestBook: () => _openEventSignIn(
           context,
-          clubId: widget.clubId,
+          organizerId: widget.organizerId,
           eventId: vm.event.id,
           inviteCode: widget.inviteCode,
           inviteLinkId: widget.inviteLinkId,
@@ -4755,7 +4761,7 @@ Widget build(BuildContext context) {
   if (vmAsync.isLoading && _initialEventMatchesRoute) {
     return EventDetailOptimisticBody(
       event: widget.initialEvent!,
-      clubId: widget.clubId,
+      organizerId: widget.organizerId,
       presentationMode: widget.presentationMode,
       heroTag: widget.heroTag,
       inviteCode: widget.inviteCode,

@@ -19,11 +19,11 @@ import '../organizers/organizers_test_helpers.dart' as organizer_test;
 import 'events_test_helpers.dart';
 
 OrganizerMembership _membership({
-  required String clubId,
+  required String organizerId,
   String uid = 'runner-1',
 }) => OrganizerMembership(
-  id: organizerMembershipId(clubId: clubId, uid: uid),
-  clubId: clubId,
+  id: organizerMembershipId(organizerId: organizerId, uid: uid),
+  organizerId: organizerId,
   uid: uid,
   role: OrganizerMembershipRole.member,
   status: OrganizerMembershipStatus.active,
@@ -222,7 +222,7 @@ void main() {
             watchActiveOrganizerMembershipsForUserProvider(
               user.uid,
             ).overrideWith(
-              (ref) => Stream.value([_membership(clubId: 'club-1')]),
+              (ref) => Stream.value([_membership(organizerId: 'club-1')]),
             ),
             eventRepositoryProvider.overrideWith((ref) => repository),
             bookedEventsRepositoryProvider.overrideWith(

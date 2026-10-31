@@ -21,7 +21,7 @@ void main() {
   test('explicitly skipped route stays skipped after draft serialization', () {
     final draft = EventDraft(
       id: 'draft1',
-      clubId: 'club1',
+      organizerId: 'club1',
       savedAt: DateTime(2026),
       activityKind: 'socialRun',
       routePlanEnabled: false,

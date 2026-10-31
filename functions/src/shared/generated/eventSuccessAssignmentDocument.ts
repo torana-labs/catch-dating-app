@@ -7,8 +7,7 @@
  */
 export interface EventSuccessAssignmentDocument {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   uid: string;
   moduleId: "micro_pods" | "guided_rotations";
   label: string;

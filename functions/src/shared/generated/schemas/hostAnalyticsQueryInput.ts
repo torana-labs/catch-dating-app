@@ -14,18 +14,6 @@ export const hostAnalyticsQueryCallablePayloadSchema: Record<string, unknown> = 
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "clubId": {
-      "anyOf": [
-        {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
     "organizerId": {
       "anyOf": [
         {

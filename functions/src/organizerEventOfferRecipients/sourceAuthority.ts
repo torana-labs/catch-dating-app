@@ -59,7 +59,7 @@ export async function readOfferRecipientSource(params: {
   const response = responseRaw as OrganizerFormResponseDocument | undefined;
   if (!organizer || organizer.status !== "active" || organizer.archived ||
       !event || event.status !== "active" ||
-      event.clubId !== scope.organizerId ||
+      event.organizerId !== scope.organizerId ||
       event.organizerId !== undefined &&
         event.organizerId !== scope.organizerId ||
       !event.startTime || event.startTime.toMillis() <= nowMillis ||

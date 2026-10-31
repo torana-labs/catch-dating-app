@@ -10,7 +10,7 @@ import {createOrganizerFormHandler, updateOrganizerFormDraftHandler,
 const now = Timestamp.fromDate(new Date("2026-09-24T00:00:00Z"));
 function fixture() {
   const event = {
-    clubId: "org1", organizerId: "org1", name: "Saturday mixer",
+    organizerId: "org1", name: "Saturday mixer",
     startTime: Timestamp.fromDate(new Date("2026-10-02T12:30:00Z")),
     status: "active", publicationState: "private", setupRevision: 1,
     publicRegistrationEnabled: false,
@@ -60,7 +60,7 @@ test("private basics can bind and publish a form without enabling the event",
 
 test("fixed targets reject missing, foreign and unusable events",
   async () => {
-    for (const change of [null, {clubId: "foreign"},
+    for (const change of [null, {organizerId: "foreign"},
       {organizerId: "foreign"}, {status: "cancelled"},
       {startTime: Timestamp.fromMillis(1)}, {publicationState: "other"},
       {setupRevision: 0}, {eventTimezone: null}]) {

@@ -39,7 +39,7 @@ async function harness(real?: Firestore) {
   const attendee = {...JSON.parse(readFileSync(
     "../contracts/fixtures/valid/event_attendee_doc.json", "utf8")),
   eventId: context.eventId, organizerId: context.organizerId,
-  clubId: context.organizerId, status: "registered", linkedUid: "guest",
+  status: "registered", linkedUid: "guest",
   checkedInAt: null, checkedInBy: null, attendanceRevision: 7,
   createdAt: Timestamp.fromMillis(start - 1000),
   updatedAt: Timestamp.fromMillis(start - 1000)};

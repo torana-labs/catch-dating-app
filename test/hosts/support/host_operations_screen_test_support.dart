@@ -17,7 +17,7 @@ void registerHostEventEntryTests() {
     final organizer = buildOrganizer(id: 'club-host', ownerUserId: _hostUid);
     final event = buildEvent(
       id: 'event-host',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 6, 15, 17),
     );
 
@@ -97,13 +97,13 @@ void registerHostEventEntryTests() {
     final organizer = buildOrganizer(id: 'quiet-club', ownerUserId: _hostUid);
     final draft = EventDraft(
       id: 'quiet-draft',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       savedAt: DateTime(2026, 6, 15, 10),
       customActivityLabel: 'Quiz night',
     );
     final pastEvent = buildEvent(
       id: 'past-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 6, 14, 17),
     );
 
@@ -162,7 +162,7 @@ void registerHostEventEntryTests() {
     final organizer = buildOrganizer(id: 'draft-club', ownerUserId: _hostUid);
     final draft = EventDraft(
       id: 'draft-one',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       savedAt: DateTime(2026, 6, 15, 10),
       customActivityLabel: 'Quiz night',
     );
@@ -303,7 +303,7 @@ class _RecordingHostOrganizerEditActions implements HostOrganizerEditActions {
 
   @override
   Future<void> updateOrganizer({
-    required String clubId,
+    required String organizerId,
     required UpdateOrganizerPatch patch,
   }) async {
     profileWrites.add(patch);
@@ -455,7 +455,7 @@ final class _EmptyHostAnalyticsRepository implements HostAnalyticsRepository {
 HostAnalyticsEventRow _hostAnalyticsEventRow({required String eventId}) =>
     HostAnalyticsEventRow(
       eventId: eventId,
-      clubId: 'exact-club',
+      organizerId: 'exact-club',
       title: 'Top event',
       startTime: DateTime(2026, 7, 8, 19),
       status: 'completed',
@@ -522,7 +522,7 @@ List _hostOrganizerOverrides({
       _hostUid,
     ).overrideWithValue(AsyncData<List<Organizer>>(hosted)),
     for (final organizerId in organizerIds)
-      organizerEventDraftsProvider(clubId: organizerId).overrideWithValue(
+      organizerEventDraftsProvider(organizerId: organizerId).overrideWithValue(
         AsyncData<List<EventDraft>>(
           draftsByOrganizer[organizerId] ?? const <EventDraft>[],
         ),

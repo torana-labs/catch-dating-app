@@ -69,7 +69,7 @@ never CRM, saved audiences, sender connections, or payouts.
 
 | Actor | Path |
 |---|---|
-| Organizer manager | 5-tab host shell → Events → event → Manage → Moments field → `/host/organizers/:clubId/events/:eventId/moments` (PR #443) |
+| Organizer manager | 5-tab host shell → Events → event → Manage → Moments field → `/host/organizers/:organizerId/events/:eventId/moments` (PR #443) |
 | Program staff | `/host/work/:programId` (+ `?invite=` token claim) → `getProgramWorkAccess` resolves duty-scoped destinations → `/arrivals/:pickupPointId`, `/dispatch/:pickupPointId`, `/hotel/:hotelId`, `/trips` |
 | Program staff (unified) | `listMyHostAssignments` callable deployed — **no Flutter assignment-picker shell yet** |
 | Guest (RSVP) | Web `/rsvp/:householdToken` (HMAC link via `issueProgramHouseholdRsvpLink`); `.ics` feed via `programHouseholdItineraryIcs` (`onRequest`) |

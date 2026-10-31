@@ -18,7 +18,7 @@ function input(overrides: Partial<SeatMigrationInput> = {}):
   SeatMigrationInput {
   return {eventId: "event1", organizerId: "org1", asOfMillis: 1000,
     migrationRevision: 1,
-    event: {clubId: "org1", organizerId: "org1", status: "active",
+    event: {organizerId: "org1", status: "active",
       capacityLimit: 2, bookedCount: 0, constraints: {}},
     participations: [], attendees: [guest()], verifiedPhones: [],
     origins: [], contacts: [], formReceipts: [], ...overrides,
@@ -45,7 +45,7 @@ test("a guest retains one seat without a Catch UID", () => {
 test("explicit linked attendee and Auth proof converge with participation",
   () => {
     const result = planEventSeatMigration(input({
-      event: {clubId: "org1", status: "active", capacityLimit: 2,
+      event: {organizerId: "org1", status: "active", capacityLimit: 2,
         bookedCount: 1, constraints: {}},
       participations: [{eventId: "event1", organizerId: "org1",
         uid: "user1", status: "signedUp"}],
@@ -63,7 +63,7 @@ test("explicit linked attendee and Auth proof converge with participation",
 
 test("matching guest phone alone cannot merge into a verified UID", () => {
   const result = planEventSeatMigration(input({
-    event: {clubId: "org1", status: "active", capacityLimit: 2,
+    event: {organizerId: "org1", status: "active", capacityLimit: 2,
       bookedCount: 1, constraints: {}},
     participations: [{eventId: "event1", organizerId: "org1",
       uid: "user1", status: "signedUp"}],
@@ -80,7 +80,7 @@ test("duplicate guest aliases and stale counters block a ready ledger",
       guest({id: "att_other", externalReference: "booking-2"})]}));
     assert.equal(duplicate.state, "blocked");
     assert.ok(duplicate.blockers.includes("ambiguousSeatAlias"));
-    const count = planEventSeatMigration(input({event: {clubId: "org1",
+    const count = planEventSeatMigration(input({event: {organizerId: "org1",
       status: "active", capacityLimit: 2, bookedCount: 1}}));
     assert.deepEqual(count, {state: "blocked",
       blockers: ["catchCountMismatch"]});
@@ -103,7 +103,7 @@ test("missing Auth proof, foreign rows, malformed policy and capacity block",
     const participation = {eventId: "event1", organizerId: "org1",
       uid: "user1", status: "signedUp" as const};
     const missingProof = planEventSeatMigration(input({
-      event: {clubId: "org1", status: "active", capacityLimit: 2,
+      event: {organizerId: "org1", status: "active", capacityLimit: 2,
         bookedCount: 1}, participations: [participation]}));
     assert.equal(missingProof.state, "blocked");
     if (missingProof.state !== "blocked") return;
@@ -114,11 +114,11 @@ test("missing Auth proof, foreign rows, malformed policy and capacity block",
     assert.equal(foreign.state, "blocked");
     if (foreign.state !== "blocked") return;
     assert.ok(foreign.blockers.includes("attendeeSourceConflict"));
-    const policy = planEventSeatMigration(input({event: {clubId: "org1",
-      organizerId: "other", capacityLimit: 2, status: "active"}}));
+    const policy = planEventSeatMigration(input({event: {organizerId: "other",
+      capacityLimit: 2, status: "active"}}));
     assert.deepEqual(policy, {state: "blocked",
       blockers: ["eventTenantConflict"]});
-    const full = planEventSeatMigration(input({event: {clubId: "org1",
+    const full = planEventSeatMigration(input({event: {organizerId: "org1",
       capacityLimit: 0, bookedCount: 0, status: "active"}}));
     assert.equal(full.state, "blocked");
     if (full.state !== "blocked") return;

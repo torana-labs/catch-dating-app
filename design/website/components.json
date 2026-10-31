@@ -3076,14 +3076,14 @@
         "organizer_listing_canonical"
       ],
       "owner": "shared/media",
-      "source": "packages/web-ui/src/components/ClubPlaceholderCover.tsx",
-      "exportName": "ClubPlaceholderCover",
+      "source": "packages/web-ui/src/components/OrganizerPlaceholderCover.tsx",
+      "exportName": "OrganizerPlaceholderCover",
       "css": [
-        "packages/web-ui/src/components/ClubPlaceholderCover.module.css"
+        "packages/web-ui/src/components/OrganizerPlaceholderCover.module.css"
       ],
       "storybook": {
         "status": "ready",
-        "story": "packages/web-ui/src/components/ClubPlaceholderCover.stories.tsx",
+        "story": "packages/web-ui/src/components/OrganizerPlaceholderCover.stories.tsx",
         "exportName": "Card",
         "states": [
           "card",
@@ -3092,7 +3092,7 @@
           "compact"
         ]
       },
-      "notes": "Website T4 under D18 (G7 typographic organiser cover). Twin of the Flutter member catch.organizer_poster.artwork (Flutter ClubPlaceholderCover): the organiser's name and city over its activity artwork, initials when compact; deterministic per organiser. The Flutter artwork does not set type yet; converging it on this recipe is a follow-up. Search aliases: OrganizerCover, OrganiserCover, TypographicCover, ClubFallback, Monogram."
+      "notes": "Website T4 under D18 (G7 typographic organiser cover). Twin of the Flutter member catch.organizer_poster.artwork (Flutter OrganizerPlaceholderCover): the organiser's name and city over its activity artwork, initials when compact; deterministic per organiser. The Flutter artwork does not set type yet; converging it on this recipe is a follow-up. Search aliases: OrganizerCover, OrganiserCover, TypographicCover, OrganizerFallback, Monogram."
     },
     {
       "id": "shared_club_cover",
@@ -3102,21 +3102,21 @@
         "organizer_listing_canonical"
       ],
       "owner": "shared/media",
-      "source": "packages/web-ui/src/components/ClubCover.tsx",
-      "exportName": "ClubCover",
+      "source": "packages/web-ui/src/components/OrganizerCover.tsx",
+      "exportName": "OrganizerCover",
       "css": [
         "packages/web-ui/src/components/EventThumbnail.module.css"
       ],
       "storybook": {
         "status": "ready",
-        "story": "packages/web-ui/src/components/ClubCover.stories.tsx",
+        "story": "packages/web-ui/src/components/OrganizerCover.stories.tsx",
         "exportName": "Photo",
         "states": [
           "photo",
           "fallback"
         ]
       },
-      "notes": "Website T4 under D18. Same symbol as Flutter ClubCover (catch.club_cover); becomes its react record when that registry is free: the organiser's photo, or ClubPlaceholderCover when there is none or it fails to load. Never a stand-in photo or a grey box. Flutter binds a Club; the website binds the public listing's name, city and activity. Search aliases: OrganizerCover, OrganizerImage, ClubImage."
+      "notes": "Website T4 under D18. Same symbol as Flutter OrganizerCover (catch.club_cover); becomes its react record when that registry is free: the organiser's photo, or OrganizerPlaceholderCover when there is none or it fails to load. Never a stand-in photo or a grey box. Flutter binds a Club; the website binds the public listing's name, city and activity. Search aliases: OrganizerCover, OrganizerImage, OrganizerImage."
     },
     {
       "id": "shared_band",
@@ -3442,7 +3442,7 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-251). The organiser page's identity: a cover photo or ground, an 88px monogram over its foot, the name with an optional verified seal, a tag, the headline, a meta line, a stats line and the caller's actions. Search aliases: ProfileHero, OrganiserHeader, ClubHeader, IdentityHeader, BioHeader.",
+      "notes": "Website T4 under D18 (CAT-251). The organiser page's identity: a cover photo or ground, an 88px monogram over its foot, the name with an optional verified seal, a tag, the headline, a meta line, a stats line and the caller's actions. Search aliases: ProfileHero, OrganiserHeader, OrganizerHeader, IdentityHeader, BioHeader.",
       "comparedWith": [
         "catch.person_avatar",
         "catch.detail_media",
@@ -4015,7 +4015,7 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). An organiser on paper: monogram, name (linked when the organiser has a page), what they run, the next plan, and a footnote across from the page's action (Follow, a claim link). Nearest concept: catch.organizer_poster, the photo-led organiser card. Search aliases: HostCard, OrganiserCard, ClubCard, FollowCard.",
+      "notes": "Website T4 under D18 (CAT-260). An organiser on paper: monogram, name (linked when the organiser has a page), what they run, the next plan, and a footnote across from the page's action (Follow, a claim link). Nearest concept: catch.organizer_poster, the photo-led organiser card. Search aliases: HostCard, OrganiserCard, OrganizerCard, FollowCard.",
       "comparedWith": [
         "catch.text",
         "catch.person_avatar"

@@ -90,7 +90,7 @@ store.get(`organizerFormResponses/${responseId}`)!
   .status = "withdrawn";
       },
       (store) => {
-store.get(`events/${eventId}`)!.clubId = "foreign";
+store.get(`events/${eventId}`)!.organizerId = "foreign";
       },
       (store) => {
 store.get(`organizerEventOffers/${offerId}`)!
@@ -163,8 +163,8 @@ test("verified imported guest keeps its source and existing seat", async () => {
   store.get(`organizerContacts/${contactId}`)!.phoneE164 = phone;
   store.get(`eventSeatLedgers/${eventId}`)!.occupied = 1;
   store.get(`events/${eventId}`)!.bookedCount = 1;
-  store.put(`eventAttendees/${guestId}`, {eventId, clubId: org,
-    organizerId: org, source: "hostImport", status: "registered",
+  store.put(`eventAttendees/${guestId}`, {eventId, organizerId: org,
+    source: "hostImport", status: "registered",
     linkedUid: null, phoneE164: phone, externalReference: null,
     displayName: "Imported Ada"});
   store.alias("attendee", guestId, guestKey);
@@ -211,7 +211,7 @@ test("retained Catch participation materializes missing display-only roster",
         active: true, revision: 1, reservedAtMillis: 1000,
         releasedAtMillis: null});
     store.put(`eventParticipations/${eventId}_${uid}`, {
-      eventId, clubId: org, organizerId: org, uid,
+      eventId, organizerId: org, uid,
       status: "signedUp", createdAt: ts(1000),
       signedUpAt: ts(1000)});
     store.put(`publicProfiles/${uid}`, {name: "Public Ada"});
@@ -294,8 +294,8 @@ test("attested manual payment lands on a linked imported attendee",
     store.get(`organizerContacts/${contactId}`)!.phoneE164 = phone;
     store.get(`eventSeatLedgers/${eventId}`)!.occupied = 1;
     store.get(`events/${eventId}`)!.bookedCount = 1;
-    store.put(`eventAttendees/${guestId}`, {eventId, clubId: org,
-      organizerId: org, source: "hostImport", status: "registered",
+    store.put(`eventAttendees/${guestId}`, {eventId, organizerId: org,
+      source: "hostImport", status: "registered",
       linkedUid: null, phoneE164: phone, externalReference: null,
       displayName: "Imported Ada"});
     store.alias("attendee", guestId, guestKey);

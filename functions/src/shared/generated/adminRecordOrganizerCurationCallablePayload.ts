@@ -71,7 +71,7 @@ export interface AdminRecordOrganizerCurationCallablePayload {
     evidenceRefs: {
       type:
         | "hostDiscoveryRun"
-        | "seedClub"
+        | "seedOrganizer"
         | "userReportedSearchResult"
         | "manualNote";
       ref: string | null;

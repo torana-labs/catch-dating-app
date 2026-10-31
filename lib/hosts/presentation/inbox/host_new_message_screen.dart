@@ -204,7 +204,7 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
           uid == null ||
           uid != accountId ||
           !match.isOrganizerHostInquiry ||
-          match.clubId != widget.organizerId ||
+          match.organizerId != widget.organizerId ||
           (match.user1Id != uid && match.user2Id != uid)) {
         throw StateError('Conversation is not available in this workspace.');
       }

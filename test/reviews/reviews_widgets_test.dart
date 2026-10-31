@@ -478,7 +478,7 @@ Future<void> _pumpReviewsSection(
           body: Padding(
             padding: const EdgeInsets.all(16),
             child: EventReviewsSection(
-              clubId: 'club-1',
+              organizerId: 'club-1',
               eventId: 'event-1',
               reviews: reviews,
               currentUid: user.uid,

@@ -55,7 +55,7 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
         const event = (await tx.get(db.collection("events")
           .doc(payment.eventId))).data();
         if (event?.status !== "cancelled") return false;
-        if ((event.organizerId ?? event.clubId) !== payment.organizerId) {
+        if ((event.organizerId) !== payment.organizerId) {
           unavailable();
         }
         await input.readAdmission({db, tx, payment, paymentId});
@@ -90,7 +90,7 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
       tx.get(db.collection("eventParticipations")
         .doc(eventParticipationId(eventId, recipientUid))),
     ]);
-    if ((event.organizerId ?? event.clubId) !== organizerId ||
+    if ((event.organizerId) !== organizerId ||
         payment.refundedAmountPaise !== 0 || !payment.providerPaymentId ||
         !payment.providerOrderId) unavailable();
     const attendeeRef = db.collection("eventAttendees").doc(receipt.attendeeId);
@@ -140,7 +140,7 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
     const seatRetained = participationActive && !bridgedBooking;
     if (seatRetained && (participation?.eventId !== eventId ||
         participation?.uid !== recipientUid ||
-        (participation?.organizerId ?? participation?.clubId) !==
+        (participation?.organizerId) !==
           organizerId)) {
       unavailable();
     }
@@ -155,7 +155,7 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
     const now = Timestamp.fromMillis(nowMillis);
     if (bridgedBooking && (participation?.eventId !== eventId ||
         participation?.uid !== recipientUid ||
-        (participation?.organizerId ?? participation?.clubId) !==
+        (participation?.organizerId) !==
           organizerId)) {
       unavailable();
     }

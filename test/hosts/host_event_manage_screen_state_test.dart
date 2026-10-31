@@ -105,7 +105,7 @@ void main() {
   });
 
   test('HostEventManageActionEffect maps action destinations', () {
-    final event = buildEvent(id: 'event-action', clubId: 'club-action');
+    final event = buildEvent(id: 'event-action', organizerId: 'club-action');
 
     final edit = HostEventManageActionEffect.resolve(
       intent: HostEventManageActionIntent.editEvent,
@@ -122,7 +122,7 @@ void main() {
 
     expect(edit.destination, HostEventManageActionDestination.editEventRoute);
     expect(edit.pathParameters, {
-      'clubId': 'club-action',
+      'organizerId': 'club-action',
       'eventId': 'event-action',
     });
     expect(edit.event, event);
@@ -185,14 +185,14 @@ void main() {
     final access = EventPrivateAccess(
       id: 'access-1',
       eventId: event.id,
-      clubId: organizer.id,
+      organizerId: organizer.id,
       inviteCode: ' CATCH-DELHI ',
       createdAt: DateTime(2026, 7),
     );
     final inviteLink = EventInviteLink(
       id: 'link-1',
       eventId: event.id,
-      clubId: organizer.id,
+      organizerId: organizer.id,
       hostUid: 'host-1',
       label: 'Instagram',
       createdAt: DateTime(2026, 7),
@@ -251,7 +251,7 @@ void main() {
     final access = EventPrivateAccess(
       id: 'access-1',
       eventId: event.id,
-      clubId: organizer.id,
+      organizerId: organizer.id,
       inviteCode: 'CATCH-DELHI',
       createdAt: DateTime(2026, 7),
     );
@@ -506,7 +506,7 @@ void main() {
     final active = EventInviteLink(
       id: 'link-1',
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       hostUid: 'host-1',
       label: 'Instagram',
       source: 'instagram',
@@ -524,13 +524,13 @@ void main() {
     final activeState = HostInviteLinkRowDisplayState.resolve(
       link: active,
       url:
-          '${Brand.webOrigin}/organizers/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
+          '${Brand.webOrigin}/organizers/${event.organizerId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
       actionsDisabled: false,
     );
     final disabledState = HostInviteLinkRowDisplayState.resolve(
       link: disabled,
       url:
-          '${Brand.webOrigin}/organizers/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
+          '${Brand.webOrigin}/organizers/${event.organizerId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
       actionsDisabled: true,
     );
 
@@ -538,7 +538,7 @@ void main() {
     expect(activeState.source, 'instagram');
     expect(
       activeState.url,
-      '${Brand.webOrigin}/organizers/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
+      '${Brand.webOrigin}/organizers/${event.organizerId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
     );
     expect(
       activeState.stats,

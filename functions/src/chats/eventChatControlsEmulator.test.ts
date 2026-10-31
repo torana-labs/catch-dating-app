@@ -38,13 +38,12 @@ test("scheduled, announcement-only, paused and archived room authority",
       {text: "Room update", replyToMessageId: null, kind,
         requestId: randomUUID()}), deps);
     try {
-      await ref("events", eventId).set({organizerId, clubId: organizerId,
-        name: "Room", status: "active"});
+      await ref("events", eventId).set({organizerId, name: "Room",
+        status: "active"});
       await ref("organizers", organizerId).set({ownerUserId: host,
         hostUserId: host, hostUserIds: [], hostProfiles: []});
       await ref("eventParticipations", `${eventId}_${person}`).set({
-        eventId, organizerId, clubId: organizerId,
-        uid: person, status: "signedUp"});
+        eventId, organizerId, uid: person, status: "signedUp"});
       for (const uid of [host, person]) {
         await ref("users", uid).set({displayName: uid,
           profileComplete: true, profileRevision: 1});

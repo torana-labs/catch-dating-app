@@ -320,7 +320,7 @@ void _registerExploreScreenFiltersTests() {
       final today = DateTime.now();
       final event = buildEvent(
         id: 'event-42',
-        clubId: organizer.id,
+        organizerId: organizer.id,
         startTime: DateTime(today.year, today.month, today.day, 8),
         endTime: DateTime(today.year, today.month, today.day, 9),
       );
@@ -343,7 +343,7 @@ void _registerExploreScreenFiltersTests() {
                   context.pushNamed<void>(
                     Routes.eventDetailScreen.name,
                     pathParameters: {
-                      'clubId': organizer.id,
+                      'organizerId': organizer.id,
                       'eventId': selectedEvent.id,
                     },
                   ),
@@ -352,7 +352,7 @@ void _registerExploreScreenFiltersTests() {
             ),
           ),
           GoRoute(
-            path: '/events/:clubId/:eventId',
+            path: '/events/:organizerId/:eventId',
             name: Routes.eventDetailScreen.name,
             builder: (_, state) => Text(
               'Event ${state.pathParameters['eventId']}',
@@ -741,7 +741,7 @@ void _registerExploreScreenFiltersTests() {
       );
       final event = event_test.buildEvent(
         id: 'search-cover-event',
-        clubId: organizer.id,
+        organizerId: organizer.id,
         startTime: DateTime.now().add(const Duration(hours: 3)),
       );
 
@@ -819,7 +819,7 @@ void _registerExploreScreenFiltersTests() {
     );
     final event = event_test.buildEvent(
       id: 'event-only',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startingPointLat: 19.06,
       startingPointLng: 72.83,
     );

@@ -925,7 +925,7 @@ These decisions were made while writing the spec. Each can be revisited in
 review.
 
 - **D-1 Naming.** The existing `organizerCommunityMemberships` ("community
-  membership") is an unpaid, host-approved admission grant. `clubMemberships`
+  membership") is an unpaid, host-approved admission grant. `organizerMemberships`
   are follows, and `organizerEntitlements` are SKUs Catch sells to hosts. The
   paid feature therefore uses the distinct prefix `hostMembership*` and the code
   roots `functions/src/hostMemberships/`, `lib/host_memberships/` and

@@ -23,7 +23,7 @@ export const eventSuccessFeedbackDocumentSchema: Record<string, unknown> = {
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "uid",
     "welcomeRating",
     "structureRating",
@@ -34,12 +34,6 @@ export const eventSuccessFeedbackDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

@@ -3,7 +3,7 @@
   "ownerId": "runner-1",
   "slot": 494080,
   "eventId": "event-1",
-  "clubId": "club-1",
+  "organizerId": "club-1",
   "uid": "runner-1",
   "startTimeMillis": 1778889600000,
   "endTimeMillis": 1778893800000

@@ -42,7 +42,7 @@ async function harness(realDb?: Firestore, id = "fixture") {
     else fake.write(path, value as Record<string, unknown>);
   };
   const event = {...fixture("event_doc"), organizerId: context.organizerId,
-    clubId: context.organizerId, name: "Night walk",
+    name: "Night walk",
     startTime: stamp(now - 60_000), endTime: stamp(now + 3_600_000),
     eventFormat: {version: 1, activityKind: "barCrawl",
       interactionModel: "freeFormMixer"},
@@ -52,12 +52,12 @@ async function harness(realDb?: Firestore, id = "fixture") {
         longitude: 75.8, notes: "Meet at the entrance."}}))};
   const organizerSchema = JSON.parse(readFileSync(
     "../contracts/firestore/organizers.schema.json", "utf8"));
-  const organizer = {...Object.fromEntries(Object.entries(fixture("club_doc"))
+  const organizer = {...Object.fromEntries(Object.entries(fixture(
+    "organizer_doc"))
     .filter(([key]) => key in organizerSchema.properties)), followerCount: 12,
   organizerPhotos: [], organizerType: "community"};
   const plan = {...fixture("event_success_plan_doc"),
-    eventId: context.eventId, clubId: context.organizerId,
-    organizerId: context.organizerId, status: "live"};
+    eventId: context.eventId, organizerId: context.organizerId, status: "live"};
   assert.ok(validateEventDocument(event),
     JSON.stringify(validateEventDocument.errors));
   assert.ok(validateOrganizerDocument(organizer),

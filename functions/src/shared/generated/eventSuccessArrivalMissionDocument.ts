@@ -7,8 +7,7 @@
  */
 export interface EventSuccessArrivalMissionDocument {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   observerUid: string;
   targetUid: string;
   targetDisplayName: string;

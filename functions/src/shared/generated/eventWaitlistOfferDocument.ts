@@ -7,8 +7,7 @@
  */
 export interface EventWaitlistOfferDocument {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   uid: string;
   cohortAtOffer: string;
   status: "active" | "accepted" | "declined" | "expired" | "cancelled";

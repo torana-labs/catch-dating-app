@@ -17,7 +17,6 @@ const schemaEventRehearsalDocumentSchema = <String, Object?>{
   'x-owner': 'event rehearsal callables',
   'required': <Object?>[
     'organizerId',
-    'clubId',
     'ownerUid',
     'sourceEventId',
     'sourceEventRevision',
@@ -43,12 +42,6 @@ const schemaEventRehearsalDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'organizerId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-      'x-catch-ownership': 'callable-owned',
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

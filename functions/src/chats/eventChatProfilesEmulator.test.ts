@@ -106,7 +106,6 @@ test(
     try {
       await put("events", eventId, {
         organizerId,
-        clubId: organizerId,
         name: "RSVP coffee",
         status: "active",
       });
@@ -158,7 +157,6 @@ test(
           uid: person,
           eventId,
           organizerId,
-          clubId: organizerId,
           status: "signedUp",
         },
       );

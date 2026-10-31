@@ -125,8 +125,7 @@ export async function publishEventLivePositionHandler(
     const current = await transaction.get(positionRef);
     const document: EventLivePositionDocument = {
       eventId: payload.eventId,
-      clubId: event.clubId,
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       uid: actorUid,
       role,
       latitude: payload.latitude!,

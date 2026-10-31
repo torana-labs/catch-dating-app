@@ -71,7 +71,7 @@ final class CreateOrganizerPostCallableResponse {
     }
 
     throw StateError(
-      'createClubPost response was missing postId or remainingWeeklyQuota.',
+      'createOrganizerPost response was missing postId or remainingWeeklyQuota.',
     );
   }
 
@@ -101,7 +101,9 @@ final class StartOrganizerHostConversationCallableResponse {
       }
     }
 
-    throw StateError('startClubHostConversation response was missing matchId.');
+    throw StateError(
+      'startOrganizerHostConversation response was missing matchId.',
+    );
   }
 
   final String matchId;

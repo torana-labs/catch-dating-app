@@ -36,7 +36,6 @@ abstract class EventAttendee with _$EventAttendee {
   const factory EventAttendee({
     @JsonKey(includeToJson: false) required String id,
     required String eventId,
-    required String clubId,
     required String organizerId,
     required String displayName,
     required String searchName,

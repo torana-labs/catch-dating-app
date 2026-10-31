@@ -10,7 +10,7 @@ _EventInviteLink _$EventInviteLinkFromJson(Map<String, dynamic> json) =>
     _EventInviteLink(
       id: json['id'] as String,
       eventId: json['eventId'] as String,
-      clubId: json['clubId'] as String,
+      organizerId: json['organizerId'] as String,
       hostUid: json['hostUid'] as String,
       label: json['label'] as String,
       source: json['source'] as String?,
@@ -33,7 +33,7 @@ Map<String, dynamic> _$EventInviteLinkToJson(
   _EventInviteLink instance,
 ) => <String, dynamic>{
   'eventId': instance.eventId,
-  'clubId': instance.clubId,
+  'organizerId': instance.organizerId,
   'hostUid': instance.hostUid,
   'label': instance.label,
   'source': instance.source,

@@ -260,7 +260,7 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
             title:
                 context.l10n.hostsOrganizerHostDefaultsStepTextDefaultActivity,
             contract: CatchContractConstraints
-                .createClubCallablePayloadHostDefaultsPrimaryActivityKind,
+                .createOrganizerCallablePayloadHostDefaultsPrimaryActivityKind,
             contractValueBuilder: (value) => value.name,
             helperText: context
                 .l10n
@@ -281,7 +281,7 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
             title:
                 context.l10n.hostsOrganizerHostDefaultsStepLabelAdmissionFormat,
             contract: CatchContractConstraints
-                .createClubCallablePayloadHostDefaultsEventPolicyAdmissionPreset,
+                .createOrganizerCallablePayloadHostDefaultsEventPolicyAdmissionPreset,
             contractValueBuilder: (value) => value.name,
             values: visibleAdmissionPresets,
             itemTitleBuilder: (preset) => preset.label(context.l10n),
@@ -331,7 +331,7 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
                           .l10n
                           .hostsOrganizerHostDefaultsStepTitleMaxStraightMen,
                       contract: CatchContractConstraints
-                          .createClubCallablePayloadHostDefaultsEventPolicyMaxMen,
+                          .createOrganizerCallablePayloadHostDefaultsEventPolicyMaxMen,
                       controller: _maxMenController,
                       open: _openNumericField == 'maxMen',
                       onOpenChanged: (open) =>
@@ -367,7 +367,7 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
                           .l10n
                           .hostsOrganizerHostDefaultsStepTitleMaxStraightWomen,
                       contract: CatchContractConstraints
-                          .createClubCallablePayloadHostDefaultsEventPolicyMaxWomen,
+                          .createOrganizerCallablePayloadHostDefaultsEventPolicyMaxWomen,
                       controller: _maxWomenController,
                       open: _openNumericField == 'maxWomen',
                       onOpenChanged: (open) =>
@@ -406,7 +406,7 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
             title:
                 context.l10n.hostsOrganizerHostDefaultsStepTitleDemandPricing,
             contract: CatchContractConstraints
-                .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingEnabled,
+                .createOrganizerCallablePayloadHostDefaultsEventPolicyDynamicPricingEnabled,
             body: context
                 .l10n
                 .hostsOrganizerHostDefaultsStepBodyPrefillDynamicPricingControls,
@@ -435,7 +435,7 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
                             .l10n
                             .hostsOrganizerHostDefaultsStepTitleStep,
                         contract: CatchContractConstraints
-                            .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingStepInPaise,
+                            .createOrganizerCallablePayloadHostDefaultsEventPolicyDynamicPricingStepInPaise,
                         controller: _pricingStepController,
                         open: _openNumericField == 'pricingStep',
                         onOpenChanged: (open) =>
@@ -479,7 +479,7 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
                         title:
                             context.l10n.hostsOrganizerHostDefaultsStepTitleMax,
                         contract: CatchContractConstraints
-                            .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingMaxInPaise,
+                            .createOrganizerCallablePayloadHostDefaultsEventPolicyDynamicPricingMaxInPaise,
                         controller: _pricingMaxController,
                         open: _openNumericField == 'pricingMax',
                         onOpenChanged: (open) =>
@@ -525,9 +525,9 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
             minAgeController: _minAgeController,
             maxAgeController: _maxAgeController,
             minimumContract: CatchContractConstraints
-                .createClubCallablePayloadHostDefaultsEventPolicyMinAge,
+                .createOrganizerCallablePayloadHostDefaultsEventPolicyMinAge,
             maximumContract: CatchContractConstraints
-                .createClubCallablePayloadHostDefaultsEventPolicyMaxAge,
+                .createOrganizerCallablePayloadHostDefaultsEventPolicyMaxAge,
             onChangeEnd: (minAge, maxAge) => _emit(
               (current) => current.copyWith(minAge: minAge, maxAge: maxAge),
             ),
@@ -538,7 +538,7 @@ class _PolicyDefaultsCardState extends State<OrganizerPolicyDefaultsCard> {
                 .l10n
                 .hostsOrganizerHostDefaultsStepLabelCancellationPolicy,
             contract: CatchContractConstraints
-                .createClubCallablePayloadHostDefaultsEventPolicyCancellationPolicyId,
+                .createOrganizerCallablePayloadHostDefaultsEventPolicyCancellationPolicyId,
             contractValueBuilder: (value) => value.name,
             values: EventCancellationPolicyId.values
                 .where((value) => value.isApplicable)

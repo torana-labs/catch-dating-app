@@ -146,7 +146,7 @@ export async function createEventInviteLinkHandler(
         "Only an organizer manager can create invite links."
       );
     }
-    const organizerId = event.organizerId ?? event.clubId;
+    const organizerId = event.organizerId;
     const intendedRecipientContactId = stringOrNull(
       payload.intendedRecipientContactId
     );
@@ -199,8 +199,6 @@ export async function createEventInviteLinkHandler(
     const now = deps.serverTimestamp();
     tx.create(inviteRef, {
       eventId: payload.eventId,
-      clubId: event.clubId,
-
       organizerId,
       hostUid,
       label,
@@ -351,7 +349,7 @@ export async function createAttendeeInviteLinkHandler(
       organizerId?: string;
       contactId?: string;
     } | undefined;
-    const organizerId = event.organizerId ?? event.clubId;
+    const organizerId = event.organizerId;
     if (!attendee || attendee.eventId !== payload.eventId ||
         attendee.linkedUid !== actorUid ||
         !edge || edge.organizerId !== organizerId || !edge.contactId) {
@@ -405,7 +403,6 @@ export async function createAttendeeInviteLinkHandler(
     const now = deps.serverTimestamp();
     tx.create(inviteRef, {
       eventId: payload.eventId,
-      clubId: event.clubId,
       organizerId,
       hostUid: actorUid,
       label: payload.label.trim(),
@@ -667,7 +664,7 @@ export async function recordEventInviteLinkOpenHandler(
     }, {merge: true});
     tx.create(touchRef, {
       eventId: payload.eventId,
-      organizerId: stringOrNull(link.organizerId) ?? link.clubId,
+      organizerId: stringOrNull(link.organizerId) ?? link.organizerId,
       inviteLinkId: resolved.inviteLinkId,
       touchKind: "open",
       surface: payload.surface ?? "unknown",
@@ -762,7 +759,7 @@ export async function resolveEventInviteLandingHandler(
       }, {merge: true});
       tx.create(touchRef, {
         eventId: link.eventId,
-        organizerId: stringOrNull(link.organizerId) ?? link.clubId,
+        organizerId: stringOrNull(link.organizerId) ?? link.organizerId,
         inviteLinkId: resolved.inviteLinkId,
         touchKind: "open", surface: "marketingWeb",
         actorUid: request.auth?.uid ?? null,
@@ -834,7 +831,7 @@ export async function recordEventShareIntentHandler(
     }
     tx.create(db.collection("eventShareIntents").doc(), {
       eventId: payload.eventId,
-      organizerId: link.organizerId ?? link.clubId,
+      organizerId: link.organizerId,
       inviteLinkId: payload.inviteLinkId,
       actorUid,
       actorKind: hostAuthorized && link.linkKind !== "attendeeReferrer" ?

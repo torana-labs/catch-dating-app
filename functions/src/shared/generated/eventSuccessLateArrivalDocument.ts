@@ -7,7 +7,6 @@
  */
 export interface EventSuccessLateArrivalDocument {
   eventId: string;
-  clubId: string;
   organizerId: string;
   uid: string;
   resolvedByUid: string;

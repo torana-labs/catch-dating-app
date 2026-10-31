@@ -37,7 +37,7 @@ Widget catchOrganizerCoverContractStates(BuildContext context) {
         'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=720&q=80',
   );
   return WidgetbookContractFrame(
-    title: 'ClubCover',
+    title: 'OrganizerCover',
     contractId: 'catch.club_cover',
     states: const ['photo', 'fallback', 'compact', 'error-fallback'],
     children: [

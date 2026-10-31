@@ -91,7 +91,7 @@ void main() {
 Event _event({required ActivityKind activityKind}) {
   return Event(
     id: 'event-1',
-    clubId: 'club-1',
+    organizerId: 'club-1',
     startTime: DateTime(2026, 5, 29, 19),
     endTime: DateTime(2026, 5, 29, 21),
     meetingPoint: 'Gallery',

@@ -86,7 +86,7 @@ void main() {
     final restored = CreateEventDraftRestoreState.fromDraft(
       EventDraft(
         id: 'draft-1',
-        clubId: 'organizer-1',
+        organizerId: 'organizer-1',
         savedAt: DateTime(2026, 8, 29),
         meetingPoint: 'Sea-facing gate',
         meetingLocationAddress: 'Bandra West, Mumbai',

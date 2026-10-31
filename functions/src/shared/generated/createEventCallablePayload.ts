@@ -15,10 +15,6 @@ export interface CreateEventCallablePayload {
    * Optional organizer venue provenance. The event still stores an independent meeting-location snapshot.
    */
   sourceVenueId?: string | null;
-  /**
-   * Deprecated compatibility alias for organizerId.
-   */
-  clubId?: string;
   startTimeMillis: number;
   endTimeMillis: number;
   meetingPoint: string;

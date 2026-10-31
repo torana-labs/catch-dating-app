@@ -42,7 +42,6 @@
         "waitlistOfferExpired",
         "eventCancelled",
         "eventUpdated",
-        "clubUpdate",
         "organizerUpdate",
         "formResponse",
         "crossPathsInvitation",
@@ -82,15 +81,6 @@
       "x-catch-ownership": "server-only"
     },
     "eventId": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "server-only"
-    },
-    "clubId": {
       "type": [
         "string",
         "null"

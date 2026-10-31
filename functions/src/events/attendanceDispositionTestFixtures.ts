@@ -32,7 +32,7 @@ export async function harness(realDb?: Firestore) {
     updatedAt: Timestamp.fromMillis(start)}};
   const attendee = {...fixture("event_attendee_doc"),
     eventId: context.eventId, organizerId: context.organizerId,
-    clubId: context.organizerId, status: "registered", linkedUid: "guest-1",
+    status: "registered", linkedUid: "guest-1",
     checkedInAt: null, checkedInBy: null, attendanceRevision: 7,
     createdAt: Timestamp.fromMillis(start - 1000),
     updatedAt: Timestamp.fromMillis(start - 1000)};

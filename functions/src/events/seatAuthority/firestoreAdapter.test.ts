@@ -114,7 +114,7 @@ test("missing capacity, policy mismatch and migration lag deny",
   async () => {
     const changes = [
       (store: FakeStore) => store.docs.set("events/event-1",
-        {...event(), clubId: "foreign-organizer"}),
+        {...event(), organizerId: "foreign-organizer"}),
       (store: FakeStore) => store.docs.set("events/event-1",
         {...event(), capacityLimit: undefined}),
       (store: FakeStore) => store.docs.set("events/event-1",

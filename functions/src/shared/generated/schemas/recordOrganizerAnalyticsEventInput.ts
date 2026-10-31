@@ -20,11 +20,6 @@ export const recordOrganizerAnalyticsEventCallablePayloadSchema: Record<string, 
       "minLength": 1,
       "maxLength": 180
     },
-    "clubId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
     "eventId": {
       "anyOf": [
         {

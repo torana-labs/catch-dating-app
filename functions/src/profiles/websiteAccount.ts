@@ -208,7 +208,7 @@ export function newAccountProfile(name: string, phone: string): Profile {
     prefsMessages: true,
     prefsEventReminders: true,
     prefsRunStatusUpdates: false,
-    prefsClubUpdates: false,
+    prefsOrganizerUpdates: false,
     prefsWeeklyDigest: false,
     prefsShowOnMap: false,
     prefsShowInCrossPaths: false,

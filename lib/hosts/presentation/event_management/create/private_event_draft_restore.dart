@@ -121,7 +121,7 @@ class PrivateEventDraftRestore {
 EventDraft privateEventDraftSnapshot({
   required EventDraft? old,
   required String draftId,
-  required String clubId,
+  required String organizerId,
   required String name,
   required String? cityId,
   required String? marketId,
@@ -139,7 +139,11 @@ EventDraft privateEventDraftSnapshot({
   PrivateEventCreateReceipt? receipt,
 }) {
   return (old ??
-          EventDraft(id: draftId, clubId: clubId, savedAt: DateTime.now()))
+          EventDraft(
+            id: draftId,
+            organizerId: organizerId,
+            savedAt: DateTime.now(),
+          ))
       .copyWith(
         savedAt: DateTime.now(),
         name: name,

@@ -31,7 +31,7 @@ export async function readOperationalNoticeFanoutAuthority(db: Firestore,
   const [eventSnap, sourceSnap] = await tx.getAll(eventRef, sourceRef);
   const event = eventSnap.data();
   if (!validateEventDocument(event) ||
-      (event.organizerId ?? event.clubId) !== input.context.organizerId ||
+      (event.organizerId) !== input.context.organizerId ||
       event.status !== "active") {
     return {kind: "held", reason: "sourceChanged"};
   }
@@ -86,7 +86,7 @@ value: unknown) {
     Math.max(completedAt, eventEnd);
   return sourceId === input.context.eventId &&
     value.eventId === input.context.eventId &&
-    (value.organizerId ?? value.clubId) === input.context.organizerId &&
+    (value.organizerId) === input.context.organizerId &&
     value.status === "complete" && revision === input.source.revision &&
     postEventFollowUpSourceId(input.context, revision) ===
       input.source.sourceId && occurredAt === input.source.occurredAt &&

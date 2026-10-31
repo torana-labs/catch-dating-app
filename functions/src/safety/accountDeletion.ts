@@ -245,7 +245,7 @@ async function queueRelationshipCleanup(params: {
   // Paid memberships stop billing before their records are erased below.
   await endAccountHostMemberships(uid).catch(() => undefined);
   await Promise.all([
-    queueClubMembershipCleanup(db, uid, now, writer),
+    queueOrganizerMembershipCleanup(db, uid, now, writer),
     queueOrganizerAudienceIdentityCleanup(db, uid, now, writer),
     queueCrossPathsConsentCleanup(db, uid, writer),
     queueCrossPathsSuggestionExposureCleanup(db, uid, writer),
@@ -390,7 +390,7 @@ async function queueParticipantPrivateStateCleanup(
 /**
  * Marks the user's organizer follow edges inactive and updates aggregates.
  */
-async function queueClubMembershipCleanup(
+async function queueOrganizerMembershipCleanup(
   db: FirebaseFirestore.Firestore,
   uid: string,
   now: FirebaseFirestore.FieldValue,

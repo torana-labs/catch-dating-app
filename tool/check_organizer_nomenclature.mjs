@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import {execFileSync} from "node:child_process";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "./lib/repo_paths.mjs";
 import {clubNameFindings} from "./architecture/rename_to_organizer.mjs";
+import {wireNameFindings} from "./architecture/rename_wire_to_organizer.mjs";
 
 const taxonomy = [
   "club",
@@ -124,6 +126,7 @@ export function checkOrganizerNomenclature({root = fromRepo()} = {}) {
   checkClientAuthorityPatterns(root, findings);
   checkProductCopy(root, findings);
   checkFlutterNames(root, findings);
+  checkWireNames(root, findings);
   return {ok: findings.length === 0, findings};
 }
 
@@ -133,6 +136,46 @@ function checkFlutterNames(root, findings) {
   for (const finding of clubNameFindings({files, read})) {
     findings.push({rule: "clubInFlutterNames", ...finding});
   }
+}
+
+// Contract, TypeScript and rules names say organizer too. What
+// tool/architecture/rename_wire_to_organizer.mjs would still rename is a
+// finding; it keeps the club subtype and the warehouse columns.
+const wireNameRoots = ["contracts", "functions", "website", "admin", "packages", "operations", "tool"];
+const wireNameFile = /\.(?:ts|tsx|mts|cts|js|jsx|mjs|cjs|json|css)$/u;
+
+function checkWireNames(root, findings) {
+  // Tracked files only: build outputs (functions/lib, .next) are not sources.
+  const files = trackedFiles(root)?.filter((file) => wireNameRoots.some((dir) => file.startsWith(`${dir}/`)) &&
+    wireNameFile.test(file)) ?? wireNameRoots.flatMap((dir) => walkFiles(root, dir, (file) => wireNameFile.test(file)));
+  const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
+  for (const finding of wireNameFindings({files, read})) {
+    findings.push({rule: "clubInWireNames", ...finding});
+  }
+}
+
+function trackedFiles(root) {
+  try {
+    return execFileSync("git", ["ls-files", "-z"], {cwd: root, encoding: "utf8", maxBuffer: 1 << 28,
+      stdio: ["ignore", "pipe", "ignore"]}).split("\0").filter((file) => file !== "" && fs.existsSync(path.join(root, file)));
+  } catch {
+    return null;
+  }
+}
+
+function walkFiles(root, relativeDir, keep) {
+  const target = path.join(root, relativeDir);
+  if (!fs.existsSync(target)) return [];
+  const files = [];
+  for (const entry of fs.readdirSync(target, {withFileTypes: true})) {
+    const relativePath = `${relativeDir}/${entry.name}`;
+    if (entry.isDirectory()) {
+      if (!skippedDirectories.has(entry.name)) files.push(...walkFiles(root, relativePath, keep));
+    } else if (keep(relativePath)) {
+      files.push(relativePath);
+    }
+  }
+  return files;
 }
 
 function flutterNameFiles(root, relativeDir) {

@@ -24,7 +24,7 @@ class WriteReviewController extends _$WriteReviewController {
   void build() {}
 
   Future<void> submit({
-    required String clubId,
+    required String organizerId,
     required String eventId,
     required String reviewerUserId,
     required String reviewerName,
@@ -34,7 +34,7 @@ class WriteReviewController extends _$WriteReviewController {
   }) {
     return _trackWrite(
       () => _submit(
-        clubId: clubId,
+        organizerId: organizerId,
         eventId: eventId,
         reviewerUserId: reviewerUserId,
         reviewerName: reviewerName,
@@ -46,7 +46,7 @@ class WriteReviewController extends _$WriteReviewController {
   }
 
   Future<void> _submit({
-    required String clubId,
+    required String organizerId,
     required String eventId,
     required String reviewerUserId,
     required String reviewerName,
@@ -68,7 +68,7 @@ class WriteReviewController extends _$WriteReviewController {
       await repo.addReview(
         Review(
           id: '',
-          organizerId: clubId,
+          organizerId: organizerId,
           eventId: eventId,
           reviewerUserId: reviewerUserId,
           reviewerName: reviewerName,

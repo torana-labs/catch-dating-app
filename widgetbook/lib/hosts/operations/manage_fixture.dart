@@ -235,7 +235,7 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
           child:
               child ??
               HostEventManageRouteScreen(
-                clubId: effectiveOrganizer.id,
+                organizerId: effectiveOrganizer.id,
                 eventId: effectiveEvent.id,
                 initialEvent: _initialManageEvent(eventValue, effectiveEvent),
                 initialSection: initialSection,

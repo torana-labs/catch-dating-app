@@ -71,9 +71,12 @@ class HostEventEntryState {
     }
 
     final matchingDrafts =
-        drafts.where((draft) => draft.clubId == normalizedOrganizerId).toList()
+        drafts
+            .where((draft) => draft.organizerId == normalizedOrganizerId)
+            .toList()
           ..sort((a, b) => b.savedAt.compareTo(a.savedAt));
-    final matchingRepeatSource = repeatSource?.clubId == normalizedOrganizerId
+    final matchingRepeatSource =
+        repeatSource?.organizerId == normalizedOrganizerId
         ? repeatSource
         : null;
 

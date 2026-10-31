@@ -2,11 +2,13 @@ import type {OrganizerDocument} from "./generated/firestoreAdminTypes";
 
 export type OrganizerTeamRole = "owner" | "manager";
 
+export type OrganizerHostRole = "owner" | "host";
+
 export interface OrganizerHostProfile {
   uid: string;
   displayName: string;
   avatarUrl: string | null;
-  role: "owner" | "host";
+  role: OrganizerHostRole;
 }
 
 /** Returns the canonical organizer owner id. */

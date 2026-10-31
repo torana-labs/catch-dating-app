@@ -179,13 +179,13 @@ void main() {
 }
 
 Review _review({
-  String clubId = 'club-1',
+  String organizerId = 'club-1',
   String? eventId = 'event-1',
   String reviewerUserId = 'runner-1',
 }) {
   return Review(
     id: '',
-    organizerId: clubId,
+    organizerId: organizerId,
     eventId: eventId,
     reviewerUserId: reviewerUserId,
     reviewerName: 'Runner One',

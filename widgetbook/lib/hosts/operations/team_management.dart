@@ -202,7 +202,7 @@ class _HostTeamAddHostSheetPreview extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: HostTeamAddHostSheet(
-          clubId: 'design-host-sea-face',
+          organizerId: 'design-host-sea-face',
           actionState: actionState,
         ),
       ),

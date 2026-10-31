@@ -180,7 +180,7 @@ export async function getEventRuntimeBootstrapHandler(
   const requiredDataRequest = participant?.eventAttendeeId ?
     await readRuntimeDataRequestProjection({db,
       context: {mode: "live", eventId: resolved.eventId,
-        organizerId: resolved.event.organizerId ?? resolved.event.clubId},
+        organizerId: resolved.event.organizerId},
       attendeeId: participant.eventAttendeeId, uid: participant.uid,
       completedFieldIds: participant.completedFieldIds,
       now: now.toMillis()}) : null;
@@ -217,8 +217,7 @@ export async function getEventRuntimeBootstrapHandler(
       accessStatus: participant.accessStatus,
       attendanceStatus: attendeeStatus,
       eventId: resolved.eventId,
-      clubId: participant.clubId,
-      organizerId: participant.organizerId ?? participant.clubId,
+      organizerId: participant.organizerId,
       requiredFieldIds: participant.requiredFieldIds,
       completedFieldIds: participant.completedFieldIds,
       requiredDataRequest: requiredDataRequest ? {
@@ -319,7 +318,7 @@ export async function claimEventRuntimeAccessHandler(
             .doc(participant.eventAttendeeId))).data();
           const checked = await prepareCatchUidSeatIdentity({db, tx,
             eventId: resolved.eventId,
-            organizerId: currentEvent.organizerId ?? currentEvent.clubId,
+            organizerId: currentEvent.organizerId,
             uid, currentAuthPhoneNumber: phone});
           const seats = new FirestoreSeatTransaction(db, tx);
           const [ledger, reservation] = await Promise.all([
@@ -328,7 +327,7 @@ export async function claimEventRuntimeAccessHandler(
           ]);
           requireRuntimeSeatSnapshot({event: currentEvent,
             eventId: resolved.eventId,
-            organizerId: currentEvent.organizerId ?? currentEvent.clubId,
+            organizerId: currentEvent.organizerId,
             identity: checked.identity, ledger, reservation,
             expectedActive: true});
           if (!currentAttendee || currentAttendee.eventId !==
@@ -375,11 +374,12 @@ export async function claimEventRuntimeAccessHandler(
         .collection("eventParticipations")
         .doc(eventParticipationId(resolved.eventId, uid))) : null;
       const current = currentParticipation?.data();
-      const organizerId = currentEvent.organizerId ?? currentEvent.clubId;
+      const organizerId = currentEvent.organizerId;
       if (!current || current.eventId !== resolved.eventId ||
           current.uid !== uid ||
-          (current.organizerId ?? current.clubId) !== organizerId ||
-          current.clubId !== undefined && current.clubId !== organizerId ||
+          (current.organizerId) !== organizerId ||
+          current.organizerId !== undefined &&
+              current.organizerId !== organizerId ||
           current.organizerId !== undefined &&
             current.organizerId !== organizerId ||
           current.status !== "signedUp" &&
@@ -397,7 +397,7 @@ export async function claimEventRuntimeAccessHandler(
     let createAttendeeAlias: (() => void) | null = null;
     let seatAlreadyActive = false;
     if (seatMode === "ready") {
-      const organizerId = currentEvent.organizerId ?? currentEvent.clubId;
+      const organizerId = currentEvent.organizerId;
       const enrolled = attendee && attendee.source !== "catchBooking" ?
         await prepareVerifiedUidAttendeeEnrollment({db, tx,
           eventId: resolved.eventId, organizerId,
@@ -465,8 +465,9 @@ export async function claimEventRuntimeAccessHandler(
         const current = participation.data();
         if (!current || current.eventId !== resolved.eventId ||
             current.uid !== uid ||
-            (current.organizerId ?? current.clubId) !== organizerId ||
-            current.clubId !== undefined && current.clubId !== organizerId ||
+            (current.organizerId) !== organizerId ||
+            current.organizerId !== undefined &&
+                current.organizerId !== organizerId ||
             current.organizerId !== undefined &&
               current.organizerId !== organizerId ||
             current.status !== "signedUp" &&
@@ -525,8 +526,7 @@ export async function claimEventRuntimeAccessHandler(
       runtimeAccessStatus(requiredFieldIds, completedFieldIds);
     const participant: EventRuntimeParticipantDocument = {
       eventId: resolved.eventId,
-      clubId: resolved.event.clubId,
-      organizerId: resolved.event.organizerId ?? resolved.event.clubId,
+      organizerId: resolved.event.organizerId,
       uid,
       eventAttendeeId: selectedAttendeeRef.id,
       identityVersion: 1,
@@ -551,8 +551,7 @@ export async function claimEventRuntimeAccessHandler(
     if (needsApproval) {
       const claimRequest: EventRuntimeClaimRequestDocument = {
         eventId: resolved.eventId,
-        clubId: resolved.event.clubId,
-        organizerId: resolved.event.organizerId ?? resolved.event.clubId,
+        organizerId: resolved.event.organizerId,
         uid,
         displayName: payload.displayName,
         phoneLastFour: phone.slice(-4),
@@ -646,7 +645,7 @@ export async function submitEventRuntimeProfileHandler(
     if (participant.eventAttendeeId) {
       await reconcileRuntimeDataRequest({db, tx,
         context: {mode: "live", eventId: resolved.eventId,
-          organizerId: resolved.event.organizerId ?? resolved.event.clubId},
+          organizerId: resolved.event.organizerId},
         attendeeId: participant.eventAttendeeId, uid,
         completedFieldIds, now});
     }
@@ -655,8 +654,7 @@ export async function submitEventRuntimeProfileHandler(
         .doc(eventRuntimeParticipantId(resolved.eventId, uid));
       const response: EventSuccessCompatibilityResponseDocument = {
         eventId: resolved.eventId,
-        clubId: participant.clubId,
-        organizerId: participant.organizerId ?? participant.clubId,
+        organizerId: participant.organizerId,
         uid,
         answerIds: profile.questionnaireAnswerIds,
         createdAt: participant.claimedAt,
@@ -785,7 +783,7 @@ export async function checkInEventRuntimeHandler(
     if (seatMode === "ready") {
       const identity = await new FirestoreSeatIdentityAuthority().resolve({
         db, tx, eventId: resolved.eventId,
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
         subject: attendee.source === "catchBooking" ?
           {kind: "verifiedUid", uid} :
           {kind: "importAttendee",
@@ -801,7 +799,7 @@ export async function checkInEventRuntimeHandler(
         seats.reservation(resolved.eventId, identity.key),
       ]);
       requireRuntimeSeatSnapshot({event, eventId: resolved.eventId,
-        organizerId: event.organizerId ?? event.clubId, identity,
+        organizerId: event.organizerId, identity,
         ledger, reservation, expectedActive: true});
     }
     rejectVenueSessionReplay(redemptionSnap);
@@ -949,7 +947,7 @@ export async function approveEventRuntimeClaimHandler(
     let applySeat: () => void = () => undefined;
     let nextBookedCount: number | null = null;
     if (seatMode === "ready") {
-      const organizerId = event.organizerId ?? event.clubId;
+      const organizerId = event.organizerId;
       const identities = new FirestoreSeatIdentityAuthority();
       const [verified, imported] = await Promise.all([
         identities.resolve({db, tx, eventId: payload.eventId,
@@ -1199,7 +1197,7 @@ async function runtimeSpatialLayout(
   if (!plan?.layoutId || plan.structureConfig?.unitKind === "wholeGroup") {
     return null;
   }
-  const organizerId = event.organizerId ?? event.clubId;
+  const organizerId = event.organizerId;
   const snap = await db.collection("organizerEventSuccessLayouts").doc(
     organizerEventSuccessLayoutDocumentId(organizerId, plan.layoutId)
   ).get();
@@ -1376,8 +1374,7 @@ function runtimeAttendeeDocument(params: {
 }): EventAttendeeDocument {
   return {
     eventId: params.eventId,
-    clubId: params.event.clubId,
-    organizerId: params.event.organizerId ?? params.event.clubId,
+    organizerId: params.event.organizerId,
     displayName: params.displayName,
     searchName: params.displayName.toLocaleLowerCase("en"),
     source: params.source ?? "webOtp",

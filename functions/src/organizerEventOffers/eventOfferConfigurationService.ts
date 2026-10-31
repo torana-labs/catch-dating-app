@@ -96,7 +96,7 @@ export async function configureEventOfferPreferences(params:
     const organizer = authorizeSetupManager(organizerSnap, deletedSnap,
       actorUid);
     const event = eventSnap.data();
-    if (!event || event.clubId !== command.organizerId ||
+    if (!event || event.organizerId !== command.organizerId ||
         event.organizerId !== undefined &&
         event.organizerId !== command.organizerId) {
       throw new HttpsError("not-found", "Event not found.");

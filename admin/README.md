@@ -86,10 +86,10 @@ signals, and bounded deterministic overlap checks. It is the launch-gate review
 workspace only; account actions, safety history, payment history, and broad user
 search need separate role-scoped contracts before they are exposed here.
 
-The Organizers tab calls `adminListClubDetails` for the canonical
-`clubs/{id}` directory, `adminGetClubDetails` for detail hydration,
-`adminUpdateClubDetails` for audited partial edits, and
-`adminSetClubIndexStatus` for index-ready/noindex publishing decisions.
+The Organizers tab calls `adminListOrganizerDetails` for the canonical
+`clubs/{id}` directory, `adminGetOrganizerDetails` for detail hydration,
+`adminUpdateOrganizerDetails` for audited partial edits, and
+`adminSetOrganizerIndexStatus` for index-ready/noindex publishing decisions.
 Organizer save and index decisions require a review note whenever an audited
 mutation is sent; unchanged saves short-circuit in the UI without calling the
 backend. The organizer list response includes a `generatedAt` snapshot timestamp
@@ -100,7 +100,7 @@ Organizer save and index-ready publishing also reserve
 `publicRouteReservations/{routeKey}` so website routes are claimed before
 canonical listings become indexable.
 Organizer save and index-ready publishing also rebuild the server-owned
-`clubs/{id}.adminSearch` projection used by `adminListClubDetails` for
+`clubs/{id}.adminSearch` projection used by `adminListOrganizerDetails` for
 token-backed large-list search. Backend query matching owns token search; the
 client table only applies tab filters to the rows returned by the callable.
 The default Organizer Indore + Mumbai view sends a bounded `citySlugs` backend
@@ -110,9 +110,9 @@ Organizer public-page previews use `VITE_ADMIN_PUBLIC_SITE_ORIGIN` plus
 `clubs/{id}.publicPage.canonicalPath`; if the env var is omitted, the admin
 console falls back to `https://catchdates.com`.
 The same Organizers workspace lists pending organizer claims through
-`adminListClubClaimRequests`, loads bounded requester/profile/club evidence
-through `adminGetClubClaimRequestDetails`, and sends approve/reject decisions
-through `adminDecideClubClaim`. Approval stays disabled when the requester
+`adminListOrganizerClaimRequests`, loads bounded requester/profile/club evidence
+through `adminGetOrganizerClaimRequestDetails`, and sends approve/reject decisions
+through `adminDecideOrganizerClaim`. Approval stays disabled when the requester
 profile is incomplete or the claim target is missing, and every decision
 requires an operator note. The backend rejects competing active claims and
 stale decisions; rejected applicants receive a deterministic activity

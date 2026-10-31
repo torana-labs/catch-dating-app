@@ -185,7 +185,7 @@ function printHelp() {
   node tool/design/check_rail_contracts.mjs --json
 
 Reports rail callers that manually zero divider/header/list chrome instead of
-using the CatchSection.horizontal/ClubAvatarRail embedded-default vs fullBleed
+using the CatchSection.horizontal/OrganizerAvatarRail embedded-default vs fullBleed
 contract.
 `);
 }

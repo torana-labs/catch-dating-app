@@ -60,10 +60,10 @@ void main() {
             ),
             routes: [
               GoRoute(
-                path: ':clubId',
+                path: ':organizerId',
                 name: Routes.organizerDetailScreen.name,
                 builder: (_, state) => Text(
-                  'Club ${state.pathParameters['clubId']}',
+                  'Club ${state.pathParameters['organizerId']}',
                   textDirection: TextDirection.ltr,
                 ),
               ),
@@ -111,7 +111,7 @@ void main() {
       final organizer = _buildOrganizer();
       final router = GoRouter(
         initialLocation: Routes.organizerDetailScreen.path.replaceFirst(
-          ':clubId',
+          ':organizerId',
           organizer.id,
         ),
         routes: [
@@ -127,10 +127,10 @@ void main() {
             builder: (_, _) => const ExploreScreen(),
             routes: [
               GoRoute(
-                path: ':clubId',
+                path: ':organizerId',
                 name: Routes.organizerDetailScreen.name,
                 builder: (_, state) => OrganizerDetailScreen(
-                  clubId: state.pathParameters['clubId']!,
+                  organizerId: state.pathParameters['organizerId']!,
                   initialOrganizer: state.extra is Organizer
                       ? state.extra! as Organizer
                       : null,
@@ -192,7 +192,7 @@ void main() {
             ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: const OrganizerDetailScreen(clubId: 'club-loading'),
+              home: const OrganizerDetailScreen(organizerId: 'club-loading'),
             ),
           ),
         );
@@ -230,7 +230,7 @@ void main() {
             ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: OrganizerDetailScreen(clubId: organizer.id),
+              home: OrganizerDetailScreen(organizerId: organizer.id),
             ),
           ),
         );
@@ -246,24 +246,25 @@ void main() {
     ) async {
       AppConfig.configureEntrypointRole(AppRole.host);
       final organizer = _buildOrganizer();
-      final event = _buildEvent(id: 'event-7', clubId: organizer.id);
+      final event = _buildEvent(id: 'event-7', organizerId: organizer.id);
       final router = GoRouter(
         initialLocation: Routes.hostOrganizerDetailScreen.path.replaceFirst(
-          ':clubId',
+          ':organizerId',
           organizer.id,
         ),
         routes: [
           GoRoute(
             path: Routes.hostOrganizerDetailScreen.path,
             name: Routes.hostOrganizerDetailScreen.name,
-            builder: (_, state) =>
-                OrganizerDetailScreen(clubId: state.pathParameters['clubId']!),
+            builder: (_, state) => OrganizerDetailScreen(
+              organizerId: state.pathParameters['organizerId']!,
+            ),
           ),
           GoRoute(
             path: Routes.hostAppEventDetailScreen.path,
             name: Routes.hostAppEventDetailScreen.name,
             builder: (_, state) => Text(
-              'Host event ${state.pathParameters['clubId']}/'
+              'Host event ${state.pathParameters['organizerId']}/'
               '${state.pathParameters['eventId']}',
               textDirection: TextDirection.ltr,
             ),
@@ -351,7 +352,7 @@ void main() {
             child: MaterialApp(
               theme: AppTheme.light,
               home: OrganizerDetailScreen(
-                clubId: organizer.id,
+                organizerId: organizer.id,
                 initialOrganizer: organizer,
               ),
             ),
@@ -367,7 +368,7 @@ void main() {
         expect(find.text('Following'), findsNothing);
 
         membershipController.add(
-          _membership(clubId: organizer.id, uid: 'runner-2'),
+          _membership(organizerId: organizer.id, uid: 'runner-2'),
         );
         await _pumpOrganizerFlow(tester);
 
@@ -383,11 +384,11 @@ Future<void> _pumpOrganizerFlow(WidgetTester tester) async {
   await pumpFeatureUi(tester);
 }
 
-Event _buildEvent({required String id, required String clubId}) {
+Event _buildEvent({required String id, required String organizerId}) {
   final start = DateTime(2026, 1, 7, 8);
   return Event(
     id: id,
-    clubId: clubId,
+    organizerId: organizerId,
     startTime: start,
     endTime: start.add(const Duration(hours: 1)),
     meetingPoint: 'Start',
@@ -439,11 +440,11 @@ UserProfile _buildUser({required String uid}) {
 }
 
 OrganizerMembership _membership({
-  required String clubId,
+  required String organizerId,
   required String uid,
 }) => OrganizerMembership(
-  id: organizerMembershipId(clubId: clubId, uid: uid),
-  clubId: clubId,
+  id: organizerMembershipId(organizerId: organizerId, uid: uid),
+  organizerId: organizerId,
   uid: uid,
   role: OrganizerMembershipRole.member,
   status: OrganizerMembershipStatus.active,

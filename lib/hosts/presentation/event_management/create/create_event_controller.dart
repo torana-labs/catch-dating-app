@@ -126,7 +126,7 @@ class CreateEventController extends _$CreateEventController {
   }
 
   Future<Event> submit({
-    required String clubId,
+    required String organizerId,
     required String name,
     required DateTime startTime,
     required DateTime endTime,
@@ -149,8 +149,8 @@ class CreateEventController extends _$CreateEventController {
     EventRuntimeWalkInPolicy? runtimeWalkInPolicy,
   }) async {
     final normalizedOrganizerId = _requireNonBlank(
-      clubId,
-      fieldName: 'clubId',
+      organizerId,
+      fieldName: 'organizerId',
       code: 'event-club-required',
     );
     final normalizedName = _requireNonBlank(
@@ -209,7 +209,7 @@ class CreateEventController extends _$CreateEventController {
     final eventId = eventRepo.generateId();
     final event = Event(
       id: eventId,
-      clubId: normalizedOrganizerId,
+      organizerId: normalizedOrganizerId,
       name: normalizedName,
       startTime: startTime,
       endTime: endTime,

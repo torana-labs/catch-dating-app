@@ -11,7 +11,6 @@ _EventRuntimeClaimRequest _$EventRuntimeClaimRequestFromJson(
 ) => _EventRuntimeClaimRequest(
   id: json['id'] as String,
   eventId: json['eventId'] as String,
-  clubId: json['clubId'] as String,
   organizerId: json['organizerId'] as String,
   uid: json['uid'] as String,
   displayName: json['displayName'] as String,
@@ -33,7 +32,6 @@ Map<String, dynamic> _$EventRuntimeClaimRequestToJson(
   _EventRuntimeClaimRequest instance,
 ) => <String, dynamic>{
   'eventId': instance.eventId,
-  'clubId': instance.clubId,
   'organizerId': instance.organizerId,
   'uid': instance.uid,
   'displayName': instance.displayName,

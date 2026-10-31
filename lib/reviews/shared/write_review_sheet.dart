@@ -17,7 +17,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Pass [existingReview] to pre-fill and switch to edit mode.
 Future<void> showWriteReviewSheet({
   required BuildContext context,
-  required String clubId,
+  required String organizerId,
   required String eventId,
   required UserProfile reviewer,
   Review? existingReview,
@@ -25,7 +25,7 @@ Future<void> showWriteReviewSheet({
   return showCatchBottomSheet(
     context: context,
     builder: (_) => WriteReviewSheet(
-      clubId: clubId,
+      organizerId: organizerId,
       eventId: eventId,
       reviewer: reviewer,
       existingReview: existingReview,
@@ -36,13 +36,13 @@ Future<void> showWriteReviewSheet({
 class WriteReviewSheet extends ConsumerStatefulWidget {
   const WriteReviewSheet({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     required this.eventId,
     required this.reviewer,
     this.existingReview,
   });
 
-  final String clubId;
+  final String organizerId;
   final String eventId;
   final UserProfile reviewer;
   final Review? existingReview;
@@ -89,7 +89,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
         await tx
             .get(writeReviewControllerProvider.notifier)
             .submit(
-              clubId: widget.clubId,
+              organizerId: widget.organizerId,
               eventId: widget.eventId,
               reviewerUserId: widget.reviewer.uid,
               reviewerName: widget.reviewer.name,

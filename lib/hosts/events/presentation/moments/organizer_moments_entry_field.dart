@@ -10,11 +10,11 @@ import 'package:go_router/go_router.dart';
 class OrganizerMomentsEntryField extends StatelessWidget {
   const OrganizerMomentsEntryField({
     super.key,
-    required this.clubId,
+    required this.organizerId,
     required this.event,
   });
 
-  final String clubId;
+  final String organizerId;
   final Event event;
 
   @override
@@ -28,7 +28,7 @@ class OrganizerMomentsEntryField extends StatelessWidget {
         emphasis: CatchFieldEmphasis.title,
         onTap: () => context.pushNamed(
           Routes.hostAppEventMomentsScreen.name,
-          pathParameters: {'clubId': clubId, 'eventId': event.id},
+          pathParameters: {'organizerId': organizerId, 'eventId': event.id},
           extra: event,
         ),
       ),

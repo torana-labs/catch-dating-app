@@ -78,7 +78,7 @@ void main() {
       overrides: [
         organizersRepositoryProvider.overrideWithValue(_Organizers()),
         eventRepositoryProvider.overrideWithValue(
-          _Events(rehearsalSourceEvent().copyWith(clubId: 'other')),
+          _Events(rehearsalSourceEvent().copyWith(organizerId: 'other')),
         ),
         eventRehearsalSourcePlanProvider('event-1').overrideWith((ref) async {
           sourceReads++;

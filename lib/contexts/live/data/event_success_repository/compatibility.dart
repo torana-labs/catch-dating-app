@@ -33,7 +33,7 @@ mixin _EventSuccessCompatibilityRepository on _EventSuccessRepositoryCore {
       final response = EventSuccessCompatibilityResponse(
         id: eventSuccessCompatibilityResponseId(eventId: event.id, uid: uid),
         eventId: event.id,
-        clubId: event.clubId,
+        organizerId: event.organizerId,
         uid: uid,
         answerIds: EventSuccessCompatibilityQuestionnaire.normalizedAnswerIds(
           answerIds,

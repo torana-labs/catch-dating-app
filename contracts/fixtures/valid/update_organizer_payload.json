@@ -1,0 +1,12 @@
+{
+  "organizerId": "club-1",
+  "fields": {
+    "name": "Race Course Event Collective",
+    "description": "Updated social event details.",
+    "location": "in-mp-indore",
+    "area": "Race Course Road",
+    "imageUrl": null,
+    "profileImageUrl": null,
+    "tags": ["social", "coffee"]
+  }
+}

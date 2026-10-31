@@ -256,7 +256,8 @@ export function reviewedUserProfile(input: {
       preferredRunTimes: [], version: 0}}, prefsNewCatches: false,
     prefsMessages: true, prefsEventReminders: true,
     prefsRunStatusUpdates: false,
-    prefsClubUpdates: false, prefsWeeklyDigest: false, prefsShowOnMap: false,
+    prefsOrganizerUpdates: false, prefsWeeklyDigest: false,
+    prefsShowOnMap: false,
     prefsShowInCrossPaths: false, prefsCrossPathsInvitations: false};
   const photos = [...base.profilePhotos];
   if (photo && !photos.some((existing) => existing.id === photo.id)) {

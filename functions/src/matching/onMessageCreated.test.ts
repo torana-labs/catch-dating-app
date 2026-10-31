@@ -148,7 +148,7 @@ function harness({
   conversationType,
 }: {
   eventIds?: string[];
-  conversationType?: "match" | "clubHostInquiry";
+  conversationType?: "match" | "organizerHostInquiry";
 } = {}) {
   const firestore = new FakeFirestore({
     "matches/match-1": {
@@ -163,7 +163,8 @@ function harness({
       unreadCounts: {"runner-1": 0, "runner-2": 1},
       status: "active",
       ...(conversationType == null ? {} : {conversationType}),
-      ...(conversationType === "clubHostInquiry" ? {organizerId: "org-1"} : {}),
+      ...(conversationType === "organizerHostInquiry" ? {
+        organizerId: "org-1"} : {}),
     },
     "publicProfiles/runner-1": {name: "Runner One"},
     "users/runner-2": {fcmToken: "token-2"},
@@ -307,7 +308,7 @@ test("onMessageCreatedHandler redacts blocked content in push and preview",
 test(
   "onMessageCreatedHandler keeps Host inquiries out of dating analytics",
   async () => {
-    const h = harness({conversationType: "clubHostInquiry"});
+    const h = harness({conversationType: "organizerHostInquiry"});
 
     await onMessageCreatedHandler(event("event-1"), h.deps);
 
@@ -326,14 +327,14 @@ test(
 );
 
 test("Host-only recipients need no Consumer profile", async () => {
-  const h = harness({conversationType: "clubHostInquiry"});
+  const h = harness({conversationType: "organizerHostInquiry"});
   h.firestore.set("users/runner-2", undefined);
   await onMessageCreatedHandler(event("host-only"), h.deps);
   assert.equal(h.notifications[0]?.token, "host-token");
 });
 
 test("Host replies target Consumer and use professional identity", async () => {
-  const h = harness({conversationType: "clubHostInquiry"});
+  const h = harness({conversationType: "organizerHostInquiry"});
   h.firestore.set("users/runner-1", {});
   h.firestore.set("publicProfiles/runner-2", {name: "Private Dating Name"});
   const reply = event("reply");
@@ -348,7 +349,7 @@ test("Host replies target Consumer and use professional identity", async () => {
   );
 });
 
-for (const conversationType of ["match", "clubHostInquiry"] as const) {
+for (const conversationType of ["match", "organizerHostInquiry"] as const) {
   test(`message preference is respected for ${conversationType}`, async () => {
     const h = harness({conversationType});
     h.firestore.set("users/runner-2", {prefsMessages: false});
@@ -388,7 +389,7 @@ test("closed or deleted-recipient conversations do not notify", async () => {
 });
 
 test("missing organizer suppresses push, not chat metadata", async () => {
-  const h = harness({conversationType: "clubHostInquiry"});
+  const h = harness({conversationType: "organizerHostInquiry"});
   h.firestore.set("organizers/org-1", undefined);
   await onMessageCreatedHandler(event("missing-organizer"), h.deps);
   assert.equal(h.notifications.length, 0);

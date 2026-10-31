@@ -166,7 +166,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
               uid: widget.userProfile.uid,
             ),
         eventId: widget.event.id,
-        clubId: widget.event.clubId,
+        organizerId: widget.event.organizerId,
         uid: widget.userProfile.uid,
         welcomeRating: _welcome,
         structureRating: _structure,

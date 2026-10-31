@@ -35,7 +35,7 @@ Organizer buildOrganizer({
   DateTime? createdAt,
   String? imageUrl,
   String? profileImageUrl,
-  List<UploadedPhoto> clubPhotos = const [],
+  List<UploadedPhoto> organizerPhotos = const [],
   UploadedPhoto? logoPhoto,
   List<String> tags = const ['social'],
   int memberCount = 1,
@@ -66,7 +66,7 @@ Organizer buildOrganizer({
     createdAt: createdAt ?? DateTime(2025),
     imageUrl: imageUrl,
     profileImageUrl: profileImageUrl,
-    clubPhotos: clubPhotos,
+    organizerPhotos: organizerPhotos,
     logoPhoto: logoPhoto,
     tags: tags,
     memberCount: memberCount,
@@ -122,7 +122,7 @@ UserProfile buildUser({
 
 Event buildEvent({
   String id = 'event-1',
-  String clubId = 'club-1',
+  String organizerId = 'club-1',
   DateTime? startTime,
   DateTime? endTime,
   int priceInPaise = 0,
@@ -133,7 +133,7 @@ Event buildEvent({
   final start = startTime ?? DateTime.now().add(const Duration(hours: 2));
   return Event(
     id: id,
-    clubId: clubId,
+    organizerId: organizerId,
     startTime: start,
     endTime: endTime ?? start.add(const Duration(hours: 1)),
     meetingPoint: 'Start',
@@ -157,7 +157,7 @@ Event buildEvent({
 
 Review buildReview({
   String id = 'review-1',
-  String clubId = 'club-1',
+  String organizerId = 'club-1',
   String reviewerUserId = 'runner-1',
   String reviewerName = 'Runner 1',
   int rating = 5,
@@ -166,7 +166,7 @@ Review buildReview({
 }) {
   return Review(
     id: id,
-    organizerId: clubId,
+    organizerId: organizerId,
     reviewerUserId: reviewerUserId,
     reviewerName: reviewerName,
     rating: rating,
@@ -228,7 +228,7 @@ class FakeOrganizersRepository implements OrganizersRepository {
 
   @override
   Future<String> createOrganizer({
-    String? clubId,
+    String? organizerId,
     required String name,
     required String description,
     required String location,
@@ -249,9 +249,9 @@ class FakeOrganizersRepository implements OrganizersRepository {
     if (pendingCreate != null) {
       await pendingCreate.future;
     }
-    final resolvedOrganizerId = clubId ?? generatedId;
+    final resolvedOrganizerId = organizerId ?? generatedId;
     lastCreateCall = CreateOrganizerCall(
-      clubId: resolvedOrganizerId,
+      organizerId: resolvedOrganizerId,
       name: name,
       description: description,
       location: location,
@@ -271,39 +271,39 @@ class FakeOrganizersRepository implements OrganizersRepository {
   Future<Organizer?> fetchOrganizer(String id) async => organizersById[id];
 
   @override
-  Future<void> joinOrganizer(String clubId) async {
+  Future<void> joinOrganizer(String organizerId) async {
     if (joinError != null) {
       throw joinError!;
     }
-    joinedOrganizerId = clubId;
+    joinedOrganizerId = organizerId;
   }
 
   @override
-  Future<void> leaveOrganizer(String clubId) async {
+  Future<void> leaveOrganizer(String organizerId) async {
     if (leaveError != null) {
       throw leaveError!;
     }
-    leftOrganizerId = clubId;
+    leftOrganizerId = organizerId;
   }
 
   @override
   Future<void> setOrganizerPushNotifications({
-    required String clubId,
+    required String organizerId,
     required bool enabled,
   }) async {
-    notificationsOrganizerId = clubId;
+    notificationsOrganizerId = organizerId;
     notificationsEnabled = enabled;
   }
 
   @override
   Future<void> updateOrganizer({
-    required String clubId,
+    required String organizerId,
     required UpdateOrganizerPatch patch,
   }) async {
     if (updateError != null) {
       throw updateError!;
     }
-    lastUpdatedOrganizerId = clubId;
+    lastUpdatedOrganizerId = organizerId;
     lastUpdatedFields = Map<String, dynamic>.from(patch.toFieldsJson());
   }
 
@@ -363,30 +363,30 @@ class FakeOrganizersRepository implements OrganizersRepository {
 
   @override
   Future<void> addOrganizerHost({
-    required String clubId,
+    required String organizerId,
     String? uid,
     String? phoneNumber,
   }) async {
-    addedHostOrganizerId = clubId;
+    addedHostOrganizerId = organizerId;
     addedHostUid = uid;
     addedHostPhoneNumber = phoneNumber;
   }
 
   @override
   Future<void> removeOrganizerHost({
-    required String clubId,
+    required String organizerId,
     required String uid,
   }) async {
-    removedHostOrganizerId = clubId;
+    removedHostOrganizerId = organizerId;
     removedHostUid = uid;
   }
 
   @override
   Future<void> transferOrganizerOwnership({
-    required String clubId,
+    required String organizerId,
     required String uid,
   }) async {
-    transferredOwnershipOrganizerId = clubId;
+    transferredOwnershipOrganizerId = organizerId;
     transferredOwnershipUid = uid;
   }
 
@@ -405,7 +405,7 @@ class FakeOrganizersRepository implements OrganizersRepository {
 
 class CreateOrganizerCall {
   const CreateOrganizerCall({
-    required this.clubId,
+    required this.organizerId,
     required this.name,
     required this.description,
     required this.location,
@@ -419,7 +419,7 @@ class CreateOrganizerCall {
     this.hostDefaults = const OrganizerHostDefaults(),
   });
 
-  final String clubId;
+  final String organizerId;
   final String name;
   final String description;
   final String location;
@@ -511,7 +511,7 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   @override
   Future<UploadedImage> uploadOrganizerPhoto({
     String? uid,
-    required String clubId,
+    required String organizerId,
     required int position,
     required XFile image,
     String? mediaId,
@@ -526,7 +526,7 @@ class FakeImageUploadRepository implements ImageUploadRepository {
       throw StateError('upload failed for $mediaId');
     }
     lastUploadUid = uid;
-    lastUploadOrganizerId = clubId;
+    lastUploadOrganizerId = organizerId;
     lastUploadPosition = position;
     lastUploadedImage = image;
     uploadedOrganizerPhotoPositions.add(position);
@@ -540,14 +540,15 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     final resolvedMediaId = mediaId ?? 'test-media';
     return UploadedImage(
       url: uploadResult,
-      storagePath: 'organizers/$clubId/media/$resolvedMediaId/original.jpg',
+      storagePath:
+          'organizers/$organizerId/media/$resolvedMediaId/original.jpg',
     );
   }
 
   @override
   Future<UploadedImage> uploadOrganizerLogo({
     String? uid,
-    required String clubId,
+    required String organizerId,
     required XFile image,
     String? mediaId,
     ValueChanged<ImageUploadProgress>? onProgress,
@@ -557,7 +558,7 @@ class FakeImageUploadRepository implements ImageUploadRepository {
       throw uploadError!;
     }
     lastUploadUid = uid;
-    lastUploadOrganizerId = clubId;
+    lastUploadOrganizerId = organizerId;
     lastUploadPosition = 0;
     lastUploadedImage = image;
     onProgress?.call(
@@ -569,21 +570,21 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     final resolvedMediaId = mediaId ?? 'test-logo';
     return UploadedImage(
       url: uploadResult,
-      storagePath: 'organizers/$clubId/logo/$resolvedMediaId/original.jpg',
+      storagePath: 'organizers/$organizerId/logo/$resolvedMediaId/original.jpg',
     );
   }
 
   @override
   Future<String> uploadOrganizerCover({
     required String uid,
-    required String clubId,
+    required String organizerId,
     required XFile image,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
     }
     lastUploadUid = uid;
-    lastUploadOrganizerId = clubId;
+    lastUploadOrganizerId = organizerId;
     lastUploadedImage = image;
     return uploadResult;
   }
@@ -591,14 +592,14 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   @override
   Future<String> uploadOrganizerProfileImage({
     required String uid,
-    required String clubId,
+    required String organizerId,
     required XFile image,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
     }
     lastUploadUid = uid;
-    lastUploadOrganizerId = clubId;
+    lastUploadOrganizerId = organizerId;
     lastUploadedImage = image;
     return uploadResult;
   }
@@ -606,7 +607,7 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   @override
   Future<String> uploadEventPhoto({
     String? uid,
-    String? clubId,
+    String? organizerId,
     required String eventId,
     int position = 0,
     required XFile image,
@@ -615,7 +616,7 @@ class FakeImageUploadRepository implements ImageUploadRepository {
       throw uploadError!;
     }
     lastUploadUid = uid;
-    lastUploadOrganizerId = clubId;
+    lastUploadOrganizerId = organizerId;
     lastUploadEventId = eventId;
     lastUploadPosition = position;
     lastUploadedImage = image;

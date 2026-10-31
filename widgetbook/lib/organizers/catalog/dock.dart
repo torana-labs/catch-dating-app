@@ -15,7 +15,7 @@ import 'fixtures.dart';
 )
 Widget organizerMembershipDockStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubMembershipDock',
+    title: 'OrganizerMembershipDock',
     catalogId: 'section.club.membership_dock_provider',
     children: [
       WidgetbookPageStateCard(
@@ -55,7 +55,7 @@ Widget organizerMembershipDockStates(BuildContext context) {
 )
 Widget organizerDetailDockStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubDetailDock',
+    title: 'OrganizerDetailDock',
     catalogId: 'section.club.detail_dock',
     children: [
       WidgetbookPageStateCard(
@@ -141,7 +141,7 @@ Widget organizerDetailDockStates(BuildContext context) {
 )
 Widget dockCountStates(BuildContext context) {
   return const WidgetbookScrollCatalogFrame(
-    title: 'ClubMemberCountText',
+    title: 'OrganizerMemberCountText',
     catalogId: 'section.club.dock.count',
     children: [
       WidgetbookPageStateCard(
@@ -164,7 +164,7 @@ Widget dockCountStates(BuildContext context) {
 Widget dockBellStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubBellButton',
+    title: 'OrganizerBellButton',
     catalogId: 'section.club.dock.bell',
     children: [
       WidgetbookPageStateCard(

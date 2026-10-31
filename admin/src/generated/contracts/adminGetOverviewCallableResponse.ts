@@ -44,7 +44,7 @@ export interface AdminGetOverviewCallableResponse {
       createdAt: string | null;
       targetPath: string;
     }[];
-    clubClaimRequests: {
+    organizerClaimRequests: {
       id: string;
       title: string;
       detail: string;
@@ -52,7 +52,7 @@ export interface AdminGetOverviewCallableResponse {
       createdAt: string | null;
       targetPath: string;
     }[];
-    clubIndexReviews: {
+    organizerIndexReviews: {
       id: string;
       title: string;
       detail: string;

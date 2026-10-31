@@ -81,7 +81,7 @@ HostProfile _hostProfileFromDocument(
     status: _status(data['status']),
     verified: data['verified'] == true,
     linkedOrganizerIds: [
-      for (final value in data['linkedClubIds'] as List? ?? const [])
+      for (final value in data['linkedOrganizerIds'] as List? ?? const [])
         if (value is String && value.isNotEmpty) value,
     ],
     createdAt: nullableDateTimeFromFirestoreValue(data['createdAt']),

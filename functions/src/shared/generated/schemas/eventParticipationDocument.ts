@@ -23,7 +23,7 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
   ],
   "required": [
     "eventId",
-    "clubId",
+    "organizerId",
     "uid",
     "status",
     "createdAt",
@@ -38,12 +38,6 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

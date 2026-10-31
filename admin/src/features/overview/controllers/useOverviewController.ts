@@ -44,12 +44,12 @@ export function useOverviewController({
     useState(defaultAnalyticsDate(29));
   const [analyticsEndDate, setAnalyticsEndDate] =
     useState(defaultAnalyticsDate(0));
-  const [analyticsClubId, setAnalyticsClubId] = useState("");
+  const [analyticsOrganizerId, setAnalyticsOrganizerId] = useState("");
   const [analyticsEventId, setAnalyticsEventId] = useState("");
 
   const analyticsPayload = useMemo(
     () => buildHostAnalyticsPayload({
-      clubId: analyticsClubId,
+      organizerId: analyticsOrganizerId,
       eventId: analyticsEventId,
       granularity: analyticsGranularity,
       rangePreset: analyticsRangePreset,
@@ -57,7 +57,7 @@ export function useOverviewController({
       endDate: analyticsEndDate,
     }),
     [
-      analyticsClubId,
+      analyticsOrganizerId,
       analyticsEndDate,
       analyticsEventId,
       analyticsGranularity,
@@ -157,12 +157,12 @@ export function useOverviewController({
   ]);
 
   const clearAnalyticsScope = useCallback(() => {
-    setAnalyticsClubId("");
+    setAnalyticsOrganizerId("");
     setAnalyticsEventId("");
   }, []);
 
   return {
-    analyticsClubId,
+    analyticsOrganizerId,
     analyticsEndDate,
     analyticsEventId,
     analyticsGranularity,
@@ -190,7 +190,7 @@ export function useOverviewController({
     refresh,
     refreshAnalytics,
     refreshOverview,
-    setAnalyticsClubId,
+    setAnalyticsOrganizerId,
     setAnalyticsEndDate,
     setAnalyticsEventId,
     setAnalyticsGranularity,
@@ -200,14 +200,14 @@ export function useOverviewController({
 }
 
 function buildHostAnalyticsPayload({
-  clubId,
+  organizerId,
   endDate,
   eventId,
   granularity,
   rangePreset,
   startDate,
 }: {
-  clubId: string;
+  organizerId: string;
   endDate: string;
   eventId: string;
   granularity: OverviewAnalyticsGranularity;
@@ -216,7 +216,7 @@ function buildHostAnalyticsPayload({
 }): HostAnalyticsQueryPayload {
   const isCustom = rangePreset === "custom";
   return {
-    clubId: clubId.trim() || null,
+    organizerId: organizerId.trim() || null,
     eventId: eventId.trim() || null,
     rangePreset,
     startDate: isCustom ? startDate : null,
@@ -234,7 +234,7 @@ function hasAnyAdminRole(
 
 function hostAnalyticsPayloadKey(payload: HostAnalyticsQueryPayload): string {
   return JSON.stringify({
-    clubId: payload.clubId ?? "",
+    organizerId: payload.organizerId ?? "",
     eventId: payload.eventId ?? "",
     rangePreset: payload.rangePreset ?? "30d",
     startDate: payload.startDate ?? null,

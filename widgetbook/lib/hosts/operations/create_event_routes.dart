@@ -74,7 +74,9 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             organizerValue: const AsyncLoading<Organizer?>(),
-            child: HostCreateEventRouteScreen(clubId: widgetbookOrganizer.id),
+            child: HostCreateEventRouteScreen(
+              organizerId: widgetbookOrganizer.id,
+            ),
           ),
         ),
       ),
@@ -86,7 +88,9 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
               StateError('Club fetch failed'),
               StackTrace.empty,
             ),
-            child: HostCreateEventRouteScreen(clubId: widgetbookOrganizer.id),
+            child: HostCreateEventRouteScreen(
+              organizerId: widgetbookOrganizer.id,
+            ),
           ),
         ),
       ),
@@ -98,7 +102,9 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
               obviousOfflineException(),
               StackTrace.empty,
             ),
-            child: HostCreateEventRouteScreen(clubId: widgetbookOrganizer.id),
+            child: HostCreateEventRouteScreen(
+              organizerId: widgetbookOrganizer.id,
+            ),
           ),
         ),
       ),
@@ -107,7 +113,9 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             organizerValue: const AsyncData<Organizer?>(null),
-            child: HostCreateEventRouteScreen(clubId: widgetbookOrganizer.id),
+            child: HostCreateEventRouteScreen(
+              organizerId: widgetbookOrganizer.id,
+            ),
           ),
         ),
       ),
@@ -388,7 +396,7 @@ Widget hostCreateEventRouteStateViewCatalogStates(BuildContext context) {
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
             child: HostCreateEventRouteBody(
-              clubId: widgetbookOrganizer.id,
+              organizerId: widgetbookOrganizer.id,
               state: HostCreateEventRouteState.initial(widgetbookOrganizer),
             ),
           ),

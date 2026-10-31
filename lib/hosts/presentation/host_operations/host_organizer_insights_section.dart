@@ -42,7 +42,9 @@ class _HostOrganizerInsightsSectionState
   @override
   void initState() {
     super.initState();
-    _state = HostOrganizerInsightsState.initial(clubId: widget.organizer.id);
+    _state = HostOrganizerInsightsState.initial(
+      organizerId: widget.organizer.id,
+    );
     widget.refreshController?._attach(_refresh);
   }
 
@@ -105,7 +107,7 @@ class _HostOrganizerInsightsSectionState
                 widget.onOpenEventDefaults ??
                 () => context.pushNamed(
                   Routes.hostOrganizerEventDefaultsScreen.name,
-                  queryParameters: {'clubId': widget.organizer.id},
+                  queryParameters: {'organizerId': widget.organizer.id},
                 ),
           ),
         ),
@@ -130,7 +132,7 @@ class _HostOrganizerInsightsSectionState
   void _openEventReport(String eventId) {
     context.pushNamed(
       Routes.hostAppEventManageScreen.name,
-      pathParameters: {'clubId': widget.organizer.id, 'eventId': eventId},
+      pathParameters: {'organizerId': widget.organizer.id, 'eventId': eventId},
       queryParameters: const {'section': 'report'},
     );
   }
@@ -251,7 +253,7 @@ HostAnalyticsQuery _hostAnalyticsQueryFor(
   required String timezone,
 }) {
   return HostAnalyticsQuery(
-    clubId: state.clubId,
+    organizerId: state.organizerId,
     rangePreset: switch (state.rangePreset) {
       HostOrganizerInsightsRangePreset.thirtyDays =>
         HostAnalyticsRangePreset.thirtyDays,

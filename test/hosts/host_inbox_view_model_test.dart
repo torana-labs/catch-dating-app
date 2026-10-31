@@ -122,7 +122,7 @@ void main() {
           uid: 'other-organizer',
           eventIds: ['live'],
           name: 'Other organizer',
-          clubId: 'club-2',
+          organizerId: 'club-2',
         ),
       ]);
       final participations = [
@@ -341,7 +341,7 @@ ChatThreadPreview _preview({
   required String uid,
   required List<String> eventIds,
   required String name,
-  String clubId = 'club-1',
+  String organizerId = 'club-1',
 }) {
   final match = Match(
     id: 'match-$uid-${eventIds.join('-')}',
@@ -352,8 +352,8 @@ ChatThreadPreview _preview({
     lastMessageAt: DateTime(2026, 7, 10, 17),
     lastMessagePreview: 'Can you help?',
     lastMessageSenderId: uid,
-    conversationType: MatchConversationType.clubHostInquiry,
-    clubId: clubId,
+    conversationType: MatchConversationType.organizerHostInquiry,
+    organizerId: organizerId,
   );
   return ChatThreadPreview(
     match: match,

@@ -152,7 +152,7 @@
           "contracts/callables/open_organizer_manual_send_task_payload.schema.json",
           "contracts/callables/mark_organizer_manual_send_task_payload.schema.json",
           "contracts/callables/replan_organizer_manual_send_tasks_payload.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/event_broadcasts.schema.json",
           "contracts/firestore/event_participations.schema.json",
           "contracts/firestore/events.schema.json",

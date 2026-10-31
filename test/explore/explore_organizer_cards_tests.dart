@@ -10,7 +10,7 @@ void _registerExploreOrganizerCardsTests() {
     );
     final event = event_test.buildEvent(
       id: 'event-cover-search',
-      clubId: organizer.id,
+      organizerId: organizer.id,
     );
     final item = ExploreEventItem(
       event: event,
@@ -179,7 +179,7 @@ void _registerExploreOrganizerCardsTests() {
     final organizer = buildOrganizer(
       id: 'club-primary-photo',
       imageUrl: 'https://example.com/legacy.jpg',
-      clubPhotos: [
+      organizerPhotos: [
         UploadedPhoto.fromUpload(
           url: 'https://example.com/primary.jpg',
           storagePath: 'clubs/primary.jpg',
@@ -341,7 +341,7 @@ void _registerExploreOrganizerCardsTests() {
     final today = DateUtils.dateOnly(DateTime.now());
     final dinner = event_test.buildEvent(
       id: 'event-week-dinner',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: today.add(const Duration(days: 1, hours: 19)),
       meetingPoint: 'Long table room',
       eventFormat: EventFormatSnapshot.custom(
@@ -351,13 +351,13 @@ void _registerExploreOrganizerCardsTests() {
     );
     final run = event_test.buildEvent(
       id: 'event-week-run',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: today.add(const Duration(days: 2, hours: 6)),
       meetingPoint: 'Cubbon Park',
     );
     final art = event_test.buildEvent(
       id: 'event-week-art',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: today.add(const Duration(days: 3, hours: 16)),
       meetingPoint: 'NGMA',
       eventFormat: EventFormatSnapshot.custom(
@@ -367,14 +367,14 @@ void _registerExploreOrganizerCardsTests() {
     );
     final brunch = event_test.buildEvent(
       id: 'event-week-brunch',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: today.add(const Duration(days: 4, hours: 11)),
       meetingPoint: 'Koramangala',
       eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.dinner),
     );
     final pickleball = event_test.buildEvent(
       id: 'event-week-pickleball',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: today.add(const Duration(days: 5, hours: 18)),
       meetingPoint: 'Court 2',
       eventFormat: EventFormatSnapshot.fromActivityKind(
@@ -383,7 +383,7 @@ void _registerExploreOrganizerCardsTests() {
     );
     final quiz = event_test.buildEvent(
       id: 'event-week-quiz',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: today.add(const Duration(days: 6, hours: 20)),
       meetingPoint: 'Trivia room',
       eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.pubQuiz),
@@ -453,14 +453,14 @@ void _registerExploreOrganizerCardsTests() {
     );
     final featuredEvent = event_test.buildEvent(
       id: 'event-featured',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       meetingPoint: 'People Plaza',
       bookedCount: 2,
       capacityLimit: 6,
     );
     final event = event_test.buildEvent(
       id: 'event-full',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       meetingPoint: 'People Plaza',
       bookedCount: 6,
       capacityLimit: 6,
@@ -543,7 +543,7 @@ void _registerExploreOrganizerCardsTests() {
         ExploreEventItem(
           event: event_test.buildEvent(
             id: 'event-type-$index',
-            clubId: organizer.id,
+            organizerId: organizer.id,
             eventFormat: EventFormatSnapshot.fromActivityKind(
               activityKinds[index],
             ),
@@ -611,7 +611,7 @@ void _registerExploreOrganizerCardsTests() {
     );
     final event = event_test.buildEvent(
       id: 'event-social-run',
-      clubId: organizer.id,
+      organizerId: organizer.id,
     );
 
     await tester.pumpWidget(

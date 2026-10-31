@@ -25,7 +25,7 @@ import 'role_theme.dart';
 )
 Widget hostOrganizerDetailPublicPreviewStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostClubDetailScreen',
+    title: 'HostOrganizerDetailScreen',
     contractId: 'screen.host.club.detail',
     children: [
       WidgetbookPageStateCard(
@@ -174,7 +174,7 @@ class _HostOrganizerDetailScope extends StatelessWidget {
         child: WidgetbookThemedHostPreview(
           themeMode: themeMode ?? ThemeMode.light,
           child: OrganizerDetailScreen(
-            clubId: widgetbookOrganizer.id,
+            organizerId: widgetbookOrganizer.id,
             initialOrganizer: useInitialOrganizer ? widgetbookOrganizer : null,
           ),
         ),

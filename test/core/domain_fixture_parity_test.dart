@@ -57,7 +57,7 @@ void main() {
       final json = _loadFixture('event_doc.json', injectIdField: 'id');
       final event = Event.fromJson(json);
       expect(event.id, isNotEmpty);
-      expect(event.clubId, 'club-1');
+      expect(event.organizerId, 'club-1');
       expect(event.startTime, isA<DateTime>());
       expect(event.meetingLocation, isNotNull);
       // Round-trip: re-encode and confirm we can decode the result back.
@@ -117,8 +117,8 @@ void main() {
       expect(policy.usesDemandPricing, isFalse);
     });
 
-    test('Club decodes club_doc.json', () {
-      final json = _loadFixture('club_doc.json', injectIdField: 'id');
+    test('Organizer decodes organizer_doc.json', () {
+      final json = _loadFixture('organizer_doc.json', injectIdField: 'id');
       final organizer = Organizer.fromJson(json);
       expect(organizer.id, isNotEmpty);
       expect(organizer.name, isNotEmpty);
@@ -131,7 +131,7 @@ void main() {
       'OrganizerHostProfile decodes event_common fixture shape directly',
       () {
         final host = OrganizerHostProfile.fromJson(
-          _fixtureListItemMap('club_doc.json', 'hostProfiles', 0),
+          _fixtureListItemMap('organizer_doc.json', 'hostProfiles', 0),
         );
         expect(host.uid, 'host-1');
         expect(host.displayName, 'Subrath');
@@ -141,11 +141,11 @@ void main() {
 
     test('OrganizerMembership decodes club_membership_doc.json', () {
       final json = _loadFixture(
-        'club_membership_doc.json',
+        'organizer_membership_doc.json',
         injectIdField: 'id',
       );
       final membership = OrganizerMembership.fromJson(json);
-      expect(membership.clubId, isNotEmpty);
+      expect(membership.organizerId, isNotEmpty);
       expect(membership.uid, isNotEmpty);
     });
 

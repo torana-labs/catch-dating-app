@@ -134,7 +134,7 @@ Widget savedEventsAgendaSliverStates(BuildContext context) {
           state: SavedEventsListState.from(events, now: widgetbookEventsNow),
           organizerNames: {
             for (final event in events)
-              event.clubId: widgetbookEventsOrganizer.name,
+              event.organizerId: widgetbookEventsOrganizer.name,
           },
           onEventSelected: (_) {},
         ),
@@ -178,7 +178,9 @@ class _SavedEventsRouteFrame extends StatelessWidget {
     final effectiveSavedEvents =
         savedEvents ?? AsyncData<List<Event>>(widgetbookEventsAgendaEvents());
     final events = _asyncDataList(effectiveSavedEvents);
-    final query = OrganizerNameLookupQuery(events.map((event) => event.clubId));
+    final query = OrganizerNameLookupQuery(
+      events.map((event) => event.organizerId),
+    );
 
     return WidgetbookEventDeviceFrame(
       child: WidgetbookFixtureScope(
@@ -193,7 +195,7 @@ class _SavedEventsRouteFrame extends StatelessWidget {
               organizerNames ??
                   AsyncData<Map<String, String>>({
                     for (final event in events)
-                      event.clubId: widgetbookEventsOrganizer.name,
+                      event.organizerId: widgetbookEventsOrganizer.name,
                   }),
             ),
         ],

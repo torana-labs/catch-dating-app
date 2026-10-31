@@ -51,12 +51,12 @@ void main() {
       final event = buildEvent();
       final screen = EventDetailScreen(
         enableMapNetworkTiles: false,
-        clubId: 'club-1',
+        organizerId: 'club-1',
         eventId: 'event-1',
         initialEvent: event,
       );
 
-      expect(screen.clubId, 'club-1');
+      expect(screen.organizerId, 'club-1');
       expect(screen.eventId, 'event-1');
       expect(screen.initialEvent, event);
     });
@@ -66,7 +66,7 @@ void main() {
         tester,
         const EventDetailScreen(
           enableMapNetworkTiles: false,
-          clubId: 'club-1',
+          organizerId: 'club-1',
           eventId: 'event-1',
         ),
         overrides: [
@@ -93,7 +93,7 @@ void main() {
         tester,
         EventDetailScreen(
           enableMapNetworkTiles: false,
-          clubId: 'club-1',
+          organizerId: 'club-1',
           eventId: 'event-1',
           initialEvent: event,
         ),
@@ -130,7 +130,7 @@ void main() {
           tester,
           EventDetailScreen(
             enableMapNetworkTiles: false,
-            clubId: 'club-1',
+            organizerId: 'club-1',
             eventId: 'event-1',
             initialEvent: event,
           ),
@@ -157,7 +157,7 @@ void main() {
         tester,
         const EventDetailScreen(
           enableMapNetworkTiles: false,
-          clubId: 'club-1',
+          organizerId: 'club-1',
           eventId: 'event-1',
         ),
         overrides: [
@@ -181,7 +181,7 @@ void main() {
         tester,
         const EventDetailScreen(
           enableMapNetworkTiles: false,
-          clubId: 'club-1',
+          organizerId: 'club-1',
           eventId: 'event-1',
         ),
         overrides: [
@@ -203,7 +203,7 @@ void main() {
         tester,
         const EventDetailScreen(
           enableMapNetworkTiles: false,
-          clubId: 'club-1',
+          organizerId: 'club-1',
           eventId: 'event-1',
         ),
         overrides: [
@@ -233,7 +233,10 @@ void main() {
         tester,
         MediaQuery(
           data: media,
-          child: const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
+          child: const EventDetailScreen(
+            organizerId: 'club-1',
+            eventId: 'event-1',
+          ),
         ),
         viewerState: viewerFixture(),
         overrides: [
@@ -272,7 +275,7 @@ void main() {
           data: media,
           child: const EventDetailScreen(
             enableMapNetworkTiles: false,
-            clubId: 'club-1',
+            organizerId: 'club-1',
             eventId: 'event-1',
           ),
         ),
@@ -307,7 +310,7 @@ void main() {
         tester,
         const EventDetailScreen(
           enableMapNetworkTiles: false,
-          clubId: 'club-1',
+          organizerId: 'club-1',
           eventId: 'event-1',
         ),
         viewerState: viewerFixture(reason: 'past'),
@@ -767,7 +770,7 @@ void main() {
         _eventDetailBody(
           event: event,
           userProfile: user,
-          clubId: 'club-1',
+          organizerId: 'club-1',
           isHost: false,
           reviews: const [],
           isAuthenticated: true,
@@ -804,7 +807,7 @@ void main() {
         _eventDetailBody(
           event: event,
           userProfile: buildUser(),
-          clubId: 'club-1',
+          organizerId: 'club-1',
           isHost: false,
           reviews: const [],
           isAuthenticated: true,
@@ -845,7 +848,7 @@ void main() {
         _eventDetailBody(
           event: event,
           userProfile: buildUser(),
-          clubId: 'club-1',
+          organizerId: 'club-1',
           isHost: false,
           reviews: const [],
           isAuthenticated: true,
@@ -881,13 +884,13 @@ void main() {
         tester,
         EventDetailScreen(
           enableMapNetworkTiles: false,
-          clubId: event.clubId,
+          organizerId: event.organizerId,
           eventId: event.id,
         ),
         signedInUid: null,
         overrides: [
           organizersRepositoryProvider.overrideWithValue(
-            seededOrganizersRepository(buildOrganizer(id: event.clubId)),
+            seededOrganizersRepository(buildOrganizer(id: event.organizerId)),
           ),
           eventDetailViewModelProvider(event.id).overrideWith(
             (ref) => AsyncData(
@@ -935,7 +938,7 @@ void main() {
               path: '/detail',
               builder: (context, state) => EventDetailScreen(
                 enableMapNetworkTiles: false,
-                clubId: event.clubId,
+                organizerId: event.organizerId,
                 eventId: event.id,
               ),
             ),
@@ -953,7 +956,9 @@ void main() {
             overrides: [
               uidProvider.overrideWith((ref) => Stream.value('runner-1')),
               organizersRepositoryProvider.overrideWithValue(
-                seededOrganizersRepository(buildOrganizer(id: event.clubId)),
+                seededOrganizersRepository(
+                  buildOrganizer(id: event.organizerId),
+                ),
               ),
               eventDetailViewModelProvider(event.id).overrideWith(
                 (ref) => AsyncData(
@@ -995,7 +1000,7 @@ void main() {
         _eventDetailBody(
           event: event,
           userProfile: buildUser(uid: 'host-1'),
-          clubId: 'club-1',
+          organizerId: 'club-1',
           isHost: true,
           reviews: const [],
           isAuthenticated: true,
@@ -1023,7 +1028,7 @@ void main() {
         tester,
         const EventDetailScreen(
           enableMapNetworkTiles: false,
-          clubId: 'club-1',
+          organizerId: 'club-1',
           eventId: 'event-1',
         ),
         viewerState: viewerFixture(),
@@ -1062,7 +1067,7 @@ void main() {
         tester,
         const EventDetailScreen(
           enableMapNetworkTiles: false,
-          clubId: 'club-1',
+          organizerId: 'club-1',
           eventId: 'event-1',
         ),
         viewerState: viewerFixture(admission: 'nativeParticipation'),
@@ -1125,7 +1130,7 @@ void main() {
               '/detail': (context) => _eventDetailBody(
                 event: event,
                 userProfile: buildUser(),
-                clubId: 'club-1',
+                organizerId: 'club-1',
                 isHost: false,
                 reviews: const [],
                 isAuthenticated: true,
@@ -1200,7 +1205,7 @@ void main() {
         _eventDetailBody(
           event: event,
           userProfile: buildUser(),
-          clubId: 'club-1',
+          organizerId: 'club-1',
           isHost: false,
           reviews: const [],
           isAuthenticated: true,
@@ -1275,7 +1280,7 @@ void main() {
         tester,
         const EventDetailScreen(
           enableMapNetworkTiles: false,
-          clubId: 'club-1',
+          organizerId: 'club-1',
           eventId: 'event-1',
         ),
         viewerState: viewerFixture(),
@@ -1323,7 +1328,7 @@ void main() {
         tester,
         const EventDetailScreen(
           enableMapNetworkTiles: false,
-          clubId: 'club-1',
+          organizerId: 'club-1',
           eventId: 'event-1',
         ),
         viewerState: viewerFixture(),
@@ -1375,7 +1380,7 @@ void main() {
             builder: (context, state) => _eventDetailBody(
               event: event,
               userProfile: buildUser(),
-              clubId: 'club-1',
+              organizerId: 'club-1',
               isHost: false,
               reviews: const [],
               isAuthenticated: true,
@@ -1444,7 +1449,7 @@ void main() {
 Widget _eventDetailBody({
   required Event event,
   required UserProfile? userProfile,
-  required String clubId,
+  required String organizerId,
   required List<Review> reviews,
   required bool isAuthenticated,
   required bool isHost,
@@ -1478,7 +1483,7 @@ Widget _eventDetailBody({
   return EventDetailBody(
     event: event,
     userProfile: userProfile,
-    clubId: clubId,
+    organizerId: organizerId,
     reviews: reviews,
     isAuthenticated: isAuthenticated,
     sectionVisibility:
@@ -1582,7 +1587,7 @@ EventParticipation _participation({
   return EventParticipation(
     id: eventParticipationId(eventId: eventId, uid: uid),
     eventId: eventId,
-    clubId: 'club-1',
+    organizerId: 'club-1',
     uid: uid,
     status: status,
     createdAt: now,

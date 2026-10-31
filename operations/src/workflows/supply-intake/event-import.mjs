@@ -104,7 +104,6 @@ function externalEventDocument({event, eventId, organizer, review, duplicates, c
     schemaVersion: 1,
     eventId,
     canonicalHostId: organizer.organizerId,
-    compatibilityClubId: organizer.organizerId,
     title: clip(event.title, 240),
     description: event.description ?? event.title,
     startTime: timestamp(event.startAt),

@@ -7,7 +7,6 @@
  */
 export interface EventAttendeeDocument {
   eventId: string;
-  clubId: string;
   organizerId: string;
   displayName: string;
   searchName: string;

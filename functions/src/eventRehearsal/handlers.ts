@@ -162,7 +162,7 @@ type Firestore = FirebaseFirestore.Firestore;
 interface CreateOverrides {
   setup?: RehearsalSetup;
   sourceEventRevision?: string | null;
-  clubId?: string;
+  organizerId?: string;
   rosterSnapshot?: EventRehearsalDocument["rosterSnapshot"];
 }
 
@@ -981,7 +981,7 @@ export async function resetEventRehearsalHandler(
     }, {
       setup: session.setup,
       sourceEventRevision: session.sourceEventRevision,
-      clubId: session.clubId,
+      organizerId: session.organizerId,
       rosterSnapshot: session.rosterSnapshot,
     });
   }
@@ -1402,7 +1402,6 @@ async function createSession(
   ).map((actor) => running ? actorAtMoment(actor, "checkIn", now) : actor);
   const session: EventRehearsalDocument = {
     organizerId: data.organizerId,
-    clubId: overrides.clubId ?? source?.clubId ?? data.organizerId,
     ownerUid: uid,
     sourceEventId: data.sourceEventId,
     sourceEventRevision: overrides.sourceEventRevision ??
@@ -1471,13 +1470,13 @@ async function sourceSetup(
   db: Firestore,
   organizerId: string,
   eventId: string
-): Promise<{setup: RehearsalSetup; clubId: string; revision: string}> {
+): Promise<{setup: RehearsalSetup; organizerId: string; revision: string}> {
   const snap = await db.collection("events").doc(eventId).get();
   if (!snap.exists) {
     throw new HttpsError("not-found", "Source event not found.");
   }
   const event = requireDoc<EventDocument>(snap, "EventDocument");
-  const eventOrganizerId = event.organizerId ?? event.clubId;
+  const eventOrganizerId = event.organizerId;
   if (eventOrganizerId !== organizerId) {
     throw new HttpsError(
       "permission-denied",
@@ -1494,7 +1493,7 @@ async function sourceSetup(
   );
   const setup = rehearsalSetupFromEvent(configuredEvent);
   return {
-    clubId: event.clubId,
+    organizerId: event.organizerId,
     revision: sha256(JSON.stringify({
       name: event.name ?? null,
       startTimeMillis: event.startTime.toMillis(),

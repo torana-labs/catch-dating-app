@@ -1,0 +1,50 @@
+{
+  "name": "Race Course Event Collective",
+  "description": "Social Indore events for easy kilometres, coffee stops, and reliable weekend training.",
+  "location": "in-mp-indore",
+  "locationCityId": "in-mp-indore",
+  "locationMarketId": "in-mp-indore",
+  "cityName": "Indore",
+  "regionName": "Madhya Pradesh",
+  "countryCode": "IN",
+  "countryName": "India",
+  "area": "Race Course Road",
+  "hostUserId": "host-1",
+  "hostName": "Subrath",
+  "hostAvatarUrl": "https://example.test/host.jpg",
+  "ownerUserId": "host-1",
+  "hostUserIds": ["host-1"],
+  "hostProfiles": [
+    {
+      "uid": "host-1",
+      "displayName": "Subrath",
+      "avatarUrl": "https://example.test/host.jpg",
+      "role": "owner"
+    }
+  ],
+  "createdAt": {
+    "_seconds": 1778803200,
+    "_nanoseconds": 0
+  },
+  "imageUrl": "https://example.test/club.jpg",
+  "profileImageUrl": "https://example.test/club-profile.jpg",
+  "tags": ["social", "beginner-friendly", "indore"],
+  "memberCount": 12,
+  "rating": 4.7,
+  "reviewCount": 8,
+  "nextEventAt": {
+    "_seconds": 1778889600,
+    "_nanoseconds": 0
+  },
+  "nextEventLabel": "Saturday Morning Event",
+  "instagramHandle": "racecourseevents",
+  "phoneNumber": "+918800000001",
+  "email": "race.course@example.test",
+  "status": "active",
+  "archived": false,
+  "archivedAt": null,
+  "archiveReason": null,
+  "organizerType": "club",
+  "organizerPhotos": [],
+  "followerCount": 12
+}

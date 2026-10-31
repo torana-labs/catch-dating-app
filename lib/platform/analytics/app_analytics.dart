@@ -391,7 +391,7 @@ abstract final class AnalyticsParameters {
   static const onboardingStep = 'onboarding_step';
   static const splashMotion = 'splash_motion';
   static const cta = 'cta';
-  static const clubId = 'club_id';
+  static const organizerId = 'club_id';
   static const eventId = 'event_id';
   static const activityKind = 'activity_kind';
   static const availabilityStatus = 'availability_status';

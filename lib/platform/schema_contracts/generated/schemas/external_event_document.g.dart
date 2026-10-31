@@ -19,7 +19,6 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
     'schemaVersion',
     'eventId',
     'canonicalHostId',
-    'compatibilityClubId',
     'title',
     'description',
     'startTime',
@@ -53,11 +52,6 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
       'maxLength': 180,
     },
     'canonicalHostId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-    },
-    'compatibilityClubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

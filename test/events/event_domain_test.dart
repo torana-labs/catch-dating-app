@@ -24,7 +24,7 @@ void main() {
     final start = startTime ?? DateTime.now().add(const Duration(hours: 1));
     return Event(
       id: id,
-      clubId: 'club-1',
+      organizerId: 'club-1',
       name: name,
       startTime: start,
       endTime: endTime ?? start.add(const Duration(hours: 1)),

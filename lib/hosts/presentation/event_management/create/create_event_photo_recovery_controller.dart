@@ -171,7 +171,7 @@ class CreateEventPhotoRecoveryController
     _requireCurrent(session);
     if (event == null ||
         event.id != receipt.scope.eventId ||
-        event.clubId != organizerId) {
+        event.organizerId != organizerId) {
       throw const ValidationException(
         'The saved event is unavailable. '
         'Its photo recovery has been preserved.',
@@ -201,7 +201,7 @@ class CreateEventPhotoRecoveryController
       operationSession = session;
       await restore();
       _requireCurrent(session);
-      if (event.clubId != organizerId) {
+      if (event.organizerId != organizerId) {
         throw const ValidationException('The saved event organizer changed.');
       }
       if (state.restored.hasError) throw state.restored.error!;
@@ -360,7 +360,7 @@ class CreateEventPhotoRecoveryController
     await ref
         .read(eventDraftRepositoryProvider)
         .deleteDraft(
-          clubId: organizerId,
+          organizerId: organizerId,
           userId: session.account.uid,
           draftId: draftId,
         );
@@ -454,7 +454,7 @@ class CreateEventPhotoRecoveryController
         _requireCurrent(session);
         if (canonical == null ||
             canonical.id != event.id ||
-            canonical.clubId != organizerId) {
+            canonical.organizerId != organizerId) {
           final error = const ValidationException(
             'The saved event is unavailable. '
             'Its photo recovery has been preserved.',

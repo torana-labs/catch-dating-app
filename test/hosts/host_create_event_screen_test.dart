@@ -153,7 +153,7 @@ void main() {
       await pumpEventsTestApp(
         tester,
         HostCreateEventRouteScreen(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           initialOrganizer: buildOrganizer(),
         ),
       );
@@ -179,7 +179,7 @@ void main() {
         await pumpEventsTestApp(
           tester,
           HostCreateEventRouteScreen(
-            clubId: initialOrganizer.id,
+            organizerId: initialOrganizer.id,
             initialOrganizer: initialOrganizer,
           ),
           overrides: [
@@ -203,7 +203,7 @@ void main() {
       await pumpEventsTestApp(
         tester,
         HostCreateEventRouteScreen(
-          clubId: 'path-club',
+          organizerId: 'path-club',
           initialOrganizer: buildOrganizer(id: 'extra-club'),
         ),
         signedInUid: 'host-1',
@@ -329,7 +329,7 @@ void main() {
         );
         expect(find.textContaining('visible to'), findsNothing);
         expect(fakeEventRepository.createdEvent, isNotNull);
-        expect(fakeEventRepository.createdEvent!.clubId, 'club-1');
+        expect(fakeEventRepository.createdEvent!.organizerId, 'club-1');
         expect(
           fakeEventRepository.createdEvent!.eventFormat.accessibilityNotes,
           'Step-free entrance',
@@ -787,7 +787,7 @@ void main() {
       await _pumpTestAnimation(tester);
 
       final remainingDrafts = await draftRepository.loadDrafts(
-        clubId: 'club-1',
+        organizerId: 'club-1',
         userId: 'runner-1',
       );
       expect(remainingDrafts.map((draft) => draft.id), ['keep-draft']);
@@ -841,7 +841,7 @@ void main() {
         findsNothing,
       );
       final drafts = await draftRepository.loadDrafts(
-        clubId: 'club-1',
+        organizerId: 'club-1',
         userId: 'runner-1',
       );
       expect(drafts.map((draft) => draft.id), ['saved-draft']);
@@ -867,7 +867,7 @@ EventDraft _buildEventDraft({
 }) {
   return EventDraft(
     id: id,
-    clubId: 'club-1',
+    organizerId: 'club-1',
     savedAt: savedAt,
     distance: distance,
     capacity: capacity,
@@ -933,7 +933,7 @@ Future<void> _pumpCreateEventFlow(
           organizer: organizer,
           event: switch (state.extra) {
             final Event event => event,
-            _ => buildEvent(clubId: organizer.id),
+            _ => buildEvent(organizerId: organizer.id),
           },
           onBackToSuccess: () => context.pop(),
         ),

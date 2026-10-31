@@ -592,7 +592,7 @@ test("bounded loader retains nested canonical " +
   );
   const now = new Date("2026-06-18T12:00:00Z");
   const report = buildHostAnalyticsFromRecords(
-    {clubs: [], events: [], martRows: []},
+    {organizers: [], events: [], martRows: []},
     resolveAnalyticsRange({rangePreset: "30d"}, now),
     now
   );

@@ -213,7 +213,7 @@ node tool/contracts/check_storage_contract.mjs
 generator cannot emit patch helpers for arrays of embedded objects. Their
 `toJson()` output is validated against
 `contracts/patches/update_user_profile.schema.json` and
-`contracts/callables/update_club_payload.schema.json` by
+`contracts/callables/update_organizer_payload.schema.json` by
 `test/core/update_user_profile_patch_test.dart` and
 `test/core/update_organizer_patch_test.dart`.
 

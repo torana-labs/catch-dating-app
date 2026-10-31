@@ -40,7 +40,7 @@ class ChatThreadLookupState {
     final otherUid = uid == null ? null : match?.otherId(uid);
     final isSuvbot = isSuvbotConversation(matchId: matchId, otherUid: otherUid);
     final isHostInquiry = match?.isOrganizerHostInquiry == true;
-    final hostInquiryOrganizerId = isHostInquiry ? match?.clubId : null;
+    final hostInquiryOrganizerId = isHostInquiry ? match?.organizerId : null;
     final hostProfile = _hostProfileFor(hostInquiryOrganizer, otherUid);
     final otherParticipantIsHost = hostProfile != null;
     final shouldReadPublicProfile =

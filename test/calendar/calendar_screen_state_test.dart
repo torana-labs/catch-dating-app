@@ -26,7 +26,7 @@ void main() {
       expect(state.selectedDate, DateUtils.dateOnly(nextEvent.startTime));
       expect(state.expanded, isFalse);
       expect(state.hasEvents, isTrue);
-      expect(state.organizerIds, [nextEvent.clubId]);
+      expect(state.organizerIds, [nextEvent.organizerId]);
     });
 
     test('preserves explicit selected date and header mode', () {
@@ -189,17 +189,17 @@ void main() {
       final now = DateTime(2026, 6, 30, 12);
       final joined = buildEvent(
         id: 'joined',
-        clubId: 'joined-club',
+        organizerId: 'joined-club',
         startTime: now.add(const Duration(days: 2)),
       );
       final saved = buildEvent(
         id: 'saved',
-        clubId: 'saved-club',
+        organizerId: 'saved-club',
         startTime: now.add(const Duration(days: 1)),
       );
       final cancelled = buildEvent(
         id: 'cancelled',
-        clubId: 'cancelled-club',
+        organizerId: 'cancelled-club',
         startTime: now.add(const Duration(hours: 6)),
         status: EventLifecycleStatus.cancelled,
       );

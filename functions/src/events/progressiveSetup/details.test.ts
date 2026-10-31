@@ -106,7 +106,7 @@ async function setup() {
       preferredVenueId: "venue1"},
   });
   store.rows.set("events/event1", {
-    organizerId: "org1", clubId: "org1", name: "Mixer",
+    organizerId: "org1", name: "Mixer",
     eventCityId: "in-mh-mumbai", eventMarketId: "in-mh-mumbai",
     eventLocalDate: "2026-10-18", eventLocalStartTime: "18:30",
     eventTimezone: "Asia/Kolkata",

@@ -17,7 +17,7 @@ const schemaEventSuccessStandingsDocumentSchema = <String, Object?>{
   'x-owner': 'recordEventSuccessUnitOutcomes callable',
   'required': <Object?>[
     'eventId',
-    'clubId',
+    'organizerId',
     'unitOutcome',
     'revision',
     'latestRoundIndex',
@@ -67,12 +67,6 @@ const schemaEventSuccessStandingsDocumentSchema = <String, Object?>{
   },
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-      'x-catch-ownership': 'callable-owned',
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

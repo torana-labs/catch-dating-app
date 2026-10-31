@@ -10,8 +10,7 @@ export interface UserEventScheduleLockDocument {
   ownerId: string;
   slot: number;
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   uid: string;
   startTimeMillis: number;
   endTimeMillis: number;

@@ -389,7 +389,7 @@
             "prefsMessages",
             "prefsEventReminders",
             "prefsRunStatusUpdates",
-            "prefsClubUpdates",
+            "prefsOrganizerUpdates",
             "prefsWeeklyDigest",
             "prefsShowOnMap"
           ],
@@ -442,7 +442,7 @@
             "prefsMessages",
             "prefsEventReminders",
             "prefsRunStatusUpdates",
-            "prefsClubUpdates",
+            "prefsOrganizerUpdates",
             "prefsWeeklyDigest",
             "prefsShowOnMap"
           ]
@@ -467,7 +467,7 @@
         "Rules, Functions profile updates, and the generated Dart/TypeScript contract no longer allow new sexualOrientation writes.",
         "firstName and lastName are private identity fields initialized during onboarding; displayName is the editable public name written by the updateUserProfile callable.",
         "Legacy bio text now migrates into structured profilePrompts; new prompt text is stored in profilePrompts and photo prompt selections live inside profilePhotos.prompt.",
-        "Global notification category preferences live on users/{uid}; per-club push opt-in lives on clubMemberships/{clubId_uid}.",
+        "Global notification category preferences live on users/{uid}; per-club push opt-in lives on organizerMemberships/{organizerId_uid}.",
         "Event-club membership and saved-event state live in edge collections, not profile arrays."
       ]
     },

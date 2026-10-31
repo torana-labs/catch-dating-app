@@ -1,14 +1,14 @@
 part of '../host_operations_screen.dart';
 
 class HostOrganizerLiveGuideScreen extends StatelessWidget {
-  const HostOrganizerLiveGuideScreen({super.key, required this.clubId});
+  const HostOrganizerLiveGuideScreen({super.key, required this.organizerId});
 
-  final String clubId;
+  final String organizerId;
 
   @override
   Widget build(BuildContext context) {
     return HostOrganizerSpokeAsyncBoundary._(
-      clubId: clubId,
+      organizerId: organizerId,
       title: context.l10n.hostsHostOrganizerEditTabLabelLiveEventGuide,
       builder: (context, organizer, _, isOwner) {
         final activityKind = organizer.hostDefaults.primaryActivityKind;

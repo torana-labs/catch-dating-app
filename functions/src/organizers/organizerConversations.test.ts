@@ -113,19 +113,12 @@ function request(
   } as CallableRequest<unknown>;
 }
 
-function club(overrides: FakeData = {}): FakeData {
+function organizer(overrides: FakeData = {}): FakeData {
   return {
     name: "Sunday Run Club",
     hostUserId: "owner-1",
     ownerUserId: "owner-1",
     hostUserIds: ["owner-1", "host-1"],
-    ...overrides,
-  };
-}
-
-function organizer(overrides: FakeData = {}): FakeData {
-  return {
-    ...club(),
     organizerType: "club",
     hostProfiles: [],
     ...overrides,

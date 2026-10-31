@@ -81,7 +81,7 @@ class _PreviewState extends State<_Preview> {
           _rules ?? (view.own!.preference as LateJoinConfigured).template.rules;
       final event = Event(
         id: view.scope.eventId,
-        clubId: view.scope.organizerId,
+        organizerId: view.scope.organizerId,
         startTime: DateTime.fromMillisecondsSinceEpoch(view.serverTime),
         endTime: DateTime.fromMillisecondsSinceEpoch(setup.eventEnd),
         meetingPoint:

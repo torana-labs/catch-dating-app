@@ -28,7 +28,7 @@ function contact(overrides: Partial<OrganizerContactDocument> = {}) {
     OrganizerContactDocument;
 }
 function attendee(overrides: Partial<EventAttendeeDocument> = {}) {
-  return {eventId: "event-1", clubId: "org-1", organizerId: "org-1",
+  return {eventId: "event-1", organizerId: "org-1",
     displayName: "Event name", searchName: "event name", source: "catchBooking",
     status: "registered", linkedUid: "uid-1", phoneE164: null, email: null,
     externalReference: null, arrivalGroup: null, ticketType: null,

@@ -94,7 +94,7 @@ export interface OrganizerIntakeCurationDecisionDocument {
     evidenceRefs: {
       type:
         | "hostDiscoveryRun"
-        | "seedClub"
+        | "seedOrganizer"
         | "userReportedSearchResult"
         | "manualNote";
       ref: string | null;

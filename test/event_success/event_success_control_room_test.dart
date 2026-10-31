@@ -442,7 +442,7 @@ void main() {
     final assignment = EventSuccessAssignment(
       id: 'placement',
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       uid: 'guest',
       moduleId: 'micro_pods',
       label: 'Table 1',

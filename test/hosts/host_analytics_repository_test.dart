@@ -11,7 +11,7 @@ import '../test_pump_helpers.dart';
 void main() {
   test('HostAnalyticsQuery serializes custom event-scoped ranges', () {
     final request = HostAnalyticsQuery(
-      clubId: 'club-1',
+      organizerId: 'club-1',
       eventId: 'event-1',
       rangePreset: HostAnalyticsRangePreset.custom,
       startDate: DateTime(2026, 6),
@@ -20,7 +20,7 @@ void main() {
     ).toCallableRequest().toJson();
 
     expect(request, {
-      'clubId': 'club-1',
+      'organizerId': 'club-1',
       'eventId': 'event-1',
       'rangePreset': 'custom',
       'startDate': '2026-06-01',
@@ -31,7 +31,7 @@ void main() {
 
   test('HostAnalyticsQuery omits date bounds for preset ranges', () {
     final request = HostAnalyticsQuery(
-      clubId: 'club-1',
+      organizerId: 'club-1',
       rangePreset: HostAnalyticsRangePreset.ninetyDays,
       startDate: DateTime(2026, 2),
       endDate: DateTime(2026, 1, 31),
@@ -39,7 +39,7 @@ void main() {
     ).toCallableRequest().toJson();
 
     expect(request, {
-      'clubId': 'club-1',
+      'organizerId': 'club-1',
       'rangePreset': '90d',
       'granularity': 'month',
     });
@@ -47,7 +47,7 @@ void main() {
 
   test('HostAnalyticsQuery sends the 12-month preset and IANA timezone', () {
     const query = HostAnalyticsQuery(
-      clubId: 'club-1',
+      organizerId: 'club-1',
       rangePreset: HostAnalyticsRangePreset.twelveMonths,
       granularity: HostAnalyticsGranularity.month,
       timezone: 'Asia/Kolkata',
@@ -55,7 +55,7 @@ void main() {
     final request = query.toCallableRequest().toJson();
 
     expect(request, {
-      'clubId': 'club-1',
+      'organizerId': 'club-1',
       'rangePreset': '12m',
       'granularity': 'month',
       'timezone': 'Asia/Kolkata',
@@ -134,7 +134,7 @@ void main() {
   test('HostAnalyticsEventRow parses full backend event metrics', () {
     final row = HostAnalyticsEventRow.fromMap({
       'eventId': 'event-1',
-      'clubId': 'club-1',
+      'organizerId': 'club-1',
       'title': 'Morning miles',
       'startTime': '2026-06-18T02:30:00.000Z',
       'status': 'completed',
@@ -181,15 +181,15 @@ void main() {
     addTearDown(container.dispose);
 
     const queries = [
-      HostAnalyticsQuery(clubId: 'club-1', timezone: 'Asia/Kolkata'),
+      HostAnalyticsQuery(organizerId: 'club-1', timezone: 'Asia/Kolkata'),
       HostAnalyticsQuery(
-        clubId: 'club-1',
+        organizerId: 'club-1',
         rangePreset: HostAnalyticsRangePreset.ninetyDays,
         granularity: HostAnalyticsGranularity.week,
         timezone: 'Asia/Kolkata',
       ),
       HostAnalyticsQuery(
-        clubId: 'club-1',
+        organizerId: 'club-1',
         rangePreset: HostAnalyticsRangePreset.twelveMonths,
         granularity: HostAnalyticsGranularity.month,
         timezone: 'Asia/Kolkata',
@@ -266,7 +266,7 @@ void main() {
       addTearDown(container.dispose);
       // The app-wide auth foundation remains observed independently of tabs.
       container.listen(uidProvider, (_, _) {});
-      const query = HostAnalyticsQuery(clubId: 'club-1');
+      const query = HostAnalyticsQuery(organizerId: 'club-1');
       final provider = hostAnalyticsProvider(query);
       var subscription = container.listen(provider, (_, _) {});
       accounts.add('account-a');
@@ -315,7 +315,7 @@ void main() {
         addTearDown(container.dispose);
         final oldRead = Completer<HostAnalyticsReport>();
         repository.pending = oldRead;
-        const query = HostAnalyticsQuery(clubId: 'club-1');
+        const query = HostAnalyticsQuery(organizerId: 'club-1');
         final provider = hostAnalyticsProvider(query);
         final observed = <HostAnalyticsReport>[];
         container.listen(provider, (_, next) {
@@ -359,7 +359,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
-      const query = HostAnalyticsQuery(clubId: 'club-1');
+      const query = HostAnalyticsQuery(organizerId: 'club-1');
       container.listen(hostAnalyticsProvider(query), (_, _) {});
       await expectLater(
         container.read(hostAnalyticsProvider(query).future),

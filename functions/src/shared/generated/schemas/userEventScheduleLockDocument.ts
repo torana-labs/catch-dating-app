@@ -26,7 +26,7 @@ export const userEventScheduleLockDocumentSchema: Record<string, unknown> = {
     "ownerId",
     "slot",
     "eventId",
-    "clubId",
+    "organizerId",
     "uid",
     "startTimeMillis",
     "endTimeMillis"
@@ -49,12 +49,6 @@ export const userEventScheduleLockDocumentSchema: Record<string, unknown> = {
       "x-catch-ownership": "callable-owned"
     },
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,

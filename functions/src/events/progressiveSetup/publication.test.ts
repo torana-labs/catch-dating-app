@@ -23,17 +23,17 @@ function setup() {
   const raw = JSON.parse(readFileSync(resolve(__dirname,
     "../../../../contracts/fixtures/valid/event_doc.json"), "utf8"));
   const start = 1_900_000_000_000;
-  const event = {...raw, organizerId: "org1", clubId: "org1",
-    startTime: Timestamp.fromMillis(start),
-    endTime: Timestamp.fromMillis(start + 60 * 60_000),
-    eventCityId: "in-mp-indore", eventMarketId: "in-mp-indore",
-    eventLocalDate: "2030-03-17", eventLocalStartTime: "12:00",
-    eventTimezone: "Asia/Kolkata", setupRevision: 1,
-    publicationState: "private", publicRegistrationEnabled: false,
-    setupDefaults: {city: {value: {cityId: "in-mp-indore",
-      marketId: "in-mp-indore"}, source: "event"},
-    timezone: {value: "Asia/Kolkata", source: "event"},
-    organizerDefaultsRevision: null, organizerDefaultsHash: "a".repeat(64)}};
+  const event = {...raw, organizerId: "org1", startTime: Timestamp.fromMillis(
+    start),
+  endTime: Timestamp.fromMillis(start + 60 * 60_000),
+  eventCityId: "in-mp-indore", eventMarketId: "in-mp-indore",
+  eventLocalDate: "2030-03-17", eventLocalStartTime: "12:00",
+  eventTimezone: "Asia/Kolkata", setupRevision: 1,
+  publicationState: "private", publicRegistrationEnabled: false,
+  setupDefaults: {city: {value: {cityId: "in-mp-indore",
+    marketId: "in-mp-indore"}, source: "event"},
+  timezone: {value: "Asia/Kolkata", source: "event"},
+  organizerDefaultsRevision: null, organizerDefaultsHash: "a".repeat(64)}};
   store.put("events/event1", event);
   store.put("organizers/org1", {ownerUserId: "host1", hostUserId: "host1",
     hostUserIds: [], hostProfiles: [], status: "active", archived: false,

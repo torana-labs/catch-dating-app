@@ -11,20 +11,10 @@ export const exploreSearchCallableResponseSchema: Record<string, unknown> = {
   "additionalProperties": false,
   "required": [
     "organizerIds",
-    "clubIds",
     "eventIds"
   ],
   "properties": {
     "organizerIds": {
-      "type": "array",
-      "maxItems": 50,
-      "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 256
-      }
-    },
-    "clubIds": {
       "type": "array",
       "maxItems": 50,
       "items": {

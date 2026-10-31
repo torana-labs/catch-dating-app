@@ -18,10 +18,10 @@ type OrganizerRouteReservationSource =
   "hostPublishOrganizer" |
   "adminCreateOrganizerDraftFromCandidate" |
   "adminApproveOrganizerListing" |
-  "adminUpdateClubDetails" | "adminSetClubIndexStatus";
+  "adminUpdateOrganizerDetails" | "adminSetOrganizerIndexStatus";
 
 interface ReserveOrganizerCanonicalRouteOptions {
-  clubId: string;
+  organizerId: string;
   canonicalPath: string;
   slug: string | null | undefined;
   citySlug: string | null | undefined;
@@ -96,13 +96,13 @@ export function organizerRouteReservationId(canonicalPath: string): string {
 /**
  * Reads route reservation state for the organizer list view.
  * @param {FirebaseFirestore.Firestore} db Firestore database.
- * @param {string} clubId Current club document id.
+ * @param {string} organizerId Current club document id.
  * @param {string} canonicalPath Public route path.
  * @return {Promise<OrganizerRouteReservationStatus>} Reservation status.
  */
 export async function readOrganizerRouteReservationStatus(
   db: FirebaseFirestore.Firestore,
-  clubId: string,
+  organizerId: string,
   canonicalPath: string
 ): Promise<OrganizerRouteReservationStatus> {
   const routeKey = organizerRouteReservationId(canonicalPath);
@@ -113,7 +113,7 @@ export async function readOrganizerRouteReservationStatus(
   const reservation = snap.data() as
     PublicRouteReservationDocument | undefined;
   if (!reservation || reservation.status !== "active") return "missing";
-  const targetPath = `organizers/${clubId}`;
+  const targetPath = `organizers/${organizerId}`;
   return reservation.targetPath === targetPath &&
     reservation.routePath === normalizedOrganizerPath(canonicalPath) ?
     "reserved" :
@@ -141,11 +141,11 @@ export async function reserveOrganizerCanonicalRoute(
   await assertOrganizerCanonicalPathAvailable(
     tx,
     db,
-    options.clubId,
+    options.organizerId,
     routePath
   );
 
-  const targetPath = `organizers/${options.clubId}`;
+  const targetPath = `organizers/${options.organizerId}`;
   const routeKey = organizerRouteReservationId(routePath);
   const reservationRef = db.collection("publicRouteReservations").doc(routeKey);
   const previousRouteKey = previousReservationId(
@@ -182,7 +182,7 @@ export async function reserveOrganizerCanonicalRoute(
     status: "active",
     ownerType: "organizer",
     ownerCollection: "organizers",
-    ownerId: options.clubId,
+    ownerId: options.organizerId,
     targetPath,
     slug: route.slug,
     citySlug: route.citySlug,
@@ -217,14 +217,14 @@ export async function reserveOrganizerCanonicalRoute(
  * Verifies no other club document owns this canonical organizer path.
  * @param {FirebaseFirestore.Transaction} tx Firestore transaction.
  * @param {FirebaseFirestore.Firestore} db Firestore database.
- * @param {string} clubId Current club document id.
+ * @param {string} organizerId Current club document id.
  * @param {string} canonicalPath Public route path.
  * @return {Promise<void>} Completes when the path is available.
  */
 export async function assertOrganizerCanonicalPathAvailable(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
-  clubId: string,
+  organizerId: string,
   canonicalPath: string
 ): Promise<void> {
   const query = db
@@ -232,7 +232,7 @@ export async function assertOrganizerCanonicalPathAvailable(
     .where("publicPage.canonicalPath", "==", canonicalPath)
     .limit(2);
   const existing = await tx.get(query);
-  const conflict = existing.docs.find((doc) => doc.id !== clubId);
+  const conflict = existing.docs.find((doc) => doc.id !== organizerId);
   if (conflict) {
     throw new HttpsError(
       "already-exists",

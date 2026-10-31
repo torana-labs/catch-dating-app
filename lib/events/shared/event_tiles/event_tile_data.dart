@@ -47,7 +47,7 @@ class EventTileData {
   final String? reasonLabel;
   final String? positionLabel;
 
-  String get clubId => event.clubId;
+  String get organizerId => event.organizerId;
   String get eventId => event.id;
   String get title => event.title;
   String get meetingPoint => event.locationName;

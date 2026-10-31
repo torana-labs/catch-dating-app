@@ -205,7 +205,7 @@ final class WatchActiveOrganizerMembershipsForOrganizerProvider
 }
 
 String _$watchActiveOrganizerMembershipsForOrganizerHash() =>
-    r'0ab873da7306759a6823856f208716d41adb98f3';
+    r'7414937b8e2fd54f171a99113aeb7dd2a26bc8d2';
 
 final class WatchActiveOrganizerMembershipsForOrganizerFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<OrganizerMembership>>, String> {
@@ -218,11 +218,12 @@ final class WatchActiveOrganizerMembershipsForOrganizerFamily extends $Family
         isAutoDispose: true,
       );
 
-  WatchActiveOrganizerMembershipsForOrganizerProvider call(String clubId) =>
-      WatchActiveOrganizerMembershipsForOrganizerProvider._(
-        argument: clubId,
-        from: this,
-      );
+  WatchActiveOrganizerMembershipsForOrganizerProvider call(
+    String organizerId,
+  ) => WatchActiveOrganizerMembershipsForOrganizerProvider._(
+    argument: organizerId,
+    from: this,
+  );
 
   @override
   String toString() => r'watchActiveOrganizerMembershipsForOrganizerProvider';
@@ -287,7 +288,7 @@ final class WatchOrganizerMembershipProvider
 }
 
 String _$watchOrganizerMembershipHash() =>
-    r'664be72036b17291c999ebeb845ae3ea22d77221';
+    r'c6c87faad4f4bd409aaf513762f5a5ac130496b5';
 
 final class WatchOrganizerMembershipFamily extends $Family
     with
@@ -304,8 +305,11 @@ final class WatchOrganizerMembershipFamily extends $Family
         isAutoDispose: true,
       );
 
-  WatchOrganizerMembershipProvider call(String clubId, String uid) =>
-      WatchOrganizerMembershipProvider._(argument: (clubId, uid), from: this);
+  WatchOrganizerMembershipProvider call(String organizerId, String uid) =>
+      WatchOrganizerMembershipProvider._(
+        argument: (organizerId, uid),
+        from: this,
+      );
 
   @override
   String toString() => r'watchOrganizerMembershipProvider';
@@ -358,4 +362,4 @@ final class CurrentUserFollowedOrganizerIdsProvider
 }
 
 String _$currentUserFollowedOrganizerIdsHash() =>
-    r'9e53aeba3219bd304341a078fd8147670db0f6d8';
+    r'91326dcc29ea1ff91d739072a6612049fb320ac8';

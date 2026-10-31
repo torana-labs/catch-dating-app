@@ -11,7 +11,6 @@ _EventAttendee _$EventAttendeeFromJson(
 ) => _EventAttendee(
   id: json['id'] as String,
   eventId: json['eventId'] as String,
-  clubId: json['clubId'] as String,
   organizerId: json['organizerId'] as String,
   displayName: json['displayName'] as String,
   searchName: json['searchName'] as String,
@@ -80,7 +79,6 @@ Map<String, dynamic> _$EventAttendeeToJson(
   _EventAttendee instance,
 ) => <String, dynamic>{
   'eventId': instance.eventId,
-  'clubId': instance.clubId,
   'organizerId': instance.organizerId,
   'displayName': instance.displayName,
   'searchName': instance.searchName,

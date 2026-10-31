@@ -16,16 +16,16 @@ import {
   Users,
 } from "lucide-react";
 import type {
-  AdminClubClaimListRow,
-  AdminClubClaimRequestDetails,
-  AdminClubDetails,
-  AdminClubListRow,
+  AdminOrganizerClaimListRow,
+  AdminOrganizerClaimRequestDetails,
+  AdminOrganizerDetails,
+  AdminOrganizerListRow,
   OrganizerAppVisibility,
   OrganizerEntityKind,
   OrganizerPublishStatus,
   OrganizerSourceConfidence,
   OrganizerVerificationStatus,
-  ClubClaimDecision,
+  OrganizerClaimDecision,
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
@@ -100,17 +100,17 @@ export function OrganizerPublishingScreen({
   onBackToList,
   onBackToClaims,
   onSelectClaimRequestId,
-  onSelectClubId,
+  onSelectOrganizerId,
   onWorkspaceChange,
   selectedClaimRequestId,
-  selectedClubId,
+  selectedOrganizerId,
 }: {
   activeWorkspace?: "directory" | "claims";
-  selectedClubId?: string | null;
+  selectedOrganizerId?: string | null;
   onBackToList?: () => void;
   onBackToClaims?: () => void;
   onSelectClaimRequestId?: (requestId: string) => void;
-  onSelectClubId?: (clubId: string) => void;
+  onSelectOrganizerId?: (organizerId: string) => void;
   onWorkspaceChange?: (workspace: "directory" | "claims") => void;
   selectedClaimRequestId?: string | null;
 }) {
@@ -119,8 +119,8 @@ export function OrganizerPublishingScreen({
     onBackToList,
     onError,
     onNotice,
-    onSelectClubId,
-    selectedClubId,
+    onSelectOrganizerId,
+    selectedOrganizerId,
   });
   const claimReviewController = useOrganizerClaimReviewController({
     enabled: activeWorkspace === "claims",

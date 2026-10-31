@@ -149,7 +149,7 @@ export class EventParticipationStore {
         !validateOrganizerDocument(organizer) ||
         (plan !== null && (!validateEventSuccessPlanDocument(plan) ||
           plan.eventId !== context.eventId ||
-          (plan.organizerId ?? plan.clubId) !== context.organizerId))) {
+          (plan.organizerId) !== context.organizerId))) {
       throw invalidSource();
     }
     const manager = isOrganizerManager(organizer as unknown as

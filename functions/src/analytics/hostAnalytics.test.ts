@@ -84,32 +84,32 @@ test("mart dates use local-day buckets", () => {
 test("host snapshot identity pins authorized scope and local-day range", () => {
   const now = new Date("2026-06-17T20:00:00.000Z");
   const payload = {
-    clubId: "club-1",
+    organizerId: "club-1",
     rangePreset: "30d" as const,
     granularity: "week" as const,
     timezone: "Asia/Kolkata",
   };
   const range = resolveAnalyticsRange(payload, now);
-  const clubs = records().clubs;
-  const first = hostAnalyticsSnapshotId("host-1", payload, range, clubs);
+  const organizers = records().organizers;
+  const first = hostAnalyticsSnapshotId("host-1", payload, range, organizers);
   const reordered = hostAnalyticsSnapshotId(
     "host-1",
     payload,
     range,
-    [...clubs].reverse()
+    [...organizers].reverse()
   );
   const utc = hostAnalyticsSnapshotId(
     "host-1",
     {...payload, timezone: "UTC"},
     resolveAnalyticsRange({...payload, timezone: "UTC"}, now),
-    clubs
+    organizers
   );
 
   const previousHash = createHash("sha256").update(JSON.stringify({
     registrationReadoutVersion: 1,
-    organizerId: payload.clubId,
+    organizerId: payload.organizerId,
     eventId: null,
-    clubIds: clubs.map((club) => club.id).sort(),
+    organizerIds: organizers.map((organizer) => organizer.id).sort(),
     start: range.start.toISOString(),
     endExclusive: range.endExclusive.toISOString(),
     granularity: range.granularity,
@@ -220,8 +220,8 @@ test("buildHostAnalyticsFromRecords aggregates host-safe metrics", () => {
     "2026-06-18T12:00:00.000Z"
   ));
 
-  assert.equal(response.scope.clubName, "Saket Run Club");
-  assert.deepEqual(response.scope.clubIds, ["club-1"]);
+  assert.equal(response.scope.organizerName, "Saket Run Club");
+  assert.deepEqual(response.scope.organizerIds, ["club-1"]);
   assert.deepEqual(response.scope.eventIds, ["event-1"]);
   assert.equal(metric(response, "listingViews").value, 12);
   assert.equal(metric(response, "eventViews").value, 9);
@@ -303,7 +303,7 @@ test("buildHostAnalyticsFromRecords totals beyond the top event slice", () => {
     return {
       id,
       data: {
-        clubId: "club-1",
+        organizerId: "club-1",
         status: "completed",
         startTime: `2026-06-${day}T01:30:00.000Z`,
         capacityLimit: 10,
@@ -331,7 +331,7 @@ test("buildHostAnalyticsFromRecords totals beyond the top event slice", () => {
     mutualMatchCount: 1,
     chatStartedCount: 1,
   }));
-  const clubReviewRow = martRow({
+  const organizerReviewRow = martRow({
     date: "2026-06-15",
     eventId: null,
     eventTitle: null,
@@ -345,12 +345,12 @@ test("buildHostAnalyticsFromRecords totals beyond the top event slice", () => {
   });
 
   const response = buildHostAnalyticsFromRecords({
-    clubs: [{
+    organizers: [{
       id: "club-1",
       data: {name: "Saket Run Club"},
     }],
     events,
-    martRows: [...eventRows, clubReviewRow],
+    martRows: [...eventRows, organizerReviewRow],
   } as unknown as AnalyticsRecords, range, new Date(
     "2026-06-18T12:00:00.000Z"
   ));
@@ -403,7 +403,7 @@ function metric(
 
 function records(): AnalyticsRecords {
   return {
-    clubs: [{
+    organizers: [{
       id: "club-1",
       data: {
         name: "Saket Run Club",
@@ -412,7 +412,7 @@ function records(): AnalyticsRecords {
     events: [{
       id: "event-1",
       data: {
-        clubId: "club-1",
+        organizerId: "club-1",
         status: "completed",
         startTime: "2026-06-12T01:30:00.000Z",
         capacityLimit: 10,
@@ -428,8 +428,8 @@ function records(): AnalyticsRecords {
     }],
     martRows: [{
       date: "2026-06-12",
-      clubId: "club-1",
-      clubName: "Saket Run Club",
+      organizerId: "club-1",
+      organizerName: "Saket Run Club",
       eventId: "event-1",
       eventTitle: "Social run · 2026-06-12",
       eventStartTime: "2026-06-12T01:30:00.000Z",
@@ -500,8 +500,8 @@ function fakeTimestamp(date: Date): FirebaseFirestore.Timestamp {
 function martRow(overrides: Record<string, unknown> = {}) {
   return {
     date: "2026-06-12",
-    clubId: "club-1",
-    clubName: "Saket Run Club",
+    organizerId: "club-1",
+    organizerName: "Saket Run Club",
     eventId: "event-1",
     eventTitle: "Social run · 2026-06-12",
     eventStartTime: "2026-06-12T01:30:00.000Z",
@@ -700,7 +700,7 @@ test("external-only organizer retains presence without native report links",
       fixture.request("owner", {organizerId: "org"}),
       {...fixture.deps, bigQuerySource: {
         loadRows: async () => [martRow({
-          clubId: "org", eventId: "external-only", listingViews: 12,
+          organizerId: "org", eventId: "external-only", listingViews: 12,
           eventViews: 9, outboundBookingClicks: 4, bookedCount: 0,
           paymentCompletedCount: 0, grossRevenueMinor: 0,
         })],
@@ -718,20 +718,20 @@ test("external-only organizer retains presence without native report links",
 test("owner link clicks roll up by link, with labels and traffic sources",
   () => {
     const input = records();
-    input.clubs[0].data = {...input.clubs[0].data, ownerLinks: [
+    input.organizers[0].data = {...input.organizers[0].data, ownerLinks: [
       {id: "tickets", label: "Tickets", subtitle: null,
         url: "https://www.district.in/saket", icon: "tickets", pinned: false,
         showUntil: null},
-    ]} as AnalyticsRecords["clubs"][number]["data"];
+    ]} as AnalyticsRecords["organizers"][number]["data"];
     input.martRows = [martRow({linkClicks: 7})];
     input.linkRows = [
-      {clubId: "club-1", linkId: "tickets", trafficSource: "instagram",
+      {organizerId: "club-1", linkId: "tickets", trafficSource: "instagram",
         linkClicks: 4},
-      {clubId: "club-1", linkId: "tickets", trafficSource: "qr",
+      {organizerId: "club-1", linkId: "tickets", trafficSource: "qr",
         linkClicks: 1},
-      {clubId: "club-1", linkId: "removed", trafficSource: "made_up",
+      {organizerId: "club-1", linkId: "removed", trafficSource: "made_up",
         linkClicks: 2},
-      {clubId: "club-1", linkId: "silent", trafficSource: "direct",
+      {organizerId: "club-1", linkId: "silent", trafficSource: "direct",
         linkClicks: 0},
     ];
     const range = resolveAnalyticsRange(

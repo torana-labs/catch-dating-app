@@ -122,12 +122,12 @@ test("checked-in heartbeat is server-owned and returns policy", async () => {
   const firestore = new FakeFirestore();
   const attendedAt = {toMillis: () => 1_000};
   firestore.docs.set("events/event-1", {
-    clubId: "club-1",
+    organizerId: "club-1",
     status: "active",
   });
   firestore.docs.set("eventParticipations/event-1_guest-1", {
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid: "guest-1",
     status: "attended",
     attendedAt,
@@ -155,7 +155,6 @@ test("checked-in heartbeat is server-owned and returns policy", async () => {
     firestore.docs.get("eventSuccessPresence/event-1_guest-1"),
     {
       eventId: "event-1",
-      clubId: "club-1",
       organizerId: "club-1",
       uid: "guest-1",
       surface: "flutter",

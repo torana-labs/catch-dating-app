@@ -138,7 +138,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["hostDiscoveryRun", "seedClub", "userReportedSearchResult", "manualNote"]
+          "enum": ["hostDiscoveryRun", "seedOrganizer", "userReportedSearchResult", "manualNote"]
         },
         "ref": {"type": ["string", "null"], "maxLength": 240},
         "description": {"type": "string", "minLength": 1, "maxLength": 400}

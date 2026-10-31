@@ -33,10 +33,10 @@ class ReviewsRepository {
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
-  Stream<List<Review>> watchReviewsForOrganizer(String clubId) =>
+  Stream<List<Review>> watchReviewsForOrganizer(String organizerId) =>
       withBackendErrorStream(
         () => _reviewsRef
-            .where('organizerId', isEqualTo: clubId)
+            .where('organizerId', isEqualTo: organizerId)
             .orderBy('createdAt', descending: true)
             .limit(ReadLimitPolicy.historyPage)
             .snapshots()
@@ -80,12 +80,12 @@ class ReviewsRepository {
 
   Future<CursorPage<Review, DocumentSnapshot<Review>>>
   fetchOrganizerReviewsPage({
-    required String clubId,
+    required String organizerId,
     DocumentSnapshot<Review>? startAfter,
     int limit = ReadLimitPolicy.historyPage,
   }) => _fetchReviewsPage(
     _reviewsRef
-        .where('organizerId', isEqualTo: clubId)
+        .where('organizerId', isEqualTo: organizerId)
         .orderBy('createdAt', descending: true),
     startAfter: startAfter,
     limit: limit,
@@ -279,8 +279,8 @@ ReviewsRepository reviewsRepository(Ref ref) => ReviewsRepository(
 );
 
 @riverpod
-Stream<List<Review>> watchReviewsForOrganizer(Ref ref, String clubId) =>
-    ref.watch(reviewsRepositoryProvider).watchReviewsForOrganizer(clubId);
+Stream<List<Review>> watchReviewsForOrganizer(Ref ref, String organizerId) =>
+    ref.watch(reviewsRepositoryProvider).watchReviewsForOrganizer(organizerId);
 
 @riverpod
 Stream<List<Review>> watchReviewsForEvent(Ref ref, String eventId) =>

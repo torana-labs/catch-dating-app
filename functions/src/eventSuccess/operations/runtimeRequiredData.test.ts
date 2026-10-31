@@ -19,18 +19,17 @@ async function harness() {
     organizerId: "organizer-1"};
   const attendeeId = "attendee-1";
   const uid = "guest-1";
-  const event = {...fixture("event_doc"), clubId: context.organizerId,
-    organizerId: context.organizerId, startTime: stamp(now - 60_000),
+  const event = {...fixture("event_doc"), organizerId: context.organizerId,
+    startTime: stamp(now - 60_000),
     endTime: stamp(now + 3_600_000), status: "active",
     runtimeAccess: {enabled: true,
       publicRuntimeId: "runtime_123456789012345678901234",
       walkInPolicy: "deny", termsVersion: "event-runtime-v1"}};
   const plan = {...fixture("event_success_plan_doc"),
-    eventId: context.eventId, clubId: context.organizerId,
-    organizerId: context.organizerId};
+    eventId: context.eventId, organizerId: context.organizerId};
   const attendee = {...fixture("event_attendee_doc"),
-    eventId: context.eventId, clubId: context.organizerId,
-    organizerId: context.organizerId, status: "registered", linkedUid: uid,
+    eventId: context.eventId, organizerId: context.organizerId,
+    status: "registered", linkedUid: uid,
     checkedInAt: null, checkedInBy: null, linkedAt: stamp(now - 60_000),
     accountabilityResolution: null,
     accountabilityResolvedForCheckInAt: null,
@@ -39,7 +38,7 @@ async function harness() {
     createdAt: stamp(now - 120_000), updatedAt: stamp(now - 60_000),
     registeredAt: stamp(now - 120_000)};
   const participant = {eventId: context.eventId,
-    clubId: context.organizerId, organizerId: context.organizerId, uid,
+    organizerId: context.organizerId, uid,
     eventAttendeeId: attendeeId, identityVersion: 1,
     claimMethod: "verifiedPhone", accessStatus: "needsInput",
     requiredFieldIds: ["displayName", "paceBand"],

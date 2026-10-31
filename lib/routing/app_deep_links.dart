@@ -7,9 +7,9 @@ const _deepLinkHost = Brand.webDomain;
 class AppDeepLinks {
   const AppDeepLinks._();
 
-  static Uri organizer(String clubId) => _httpsRoute(
+  static Uri organizer(String organizerId) => _httpsRoute(
     Routes.organizerDetailScreen.path,
-    pathParameters: {'clubId': clubId},
+    pathParameters: {'organizerId': organizerId},
   );
 
   static Uri eventInvite(String inviteToken) => Uri(
@@ -19,13 +19,13 @@ class AppDeepLinks {
   );
 
   static Uri event({
-    required String clubId,
+    required String organizerId,
     required String eventId,
     String? inviteCode,
     String? inviteLinkId,
   }) => _httpsRoute(
     Routes.eventDetailScreen.path,
-    pathParameters: {'clubId': clubId, 'eventId': eventId},
+    pathParameters: {'organizerId': organizerId, 'eventId': eventId},
     queryParameters: _eventQuery(
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
@@ -50,7 +50,7 @@ class AppDeepLinks {
       );
 
   static String inAppEventPath({
-    required String clubId,
+    required String organizerId,
     required String eventId,
     String? inviteCode,
     String? inviteLinkId,
@@ -61,7 +61,7 @@ class AppDeepLinks {
       role.isHost
           ? Routes.hostAppEventDetailScreen.path
           : Routes.eventDetailScreen.path,
-      pathParameters: {'clubId': clubId, 'eventId': eventId},
+      pathParameters: {'organizerId': organizerId, 'eventId': eventId},
       queryParameters: _eventQuery(
         inviteCode: inviteCode,
         inviteLinkId: inviteLinkId,

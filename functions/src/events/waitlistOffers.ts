@@ -220,7 +220,7 @@ export async function createEventWaitlistOffersHandler(
         await Promise.all([
           hasBlockingRelationshipInTransaction(tx, db, uid, activePeerIds),
           hasEventCommunityMembership({db, tx,
-            organizerId: event.organizerId ?? event.clubId, uid, policy,
+            organizerId: event.organizerId, uid, policy,
             nowMillis}),
         ]) : [false, false];
       return {uid, participationRef, participationSnap, userSnap, offerRef,
@@ -314,9 +314,7 @@ export async function createEventWaitlistOffersHandler(
       const offerId = eventWaitlistOfferId(eventId, row.uid);
       tx.set(row.offerRef, {
         eventId,
-        clubId: event.clubId,
-
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
         uid: row.uid,
         cohortAtOffer,
         status: "active" satisfies WaitlistOfferStatus,
@@ -500,7 +498,7 @@ export async function acceptEventWaitlistOfferHandler(
       cohortId,
       roster,
       hasActiveCommunityMembership: await hasEventCommunityMembership({
-        db, tx, organizerId: event.organizerId ?? event.clubId, uid, policy,
+        db, tx, organizerId: event.organizerId, uid, policy,
         nowMillis,
       }),
       hasValidInvite: true,
@@ -778,7 +776,7 @@ function queueOfferNotification(params: {
     body: copy.body,
     createdAt: params.createdAt,
     eventId: params.eventId,
-    clubId: params.event.clubId,
+    organizerId: params.event.organizerId,
   });
   if (
     params.user.fcmToken &&
@@ -790,7 +788,7 @@ function queueOfferNotification(params: {
       body: copy.body,
       type: params.type,
       eventId: params.eventId,
-      clubId: params.event.clubId,
+      organizerId: params.event.organizerId,
     });
   }
 }

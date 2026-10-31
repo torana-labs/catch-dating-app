@@ -186,7 +186,6 @@ function attendee(
   const timestamp = admin.firestore.Timestamp.fromMillis(day);
   return {
     eventId: "event-1",
-    clubId: "organizer-1",
     organizerId: "organizer-1",
     displayName: "Asha",
     searchName: "asha",

@@ -16,7 +16,7 @@ describe("Admin route contract", () => {
   it.each([
     ["/safety/reports%2Freport-1", "safety", "targetPath", "reports/report-1"],
     ["/access/user-1/", "access", "applicationUid", "user-1"],
-    ["/organizers/afterfly", "organizers", "clubId", "afterfly"],
+    ["/organizers/afterfly", "organizers", "organizerId", "afterfly"],
     ["/organizers/claims/request-1", "organizers", "claimRequestId", "request-1"],
     ["/events/event-1", "events", "eventId", "event-1"],
     ["/events/external/candidate-1", "events", "externalEventId", "candidate-1"],
@@ -34,7 +34,7 @@ describe("Admin route contract", () => {
   });
 
   it.each([
-    ["/organizers/claims", "organizerWorkspace", "claims", "clubId"],
+    ["/organizers/claims", "organizerWorkspace", "claims", "organizerId"],
     ["/events/readiness/", "eventWorkspace", "directory", "eventId"],
     ["/events/external", "eventWorkspace", "external", "eventId"],
     ["/finance/commercial-terms", "financeWorkspace", "commercial-terms", "financeIssueId"],

@@ -187,12 +187,12 @@ export async function deleteAccountEventParticipations(params: {
         }
         return;
       }
-      if (!event || !ID.test(event.clubId) ||
+      if (!event || !ID.test(event.organizerId) ||
           event.organizerId !== undefined &&
-          event.organizerId !== event.clubId ||
-          current && (current.clubId !== event.clubId ||
+          event.organizerId !== event.organizerId ||
+          current && (current.organizerId !== event.organizerId ||
             current.organizerId !== undefined &&
-            current.organizerId !== event.clubId)) {
+            current.organizerId !== event.organizerId)) {
         unavailable("Ready event or participation tenant is malformed.");
       }
       const ledgerTx = new FirestoreSeatTransaction(db, tx);
@@ -203,7 +203,7 @@ export async function deleteAccountEventParticipations(params: {
         unavailable("Ready seat ledger is unavailable.");
       }
       const policy = deriveEventSeatPolicy(event);
-      if (policy.organizerId !== event.clubId ||
+      if (policy.organizerId !== event.organizerId ||
           policy.capacity !== ledger.capacity ||
           policy.policyHash !== ledger.policyHash ||
           policy.policyVersion !== ledger.policyVersion) {
@@ -213,7 +213,7 @@ export async function deleteAccountEventParticipations(params: {
       let retainHostSeat = false;
       const catchRows: FirebaseFirestore.QueryDocumentSnapshot[] = [];
       const identity = await new FirestoreSeatIdentityAuthority().resolve({
-        db, tx, eventId, organizerId: event.clubId,
+        db, tx, eventId, organizerId: event.organizerId,
         subject: {kind: "verifiedUid", uid},
       });
       if (!identity) unavailable("Current Catch seat is unresolved.");
@@ -249,7 +249,7 @@ export async function deleteAccountEventParticipations(params: {
       }
       for (const guest of [...independent, ...catchRows]) {
         const hostIdentity = await new FirestoreSeatIdentityAuthority()
-          .resolve({db, tx, eventId, organizerId: event.clubId,
+          .resolve({db, tx, eventId, organizerId: event.organizerId,
             subject: {kind: "importAttendee",
               attendeeId: guest.id}});
         if (!hostIdentity || hostIdentity.key !== identity.key ||
@@ -260,7 +260,7 @@ export async function deleteAccountEventParticipations(params: {
       retainHostSeat = independent.length === 1;
       const reservation = await ledgerTx.reservation(eventId, identity.key);
       assertCurrentReadySeatSnapshot({event, eventId,
-        organizerId: event.clubId, identity, ledger, reservation});
+        organizerId: event.organizerId, identity, ledger, reservation});
       if (reservation?.checkoutHold || reservation?.temporaryHold) {
         unavailable("Finish payment reconciliation before deleting account.");
       }

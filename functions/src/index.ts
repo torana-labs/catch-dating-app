@@ -554,10 +554,10 @@ export {
 export {
   adminGetOrganizerClaimRequestDetails,
   adminListOrganizerClaimRequests,
-} from "./admin/clubClaimReview";
+} from "./admin/organizerClaimReview";
 export {
   adminSetOrganizerIndexStatus,
-} from "./admin/clubIndexing";
+} from "./admin/organizerIndexing";
 export {
   adminListCrossPathsShowcaseCandidates,
   adminSetCrossPathsShowcaseEligibility,
@@ -566,7 +566,7 @@ export {
   adminGetOrganizerDetails,
   adminListOrganizerDetails,
   adminUpdateOrganizerDetails,
-} from "./admin/clubDetails";
+} from "./admin/organizerDetails";
 export {
   adminGetEventDetails,
   adminListEventDetails,

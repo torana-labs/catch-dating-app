@@ -94,7 +94,7 @@ class FakeQuery {
 
 function event(start: number, patch: Row = {}): Row {
   return {
-    clubId: "org1", organizerId: "org1", name: "Mixer",
+    organizerId: "org1", name: "Mixer",
     startTime: Timestamp.fromMillis(start),
     status: "active", publicationState: "private", setupRevision: 1,
     publicRegistrationEnabled: false,
@@ -138,7 +138,7 @@ test("manager sees only upcoming private whitelisted summaries", async () => {
   store.rows.set("events/public", event(NOW + 1000,
     {publicationState: "published"}));
   store.rows.set("events/other", event(NOW + 1000,
-    {organizerId: "org2", clubId: "org2"}));
+    {organizerId: "org2"}));
   store.rows.set("events/past", event(NOW - 1000));
   const result = await list(store, {organizerId: "org1"});
   assert.deepEqual(result.events.map((row) => row.eventId), ["b"]);
@@ -248,7 +248,7 @@ for (const scope of ["past", "cancelled"] as const) {
     }
     store.rows.set("events/upcoming", event(NOW + 1000));
     store.rows.set("events/other", event(NOW - 1000,
-      {organizerId: "org2", clubId: "org2"}));
+      {organizerId: "org2"}));
     const first = await list(store, {organizerId: "org1", scope, limit: 1});
     const second = await list(store, {organizerId: "org1", scope, limit: 1,
       cursor: first.nextCursor!});

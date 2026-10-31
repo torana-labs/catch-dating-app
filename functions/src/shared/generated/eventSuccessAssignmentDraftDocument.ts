@@ -9,7 +9,6 @@ import type {EventSuccessAssignmentDocument} from "./eventSuccessAssignmentDocum
  */
 export interface EventSuccessAssignmentDraftDocument {
   eventId: string;
-  clubId: string;
   organizerId: string;
   uid: string;
   moduleId: "guided_rotations";

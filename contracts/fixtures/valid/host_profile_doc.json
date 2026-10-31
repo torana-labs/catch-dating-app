@@ -4,7 +4,7 @@
   "roleTitle": "Community Lead",
   "status": "active",
   "verified": true,
-  "linkedClubIds": ["club-1"],
+  "linkedOrganizerIds": ["club-1"],
   "createdAt": {
     "_seconds": 1778803200,
     "_nanoseconds": 0

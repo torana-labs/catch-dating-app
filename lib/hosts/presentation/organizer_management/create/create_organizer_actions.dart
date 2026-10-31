@@ -42,7 +42,7 @@ extension _CreateOrganizerActions on _CreateOrganizerScreenState {
   void _seedInitialMedia() {
     _profileImage = widget.initialProfileImage;
     if (widget.initialPickedOrganizerPhotos.isEmpty) return;
-    _clubPhotos.addAll(
+    _organizerPhotos.addAll(
       widget.initialPickedOrganizerPhotos.map(
         (photo) =>
             _PickedOrganizerPhotoDraft(_nextPickedOrganizerPhotoId++, photo),
@@ -75,7 +75,7 @@ extension _CreateOrganizerActions on _CreateOrganizerScreenState {
       return;
     }
     _setLocalState(() {
-      _clubPhotos.addAll(
+      _organizerPhotos.addAll(
         photos.map(
           (photo) =>
               _PickedOrganizerPhotoDraft(_nextPickedOrganizerPhotoId++, photo),
@@ -86,9 +86,9 @@ extension _CreateOrganizerActions on _CreateOrganizerScreenState {
   }
 
   void _removeOrganizerPhoto(int index) {
-    if (index < 0 || index >= _clubPhotos.length) return;
+    if (index < 0 || index >= _organizerPhotos.length) return;
     _setLocalState(() {
-      _clubPhotos.removeAt(index);
+      _organizerPhotos.removeAt(index);
       _organizerPhotosTouched = true;
     });
   }
@@ -97,13 +97,13 @@ extension _CreateOrganizerActions on _CreateOrganizerScreenState {
     if (fromIndex == toIndex ||
         fromIndex < 0 ||
         toIndex < 0 ||
-        fromIndex >= _clubPhotos.length ||
-        toIndex >= _clubPhotos.length) {
+        fromIndex >= _organizerPhotos.length ||
+        toIndex >= _organizerPhotos.length) {
       return;
     }
     _setLocalState(() {
-      final moved = _clubPhotos.removeAt(fromIndex);
-      _clubPhotos.insert(toIndex, moved);
+      final moved = _organizerPhotos.removeAt(fromIndex);
+      _organizerPhotos.insert(toIndex, moved);
       _organizerPhotosTouched = true;
     });
   }
@@ -342,12 +342,12 @@ extension _CreateOrganizerActions on _CreateOrganizerScreenState {
   }
 
   List<OrderedPhotoPreview> get _organizerPhotoPreviews => [
-    for (final photo in _clubPhotos) photo.preview,
+    for (final photo in _organizerPhotos) photo.preview,
   ];
 
   List<OrganizerPhotoInput>? get _organizerPhotoInputsForSubmit {
     if (!_organizerPhotosTouched) return null;
-    return [for (final photo in _clubPhotos) photo.input];
+    return [for (final photo in _organizerPhotos) photo.input];
   }
 
   bool get _requestPending =>

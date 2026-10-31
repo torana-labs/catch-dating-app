@@ -503,7 +503,6 @@ function event(): FakeData {
     status: "active",
     crossPathsDiscoveryEnabled: true,
     discoveryMarketId: "in-mh-mumbai",
-    clubId: "organizer-1",
     organizerId: "organizer-1",
     capacityLimit: 20,
     priceInPaise: 0,

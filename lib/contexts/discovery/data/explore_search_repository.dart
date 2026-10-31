@@ -57,7 +57,7 @@ class ExploreSearchResult {
   factory ExploreSearchResult.fromCallableData(Object? data) {
     if (data case final Map<Object?, Object?> map) {
       return ExploreSearchResult(
-        organizerIds: _stringList(map['organizerIds'] ?? map['clubIds']),
+        organizerIds: _stringList(map['organizerIds'] ?? map['organizerIds']),
         eventIds: _stringList(map['eventIds']),
       );
     }

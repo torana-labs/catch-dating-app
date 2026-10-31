@@ -857,7 +857,7 @@ async function campaignContext(
         template :
         null,
     event:
-      event && (event.organizerId ?? event.clubId) === organizerId ?
+      event && (event.organizerId) === organizerId ?
         event :
         null,
     summary: summaryForOrganizer ? {
@@ -1496,7 +1496,7 @@ function createCampaignInviteLink(params: {
   event: EventDocument;
   now: FirebaseFirestore.Timestamp;
 }): void {
-  const organizerId = params.event.organizerId ?? params.event.clubId;
+  const organizerId = params.event.organizerId;
   const linkRef = params.db
     .collection("eventInviteLinks")
     .doc(params.inviteLinkId);
@@ -1505,7 +1505,6 @@ function createCampaignInviteLink(params: {
     .doc(params.inviteLinkId);
   params.tx.create(linkRef, {
     eventId: params.campaign.eventId,
-    clubId: params.event.clubId,
     organizerId,
     hostUid: params.hostUid,
     label: params.campaign.name.slice(0, 80),

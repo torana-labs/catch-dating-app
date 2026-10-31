@@ -7,7 +7,6 @@
  */
 export interface RecordOrganizerAnalyticsEventCallablePayload {
   organizerId: string;
-  clubId?: string;
   eventId?: string | null;
   eventName:
     | "listingView"

@@ -10,7 +10,7 @@ test("buildLocationMarketBackfillPlan repairs canonical market fields", async ()
     config: {
       cities: {version: 1, cityNames: ["mumbai"]},
     },
-    clubs: {
+    organizers: {
       "club-1": {
         location: "mumbai",
         publicPage: {citySlug: "mumbai"},
@@ -31,10 +31,10 @@ test("buildLocationMarketBackfillPlan repairs canonical market fields", async ()
 
   const plan = await buildLocationMarketBackfillPlan(firestore);
 
-  const clubRepair = plan.repairs.find((repair) =>
-    repair.path === "clubs/club-1"
+  const organizerRepair = plan.repairs.find((repair) =>
+    repair.path === "organizers/club-1"
   );
-  assert.deepEqual(clubRepair.data, {
+  assert.deepEqual(organizerRepair.data, {
     location: "in-mh-mumbai",
     locationCityId: "in-mh-mumbai",
     locationMarketId: "in-mh-mumbai",
@@ -53,7 +53,7 @@ test("buildLocationMarketBackfillPlan repairs canonical market fields", async ()
     repair.data.city === "in-mp-indore"
   ));
   assert.deepEqual(plan.summary.warnings, [
-    "clubs/club-2 has no resolvable location market.",
+    "organizers/club-2 has no resolvable location market.",
     "publicProfiles/user-3: unresolvable city \"unknown\"",
   ]);
 });
@@ -61,7 +61,7 @@ test("buildLocationMarketBackfillPlan repairs canonical market fields", async ()
 test("applyLocationMarketBackfillPlan writes set and update repairs", async () => {
   const firestore = fakeFirestore({
     config: {},
-    clubs: {"club-1": {location: "mumbai"}},
+    organizers: {"club-1": {location: "mumbai"}},
     users: {},
     publicProfiles: {},
   });
@@ -70,7 +70,7 @@ test("applyLocationMarketBackfillPlan writes set and update repairs", async () =
     repairs: [
       {path: "config/cities", op: "set", data: {version: 2}},
       {
-        path: "clubs/club-1",
+        path: "organizers/club-1",
         op: "update",
         data: {
           location: "in-mh-mumbai",
@@ -81,7 +81,7 @@ test("applyLocationMarketBackfillPlan writes set and update repairs", async () =
   });
 
   assert.deepEqual(firestore.data.config.cities, {version: 2});
-  assert.deepEqual(firestore.data.clubs["club-1"], {
+  assert.deepEqual(firestore.data.organizers["club-1"], {
     location: "in-mh-mumbai",
     publicPage: {citySlug: "mumbai"},
   });
@@ -90,7 +90,7 @@ test("applyLocationMarketBackfillPlan writes set and update repairs", async () =
 test("buildLocationMarketBackfillPlan can scope repairs to clubs", async () => {
   const firestore = fakeFirestore({
     config: {cities: {version: 1}},
-    clubs: {"club-1": {location: "indore"}},
+    organizers: {"club-1": {location: "indore"}},
     users: {"user-1": {city: "indore"}},
     publicProfiles: {"user-1": {city: "indore"}},
   });
@@ -100,9 +100,9 @@ test("buildLocationMarketBackfillPlan can scope repairs to clubs", async () => {
     includeProfiles: false,
   });
 
-  assert.deepEqual(plan.repairs.map((repair) => repair.path), ["clubs/club-1"]);
+  assert.deepEqual(plan.repairs.map((repair) => repair.path), ["organizers/club-1"]);
   assert.equal(plan.summary.configChecked, false);
-  assert.equal(plan.summary.clubsScanned, 1);
+  assert.equal(plan.summary.organizersScanned, 1);
   assert.equal(plan.summary.usersScanned, 0);
   assert.equal(plan.summary.publicProfilesScanned, 0);
 });

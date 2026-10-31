@@ -31,7 +31,7 @@ const activeParticipationStatuses = new Set(["signedUp", "attended"]);
 
 interface EventSuccessFeedbackDocument {
   eventId: string;
-  clubId: string;
+  organizerId: string;
   uid: string;
   welcomeRating: number;
   structureRating: number;
@@ -44,7 +44,6 @@ interface EventSuccessFeedbackDocument {
 
 export interface EventSuccessScorecardDocument {
   eventId: string;
-  clubId: string;
   organizerId: string;
   bookedCount: number;
   checkedInCount: number;
@@ -176,7 +175,8 @@ export async function refreshEventSuccessScorecard(
   // Host inquiries may carry event provenance, but they are support threads,
   // not attendee-to-attendee connections. Keep legacy dating matches whose
   // conversationType predates the discriminator while excluding every
-  // clubHostInquiry before the shared scorecard, funnel, and invite-link paths.
+  // organizerHostInquiry before the shared scorecard, funnel, and
+  // invite-link paths.
   const matches = matchesSnap.docs
     .map((doc) => doc.data() as MatchDocument)
     .filter(isDatingMatch);
@@ -283,9 +283,7 @@ export function buildEventSuccessScorecard(params: {
   });
   return {
     eventId,
-    clubId: event.clubId,
-
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     bookedCount: event.bookedCount ?? 0,
     checkedInCount,
     feedbackCount,
@@ -474,8 +472,8 @@ async function loadRepeatAttendeeCount(params: {
   ));
   if (activeUids.length === 0) return 0;
 
-  const {clubId} = params.event;
-  if (typeof clubId !== "string" || clubId.length === 0) return 0;
+  const {organizerId} = params.event;
+  if (typeof organizerId !== "string" || organizerId.length === 0) return 0;
   const statuses = Array.from(activeParticipationStatuses);
 
   // Ask, per current attendee, whether they have any other active
@@ -491,7 +489,7 @@ async function loadRepeatAttendeeCount(params: {
         .get();
       return snap.docs.some((doc) => {
         const participation = doc.data() as Partial<EventParticipationDocument>;
-        return participation.clubId === clubId &&
+        return participation.organizerId === organizerId &&
           participation.eventId !== params.eventId;
       });
     })
@@ -1131,7 +1129,7 @@ export async function writeEventSafetyReportIfNeeded(
     .doc(feedbackId)
     .set({
       eventId: feedback.eventId,
-      clubId: feedback.clubId,
+      organizerId: feedback.organizerId,
       reporterUserId: feedback.uid,
       feedbackId,
       source: "event_success_feedback",

@@ -22,7 +22,9 @@ Future<void> runHostEventEntryFlow({
   switch (selection.intent) {
     case HostEventEntryIntent.resumeDraft:
       final draft = selection.draft;
-      if (draft == null || draft.clubId != organizer.id || !context.mounted) {
+      if (draft == null ||
+          draft.organizerId != organizer.id ||
+          !context.mounted) {
         return;
       }
       await _openCreateEvent(
@@ -54,7 +56,7 @@ Future<void> runHostEventEntryFlow({
       if (state.organizerId != organizer.id || !context.mounted) return;
       await context.pushNamed(
         Routes.hostCreateProgramScreen.name,
-        pathParameters: {'clubId': organizer.id},
+        pathParameters: {'organizerId': organizer.id},
       );
     case HostEventEntryIntent.resumePrivateEvent:
       final eventId = selection.savedEventId;
@@ -79,7 +81,7 @@ Future<void> _openCreateEvent({
 }) async {
   await context.pushNamed(
     Routes.hostCreateEventScreen.name,
-    pathParameters: {'clubId': organizer.id},
+    pathParameters: {'organizerId': organizer.id},
     extra: HostCreateEventRouteArguments(
       initialOrganizer: organizer,
       initialDraft: initialDraft,
@@ -89,7 +91,7 @@ Future<void> _openCreateEvent({
     ),
   );
   if (!context.mounted || isCurrent?.call() == false) return;
-  ref.invalidate(organizerEventDraftsProvider(clubId: organizer.id));
+  ref.invalidate(organizerEventDraftsProvider(organizerId: organizer.id));
 }
 
 Future<void> _openRepeatEvent({
@@ -103,7 +105,7 @@ Future<void> _openRepeatEvent({
   final prefill = CreateEventPrefill.repeat(event: event, createdAt: createdAt);
   await context.pushNamed(
     Routes.hostCreateEventScreen.name,
-    pathParameters: {'clubId': organizer.id},
+    pathParameters: {'organizerId': organizer.id},
     extra: HostCreateEventRouteArguments(
       initialOrganizer: organizer,
       initialPrefill: prefill,
@@ -111,5 +113,5 @@ Future<void> _openRepeatEvent({
     ),
   );
   if (!context.mounted || isCurrent?.call() == false) return;
-  ref.invalidate(organizerEventDraftsProvider(clubId: organizer.id));
+  ref.invalidate(organizerEventDraftsProvider(organizerId: organizer.id));
 }

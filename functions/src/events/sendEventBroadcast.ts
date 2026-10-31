@@ -64,7 +64,7 @@ interface DeliveryEvidence {
 
 interface BroadcastReceiptData {
   eventId?: string;
-  clubId?: string;
+  organizerId?: string;
   actorUid?: string;
   audience?: BroadcastAudience;
   title?: string;
@@ -119,7 +119,7 @@ interface BroadcastClaim {
   isNewLogicalRequest: boolean;
   title: string;
   event: EventDocument;
-  club: EventOrganizerDocument;
+  organizer: EventOrganizerDocument;
   targetUids: string[];
   priorDeliveries: Record<string, DeliveryEvidence>;
   completedAt?: FirebaseFirestore.Timestamp;
@@ -164,7 +164,7 @@ export async function sendEventBroadcastHandler(
   if (claim.replay) {
     const contactIdsByUid = await resolveBroadcastContactIds({
       db,
-      organizerId: claim.event.organizerId ?? claim.event.clubId,
+      organizerId: claim.event.organizerId,
       targetUids: claim.targetUids,
     });
     await ensureReplayBroadcastSummary({
@@ -211,7 +211,7 @@ export async function sendEventBroadcastHandler(
     }
     const contactIdsByUid = await resolveBroadcastContactIds({
       db,
-      organizerId: claim.event.organizerId ?? claim.event.clubId,
+      organizerId: claim.event.organizerId,
       targetUids: claim.targetUids,
     });
     return await finalizeBroadcast({
@@ -287,8 +287,8 @@ async function claimBroadcast(params: {
     }
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
     const organizerSnap = await tx.get(eventOrganizerRef(params.db, event));
-    const club = requireEventOrganizer(organizerSnap, event);
-    if (!isEventOrganizerManager(club, event, params.actorUid)) {
+    const organizer = requireEventOrganizer(organizerSnap, event);
+    if (!isEventOrganizerManager(organizer, event, params.actorUid)) {
       throw new HttpsError(
         "permission-denied",
         "Only an organizer manager can send a broadcast."
@@ -309,7 +309,7 @@ async function claimBroadcast(params: {
         "Broadcasts are available only before an active event ends."
       );
     }
-    const title = `Update from ${club.name}`.slice(0, 160);
+    const title = `Update from ${organizer.name}`.slice(0, 160);
     if (moderateText(title).action !== "allow") {
       throw new HttpsError(
         "failed-precondition",
@@ -331,7 +331,7 @@ async function claimBroadcast(params: {
           isNewLogicalRequest: false,
           title,
           event,
-          club,
+          organizer,
           targetUids: parseTargetUids(existing.targetUids),
           priorDeliveries: existing.deliveries ?? {},
           completedAt: existing.completedAt ?? existing.updatedAt ??
@@ -374,9 +374,7 @@ async function claimBroadcast(params: {
 
     const leasePatch = {
       eventId: params.data.eventId,
-      clubId: event.clubId,
-
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       actorUid: params.actorUid,
       audience: params.data.audience,
       title,
@@ -413,7 +411,7 @@ async function claimBroadcast(params: {
       isNewLogicalRequest: existing === undefined,
       title,
       event,
-      club,
+      organizer,
       targetUids,
       priorDeliveries: existing?.deliveries ?? {},
     };
@@ -588,7 +586,7 @@ function broadcastSummary(params: {
       "available" : "failed";
   }
   return {
-    organizerId: params.claim.event.organizerId ?? params.claim.event.clubId,
+    organizerId: params.claim.event.organizerId,
     broadcastId: params.claim.broadcastId,
     eventId: params.claim.eventId,
     eventName: broadcastEventName(params.claim.event),
@@ -816,9 +814,9 @@ async function deliverToRecipient(params: {
       body: params.data.body,
       createdAt: params.deps.serverTimestamp(),
       eventId: params.data.eventId,
-      clubId: params.claim.event.clubId,
+      organizerId: params.claim.event.organizerId,
       actorUid: params.actorUid,
-      actorName: params.claim.club.name,
+      actorName: params.claim.organizer.name,
     });
     if (creation === "recipient-deleted") {
       return {
@@ -867,7 +865,7 @@ async function deliverToRecipient(params: {
         body: params.data.body,
         type: "eventUpdated",
         eventId: params.data.eventId,
-        clubId: params.claim.event.clubId,
+        organizerId: params.claim.event.organizerId,
       });
       return {
         key,

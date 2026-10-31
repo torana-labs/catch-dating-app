@@ -7,8 +7,7 @@
  */
 export interface EventSafetyReportDocument {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   reporterUserId: string;
   feedbackId: string;
   source: "event_success_feedback";

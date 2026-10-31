@@ -1,9 +1,9 @@
 part of '../host_operations_screen.dart';
 
 class HostOrganizerTeamScreen extends ConsumerStatefulWidget {
-  const HostOrganizerTeamScreen({super.key, required this.clubId});
+  const HostOrganizerTeamScreen({super.key, required this.organizerId});
 
-  final String clubId;
+  final String organizerId;
 
   @override
   ConsumerState<HostOrganizerTeamScreen> createState() =>
@@ -120,7 +120,7 @@ class _HostOrganizerTeamScreenState
     }
     final organizers = organizersState.value ?? const <Organizer>[];
     final organizer = organizers
-        .where((item) => item.id == widget.clubId)
+        .where((item) => item.id == widget.organizerId)
         .firstOrNull;
     if (organizer == null) {
       return CatchRouteScaffold(
@@ -311,7 +311,7 @@ class _HostOrganizerTeamScreenState
       context.goNamed(
         Routes.hostOrganizerScreen.name,
         queryParameters: {
-          'clubId': navigation.organizer.id,
+          'organizerId': navigation.organizer.id,
           'tab': HostOrganizerTab.edit.name,
         },
       );
@@ -319,7 +319,7 @@ class _HostOrganizerTeamScreenState
     }
     context.pushNamed(
       Routes.hostOrganizerDetailScreen.name,
-      pathParameters: {'clubId': navigation.organizer.id},
+      pathParameters: {'organizerId': navigation.organizer.id},
       extra: navigation.organizer,
     );
   }
@@ -332,7 +332,7 @@ class _HostOrganizerTeamScreenState
     context.goNamed(
       Routes.hostOrganizerScreen.name,
       queryParameters: {
-        'clubId': widget.clubId,
+        'organizerId': widget.organizerId,
         'tab': HostOrganizerTab.edit.name,
       },
     );

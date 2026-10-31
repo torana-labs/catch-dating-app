@@ -349,7 +349,7 @@ void runCreateEventPhotoRecoveryIntegrationTests() {
             updatedAt: time,
           ),
       ];
-      final base = buildEvent(id: 'committed-7', clubId: 'club-7');
+      final base = buildEvent(id: 'committed-7', organizerId: 'club-7');
       Event event() =>
           base.copyWith(eventPhotos: photos, photoUrl: photos.first.url);
       Map<String, Object?> payload() => boundedEventPhotoAttachmentPayload(
@@ -506,7 +506,7 @@ class _RecoveryHarness {
   final _RecordingEventDraftRepository drafts;
   final event = buildEvent(
     id: 'committed-7',
-    clubId: 'club-7',
+    organizerId: 'club-7',
     name: 'Saved event',
   );
   final List<XFile> photos;
@@ -552,10 +552,10 @@ class _RecordingEventDraftRepository extends Fake
   final deleted = <(String, String, String)>[];
   @override
   Future<void> deleteDraft({
-    required String clubId,
+    required String organizerId,
     required String userId,
     required String draftId,
   }) async {
-    deleted.add((clubId, userId, draftId));
+    deleted.add((organizerId, userId, draftId));
   }
 }

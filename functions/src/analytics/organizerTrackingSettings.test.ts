@@ -15,8 +15,8 @@ function fixture() {
       ownership: {state: "userCreated"}, claim: {state: "verified"},
       publicPage: {publishStatus: "published", indexStatus: "index",
         robots: "index, follow", canonicalPath: "/organizers/org-1/"}},
-    "events/event-1": {organizerId: "org-1", clubId: "org-1",
-      publicationState: "published", status: "active",
+    "events/event-1": {organizerId: "org-1", publicationState: "published",
+      status: "active",
       eventFormat: {version: 1, activityKind: "running",
         interactionModel: "pacePods"}},
   };
@@ -218,9 +218,9 @@ test("public external event requires an existing claimed organizer", async (
 });
 
 for (const [label, overrides, code] of [
-  ["foreign", {organizerId: "foreign", clubId: "foreign"},
+  ["foreign", {organizerId: "foreign"},
     "permission-denied"],
-  ["conflicting owner", {clubId: "foreign"}, "permission-denied"],
+  ["conflicting owner", {organizerId: "foreign"}, "permission-denied"],
   ["private", {publicationState: "private"}, "failed-precondition"],
   ["cancelled", {status: "cancelled"}, "failed-precondition"],
 ] as const) {

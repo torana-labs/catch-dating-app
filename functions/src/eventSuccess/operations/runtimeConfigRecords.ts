@@ -59,7 +59,7 @@ export function runtimeConfigSource(context: RuntimeContext,
       event.organizerId !== context.organizerId ||
       (plan !== null && (!validateEventSuccessPlanDocument(plan) ||
         plan.eventId !== context.eventId ||
-        (plan.organizerId ?? plan.clubId) !== context.organizerId))) {
+        (plan.organizerId) !== context.organizerId))) {
     throw invalidSource();
   }
   const end = timestampEvidence(event.endTime);

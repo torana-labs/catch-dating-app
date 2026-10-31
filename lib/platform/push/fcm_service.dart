@@ -72,21 +72,21 @@ String? hostEventManageRouteFromMessageData(Map<String, Object?> data) {
       type != 'eventHostManage') {
     return null;
   }
-  final clubId = data['organizerId'] ?? data['clubId'];
+  final organizerId = data['organizerId'] ?? data['organizerId'];
   final eventId = data['eventId'];
-  if (clubId is! String || clubId.isEmpty) return null;
+  if (organizerId is! String || organizerId.isEmpty) return null;
   if (eventId is! String || eventId.isEmpty) return null;
-  return '/host/organizers/$clubId/events/$eventId/manage';
+  return '/host/organizers/$organizerId/events/$eventId/manage';
 }
 
 String? eventCompanionRouteFromMessageData(Map<String, Object?> data) {
   if (AppConfig.appRole.isHost) return null;
   if (data['type'] != 'eventCompanionReady') return null;
-  final clubId = data['organizerId'] ?? data['clubId'];
+  final organizerId = data['organizerId'] ?? data['organizerId'];
   final eventId = data['eventId'];
-  if (clubId is! String || clubId.isEmpty) return null;
+  if (organizerId is! String || organizerId.isEmpty) return null;
   if (eventId is! String || eventId.isEmpty) return null;
-  return '/organizers/$clubId/events/$eventId/companion';
+  return '/organizers/$organizerId/events/$eventId/companion';
 }
 
 String? eventDetailRouteFromMessageData(Map<String, Object?> data) {
@@ -102,18 +102,18 @@ String? eventDetailRouteFromMessageData(Map<String, Object?> data) {
     'eventUpdated',
   };
   if (!eventActivityTypes.contains(data['type'])) return null;
-  final clubId = data['organizerId'] ?? data['clubId'];
+  final organizerId = data['organizerId'] ?? data['organizerId'];
   final eventId = data['eventId'];
-  if (clubId is! String || clubId.isEmpty) return null;
+  if (organizerId is! String || organizerId.isEmpty) return null;
   if (eventId is! String || eventId.isEmpty) return null;
-  return '/organizers/$clubId/events/$eventId';
+  return '/organizers/$organizerId/events/$eventId';
 }
 
 String? organizerRouteFromMessageData(Map<String, Object?> data) {
   if (AppConfig.appRole.isHost || data['type'] != 'organizerUpdate') {
     return null;
   }
-  final organizerId = data['organizerId'] ?? data['clubId'];
+  final organizerId = data['organizerId'] ?? data['organizerId'];
   if (organizerId is! String || organizerId.isEmpty) return null;
   return '/organizers/$organizerId';
 }

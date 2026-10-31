@@ -30,7 +30,7 @@ Event widgetbookCatalogEvent({
       : null;
   return Event(
     id: id,
-    clubId: 'club-widgetbook',
+    organizerId: 'club-widgetbook',
     startTime: start,
     endTime: start.add(const Duration(hours: 1, minutes: 45)),
     meetingPoint: meetingPoint,

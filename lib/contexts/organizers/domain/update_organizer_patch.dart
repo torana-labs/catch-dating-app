@@ -21,7 +21,7 @@ final class UpdateOrganizerPatch {
     Object? hostAvatarUrl = unsetSentinel,
     Object? imageUrl = unsetSentinel,
     Object? profileImageUrl = unsetSentinel,
-    List<UploadedPhoto>? clubPhotos,
+    List<UploadedPhoto>? organizerPhotos,
     Object? logoPhoto = unsetSentinel,
     List<String>? tags,
     Object? instagramHandle = unsetSentinel,
@@ -41,8 +41,8 @@ final class UpdateOrganizerPatch {
          if (!identical(imageUrl, unsetSentinel)) 'imageUrl': imageUrl,
          if (!identical(profileImageUrl, unsetSentinel))
            'profileImageUrl': profileImageUrl,
-         if (clubPhotos != null)
-           'organizerPhotos': clubPhotos
+         if (organizerPhotos != null)
+           'organizerPhotos': organizerPhotos
                .map((photo) => firestoreCallableJsonValue(photo.toJson()))
                .toList(),
          if (!identical(logoPhoto, unsetSentinel))
@@ -74,8 +74,8 @@ final class UpdateOrganizerPatch {
   Map<String, Object?> toFieldsJson() =>
       Map<String, Object?>.unmodifiable(_fields);
 
-  Map<String, Object?> toCallableJson({required String clubId}) => {
-    'organizerId': clubId,
+  Map<String, Object?> toCallableJson({required String organizerId}) => {
+    'organizerId': organizerId,
     'fields': toFieldsJson(),
   };
 }

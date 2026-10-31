@@ -123,7 +123,7 @@
       "type": "array",
       "maxItems": 20,
       "items": {
-        "$ref": "../shared/event_common.schema.json#/definitions/clubHostProfile"
+        "$ref": "../shared/event_common.schema.json#/definitions/organizerHostProfile"
       },
       "x-catch-ownership": "callable-owned"
     },
@@ -139,19 +139,12 @@
       "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull",
       "x-catch-ownership": "callable-owned"
     },
-    "clubPhotos": {
-      "type": "array",
-      "items": {
-        "$ref": "../embedded/uploaded_photo.schema.json"
-      },
-      "x-catch-ownership": "callable-owned"
-    },
     "organizerPhotos": {
       "type": "array",
       "items": {
         "$ref": "../embedded/uploaded_photo.schema.json"
       },
-      "description": "Canonical organizer gallery. clubPhotos is tolerated only while released clients migrate.",
+      "description": "Canonical organizer gallery. organizerPhotos is tolerated only while released clients migrate.",
       "x-catch-ownership": "callable-owned"
     },
     "logoPhoto": {
@@ -241,7 +234,7 @@
       "x-catch-ownership": "callable-owned"
     },
     "hostDefaults": {
-      "$ref": "../shared/event_common.schema.json#/definitions/clubHostDefaults",
+      "$ref": "../shared/event_common.schema.json#/definitions/organizerHostDefaults",
       "x-catch-ownership": "callable-owned"
     },
     "organizerType": {
@@ -699,8 +692,8 @@
           "enum": [
             "adminCreateOrganizerDraftFromCandidate",
             "adminApproveOrganizerListing",
-            "adminUpdateClubDetails",
-            "adminSetClubIndexStatus",
+            "adminUpdateOrganizerDetails",
+            "adminSetOrganizerIndexStatus",
             "adminOrganizerSearchBackfill"
           ]
         }
@@ -889,7 +882,7 @@
     }
   },
   "x-legacy-tolerated-fields": [
-    "clubPhotos",
+    "organizerPhotos",
     "memberCount",
     "entityKind",
     "entitySubtypes",

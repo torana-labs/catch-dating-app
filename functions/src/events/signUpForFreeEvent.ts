@@ -140,7 +140,7 @@ export async function signUpForFreeEventHandler(
       requesterUid: uid,
     }) : null;
   const nowMillis = deps.nowMillis();
-  const organizerId = event.organizerId ?? event.clubId;
+  const organizerId = event.organizerId;
   const listPriceInPaise = pairHold?.requesterPriceInPaise ??
     quotePriceInPaise({policy, cohortId, roster});
   // Paid host membership pricing and gates apply after the policy quote; an
@@ -166,7 +166,7 @@ export async function signUpForFreeEventHandler(
     );
   }
   const hasActiveCommunityMembership = await hasEventCommunityMembership({
-    db, organizerId: event.organizerId ?? event.clubId, uid, policy,
+    db, organizerId: event.organizerId, uid, policy,
   });
   // Pair holds are inventory, never community entitlement.
   assertPolicyAllowsMembership({policy, hasActiveCommunityMembership});

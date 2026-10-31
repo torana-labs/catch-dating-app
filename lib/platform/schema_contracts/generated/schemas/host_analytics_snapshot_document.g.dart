@@ -101,19 +101,10 @@ const schemaHostAnalyticsSnapshotDocumentSchema = <String, Object?>{
           'additionalProperties': false,
           'required': <Object?>[
             'organizerIds',
-            'clubIds',
             'eventIds',
           ],
           'properties': <String, Object?>{
             'organizerIds': <String, Object?>{
-              'type': 'array',
-              'items': <String, Object?>{
-                'type': 'string',
-                'minLength': 1,
-                'maxLength': 180,
-              },
-            },
-            'clubIds': <String, Object?>{
               'type': 'array',
               'items': <String, Object?>{
                 'type': 'string',
@@ -128,13 +119,6 @@ const schemaHostAnalyticsSnapshotDocumentSchema = <String, Object?>{
                 'minLength': 1,
                 'maxLength': 180,
               },
-            },
-            'clubName': <String, Object?>{
-              'type': <Object?>[
-                'string',
-                'null',
-              ],
-              'maxLength': 160,
             },
             'organizerName': <String, Object?>{
               'type': <Object?>[
@@ -247,7 +231,7 @@ const schemaHostAnalyticsSnapshotDocumentSchema = <String, Object?>{
             'additionalProperties': false,
             'required': <Object?>[
               'eventId',
-              'clubId',
+              'organizerId',
               'title',
               'startTime',
               'status',
@@ -274,11 +258,6 @@ const schemaHostAnalyticsSnapshotDocumentSchema = <String, Object?>{
             ],
             'properties': <String, Object?>{
               'eventId': <String, Object?>{
-                'type': 'string',
-                'minLength': 1,
-                'maxLength': 180,
-              },
-              'clubId': <String, Object?>{
                 'type': 'string',
                 'minLength': 1,
                 'maxLength': 180,

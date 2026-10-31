@@ -8,15 +8,15 @@ test("validateCallableWithAjv names root additional properties", () => {
   const validator = new Ajv({allErrors: true}).compile({
     type: "object",
     additionalProperties: false,
-    required: ["clubId"],
+    required: ["organizerId"],
     properties: {
-      clubId: {type: "string"},
+      organizerId: {type: "string"},
     },
   });
 
   assert.throws(
     () => validateCallableWithAjv(
-      {data: {clubId: "club-1", eventSuccessDefaults: {enabled: true}}} as
+      {data: {organizerId: "club-1", eventSuccessDefaults: {enabled: true}}} as
         CallableRequest<unknown>,
       validator
     ),

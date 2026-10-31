@@ -40,10 +40,10 @@ Owned routes:
 
 Typed handoffs:
 
-- `hostCreateEventScreen` — `/host/organizers/:clubId/create-event`
-- `hostCreateProgramScreen` — `/host/organizers/:clubId/create-program`
-- `hostAppEventManageScreen` — `/host/organizers/:clubId/events/:eventId/manage`
-- `hostAppEventDetailScreen` — `/host/organizers/:clubId/events/:eventId`
+- `hostCreateEventScreen` — `/host/organizers/:organizerId/create-event`
+- `hostCreateProgramScreen` — `/host/organizers/:organizerId/create-program`
+- `hostAppEventManageScreen` — `/host/organizers/:organizerId/events/:eventId/manage`
+- `hostAppEventDetailScreen` — `/host/organizers/:organizerId/events/:eventId`
 - `hostProgramWorkspaceScreen` — `/host/programs/:programId`
 
 ## Key code owners
@@ -71,7 +71,6 @@ Typed handoffs:
 - `contracts/callable_responses/organizer_program_list_response.schema.json`
 - `contracts/callables/create_organizer_program_payload.schema.json`
 - `contracts/callables/list_organizer_programs_payload.schema.json`
-- `contracts/firestore/clubs.schema.json`
 - `contracts/firestore/events.schema.json`
 - `contracts/firestore/organizer_programs.schema.json`
 - `contracts/firestore/organizer_team_memberships.schema.json`

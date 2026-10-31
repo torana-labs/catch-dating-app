@@ -32,7 +32,6 @@ export interface AdminExternalEventListRow {
   eventId: string;
   targetPath: string;
   canonicalHostId: string;
-  compatibilityClubId: string;
   title: string;
   startTime: string | null;
   endTime: string | null;
@@ -148,7 +147,6 @@ function publicExternalEventListRow(
     eventId: event.eventId || docId,
     targetPath: `externalEvents/${docId}`,
     canonicalHostId: event.canonicalHostId,
-    compatibilityClubId: event.compatibilityClubId,
     title: event.title,
     startTime: timestampIso(event.startTime),
     endTime: timestampIso(event.endTime),
@@ -335,7 +333,7 @@ function externalEventListRowMatchesQuery(
     row.eventId,
     row.targetPath,
     row.canonicalHostId,
-    row.compatibilityClubId,
+    row.canonicalHostId,
     row.title,
     row.citySlug,
     row.countryCode,

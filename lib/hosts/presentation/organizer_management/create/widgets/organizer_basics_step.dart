@@ -89,7 +89,7 @@ class OrganizerBasicsStep extends StatelessWidget {
                   copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsOrganizerTypeLabel,
                   contract: CatchContractConstraints
-                      .createClubCallablePayloadOrganizerType,
+                      .createOrganizerCallablePayloadOrganizerType,
                   contractValueBuilder: (value) => value.name,
                   body: _organizerTypeLabel(context, selectedOrganizerType),
                   icon: CatchIcons.people,
@@ -112,8 +112,8 @@ class OrganizerBasicsStep extends StatelessWidget {
                   copy: catchFieldCopy(context.l10n),
                   title:
                       context.l10n.hostsOrganizerBasicsStepTitleOrganizerName,
-                  contract:
-                      CatchContractConstraints.createClubCallablePayloadName,
+                  contract: CatchContractConstraints
+                      .createOrganizerCallablePayloadName,
                   controller: nameController,
                   icon: CatchIcons.people,
                   states: <WidgetState>{
@@ -145,7 +145,7 @@ class OrganizerBasicsStep extends StatelessWidget {
                       copy: catchFieldCopy(context.l10n),
                       title: context.l10n.hostsOrganizerBasicsStepTitleCity,
                       contract: CatchContractConstraints
-                          .createClubCallablePayloadLocation,
+                          .createOrganizerCallablePayloadLocation,
                       contractValueBuilder: (city) => city.effectiveMarketId,
                       body: selectedCity?.label,
                       icon: CatchIcons.city,
@@ -178,8 +178,8 @@ class OrganizerBasicsStep extends StatelessWidget {
                   title: context
                       .l10n
                       .hostsOrganizerBasicsStepTitleAreaNeighbourhood,
-                  contract:
-                      CatchContractConstraints.createClubCallablePayloadArea,
+                  contract: CatchContractConstraints
+                      .createOrganizerCallablePayloadArea,
                   controller: areaController,
                   icon: CatchIcons.location,
                   states: <WidgetState>{

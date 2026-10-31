@@ -330,7 +330,7 @@ Event? publishedRichEvent(DocumentSnapshot<Map<String, dynamic>> snapshot) {
       !data.containsKey('setupRevision');
   if (data == null ||
       (explicitState != 'published' && !legacyPublic) ||
-      (data['organizerId'] is! String && data['clubId'] is! String) ||
+      (data['organizerId'] is! String && data['organizerId'] is! String) ||
       data['startTime'] is! Timestamp ||
       data['endTime'] is! Timestamp ||
       data['meetingPoint'] is! String ||

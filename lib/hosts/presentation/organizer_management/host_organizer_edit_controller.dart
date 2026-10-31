@@ -19,7 +19,7 @@ HostOrganizerEditActions hostOrganizerEditController(Ref ref) =>
 
 abstract interface class HostOrganizerEditActions {
   Future<void> updateOrganizer({
-    required String clubId,
+    required String organizerId,
     required UpdateOrganizerPatch patch,
   });
 
@@ -156,14 +156,14 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
 
   @override
   Future<void> updateOrganizer({
-    required String clubId,
+    required String organizerId,
     required UpdateOrganizerPatch patch,
   }) async {
     requireSignedInUid(_ref, action: 'edit this organizer');
     if (patch.isEmpty) return;
     await _ref
         .read(organizersRepositoryProvider)
-        .updateOrganizer(clubId: clubId, patch: patch);
+        .updateOrganizer(organizerId: organizerId, patch: patch);
   }
 
   @override
@@ -229,7 +229,7 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
       if (photoInputs != null) {
         resolvedInputs = await _resolvePhotoInputs(
           uid: uid,
-          clubId: organizer.id,
+          organizerId: organizer.id,
           inputs: photoInputs,
           failures: failures,
           onProgress: onProgress,
@@ -249,7 +249,7 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
               .read(imageUploadRepositoryProvider)
               .uploadOrganizerLogo(
                 uid: uid,
-                clubId: organizer.id,
+                organizerId: organizer.id,
                 mediaId: logo.id,
                 image: logo.image,
                 onProgress: (progress) => onProgress?.call(
@@ -303,7 +303,7 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
             ),
         ];
         patch['imageUrl'] = photos.isEmpty ? null : photos.first.url;
-        patch['clubPhotos'] = photos
+        patch['organizerPhotos'] = photos
             .map((photo) => photo.toJson())
             .toList(growable: false);
       }
@@ -318,7 +318,7 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
         await _ref
             .read(organizersRepositoryProvider)
             .updateOrganizer(
-              clubId: organizer.id,
+              organizerId: organizer.id,
               patch: UpdateOrganizerPatch.raw(patch),
             );
       }
@@ -339,7 +339,7 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
 
   Future<List<HostOrganizerMediaInput>> _resolvePhotoInputs({
     required String uid,
-    required String clubId,
+    required String organizerId,
     required List<HostOrganizerMediaInput> inputs,
     required Map<String, Object> failures,
     required ValueChanged<HostOrganizerMediaProgress>? onProgress,
@@ -365,7 +365,7 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
                 .read(imageUploadRepositoryProvider)
                 .uploadOrganizerPhoto(
                   uid: uid,
-                  clubId: clubId,
+                  organizerId: organizerId,
                   mediaId: id,
                   position: index,
                   image: image,

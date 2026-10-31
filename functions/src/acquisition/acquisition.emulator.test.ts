@@ -166,7 +166,7 @@ test("competing reviewed check-ins create one private activation receipt",
     const eventId = randomUUID();
     await db.doc(`organizers/${organizerId}`).set({});
     await db.doc(`events/${eventId}`).set({
-      organizerId, clubId: organizerId, publicationState: "published",
+      organizerId, publicationState: "published",
       status: "active", startTime: Timestamp.fromMillis(now - 1000),
       endTime: Timestamp.fromMillis(now + 1000),
       eventFormat: {version: 1, activityKind: "running",

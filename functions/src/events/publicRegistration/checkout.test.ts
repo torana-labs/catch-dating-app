@@ -272,7 +272,6 @@ test("native booking does not create another payment", async () => {
     eventId,
     uid,
     organizerId: old.organizerId,
-    clubId: old.organizerId,
     status: "signedUp",
   });
   const next = await h.reserve({requestId: "native_already_registered"});

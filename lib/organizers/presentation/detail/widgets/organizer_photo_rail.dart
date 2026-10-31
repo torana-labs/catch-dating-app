@@ -12,7 +12,7 @@ class OrganizerPhotoRail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final photos = organizer.clubPhotos.take(3).toList();
+    final photos = organizer.organizerPhotos.take(3).toList();
 
     return Column(
       children: [
@@ -55,7 +55,7 @@ class OrganizerPhotoRail extends StatelessWidget {
             const Spacer(),
             Text(
               context.l10n.organizersOrganizerPhotoStripTextLengthPhotos(
-                length: organizer.clubPhotos.length,
+                length: organizer.organizerPhotos.length,
               ),
               style: CatchTextStyles.monoLabelS(context, color: t.ink3),
             ),

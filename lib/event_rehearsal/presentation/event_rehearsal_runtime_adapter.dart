@@ -79,7 +79,7 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     id: eventId,
     synthetic: true,
     seedPrefix: session.seed.toString(),
-    clubId: session.organizerId,
+    organizerId: session.organizerId,
     name: session.setup.title,
     startTime: eventStart,
     endTime: eventStart.add(Duration(minutes: session.setup.durationMinutes)),
@@ -120,7 +120,7 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
       : EventSuccessPlan.fromDraft(
           id: eventId,
           eventId: eventId,
-          clubId: session.organizerId,
+          organizerId: session.organizerId,
           draft: defaults.toDraft(targetAttendeeCount: session.actorCount),
           createdAt: virtualNow,
           updatedAt: virtualNow,
@@ -195,7 +195,7 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
         tableCount: tableCount,
         unitKind: unitKind,
         eventId: eventId,
-        clubId: session.organizerId,
+        organizerId: session.organizerId,
         now: virtualNow,
         practiceGuestLabel: practiceGuestLabel,
         latePracticeGuestLabel: latePracticeGuestLabel,
@@ -273,7 +273,7 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
   final standings = _standingsFor(
     review: rehearsal.outcomeReview,
     eventId: eventId,
-    clubId: session.organizerId,
+    organizerId: session.organizerId,
     unitLabels: outcomeUnitLabels,
     now: virtualNow,
   );
@@ -296,7 +296,6 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
           EventAttendee(
             id: row.actorId,
             eventId: eventId,
-            clubId: session.organizerId,
             organizerId: session.organizerId,
             displayName: rehearsal.actors
                 .firstWhere((actor) => actor.actorId == row.actorId)
@@ -327,7 +326,7 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
 EventSuccessStandings? _standingsFor({
   required RehearsalOutcomeReview? review,
   required String eventId,
-  required String clubId,
+  required String organizerId,
   required Map<String, String> unitLabels,
   required DateTime now,
 }) {
@@ -407,7 +406,7 @@ EventSuccessStandings? _standingsFor({
   return EventSuccessStandings(
     id: 'rehearsal-standings-$eventId',
     eventId: eventId,
-    clubId: clubId,
+    organizerId: organizerId,
     unitOutcome: review.kind == RehearsalOutcomeKind.score
         ? EventSuccessUnitOutcome.score
         : EventSuccessUnitOutcome.rank,
@@ -452,7 +451,7 @@ EventSuccessAssignment _assignmentFor({
   required int tableCount,
   required EventSuccessUnitKind unitKind,
   required String eventId,
-  required String clubId,
+  required String organizerId,
   required DateTime now,
   required String practiceGuestLabel,
   required String latePracticeGuestLabel,
@@ -471,7 +470,7 @@ EventSuccessAssignment _assignmentFor({
   return EventSuccessAssignment(
     id: 'rehearsal-assignment-${actor.actorId}',
     eventId: eventId,
-    clubId: clubId,
+    organizerId: organizerId,
     uid: actor.actorId,
     moduleId: EventSuccessModuleCatalog.microPods.id,
     label: tableLabel,

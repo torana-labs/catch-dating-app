@@ -380,7 +380,7 @@
     "note": "",
     "recommended": "catch.person_avatar",
     "left": "CatchPersonAvatar",
-    "right": "ClubHostAvatar"
+    "right": "OrganizerHostAvatar"
   },
   {
     "ts": "2026-06-27T11:38:28.965Z",
@@ -420,7 +420,7 @@
     "note": "i think dashboard rail doesnt need to be an independent concept. we should have one catchhorizontalrail widget thats configurable ",
     "recommended": "catch.horizontal_rail",
     "left": "CatchHorizontalRail",
-    "right": "DashboardClubsRail"
+    "right": "DashboardOrganizersRail"
   },
   {
     "ts": "2026-06-27T11:32:01.833Z",

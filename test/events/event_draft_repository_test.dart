@@ -15,14 +15,14 @@ void main() {
 
     EventDraft buildDraft({
       String id = 'draft-1',
-      String clubId = 'club-1',
+      String organizerId = 'club-1',
       DateTime? savedAt,
       String? distance,
       String? meetingPoint,
     }) {
       return EventDraft(
         id: id,
-        clubId: clubId,
+        organizerId: organizerId,
         savedAt: savedAt ?? DateTime.now(),
         distance: distance,
         meetingPoint: meetingPoint,
@@ -32,7 +32,7 @@ void main() {
     group('loadDrafts', () {
       test('returns empty list when no drafts exist', () async {
         final drafts = await repo.loadDrafts(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
         );
         expect(drafts, isEmpty);
@@ -41,14 +41,14 @@ void main() {
       test('stale drafts are filtered out and removed', () async {
         final oldDraft = EventDraft(
           id: 'old-1',
-          clubId: 'club-1',
+          organizerId: 'club-1',
           savedAt: DateTime.now().subtract(const Duration(days: 10)),
           distance: '5',
         );
         await repo.saveDraft(userId: 'user-1', draft: oldDraft);
 
         final drafts = await repo.loadDrafts(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
         );
         expect(drafts, isEmpty);
@@ -59,7 +59,7 @@ void main() {
         await prefs.setString('event_drafts_club-1_user-1', '{invalid');
 
         final drafts = await repo.loadDrafts(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
         );
         expect(drafts, isEmpty);
@@ -72,7 +72,7 @@ void main() {
         await repo.saveDraft(userId: 'user-1', draft: draft);
 
         final drafts = await repo.loadDrafts(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
         );
         expect(drafts.length, 1);
@@ -88,7 +88,7 @@ void main() {
         await repo.saveDraft(userId: 'user-1', draft: draft2);
 
         final drafts = await repo.loadDrafts(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
         );
         expect(drafts.length, 1);
@@ -112,7 +112,7 @@ void main() {
         await repo.saveDraft(userId: 'user-1', draft: newer);
 
         final drafts = await repo.loadDrafts(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
         );
         expect(drafts.length, 2);
@@ -134,7 +134,7 @@ void main() {
         }
 
         final drafts = await repo.loadDrafts(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
         );
         expect(drafts.length, 5);
@@ -158,13 +158,13 @@ void main() {
         );
 
         await repo.deleteDraft(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
           draftId: 'd-1',
         );
 
         final drafts = await repo.loadDrafts(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
         );
         expect(drafts.length, 1);
@@ -177,13 +177,13 @@ void main() {
           draft: buildDraft(id: 'd-1'),
         );
         await repo.deleteDraft(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
           draftId: 'nonexistent',
         );
 
         final drafts = await repo.loadDrafts(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
         );
         expect(drafts.length, 1);
@@ -201,10 +201,10 @@ void main() {
           draft: buildDraft(id: 'd-2'),
         );
 
-        await repo.deleteAllDrafts(clubId: 'club-1', userId: 'user-1');
+        await repo.deleteAllDrafts(organizerId: 'club-1', userId: 'user-1');
 
         final drafts = await repo.loadDrafts(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
         );
         expect(drafts, isEmpty);
@@ -212,22 +212,22 @@ void main() {
     });
 
     group('isolation', () {
-      test('different clubIds produce isolated lists', () async {
+      test('different organizerIds produce isolated lists', () async {
         await repo.saveDraft(
           userId: 'user-1',
           draft: buildDraft(id: 'd-1'),
         );
         await repo.saveDraft(
           userId: 'user-1',
-          draft: buildDraft(id: 'd-2', clubId: 'club-2'),
+          draft: buildDraft(id: 'd-2', organizerId: 'club-2'),
         );
 
         final organizer1Drafts = await repo.loadDrafts(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
         );
         final organizer2Drafts = await repo.loadDrafts(
-          clubId: 'club-2',
+          organizerId: 'club-2',
           userId: 'user-1',
         );
         expect(organizer1Drafts.length, 1);
@@ -247,11 +247,11 @@ void main() {
         );
 
         final user1Drafts = await repo.loadDrafts(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-1',
         );
         final user2Drafts = await repo.loadDrafts(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           userId: 'user-2',
         );
         expect(user1Drafts.length, 1);

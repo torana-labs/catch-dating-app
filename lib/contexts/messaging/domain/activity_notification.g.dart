@@ -18,7 +18,6 @@ _ActivityNotification _$ActivityNotificationFromJson(
   readAt: const NullableTimestampConverter().fromJson(json['readAt']),
   matchId: json['matchId'] as String?,
   eventId: json['eventId'] as String?,
-  clubId: json['clubId'] as String?,
   organizerId: json['organizerId'] as String?,
   postId: json['postId'] as String?,
   invitationId: json['invitationId'] as String?,
@@ -37,7 +36,6 @@ Map<String, dynamic> _$ActivityNotificationToJson(
   'readAt': const NullableTimestampConverter().toJson(instance.readAt),
   'matchId': instance.matchId,
   'eventId': instance.eventId,
-  'clubId': instance.clubId,
   'organizerId': instance.organizerId,
   'postId': instance.postId,
   'invitationId': instance.invitationId,
@@ -56,7 +54,6 @@ const _$ActivityNotificationTypeEnumMap = {
   ActivityNotificationType.waitlistOfferExpired: 'waitlistOfferExpired',
   ActivityNotificationType.eventCancelled: 'eventCancelled',
   ActivityNotificationType.eventUpdated: 'eventUpdated',
-  ActivityNotificationType.clubUpdate: 'clubUpdate',
   ActivityNotificationType.organizerUpdate: 'organizerUpdate',
   ActivityNotificationType.crossPathsInvitation: 'crossPathsInvitation',
   ActivityNotificationType.crossPathsInvitationAccepted:

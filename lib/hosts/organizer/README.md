@@ -46,8 +46,8 @@ Typed handoffs:
 
 - `hostCreateOrganizerScreen` — `/host/organizers/create-organizer`
 - `hostEventsScreen` — `/host/events`
-- `hostAppEventManageScreen` — `/host/organizers/:clubId/events/:eventId/manage`
-- `hostOrganizerDetailScreen` — `/host/organizers/:clubId`
+- `hostAppEventManageScreen` — `/host/organizers/:organizerId/events/:eventId/manage`
+- `hostOrganizerDetailScreen` — `/host/organizers/:organizerId`
 
 ## Key code owners
 
@@ -88,7 +88,6 @@ Typed handoffs:
 - `contracts/callables/remove_organizer_manager_payload.schema.json`
 - `contracts/callables/transfer_organizer_ownership_payload.schema.json`
 - `contracts/callables/update_organizer_payload.schema.json`
-- `contracts/firestore/clubs.schema.json`
 - `contracts/firestore/event_attendees.schema.json`
 - `contracts/firestore/host_analytics_snapshots.schema.json`
 - `contracts/firestore/host_payment_accounts.schema.json`

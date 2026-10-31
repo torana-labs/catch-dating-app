@@ -13,7 +13,7 @@ import 'fixtures.dart';
 )
 Widget organizerTagWrapStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubTagList',
+    title: 'OrganizerTagList',
     catalogId: 'atom.club.tag_wrap',
     children: [
       WidgetbookPageStateCard(
@@ -40,7 +40,7 @@ Widget organizerTagWrapStates(BuildContext context) {
 )
 Widget organizerHostIdentityLineStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubHostIdentityRow',
+    title: 'OrganizerHostIdentityRow',
     catalogId: 'atom.club.host_identity_line',
     children: [
       WidgetbookPageStateCard(

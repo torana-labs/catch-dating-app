@@ -29,11 +29,11 @@ void main() {
         hostTeamManagementControllerProvider.notifier,
       );
       await controller.addHostByPhone(
-        clubId: 'club-1',
+        organizerId: 'club-1',
         phoneNumber: '98765 43210',
       );
-      await controller.removeHost(clubId: 'club-1', uid: 'host-2');
-      await controller.transferOwnership(clubId: 'club-1', uid: 'host-2');
+      await controller.removeHost(organizerId: 'club-1', uid: 'host-2');
+      await controller.transferOwnership(organizerId: 'club-1', uid: 'host-2');
 
       expect(fakeRepository.addedHostOrganizerId, 'club-1');
       expect(fakeRepository.addedHostPhoneNumber, '98765 43210');

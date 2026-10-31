@@ -139,7 +139,7 @@ export interface UserProfileDocument {
   prefsMessages: boolean;
   prefsEventReminders: boolean;
   prefsRunStatusUpdates: boolean;
-  prefsClubUpdates: boolean;
+  prefsOrganizerUpdates: boolean;
   prefsWeeklyDigest: boolean;
   prefsShowOnMap: boolean;
   /**

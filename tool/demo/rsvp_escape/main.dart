@@ -67,7 +67,7 @@ Future<void> main() async {
       GoRoute(
         path: '/rehearsal',
         builder: (_, _) => const HostEventRehearsalScreen(
-          clubId: 'demo-saket',
+          organizerId: 'demo-saket',
           sessionId: 'demo-snapshot',
         ),
       ),

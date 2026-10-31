@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-09-15",
-  "sourceDigest": "sha256:d1da5cb2b6d2bea0123d1fe970340665847edb262760aa6d6e8991955e04d01a",
+  "sourceDigest": "sha256:87c7b52756b1b2c34bb230d42debf64efc9c86de3b1881e93f269998605ccf6d",
   "resolvedDigest": "sha256:aa8e93924d4b5620f4b4839927328a891c6e4041f289b38fb2919b4969bd241b",
   "feature": {
     "id": "feature.host_inbox",
@@ -168,7 +168,7 @@
           "contracts/callables/open_organizer_manual_send_task_payload.schema.json",
           "contracts/callables/mark_organizer_manual_send_task_payload.schema.json",
           "contracts/callables/replan_organizer_manual_send_tasks_payload.schema.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/event_broadcasts.schema.json",
           "contracts/firestore/event_participations.schema.json",
           "contracts/firestore/events.schema.json",
@@ -4768,7 +4768,7 @@
             },
             {
               "id": "hostOrganizerMessagingScreen",
-              "path": "/host/organizer/:clubId/messaging",
+              "path": "/host/organizer/:organizerId/messaging",
               "role": "host"
             }
           ]

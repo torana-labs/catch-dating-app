@@ -193,8 +193,6 @@ const schemaPublicRouteReservationDocumentSchema = <String, Object?>{
     'lastVerifiedSource': <String, Object?>{
       'type': 'string',
       'enum': <Object?>[
-        'adminUpdateClubDetails',
-        'adminSetClubIndexStatus',
         'adminUpdateOrganizerDetails',
         'adminSetOrganizerIndexStatus',
         'adminCreateOrganizerDraftFromCandidate',

@@ -1,14 +1,14 @@
 part of '../host_operations_screen.dart';
 
 class HostOrganizerPaymentsScreen extends StatelessWidget {
-  const HostOrganizerPaymentsScreen({super.key, required this.clubId});
+  const HostOrganizerPaymentsScreen({super.key, required this.organizerId});
 
-  final String clubId;
+  final String organizerId;
 
   @override
   Widget build(BuildContext context) {
     return HostOrganizerSpokeAsyncBoundary._(
-      clubId: clubId,
+      organizerId: organizerId,
       title: context.l10n.hostsHostOrganizerEditTabLabelPayments,
       builder: (context, organizer, _, isOwner) => isOwner
           ? HostRazorpayConnectionCard(

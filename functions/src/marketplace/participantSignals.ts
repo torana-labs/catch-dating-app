@@ -35,7 +35,6 @@ export interface ParticipantSignalFactInput {
   source: ParticipantSignalSource;
   direction: ParticipantSignalDirection;
   eventId?: string;
-  clubId?: string;
   organizerId?: string;
   matchId?: string;
   peerUid?: string;
@@ -130,7 +129,7 @@ export function participantSignalFactData(
   };
 
   setOptional(data, "eventId", fact.eventId);
-  setOptional(data, "clubId", fact.clubId);
+  setOptional(data, "organizerId", fact.organizerId);
   setOptional(data, "matchId", fact.matchId);
   setOptional(data, "peerUid", fact.peerUid);
 

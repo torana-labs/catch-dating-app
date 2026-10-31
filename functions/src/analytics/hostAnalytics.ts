@@ -9,10 +9,9 @@ import {writeAdminAuditLog} from "../admin/adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import type {
-  ClubDocument,
+  OrganizerDocument,
   EventAttendeeDocument,
   EventDocument,
-  OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {
   HostAnalyticsQueryCallablePayload,
@@ -26,7 +25,7 @@ import {
 import {
   validateHostAnalyticsQueryCallablePayload,
 } from "../shared/generated/validators/hostAnalyticsQueryInput";
-import {isClubHost} from "../shared/clubHosts";
+import {isOrganizerManager} from "../shared/organizerHosts";
 import {loadHostRegistrationAnalytics} from "./hostRegistrationAnalytics";
 import {
   defaultHostAnalyticsBigQuerySource,
@@ -55,9 +54,9 @@ interface AnalyticsRange {
   timezone: string;
 }
 
-interface ClubRecord {
+interface OrganizerRecord {
   id: string;
-  data: ClubDocument;
+  data: OrganizerDocument;
 }
 
 interface EventRecord {
@@ -66,7 +65,7 @@ interface EventRecord {
 }
 
 interface AnalyticsRecords {
-  clubs: ClubRecord[];
+  organizers: OrganizerRecord[];
   events: EventRecord[];
   martRows: HostAnalyticsMartRow[];
   operationalAttendees?: EventAttendeeRecord[];
@@ -84,7 +83,6 @@ interface EventAttendeeRecord {
 
 interface EventMetricAccumulator {
   eventId: string;
-  clubId: string;
   organizerId: string;
   title: string;
   startTime: Date;
@@ -116,9 +114,9 @@ interface EventMetricAccumulator {
   attendeeSources: Record<EventAttendeeDocument["source"], number>;
 }
 
-const maxHostClubs = 25;
-const maxHostEventsPerClub = 500;
-const maxAdminClubs = 100;
+const maxHostOrganizers = 25;
+const maxHostEventsPerOrganizer = 500;
+const maxAdminOrganizers = 100;
 const maxAdminEvents = 1000;
 const hostAnalyticsSnapshotCollection = "hostAnalyticsSnapshots";
 export const hostAnalyticsSnapshotTtlMs = 15 * 60 * 1000;
@@ -282,7 +280,8 @@ export function buildHostAnalyticsFromRecords(
   const previousRows = records.martRows.filter((row) =>
     dailyRowInRange(row, previousRange)
   );
-  const clubIds = uniqueStrings(records.clubs.map((club) => club.id));
+  const organizerIds = uniqueStrings(records.organizers.map((
+    organizer) => organizer.id));
   const eventIds = resolveScopeEventIds(records, rows);
   const eventMetrics = eventMetricsFromRows(
     rows,
@@ -335,11 +334,9 @@ export function buildHostAnalyticsFromRecords(
       preset: range.preset,
     },
     scope: {
-      organizerIds: clubIds,
-      clubIds,
+      organizerIds: organizerIds,
       eventIds,
-      clubName: resolveClubName(records, rows),
-      organizerName: resolveClubName(records, rows),
+      organizerName: resolveOrganizerName(records, rows),
       eventTitle: resolveEventTitle(records, eventMetrics),
     },
     summaryCards: [
@@ -470,9 +467,7 @@ export function buildHostAnalyticsFromRecords(
     trend: buildTrend(rows, range),
     topEvents: topEvents.map((event) => ({
       eventId: event.eventId,
-      clubId: event.clubId,
-
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       title: event.title,
       startTime: event.startTime.toISOString(),
       status: event.status,
@@ -504,7 +499,7 @@ export function buildHostAnalyticsFromRecords(
     })),
     reviewSummary,
     discoverySummary,
-    linkSummary: summarizeLinks(records.clubs, records.linkRows ?? []),
+    linkSummary: summarizeLinks(records.organizers, records.linkRows ?? []),
     dataQuality: [
       ...dataQualityRows(
         rows,
@@ -528,13 +523,13 @@ async function loadHostAnalytics(
 ): Promise<HostAnalyticsCallableResponse> {
   const range = resolveAnalyticsRange(payload, now);
   const previousRange = comparisonRange(range);
-  const clubs = await resolveClubs(db, payload, scope, uid);
-  const snapshotId = hostAnalyticsSnapshotId(uid, payload, range, clubs);
+  const organizers = await resolveOrganizers(db, payload, scope, uid);
+  const snapshotId = hostAnalyticsSnapshotId(uid, payload, range, organizers);
   if (scope === "host") {
     const cached = await readHostAnalyticsSnapshot(db, snapshotId, now);
     if (cached !== null) return cached;
   }
-  const events = await resolveEvents(db, payload, clubs, range, scope);
+  const events = await resolveEvents(db, payload, organizers, range, scope);
   const [martRows, operationalAttendees, registrationAnalytics, linkRows] =
     await Promise.all([
       deps.bigQuerySource.loadRows(
@@ -546,13 +541,14 @@ async function loadHostAnalytics(
           ),
         },
         {
-          clubIds: clubs.map((club) => club.id),
+          organizerIds: organizers.map((organizer) => organizer.id),
           eventId: payload.eventId ?? null,
         },
       ),
       loadOperationalAttendees(db, events),
-      loadHostRegistrationAnalytics(db, clubs.map((club) => club.id),
-        payload.eventId ?? null, range),
+      loadHostRegistrationAnalytics(db, organizers.map((
+        organizer) => organizer.id),
+      payload.eventId ?? null, range),
       // Links belong to the organizer page, so event reports have none.
       payload.eventId ? Promise.resolve([]) : deps.bigQuerySource.loadLinkRows(
         {
@@ -562,14 +558,14 @@ async function loadHostAnalytics(
             range.timezone
           ),
         },
-        clubs.map((club) => club.id),
+        organizers.map((organizer) => organizer.id),
       ).catch((error) => {
         console.warn("Owner link click rows unavailable.", error);
         return null;
       }),
     ]);
   const response = buildHostAnalyticsFromRecords(
-    {clubs, events, martRows, operationalAttendees, linkRows},
+    {organizers, events, martRows, operationalAttendees, linkRows},
     range,
     now
   );
@@ -588,20 +584,20 @@ async function loadHostAnalytics(
  * @param {string} uid Authenticated host uid.
  * @param {HostAnalyticsQueryCallablePayload} payload Normalized query.
  * @param {AnalyticsRange} range Resolved absolute range.
- * @param {ClubRecord[]} clubs Currently authorized clubs.
+ * @param {OrganizerRecord[]} clubs Currently authorized clubs.
  * @return {string} Snapshot document id.
  */
 export function hostAnalyticsSnapshotId(
   uid: string,
   payload: HostAnalyticsQueryCallablePayload,
   range: AnalyticsRange,
-  clubs: ClubRecord[]
+  organizers: OrganizerRecord[]
 ): string {
   const scopeHash = createHash("sha256").update(JSON.stringify({
     registrationReadoutVersion: 2,
-    organizerId: payload.organizerId ?? payload.clubId ?? null,
+    organizerId: payload.organizerId ?? null,
     eventId: payload.eventId ?? null,
-    clubIds: clubs.map((club) => club.id).sort(),
+    organizerIds: organizers.map((organizer) => organizer.id).sort(),
     start: range.start.toISOString(),
     endExclusive: range.endExclusive.toISOString(),
     granularity: range.granularity,
@@ -704,7 +700,6 @@ function normalizeAnalyticsPayload(data: unknown): unknown {
   const input = data as Record<string, unknown>;
   return {
     ...input,
-    clubId: nullableTrimmedString(input.clubId),
     organizerId: nullableTrimmedString(input.organizerId),
     eventId: nullableTrimmedString(input.eventId),
     startDate: nullableTrimmedString(input.startDate),
@@ -713,71 +708,72 @@ function normalizeAnalyticsPayload(data: unknown): unknown {
   };
 }
 
-async function resolveClubs(
+async function resolveOrganizers(
   db: FirebaseFirestore.Firestore,
   payload: HostAnalyticsQueryCallablePayload,
   scope: QueryScope,
   uid: string
-): Promise<ClubRecord[]> {
+): Promise<OrganizerRecord[]> {
   if (payload.eventId) {
     const eventSnap = await db.collection("events").doc(payload.eventId).get();
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
     const event = eventSnap.data() as EventDocument;
-    const eventOwnerId = event.organizerId ?? event.clubId;
-    const requestedOwnerId = payload.organizerId ?? payload.clubId;
+    const eventOwnerId = event.organizerId;
+    const requestedOwnerId = payload.organizerId;
     if (requestedOwnerId && requestedOwnerId !== eventOwnerId) {
       throw new HttpsError("permission-denied",
         "Event scope does not match organizer.");
     }
-    const club = await getClubRecord(db, eventOwnerId);
-    assertCanReadClub(club, scope, uid);
-    return [club];
+    const organizer = await getOrganizerRecord(db, eventOwnerId);
+    assertCanReadOrganizer(organizer, scope, uid);
+    return [organizer];
   }
 
-  const requestedOrganizerId = payload.organizerId ?? payload.clubId;
+  const requestedOrganizerId = payload.organizerId;
   if (requestedOrganizerId) {
-    const club = await getClubRecord(db, requestedOrganizerId);
-    assertCanReadClub(club, scope, uid);
-    return [club];
+    const organizer = await getOrganizerRecord(db, requestedOrganizerId);
+    assertCanReadOrganizer(organizer, scope, uid);
+    return [organizer];
   }
 
   if (scope === "admin") {
-    const snap = await db.collection("organizers").limit(maxAdminClubs).get();
+    const snap = await db.collection("organizers").limit(
+      maxAdminOrganizers).get();
     return snap.docs.map((doc) => ({
       id: doc.id,
-      data: doc.data() as ClubDocument,
+      data: doc.data() as OrganizerDocument,
     }));
   }
 
   const snapshots = await Promise.all([
     db.collection("organizers")
       .where("hostUserIds", "array-contains", uid)
-      .limit(maxHostClubs)
+      .limit(maxHostOrganizers)
       .get(),
     db.collection("organizers")
       .where("ownerUserId", "==", uid)
-      .limit(maxHostClubs)
+      .limit(maxHostOrganizers)
       .get(),
     db.collection("organizers")
       .where("hostUserId", "==", uid)
-      .limit(maxHostClubs)
+      .limit(maxHostOrganizers)
       .get(),
   ]);
-  const byId = new Map<string, ClubRecord>();
+  const byId = new Map<string, OrganizerRecord>();
   for (const snapshot of snapshots) {
     for (const doc of snapshot.docs) {
-      byId.set(doc.id, {id: doc.id, data: doc.data() as ClubDocument});
+      byId.set(doc.id, {id: doc.id, data: doc.data() as OrganizerDocument});
     }
   }
-  return [...byId.values()].slice(0, maxHostClubs);
+  return [...byId.values()].slice(0, maxHostOrganizers);
 }
 
 async function resolveEvents(
   db: FirebaseFirestore.Firestore,
   payload: HostAnalyticsQueryCallablePayload,
-  clubs: ClubRecord[],
+  organizers: OrganizerRecord[],
   range: AnalyticsRange,
   scope: QueryScope
 ): Promise<EventRecord[]> {
@@ -785,14 +781,14 @@ async function resolveEvents(
     const snap = await db.collection("events").doc(payload.eventId).get();
     if (!snap.exists) throw new HttpsError("not-found", "Event not found.");
     const event = snap.data() as EventDocument;
-    if (!clubs.some((club) =>
-      club.id === (event.organizerId ?? event.clubId))) {
+    if (!organizers.some((organizer) =>
+      organizer.id === (event.organizerId))) {
       throw new HttpsError("permission-denied", "Event scope changed.");
     }
     return [{id: snap.id, data: event}];
   }
 
-  if (scope === "admin" && !payload.organizerId && !payload.clubId) {
+  if (scope === "admin" && !payload.organizerId) {
     const snap = await db.collection("events")
       .where("startTime", ">=", admin.firestore.Timestamp.fromDate(
         range.start
@@ -809,9 +805,9 @@ async function resolveEvents(
   }
 
   const eventSnapshots = await Promise.all(
-    clubs.map((club) => db.collection("events")
-      .where("organizerId", "==", club.id)
-      .limit(maxHostEventsPerClub)
+    organizers.map((organizer) => db.collection("events")
+      .where("organizerId", "==", organizer.id)
+      .limit(maxHostEventsPerOrganizer)
       .get())
   );
   return eventSnapshots.flatMap((snapshot) => snapshot.docs.map((doc) => ({
@@ -841,24 +837,26 @@ async function loadOperationalAttendees(
   })));
 }
 
-async function getClubRecord(
+async function getOrganizerRecord(
   db: FirebaseFirestore.Firestore,
-  clubId: string
-): Promise<ClubRecord> {
-  const clubSnap = await db.collection("organizers").doc(clubId).get();
-  if (!clubSnap.exists) {
+  organizerId: string
+): Promise<OrganizerRecord> {
+  const organizerSnap = await db.collection("organizers").doc(
+    organizerId).get();
+  if (!organizerSnap.exists) {
     throw new HttpsError("not-found", "Club not found.");
   }
-  return {id: clubSnap.id, data: clubSnap.data() as ClubDocument};
+  return {id: organizerSnap.id,
+    data: organizerSnap.data() as OrganizerDocument};
 }
 
-function assertCanReadClub(
-  club: ClubRecord,
+function assertCanReadOrganizer(
+  organizer: OrganizerRecord,
   scope: QueryScope,
   uid: string
 ): void {
   if (scope === "admin") return;
-  if (isClubHost(club.data, uid)) return;
+  if (isOrganizerManager(organizer.data, uid)) return;
   throw new HttpsError(
     "permission-denied",
     "Only this club's host team can read host analytics."
@@ -879,8 +877,7 @@ function eventMetricsFromRows(
     if (!existing) {
       byEvent.set(row.eventId, {
         eventId: row.eventId,
-        clubId: row.clubId,
-        organizerId: fallbackEvent?.data.organizerId ?? row.clubId,
+        organizerId: fallbackEvent?.data.organizerId ?? row.organizerId,
         title: row.eventTitle ?? fallbackEventTitle(fallbackEvent),
         startTime: parseDate(row.eventStartTime) ??
           timestampToDate(fallbackEvent?.data.startTime) ??
@@ -1024,8 +1021,7 @@ function eventMetricFromEvent(
       !Number.isInteger(capacityLimit) || capacityLimit < 1) return undefined;
   return {
     eventId: event.id,
-    clubId: event.data.clubId,
-    organizerId: event.data.organizerId ?? event.data.clubId,
+    organizerId: event.data.organizerId,
     title: fallbackEventTitle(event),
     startTime: timestampToDate(event.data.startTime) ?? new Date(0),
     status: event.data.status,
@@ -1169,27 +1165,30 @@ const linkClicksUnavailable:
 /**
  * Owner link clicks (CAT-254): each link's total, most clicked first, with
  * its current label, and the clicks by where visitors came from.
- * @param {ClubRecord[]} clubs Organizers in scope, for current link labels.
+ * @param {OrganizerRecord[]} clubs Organizers in scope, for current link
+ *     labels.
  * @param {HostAnalyticsLinkRow[]} rows Clicks by link and traffic source.
  * @return {HostAnalyticsCallableResponse["linkSummary"]} The roll-up.
  */
 function summarizeLinks(
-  clubs: ClubRecord[],
+  organizers: OrganizerRecord[],
   rows: HostAnalyticsLinkRow[]
 ): HostAnalyticsCallableResponse["linkSummary"] {
-  // Organizers are read as ClubDocument here; ownerLinks is organizer-only.
-  const labels = new Map(clubs.flatMap((club) =>
-    ((club.data as Pick<OrganizerDocument, "ownerLinks">).ownerLinks ?? [])
-      .map((link): [string, string] => [`${club.id}/${link.id}`, link.label])));
+  // Organizers are read as OrganizerDocument here; ownerLinks is
+  // organizer-only.
+  const labels = new Map(organizers.flatMap((organizer) =>
+    ((organizer.data as Pick<OrganizerDocument, "ownerLinks">).ownerLinks ?? [])
+      .map((link): [string, string] => [`${organizer.id}/${link.id}`,
+        link.label])));
   const links = new Map<string, {organizerId: string; linkId: string;
     clicks: number}>();
   const sources = new Map<TrafficSource, number>();
   for (const row of rows) {
     const clicks = intValue(row.linkClicks);
     if (clicks === 0) continue;
-    const key = `${row.clubId}/${row.linkId}`;
+    const key = `${row.organizerId}/${row.linkId}`;
     const link = links.get(key) ??
-      {organizerId: row.clubId, linkId: row.linkId, clicks: 0};
+      {organizerId: row.organizerId, linkId: row.linkId, clicks: 0};
     link.clicks += clicks;
     links.set(key, link);
     const source = trafficSources.find((name) => name === row.trafficSource) ??
@@ -1408,15 +1407,15 @@ function resolveScopeEventIds(
   ));
 }
 
-function resolveClubName(
+function resolveOrganizerName(
   records: AnalyticsRecords,
   rows: HostAnalyticsMartRow[]
 ): string | null {
-  if (records.clubs.length === 1) {
-    return records.clubs[0].data.name;
+  if (records.organizers.length === 1) {
+    return records.organizers[0].data.name;
   }
   const rowNames = uniqueStrings(rows.flatMap((row) =>
-    row.clubName ? [row.clubName] : []
+    row.organizerName ? [row.organizerName] : []
   ));
   return rowNames.length === 1 ? rowNames[0] : null;
 }
@@ -1740,7 +1739,7 @@ function adminAnalyticsTargetPath(
   payload: HostAnalyticsQueryCallablePayload
 ): string {
   if (payload.eventId) return `events/${payload.eventId}/analytics`;
-  const organizerId = payload.organizerId ?? payload.clubId;
+  const organizerId = payload.organizerId;
   if (organizerId) return `organizers/${organizerId}/analytics`;
   return "admin/hostAnalytics";
 }

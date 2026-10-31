@@ -46,7 +46,7 @@ final class UpdateUserProfilePatch {
     bool? prefsMessages,
     bool? prefsEventReminders,
     bool? prefsRunStatusUpdates,
-    bool? prefsClubUpdates,
+    bool? prefsOrganizerUpdates,
     bool? prefsWeeklyDigest,
     bool? prefsShowOnMap,
     bool? prefsShowInCrossPaths,
@@ -116,8 +116,8 @@ final class UpdateUserProfilePatch {
            'prefsEventReminders': prefsEventReminders,
          if (prefsRunStatusUpdates != null)
            'prefsRunStatusUpdates': prefsRunStatusUpdates,
-         if (prefsClubUpdates != null)
-           'prefsClubUpdates': prefsClubUpdates,
+         if (prefsOrganizerUpdates != null)
+           'prefsOrganizerUpdates': prefsOrganizerUpdates,
          if (prefsWeeklyDigest != null)
            'prefsWeeklyDigest': prefsWeeklyDigest,
          if (prefsShowOnMap != null)

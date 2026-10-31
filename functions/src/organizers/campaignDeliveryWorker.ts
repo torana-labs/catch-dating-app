@@ -347,7 +347,7 @@ function senderGateReason(params: {
   if (
     params.campaign.eventId &&
     (!params.event ||
-      (params.event.organizerId ?? params.event.clubId) !==
+      (params.event.organizerId) !==
         params.organizerId ||
       params.event.status !== "active" ||
       !params.inviteToken)

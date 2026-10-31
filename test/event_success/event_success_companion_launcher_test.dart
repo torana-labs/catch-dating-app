@@ -249,7 +249,7 @@ Future<void> _pumpLauncherHarness(
   EventParticipation? participation,
 }) async {
   final organizersRepository = FakeOrganizersRepository()
-    ..organizersById[event.clubId] = buildOrganizer(id: event.clubId);
+    ..organizersById[event.organizerId] = buildOrganizer(id: event.organizerId);
   final eventSuccessRepository = _FakeEventSuccessRepository(plan: plan);
   late final GoRouter router;
   router = GoRouter(

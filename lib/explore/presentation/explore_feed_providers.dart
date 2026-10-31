@@ -326,7 +326,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   };
   for (final event in personalEventsState.value ?? const <Event>[]) {
     final participation = participationByEventId[event.id];
-    if (sourceOrganizerIds.contains(event.clubId) ||
+    if (sourceOrganizerIds.contains(event.organizerId) ||
         (event.synthetic &&
             participation?.status == EventParticipationStatus.signedUp)) {
       eventsById[event.id] = event;
@@ -341,10 +341,10 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
     eventsById[event.id] = event;
   }
   final extraOrganizerIds = <String>{
-    for (final clubId in serverOrganizerIds ?? const <String>{})
-      if (!sourceOrganizerIds.contains(clubId)) clubId,
+    for (final organizerId in serverOrganizerIds ?? const <String>{})
+      if (!sourceOrganizerIds.contains(organizerId)) organizerId,
     for (final event in eventsById.values)
-      if (!sourceOrganizerIds.contains(event.clubId)) event.clubId,
+      if (!sourceOrganizerIds.contains(event.organizerId)) event.organizerId,
   };
   final extraOrganizersAsync = extraOrganizerIds.isEmpty
       ? const AsyncData<List<Organizer>>([])
@@ -372,7 +372,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final allItems = eventsById.values
       .where((event) => event.isUpcomingAt(now))
       .map((event) {
-        final organizer = organizerById[event.clubId];
+        final organizer = organizerById[event.organizerId];
         final participation = participationByEventId[event.id];
         final isSignedUpSyntheticFixture =
             event.synthetic &&
@@ -384,7 +384,9 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
             (!organizer.isPubliclyBrowseable && !isSignedUpSyntheticFixture)) {
           return null;
         }
-        final isOrganizerMember = membershipOrganizerIds.contains(event.clubId);
+        final isOrganizerMember = membershipOrganizerIds.contains(
+          event.organizerId,
+        );
         final distanceFromUserKm = _distanceFromUserKm(
           event: event,
           deviceLocation: deviceLocation,
@@ -402,7 +404,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
           ),
           isJoinedOrganizerMember: isOrganizerMember,
           isFollowedOrganizerSignal: followedOrganizerIds.contains(
-            event.clubId,
+            event.organizerId,
           ),
           distanceFromUserKm: distanceFromUserKm,
         );

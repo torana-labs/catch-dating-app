@@ -211,7 +211,7 @@ Organizer _organizer({
     ownerUserId: hostName == null ? null : 'host-$id',
     createdAt: DateTime(2025, 9, 12),
     imageUrl: 'https://images.unsplash.com/photo-$photoSeed?w=1200&q=80',
-    clubPhotos: [_photo('club-$id', 0, photoSeed)],
+    organizerPhotos: [_photo('club-$id', 0, photoSeed)],
     tags: tags,
     memberCount: memberCount,
     rating: rating,
@@ -235,7 +235,7 @@ Event _event({
 }) {
   return Event(
     id: id,
-    clubId: organizer.id,
+    organizerId: organizer.id,
     startTime: startTime,
     endTime: startTime.add(const Duration(hours: 1, minutes: 45)),
     meetingPoint: meetingPoint,

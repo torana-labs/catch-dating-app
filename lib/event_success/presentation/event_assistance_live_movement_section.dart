@@ -29,7 +29,7 @@ class EventAssistanceLiveMovementSection extends ConsumerWidget {
             ],
       onDeparture: (id) {
         final scope = EventAssistanceGroupScope(
-          organizerId: event.clubId,
+          organizerId: event.organizerId,
           eventId: event.id,
           groupId: id,
         );
@@ -48,7 +48,7 @@ class EventAssistanceLiveMovementSection extends ConsumerWidget {
       },
       onCheckpointHistory: (id) {
         final scope = EventAssistanceGroupScope(
-          organizerId: event.clubId,
+          organizerId: event.organizerId,
           eventId: event.id,
           groupId: id,
         );

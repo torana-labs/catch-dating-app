@@ -10,7 +10,6 @@ export function normalizeCreateEventPayload(data: unknown): unknown {
   const payload = normalizeFields(data, {
     stringFields: [
       "eventId",
-      "clubId",
       "organizerId",
       "name",
       "meetingPoint",
@@ -19,7 +18,7 @@ export function normalizeCreateEventPayload(data: unknown): unknown {
     ],
     nullableStringFields: ["locationDetails", "photoUrl"],
   });
-  const organizerId = payload.organizerId ?? payload.clubId;
+  const organizerId = payload.organizerId;
   if (organizerId !== undefined) {
     payload.organizerId = organizerId;
   }

@@ -220,7 +220,7 @@ export async function recordEventSuccessUnitOutcomesHandler(
     const now = deps.serverTimestamp();
     const identity = {
       eventId: payload.eventId,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       ...(event.organizerId != null ? {organizerId: event.organizerId} : {}),
     };
     transaction.set(outcomeRef, {

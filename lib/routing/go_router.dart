@@ -131,7 +131,7 @@ String hostProgramsLegacyRedirect(Uri uri) =>
 
 @visibleForTesting
 HostOrganizersScreen hostOrganizerScreenForUri(Uri uri) => HostOrganizersScreen(
-  initialOrganizerId: uri.queryParameters['clubId'],
+  initialOrganizerId: uri.queryParameters['organizerId'],
   initialExpandedEditField: uri.queryParameters['editField'],
   initialTab: HostOrganizerTab.values.firstWhere(
     (tab) => tab.name == uri.queryParameters['tab'],
@@ -394,7 +394,7 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
                       pageBuilder: _exploreMapPage,
                     ),
                     GoRoute(
-                      path: ':clubId',
+                      path: ':organizerId',
                       name: Routes.organizerDetailScreen.name,
                       parentNavigatorKey: keys.root,
                       pageBuilder: _organizerDetailPage,
@@ -411,7 +411,8 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
                               parentNavigatorKey: keys.root,
                               builder: (context, state) =>
                                   EventSuccessCompanionRouteScreen(
-                                    clubId: state.pathParameters['clubId']!,
+                                    organizerId:
+                                        state.pathParameters['organizerId']!,
                                     eventId: state.pathParameters['eventId']!,
                                     initialEvent: _routeEventExtra(state),
                                   ),
@@ -553,7 +554,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostEventRosterScreen.path,
     name: Routes.hostEventRosterScreen.name,
     builder: (context, state) => HostEventManageRouteScreen(
-      clubId: state.pathParameters['clubId']!,
+      organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
       initialEvent: _routeEventExtra(state),
       initialSection: HostEventManageSection.guests,
@@ -565,7 +566,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostEventPublicationScreen.path,
     name: Routes.hostEventPublicationScreen.name,
     builder: (context, state) => HostEventPublicationRouteScreen(
-      clubId: state.pathParameters['clubId']!,
+      organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
     ),
   ),
@@ -819,7 +820,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostCreateProgramScreen.path,
     name: Routes.hostCreateProgramScreen.name,
     builder: (context, state) =>
-        ProgramCreateScreen(organizerId: state.pathParameters['clubId']!),
+        ProgramCreateScreen(organizerId: state.pathParameters['organizerId']!),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.events,
@@ -874,15 +875,16 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     root: HostWorkspaceRoot.organizer,
     path: Routes.hostOrganizerMessagingScreen.path,
     name: Routes.hostOrganizerMessagingScreen.name,
-    builder: (context, state) =>
-        HostMessagingSetupScreen(clubId: state.pathParameters['clubId']!),
+    builder: (context, state) => HostMessagingSetupScreen(
+      organizerId: state.pathParameters['organizerId']!,
+    ),
   ),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.organizer,
     path: Routes.hostOrganizerEventDefaultsScreen.path,
     name: Routes.hostOrganizerEventDefaultsScreen.name,
     builder: (context, state) => HostOrganizerEventDefaultsScreen(
-      clubId: state.uri.queryParameters['clubId'] ?? '',
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
   HostWorkspaceDestination(
@@ -890,7 +892,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostOrganizerLiveGuideScreen.path,
     name: Routes.hostOrganizerLiveGuideScreen.name,
     builder: (context, state) => HostOrganizerLiveGuideScreen(
-      clubId: state.uri.queryParameters['clubId'] ?? '',
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
   HostWorkspaceDestination(
@@ -898,7 +900,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostOrganizerTeamScreen.path,
     name: Routes.hostOrganizerTeamScreen.name,
     builder: (context, state) => HostOrganizerTeamScreen(
-      clubId: state.uri.queryParameters['clubId'] ?? '',
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
   HostWorkspaceDestination(
@@ -906,7 +908,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostOrganizerPaymentsScreen.path,
     name: Routes.hostOrganizerPaymentsScreen.name,
     builder: (context, state) => HostOrganizerPaymentsScreen(
-      clubId: state.uri.queryParameters['clubId'] ?? '',
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
   HostWorkspaceDestination(
@@ -914,7 +916,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostOrganizerMembershipsScreen.path,
     name: Routes.hostOrganizerMembershipsScreen.name,
     builder: (context, state) => HostOrganizerMembershipsScreen(
-      clubId: state.uri.queryParameters['clubId'] ?? '',
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
   HostWorkspaceDestination(
@@ -934,7 +936,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostOrganizerDetailScreen.path,
     name: Routes.hostOrganizerDetailScreen.name,
     builder: (context, state) => OrganizerDetailScreen(
-      clubId: state.pathParameters['clubId']!,
+      organizerId: state.pathParameters['organizerId']!,
       initialOrganizer: _organizerDetailInitialOrganizer(state),
     ),
   ),
@@ -945,7 +947,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) {
       final extra = state.extra;
       return HostCreateEventRouteScreen(
-        clubId: state.pathParameters['clubId']!,
+        organizerId: state.pathParameters['organizerId']!,
         initialOrganizer: switch (extra) {
           final HostCreateEventRouteArguments arguments =>
             arguments.initialOrganizer,
@@ -988,7 +990,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostEventRehearsalStartScreen.path,
     name: Routes.hostEventRehearsalStartScreen.name,
     builder: (context, state) => HostEventRehearsalStartScreen(
-      clubId: state.pathParameters['clubId']!,
+      organizerId: state.pathParameters['organizerId']!,
       sourceEventId: state.uri.queryParameters['eventId'],
       startFromOrganizerDefaults:
           state.uri.queryParameters['source'] == 'custom',
@@ -1000,7 +1002,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostEventRehearsalScreen.path,
     name: Routes.hostEventRehearsalScreen.name,
     builder: (context, state) => HostEventRehearsalScreen(
-      clubId: state.pathParameters['clubId']!,
+      organizerId: state.pathParameters['organizerId']!,
       sessionId: state.pathParameters['sessionId']!,
     ),
   ),
@@ -1016,7 +1018,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostAppEventManageScreen.path,
     name: Routes.hostAppEventManageScreen.name,
     builder: (context, state) => HostEventManageRouteScreen(
-      clubId: state.pathParameters['clubId']!,
+      organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
       initialEvent: _routeEventExtra(state),
       initialSection: _hostManageSectionFromState(state),
@@ -1028,7 +1030,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostAppEditEventScreen.path,
     name: Routes.hostAppEditEventScreen.name,
     builder: (context, state) => EditHostedEventRouteScreen(
-      clubId: state.pathParameters['clubId']!,
+      organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
       initialEvent: _routeEventExtra(state),
     ),
@@ -1038,7 +1040,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostAppAttendanceSheet.path,
     name: Routes.hostAppAttendanceSheet.name,
     builder: (context, state) => HostEventManageRouteScreen(
-      clubId: state.pathParameters['clubId']!,
+      organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
       initialEvent: _routeEventExtra(state),
       initialSection: HostEventManageSection.live,
@@ -1049,7 +1051,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostAppEventSuccessScreen.path,
     name: Routes.hostAppEventSuccessScreen.name,
     builder: (context, state) => HostEventManageRouteScreen(
-      clubId: state.pathParameters['clubId']!,
+      organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
       initialEvent: _routeEventExtra(state),
       initialSection: _hostManageSectionFromState(state),
@@ -1347,8 +1349,8 @@ Uri _hostWorkspaceUri(Routes root, GoRouterState state) {
     queryParameters: {
       ...state.uri.queryParameters,
       if (_routeOrganizerQueryId(state) == null &&
-          state.pathParameters['clubId'] != null)
-        'organizerId': state.pathParameters['clubId']!,
+          state.pathParameters['organizerId'] != null)
+        'organizerId': state.pathParameters['organizerId']!,
       if (root == Routes.hostAudienceScreen && state.uri.path != root.path)
         'view': state.uri.queryParameters.containsKey('_parentAudienceId')
             ? HostAudienceView.audiences.name
@@ -1475,7 +1477,7 @@ StatefulShellRoute _hostShellRoute(
     builder: (context, state, navigationShell) => HostAppShell(
       navigationShell: navigationShell,
       requestedOrganizerId:
-          _routeOrganizerQueryId(state) ?? state.pathParameters['clubId'],
+          _routeOrganizerQueryId(state) ?? state.pathParameters['organizerId'],
     ),
     branches: [
       StatefulShellBranch(
@@ -1508,7 +1510,7 @@ StatefulShellRoute _hostShellRoute(
 }
 
 EventDetailScreen _eventDetailScreen(GoRouterState state) => EventDetailScreen(
-  clubId: state.pathParameters['clubId']!,
+  organizerId: state.pathParameters['organizerId']!,
   eventId: state.pathParameters['eventId']!,
   inviteCode: state.uri.queryParameters['invite'],
   inviteLinkId:

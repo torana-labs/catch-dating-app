@@ -13,14 +13,14 @@ export interface HostAnalyticsBigQueryRange {
 }
 
 export interface HostAnalyticsBigQueryScope {
-  clubIds: string[];
+  organizerIds: string[];
   eventId: string | null;
 }
 
 export interface HostAnalyticsMartRow {
   date: string;
-  clubId: string;
-  clubName: string | null;
+  organizerId: string;
+  organizerName: string | null;
   eventId: string | null;
   eventTitle: string | null;
   eventStartTime: string | null;
@@ -60,7 +60,7 @@ export interface HostAnalyticsMartRow {
 
 /** Owner link clicks for one organizer, link and traffic source. */
 export interface HostAnalyticsLinkRow {
-  clubId: string;
+  organizerId: string;
   linkId: string;
   trafficSource: string | null;
   linkClicks: number;
@@ -73,14 +73,14 @@ export interface HostAnalyticsBigQuerySource {
   ): Promise<HostAnalyticsMartRow[]>;
   loadLinkRows(
     range: HostAnalyticsBigQueryRange,
-    clubIds: string[],
+    organizerIds: string[],
   ): Promise<HostAnalyticsLinkRow[]>;
 }
 
 interface RawHostAnalyticsMartRow {
   date: string;
-  clubId: string;
-  clubName: string | null;
+  organizerId: string;
+  organizerName: string | null;
   eventId: string | null;
   eventTitle: string | null;
   eventStartTime: string | null;
@@ -119,7 +119,7 @@ interface RawHostAnalyticsMartRow {
 }
 
 interface RawHostAnalyticsLinkRow {
-  clubId: string;
+  organizerId: string;
   linkId: string;
   trafficSource: string | null;
   linkClicks: string | number | null;
@@ -137,13 +137,13 @@ implements HostAnalyticsBigQuerySource {
     range: HostAnalyticsBigQueryRange,
     scope: HostAnalyticsBigQueryScope,
   ): Promise<HostAnalyticsMartRow[]> {
-    if (scope.clubIds.length === 0) return [];
+    if (scope.organizerIds.length === 0) return [];
     const rows = await this.client.query<RawHostAnalyticsMartRow>(
       hostAnalyticsRowsSql(this.table),
       [
         dateParam("startDate", range.startDate),
         dateParam("endDate", range.endDate),
-        stringArrayParam("clubIds", scope.clubIds),
+        stringArrayParam("organizerIds", scope.organizerIds),
         stringParam("eventId", scope.eventId),
         intParam("limit", 5000),
       ],
@@ -153,20 +153,20 @@ implements HostAnalyticsBigQuerySource {
 
   async loadLinkRows(
     range: HostAnalyticsBigQueryRange,
-    clubIds: string[],
+    organizerIds: string[],
   ): Promise<HostAnalyticsLinkRow[]> {
-    if (clubIds.length === 0) return [];
+    if (organizerIds.length === 0) return [];
     const rows = await this.client.query<RawHostAnalyticsLinkRow>(
       hostAnalyticsLinkRowsSql(this.linkTable),
       [
         dateParam("startDate", range.startDate),
         dateParam("endDate", range.endDate),
-        stringArrayParam("clubIds", clubIds),
+        stringArrayParam("organizerIds", organizerIds),
         intParam("limit", 2000),
       ],
     );
     return rows.map((row) => ({
-      clubId: row.clubId,
+      organizerId: row.organizerId,
       linkId: row.linkId,
       trafficSource: row.trafficSource,
       linkClicks: numberValue(row.linkClicks),
@@ -187,8 +187,8 @@ export function hostAnalyticsRowsSql(table: string): string {
   return `
 SELECT
   CAST(date AS STRING) AS date,
-  club_id AS clubId,
-  ANY_VALUE(club_name) AS clubName,
+  club_id AS organizerId,
+  ANY_VALUE(club_name) AS organizerName,
   event_id AS eventId,
   ANY_VALUE(event_title) AS eventTitle,
   CAST(ANY_VALUE(event_start_time) AS STRING) AS eventStartTime,
@@ -229,7 +229,7 @@ SELECT
 FROM \`${table}\` AS martRow
 WHERE date >= @startDate
   AND date <= @endDate
-  AND club_id IN UNNEST(@clubIds)
+  AND club_id IN UNNEST(@organizerIds)
   AND (@eventId IS NULL OR event_id = @eventId)
 GROUP BY date, club_id, event_id
 ORDER BY date ASC
@@ -239,14 +239,14 @@ LIMIT @limit`;
 export function hostAnalyticsLinkRowsSql(table: string): string {
   return `
 SELECT
-  club_id AS clubId,
+  club_id AS organizerId,
   link_id AS linkId,
   traffic_source AS trafficSource,
   SUM(link_clicks) AS linkClicks
 FROM \`${table}\`
 WHERE date >= @startDate
   AND date <= @endDate
-  AND club_id IN UNNEST(@clubIds)
+  AND club_id IN UNNEST(@organizerIds)
 GROUP BY club_id, link_id, traffic_source
 ORDER BY linkClicks DESC
 LIMIT @limit`;
@@ -257,8 +257,8 @@ function normalizeMartRow(
 ): HostAnalyticsMartRow {
   return {
     date: row.date,
-    clubId: row.clubId,
-    clubName: row.clubName,
+    organizerId: row.organizerId,
+    organizerName: row.organizerName,
     eventId: row.eventId,
     eventTitle: row.eventTitle,
     eventStartTime: row.eventStartTime,

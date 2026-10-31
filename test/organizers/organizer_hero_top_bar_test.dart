@@ -18,7 +18,9 @@ void main() {
       final logoPhoto = _photo('logo', 0);
 
       expect(
-        organizerHeroVariantFor(buildOrganizer(clubPhotos: [organizerPhoto])),
+        organizerHeroVariantFor(
+          buildOrganizer(organizerPhotos: [organizerPhoto]),
+        ),
         OrganizerHeroVariant.poster,
       );
       expect(
@@ -38,7 +40,7 @@ void main() {
     });
 
     testWidgets('photo clubs render the poster hero shell', (tester) async {
-      final organizer = buildOrganizer(clubPhotos: [_photo('cover', 0)]);
+      final organizer = buildOrganizer(organizerPhotos: [_photo('cover', 0)]);
 
       await _pumpHeroModule(
         tester,

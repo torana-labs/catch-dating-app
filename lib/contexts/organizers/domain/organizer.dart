@@ -41,7 +41,7 @@ abstract class Organizer with _$Organizer {
     String? profileImageUrl,
     @JsonKey(name: 'organizerPhotos')
     @Default([])
-    List<UploadedPhoto> clubPhotos,
+    List<UploadedPhoto> organizerPhotos,
     UploadedPhoto? logoPhoto,
     @Default([]) List<String> tags,
     @JsonKey(name: 'followerCount') @Default(0) int memberCount,
@@ -108,11 +108,9 @@ abstract class Organizer with _$Organizer {
   }
 
   String? get primaryOrganizerPhotoUrl {
-    if (clubPhotos.isNotEmpty) return clubPhotos.first.url;
+    if (organizerPhotos.isNotEmpty) return organizerPhotos.first.url;
     return imageUrl;
   }
-
-  List<UploadedPhoto> get organizerPhotos => clubPhotos;
 
   int get followerCount => memberCount;
 

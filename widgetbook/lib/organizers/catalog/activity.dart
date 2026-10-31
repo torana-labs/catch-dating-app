@@ -14,7 +14,7 @@ import 'fixtures.dart';
 )
 Widget organizerNextRunBannerStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubNextRunBanner',
+    title: 'OrganizerNextRunBanner',
     catalogId: 'section.club.next_run_banner',
     children: [
       WidgetbookPageStateCard(
@@ -39,7 +39,7 @@ Widget organizerNextRunBannerStates(BuildContext context) {
 )
 Widget organizerActivitySectionStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubActivitySection',
+    title: 'OrganizerActivitySection',
     catalogId: 'section.club.activity',
     children: [
       WidgetbookPageStateCard(

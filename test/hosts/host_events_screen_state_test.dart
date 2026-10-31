@@ -38,7 +38,7 @@ void main() {
   test('Host event entry resolves organizer capabilities once', () {
     final draft = EventDraft(
       id: 'draft-1',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       savedAt: DateTime(2026, 6, 15, 10),
       customActivityLabel: 'Quiz night',
     );
@@ -84,11 +84,11 @@ void main() {
         drafts: [
           EventDraft(
             id: 'other-draft',
-            clubId: 'club-2',
+            organizerId: 'club-2',
             savedAt: DateTime(2026, 6, 15),
           ),
         ],
-        repeatSource: buildEvent(id: 'other-event', clubId: 'club-2'),
+        repeatSource: buildEvent(id: 'other-event', organizerId: 'club-2'),
       );
 
       expect(state.continueIntents, isEmpty);

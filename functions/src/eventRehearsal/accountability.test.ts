@@ -29,7 +29,7 @@ import {
 
 function organizer(): OrganizerDocument {
   const fixture = JSON.parse(
-    readFileSync("../contracts/fixtures/valid/club_doc.json", "utf8")
+    readFileSync("../contracts/fixtures/valid/organizer_doc.json", "utf8")
   );
   const schema = JSON.parse(
     readFileSync("../contracts/firestore/organizers.schema.json", "utf8")
@@ -459,7 +459,6 @@ test(
     const session = practiceSession();
     session.setup.moduleIds.push("accountability");
     session.organizerId = "practice-accountability-" + id;
-    session.clubId = session.organizerId;
     session.publicRehearsalId = "public-" + id;
     session.viewerTokenHash = createHash("sha256")
       .update(session.publicRehearsalId)

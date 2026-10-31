@@ -490,7 +490,6 @@ import {
   userProfileDocumentSchema,
   publicProfileDocumentSchema,
   hostProfileDocumentSchema,
-  clubDocumentSchema,
   organizerDocumentSchema,
   organizerPostDocumentSchema,
   organizerPostDeliveryOperationDocumentSchema,
@@ -653,10 +652,8 @@ import {
   organizerClaimInstagramMessageDocumentSchema,
   instagramAccessTokenDocumentSchema,
   organizerScheduleLockDocumentSchema,
-  clubPostDocumentSchema,
-  clubMembershipDocumentSchema,
-  clubHostClaimDocumentSchema,
-  clubClaimRequestDocumentSchema,
+  organizerMembershipDocumentSchema,
+  organizerHostClaimDocumentSchema,
   eventDocumentSchema,
   eventPlanChangeDocumentSchema,
   externalEventDocumentSchema,
@@ -835,7 +832,6 @@ import {
   eventSuccessStandingsDocumentSchema,
   eventSuccessScorecardDocumentSchema,
   eventSafetyReportDocumentSchema,
-  clubScheduleLockDocumentSchema,
   userEventScheduleLockDocumentSchema,
   savedEventDocumentSchema,
   hostAnalyticsEventSchema,
@@ -864,7 +860,6 @@ import {
   organizerIntakeFieldCorrectionDocumentSchema,
   organizerPolicyGapReviewDecisionDocumentSchema,
   updateUserProfileCallablePayloadSchema,
-  createClubCallablePayloadSchema,
   createOrganizerCallablePayloadSchema,
   createOrganizerCallableResponseSchema,
   updateOrganizerCallablePayloadSchema,
@@ -881,27 +876,19 @@ import {
   confirmOrganizerClaimVerificationCallablePayloadSchema,
   confirmOrganizerClaimVerificationCallableResponseSchema,
   adminDecideOrganizerClaimCallablePayloadSchema,
-  createClubCallableResponseSchema,
-  createClubPostCallablePayloadSchema,
-  createClubPostCallableResponseSchema,
   sendEventBroadcastCallablePayloadSchema,
   sendEventBroadcastCallableResponseSchema,
-  updateClubCallablePayloadSchema,
   hostAnalyticsQueryCallablePayloadSchema,
   hostAnalyticsCallableResponseSchema,
   userAnalyticsQueryCallablePayloadSchema,
   userAnalyticsCallableResponseSchema,
-  addClubHostCallablePayloadSchema,
+  addOrganizerHostCallablePayloadSchema,
   organizerFollowCallablePayloadSchema,
   setOrganizerNotificationPreferenceCallablePayloadSchema,
   addOrganizerManagerCallablePayloadSchema,
   removeOrganizerManagerCallablePayloadSchema,
   transferOrganizerOwnershipCallablePayloadSchema,
-  removeClubHostCallablePayloadSchema,
-  transferClubOwnershipCallablePayloadSchema,
-  requestClubClaimCallablePayloadSchema,
-  requestClubClaimCallableResponseSchema,
-  adminDecideClubClaimCallablePayloadSchema,
+  removeOrganizerHostCallablePayloadSchema,
   adminDecideOrganizerIntakeCallablePayloadSchema,
   adminRecordOrganizerCurationCallablePayloadSchema,
   adminRecordEventIntakeReviewDecisionCallablePayloadSchema,
@@ -927,12 +914,9 @@ import {
   adminRefreshOrganizerEventsCallableResponseSchema,
   adminPublishListingEventsCallableResponseSchema,
   adminDecideOrganizerPolicyGapCallablePayloadSchema,
-  adminSetClubIndexStatusCallablePayloadSchema,
+  adminSetOrganizerIndexStatusCallablePayloadSchema,
   adminListCrossPathsShowcaseCandidatesCallablePayloadSchema,
   adminSetCrossPathsShowcaseEligibilityCallablePayloadSchema,
-  adminGetClubDetailsCallablePayloadSchema,
-  adminListClubDetailsCallablePayloadSchema,
-  adminUpdateClubDetailsCallablePayloadSchema,
   adminGetOrganizerDetailsCallablePayloadSchema,
   adminListOrganizerDetailsCallablePayloadSchema,
   adminUpdateOrganizerDetailsCallablePayloadSchema,
@@ -956,13 +940,10 @@ import {
   adminListExternalEventDetailsCallablePayloadSchema,
   adminUpdateEventDetailsCallablePayloadSchema,
   adminTakedownExternalEventCallablePayloadSchema,
-  startClubHostConversationCallablePayloadSchema,
+  startOrganizerHostConversationCallablePayloadSchema,
   startOrganizerConversationCallablePayloadSchema,
   startOrganizerContactConversationCallablePayloadSchema,
-  archiveClubCallablePayloadSchema,
-  deleteClubCallablePayloadSchema,
-  clubMembershipCallablePayloadSchema,
-  setClubNotificationPreferenceCallablePayloadSchema,
+  organizerMembershipCallablePayloadSchema,
   eventOfferAuthorityRowSchema,
   eventOfferRowSchema,
   eventOfferPaymentSnapshotSchema,
@@ -1240,10 +1221,6 @@ import {
   markEventAttendanceCallableResponseSchema,
   selfCheckInAttendanceCallablePayloadSchema,
   createEventReviewCallablePayloadSchema,
-  createPublicClubReviewCallablePayloadSchema,
-  createPublicClubReviewCallableResponseSchema,
-  listPublicClubReviewsCallablePayloadSchema,
-  listPublicClubReviewsCallableResponseSchema,
   createPublicOrganizerReviewCallablePayloadSchema,
   createPublicOrganizerReviewCallableResponseSchema,
   listPublicOrganizerReviewsCallablePayloadSchema,
@@ -1820,7 +1797,6 @@ export const validateAccessApplicationDocument = ajv.compile(accessApplicationDo
 export const validateUserProfileDocument = ajv.compile(userProfileDocumentSchema);
 export const validatePublicProfileDocument = ajv.compile(publicProfileDocumentSchema);
 export const validateHostProfileDocument = ajv.compile(hostProfileDocumentSchema);
-export const validateClubDocument = ajv.compile(clubDocumentSchema);
 export const validateOrganizerDocument = ajv.compile(organizerDocumentSchema);
 export const validateOrganizerPostDocument = ajv.compile(organizerPostDocumentSchema);
 export const validateOrganizerPostDeliveryOperationDocument = ajv.compile(organizerPostDeliveryOperationDocumentSchema);
@@ -1983,10 +1959,8 @@ export const validateOrganizerClaimInstagramCodeDocument = ajv.compile(organizer
 export const validateOrganizerClaimInstagramMessageDocument = ajv.compile(organizerClaimInstagramMessageDocumentSchema);
 export const validateInstagramAccessTokenDocument = ajv.compile(instagramAccessTokenDocumentSchema);
 export const validateOrganizerScheduleLockDocument = ajv.compile(organizerScheduleLockDocumentSchema);
-export const validateClubPostDocument = ajv.compile(clubPostDocumentSchema);
-export const validateClubMembershipDocument = ajv.compile(clubMembershipDocumentSchema);
-export const validateClubHostClaimDocument = ajv.compile(clubHostClaimDocumentSchema);
-export const validateClubClaimRequestDocument = ajv.compile(clubClaimRequestDocumentSchema);
+export const validateOrganizerMembershipDocument = ajv.compile(organizerMembershipDocumentSchema);
+export const validateOrganizerHostClaimDocument = ajv.compile(organizerHostClaimDocumentSchema);
 export const validateEventDocument = ajv.compile(eventDocumentSchema);
 export const validateEventPlanChangeDocument = ajv.compile(eventPlanChangeDocumentSchema);
 export const validateExternalEventDocument = ajv.compile(externalEventDocumentSchema);
@@ -2165,7 +2139,6 @@ export const validateEventSuccessUnitOutcomesDocument = ajv.compile(eventSuccess
 export const validateEventSuccessStandingsDocument = ajv.compile(eventSuccessStandingsDocumentSchema);
 export const validateEventSuccessScorecardDocument = ajv.compile(eventSuccessScorecardDocumentSchema);
 export const validateEventSafetyReportDocument = ajv.compile(eventSafetyReportDocumentSchema);
-export const validateClubScheduleLockDocument = ajv.compile(clubScheduleLockDocumentSchema);
 export const validateUserEventScheduleLockDocument = ajv.compile(userEventScheduleLockDocumentSchema);
 export const validateSavedEventDocument = ajv.compile(savedEventDocumentSchema);
 export const validateHostAnalyticsEvent = ajv.compile(hostAnalyticsEventSchema);
@@ -2194,7 +2167,6 @@ export const validateOrganizerIntakeCurationDecisionDocument = ajv.compile(organ
 export const validateOrganizerIntakeFieldCorrectionDocument = ajv.compile(organizerIntakeFieldCorrectionDocumentSchema);
 export const validateOrganizerPolicyGapReviewDecisionDocument = ajv.compile(organizerPolicyGapReviewDecisionDocumentSchema);
 export const validateUpdateUserProfileCallablePayload = ajv.compile(updateUserProfileCallablePayloadSchema);
-export const validateCreateClubCallablePayload = ajv.compile(createClubCallablePayloadSchema);
 export const validateCreateOrganizerCallablePayload = ajv.compile(createOrganizerCallablePayloadSchema);
 export const validateCreateOrganizerCallableResponse = ajv.compile(createOrganizerCallableResponseSchema);
 export const validateUpdateOrganizerCallablePayload = ajv.compile(updateOrganizerCallablePayloadSchema);
@@ -2211,27 +2183,19 @@ export const validateOrganizerClaimVerificationOptionsCallableResponse = ajv.com
 export const validateConfirmOrganizerClaimVerificationCallablePayload = ajv.compile(confirmOrganizerClaimVerificationCallablePayloadSchema);
 export const validateConfirmOrganizerClaimVerificationCallableResponse = ajv.compile(confirmOrganizerClaimVerificationCallableResponseSchema);
 export const validateAdminDecideOrganizerClaimCallablePayload = ajv.compile(adminDecideOrganizerClaimCallablePayloadSchema);
-export const validateCreateClubCallableResponse = ajv.compile(createClubCallableResponseSchema);
-export const validateCreateClubPostCallablePayload = ajv.compile(createClubPostCallablePayloadSchema);
-export const validateCreateClubPostCallableResponse = ajv.compile(createClubPostCallableResponseSchema);
 export const validateSendEventBroadcastCallablePayload = ajv.compile(sendEventBroadcastCallablePayloadSchema);
 export const validateSendEventBroadcastCallableResponse = ajv.compile(sendEventBroadcastCallableResponseSchema);
-export const validateUpdateClubCallablePayload = ajv.compile(updateClubCallablePayloadSchema);
 export const validateHostAnalyticsQueryCallablePayload = ajv.compile(hostAnalyticsQueryCallablePayloadSchema);
 export const validateHostAnalyticsCallableResponse = ajv.compile(hostAnalyticsCallableResponseSchema);
 export const validateUserAnalyticsQueryCallablePayload = ajv.compile(userAnalyticsQueryCallablePayloadSchema);
 export const validateUserAnalyticsCallableResponse = ajv.compile(userAnalyticsCallableResponseSchema);
-export const validateAddClubHostCallablePayload = ajv.compile(addClubHostCallablePayloadSchema);
+export const validateAddOrganizerHostCallablePayload = ajv.compile(addOrganizerHostCallablePayloadSchema);
 export const validateOrganizerFollowCallablePayload = ajv.compile(organizerFollowCallablePayloadSchema);
 export const validateSetOrganizerNotificationPreferenceCallablePayload = ajv.compile(setOrganizerNotificationPreferenceCallablePayloadSchema);
 export const validateAddOrganizerManagerCallablePayload = ajv.compile(addOrganizerManagerCallablePayloadSchema);
 export const validateRemoveOrganizerManagerCallablePayload = ajv.compile(removeOrganizerManagerCallablePayloadSchema);
 export const validateTransferOrganizerOwnershipCallablePayload = ajv.compile(transferOrganizerOwnershipCallablePayloadSchema);
-export const validateRemoveClubHostCallablePayload = ajv.compile(removeClubHostCallablePayloadSchema);
-export const validateTransferClubOwnershipCallablePayload = ajv.compile(transferClubOwnershipCallablePayloadSchema);
-export const validateRequestClubClaimCallablePayload = ajv.compile(requestClubClaimCallablePayloadSchema);
-export const validateRequestClubClaimCallableResponse = ajv.compile(requestClubClaimCallableResponseSchema);
-export const validateAdminDecideClubClaimCallablePayload = ajv.compile(adminDecideClubClaimCallablePayloadSchema);
+export const validateRemoveOrganizerHostCallablePayload = ajv.compile(removeOrganizerHostCallablePayloadSchema);
 export const validateAdminDecideOrganizerIntakeCallablePayload = ajv.compile(adminDecideOrganizerIntakeCallablePayloadSchema);
 export const validateAdminRecordOrganizerCurationCallablePayload = ajv.compile(adminRecordOrganizerCurationCallablePayloadSchema);
 export const validateAdminRecordEventIntakeReviewDecisionCallablePayload = ajv.compile(adminRecordEventIntakeReviewDecisionCallablePayloadSchema);
@@ -2257,12 +2221,9 @@ export const validateAdminRefreshOrganizerEventsCallablePayload = ajv.compile(ad
 export const validateAdminRefreshOrganizerEventsCallableResponse = ajv.compile(adminRefreshOrganizerEventsCallableResponseSchema);
 export const validateAdminPublishListingEventsCallableResponse = ajv.compile(adminPublishListingEventsCallableResponseSchema);
 export const validateAdminDecideOrganizerPolicyGapCallablePayload = ajv.compile(adminDecideOrganizerPolicyGapCallablePayloadSchema);
-export const validateAdminSetClubIndexStatusCallablePayload = ajv.compile(adminSetClubIndexStatusCallablePayloadSchema);
+export const validateAdminSetOrganizerIndexStatusCallablePayload = ajv.compile(adminSetOrganizerIndexStatusCallablePayloadSchema);
 export const validateAdminListCrossPathsShowcaseCandidatesCallablePayload = ajv.compile(adminListCrossPathsShowcaseCandidatesCallablePayloadSchema);
 export const validateAdminSetCrossPathsShowcaseEligibilityCallablePayload = ajv.compile(adminSetCrossPathsShowcaseEligibilityCallablePayloadSchema);
-export const validateAdminGetClubDetailsCallablePayload = ajv.compile(adminGetClubDetailsCallablePayloadSchema);
-export const validateAdminListClubDetailsCallablePayload = ajv.compile(adminListClubDetailsCallablePayloadSchema);
-export const validateAdminUpdateClubDetailsCallablePayload = ajv.compile(adminUpdateClubDetailsCallablePayloadSchema);
 export const validateAdminGetOrganizerDetailsCallablePayload = ajv.compile(adminGetOrganizerDetailsCallablePayloadSchema);
 export const validateAdminListOrganizerDetailsCallablePayload = ajv.compile(adminListOrganizerDetailsCallablePayloadSchema);
 export const validateAdminUpdateOrganizerDetailsCallablePayload = ajv.compile(adminUpdateOrganizerDetailsCallablePayloadSchema);
@@ -2286,13 +2247,10 @@ export const validateAdminListEventDetailsCallablePayload = ajv.compile(adminLis
 export const validateAdminListExternalEventDetailsCallablePayload = ajv.compile(adminListExternalEventDetailsCallablePayloadSchema);
 export const validateAdminUpdateEventDetailsCallablePayload = ajv.compile(adminUpdateEventDetailsCallablePayloadSchema);
 export const validateAdminTakedownExternalEventCallablePayload = ajv.compile(adminTakedownExternalEventCallablePayloadSchema);
-export const validateStartClubHostConversationCallablePayload = ajv.compile(startClubHostConversationCallablePayloadSchema);
+export const validateStartOrganizerHostConversationCallablePayload = ajv.compile(startOrganizerHostConversationCallablePayloadSchema);
 export const validateStartOrganizerConversationCallablePayload = ajv.compile(startOrganizerConversationCallablePayloadSchema);
 export const validateStartOrganizerContactConversationCallablePayload = ajv.compile(startOrganizerContactConversationCallablePayloadSchema);
-export const validateArchiveClubCallablePayload = ajv.compile(archiveClubCallablePayloadSchema);
-export const validateDeleteClubCallablePayload = ajv.compile(deleteClubCallablePayloadSchema);
-export const validateClubMembershipCallablePayload = ajv.compile(clubMembershipCallablePayloadSchema);
-export const validateSetClubNotificationPreferenceCallablePayload = ajv.compile(setClubNotificationPreferenceCallablePayloadSchema);
+export const validateOrganizerMembershipCallablePayload = ajv.compile(organizerMembershipCallablePayloadSchema);
 export const validateEventOfferAuthorityRow = ajv.compile(eventOfferAuthorityRowSchema);
 export const validateEventOfferRow = ajv.compile(eventOfferRowSchema);
 export const validateEventOfferPaymentSnapshot = ajv.compile(eventOfferPaymentSnapshotSchema);
@@ -2570,10 +2528,6 @@ export const validateCompleteEventSuccessFirstHelloMissionCallablePayload = ajv.
 export const validateMarkEventAttendanceCallableResponse = ajv.compile(markEventAttendanceCallableResponseSchema);
 export const validateSelfCheckInAttendanceCallablePayload = ajv.compile(selfCheckInAttendanceCallablePayloadSchema);
 export const validateCreateEventReviewCallablePayload = ajv.compile(createEventReviewCallablePayloadSchema);
-export const validateCreatePublicClubReviewCallablePayload = ajv.compile(createPublicClubReviewCallablePayloadSchema);
-export const validateCreatePublicClubReviewCallableResponse = ajv.compile(createPublicClubReviewCallableResponseSchema);
-export const validateListPublicClubReviewsCallablePayload = ajv.compile(listPublicClubReviewsCallablePayloadSchema);
-export const validateListPublicClubReviewsCallableResponse = ajv.compile(listPublicClubReviewsCallableResponseSchema);
 export const validateCreatePublicOrganizerReviewCallablePayload = ajv.compile(createPublicOrganizerReviewCallablePayloadSchema);
 export const validateCreatePublicOrganizerReviewCallableResponse = ajv.compile(createPublicOrganizerReviewCallableResponseSchema);
 export const validateListPublicOrganizerReviewsCallablePayload = ajv.compile(listPublicOrganizerReviewsCallablePayloadSchema);

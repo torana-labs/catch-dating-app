@@ -15,7 +15,6 @@ export const eventAttendeeImportDocumentSchema: Record<string, unknown> = {
   "x-owner": "importEventAttendees callable",
   "required": [
     "eventId",
-    "clubId",
     "organizerId",
     "uploadedBy",
     "importKey",
@@ -34,11 +33,6 @@ export const eventAttendeeImportDocumentSchema: Record<string, unknown> = {
   ],
   "properties": {
     "eventId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180

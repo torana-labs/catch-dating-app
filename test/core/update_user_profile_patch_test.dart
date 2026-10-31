@@ -59,7 +59,7 @@ void main() {
         prefsMessages: true,
         prefsEventReminders: true,
         prefsRunStatusUpdates: true,
-        prefsClubUpdates: true,
+        prefsOrganizerUpdates: true,
         prefsWeeklyDigest: true,
         prefsShowOnMap: true,
         prefsShowInCrossPaths: true,

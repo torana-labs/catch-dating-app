@@ -216,13 +216,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const activityNotificationDocumentClubId = CatchContractFieldConstraints(
-    path: 'activityNotificationDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
   static const activityNotificationDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'activityNotificationDocument.createdAt._nanoseconds',
     required: true,
@@ -340,7 +333,7 @@ abstract final class CatchContractConstraints {
     path: 'activityNotificationDocument.type',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['message', 'match', 'eventReminder', 'eventSignup', 'waitlistPromotion', 'waitlistOffer', 'waitlistOfferExpiring', 'waitlistOfferExpired', 'eventCancelled', 'eventUpdated', 'clubUpdate', 'organizerUpdate', 'formResponse', 'crossPathsInvitation', 'crossPathsInvitationAccepted', 'crossPathsInvitationDeclined', 'crossPathsPlanCancelled'],
+    enumValues: <String>['message', 'match', 'eventReminder', 'eventSignup', 'waitlistPromotion', 'waitlistOffer', 'waitlistOfferExpiring', 'waitlistOfferExpired', 'eventCancelled', 'eventUpdated', 'organizerUpdate', 'formResponse', 'crossPathsInvitation', 'crossPathsInvitationAccepted', 'crossPathsInvitationDeclined', 'crossPathsPlanCancelled'],
   );
 
   static const activityNotificationDocumentUid = CatchContractFieldConstraints(
@@ -480,24 +473,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
-  static const addClubHostCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'addClubHostCallablePayload.clubId',
+  static const addOrganizerHostCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'addOrganizerHostCallablePayload.organizerId',
     maxLength: 180,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
   );
 
-  static const addClubHostCallablePayloadPhoneNumber = CatchContractFieldConstraints(
-    path: 'addClubHostCallablePayload.phoneNumber',
+  static const addOrganizerHostCallablePayloadPhoneNumber = CatchContractFieldConstraints(
+    path: 'addOrganizerHostCallablePayload.phoneNumber',
     maxLength: 32,
     minLength: 6,
     required: true,
     valueTypes: <String>['string'],
   );
 
-  static const addClubHostCallablePayloadUid = CatchContractFieldConstraints(
-    path: 'addClubHostCallablePayload.uid',
+  static const addOrganizerHostCallablePayloadUid = CatchContractFieldConstraints(
+    path: 'addOrganizerHostCallablePayload.uid',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -3407,27 +3400,6 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['approvedForProfile', 'notSelectedYet'],
   );
 
-  static const adminDecideClubClaimCallablePayloadDecision = CatchContractFieldConstraints(
-    path: 'adminDecideClubClaimCallablePayload.decision',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['approve', 'reject'],
-  );
-
-  static const adminDecideClubClaimCallablePayloadDecisionReason = CatchContractFieldConstraints(
-    path: 'adminDecideClubClaimCallablePayload.decisionReason',
-    maxLength: 1000,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminDecideClubClaimCallablePayloadRequestId = CatchContractFieldConstraints(
-    path: 'adminDecideClubClaimCallablePayload.requestId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const adminDecideEventMessagingBudgetCallablePayloadDecisionCurrency = CatchContractFieldConstraints(
     path: 'adminDecideEventMessagingBudgetCallablePayload.decision.currency',
     required: true,
@@ -3895,14 +3867,6 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
-  static const adminGetClubDetailsCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'adminGetClubDetailsCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const adminGetEventDetailsCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'adminGetEventDetailsCallablePayload.eventId',
     maxLength: 180,
@@ -4076,110 +4040,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const adminGetOverviewCallableResponseQueuesClubClaimRequests = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-  );
-
-  static const adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsCreatedAt = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.createdAt',
-    valueTypes: <String>['string'],
-    format: 'date-time',
-  );
-
-  static const adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsDetail = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.detail',
-    maxLength: 1000,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsId = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.id',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsStatus = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.status',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsTargetPath = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.targetPath',
-    maxLength: 260,
-    minLength: 3,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsTitle = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.title',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminGetOverviewCallableResponseQueuesClubIndexReviews = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-  );
-
-  static const adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsCreatedAt = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.createdAt',
-    valueTypes: <String>['string'],
-    format: 'date-time',
-  );
-
-  static const adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsDetail = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.detail',
-    maxLength: 1000,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsId = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.id',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsStatus = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.status',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsTargetPath = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.targetPath',
-    maxLength: 260,
-    minLength: 3,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsTitle = CatchContractFieldConstraints(
-    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.title',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const adminGetOverviewCallableResponseQueuesEventSafetyReports = CatchContractFieldConstraints(
     path: 'adminGetOverviewCallableResponse.queues.eventSafetyReports',
     required: true,
@@ -4278,6 +4138,110 @@ abstract final class CatchContractConstraints {
 
   static const adminGetOverviewCallableResponseQueuesModerationFlagsItemsTitle = CatchContractFieldConstraints(
     path: 'adminGetOverviewCallableResponse.queues.moderationFlags.items.title',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerClaimRequests = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerClaimRequests',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerClaimRequestsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerClaimRequests.items.createdAt',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerClaimRequestsItemsDetail = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerClaimRequests.items.detail',
+    maxLength: 1000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerClaimRequestsItemsId = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerClaimRequests.items.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerClaimRequestsItemsStatus = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerClaimRequests.items.status',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerClaimRequestsItemsTargetPath = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerClaimRequests.items.targetPath',
+    maxLength: 260,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerClaimRequestsItemsTitle = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerClaimRequests.items.title',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerIndexReviews = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerIndexReviews',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerIndexReviewsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerIndexReviews.items.createdAt',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerIndexReviewsItemsDetail = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerIndexReviews.items.detail',
+    maxLength: 1000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerIndexReviewsItemsId = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerIndexReviews.items.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerIndexReviewsItemsStatus = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerIndexReviews.items.status',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerIndexReviewsItemsTargetPath = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerIndexReviews.items.targetPath',
+    maxLength: 260,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesOrganizerIndexReviewsItemsTitle = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.organizerIndexReviews.items.title',
     maxLength: 240,
     minLength: 1,
     required: true,
@@ -7505,48 +7469,6 @@ abstract final class CatchContractConstraints {
     maximum: 100,
   );
 
-  static const adminListClubDetailsCallablePayloadAppVisibility = CatchContractFieldConstraints(
-    path: 'adminListClubDetailsCallablePayload.appVisibility',
-    valueTypes: <String>['string'],
-    enumValues: <String>['discoverable', 'hidden'],
-  );
-
-  static const adminListClubDetailsCallablePayloadCitySlug = CatchContractFieldConstraints(
-    path: 'adminListClubDetailsCallablePayload.citySlug',
-    maxLength: 120,
-    minLength: 1,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
-  );
-
-  static const adminListClubDetailsCallablePayloadCitySlugs = CatchContractFieldConstraints(
-    path: 'adminListClubDetailsCallablePayload.citySlugs',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    minItems: 1,
-    maxItems: 10,
-    uniqueItems: true,
-  );
-
-  static const adminListClubDetailsCallablePayloadLimit = CatchContractFieldConstraints(
-    path: 'adminListClubDetailsCallablePayload.limit',
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 100,
-  );
-
-  static const adminListClubDetailsCallablePayloadPublishStatus = CatchContractFieldConstraints(
-    path: 'adminListClubDetailsCallablePayload.publishStatus',
-    valueTypes: <String>['string'],
-    enumValues: <String>['draft', 'qa', 'published', 'suppressed', 'removed'],
-  );
-
-  static const adminListClubDetailsCallablePayloadQuery = CatchContractFieldConstraints(
-    path: 'adminListClubDetailsCallablePayload.query',
-    maxLength: 160,
-    valueTypes: <String>['string'],
-  );
-
   static const adminListCommercialTermsCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'adminListCommercialTermsCallablePayload.organizerId',
     maxLength: 180,
@@ -8535,13 +8457,6 @@ abstract final class CatchContractConstraints {
     minItems: 1,
     maxItems: 10,
     uniqueItems: true,
-  );
-
-  static const adminListEventDetailsCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'adminListEventDetailsCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
   );
 
   static const adminListEventDetailsCallablePayloadLimit = CatchContractFieldConstraints(
@@ -11655,7 +11570,7 @@ abstract final class CatchContractConstraints {
     path: 'adminRecordOrganizerCurationCallablePayload.surface.evidenceRefs.items.type',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['hostDiscoveryRun', 'seedClub', 'userReportedSearchResult', 'manualNote'],
+    enumValues: <String>['hostDiscoveryRun', 'seedOrganizer', 'userReportedSearchResult', 'manualNote'],
   );
 
   static const adminRecordOrganizerCurationCallablePayloadSurfaceNormalizedKey = CatchContractFieldConstraints(
@@ -14895,51 +14810,6 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]{3,128}\$',
   );
 
-  static const adminSetClubIndexStatusCallablePayloadChecklistCadenceVerified = CatchContractFieldConstraints(
-    path: 'adminSetClubIndexStatusCallablePayload.checklist.cadenceVerified',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminSetClubIndexStatusCallablePayloadChecklistMediaRightsVerified = CatchContractFieldConstraints(
-    path: 'adminSetClubIndexStatusCallablePayload.checklist.mediaRightsVerified',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminSetClubIndexStatusCallablePayloadChecklistOwnerContactVerified = CatchContractFieldConstraints(
-    path: 'adminSetClubIndexStatusCallablePayload.checklist.ownerContactVerified',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminSetClubIndexStatusCallablePayloadChecklistSourceEvidenceVerified = CatchContractFieldConstraints(
-    path: 'adminSetClubIndexStatusCallablePayload.checklist.sourceEvidenceVerified',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminSetClubIndexStatusCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'adminSetClubIndexStatusCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminSetClubIndexStatusCallablePayloadIndexStatus = CatchContractFieldConstraints(
-    path: 'adminSetClubIndexStatusCallablePayload.indexStatus',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['noindex', 'indexReady', 'indexed'],
-  );
-
-  static const adminSetClubIndexStatusCallablePayloadReviewNote = CatchContractFieldConstraints(
-    path: 'adminSetClubIndexStatusCallablePayload.reviewNote',
-    maxLength: 1000,
-    valueTypes: <String>['string'],
-  );
-
   static const adminSetCrossPathsShowcaseEligibilityCallablePayloadReviewChecklistPrimaryPortraitClear = CatchContractFieldConstraints(
     path: 'adminSetCrossPathsShowcaseEligibilityCallablePayload.reviewChecklist.primaryPortraitClear',
     required: true,
@@ -15038,6 +14908,51 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminSetOrganizerIndexStatusCallablePayloadChecklistCadenceVerified = CatchContractFieldConstraints(
+    path: 'adminSetOrganizerIndexStatusCallablePayload.checklist.cadenceVerified',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminSetOrganizerIndexStatusCallablePayloadChecklistMediaRightsVerified = CatchContractFieldConstraints(
+    path: 'adminSetOrganizerIndexStatusCallablePayload.checklist.mediaRightsVerified',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminSetOrganizerIndexStatusCallablePayloadChecklistOwnerContactVerified = CatchContractFieldConstraints(
+    path: 'adminSetOrganizerIndexStatusCallablePayload.checklist.ownerContactVerified',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminSetOrganizerIndexStatusCallablePayloadChecklistSourceEvidenceVerified = CatchContractFieldConstraints(
+    path: 'adminSetOrganizerIndexStatusCallablePayload.checklist.sourceEvidenceVerified',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminSetOrganizerIndexStatusCallablePayloadIndexStatus = CatchContractFieldConstraints(
+    path: 'adminSetOrganizerIndexStatusCallablePayload.indexStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['noindex', 'indexReady', 'indexed'],
+  );
+
+  static const adminSetOrganizerIndexStatusCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminSetOrganizerIndexStatusCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminSetOrganizerIndexStatusCallablePayloadReviewNote = CatchContractFieldConstraints(
+    path: 'adminSetOrganizerIndexStatusCallablePayload.reviewNote',
+    maxLength: 1000,
     valueTypes: <String>['string'],
   );
 
@@ -15432,315 +15347,6 @@ abstract final class CatchContractConstraints {
     maxLength: 1000,
     minLength: 1,
     required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsAppVisibility = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.appVisibility',
-    valueTypes: <String>['string'],
-    enumValues: <String>['discoverable', 'hidden'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsArea = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.area',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsCityName = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.cityName',
-    maxLength: 120,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsCountryCode = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.countryCode',
-    valueTypes: <String>['string'],
-    pattern: '^[A-Z]{2}\$',
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsCountryName = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.countryName',
-    maxLength: 120,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsDescription = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.description',
-    maxLength: 2000,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsDisplayCategory = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.displayCategory',
-    maxLength: 120,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsEmail = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.email',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsEntityKind = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.entityKind',
-    valueTypes: <String>['string'],
-    enumValues: <String>['club', 'venue', 'eventOrganizer', 'creatorCommunity', 'brand'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsEntitySubtypes = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.entitySubtypes',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 20,
-    uniqueItems: true,
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsEntitySubtypesItems = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.entitySubtypes.items',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsImageUrl = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.imageUrl',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsInstagramHandle = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.instagramHandle',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsLocation = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.location',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsName = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.name',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsOrganizerType = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.organizerType',
-    valueTypes: <String>['string'],
-    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinks = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    maxItems: 20,
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsIcon = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.icon',
-    valueTypes: <String>['string'],
-    enumValues: <String>['link', 'website', 'community', 'social', 'tickets', 'calendar', 'shop', 'partner', 'video', 'route'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsId = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.id',
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsLabel = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.label',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsPinned = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.pinned',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsShowUntil = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.showUntil',
-    valueTypes: <String>['string'],
-    format: 'date-time',
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsSubtitle = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.subtitle',
-    maxLength: 80,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsUrl = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.url',
-    maxLength: 4096,
-    required: true,
-    valueTypes: <String>['string'],
-    format: 'uri',
-    pattern: '^https://',
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPhoneNumber = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.phoneNumber',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsProfileImageUrl = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.profileImageUrl',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsProvenanceSourceConfidence = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.provenance.sourceConfidence',
-    valueTypes: <String>['string'],
-    enumValues: <String>['seedOnly', 'low', 'medium', 'high', 'ownerVerified'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsProvenanceVerificationStatus = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.provenance.verificationStatus',
-    valueTypes: <String>['string'],
-    enumValues: <String>['unverified', 'sourceBacked', 'ownerVerified'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicCategoryLabel = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicCategoryLabel',
-    maxLength: 120,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicPageCanonicalPath = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicPage.canonicalPath',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicPageCitySlug = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicPage.citySlug',
-    maxLength: 80,
-    minLength: 1,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z0-9-]+\$',
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicPagePublishStatus = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicPage.publishStatus',
-    valueTypes: <String>['string'],
-    enumValues: <String>['draft', 'qa', 'published', 'suppressed', 'removed'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicPageSeoDescription = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicPage.seoDescription',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicPageSeoTitle = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicPage.seoTitle',
-    maxLength: 120,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicPageSlug = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicPage.slug',
-    maxLength: 160,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z0-9-]+\$',
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicProfileFormats = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicProfile.formats',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 12,
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicProfileFormatsItems = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicProfile.formats.items',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicProfileHeadline = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicProfile.headline',
-    maxLength: 160,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicProfileSourceSummary = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicProfile.sourceSummary',
-    maxLength: 800,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicProfileSummary = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicProfile.summary',
-    maxLength: 800,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsRegionName = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.regionName',
-    maxLength: 120,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsTags = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.tags',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 20,
-    uniqueItems: true,
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsTagsItems = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.tags.items',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadReviewNote = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.reviewNote',
-    maxLength: 1000,
     valueTypes: <String>['string'],
   );
 
@@ -17082,20 +16688,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['approved', 'rejected'],
-  );
-
-  static const archiveClubCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'archiveClubCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const archiveClubCallablePayloadReason = CatchContractFieldConstraints(
-    path: 'archiveClubCallablePayload.reason',
-    maxLength: 500,
-    valueTypes: <String>['string'],
   );
 
   static const archiveOrganizerCallablePayloadOrganizerId = CatchContractFieldConstraints(
@@ -23167,1930 +22759,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const clubClaimRequestDocumentBusinessEmail = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.businessEmail',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubClaimRequestDocumentBusinessPhone = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.businessPhone',
-    maxLength: 32,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubClaimRequestDocumentClubId = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubClaimRequestDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.createdAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubClaimRequestDocumentCreatedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.createdAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubClaimRequestDocumentDecidedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.decidedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubClaimRequestDocumentDecidedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.decidedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubClaimRequestDocumentDecidedByUid = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.decidedByUid',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubClaimRequestDocumentDecisionReason = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.decisionReason',
-    maxLength: 1000,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubClaimRequestDocumentMessage = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.message',
-    maxLength: 1000,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubClaimRequestDocumentPreviousRequestId = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.previousRequestId',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubClaimRequestDocumentProofUrls = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.proofUrls',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 8,
-    uniqueItems: true,
-  );
-
-  static const clubClaimRequestDocumentProofUrlsItems = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.proofUrls.items',
-    maxLength: 2048,
-    required: true,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const clubClaimRequestDocumentRequesterName = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.requesterName',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubClaimRequestDocumentRequesterRole = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.requesterRole',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['owner', 'founder', 'manager', 'marketer', 'venueManager', 'other'],
-  );
-
-  static const clubClaimRequestDocumentRequesterUid = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.requesterUid',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubClaimRequestDocumentRequestId = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.requestId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubClaimRequestDocumentStatus = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.status',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['pending', 'approved', 'rejected', 'withdrawn', 'superseded'],
-  );
-
-  static const clubClaimRequestDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.updatedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubClaimRequestDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubClaimRequestDocument.updatedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentAdminSearchSortKey = CatchContractFieldConstraints(
-    path: 'clubDocument.adminSearch.sortKey',
-    maxLength: 160,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z0-9-]+(?:-[a-z0-9-]+)*\$',
-  );
-
-  static const clubDocumentAdminSearchTokens = CatchContractFieldConstraints(
-    path: 'clubDocument.adminSearch.tokens',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 120,
-    uniqueItems: true,
-  );
-
-  static const clubDocumentAdminSearchTokensItems = CatchContractFieldConstraints(
-    path: 'clubDocument.adminSearch.tokens.items',
-    maxLength: 80,
-    minLength: 2,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z0-9-]+\$',
-  );
-
-  static const clubDocumentAdminSearchUpdatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.adminSearch.updatedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentAdminSearchUpdatedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.adminSearch.updatedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentAdminSearchUpdatedBySource = CatchContractFieldConstraints(
-    path: 'clubDocument.adminSearch.updatedBySource',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminOrganizerSearchBackfill', 'adminCreateOrganizerDraftFromCandidate'],
-  );
-
-  static const clubDocumentAppVisibility = CatchContractFieldConstraints(
-    path: 'clubDocument.appVisibility',
-    valueTypes: <String>['string'],
-    enumValues: <String>['discoverable', 'hidden'],
-  );
-
-  static const clubDocumentArchived = CatchContractFieldConstraints(
-    path: 'clubDocument.archived',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentArchivedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.archivedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentArchivedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.archivedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentArchiveReason = CatchContractFieldConstraints(
-    path: 'clubDocument.archiveReason',
-    maxLength: 500,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentArea = CatchContractFieldConstraints(
-    path: 'clubDocument.area',
-    maxLength: 120,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentCityName = CatchContractFieldConstraints(
-    path: 'clubDocument.cityName',
-    maxLength: 120,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentClaimClaimHref = CatchContractFieldConstraints(
-    path: 'clubDocument.claim.claimHref',
-    maxLength: 240,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentClaimLastClaimRequestId = CatchContractFieldConstraints(
-    path: 'clubDocument.claim.lastClaimRequestId',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentClaimState = CatchContractFieldConstraints(
-    path: 'clubDocument.claim.state',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['unclaimed', 'claimPending', 'claimed', 'verified', 'suppressed'],
-  );
-
-  static const clubDocumentClubPhotos = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-  );
-
-  static const clubDocumentClubPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.createdAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentClubPhotosItemsCreatedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.createdAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentClubPhotosItemsId = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.id',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9_-]+\$',
-  );
-
-  static const clubDocumentClubPhotosItemsModerationReason = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.moderation.reason',
-    maxLength: 240,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentClubPhotosItemsModerationReviewedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.moderation.reviewedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentClubPhotosItemsModerationReviewedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.moderation.reviewedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentClubPhotosItemsModerationStatus = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.moderation.status',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['pending', 'approved', 'rejected'],
-  );
-
-  static const clubDocumentClubPhotosItemsPosition = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.position',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const clubDocumentClubPhotosItemsStoragePath = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.storagePath',
-    maxLength: 512,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const clubDocumentClubPhotosItemsThumbnailStoragePath = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.thumbnailStoragePath',
-    maxLength: 512,
-    minLength: 1,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const clubDocumentClubPhotosItemsThumbnailUrl = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.thumbnailUrl',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const clubDocumentClubPhotosItemsUpdatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.updatedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentClubPhotosItemsUpdatedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.updatedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentClubPhotosItemsUrl = CatchContractFieldConstraints(
-    path: 'clubDocument.clubPhotos.items.url',
-    maxLength: 2048,
-    required: true,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const clubDocumentCountryCode = CatchContractFieldConstraints(
-    path: 'clubDocument.countryCode',
-    valueTypes: <String>['string'],
-    pattern: '^[A-Z]{2}\$',
-  );
-
-  static const clubDocumentCountryName = CatchContractFieldConstraints(
-    path: 'clubDocument.countryName',
-    maxLength: 120,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.createdAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentCreatedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.createdAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentDemoOps = CatchContractFieldConstraints(
-    path: 'clubDocument.demoOps',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentDemoOpsCommand = CatchContractFieldConstraints(
-    path: 'clubDocument.demoOpsCommand',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentDemoOpsId = CatchContractFieldConstraints(
-    path: 'clubDocument.demoOpsId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentDescription = CatchContractFieldConstraints(
-    path: 'clubDocument.description',
-    maxLength: 2000,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentDisplayCategory = CatchContractFieldConstraints(
-    path: 'clubDocument.displayCategory',
-    maxLength: 120,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentEmail = CatchContractFieldConstraints(
-    path: 'clubDocument.email',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentEntityKind = CatchContractFieldConstraints(
-    path: 'clubDocument.entityKind',
-    valueTypes: <String>['string'],
-    enumValues: <String>['club', 'venue', 'eventOrganizer', 'creatorCommunity', 'brand'],
-  );
-
-  static const clubDocumentEntitySubtypes = CatchContractFieldConstraints(
-    path: 'clubDocument.entitySubtypes',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 20,
-    uniqueItems: true,
-  );
-
-  static const clubDocumentEntitySubtypesItems = CatchContractFieldConstraints(
-    path: 'clubDocument.entitySubtypes.items',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostAvatarUrl = CatchContractFieldConstraints(
-    path: 'clubDocument.hostAvatarUrl',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const clubDocumentHostDefaultsEventPolicyAdmissionPreset = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventPolicy.admissionPreset',
-    valueTypes: <String>['string'],
-    enumValues: <String>['openCapacity', 'inviteOnly', 'balancedSingles', 'fixedCohortCaps'],
-  );
-
-  static const clubDocumentHostDefaultsEventPolicyCancellationPolicyId = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventPolicy.cancellationPolicyId',
-    valueTypes: <String>['string'],
-    enumValues: <String>['flexible', 'standard', 'strict'],
-  );
-
-  static const clubDocumentHostDefaultsEventPolicyCrossPathsPairCapacity = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventPolicy.crossPathsPairCapacity',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 100,
-  );
-
-  static const clubDocumentHostDefaultsEventPolicyDynamicPricingEnabled = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventPolicy.dynamicPricingEnabled',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentHostDefaultsEventPolicyDynamicPricingMaxInPaise = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventPolicy.dynamicPricingMaxInPaise',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 100000000,
-  );
-
-  static const clubDocumentHostDefaultsEventPolicyDynamicPricingStepInPaise = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventPolicy.dynamicPricingStepInPaise',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 100000000,
-  );
-
-  static const clubDocumentHostDefaultsEventPolicyMaxAge = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventPolicy.maxAge',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 120,
-  );
-
-  static const clubDocumentHostDefaultsEventPolicyMaxMen = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventPolicy.maxMen',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const clubDocumentHostDefaultsEventPolicyMaxWomen = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventPolicy.maxWomen',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const clubDocumentHostDefaultsEventPolicyMinAge = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventPolicy.minAge',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 120,
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessAttendeePrompt = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.attendeePrompt',
-    maxLength: 300,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessCompatibilityAffectsRanking = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.compatibilityAffectsRanking',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessContextualOpenersEnabled = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.contextualOpenersEnabled',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessEnabled = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.enabled',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessHostGoal = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.hostGoal',
-    maxLength: 300,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.layoutId',
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.moduleSelectionConfigured',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessPlaybookId = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.playbookId',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    maxItems: 8,
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsId = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.id',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptions = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    minItems: 2,
-    maxItems: 5,
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptionsItemsId = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options.items.id',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options.items.label',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsPrompt = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.prompt',
-    maxLength: 140,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomTitle = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customTitle',
-    maxLength: 80,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessQuestionnaireConfigTemplateId = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.templateId',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessSelectedModuleIds = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.selectedModuleIds',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 24,
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessSelectedModuleIdsItems = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.selectedModuleIds.items',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigBalanceActivityAttributes = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.balanceActivityAttributes',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
-    maxItems: 8,
-    uniqueItems: true,
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigBalanceActivityAttributesItems = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.balanceActivityAttributes.items',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigClusterActivityAttributes = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
-    maxItems: 8,
-    uniqueItems: true,
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigMaxPairMeetings = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.maxPairMeetings',
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 10,
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 200,
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['court', 'table', 'lane', 'board'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 1000,
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 60,
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes',
-    valueTypes: <String>['integer'],
-    minimum: 5,
-    maximum: 180,
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
-    valueTypes: <String>['string'],
-    enumValues: <String>['avoid', 'allowWhenExhausted'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.topology',
-    valueTypes: <String>['string'],
-    enumValues: <String>['set', 'sequence', 'adjacency'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.unitCount',
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 200,
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigUnitKind = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.unitKind',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessStructureConfigUnitSize = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.structureConfig.unitSize',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 1000,
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessWingmanRequestsEnabled = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccess.wingmanRequestsEnabled',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentHostDefaultsEventSuccessByActivityKind = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.eventSuccessByActivityKind',
-    valueTypes: <String>['object'],
-  );
-
-  static const clubDocumentHostDefaultsPrimaryActivityKind = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.primaryActivityKind',
-    valueTypes: <String>['string'],
-    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
-  );
-
-  static const clubDocumentHostDefaultsSupportedActivityKinds = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.supportedActivityKinds',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
-    maxItems: 16,
-    uniqueItems: true,
-  );
-
-  static const clubDocumentHostDefaultsSupportedActivityKindsItems = CatchContractFieldConstraints(
-    path: 'clubDocument.hostDefaults.supportedActivityKinds.items',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
-  );
-
-  static const clubDocumentHostName = CatchContractFieldConstraints(
-    path: 'clubDocument.hostName',
-    maxLength: 120,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostProfiles = CatchContractFieldConstraints(
-    path: 'clubDocument.hostProfiles',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    maxItems: 20,
-  );
-
-  static const clubDocumentHostProfilesItemsAvatarUrl = CatchContractFieldConstraints(
-    path: 'clubDocument.hostProfiles.items.avatarUrl',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const clubDocumentHostProfilesItemsDisplayName = CatchContractFieldConstraints(
-    path: 'clubDocument.hostProfiles.items.displayName',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostProfilesItemsRole = CatchContractFieldConstraints(
-    path: 'clubDocument.hostProfiles.items.role',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['owner', 'host'],
-  );
-
-  static const clubDocumentHostProfilesItemsUid = CatchContractFieldConstraints(
-    path: 'clubDocument.hostProfiles.items.uid',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostUserId = CatchContractFieldConstraints(
-    path: 'clubDocument.hostUserId',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentHostUserIds = CatchContractFieldConstraints(
-    path: 'clubDocument.hostUserIds',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 20,
-    uniqueItems: true,
-  );
-
-  static const clubDocumentHostUserIdsItems = CatchContractFieldConstraints(
-    path: 'clubDocument.hostUserIds.items',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentImageUrl = CatchContractFieldConstraints(
-    path: 'clubDocument.imageUrl',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const clubDocumentInstagramHandle = CatchContractFieldConstraints(
-    path: 'clubDocument.instagramHandle',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentLocation = CatchContractFieldConstraints(
-    path: 'clubDocument.location',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
-  );
-
-  static const clubDocumentLocationCityId = CatchContractFieldConstraints(
-    path: 'clubDocument.locationCityId',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
-  );
-
-  static const clubDocumentLocationMarketId = CatchContractFieldConstraints(
-    path: 'clubDocument.locationMarketId',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
-  );
-
-  static const clubDocumentLogoPhotoCreatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.createdAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentLogoPhotoCreatedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.createdAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentLogoPhotoId = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.id',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9_-]+\$',
-  );
-
-  static const clubDocumentLogoPhotoModerationReason = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.moderation.reason',
-    maxLength: 240,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentLogoPhotoModerationReviewedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.moderation.reviewedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentLogoPhotoModerationReviewedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.moderation.reviewedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentLogoPhotoModerationStatus = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.moderation.status',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['pending', 'approved', 'rejected'],
-  );
-
-  static const clubDocumentLogoPhotoPosition = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.position',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const clubDocumentLogoPhotoStoragePath = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.storagePath',
-    maxLength: 512,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const clubDocumentLogoPhotoThumbnailStoragePath = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.thumbnailStoragePath',
-    maxLength: 512,
-    minLength: 1,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const clubDocumentLogoPhotoThumbnailUrl = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.thumbnailUrl',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const clubDocumentLogoPhotoUpdatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.updatedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentLogoPhotoUpdatedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.updatedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentLogoPhotoUrl = CatchContractFieldConstraints(
-    path: 'clubDocument.logoPhoto.url',
-    maxLength: 2048,
-    required: true,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const clubDocumentMemberCount = CatchContractFieldConstraints(
-    path: 'clubDocument.memberCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const clubDocumentName = CatchContractFieldConstraints(
-    path: 'clubDocument.name',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentNextEventAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.nextEventAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentNextEventAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.nextEventAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentNextEventLabel = CatchContractFieldConstraints(
-    path: 'clubDocument.nextEventLabel',
-    maxLength: 240,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentOrganizerType = CatchContractFieldConstraints(
-    path: 'clubDocument.organizerType',
-    valueTypes: <String>['string'],
-    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
-  );
-
-  static const clubDocumentOrganizerTypeUpdatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.organizerTypeUpdatedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentOrganizerTypeUpdatedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.organizerTypeUpdatedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentOrganizerTypeUpdatedByUid = CatchContractFieldConstraints(
-    path: 'clubDocument.organizerTypeUpdatedByUid',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentOwnershipClaimedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.ownership.claimedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentOwnershipClaimedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.ownership.claimedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentOwnershipClaimedByUid = CatchContractFieldConstraints(
-    path: 'clubDocument.ownership.claimedByUid',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentOwnershipHostUserIds = CatchContractFieldConstraints(
-    path: 'clubDocument.ownership.hostUserIds',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 20,
-    uniqueItems: true,
-  );
-
-  static const clubDocumentOwnershipHostUserIdsItems = CatchContractFieldConstraints(
-    path: 'clubDocument.ownership.hostUserIds.items',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentOwnershipOwnerUserId = CatchContractFieldConstraints(
-    path: 'clubDocument.ownership.ownerUserId',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentOwnershipPrimaryHostUserId = CatchContractFieldConstraints(
-    path: 'clubDocument.ownership.primaryHostUserId',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentOwnershipState = CatchContractFieldConstraints(
-    path: 'clubDocument.ownership.state',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['programmatic', 'userCreated', 'claimed', 'transferred'],
-  );
-
-  static const clubDocumentOwnerUserId = CatchContractFieldConstraints(
-    path: 'clubDocument.ownerUserId',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPhoneNumber = CatchContractFieldConstraints(
-    path: 'clubDocument.phoneNumber',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentProfileImageUrl = CatchContractFieldConstraints(
-    path: 'clubDocument.profileImageUrl',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const clubDocumentProvenanceLastVerifiedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.provenance.lastVerifiedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentProvenanceLastVerifiedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.provenance.lastVerifiedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentProvenanceOrigin = CatchContractFieldConstraints(
-    path: 'clubDocument.provenance.origin',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['userCreated', 'scraper', 'adminSeed', 'import'],
-  );
-
-  static const clubDocumentProvenanceSourceConfidence = CatchContractFieldConstraints(
-    path: 'clubDocument.provenance.sourceConfidence',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['seedOnly', 'low', 'medium', 'high', 'ownerVerified'],
-  );
-
-  static const clubDocumentProvenanceVerificationStatus = CatchContractFieldConstraints(
-    path: 'clubDocument.provenance.verificationStatus',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['unverified', 'sourceBacked', 'ownerVerified'],
-  );
-
-  static const clubDocumentPublicCategoryLabel = CatchContractFieldConstraints(
-    path: 'clubDocument.publicCategoryLabel',
-    maxLength: 120,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicPageCanonicalPath = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.canonicalPath',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicPageCitySlug = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.citySlug',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z0-9-]+\$',
-  );
-
-  static const clubDocumentPublicPageIndexReviewChecklistCadenceVerified = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.indexReview.checklist.cadenceVerified',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentPublicPageIndexReviewChecklistMediaRightsVerified = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.indexReview.checklist.mediaRightsVerified',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentPublicPageIndexReviewChecklistOwnerContactVerified = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.indexReview.checklist.ownerContactVerified',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentPublicPageIndexReviewChecklistSourceEvidenceVerified = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.indexReview.checklist.sourceEvidenceVerified',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentPublicPageIndexReviewIndexStatus = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.indexReview.indexStatus',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['noindex', 'indexReady', 'indexed'],
-  );
-
-  static const clubDocumentPublicPageIndexReviewReviewedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.indexReview.reviewedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentPublicPageIndexReviewReviewedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.indexReview.reviewedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentPublicPageIndexReviewReviewedByUid = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.indexReview.reviewedByUid',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicPageIndexReviewReviewNote = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.indexReview.reviewNote',
-    maxLength: 1000,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicPageIndexStatus = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.indexStatus',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['noindex', 'indexReady', 'indexed'],
-  );
-
-  static const clubDocumentPublicPageLastRenderedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.lastRenderedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentPublicPageLastRenderedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.lastRenderedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentPublicPagePublishStatus = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.publishStatus',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['draft', 'qa', 'published', 'suppressed', 'removed'],
-  );
-
-  static const clubDocumentPublicPageRobots = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.robots',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['noindex, follow', 'index, follow'],
-  );
-
-  static const clubDocumentPublicPageSeoDescription = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.seoDescription',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicPageSeoTitle = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.seoTitle',
-    maxLength: 120,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicPageSlug = CatchContractFieldConstraints(
-    path: 'clubDocument.publicPage.slug',
-    maxLength: 160,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z0-9-]+\$',
-  );
-
-  static const clubDocumentPublicProfileEventEvidence = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.eventEvidence',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    maxItems: 12,
-  );
-
-  static const clubDocumentPublicProfileEventEvidenceItemsDate = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.eventEvidence.items.date',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicProfileEventEvidenceItemsFacts = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.eventEvidence.items.facts',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 12,
-  );
-
-  static const clubDocumentPublicProfileEventEvidenceItemsFactsItems = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.eventEvidence.items.facts.items',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicProfileEventEvidenceItemsLocation = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.eventEvidence.items.location',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicProfileEventEvidenceItemsSourceHref = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.eventEvidence.items.sourceHref',
-    maxLength: 2048,
-    required: true,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const clubDocumentPublicProfileEventEvidenceItemsSourceLabel = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.eventEvidence.items.sourceLabel',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicProfileEventEvidenceItemsSummary = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.eventEvidence.items.summary',
-    maxLength: 600,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicProfileEventEvidenceItemsTitle = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.eventEvidence.items.title',
-    maxLength: 160,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicProfileFacts = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.facts',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    maxItems: 20,
-  );
-
-  static const clubDocumentPublicProfileFactsItemsLabel = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.facts.items.label',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicProfileFactsItemsValue = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.facts.items.value',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicProfileFormats = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.formats',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 12,
-  );
-
-  static const clubDocumentPublicProfileFormatsItems = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.formats.items',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicProfileHeadline = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.headline',
-    maxLength: 160,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicProfileSourceSummary = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.sourceSummary',
-    maxLength: 800,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicProfileSummary = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.summary',
-    maxLength: 800,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicSources = CatchContractFieldConstraints(
-    path: 'clubDocument.publicSources',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    maxItems: 20,
-  );
-
-  static const clubDocumentPublicSourcesItemsConfidence = CatchContractFieldConstraints(
-    path: 'clubDocument.publicSources.items.confidence',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['low', 'medium', 'high'],
-  );
-
-  static const clubDocumentPublicSourcesItemsDetail = CatchContractFieldConstraints(
-    path: 'clubDocument.publicSources.items.detail',
-    maxLength: 600,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicSourcesItemsHref = CatchContractFieldConstraints(
-    path: 'clubDocument.publicSources.items.href',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const clubDocumentPublicSourcesItemsLabel = CatchContractFieldConstraints(
-    path: 'clubDocument.publicSources.items.label',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicSourcesItemsLastCheckedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubDocument.publicSources.items.lastCheckedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubDocumentPublicSourcesItemsLastCheckedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubDocument.publicSources.items.lastCheckedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubDocumentPublicSourcesItemsType = CatchContractFieldConstraints(
-    path: 'clubDocument.publicSources.items.type',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentRating = CatchContractFieldConstraints(
-    path: 'clubDocument.rating',
-    required: true,
-    valueTypes: <String>['number'],
-    minimum: 0,
-    maximum: 5,
-  );
-
-  static const clubDocumentRegionName = CatchContractFieldConstraints(
-    path: 'clubDocument.regionName',
-    maxLength: 120,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentReviewCount = CatchContractFieldConstraints(
-    path: 'clubDocument.reviewCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const clubDocumentScenario = CatchContractFieldConstraints(
-    path: 'clubDocument.scenario',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentSeedPrefix = CatchContractFieldConstraints(
-    path: 'clubDocument.seedPrefix',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentStatus = CatchContractFieldConstraints(
-    path: 'clubDocument.status',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['active', 'archived'],
-  );
-
-  static const clubDocumentSupplyCapabilitiesBookable = CatchContractFieldConstraints(
-    path: 'clubDocument.supplyCapabilities.bookable',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentSupplyCapabilitiesClaimable = CatchContractFieldConstraints(
-    path: 'clubDocument.supplyCapabilities.claimable',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentSupplyCapabilitiesHostContactEnabled = CatchContractFieldConstraints(
-    path: 'clubDocument.supplyCapabilities.hostContactEnabled',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentSupplyCapabilitiesMode = CatchContractFieldConstraints(
-    path: 'clubDocument.supplyCapabilities.mode',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['unclaimed_read_only', 'claimed_managed'],
-  );
-
-  static const clubDocumentSupplyCapabilitiesPaymentsEnabled = CatchContractFieldConstraints(
-    path: 'clubDocument.supplyCapabilities.paymentsEnabled',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentSupplyCapabilitiesReviewPolicy = CatchContractFieldConstraints(
-    path: 'clubDocument.supplyCapabilities.reviewPolicy',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['after_event_end', 'attended_event_only'],
-  );
-
-  static const clubDocumentSupplyCapabilitiesWaitlistEnabled = CatchContractFieldConstraints(
-    path: 'clubDocument.supplyCapabilities.waitlistEnabled',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentSynthetic = CatchContractFieldConstraints(
-    path: 'clubDocument.synthetic',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubDocumentTags = CatchContractFieldConstraints(
-    path: 'clubDocument.tags',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 20,
-    uniqueItems: true,
-  );
-
-  static const clubDocumentTagsItems = CatchContractFieldConstraints(
-    path: 'clubDocument.tags.items',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentVerifiedReviewCount = CatchContractFieldConstraints(
-    path: 'clubDocument.verifiedReviewCount',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const clubHostClaimDocumentClubId = CatchContractFieldConstraints(
-    path: 'clubHostClaimDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubHostClaimDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubHostClaimDocument.createdAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubHostClaimDocumentCreatedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubHostClaimDocument.createdAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubHostClaimDocumentUid = CatchContractFieldConstraints(
-    path: 'clubHostClaimDocument.uid',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubMembershipCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'clubMembershipCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubMembershipDocumentClubId = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubMembershipDocumentDeletedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.deletedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubMembershipDocumentDeletedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.deletedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubMembershipDocumentDemoOps = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.demoOps',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubMembershipDocumentDemoOpsCommand = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.demoOpsCommand',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubMembershipDocumentDemoOpsId = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.demoOpsId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubMembershipDocumentJoinedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.joinedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubMembershipDocumentJoinedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.joinedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubMembershipDocumentLeftAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.leftAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubMembershipDocumentLeftAtSeconds = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.leftAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubMembershipDocumentPushNotificationsEnabled = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.pushNotificationsEnabled',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubMembershipDocumentRole = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.role',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['owner', 'host', 'member'],
-  );
-
-  static const clubMembershipDocumentScenario = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.scenario',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubMembershipDocumentSeedPrefix = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.seedPrefix',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubMembershipDocumentStatus = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.status',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['active', 'left', 'deleted'],
-  );
-
-  static const clubMembershipDocumentSynthetic = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.synthetic',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubMembershipDocumentUid = CatchContractFieldConstraints(
-    path: 'clubMembershipDocument.uid',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubPostDocumentAudience = CatchContractFieldConstraints(
-    path: 'clubPostDocument.audience',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['followers'],
-  );
-
-  static const clubPostDocumentAuthorUid = CatchContractFieldConstraints(
-    path: 'clubPostDocument.authorUid',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubPostDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'clubPostDocument.createdAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const clubPostDocumentCreatedAtSeconds = CatchContractFieldConstraints(
-    path: 'clubPostDocument.createdAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const clubPostDocumentEventId = CatchContractFieldConstraints(
-    path: 'clubPostDocument.eventId',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubPostDocumentPhotoPath = CatchContractFieldConstraints(
-    path: 'clubPostDocument.photoPath',
-    maxLength: 500,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubPostDocumentStatus = CatchContractFieldConstraints(
-    path: 'clubPostDocument.status',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['active', 'removed'],
-  );
-
-  static const clubPostDocumentText = CatchContractFieldConstraints(
-    path: 'clubPostDocument.text',
-    maxLength: 500,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubScheduleLockDocumentClubId = CatchContractFieldConstraints(
-    path: 'clubScheduleLockDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubScheduleLockDocumentDemoOps = CatchContractFieldConstraints(
-    path: 'clubScheduleLockDocument.demoOps',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const clubScheduleLockDocumentDemoOpsCommand = CatchContractFieldConstraints(
-    path: 'clubScheduleLockDocument.demoOpsCommand',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubScheduleLockDocumentDemoOpsId = CatchContractFieldConstraints(
-    path: 'clubScheduleLockDocument.demoOpsId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubScheduleLockDocumentEndTimeMillis = CatchContractFieldConstraints(
-    path: 'clubScheduleLockDocument.endTimeMillis',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const clubScheduleLockDocumentEventId = CatchContractFieldConstraints(
-    path: 'clubScheduleLockDocument.eventId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubScheduleLockDocumentOwnerId = CatchContractFieldConstraints(
-    path: 'clubScheduleLockDocument.ownerId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubScheduleLockDocumentOwnerType = CatchContractFieldConstraints(
-    path: 'clubScheduleLockDocument.ownerType',
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubScheduleLockDocumentScenario = CatchContractFieldConstraints(
-    path: 'clubScheduleLockDocument.scenario',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubScheduleLockDocumentSeedPrefix = CatchContractFieldConstraints(
-    path: 'clubScheduleLockDocument.seedPrefix',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubScheduleLockDocumentSlot = CatchContractFieldConstraints(
-    path: 'clubScheduleLockDocument.slot',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const clubScheduleLockDocumentStartTimeMillis = CatchContractFieldConstraints(
-    path: 'clubScheduleLockDocument.startTimeMillis',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const clubScheduleLockDocumentSynthetic = CatchContractFieldConstraints(
-    path: 'clubScheduleLockDocument.synthetic',
-    valueTypes: <String>['boolean'],
-  );
-
   static const commercialTermsCommissionBase = CatchContractFieldConstraints(
     path: 'commercialTerms.commission.base',
     required: true,
@@ -27799,691 +25467,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const createClubCallablePayloadArea = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.area',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubId',
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9]{20}\$',
-  );
-
-  static const createClubCallablePayloadClubPhotos = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.createdAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsCreatedAtSeconds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.createdAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsId = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.id',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9_-]+\$',
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsModerationReason = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.moderation.reason',
-    maxLength: 240,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsModerationReviewedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.moderation.reviewedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsModerationReviewedAtSeconds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.moderation.reviewedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsModerationStatus = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.moderation.status',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['pending', 'approved', 'rejected'],
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsPosition = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.position',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsStoragePath = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.storagePath',
-    maxLength: 512,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsThumbnailStoragePath = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.thumbnailStoragePath',
-    maxLength: 512,
-    minLength: 1,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsThumbnailUrl = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.thumbnailUrl',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsUpdatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.updatedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsUpdatedAtSeconds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.updatedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const createClubCallablePayloadClubPhotosItemsUrl = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.clubPhotos.items.url',
-    maxLength: 2048,
-    required: true,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const createClubCallablePayloadDescription = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.description',
-    maxLength: 2000,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadEmail = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.email',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventPolicyAdmissionPreset = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventPolicy.admissionPreset',
-    valueTypes: <String>['string'],
-    enumValues: <String>['openCapacity', 'inviteOnly', 'balancedSingles', 'fixedCohortCaps'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventPolicyCancellationPolicyId = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventPolicy.cancellationPolicyId',
-    valueTypes: <String>['string'],
-    enumValues: <String>['flexible', 'standard', 'strict'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventPolicyCrossPathsPairCapacity = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventPolicy.crossPathsPairCapacity',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 100,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingEnabled = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventPolicy.dynamicPricingEnabled',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingMaxInPaise = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventPolicy.dynamicPricingMaxInPaise',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 100000000,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingStepInPaise = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventPolicy.dynamicPricingStepInPaise',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 100000000,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventPolicyMaxAge = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventPolicy.maxAge',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 120,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventPolicyMaxMen = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventPolicy.maxMen',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventPolicyMaxWomen = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventPolicy.maxWomen',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventPolicyMinAge = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventPolicy.minAge',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 120,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessAttendeePrompt = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.attendeePrompt',
-    maxLength: 300,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessCompatibilityAffectsRanking = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.compatibilityAffectsRanking',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessContextualOpenersEnabled = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.contextualOpenersEnabled',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessEnabled = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.enabled',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessHostGoal = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.hostGoal',
-    maxLength: 300,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.layoutId',
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.moduleSelectionConfigured',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessPlaybookId = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.playbookId',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    maxItems: 8,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsId = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.id',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptions = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    minItems: 2,
-    maxItems: 5,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptionsItemsId = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options.items.id',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options.items.label',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsPrompt = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.prompt',
-    maxLength: 140,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomTitle = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customTitle',
-    maxLength: 80,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigTemplateId = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.templateId',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessSelectedModuleIds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.selectedModuleIds',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 24,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessSelectedModuleIdsItems = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.selectedModuleIds.items',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigBalanceActivityAttributes = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.balanceActivityAttributes',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
-    maxItems: 8,
-    uniqueItems: true,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigBalanceActivityAttributesItems = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.balanceActivityAttributes.items',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigClusterActivityAttributes = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
-    maxItems: 8,
-    uniqueItems: true,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigMaxPairMeetings = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.maxPairMeetings',
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 10,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 200,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['court', 'table', 'lane', 'board'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 1000,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 60,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes',
-    valueTypes: <String>['integer'],
-    minimum: 5,
-    maximum: 180,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
-    valueTypes: <String>['string'],
-    enumValues: <String>['avoid', 'allowWhenExhausted'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.topology',
-    valueTypes: <String>['string'],
-    enumValues: <String>['set', 'sequence', 'adjacency'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.unitCount',
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 200,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitKind = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.unitKind',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitSize = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.unitSize',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 1000,
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessWingmanRequestsEnabled = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccess.wingmanRequestsEnabled',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsEventSuccessByActivityKind = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.eventSuccessByActivityKind',
-    valueTypes: <String>['object'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsPrimaryActivityKind = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.primaryActivityKind',
-    valueTypes: <String>['string'],
-    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
-  );
-
-  static const createClubCallablePayloadHostDefaultsSupportedActivityKinds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.supportedActivityKinds',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
-    maxItems: 16,
-    uniqueItems: true,
-  );
-
-  static const createClubCallablePayloadHostDefaultsSupportedActivityKindsItems = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.hostDefaults.supportedActivityKinds.items',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
-  );
-
-  static const createClubCallablePayloadImageUrl = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.imageUrl',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadInstagramHandle = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.instagramHandle',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadLocation = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.location',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
-  );
-
-  static const createClubCallablePayloadLogoPhotoCreatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.createdAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const createClubCallablePayloadLogoPhotoCreatedAtSeconds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.createdAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const createClubCallablePayloadLogoPhotoId = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.id',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9_-]+\$',
-  );
-
-  static const createClubCallablePayloadLogoPhotoModerationReason = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.moderation.reason',
-    maxLength: 240,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadLogoPhotoModerationReviewedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.moderation.reviewedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const createClubCallablePayloadLogoPhotoModerationReviewedAtSeconds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.moderation.reviewedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const createClubCallablePayloadLogoPhotoModerationStatus = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.moderation.status',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['pending', 'approved', 'rejected'],
-  );
-
-  static const createClubCallablePayloadLogoPhotoPosition = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.position',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const createClubCallablePayloadLogoPhotoStoragePath = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.storagePath',
-    maxLength: 512,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const createClubCallablePayloadLogoPhotoThumbnailStoragePath = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.thumbnailStoragePath',
-    maxLength: 512,
-    minLength: 1,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const createClubCallablePayloadLogoPhotoThumbnailUrl = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.thumbnailUrl',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const createClubCallablePayloadLogoPhotoUpdatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.updatedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const createClubCallablePayloadLogoPhotoUpdatedAtSeconds = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.updatedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const createClubCallablePayloadLogoPhotoUrl = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.logoPhoto.url',
-    maxLength: 2048,
-    required: true,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const createClubCallablePayloadName = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.name',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadOrganizerType = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.organizerType',
-    valueTypes: <String>['string'],
-    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
-  );
-
-  static const createClubCallablePayloadPhoneNumber = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.phoneNumber',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallablePayloadProfileImageUrl = CatchContractFieldConstraints(
-    path: 'createClubCallablePayload.profileImageUrl',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubCallableResponseClubId = CatchContractFieldConstraints(
-    path: 'createClubCallableResponse.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubPostCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'createClubPostCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubPostCallablePayloadEventId = CatchContractFieldConstraints(
-    path: 'createClubPostCallablePayload.eventId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubPostCallablePayloadPhotoPath = CatchContractFieldConstraints(
-    path: 'createClubPostCallablePayload.photoPath',
-    maxLength: 500,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubPostCallablePayloadText = CatchContractFieldConstraints(
-    path: 'createClubPostCallablePayload.text',
-    maxLength: 500,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubPostCallableResponsePostId = CatchContractFieldConstraints(
-    path: 'createClubPostCallableResponse.postId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createClubPostCallableResponseRemainingWeeklyQuota = CatchContractFieldConstraints(
-    path: 'createClubPostCallableResponse.remainingWeeklyQuota',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 3,
-  );
-
   static const createEventCallablePayloadCapacityLimit = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.capacityLimit',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 1000,
-  );
-
-  static const createEventCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'createEventCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const createEventCallablePayloadConstraintsMaxAge = CatchContractFieldConstraints(
@@ -32509,146 +29498,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const createPublicClubReviewCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createPublicClubReviewCallablePayloadComment = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallablePayload.comment',
-    maxLength: 1000,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createPublicClubReviewCallablePayloadIsAnonymous = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallablePayload.isAnonymous',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const createPublicClubReviewCallablePayloadRating = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallablePayload.rating',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 5,
-  );
-
-  static const createPublicClubReviewCallablePayloadReviewerName = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallablePayload.reviewerName',
-    maxLength: 120,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createPublicClubReviewCallablePayloadSubmittedFromPath = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallablePayload.submittedFromPath',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createPublicClubReviewCallableResponseReviewComment = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.review.comment',
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createPublicClubReviewCallableResponseReviewCreatedAt = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.review.createdAt',
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createPublicClubReviewCallableResponseReviewIdAtReviewPropertyId = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.review.id',
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createPublicClubReviewCallableResponseReviewIsAnonymous = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.review.isAnonymous',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const createPublicClubReviewCallableResponseReviewModerationStatus = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.review.moderationStatus',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['published', 'pending'],
-  );
-
-  static const createPublicClubReviewCallableResponseReviewOwnerResponseHostAvatarUrl = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.review.ownerResponse.hostAvatarUrl',
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const createPublicClubReviewCallableResponseReviewOwnerResponseHostName = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.review.ownerResponse.hostName',
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createPublicClubReviewCallableResponseReviewOwnerResponseMessage = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.review.ownerResponse.message',
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createPublicClubReviewCallableResponseReviewOwnerResponseUpdatedAt = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.review.ownerResponse.updatedAt',
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createPublicClubReviewCallableResponseReviewRating = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.review.rating',
-    required: true,
-    valueTypes: <String>['number'],
-    minimum: 0,
-    maximum: 5,
-  );
-
-  static const createPublicClubReviewCallableResponseReviewReviewerName = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.review.reviewerName',
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const createPublicClubReviewCallableResponseReviewSource = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.review.source',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['catchEvent', 'publicListing'],
-  );
-
-  static const createPublicClubReviewCallableResponseReviewVerificationStatus = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.review.verificationStatus',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['verified', 'unverified'],
-  );
-
-  static const createPublicClubReviewCallableResponseReviewIdAtReviewId = CatchContractFieldConstraints(
-    path: 'createPublicClubReviewCallableResponse.reviewId',
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const createPublicOrganizerReviewCallablePayloadComment = CatchContractFieldConstraints(
     path: 'createPublicOrganizerReviewCallablePayload.comment',
     maxLength: 1000,
@@ -33721,14 +30570,6 @@ abstract final class CatchContractConstraints {
   static const decideSalesPartnerAssignmentCallablePayloadRequestId = CatchContractFieldConstraints(
     path: 'decideSalesPartnerAssignmentCallablePayload.requestId',
     maxLength: 128,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const deleteClubCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'deleteClubCallablePayload.clubId',
-    maxLength: 180,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -49506,14 +46347,6 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['hostImport', 'hostManual'],
   );
 
-  static const eventAttendeeDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventAttendeeDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const eventAttendeeDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventAttendeeDocument.createdAt._nanoseconds',
     required: true,
@@ -49785,14 +46618,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
-  static const eventAttendeeImportDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventAttendeeImportDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const eventAttendeeImportDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventAttendeeImportDocument.completedAt._nanoseconds',
     required: true,
@@ -50018,14 +46843,6 @@ abstract final class CatchContractConstraints {
   static const eventBroadcastDocumentBody = CatchContractFieldConstraints(
     path: 'eventBroadcastDocument.body',
     maxLength: 500,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const eventBroadcastDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventBroadcastDocument.clubId',
-    maxLength: 180,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -51081,14 +47898,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-  );
-
-  static const eventDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const eventDocumentCohortCounts = CatchContractFieldConstraints(
@@ -52822,14 +49631,6 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
-  static const eventInviteLinkDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventInviteLinkDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const eventInviteLinkDocumentConfirmedCount = CatchContractFieldConstraints(
     path: 'eventInviteLinkDocument.confirmedCount',
     required: true,
@@ -53235,14 +50036,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['number'],
     minimum: 0,
     maximum: 10000,
-  );
-
-  static const eventLivePositionDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventLivePositionDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const eventLivePositionDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -56399,14 +53192,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
-  static const eventParticipationDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventParticipationDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const eventParticipationDocumentCohortAtSignup = CatchContractFieldConstraints(
     path: 'eventParticipationDocument.cohortAtSignup',
     maxLength: 120,
@@ -57113,14 +53898,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 15,
     maximum: 240,
-  );
-
-  static const eventPrivateAccessDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventPrivateAccessDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const eventPrivateAccessDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -67065,14 +63842,6 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['enabled', 'paused'],
   );
 
-  static const eventRehearsalDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventRehearsalDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const eventRehearsalDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventRehearsalDocument.completedAt._nanoseconds',
     required: true,
@@ -74739,14 +71508,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
-  static const eventRosterHandoffDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventRosterHandoffDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const eventRosterHandoffDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventRosterHandoffDocument.createdAt._nanoseconds',
     required: true,
@@ -74872,14 +71633,6 @@ abstract final class CatchContractConstraints {
 
   static const eventRuntimeClaimRequestDocumentCandidateAttendeeIdsItems = CatchContractFieldConstraints(
     path: 'eventRuntimeClaimRequestDocument.candidateAttendeeIds.items',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const eventRuntimeClaimRequestDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventRuntimeClaimRequestDocument.clubId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -75334,14 +72087,6 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['verifiedPhone', 'signedAttendeeToken', 'verifiedEmail', 'hostApproval', 'catchParticipation'],
   );
 
-  static const eventRuntimeParticipantDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventRuntimeParticipantDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const eventRuntimeParticipantDocumentCompletedFieldIds = CatchContractFieldConstraints(
     path: 'eventRuntimeParticipantDocument.completedFieldIds',
     required: true,
@@ -75588,14 +72333,6 @@ abstract final class CatchContractConstraints {
     path: 'eventRuntimeParticipantDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
-  );
-
-  static const eventSafetyReportDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSafetyReportDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const eventSafetyReportDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -76530,14 +73267,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const eventSuccessArrivalMissionDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessArrivalMissionDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const eventSuccessArrivalMissionDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventSuccessArrivalMissionDocument.completedAt._nanoseconds',
     required: true,
@@ -76725,14 +73454,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
-  );
-
-  static const eventSuccessAssignmentDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessAssignmentDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const eventSuccessAssignmentDocumentConfirmedLayoutUnitId = CatchContractFieldConstraints(
@@ -77318,14 +74039,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
-  );
-
-  static const eventSuccessAssignmentDraftDocumentAssignmentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessAssignmentDraftDocument.assignment.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const eventSuccessAssignmentDraftDocumentAssignmentConfirmedLayoutUnitId = CatchContractFieldConstraints(
@@ -78042,14 +74755,6 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
-  static const eventSuccessAssignmentDraftDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessAssignmentDraftDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const eventSuccessAssignmentDraftDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventSuccessAssignmentDraftDocument.createdAt._nanoseconds',
     required: true,
@@ -78129,14 +74834,6 @@ abstract final class CatchContractConstraints {
   static const eventSuccessCompatibilityResponseDocumentAnswerIdsItems = CatchContractFieldConstraints(
     path: 'eventSuccessCompatibilityResponseDocument.answerIds.items',
     maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const eventSuccessCompatibilityResponseDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessCompatibilityResponseDocument.clubId',
-    maxLength: 180,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -78252,14 +74949,6 @@ abstract final class CatchContractConstraints {
     maximum: 1000,
   );
 
-  static const eventSuccessConversationGraphDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessConversationGraphDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const eventSuccessConversationGraphDocumentConsentMode = CatchContractFieldConstraints(
     path: 'eventSuccessConversationGraphDocument.consentMode',
     required: true,
@@ -78341,14 +75030,6 @@ abstract final class CatchContractConstraints {
     path: 'eventSuccessConversationGraphDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
-  );
-
-  static const eventSuccessFeedbackDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessFeedbackDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const eventSuccessFeedbackDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -78487,14 +75168,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 2147483647,
-  );
-
-  static const eventSuccessLateArrivalDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessLateArrivalDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const eventSuccessLateArrivalDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -78808,14 +75481,6 @@ abstract final class CatchContractConstraints {
   static const eventSuccessPlanDocumentAttendeePrompt = CatchContractFieldConstraints(
     path: 'eventSuccessPlanDocument.attendeePrompt',
     maxLength: 300,
-    valueTypes: <String>['string'],
-  );
-
-  static const eventSuccessPlanDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessPlanDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -79257,14 +75922,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
-  static const eventSuccessPreferenceDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessPreferenceDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const eventSuccessPreferenceDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventSuccessPreferenceDocument.createdAt._nanoseconds',
     required: true,
@@ -79369,14 +76026,6 @@ abstract final class CatchContractConstraints {
     path: 'eventSuccessPreferenceDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
-  );
-
-  static const eventSuccessPresenceDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessPresenceDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const eventSuccessPresenceDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -79523,14 +76172,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-  );
-
-  static const eventSuccessScorecardDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessScorecardDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const eventSuccessScorecardDocumentConversationGraphAssignedConversationCount = CatchContractFieldConstraints(
@@ -79955,14 +76596,6 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
-  static const eventSuccessStandingsDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessStandingsDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const eventSuccessStandingsDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventSuccessStandingsDocument.createdAt._nanoseconds',
     required: true,
@@ -80143,14 +76776,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
-  static const eventSuccessUnitOutcomesDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessUnitOutcomesDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const eventSuccessUnitOutcomesDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventSuccessUnitOutcomesDocument.createdAt._nanoseconds',
     required: true,
@@ -80270,14 +76895,6 @@ abstract final class CatchContractConstraints {
     path: 'eventSuccessUnitOutcomesDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
-  );
-
-  static const eventSuccessWingmanRequestDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventSuccessWingmanRequestDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const eventSuccessWingmanRequestDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -80519,14 +77136,6 @@ abstract final class CatchContractConstraints {
 
   static const eventVenueSessionRedemptionDocumentUid = CatchContractFieldConstraints(
     path: 'eventVenueSessionRedemptionDocument.uid',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const eventWaitlistOfferDocumentClubId = CatchContractFieldConstraints(
-    path: 'eventWaitlistOfferDocument.clubId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -82194,22 +78803,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const exploreSearchCallableResponseClubIds = CatchContractFieldConstraints(
-    path: 'exploreSearchCallableResponse.clubIds',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 50,
-  );
-
-  static const exploreSearchCallableResponseClubIdsItems = CatchContractFieldConstraints(
-    path: 'exploreSearchCallableResponse.clubIds.items',
-    maxLength: 256,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const exploreSearchCallableResponseEventIds = CatchContractFieldConstraints(
     path: 'exploreSearchCallableResponse.eventIds',
     required: true,
@@ -82492,14 +79085,6 @@ abstract final class CatchContractConstraints {
 
   static const externalEventDocumentCanonicalHostId = CatchContractFieldConstraints(
     path: 'externalEventDocument.canonicalHostId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const externalEventDocumentCompatibilityClubId = CatchContractFieldConstraints(
-    path: 'externalEventDocument.compatibilityClubId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -86236,14 +82821,6 @@ abstract final class CatchContractConstraints {
     path: 'getEventRuntimeBootstrapCallableResponse.participant.attendanceStatus',
     valueTypes: <String>['string'],
     enumValues: <String>['invited', 'registered', 'waitlisted', 'checkedIn', 'cancelled'],
-  );
-
-  static const getEventRuntimeBootstrapCallableResponseParticipantClubId = CatchContractFieldConstraints(
-    path: 'getEventRuntimeBootstrapCallableResponse.participant.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIds = CatchContractFieldConstraints(
@@ -91891,27 +88468,6 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
-  static const hostAnalyticsCallableResponseScopeClubIds = CatchContractFieldConstraints(
-    path: 'hostAnalyticsCallableResponse.scope.clubIds',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-  );
-
-  static const hostAnalyticsCallableResponseScopeClubIdsItems = CatchContractFieldConstraints(
-    path: 'hostAnalyticsCallableResponse.scope.clubIds.items',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const hostAnalyticsCallableResponseScopeClubName = CatchContractFieldConstraints(
-    path: 'hostAnalyticsCallableResponse.scope.clubName',
-    maxLength: 160,
-    valueTypes: <String>['string'],
-  );
-
   static const hostAnalyticsCallableResponseScopeEventIds = CatchContractFieldConstraints(
     path: 'hostAnalyticsCallableResponse.scope.eventIds',
     required: true,
@@ -92114,14 +88670,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-  );
-
-  static const hostAnalyticsCallableResponseTopEventsItemsClubId = CatchContractFieldConstraints(
-    path: 'hostAnalyticsCallableResponse.topEvents.items.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const hostAnalyticsCallableResponseTopEventsItemsCurrency = CatchContractFieldConstraints(
@@ -92374,13 +88922,6 @@ abstract final class CatchContractConstraints {
     path: 'hostAnalyticsEvent.traffic_source',
     valueTypes: <String>['string'],
     enumValues: <String>['instagram', 'whatsapp', 'facebook', 'google', 'qr', 'email', 'direct', 'other'],
-  );
-
-  static const hostAnalyticsQueryCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'hostAnalyticsQueryCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
   );
 
   static const hostAnalyticsQueryCallablePayloadEndDate = CatchContractFieldConstraints(
@@ -92710,27 +89251,6 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
-  static const hostAnalyticsSnapshotDocumentResponseScopeClubIds = CatchContractFieldConstraints(
-    path: 'hostAnalyticsSnapshotDocument.response.scope.clubIds',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-  );
-
-  static const hostAnalyticsSnapshotDocumentResponseScopeClubIdsItems = CatchContractFieldConstraints(
-    path: 'hostAnalyticsSnapshotDocument.response.scope.clubIds.items',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const hostAnalyticsSnapshotDocumentResponseScopeClubName = CatchContractFieldConstraints(
-    path: 'hostAnalyticsSnapshotDocument.response.scope.clubName',
-    maxLength: 160,
-    valueTypes: <String>['string'],
-  );
-
   static const hostAnalyticsSnapshotDocumentResponseScopeEventIds = CatchContractFieldConstraints(
     path: 'hostAnalyticsSnapshotDocument.response.scope.eventIds',
     required: true,
@@ -92933,14 +89453,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-  );
-
-  static const hostAnalyticsSnapshotDocumentResponseTopEventsItemsClubId = CatchContractFieldConstraints(
-    path: 'hostAnalyticsSnapshotDocument.response.topEvents.items.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const hostAnalyticsSnapshotDocumentResponseTopEventsItemsCurrency = CatchContractFieldConstraints(
@@ -95792,16 +92304,16 @@ abstract final class CatchContractConstraints {
     pattern: '.*\\S.*',
   );
 
-  static const hostProfileDocumentLinkedClubIds = CatchContractFieldConstraints(
-    path: 'hostProfileDocument.linkedClubIds',
+  static const hostProfileDocumentLinkedOrganizerIds = CatchContractFieldConstraints(
+    path: 'hostProfileDocument.linkedOrganizerIds',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
     maxItems: 20,
     uniqueItems: true,
   );
 
-  static const hostProfileDocumentLinkedClubIdsItems = CatchContractFieldConstraints(
-    path: 'hostProfileDocument.linkedClubIds.items',
+  static const hostProfileDocumentLinkedOrganizerIdsItems = CatchContractFieldConstraints(
+    path: 'hostProfileDocument.linkedOrganizerIds.items',
     maxLength: 160,
     minLength: 1,
     required: true,
@@ -104906,103 +101418,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const listPublicClubReviewsCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const listPublicClubReviewsCallableResponseReviews = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallableResponse.reviews',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    maxItems: 50,
-  );
-
-  static const listPublicClubReviewsCallableResponseReviewsItemsComment = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallableResponse.reviews.items.comment',
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const listPublicClubReviewsCallableResponseReviewsItemsCreatedAt = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallableResponse.reviews.items.createdAt',
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const listPublicClubReviewsCallableResponseReviewsItemsId = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallableResponse.reviews.items.id',
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const listPublicClubReviewsCallableResponseReviewsItemsIsAnonymous = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallableResponse.reviews.items.isAnonymous',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const listPublicClubReviewsCallableResponseReviewsItemsOwnerResponseHostAvatarUrl = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallableResponse.reviews.items.ownerResponse.hostAvatarUrl',
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const listPublicClubReviewsCallableResponseReviewsItemsOwnerResponseHostName = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallableResponse.reviews.items.ownerResponse.hostName',
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const listPublicClubReviewsCallableResponseReviewsItemsOwnerResponseMessage = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallableResponse.reviews.items.ownerResponse.message',
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const listPublicClubReviewsCallableResponseReviewsItemsOwnerResponseUpdatedAt = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallableResponse.reviews.items.ownerResponse.updatedAt',
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const listPublicClubReviewsCallableResponseReviewsItemsRating = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallableResponse.reviews.items.rating',
-    required: true,
-    valueTypes: <String>['number'],
-    minimum: 0,
-    maximum: 5,
-  );
-
-  static const listPublicClubReviewsCallableResponseReviewsItemsReviewerName = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallableResponse.reviews.items.reviewerName',
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const listPublicClubReviewsCallableResponseReviewsItemsSource = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallableResponse.reviews.items.source',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['catchEvent', 'publicListing'],
-  );
-
-  static const listPublicClubReviewsCallableResponseReviewsItemsVerificationStatus = CatchContractFieldConstraints(
-    path: 'listPublicClubReviewsCallableResponse.reviews.items.verificationStatus',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['verified', 'unverified'],
-  );
-
   static const listPublicOrganizerReviewsCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'listPublicOrganizerReviewsCallablePayload.organizerId',
     maxLength: 180,
@@ -108226,18 +104641,10 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
-  static const matchDocumentClubId = CatchContractFieldConstraints(
-    path: 'matchDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const matchDocumentConversationType = CatchContractFieldConstraints(
     path: 'matchDocument.conversationType',
     valueTypes: <String>['string'],
-    enumValues: <String>['match', 'clubHostInquiry', 'crossPathsEventPlan'],
+    enumValues: <String>['match', 'organizerHostInquiry', 'crossPathsEventPlan'],
   );
 
   static const matchDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -108655,7 +105062,7 @@ abstract final class CatchContractConstraints {
     path: 'moderationFlagDocument.source',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['profile_photo', 'club_image', 'chat_message', 'user_bio', 'club_description', 'review_comment'],
+    enumValues: <String>['profile_photo', 'organizer_image', 'chat_message', 'user_bio', 'organizer_description', 'review_comment'],
   );
 
   static const moderationFlagDocumentStatus = CatchContractFieldConstraints(
@@ -116515,7 +112922,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerDocument.adminSearch.updatedBySource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['adminCreateOrganizerDraftFromCandidate', 'adminApproveOrganizerListing', 'adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminOrganizerSearchBackfill'],
+    enumValues: <String>['adminCreateOrganizerDraftFromCandidate', 'adminApproveOrganizerListing', 'adminUpdateOrganizerDetails', 'adminSetOrganizerIndexStatus', 'adminOrganizerSearchBackfill'],
   );
 
   static const organizerDocumentAppVisibility = CatchContractFieldConstraints(
@@ -116581,115 +112988,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['unclaimed', 'claimPending', 'claimed', 'verified', 'suppressed'],
-  );
-
-  static const organizerDocumentClubPhotos = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-  );
-
-  static const organizerDocumentClubPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.createdAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const organizerDocumentClubPhotosItemsCreatedAtSeconds = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.createdAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const organizerDocumentClubPhotosItemsId = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.id',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9_-]+\$',
-  );
-
-  static const organizerDocumentClubPhotosItemsModerationReason = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.moderation.reason',
-    maxLength: 240,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerDocumentClubPhotosItemsModerationReviewedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.moderation.reviewedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const organizerDocumentClubPhotosItemsModerationReviewedAtSeconds = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.moderation.reviewedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const organizerDocumentClubPhotosItemsModerationStatus = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.moderation.status',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['pending', 'approved', 'rejected'],
-  );
-
-  static const organizerDocumentClubPhotosItemsPosition = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.position',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const organizerDocumentClubPhotosItemsStoragePath = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.storagePath',
-    maxLength: 512,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const organizerDocumentClubPhotosItemsThumbnailStoragePath = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.thumbnailStoragePath',
-    maxLength: 512,
-    minLength: 1,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const organizerDocumentClubPhotosItemsThumbnailUrl = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.thumbnailUrl',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const organizerDocumentClubPhotosItemsUpdatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.updatedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const organizerDocumentClubPhotosItemsUpdatedAtSeconds = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.updatedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const organizerDocumentClubPhotosItemsUrl = CatchContractFieldConstraints(
-    path: 'organizerDocument.clubPhotos.items.url',
-    maxLength: 2048,
-    required: true,
-    valueTypes: <String>['string'],
-    format: 'uri',
   );
 
   static const organizerDocumentCountryCode = CatchContractFieldConstraints(
@@ -125614,6 +121912,36 @@ abstract final class CatchContractConstraints {
     maximum: 1000000,
   );
 
+  static const organizerHostClaimDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerHostClaimDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerHostClaimDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerHostClaimDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerHostClaimDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerHostClaimDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerHostClaimDocumentUid = CatchContractFieldConstraints(
+    path: 'organizerHostClaimDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerIntakeCurationDecisionDocumentDecision = CatchContractFieldConstraints(
     path: 'organizerIntakeCurationDecisionDocument.decision',
     valueTypes: <String>['string'],
@@ -125861,7 +122189,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerIntakeCurationDecisionDocument.surface.evidenceRefs.items.type',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['hostDiscoveryRun', 'seedClub', 'userReportedSearchResult', 'manualNote'],
+    enumValues: <String>['hostDiscoveryRun', 'seedOrganizer', 'userReportedSearchResult', 'manualNote'],
   );
 
   static const organizerIntakeCurationDecisionDocumentSurfaceNormalizedKey = CatchContractFieldConstraints(
@@ -126691,6 +123019,134 @@ abstract final class CatchContractConstraints {
 
   static const organizerManualSendTaskDocumentUpdatedByUid = CatchContractFieldConstraints(
     path: 'organizerManualSendTaskDocument.updatedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMembershipCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerMembershipCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMembershipDocumentDeletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.deletedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerMembershipDocumentDeletedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.deletedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerMembershipDocumentDemoOps = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.demoOps',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerMembershipDocumentDemoOpsCommand = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.demoOpsCommand',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMembershipDocumentDemoOpsId = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.demoOpsId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMembershipDocumentJoinedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.joinedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerMembershipDocumentJoinedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.joinedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerMembershipDocumentLeftAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.leftAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerMembershipDocumentLeftAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.leftAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerMembershipDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMembershipDocumentPushNotificationsEnabled = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.pushNotificationsEnabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerMembershipDocumentRole = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['owner', 'host', 'member'],
+  );
+
+  static const organizerMembershipDocumentScenario = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.scenario',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMembershipDocumentSeedPrefix = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.seedPrefix',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMembershipDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'left', 'deleted'],
+  );
+
+  static const organizerMembershipDocumentSynthetic = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.synthetic',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerMembershipDocumentUid = CatchContractFieldConstraints(
+    path: 'organizerMembershipDocument.uid',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -132111,6 +128567,27 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerScheduleLockDocumentDemoOps = CatchContractFieldConstraints(
+    path: 'organizerScheduleLockDocument.demoOps',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerScheduleLockDocumentDemoOpsCommand = CatchContractFieldConstraints(
+    path: 'organizerScheduleLockDocument.demoOpsCommand',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerScheduleLockDocumentDemoOpsId = CatchContractFieldConstraints(
+    path: 'organizerScheduleLockDocument.demoOpsId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerScheduleLockDocumentEndTimeMillis = CatchContractFieldConstraints(
     path: 'organizerScheduleLockDocument.endTimeMillis',
     required: true,
@@ -132148,6 +128625,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerScheduleLockDocumentScenario = CatchContractFieldConstraints(
+    path: 'organizerScheduleLockDocument.scenario',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerScheduleLockDocumentSeedPrefix = CatchContractFieldConstraints(
+    path: 'organizerScheduleLockDocument.seedPrefix',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerScheduleLockDocumentSlot = CatchContractFieldConstraints(
     path: 'organizerScheduleLockDocument.slot',
     required: true,
@@ -132160,6 +128653,11 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
+  );
+
+  static const organizerScheduleLockDocumentSynthetic = CatchContractFieldConstraints(
+    path: 'organizerScheduleLockDocument.synthetic',
+    valueTypes: <String>['boolean'],
   );
 
   static const organizerSenderConnectionActionCallablePayloadConnectionId = CatchContractFieldConstraints(
@@ -148956,7 +145454,7 @@ abstract final class CatchContractConstraints {
     path: 'publicRouteReservationDocument.lastVerifiedSource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminUpdateOrganizerDetails', 'adminSetOrganizerIndexStatus', 'adminCreateOrganizerDraftFromCandidate', 'adminApproveOrganizerListing', 'createOrganizer', 'clubsToOrganizersMigration'],
+    enumValues: <String>['adminUpdateOrganizerDetails', 'adminSetOrganizerIndexStatus', 'adminCreateOrganizerDraftFromCandidate', 'adminApproveOrganizerListing', 'createOrganizer', 'clubsToOrganizersMigration'],
   );
 
   static const publicRouteReservationDocumentOwnerCollection = CatchContractFieldConstraints(
@@ -150566,14 +147064,6 @@ abstract final class CatchContractConstraints {
     maximum: 200,
   );
 
-  static const recordOrganizerAnalyticsEventCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'recordOrganizerAnalyticsEventCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const recordOrganizerAnalyticsEventCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'recordOrganizerAnalyticsEventCallablePayload.eventId',
     maxLength: 180,
@@ -151130,16 +147620,16 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
-  static const removeClubHostCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'removeClubHostCallablePayload.clubId',
+  static const removeOrganizerHostCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'removeOrganizerHostCallablePayload.organizerId',
     maxLength: 180,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
   );
 
-  static const removeClubHostCallablePayloadUid = CatchContractFieldConstraints(
-    path: 'removeClubHostCallablePayload.uid',
+  static const removeOrganizerHostCallablePayloadUid = CatchContractFieldConstraints(
+    path: 'removeOrganizerHostCallablePayload.uid',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -151445,77 +147935,6 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
-  );
-
-  static const requestClubClaimCallablePayloadBusinessEmail = CatchContractFieldConstraints(
-    path: 'requestClubClaimCallablePayload.businessEmail',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const requestClubClaimCallablePayloadBusinessPhone = CatchContractFieldConstraints(
-    path: 'requestClubClaimCallablePayload.businessPhone',
-    maxLength: 32,
-    valueTypes: <String>['string'],
-  );
-
-  static const requestClubClaimCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'requestClubClaimCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const requestClubClaimCallablePayloadMessage = CatchContractFieldConstraints(
-    path: 'requestClubClaimCallablePayload.message',
-    maxLength: 1000,
-    valueTypes: <String>['string'],
-  );
-
-  static const requestClubClaimCallablePayloadProofUrls = CatchContractFieldConstraints(
-    path: 'requestClubClaimCallablePayload.proofUrls',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 8,
-    uniqueItems: true,
-  );
-
-  static const requestClubClaimCallablePayloadProofUrlsItems = CatchContractFieldConstraints(
-    path: 'requestClubClaimCallablePayload.proofUrls.items',
-    maxLength: 2048,
-    required: true,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const requestClubClaimCallablePayloadRequesterName = CatchContractFieldConstraints(
-    path: 'requestClubClaimCallablePayload.requesterName',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const requestClubClaimCallablePayloadRequesterRole = CatchContractFieldConstraints(
-    path: 'requestClubClaimCallablePayload.requesterRole',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['owner', 'founder', 'manager', 'marketer', 'venueManager', 'other'],
-  );
-
-  static const requestClubClaimCallableResponseRequestId = CatchContractFieldConstraints(
-    path: 'requestClubClaimCallableResponse.requestId',
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const requestClubClaimCallableResponseStatus = CatchContractFieldConstraints(
-    path: 'requestClubClaimCallableResponse.status',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['pending'],
   );
 
   static const requestOrganizerClaimCallablePayloadBusinessEmail = CatchContractFieldConstraints(
@@ -163009,20 +159428,6 @@ abstract final class CatchContractConstraints {
     pattern: '^\\+[1-9][0-9]{7,14}\$',
   );
 
-  static const setClubNotificationPreferenceCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'setClubNotificationPreferenceCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const setClubNotificationPreferenceCallablePayloadEnabled = CatchContractFieldConstraints(
-    path: 'setClubNotificationPreferenceCallablePayload.enabled',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
   static const setCrossPathsEventConsentCallablePayloadEnabled = CatchContractFieldConstraints(
     path: 'setCrossPathsEventConsentCallablePayload.enabled',
     required: true,
@@ -164475,30 +160880,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const startClubHostConversationCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'startClubHostConversationCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const startClubHostConversationCallablePayloadEventId = CatchContractFieldConstraints(
-    path: 'startClubHostConversationCallablePayload.eventId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const startClubHostConversationCallablePayloadHostUid = CatchContractFieldConstraints(
-    path: 'startClubHostConversationCallablePayload.hostUid',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const startEventSuccessFirstHelloMissionCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'startEventSuccessFirstHelloMissionCallablePayload.eventId',
     maxLength: 180,
@@ -164622,6 +161003,30 @@ abstract final class CatchContractConstraints {
 
   static const startOrganizerConversationCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'startOrganizerConversationCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const startOrganizerHostConversationCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'startOrganizerHostConversationCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const startOrganizerHostConversationCallablePayloadHostUid = CatchContractFieldConstraints(
+    path: 'startOrganizerHostConversationCallablePayload.hostUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const startOrganizerHostConversationCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'startOrganizerHostConversationCallablePayload.organizerId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -166733,22 +163138,6 @@ abstract final class CatchContractConstraints {
     maximum: 250,
   );
 
-  static const transferClubOwnershipCallablePayloadClubId = CatchContractFieldConstraints(
-    path: 'transferClubOwnershipCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const transferClubOwnershipCallablePayloadUid = CatchContractFieldConstraints(
-    path: 'transferClubOwnershipCallablePayload.uid',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const transferEventAssistanceGroupCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
     path: 'transferEventAssistanceGroupCallablePayload.command.context.clockId',
     maxLength: 2000,
@@ -167811,645 +164200,6 @@ abstract final class CatchContractConstraints {
   static const unmergeOrganizerContactsCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'unmergeOrganizerContactsCallablePayload.organizerId',
     maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchArea = CatchContractFieldConstraints(
-    path: 'updateClubPatch.area',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchClubPhotos = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-  );
-
-  static const updateClubPatchClubPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.createdAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const updateClubPatchClubPhotosItemsCreatedAtSeconds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.createdAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const updateClubPatchClubPhotosItemsId = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.id',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9_-]+\$',
-  );
-
-  static const updateClubPatchClubPhotosItemsModerationReason = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.moderation.reason',
-    maxLength: 240,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchClubPhotosItemsModerationReviewedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.moderation.reviewedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const updateClubPatchClubPhotosItemsModerationReviewedAtSeconds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.moderation.reviewedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const updateClubPatchClubPhotosItemsModerationStatus = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.moderation.status',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['pending', 'approved', 'rejected'],
-  );
-
-  static const updateClubPatchClubPhotosItemsPosition = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.position',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const updateClubPatchClubPhotosItemsStoragePath = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.storagePath',
-    maxLength: 512,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const updateClubPatchClubPhotosItemsThumbnailStoragePath = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.thumbnailStoragePath',
-    maxLength: 512,
-    minLength: 1,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const updateClubPatchClubPhotosItemsThumbnailUrl = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.thumbnailUrl',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const updateClubPatchClubPhotosItemsUpdatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.updatedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const updateClubPatchClubPhotosItemsUpdatedAtSeconds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.updatedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const updateClubPatchClubPhotosItemsUrl = CatchContractFieldConstraints(
-    path: 'updateClubPatch.clubPhotos.items.url',
-    maxLength: 2048,
-    required: true,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const updateClubPatchDescription = CatchContractFieldConstraints(
-    path: 'updateClubPatch.description',
-    maxLength: 2000,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchEmail = CatchContractFieldConstraints(
-    path: 'updateClubPatch.email',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchHostAvatarUrl = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostAvatarUrl',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchHostDefaultsEventPolicyAdmissionPreset = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventPolicy.admissionPreset',
-    valueTypes: <String>['string'],
-    enumValues: <String>['openCapacity', 'inviteOnly', 'balancedSingles', 'fixedCohortCaps'],
-  );
-
-  static const updateClubPatchHostDefaultsEventPolicyCancellationPolicyId = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventPolicy.cancellationPolicyId',
-    valueTypes: <String>['string'],
-    enumValues: <String>['flexible', 'standard', 'strict'],
-  );
-
-  static const updateClubPatchHostDefaultsEventPolicyCrossPathsPairCapacity = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventPolicy.crossPathsPairCapacity',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 100,
-  );
-
-  static const updateClubPatchHostDefaultsEventPolicyDynamicPricingEnabled = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventPolicy.dynamicPricingEnabled',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const updateClubPatchHostDefaultsEventPolicyDynamicPricingMaxInPaise = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventPolicy.dynamicPricingMaxInPaise',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 100000000,
-  );
-
-  static const updateClubPatchHostDefaultsEventPolicyDynamicPricingStepInPaise = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventPolicy.dynamicPricingStepInPaise',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 100000000,
-  );
-
-  static const updateClubPatchHostDefaultsEventPolicyMaxAge = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventPolicy.maxAge',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 120,
-  );
-
-  static const updateClubPatchHostDefaultsEventPolicyMaxMen = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventPolicy.maxMen',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const updateClubPatchHostDefaultsEventPolicyMaxWomen = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventPolicy.maxWomen',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const updateClubPatchHostDefaultsEventPolicyMinAge = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventPolicy.minAge',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 120,
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessAttendeePrompt = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.attendeePrompt',
-    maxLength: 300,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessCompatibilityAffectsRanking = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.compatibilityAffectsRanking',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessContextualOpenersEnabled = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.contextualOpenersEnabled',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessEnabled = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.enabled',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessHostGoal = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.hostGoal',
-    maxLength: 300,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessLayoutId = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.layoutId',
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessModuleSelectionConfigured = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.moduleSelectionConfigured',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessPlaybookId = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.playbookId',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    maxItems: 8,
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsId = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.id',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptions = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    minItems: 2,
-    maxItems: 5,
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptionsItemsId = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options.items.id',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options.items.label',
-    maxLength: 80,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsPrompt = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.prompt',
-    maxLength: 140,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomTitle = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customTitle',
-    maxLength: 80,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigTemplateId = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.templateId',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessSelectedModuleIds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.selectedModuleIds',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 24,
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessSelectedModuleIdsItems = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.selectedModuleIds.items',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigBalanceActivityAttributes = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.balanceActivityAttributes',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
-    maxItems: 8,
-    uniqueItems: true,
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigBalanceActivityAttributesItems = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.balanceActivityAttributes.items',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigClusterActivityAttributes = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
-    maxItems: 8,
-    uniqueItems: true,
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigMaxPairMeetings = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.maxPairMeetings',
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 10,
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits',
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 200,
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['court', 'table', 'lane', 'board'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit',
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 1000,
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 60,
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes',
-    valueTypes: <String>['integer'],
-    minimum: 5,
-    maximum: 180,
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
-    valueTypes: <String>['string'],
-    enumValues: <String>['avoid', 'allowWhenExhausted'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigTopology = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.topology',
-    valueTypes: <String>['string'],
-    enumValues: <String>['set', 'sequence', 'adjacency'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.unitCount',
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 200,
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigUnitKind = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.unitKind',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessStructureConfigUnitSize = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.structureConfig.unitSize',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 1000,
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessWingmanRequestsEnabled = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccess.wingmanRequestsEnabled',
-    valueTypes: <String>['boolean'],
-  );
-
-  static const updateClubPatchHostDefaultsEventSuccessByActivityKind = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.eventSuccessByActivityKind',
-    valueTypes: <String>['object'],
-  );
-
-  static const updateClubPatchHostDefaultsPrimaryActivityKind = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.primaryActivityKind',
-    valueTypes: <String>['string'],
-    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
-  );
-
-  static const updateClubPatchHostDefaultsSupportedActivityKinds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.supportedActivityKinds',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
-    maxItems: 16,
-    uniqueItems: true,
-  );
-
-  static const updateClubPatchHostDefaultsSupportedActivityKindsItems = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostDefaults.supportedActivityKinds.items',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
-  );
-
-  static const updateClubPatchHostName = CatchContractFieldConstraints(
-    path: 'updateClubPatch.hostName',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchImageUrl = CatchContractFieldConstraints(
-    path: 'updateClubPatch.imageUrl',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchInstagramHandle = CatchContractFieldConstraints(
-    path: 'updateClubPatch.instagramHandle',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchLocation = CatchContractFieldConstraints(
-    path: 'updateClubPatch.location',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
-  );
-
-  static const updateClubPatchLogoPhotoCreatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.createdAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const updateClubPatchLogoPhotoCreatedAtSeconds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.createdAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const updateClubPatchLogoPhotoId = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.id',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9_-]+\$',
-  );
-
-  static const updateClubPatchLogoPhotoModerationReason = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.moderation.reason',
-    maxLength: 240,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchLogoPhotoModerationReviewedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.moderation.reviewedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const updateClubPatchLogoPhotoModerationReviewedAtSeconds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.moderation.reviewedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const updateClubPatchLogoPhotoModerationStatus = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.moderation.status',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['pending', 'approved', 'rejected'],
-  );
-
-  static const updateClubPatchLogoPhotoPosition = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.position',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const updateClubPatchLogoPhotoStoragePath = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.storagePath',
-    maxLength: 512,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const updateClubPatchLogoPhotoThumbnailStoragePath = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.thumbnailStoragePath',
-    maxLength: 512,
-    minLength: 1,
-    valueTypes: <String>['string'],
-    pattern: '^[^/\\u0000][^\\u0000]*\$',
-  );
-
-  static const updateClubPatchLogoPhotoThumbnailUrl = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.thumbnailUrl',
-    maxLength: 2048,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const updateClubPatchLogoPhotoUpdatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.updatedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const updateClubPatchLogoPhotoUpdatedAtSeconds = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.updatedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const updateClubPatchLogoPhotoUrl = CatchContractFieldConstraints(
-    path: 'updateClubPatch.logoPhoto.url',
-    maxLength: 2048,
-    required: true,
-    valueTypes: <String>['string'],
-    format: 'uri',
-  );
-
-  static const updateClubPatchName = CatchContractFieldConstraints(
-    path: 'updateClubPatch.name',
-    maxLength: 120,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchOrganizerType = CatchContractFieldConstraints(
-    path: 'updateClubPatch.organizerType',
-    valueTypes: <String>['string'],
-    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
-  );
-
-  static const updateClubPatchPhoneNumber = CatchContractFieldConstraints(
-    path: 'updateClubPatch.phoneNumber',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchProfileImageUrl = CatchContractFieldConstraints(
-    path: 'updateClubPatch.profileImageUrl',
-    maxLength: 320,
-    valueTypes: <String>['string'],
-  );
-
-  static const updateClubPatchTags = CatchContractFieldConstraints(
-    path: 'updateClubPatch.tags',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 12,
-    uniqueItems: true,
-  );
-
-  static const updateClubPatchTagsItems = CatchContractFieldConstraints(
-    path: 'updateClubPatch.tags.items',
-    maxLength: 40,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -173503,11 +169253,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const updateUserProfilePatchPrefsClubUpdates = CatchContractFieldConstraints(
-    path: 'updateUserProfilePatch.prefsClubUpdates',
-    valueTypes: <String>['boolean'],
-  );
-
   static const updateUserProfilePatchPrefsCrossPathsInvitations = CatchContractFieldConstraints(
     path: 'updateUserProfilePatch.prefsCrossPathsInvitations',
     valueTypes: <String>['boolean'],
@@ -173525,6 +169270,11 @@ abstract final class CatchContractConstraints {
 
   static const updateUserProfilePatchPrefsNewCatches = CatchContractFieldConstraints(
     path: 'updateUserProfilePatch.prefsNewCatches',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateUserProfilePatchPrefsOrganizerUpdates = CatchContractFieldConstraints(
+    path: 'updateUserProfilePatch.prefsOrganizerUpdates',
     valueTypes: <String>['boolean'],
   );
 
@@ -176064,14 +171814,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const userEventScheduleLockDocumentClubId = CatchContractFieldConstraints(
-    path: 'userEventScheduleLockDocument.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const userEventScheduleLockDocumentDemoOps = CatchContractFieldConstraints(
     path: 'userEventScheduleLockDocument.demoOps',
     valueTypes: <String>['boolean'],
@@ -176486,12 +172228,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const userProfileDocumentPrefsClubUpdates = CatchContractFieldConstraints(
-    path: 'userProfileDocument.prefsClubUpdates',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
   static const userProfileDocumentPrefsCrossPathsInvitations = CatchContractFieldConstraints(
     path: 'userProfileDocument.prefsCrossPathsInvitations',
     valueTypes: <String>['boolean'],
@@ -176511,6 +172247,12 @@ abstract final class CatchContractConstraints {
 
   static const userProfileDocumentPrefsNewCatches = CatchContractFieldConstraints(
     path: 'userProfileDocument.prefsNewCatches',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const userProfileDocumentPrefsOrganizerUpdates = CatchContractFieldConstraints(
+    path: 'userProfileDocument.prefsOrganizerUpdates',
     required: true,
     valueTypes: <String>['boolean'],
   );
@@ -178467,7 +174209,7 @@ abstract final class CatchContractConstraints {
     path: 'websiteHostListingProjection.listingVariant',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['unclaimedScraped', 'appCreatedClub'],
+    enumValues: <String>['unclaimedScraped', 'appCreatedOrganizer'],
   );
 
   static const websiteHostListingProjectionLogoMode = CatchContractFieldConstraints(
@@ -179400,7 +175142,6 @@ abstract final class CatchContractConstraints {
     'activityNotificationDocument.actorName': activityNotificationDocumentActorName,
     'activityNotificationDocument.actorUid': activityNotificationDocumentActorUid,
     'activityNotificationDocument.body': activityNotificationDocumentBody,
-    'activityNotificationDocument.clubId': activityNotificationDocumentClubId,
     'activityNotificationDocument.createdAt._nanoseconds': activityNotificationDocumentCreatedAtNanoseconds,
     'activityNotificationDocument.createdAt._seconds': activityNotificationDocumentCreatedAtSeconds,
     'activityNotificationDocument.demoOps': activityNotificationDocumentDemoOps,
@@ -179436,9 +175177,9 @@ abstract final class CatchContractConstraints {
     'actOnEventChatMessageCallablePayload.requestId': actOnEventChatMessageCallablePayloadRequestId,
     'actOnEventChatMessageCallableResponse.applied': actOnEventChatMessageCallableResponseApplied,
     'actOnEventChatMessageCallableResponse.replayed': actOnEventChatMessageCallableResponseReplayed,
-    'addClubHostCallablePayload.clubId': addClubHostCallablePayloadClubId,
-    'addClubHostCallablePayload.phoneNumber': addClubHostCallablePayloadPhoneNumber,
-    'addClubHostCallablePayload.uid': addClubHostCallablePayloadUid,
+    'addOrganizerHostCallablePayload.organizerId': addOrganizerHostCallablePayloadOrganizerId,
+    'addOrganizerHostCallablePayload.phoneNumber': addOrganizerHostCallablePayloadPhoneNumber,
+    'addOrganizerHostCallablePayload.uid': addOrganizerHostCallablePayloadUid,
     'addOrganizerManagerCallablePayload.organizerId': addOrganizerManagerCallablePayloadOrganizerId,
     'addOrganizerManagerCallablePayload.phoneNumber': addOrganizerManagerCallablePayloadPhoneNumber,
     'addOrganizerManagerCallablePayload.uid': addOrganizerManagerCallablePayloadUid,
@@ -179830,9 +175571,6 @@ abstract final class CatchContractConstraints {
     'adminDecideAccessApplicationCallableResponse.applicationUid': adminDecideAccessApplicationCallableResponseApplicationUid,
     'adminDecideAccessApplicationCallableResponse.decision': adminDecideAccessApplicationCallableResponseDecision,
     'adminDecideAccessApplicationCallableResponse.status': adminDecideAccessApplicationCallableResponseStatus,
-    'adminDecideClubClaimCallablePayload.decision': adminDecideClubClaimCallablePayloadDecision,
-    'adminDecideClubClaimCallablePayload.decisionReason': adminDecideClubClaimCallablePayloadDecisionReason,
-    'adminDecideClubClaimCallablePayload.requestId': adminDecideClubClaimCallablePayloadRequestId,
     'adminDecideEventMessagingBudgetCallablePayload.decision.currency': adminDecideEventMessagingBudgetCallablePayloadDecisionCurrency,
     'adminDecideEventMessagingBudgetCallablePayload.decision.eventLimitMicros': adminDecideEventMessagingBudgetCallablePayloadDecisionEventLimitMicros,
     'adminDecideEventMessagingBudgetCallablePayload.decision.kind': adminDecideEventMessagingBudgetCallablePayloadDecisionKind,
@@ -179901,7 +175639,6 @@ abstract final class CatchContractConstraints {
     'adminGenerateSalesOutreachDraftResponse.result.draftId': adminGenerateSalesOutreachDraftResponseResultDraftId,
     'adminGenerateSalesOutreachDraftResponse.retryAfterSeconds': adminGenerateSalesOutreachDraftResponseRetryAfterSeconds,
     'adminGenerateSalesOutreachDraftResponse.status': adminGenerateSalesOutreachDraftResponseStatus,
-    'adminGetClubDetailsCallablePayload.clubId': adminGetClubDetailsCallablePayloadClubId,
     'adminGetEventDetailsCallablePayload.eventId': adminGetEventDetailsCallablePayloadEventId,
     'adminGetOrganizerDetailsCallablePayload.organizerId': adminGetOrganizerDetailsCallablePayloadOrganizerId,
     'adminGetOverviewCallableResponse.dataQuality': adminGetOverviewCallableResponseDataQuality,
@@ -179925,20 +175662,6 @@ abstract final class CatchContractConstraints {
     'adminGetOverviewCallableResponse.queues.accessApplications.items.status': adminGetOverviewCallableResponseQueuesAccessApplicationsItemsStatus,
     'adminGetOverviewCallableResponse.queues.accessApplications.items.targetPath': adminGetOverviewCallableResponseQueuesAccessApplicationsItemsTargetPath,
     'adminGetOverviewCallableResponse.queues.accessApplications.items.title': adminGetOverviewCallableResponseQueuesAccessApplicationsItemsTitle,
-    'adminGetOverviewCallableResponse.queues.clubClaimRequests': adminGetOverviewCallableResponseQueuesClubClaimRequests,
-    'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.createdAt': adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsCreatedAt,
-    'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.detail': adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsDetail,
-    'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.id': adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsId,
-    'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.status': adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsStatus,
-    'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.targetPath': adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsTargetPath,
-    'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.title': adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsTitle,
-    'adminGetOverviewCallableResponse.queues.clubIndexReviews': adminGetOverviewCallableResponseQueuesClubIndexReviews,
-    'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.createdAt': adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsCreatedAt,
-    'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.detail': adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsDetail,
-    'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.id': adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsId,
-    'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.status': adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsStatus,
-    'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.targetPath': adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsTargetPath,
-    'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.title': adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsTitle,
     'adminGetOverviewCallableResponse.queues.eventSafetyReports': adminGetOverviewCallableResponseQueuesEventSafetyReports,
     'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.createdAt': adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsCreatedAt,
     'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.detail': adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsDetail,
@@ -179953,6 +175676,20 @@ abstract final class CatchContractConstraints {
     'adminGetOverviewCallableResponse.queues.moderationFlags.items.status': adminGetOverviewCallableResponseQueuesModerationFlagsItemsStatus,
     'adminGetOverviewCallableResponse.queues.moderationFlags.items.targetPath': adminGetOverviewCallableResponseQueuesModerationFlagsItemsTargetPath,
     'adminGetOverviewCallableResponse.queues.moderationFlags.items.title': adminGetOverviewCallableResponseQueuesModerationFlagsItemsTitle,
+    'adminGetOverviewCallableResponse.queues.organizerClaimRequests': adminGetOverviewCallableResponseQueuesOrganizerClaimRequests,
+    'adminGetOverviewCallableResponse.queues.organizerClaimRequests.items.createdAt': adminGetOverviewCallableResponseQueuesOrganizerClaimRequestsItemsCreatedAt,
+    'adminGetOverviewCallableResponse.queues.organizerClaimRequests.items.detail': adminGetOverviewCallableResponseQueuesOrganizerClaimRequestsItemsDetail,
+    'adminGetOverviewCallableResponse.queues.organizerClaimRequests.items.id': adminGetOverviewCallableResponseQueuesOrganizerClaimRequestsItemsId,
+    'adminGetOverviewCallableResponse.queues.organizerClaimRequests.items.status': adminGetOverviewCallableResponseQueuesOrganizerClaimRequestsItemsStatus,
+    'adminGetOverviewCallableResponse.queues.organizerClaimRequests.items.targetPath': adminGetOverviewCallableResponseQueuesOrganizerClaimRequestsItemsTargetPath,
+    'adminGetOverviewCallableResponse.queues.organizerClaimRequests.items.title': adminGetOverviewCallableResponseQueuesOrganizerClaimRequestsItemsTitle,
+    'adminGetOverviewCallableResponse.queues.organizerIndexReviews': adminGetOverviewCallableResponseQueuesOrganizerIndexReviews,
+    'adminGetOverviewCallableResponse.queues.organizerIndexReviews.items.createdAt': adminGetOverviewCallableResponseQueuesOrganizerIndexReviewsItemsCreatedAt,
+    'adminGetOverviewCallableResponse.queues.organizerIndexReviews.items.detail': adminGetOverviewCallableResponseQueuesOrganizerIndexReviewsItemsDetail,
+    'adminGetOverviewCallableResponse.queues.organizerIndexReviews.items.id': adminGetOverviewCallableResponseQueuesOrganizerIndexReviewsItemsId,
+    'adminGetOverviewCallableResponse.queues.organizerIndexReviews.items.status': adminGetOverviewCallableResponseQueuesOrganizerIndexReviewsItemsStatus,
+    'adminGetOverviewCallableResponse.queues.organizerIndexReviews.items.targetPath': adminGetOverviewCallableResponseQueuesOrganizerIndexReviewsItemsTargetPath,
+    'adminGetOverviewCallableResponse.queues.organizerIndexReviews.items.title': adminGetOverviewCallableResponseQueuesOrganizerIndexReviewsItemsTitle,
     'adminGetOverviewCallableResponse.queues.paymentIssues': adminGetOverviewCallableResponseQueuesPaymentIssues,
     'adminGetOverviewCallableResponse.queues.paymentIssues.items.createdAt': adminGetOverviewCallableResponseQueuesPaymentIssuesItemsCreatedAt,
     'adminGetOverviewCallableResponse.queues.paymentIssues.items.detail': adminGetOverviewCallableResponseQueuesPaymentIssuesItemsDetail,
@@ -180394,12 +176131,6 @@ abstract final class CatchContractConstraints {
     'adminLinkSalesInboundIntentCallablePayload.requestId': adminLinkSalesInboundIntentCallablePayloadRequestId,
     'adminListActionExecutionsCallablePayload.cursor': adminListActionExecutionsCallablePayloadCursor,
     'adminListActionExecutionsCallablePayload.limit': adminListActionExecutionsCallablePayloadLimit,
-    'adminListClubDetailsCallablePayload.appVisibility': adminListClubDetailsCallablePayloadAppVisibility,
-    'adminListClubDetailsCallablePayload.citySlug': adminListClubDetailsCallablePayloadCitySlug,
-    'adminListClubDetailsCallablePayload.citySlugs': adminListClubDetailsCallablePayloadCitySlugs,
-    'adminListClubDetailsCallablePayload.limit': adminListClubDetailsCallablePayloadLimit,
-    'adminListClubDetailsCallablePayload.publishStatus': adminListClubDetailsCallablePayloadPublishStatus,
-    'adminListClubDetailsCallablePayload.query': adminListClubDetailsCallablePayloadQuery,
     'adminListCommercialTermsCallablePayload.organizerId': adminListCommercialTermsCallablePayloadOrganizerId,
     'adminListCommercialTermsCallablePayload.organizerQuery': adminListCommercialTermsCallablePayloadOrganizerQuery,
     'adminListCommercialTermsCallableResponse.effectiveTerms.commission.base': adminListCommercialTermsCallableResponseEffectiveTermsCommissionBase,
@@ -180547,7 +176278,6 @@ abstract final class CatchContractConstraints {
     'adminListEventDetailsCallablePayload.activityKind': adminListEventDetailsCallablePayloadActivityKind,
     'adminListEventDetailsCallablePayload.citySlug': adminListEventDetailsCallablePayloadCitySlug,
     'adminListEventDetailsCallablePayload.citySlugs': adminListEventDetailsCallablePayloadCitySlugs,
-    'adminListEventDetailsCallablePayload.clubId': adminListEventDetailsCallablePayloadClubId,
     'adminListEventDetailsCallablePayload.limit': adminListEventDetailsCallablePayloadLimit,
     'adminListEventDetailsCallablePayload.organizerId': adminListEventDetailsCallablePayloadOrganizerId,
     'adminListEventDetailsCallablePayload.query': adminListEventDetailsCallablePayloadQuery,
@@ -181420,13 +177150,6 @@ abstract final class CatchContractConstraints {
     'adminSetAdminUserRolesCallableResponse.user.roles': adminSetAdminUserRolesCallableResponseUserRoles,
     'adminSetAdminUserRolesCallableResponse.user.roles.items': adminSetAdminUserRolesCallableResponseUserRolesItems,
     'adminSetAdminUserRolesCallableResponse.user.targetUid': adminSetAdminUserRolesCallableResponseUserTargetUid,
-    'adminSetClubIndexStatusCallablePayload.checklist.cadenceVerified': adminSetClubIndexStatusCallablePayloadChecklistCadenceVerified,
-    'adminSetClubIndexStatusCallablePayload.checklist.mediaRightsVerified': adminSetClubIndexStatusCallablePayloadChecklistMediaRightsVerified,
-    'adminSetClubIndexStatusCallablePayload.checklist.ownerContactVerified': adminSetClubIndexStatusCallablePayloadChecklistOwnerContactVerified,
-    'adminSetClubIndexStatusCallablePayload.checklist.sourceEvidenceVerified': adminSetClubIndexStatusCallablePayloadChecklistSourceEvidenceVerified,
-    'adminSetClubIndexStatusCallablePayload.clubId': adminSetClubIndexStatusCallablePayloadClubId,
-    'adminSetClubIndexStatusCallablePayload.indexStatus': adminSetClubIndexStatusCallablePayloadIndexStatus,
-    'adminSetClubIndexStatusCallablePayload.reviewNote': adminSetClubIndexStatusCallablePayloadReviewNote,
     'adminSetCrossPathsShowcaseEligibilityCallablePayload.reviewChecklist.primaryPortraitClear': adminSetCrossPathsShowcaseEligibilityCallablePayloadReviewChecklistPrimaryPortraitClear,
     'adminSetCrossPathsShowcaseEligibilityCallablePayload.reviewChecklist.profileRepresentsCurrentMember': adminSetCrossPathsShowcaseEligibilityCallablePayloadReviewChecklistProfileRepresentsCurrentMember,
     'adminSetCrossPathsShowcaseEligibilityCallablePayload.reviewChecklist.showcasePolicyReviewed': adminSetCrossPathsShowcaseEligibilityCallablePayloadReviewChecklistShowcasePolicyReviewed,
@@ -181441,6 +177164,13 @@ abstract final class CatchContractConstraints {
     'adminSetCrossPathsShowcaseEligibilityCallableResponse.ruleVersion': adminSetCrossPathsShowcaseEligibilityCallableResponseRuleVersion,
     'adminSetCrossPathsShowcaseEligibilityCallableResponse.status': adminSetCrossPathsShowcaseEligibilityCallableResponseStatus,
     'adminSetCrossPathsShowcaseEligibilityCallableResponse.uid': adminSetCrossPathsShowcaseEligibilityCallableResponseUid,
+    'adminSetOrganizerIndexStatusCallablePayload.checklist.cadenceVerified': adminSetOrganizerIndexStatusCallablePayloadChecklistCadenceVerified,
+    'adminSetOrganizerIndexStatusCallablePayload.checklist.mediaRightsVerified': adminSetOrganizerIndexStatusCallablePayloadChecklistMediaRightsVerified,
+    'adminSetOrganizerIndexStatusCallablePayload.checklist.ownerContactVerified': adminSetOrganizerIndexStatusCallablePayloadChecklistOwnerContactVerified,
+    'adminSetOrganizerIndexStatusCallablePayload.checklist.sourceEvidenceVerified': adminSetOrganizerIndexStatusCallablePayloadChecklistSourceEvidenceVerified,
+    'adminSetOrganizerIndexStatusCallablePayload.indexStatus': adminSetOrganizerIndexStatusCallablePayloadIndexStatus,
+    'adminSetOrganizerIndexStatusCallablePayload.organizerId': adminSetOrganizerIndexStatusCallablePayloadOrganizerId,
+    'adminSetOrganizerIndexStatusCallablePayload.reviewNote': adminSetOrganizerIndexStatusCallablePayloadReviewNote,
     'adminSetSalesAccountSuppressionCallablePayload.expectedRevision': adminSetSalesAccountSuppressionCallablePayloadExpectedRevision,
     'adminSetSalesAccountSuppressionCallablePayload.organizerId': adminSetSalesAccountSuppressionCallablePayloadOrganizerId,
     'adminSetSalesAccountSuppressionCallablePayload.reason': adminSetSalesAccountSuppressionCallablePayloadReason,
@@ -181496,51 +177226,6 @@ abstract final class CatchContractConstraints {
     'adminTakedownExternalEventCallablePayload.executionMode': adminTakedownExternalEventCallablePayloadExecutionMode,
     'adminTakedownExternalEventCallablePayload.idempotencyKey': adminTakedownExternalEventCallablePayloadIdempotencyKey,
     'adminTakedownExternalEventCallablePayload.reviewNote': adminTakedownExternalEventCallablePayloadReviewNote,
-    'adminUpdateClubDetailsCallablePayload.clubId': adminUpdateClubDetailsCallablePayloadClubId,
-    'adminUpdateClubDetailsCallablePayload.fields.appVisibility': adminUpdateClubDetailsCallablePayloadFieldsAppVisibility,
-    'adminUpdateClubDetailsCallablePayload.fields.area': adminUpdateClubDetailsCallablePayloadFieldsArea,
-    'adminUpdateClubDetailsCallablePayload.fields.cityName': adminUpdateClubDetailsCallablePayloadFieldsCityName,
-    'adminUpdateClubDetailsCallablePayload.fields.countryCode': adminUpdateClubDetailsCallablePayloadFieldsCountryCode,
-    'adminUpdateClubDetailsCallablePayload.fields.countryName': adminUpdateClubDetailsCallablePayloadFieldsCountryName,
-    'adminUpdateClubDetailsCallablePayload.fields.description': adminUpdateClubDetailsCallablePayloadFieldsDescription,
-    'adminUpdateClubDetailsCallablePayload.fields.displayCategory': adminUpdateClubDetailsCallablePayloadFieldsDisplayCategory,
-    'adminUpdateClubDetailsCallablePayload.fields.email': adminUpdateClubDetailsCallablePayloadFieldsEmail,
-    'adminUpdateClubDetailsCallablePayload.fields.entityKind': adminUpdateClubDetailsCallablePayloadFieldsEntityKind,
-    'adminUpdateClubDetailsCallablePayload.fields.entitySubtypes': adminUpdateClubDetailsCallablePayloadFieldsEntitySubtypes,
-    'adminUpdateClubDetailsCallablePayload.fields.entitySubtypes.items': adminUpdateClubDetailsCallablePayloadFieldsEntitySubtypesItems,
-    'adminUpdateClubDetailsCallablePayload.fields.imageUrl': adminUpdateClubDetailsCallablePayloadFieldsImageUrl,
-    'adminUpdateClubDetailsCallablePayload.fields.instagramHandle': adminUpdateClubDetailsCallablePayloadFieldsInstagramHandle,
-    'adminUpdateClubDetailsCallablePayload.fields.location': adminUpdateClubDetailsCallablePayloadFieldsLocation,
-    'adminUpdateClubDetailsCallablePayload.fields.name': adminUpdateClubDetailsCallablePayloadFieldsName,
-    'adminUpdateClubDetailsCallablePayload.fields.organizerType': adminUpdateClubDetailsCallablePayloadFieldsOrganizerType,
-    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinks,
-    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.icon': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsIcon,
-    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.id': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsId,
-    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.label': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsLabel,
-    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.pinned': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsPinned,
-    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.showUntil': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsShowUntil,
-    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.subtitle': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsSubtitle,
-    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.url': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsUrl,
-    'adminUpdateClubDetailsCallablePayload.fields.phoneNumber': adminUpdateClubDetailsCallablePayloadFieldsPhoneNumber,
-    'adminUpdateClubDetailsCallablePayload.fields.profileImageUrl': adminUpdateClubDetailsCallablePayloadFieldsProfileImageUrl,
-    'adminUpdateClubDetailsCallablePayload.fields.provenance.sourceConfidence': adminUpdateClubDetailsCallablePayloadFieldsProvenanceSourceConfidence,
-    'adminUpdateClubDetailsCallablePayload.fields.provenance.verificationStatus': adminUpdateClubDetailsCallablePayloadFieldsProvenanceVerificationStatus,
-    'adminUpdateClubDetailsCallablePayload.fields.publicCategoryLabel': adminUpdateClubDetailsCallablePayloadFieldsPublicCategoryLabel,
-    'adminUpdateClubDetailsCallablePayload.fields.publicPage.canonicalPath': adminUpdateClubDetailsCallablePayloadFieldsPublicPageCanonicalPath,
-    'adminUpdateClubDetailsCallablePayload.fields.publicPage.citySlug': adminUpdateClubDetailsCallablePayloadFieldsPublicPageCitySlug,
-    'adminUpdateClubDetailsCallablePayload.fields.publicPage.publishStatus': adminUpdateClubDetailsCallablePayloadFieldsPublicPagePublishStatus,
-    'adminUpdateClubDetailsCallablePayload.fields.publicPage.seoDescription': adminUpdateClubDetailsCallablePayloadFieldsPublicPageSeoDescription,
-    'adminUpdateClubDetailsCallablePayload.fields.publicPage.seoTitle': adminUpdateClubDetailsCallablePayloadFieldsPublicPageSeoTitle,
-    'adminUpdateClubDetailsCallablePayload.fields.publicPage.slug': adminUpdateClubDetailsCallablePayloadFieldsPublicPageSlug,
-    'adminUpdateClubDetailsCallablePayload.fields.publicProfile.formats': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileFormats,
-    'adminUpdateClubDetailsCallablePayload.fields.publicProfile.formats.items': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileFormatsItems,
-    'adminUpdateClubDetailsCallablePayload.fields.publicProfile.headline': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileHeadline,
-    'adminUpdateClubDetailsCallablePayload.fields.publicProfile.sourceSummary': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileSourceSummary,
-    'adminUpdateClubDetailsCallablePayload.fields.publicProfile.summary': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileSummary,
-    'adminUpdateClubDetailsCallablePayload.fields.regionName': adminUpdateClubDetailsCallablePayloadFieldsRegionName,
-    'adminUpdateClubDetailsCallablePayload.fields.tags': adminUpdateClubDetailsCallablePayloadFieldsTags,
-    'adminUpdateClubDetailsCallablePayload.fields.tags.items': adminUpdateClubDetailsCallablePayloadFieldsTagsItems,
-    'adminUpdateClubDetailsCallablePayload.reviewNote': adminUpdateClubDetailsCallablePayloadReviewNote,
     'adminUpdateEventDetailsCallablePayload.eventId': adminUpdateEventDetailsCallablePayloadEventId,
     'adminUpdateEventDetailsCallablePayload.fields.crossPathsDiscoveryEnabled': adminUpdateEventDetailsCallablePayloadFieldsCrossPathsDiscoveryEnabled,
     'adminUpdateEventDetailsCallablePayload.fields.description': adminUpdateEventDetailsCallablePayloadFieldsDescription,
@@ -181724,8 +177409,6 @@ abstract final class CatchContractConstraints {
     'approveEventRuntimeClaimCallablePayload.reason': approveEventRuntimeClaimCallablePayloadReason,
     'approveEventRuntimeClaimCallablePayload.uid': approveEventRuntimeClaimCallablePayloadUid,
     'approveEventRuntimeClaimCallableResponse.status': approveEventRuntimeClaimCallableResponseStatus,
-    'archiveClubCallablePayload.clubId': archiveClubCallablePayloadClubId,
-    'archiveClubCallablePayload.reason': archiveClubCallablePayloadReason,
     'archiveOrganizerCallablePayload.organizerId': archiveOrganizerCallablePayloadOrganizerId,
     'archiveOrganizerCallablePayload.reason': archiveOrganizerCallablePayloadReason,
     'archiveOrganizerSavedAudienceCallablePayload.audienceId': archiveOrganizerSavedAudienceCallablePayloadAudienceId,
@@ -182543,277 +178226,6 @@ abstract final class CatchContractConstraints {
     'claimParticipantFormProfileCallableResponse.profileRevision': claimParticipantFormProfileCallableResponseProfileRevision,
     'claimParticipantFormProfileCallableResponse.replayed': claimParticipantFormProfileCallableResponseReplayed,
     'claimProgramStaffInviteCallablePayload.inviteId': claimProgramStaffInviteCallablePayloadInviteId,
-    'clubClaimRequestDocument.businessEmail': clubClaimRequestDocumentBusinessEmail,
-    'clubClaimRequestDocument.businessPhone': clubClaimRequestDocumentBusinessPhone,
-    'clubClaimRequestDocument.clubId': clubClaimRequestDocumentClubId,
-    'clubClaimRequestDocument.createdAt._nanoseconds': clubClaimRequestDocumentCreatedAtNanoseconds,
-    'clubClaimRequestDocument.createdAt._seconds': clubClaimRequestDocumentCreatedAtSeconds,
-    'clubClaimRequestDocument.decidedAt._nanoseconds': clubClaimRequestDocumentDecidedAtNanoseconds,
-    'clubClaimRequestDocument.decidedAt._seconds': clubClaimRequestDocumentDecidedAtSeconds,
-    'clubClaimRequestDocument.decidedByUid': clubClaimRequestDocumentDecidedByUid,
-    'clubClaimRequestDocument.decisionReason': clubClaimRequestDocumentDecisionReason,
-    'clubClaimRequestDocument.message': clubClaimRequestDocumentMessage,
-    'clubClaimRequestDocument.previousRequestId': clubClaimRequestDocumentPreviousRequestId,
-    'clubClaimRequestDocument.proofUrls': clubClaimRequestDocumentProofUrls,
-    'clubClaimRequestDocument.proofUrls.items': clubClaimRequestDocumentProofUrlsItems,
-    'clubClaimRequestDocument.requesterName': clubClaimRequestDocumentRequesterName,
-    'clubClaimRequestDocument.requesterRole': clubClaimRequestDocumentRequesterRole,
-    'clubClaimRequestDocument.requesterUid': clubClaimRequestDocumentRequesterUid,
-    'clubClaimRequestDocument.requestId': clubClaimRequestDocumentRequestId,
-    'clubClaimRequestDocument.status': clubClaimRequestDocumentStatus,
-    'clubClaimRequestDocument.updatedAt._nanoseconds': clubClaimRequestDocumentUpdatedAtNanoseconds,
-    'clubClaimRequestDocument.updatedAt._seconds': clubClaimRequestDocumentUpdatedAtSeconds,
-    'clubDocument.adminSearch.sortKey': clubDocumentAdminSearchSortKey,
-    'clubDocument.adminSearch.tokens': clubDocumentAdminSearchTokens,
-    'clubDocument.adminSearch.tokens.items': clubDocumentAdminSearchTokensItems,
-    'clubDocument.adminSearch.updatedAt._nanoseconds': clubDocumentAdminSearchUpdatedAtNanoseconds,
-    'clubDocument.adminSearch.updatedAt._seconds': clubDocumentAdminSearchUpdatedAtSeconds,
-    'clubDocument.adminSearch.updatedBySource': clubDocumentAdminSearchUpdatedBySource,
-    'clubDocument.appVisibility': clubDocumentAppVisibility,
-    'clubDocument.archived': clubDocumentArchived,
-    'clubDocument.archivedAt._nanoseconds': clubDocumentArchivedAtNanoseconds,
-    'clubDocument.archivedAt._seconds': clubDocumentArchivedAtSeconds,
-    'clubDocument.archiveReason': clubDocumentArchiveReason,
-    'clubDocument.area': clubDocumentArea,
-    'clubDocument.cityName': clubDocumentCityName,
-    'clubDocument.claim.claimHref': clubDocumentClaimClaimHref,
-    'clubDocument.claim.lastClaimRequestId': clubDocumentClaimLastClaimRequestId,
-    'clubDocument.claim.state': clubDocumentClaimState,
-    'clubDocument.clubPhotos': clubDocumentClubPhotos,
-    'clubDocument.clubPhotos.items.createdAt._nanoseconds': clubDocumentClubPhotosItemsCreatedAtNanoseconds,
-    'clubDocument.clubPhotos.items.createdAt._seconds': clubDocumentClubPhotosItemsCreatedAtSeconds,
-    'clubDocument.clubPhotos.items.id': clubDocumentClubPhotosItemsId,
-    'clubDocument.clubPhotos.items.moderation.reason': clubDocumentClubPhotosItemsModerationReason,
-    'clubDocument.clubPhotos.items.moderation.reviewedAt._nanoseconds': clubDocumentClubPhotosItemsModerationReviewedAtNanoseconds,
-    'clubDocument.clubPhotos.items.moderation.reviewedAt._seconds': clubDocumentClubPhotosItemsModerationReviewedAtSeconds,
-    'clubDocument.clubPhotos.items.moderation.status': clubDocumentClubPhotosItemsModerationStatus,
-    'clubDocument.clubPhotos.items.position': clubDocumentClubPhotosItemsPosition,
-    'clubDocument.clubPhotos.items.storagePath': clubDocumentClubPhotosItemsStoragePath,
-    'clubDocument.clubPhotos.items.thumbnailStoragePath': clubDocumentClubPhotosItemsThumbnailStoragePath,
-    'clubDocument.clubPhotos.items.thumbnailUrl': clubDocumentClubPhotosItemsThumbnailUrl,
-    'clubDocument.clubPhotos.items.updatedAt._nanoseconds': clubDocumentClubPhotosItemsUpdatedAtNanoseconds,
-    'clubDocument.clubPhotos.items.updatedAt._seconds': clubDocumentClubPhotosItemsUpdatedAtSeconds,
-    'clubDocument.clubPhotos.items.url': clubDocumentClubPhotosItemsUrl,
-    'clubDocument.countryCode': clubDocumentCountryCode,
-    'clubDocument.countryName': clubDocumentCountryName,
-    'clubDocument.createdAt._nanoseconds': clubDocumentCreatedAtNanoseconds,
-    'clubDocument.createdAt._seconds': clubDocumentCreatedAtSeconds,
-    'clubDocument.demoOps': clubDocumentDemoOps,
-    'clubDocument.demoOpsCommand': clubDocumentDemoOpsCommand,
-    'clubDocument.demoOpsId': clubDocumentDemoOpsId,
-    'clubDocument.description': clubDocumentDescription,
-    'clubDocument.displayCategory': clubDocumentDisplayCategory,
-    'clubDocument.email': clubDocumentEmail,
-    'clubDocument.entityKind': clubDocumentEntityKind,
-    'clubDocument.entitySubtypes': clubDocumentEntitySubtypes,
-    'clubDocument.entitySubtypes.items': clubDocumentEntitySubtypesItems,
-    'clubDocument.hostAvatarUrl': clubDocumentHostAvatarUrl,
-    'clubDocument.hostDefaults.eventPolicy.admissionPreset': clubDocumentHostDefaultsEventPolicyAdmissionPreset,
-    'clubDocument.hostDefaults.eventPolicy.cancellationPolicyId': clubDocumentHostDefaultsEventPolicyCancellationPolicyId,
-    'clubDocument.hostDefaults.eventPolicy.crossPathsPairCapacity': clubDocumentHostDefaultsEventPolicyCrossPathsPairCapacity,
-    'clubDocument.hostDefaults.eventPolicy.dynamicPricingEnabled': clubDocumentHostDefaultsEventPolicyDynamicPricingEnabled,
-    'clubDocument.hostDefaults.eventPolicy.dynamicPricingMaxInPaise': clubDocumentHostDefaultsEventPolicyDynamicPricingMaxInPaise,
-    'clubDocument.hostDefaults.eventPolicy.dynamicPricingStepInPaise': clubDocumentHostDefaultsEventPolicyDynamicPricingStepInPaise,
-    'clubDocument.hostDefaults.eventPolicy.maxAge': clubDocumentHostDefaultsEventPolicyMaxAge,
-    'clubDocument.hostDefaults.eventPolicy.maxMen': clubDocumentHostDefaultsEventPolicyMaxMen,
-    'clubDocument.hostDefaults.eventPolicy.maxWomen': clubDocumentHostDefaultsEventPolicyMaxWomen,
-    'clubDocument.hostDefaults.eventPolicy.minAge': clubDocumentHostDefaultsEventPolicyMinAge,
-    'clubDocument.hostDefaults.eventSuccess.attendeePrompt': clubDocumentHostDefaultsEventSuccessAttendeePrompt,
-    'clubDocument.hostDefaults.eventSuccess.compatibilityAffectsRanking': clubDocumentHostDefaultsEventSuccessCompatibilityAffectsRanking,
-    'clubDocument.hostDefaults.eventSuccess.contextualOpenersEnabled': clubDocumentHostDefaultsEventSuccessContextualOpenersEnabled,
-    'clubDocument.hostDefaults.eventSuccess.enabled': clubDocumentHostDefaultsEventSuccessEnabled,
-    'clubDocument.hostDefaults.eventSuccess.hostGoal': clubDocumentHostDefaultsEventSuccessHostGoal,
-    'clubDocument.hostDefaults.eventSuccess.layoutId': clubDocumentHostDefaultsEventSuccessLayoutId,
-    'clubDocument.hostDefaults.eventSuccess.moduleSelectionConfigured': clubDocumentHostDefaultsEventSuccessModuleSelectionConfigured,
-    'clubDocument.hostDefaults.eventSuccess.playbookId': clubDocumentHostDefaultsEventSuccessPlaybookId,
-    'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
-    'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.id': clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsId,
-    'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options': clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptions,
-    'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options.items.id': clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptionsItemsId,
-    'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options.items.label': clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel,
-    'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.prompt': clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsPrompt,
-    'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.customTitle': clubDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomTitle,
-    'clubDocument.hostDefaults.eventSuccess.questionnaireConfig.templateId': clubDocumentHostDefaultsEventSuccessQuestionnaireConfigTemplateId,
-    'clubDocument.hostDefaults.eventSuccess.selectedModuleIds': clubDocumentHostDefaultsEventSuccessSelectedModuleIds,
-    'clubDocument.hostDefaults.eventSuccess.selectedModuleIds.items': clubDocumentHostDefaultsEventSuccessSelectedModuleIdsItems,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.balanceActivityAttributes': clubDocumentHostDefaultsEventSuccessStructureConfigBalanceActivityAttributes,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.balanceActivityAttributes.items': clubDocumentHostDefaultsEventSuccessStructureConfigBalanceActivityAttributesItems,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': clubDocumentHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': clubDocumentHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': clubDocumentHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': clubDocumentHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': clubDocumentHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': clubDocumentHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': clubDocumentHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.topology': clubDocumentHostDefaultsEventSuccessStructureConfigTopology,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.unitCount': clubDocumentHostDefaultsEventSuccessStructureConfigUnitCount,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.unitKind': clubDocumentHostDefaultsEventSuccessStructureConfigUnitKind,
-    'clubDocument.hostDefaults.eventSuccess.structureConfig.unitSize': clubDocumentHostDefaultsEventSuccessStructureConfigUnitSize,
-    'clubDocument.hostDefaults.eventSuccess.wingmanRequestsEnabled': clubDocumentHostDefaultsEventSuccessWingmanRequestsEnabled,
-    'clubDocument.hostDefaults.eventSuccessByActivityKind': clubDocumentHostDefaultsEventSuccessByActivityKind,
-    'clubDocument.hostDefaults.primaryActivityKind': clubDocumentHostDefaultsPrimaryActivityKind,
-    'clubDocument.hostDefaults.supportedActivityKinds': clubDocumentHostDefaultsSupportedActivityKinds,
-    'clubDocument.hostDefaults.supportedActivityKinds.items': clubDocumentHostDefaultsSupportedActivityKindsItems,
-    'clubDocument.hostName': clubDocumentHostName,
-    'clubDocument.hostProfiles': clubDocumentHostProfiles,
-    'clubDocument.hostProfiles.items.avatarUrl': clubDocumentHostProfilesItemsAvatarUrl,
-    'clubDocument.hostProfiles.items.displayName': clubDocumentHostProfilesItemsDisplayName,
-    'clubDocument.hostProfiles.items.role': clubDocumentHostProfilesItemsRole,
-    'clubDocument.hostProfiles.items.uid': clubDocumentHostProfilesItemsUid,
-    'clubDocument.hostUserId': clubDocumentHostUserId,
-    'clubDocument.hostUserIds': clubDocumentHostUserIds,
-    'clubDocument.hostUserIds.items': clubDocumentHostUserIdsItems,
-    'clubDocument.imageUrl': clubDocumentImageUrl,
-    'clubDocument.instagramHandle': clubDocumentInstagramHandle,
-    'clubDocument.location': clubDocumentLocation,
-    'clubDocument.locationCityId': clubDocumentLocationCityId,
-    'clubDocument.locationMarketId': clubDocumentLocationMarketId,
-    'clubDocument.logoPhoto.createdAt._nanoseconds': clubDocumentLogoPhotoCreatedAtNanoseconds,
-    'clubDocument.logoPhoto.createdAt._seconds': clubDocumentLogoPhotoCreatedAtSeconds,
-    'clubDocument.logoPhoto.id': clubDocumentLogoPhotoId,
-    'clubDocument.logoPhoto.moderation.reason': clubDocumentLogoPhotoModerationReason,
-    'clubDocument.logoPhoto.moderation.reviewedAt._nanoseconds': clubDocumentLogoPhotoModerationReviewedAtNanoseconds,
-    'clubDocument.logoPhoto.moderation.reviewedAt._seconds': clubDocumentLogoPhotoModerationReviewedAtSeconds,
-    'clubDocument.logoPhoto.moderation.status': clubDocumentLogoPhotoModerationStatus,
-    'clubDocument.logoPhoto.position': clubDocumentLogoPhotoPosition,
-    'clubDocument.logoPhoto.storagePath': clubDocumentLogoPhotoStoragePath,
-    'clubDocument.logoPhoto.thumbnailStoragePath': clubDocumentLogoPhotoThumbnailStoragePath,
-    'clubDocument.logoPhoto.thumbnailUrl': clubDocumentLogoPhotoThumbnailUrl,
-    'clubDocument.logoPhoto.updatedAt._nanoseconds': clubDocumentLogoPhotoUpdatedAtNanoseconds,
-    'clubDocument.logoPhoto.updatedAt._seconds': clubDocumentLogoPhotoUpdatedAtSeconds,
-    'clubDocument.logoPhoto.url': clubDocumentLogoPhotoUrl,
-    'clubDocument.memberCount': clubDocumentMemberCount,
-    'clubDocument.name': clubDocumentName,
-    'clubDocument.nextEventAt._nanoseconds': clubDocumentNextEventAtNanoseconds,
-    'clubDocument.nextEventAt._seconds': clubDocumentNextEventAtSeconds,
-    'clubDocument.nextEventLabel': clubDocumentNextEventLabel,
-    'clubDocument.organizerType': clubDocumentOrganizerType,
-    'clubDocument.organizerTypeUpdatedAt._nanoseconds': clubDocumentOrganizerTypeUpdatedAtNanoseconds,
-    'clubDocument.organizerTypeUpdatedAt._seconds': clubDocumentOrganizerTypeUpdatedAtSeconds,
-    'clubDocument.organizerTypeUpdatedByUid': clubDocumentOrganizerTypeUpdatedByUid,
-    'clubDocument.ownership.claimedAt._nanoseconds': clubDocumentOwnershipClaimedAtNanoseconds,
-    'clubDocument.ownership.claimedAt._seconds': clubDocumentOwnershipClaimedAtSeconds,
-    'clubDocument.ownership.claimedByUid': clubDocumentOwnershipClaimedByUid,
-    'clubDocument.ownership.hostUserIds': clubDocumentOwnershipHostUserIds,
-    'clubDocument.ownership.hostUserIds.items': clubDocumentOwnershipHostUserIdsItems,
-    'clubDocument.ownership.ownerUserId': clubDocumentOwnershipOwnerUserId,
-    'clubDocument.ownership.primaryHostUserId': clubDocumentOwnershipPrimaryHostUserId,
-    'clubDocument.ownership.state': clubDocumentOwnershipState,
-    'clubDocument.ownerUserId': clubDocumentOwnerUserId,
-    'clubDocument.phoneNumber': clubDocumentPhoneNumber,
-    'clubDocument.profileImageUrl': clubDocumentProfileImageUrl,
-    'clubDocument.provenance.lastVerifiedAt._nanoseconds': clubDocumentProvenanceLastVerifiedAtNanoseconds,
-    'clubDocument.provenance.lastVerifiedAt._seconds': clubDocumentProvenanceLastVerifiedAtSeconds,
-    'clubDocument.provenance.origin': clubDocumentProvenanceOrigin,
-    'clubDocument.provenance.sourceConfidence': clubDocumentProvenanceSourceConfidence,
-    'clubDocument.provenance.verificationStatus': clubDocumentProvenanceVerificationStatus,
-    'clubDocument.publicCategoryLabel': clubDocumentPublicCategoryLabel,
-    'clubDocument.publicPage.canonicalPath': clubDocumentPublicPageCanonicalPath,
-    'clubDocument.publicPage.citySlug': clubDocumentPublicPageCitySlug,
-    'clubDocument.publicPage.indexReview.checklist.cadenceVerified': clubDocumentPublicPageIndexReviewChecklistCadenceVerified,
-    'clubDocument.publicPage.indexReview.checklist.mediaRightsVerified': clubDocumentPublicPageIndexReviewChecklistMediaRightsVerified,
-    'clubDocument.publicPage.indexReview.checklist.ownerContactVerified': clubDocumentPublicPageIndexReviewChecklistOwnerContactVerified,
-    'clubDocument.publicPage.indexReview.checklist.sourceEvidenceVerified': clubDocumentPublicPageIndexReviewChecklistSourceEvidenceVerified,
-    'clubDocument.publicPage.indexReview.indexStatus': clubDocumentPublicPageIndexReviewIndexStatus,
-    'clubDocument.publicPage.indexReview.reviewedAt._nanoseconds': clubDocumentPublicPageIndexReviewReviewedAtNanoseconds,
-    'clubDocument.publicPage.indexReview.reviewedAt._seconds': clubDocumentPublicPageIndexReviewReviewedAtSeconds,
-    'clubDocument.publicPage.indexReview.reviewedByUid': clubDocumentPublicPageIndexReviewReviewedByUid,
-    'clubDocument.publicPage.indexReview.reviewNote': clubDocumentPublicPageIndexReviewReviewNote,
-    'clubDocument.publicPage.indexStatus': clubDocumentPublicPageIndexStatus,
-    'clubDocument.publicPage.lastRenderedAt._nanoseconds': clubDocumentPublicPageLastRenderedAtNanoseconds,
-    'clubDocument.publicPage.lastRenderedAt._seconds': clubDocumentPublicPageLastRenderedAtSeconds,
-    'clubDocument.publicPage.publishStatus': clubDocumentPublicPagePublishStatus,
-    'clubDocument.publicPage.robots': clubDocumentPublicPageRobots,
-    'clubDocument.publicPage.seoDescription': clubDocumentPublicPageSeoDescription,
-    'clubDocument.publicPage.seoTitle': clubDocumentPublicPageSeoTitle,
-    'clubDocument.publicPage.slug': clubDocumentPublicPageSlug,
-    'clubDocument.publicProfile.eventEvidence': clubDocumentPublicProfileEventEvidence,
-    'clubDocument.publicProfile.eventEvidence.items.date': clubDocumentPublicProfileEventEvidenceItemsDate,
-    'clubDocument.publicProfile.eventEvidence.items.facts': clubDocumentPublicProfileEventEvidenceItemsFacts,
-    'clubDocument.publicProfile.eventEvidence.items.facts.items': clubDocumentPublicProfileEventEvidenceItemsFactsItems,
-    'clubDocument.publicProfile.eventEvidence.items.location': clubDocumentPublicProfileEventEvidenceItemsLocation,
-    'clubDocument.publicProfile.eventEvidence.items.sourceHref': clubDocumentPublicProfileEventEvidenceItemsSourceHref,
-    'clubDocument.publicProfile.eventEvidence.items.sourceLabel': clubDocumentPublicProfileEventEvidenceItemsSourceLabel,
-    'clubDocument.publicProfile.eventEvidence.items.summary': clubDocumentPublicProfileEventEvidenceItemsSummary,
-    'clubDocument.publicProfile.eventEvidence.items.title': clubDocumentPublicProfileEventEvidenceItemsTitle,
-    'clubDocument.publicProfile.facts': clubDocumentPublicProfileFacts,
-    'clubDocument.publicProfile.facts.items.label': clubDocumentPublicProfileFactsItemsLabel,
-    'clubDocument.publicProfile.facts.items.value': clubDocumentPublicProfileFactsItemsValue,
-    'clubDocument.publicProfile.formats': clubDocumentPublicProfileFormats,
-    'clubDocument.publicProfile.formats.items': clubDocumentPublicProfileFormatsItems,
-    'clubDocument.publicProfile.headline': clubDocumentPublicProfileHeadline,
-    'clubDocument.publicProfile.sourceSummary': clubDocumentPublicProfileSourceSummary,
-    'clubDocument.publicProfile.summary': clubDocumentPublicProfileSummary,
-    'clubDocument.publicSources': clubDocumentPublicSources,
-    'clubDocument.publicSources.items.confidence': clubDocumentPublicSourcesItemsConfidence,
-    'clubDocument.publicSources.items.detail': clubDocumentPublicSourcesItemsDetail,
-    'clubDocument.publicSources.items.href': clubDocumentPublicSourcesItemsHref,
-    'clubDocument.publicSources.items.label': clubDocumentPublicSourcesItemsLabel,
-    'clubDocument.publicSources.items.lastCheckedAt._nanoseconds': clubDocumentPublicSourcesItemsLastCheckedAtNanoseconds,
-    'clubDocument.publicSources.items.lastCheckedAt._seconds': clubDocumentPublicSourcesItemsLastCheckedAtSeconds,
-    'clubDocument.publicSources.items.type': clubDocumentPublicSourcesItemsType,
-    'clubDocument.rating': clubDocumentRating,
-    'clubDocument.regionName': clubDocumentRegionName,
-    'clubDocument.reviewCount': clubDocumentReviewCount,
-    'clubDocument.scenario': clubDocumentScenario,
-    'clubDocument.seedPrefix': clubDocumentSeedPrefix,
-    'clubDocument.status': clubDocumentStatus,
-    'clubDocument.supplyCapabilities.bookable': clubDocumentSupplyCapabilitiesBookable,
-    'clubDocument.supplyCapabilities.claimable': clubDocumentSupplyCapabilitiesClaimable,
-    'clubDocument.supplyCapabilities.hostContactEnabled': clubDocumentSupplyCapabilitiesHostContactEnabled,
-    'clubDocument.supplyCapabilities.mode': clubDocumentSupplyCapabilitiesMode,
-    'clubDocument.supplyCapabilities.paymentsEnabled': clubDocumentSupplyCapabilitiesPaymentsEnabled,
-    'clubDocument.supplyCapabilities.reviewPolicy': clubDocumentSupplyCapabilitiesReviewPolicy,
-    'clubDocument.supplyCapabilities.waitlistEnabled': clubDocumentSupplyCapabilitiesWaitlistEnabled,
-    'clubDocument.synthetic': clubDocumentSynthetic,
-    'clubDocument.tags': clubDocumentTags,
-    'clubDocument.tags.items': clubDocumentTagsItems,
-    'clubDocument.verifiedReviewCount': clubDocumentVerifiedReviewCount,
-    'clubHostClaimDocument.clubId': clubHostClaimDocumentClubId,
-    'clubHostClaimDocument.createdAt._nanoseconds': clubHostClaimDocumentCreatedAtNanoseconds,
-    'clubHostClaimDocument.createdAt._seconds': clubHostClaimDocumentCreatedAtSeconds,
-    'clubHostClaimDocument.uid': clubHostClaimDocumentUid,
-    'clubMembershipCallablePayload.clubId': clubMembershipCallablePayloadClubId,
-    'clubMembershipDocument.clubId': clubMembershipDocumentClubId,
-    'clubMembershipDocument.deletedAt._nanoseconds': clubMembershipDocumentDeletedAtNanoseconds,
-    'clubMembershipDocument.deletedAt._seconds': clubMembershipDocumentDeletedAtSeconds,
-    'clubMembershipDocument.demoOps': clubMembershipDocumentDemoOps,
-    'clubMembershipDocument.demoOpsCommand': clubMembershipDocumentDemoOpsCommand,
-    'clubMembershipDocument.demoOpsId': clubMembershipDocumentDemoOpsId,
-    'clubMembershipDocument.joinedAt._nanoseconds': clubMembershipDocumentJoinedAtNanoseconds,
-    'clubMembershipDocument.joinedAt._seconds': clubMembershipDocumentJoinedAtSeconds,
-    'clubMembershipDocument.leftAt._nanoseconds': clubMembershipDocumentLeftAtNanoseconds,
-    'clubMembershipDocument.leftAt._seconds': clubMembershipDocumentLeftAtSeconds,
-    'clubMembershipDocument.pushNotificationsEnabled': clubMembershipDocumentPushNotificationsEnabled,
-    'clubMembershipDocument.role': clubMembershipDocumentRole,
-    'clubMembershipDocument.scenario': clubMembershipDocumentScenario,
-    'clubMembershipDocument.seedPrefix': clubMembershipDocumentSeedPrefix,
-    'clubMembershipDocument.status': clubMembershipDocumentStatus,
-    'clubMembershipDocument.synthetic': clubMembershipDocumentSynthetic,
-    'clubMembershipDocument.uid': clubMembershipDocumentUid,
-    'clubPostDocument.audience': clubPostDocumentAudience,
-    'clubPostDocument.authorUid': clubPostDocumentAuthorUid,
-    'clubPostDocument.createdAt._nanoseconds': clubPostDocumentCreatedAtNanoseconds,
-    'clubPostDocument.createdAt._seconds': clubPostDocumentCreatedAtSeconds,
-    'clubPostDocument.eventId': clubPostDocumentEventId,
-    'clubPostDocument.photoPath': clubPostDocumentPhotoPath,
-    'clubPostDocument.status': clubPostDocumentStatus,
-    'clubPostDocument.text': clubPostDocumentText,
-    'clubScheduleLockDocument.clubId': clubScheduleLockDocumentClubId,
-    'clubScheduleLockDocument.demoOps': clubScheduleLockDocumentDemoOps,
-    'clubScheduleLockDocument.demoOpsCommand': clubScheduleLockDocumentDemoOpsCommand,
-    'clubScheduleLockDocument.demoOpsId': clubScheduleLockDocumentDemoOpsId,
-    'clubScheduleLockDocument.endTimeMillis': clubScheduleLockDocumentEndTimeMillis,
-    'clubScheduleLockDocument.eventId': clubScheduleLockDocumentEventId,
-    'clubScheduleLockDocument.ownerId': clubScheduleLockDocumentOwnerId,
-    'clubScheduleLockDocument.ownerType': clubScheduleLockDocumentOwnerType,
-    'clubScheduleLockDocument.scenario': clubScheduleLockDocumentScenario,
-    'clubScheduleLockDocument.seedPrefix': clubScheduleLockDocumentSeedPrefix,
-    'clubScheduleLockDocument.slot': clubScheduleLockDocumentSlot,
-    'clubScheduleLockDocument.startTimeMillis': clubScheduleLockDocumentStartTimeMillis,
-    'clubScheduleLockDocument.synthetic': clubScheduleLockDocumentSynthetic,
     'commercialTerms.commission.base': commercialTermsCommissionBase,
     'commercialTerms.commission.capMinor': commercialTermsCommissionCapMinor,
     'commercialTerms.commission.cycleAnchor': commercialTermsCommissionCycleAnchor,
@@ -183185,103 +178597,7 @@ abstract final class CatchContractConstraints {
     'createChatMessageClientWrite.data.text': createChatMessageClientWriteDataText,
     'createChatMessageClientWrite.path.matchId': createChatMessageClientWritePathMatchId,
     'createChatMessageClientWrite.path.messageId': createChatMessageClientWritePathMessageId,
-    'createClubCallablePayload.area': createClubCallablePayloadArea,
-    'createClubCallablePayload.clubId': createClubCallablePayloadClubId,
-    'createClubCallablePayload.clubPhotos': createClubCallablePayloadClubPhotos,
-    'createClubCallablePayload.clubPhotos.items.createdAt._nanoseconds': createClubCallablePayloadClubPhotosItemsCreatedAtNanoseconds,
-    'createClubCallablePayload.clubPhotos.items.createdAt._seconds': createClubCallablePayloadClubPhotosItemsCreatedAtSeconds,
-    'createClubCallablePayload.clubPhotos.items.id': createClubCallablePayloadClubPhotosItemsId,
-    'createClubCallablePayload.clubPhotos.items.moderation.reason': createClubCallablePayloadClubPhotosItemsModerationReason,
-    'createClubCallablePayload.clubPhotos.items.moderation.reviewedAt._nanoseconds': createClubCallablePayloadClubPhotosItemsModerationReviewedAtNanoseconds,
-    'createClubCallablePayload.clubPhotos.items.moderation.reviewedAt._seconds': createClubCallablePayloadClubPhotosItemsModerationReviewedAtSeconds,
-    'createClubCallablePayload.clubPhotos.items.moderation.status': createClubCallablePayloadClubPhotosItemsModerationStatus,
-    'createClubCallablePayload.clubPhotos.items.position': createClubCallablePayloadClubPhotosItemsPosition,
-    'createClubCallablePayload.clubPhotos.items.storagePath': createClubCallablePayloadClubPhotosItemsStoragePath,
-    'createClubCallablePayload.clubPhotos.items.thumbnailStoragePath': createClubCallablePayloadClubPhotosItemsThumbnailStoragePath,
-    'createClubCallablePayload.clubPhotos.items.thumbnailUrl': createClubCallablePayloadClubPhotosItemsThumbnailUrl,
-    'createClubCallablePayload.clubPhotos.items.updatedAt._nanoseconds': createClubCallablePayloadClubPhotosItemsUpdatedAtNanoseconds,
-    'createClubCallablePayload.clubPhotos.items.updatedAt._seconds': createClubCallablePayloadClubPhotosItemsUpdatedAtSeconds,
-    'createClubCallablePayload.clubPhotos.items.url': createClubCallablePayloadClubPhotosItemsUrl,
-    'createClubCallablePayload.description': createClubCallablePayloadDescription,
-    'createClubCallablePayload.email': createClubCallablePayloadEmail,
-    'createClubCallablePayload.hostDefaults.eventPolicy.admissionPreset': createClubCallablePayloadHostDefaultsEventPolicyAdmissionPreset,
-    'createClubCallablePayload.hostDefaults.eventPolicy.cancellationPolicyId': createClubCallablePayloadHostDefaultsEventPolicyCancellationPolicyId,
-    'createClubCallablePayload.hostDefaults.eventPolicy.crossPathsPairCapacity': createClubCallablePayloadHostDefaultsEventPolicyCrossPathsPairCapacity,
-    'createClubCallablePayload.hostDefaults.eventPolicy.dynamicPricingEnabled': createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingEnabled,
-    'createClubCallablePayload.hostDefaults.eventPolicy.dynamicPricingMaxInPaise': createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingMaxInPaise,
-    'createClubCallablePayload.hostDefaults.eventPolicy.dynamicPricingStepInPaise': createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingStepInPaise,
-    'createClubCallablePayload.hostDefaults.eventPolicy.maxAge': createClubCallablePayloadHostDefaultsEventPolicyMaxAge,
-    'createClubCallablePayload.hostDefaults.eventPolicy.maxMen': createClubCallablePayloadHostDefaultsEventPolicyMaxMen,
-    'createClubCallablePayload.hostDefaults.eventPolicy.maxWomen': createClubCallablePayloadHostDefaultsEventPolicyMaxWomen,
-    'createClubCallablePayload.hostDefaults.eventPolicy.minAge': createClubCallablePayloadHostDefaultsEventPolicyMinAge,
-    'createClubCallablePayload.hostDefaults.eventSuccess.attendeePrompt': createClubCallablePayloadHostDefaultsEventSuccessAttendeePrompt,
-    'createClubCallablePayload.hostDefaults.eventSuccess.compatibilityAffectsRanking': createClubCallablePayloadHostDefaultsEventSuccessCompatibilityAffectsRanking,
-    'createClubCallablePayload.hostDefaults.eventSuccess.contextualOpenersEnabled': createClubCallablePayloadHostDefaultsEventSuccessContextualOpenersEnabled,
-    'createClubCallablePayload.hostDefaults.eventSuccess.enabled': createClubCallablePayloadHostDefaultsEventSuccessEnabled,
-    'createClubCallablePayload.hostDefaults.eventSuccess.hostGoal': createClubCallablePayloadHostDefaultsEventSuccessHostGoal,
-    'createClubCallablePayload.hostDefaults.eventSuccess.layoutId': createClubCallablePayloadHostDefaultsEventSuccessLayoutId,
-    'createClubCallablePayload.hostDefaults.eventSuccess.moduleSelectionConfigured': createClubCallablePayloadHostDefaultsEventSuccessModuleSelectionConfigured,
-    'createClubCallablePayload.hostDefaults.eventSuccess.playbookId': createClubCallablePayloadHostDefaultsEventSuccessPlaybookId,
-    'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
-    'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.id': createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsId,
-    'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options': createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptions,
-    'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options.items.id': createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptionsItemsId,
-    'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options.items.label': createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel,
-    'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.prompt': createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsPrompt,
-    'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.customTitle': createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigCustomTitle,
-    'createClubCallablePayload.hostDefaults.eventSuccess.questionnaireConfig.templateId': createClubCallablePayloadHostDefaultsEventSuccessQuestionnaireConfigTemplateId,
-    'createClubCallablePayload.hostDefaults.eventSuccess.selectedModuleIds': createClubCallablePayloadHostDefaultsEventSuccessSelectedModuleIds,
-    'createClubCallablePayload.hostDefaults.eventSuccess.selectedModuleIds.items': createClubCallablePayloadHostDefaultsEventSuccessSelectedModuleIdsItems,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.balanceActivityAttributes': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigBalanceActivityAttributes,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.balanceActivityAttributes.items': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigBalanceActivityAttributesItems,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.topology': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigTopology,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.unitCount': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitCount,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.unitKind': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitKind,
-    'createClubCallablePayload.hostDefaults.eventSuccess.structureConfig.unitSize': createClubCallablePayloadHostDefaultsEventSuccessStructureConfigUnitSize,
-    'createClubCallablePayload.hostDefaults.eventSuccess.wingmanRequestsEnabled': createClubCallablePayloadHostDefaultsEventSuccessWingmanRequestsEnabled,
-    'createClubCallablePayload.hostDefaults.eventSuccessByActivityKind': createClubCallablePayloadHostDefaultsEventSuccessByActivityKind,
-    'createClubCallablePayload.hostDefaults.primaryActivityKind': createClubCallablePayloadHostDefaultsPrimaryActivityKind,
-    'createClubCallablePayload.hostDefaults.supportedActivityKinds': createClubCallablePayloadHostDefaultsSupportedActivityKinds,
-    'createClubCallablePayload.hostDefaults.supportedActivityKinds.items': createClubCallablePayloadHostDefaultsSupportedActivityKindsItems,
-    'createClubCallablePayload.imageUrl': createClubCallablePayloadImageUrl,
-    'createClubCallablePayload.instagramHandle': createClubCallablePayloadInstagramHandle,
-    'createClubCallablePayload.location': createClubCallablePayloadLocation,
-    'createClubCallablePayload.logoPhoto.createdAt._nanoseconds': createClubCallablePayloadLogoPhotoCreatedAtNanoseconds,
-    'createClubCallablePayload.logoPhoto.createdAt._seconds': createClubCallablePayloadLogoPhotoCreatedAtSeconds,
-    'createClubCallablePayload.logoPhoto.id': createClubCallablePayloadLogoPhotoId,
-    'createClubCallablePayload.logoPhoto.moderation.reason': createClubCallablePayloadLogoPhotoModerationReason,
-    'createClubCallablePayload.logoPhoto.moderation.reviewedAt._nanoseconds': createClubCallablePayloadLogoPhotoModerationReviewedAtNanoseconds,
-    'createClubCallablePayload.logoPhoto.moderation.reviewedAt._seconds': createClubCallablePayloadLogoPhotoModerationReviewedAtSeconds,
-    'createClubCallablePayload.logoPhoto.moderation.status': createClubCallablePayloadLogoPhotoModerationStatus,
-    'createClubCallablePayload.logoPhoto.position': createClubCallablePayloadLogoPhotoPosition,
-    'createClubCallablePayload.logoPhoto.storagePath': createClubCallablePayloadLogoPhotoStoragePath,
-    'createClubCallablePayload.logoPhoto.thumbnailStoragePath': createClubCallablePayloadLogoPhotoThumbnailStoragePath,
-    'createClubCallablePayload.logoPhoto.thumbnailUrl': createClubCallablePayloadLogoPhotoThumbnailUrl,
-    'createClubCallablePayload.logoPhoto.updatedAt._nanoseconds': createClubCallablePayloadLogoPhotoUpdatedAtNanoseconds,
-    'createClubCallablePayload.logoPhoto.updatedAt._seconds': createClubCallablePayloadLogoPhotoUpdatedAtSeconds,
-    'createClubCallablePayload.logoPhoto.url': createClubCallablePayloadLogoPhotoUrl,
-    'createClubCallablePayload.name': createClubCallablePayloadName,
-    'createClubCallablePayload.organizerType': createClubCallablePayloadOrganizerType,
-    'createClubCallablePayload.phoneNumber': createClubCallablePayloadPhoneNumber,
-    'createClubCallablePayload.profileImageUrl': createClubCallablePayloadProfileImageUrl,
-    'createClubCallableResponse.clubId': createClubCallableResponseClubId,
-    'createClubPostCallablePayload.clubId': createClubPostCallablePayloadClubId,
-    'createClubPostCallablePayload.eventId': createClubPostCallablePayloadEventId,
-    'createClubPostCallablePayload.photoPath': createClubPostCallablePayloadPhotoPath,
-    'createClubPostCallablePayload.text': createClubPostCallablePayloadText,
-    'createClubPostCallableResponse.postId': createClubPostCallableResponsePostId,
-    'createClubPostCallableResponse.remainingWeeklyQuota': createClubPostCallableResponseRemainingWeeklyQuota,
     'createEventCallablePayload.capacityLimit': createEventCallablePayloadCapacityLimit,
-    'createEventCallablePayload.clubId': createEventCallablePayloadClubId,
     'createEventCallablePayload.constraints.maxAge': createEventCallablePayloadConstraintsMaxAge,
     'createEventCallablePayload.constraints.maxMen': createEventCallablePayloadConstraintsMaxMen,
     'createEventCallablePayload.constraints.maxWomen': createEventCallablePayloadConstraintsMaxWomen,
@@ -183838,26 +179154,6 @@ abstract final class CatchContractConstraints {
     'createProgramWalkInCallablePayload.occurredAtMillis': createProgramWalkInCallablePayloadOccurredAtMillis,
     'createProgramWalkInCallablePayload.partySize': createProgramWalkInCallablePayloadPartySize,
     'createProgramWalkInCallablePayload.programId': createProgramWalkInCallablePayloadProgramId,
-    'createPublicClubReviewCallablePayload.clubId': createPublicClubReviewCallablePayloadClubId,
-    'createPublicClubReviewCallablePayload.comment': createPublicClubReviewCallablePayloadComment,
-    'createPublicClubReviewCallablePayload.isAnonymous': createPublicClubReviewCallablePayloadIsAnonymous,
-    'createPublicClubReviewCallablePayload.rating': createPublicClubReviewCallablePayloadRating,
-    'createPublicClubReviewCallablePayload.reviewerName': createPublicClubReviewCallablePayloadReviewerName,
-    'createPublicClubReviewCallablePayload.submittedFromPath': createPublicClubReviewCallablePayloadSubmittedFromPath,
-    'createPublicClubReviewCallableResponse.review.comment': createPublicClubReviewCallableResponseReviewComment,
-    'createPublicClubReviewCallableResponse.review.createdAt': createPublicClubReviewCallableResponseReviewCreatedAt,
-    'createPublicClubReviewCallableResponse.review.id': createPublicClubReviewCallableResponseReviewIdAtReviewPropertyId,
-    'createPublicClubReviewCallableResponse.review.isAnonymous': createPublicClubReviewCallableResponseReviewIsAnonymous,
-    'createPublicClubReviewCallableResponse.review.moderationStatus': createPublicClubReviewCallableResponseReviewModerationStatus,
-    'createPublicClubReviewCallableResponse.review.ownerResponse.hostAvatarUrl': createPublicClubReviewCallableResponseReviewOwnerResponseHostAvatarUrl,
-    'createPublicClubReviewCallableResponse.review.ownerResponse.hostName': createPublicClubReviewCallableResponseReviewOwnerResponseHostName,
-    'createPublicClubReviewCallableResponse.review.ownerResponse.message': createPublicClubReviewCallableResponseReviewOwnerResponseMessage,
-    'createPublicClubReviewCallableResponse.review.ownerResponse.updatedAt': createPublicClubReviewCallableResponseReviewOwnerResponseUpdatedAt,
-    'createPublicClubReviewCallableResponse.review.rating': createPublicClubReviewCallableResponseReviewRating,
-    'createPublicClubReviewCallableResponse.review.reviewerName': createPublicClubReviewCallableResponseReviewReviewerName,
-    'createPublicClubReviewCallableResponse.review.source': createPublicClubReviewCallableResponseReviewSource,
-    'createPublicClubReviewCallableResponse.review.verificationStatus': createPublicClubReviewCallableResponseReviewVerificationStatus,
-    'createPublicClubReviewCallableResponse.reviewId': createPublicClubReviewCallableResponseReviewIdAtReviewId,
     'createPublicOrganizerReviewCallablePayload.comment': createPublicOrganizerReviewCallablePayloadComment,
     'createPublicOrganizerReviewCallablePayload.isAnonymous': createPublicOrganizerReviewCallablePayloadIsAnonymous,
     'createPublicOrganizerReviewCallablePayload.organizerId': createPublicOrganizerReviewCallablePayloadOrganizerId,
@@ -184006,7 +179302,6 @@ abstract final class CatchContractConstraints {
     'decideSalesPartnerAssignmentCallablePayload.organizerId': decideSalesPartnerAssignmentCallablePayloadOrganizerId,
     'decideSalesPartnerAssignmentCallablePayload.relationshipContext': decideSalesPartnerAssignmentCallablePayloadRelationshipContext,
     'decideSalesPartnerAssignmentCallablePayload.requestId': decideSalesPartnerAssignmentCallablePayloadRequestId,
-    'deleteClubCallablePayload.clubId': deleteClubCallablePayloadClubId,
     'deletedUserTombstoneDocument.completedAt._nanoseconds': deletedUserTombstoneDocumentCompletedAtNanoseconds,
     'deletedUserTombstoneDocument.completedAt._seconds': deletedUserTombstoneDocumentCompletedAtSeconds,
     'deletedUserTombstoneDocument.deletedAt._nanoseconds': deletedUserTombstoneDocumentDeletedAtNanoseconds,
@@ -186079,7 +181374,6 @@ abstract final class CatchContractConstraints {
     'eventAttendeeDocument.checkedInBy': eventAttendeeDocumentCheckedInBy,
     'eventAttendeeDocument.cityMarketId': eventAttendeeDocumentCityMarketId,
     'eventAttendeeDocument.citySource': eventAttendeeDocumentCitySource,
-    'eventAttendeeDocument.clubId': eventAttendeeDocumentClubId,
     'eventAttendeeDocument.createdAt._nanoseconds': eventAttendeeDocumentCreatedAtNanoseconds,
     'eventAttendeeDocument.createdAt._seconds': eventAttendeeDocumentCreatedAtSeconds,
     'eventAttendeeDocument.displayName': eventAttendeeDocumentDisplayName,
@@ -186119,7 +181413,6 @@ abstract final class CatchContractConstraints {
     'eventAttendeeDocument.updatedAt._seconds': eventAttendeeDocumentUpdatedAtSeconds,
     'eventAttendeeDocument.waitlistedAt._nanoseconds': eventAttendeeDocumentWaitlistedAtNanoseconds,
     'eventAttendeeDocument.waitlistedAt._seconds': eventAttendeeDocumentWaitlistedAtSeconds,
-    'eventAttendeeImportDocument.clubId': eventAttendeeImportDocumentClubId,
     'eventAttendeeImportDocument.completedAt._nanoseconds': eventAttendeeImportDocumentCompletedAtNanoseconds,
     'eventAttendeeImportDocument.completedAt._seconds': eventAttendeeImportDocumentCompletedAtSeconds,
     'eventAttendeeImportDocument.createdAt._nanoseconds': eventAttendeeImportDocumentCreatedAtNanoseconds,
@@ -186150,7 +181443,6 @@ abstract final class CatchContractConstraints {
     'eventBroadcastDocument.actorUid': eventBroadcastDocumentActorUid,
     'eventBroadcastDocument.audience': eventBroadcastDocumentAudience,
     'eventBroadcastDocument.body': eventBroadcastDocumentBody,
-    'eventBroadcastDocument.clubId': eventBroadcastDocumentClubId,
     'eventBroadcastDocument.completedAt._nanoseconds': eventBroadcastDocumentCompletedAtNanoseconds,
     'eventBroadcastDocument.completedAt._seconds': eventBroadcastDocumentCompletedAtSeconds,
     'eventBroadcastDocument.createdAt._nanoseconds': eventBroadcastDocumentCreatedAtNanoseconds,
@@ -186292,7 +181584,6 @@ abstract final class CatchContractConstraints {
     'eventDocument.catchExperienceActivities': eventDocumentCatchExperienceActivities,
     'eventDocument.catchExperienceActivities.items': eventDocumentCatchExperienceActivitiesItems,
     'eventDocument.checkedInCount': eventDocumentCheckedInCount,
-    'eventDocument.clubId': eventDocumentClubId,
     'eventDocument.cohortCounts': eventDocumentCohortCounts,
     'eventDocument.constraints.maxAge': eventDocumentConstraintsMaxAge,
     'eventDocument.constraints.maxMen': eventDocumentConstraintsMaxMen,
@@ -186540,7 +181831,6 @@ abstract final class CatchContractConstraints {
     'eventInviteLinkDocument.catcherCount': eventInviteLinkDocumentCatcherCount,
     'eventInviteLinkDocument.chatStartedCount': eventInviteLinkDocumentChatStartedCount,
     'eventInviteLinkDocument.checkedInCount': eventInviteLinkDocumentCheckedInCount,
-    'eventInviteLinkDocument.clubId': eventInviteLinkDocumentClubId,
     'eventInviteLinkDocument.confirmedCount': eventInviteLinkDocumentConfirmedCount,
     'eventInviteLinkDocument.contractVersion': eventInviteLinkDocumentContractVersion,
     'eventInviteLinkDocument.createdAt._nanoseconds': eventInviteLinkDocumentCreatedAtNanoseconds,
@@ -186598,7 +181888,6 @@ abstract final class CatchContractConstraints {
     'eventJoinRequestDecisionCallablePayload.eventId': eventJoinRequestDecisionCallablePayloadEventId,
     'eventJoinRequestDecisionCallablePayload.userId': eventJoinRequestDecisionCallablePayloadUserId,
     'eventLivePositionDocument.accuracyMeters': eventLivePositionDocumentAccuracyMeters,
-    'eventLivePositionDocument.clubId': eventLivePositionDocumentClubId,
     'eventLivePositionDocument.createdAt._nanoseconds': eventLivePositionDocumentCreatedAtNanoseconds,
     'eventLivePositionDocument.createdAt._seconds': eventLivePositionDocumentCreatedAtSeconds,
     'eventLivePositionDocument.eventId': eventLivePositionDocumentEventId,
@@ -187023,7 +182312,6 @@ abstract final class CatchContractConstraints {
     'eventParticipationDocument.attendedAt._seconds': eventParticipationDocumentAttendedAtSeconds,
     'eventParticipationDocument.cancelledAt._nanoseconds': eventParticipationDocumentCancelledAtNanoseconds,
     'eventParticipationDocument.cancelledAt._seconds': eventParticipationDocumentCancelledAtSeconds,
-    'eventParticipationDocument.clubId': eventParticipationDocumentClubId,
     'eventParticipationDocument.cohortAtSignup': eventParticipationDocumentCohortAtSignup,
     'eventParticipationDocument.communityMembershipAtSignup.decisionId': eventParticipationDocumentCommunityMembershipAtSignupDecisionId,
     'eventParticipationDocument.communityMembershipAtSignup.membershipId': eventParticipationDocumentCommunityMembershipAtSignupMembershipId,
@@ -187124,7 +182412,6 @@ abstract final class CatchContractConstraints {
     'eventPreferenceIntents.reusablePaymentPage.value.url': eventPreferenceIntentsReusablePaymentPageValueUrl,
     'eventPreferenceIntents.usualDurationMinutes.mode': eventPreferenceIntentsUsualDurationMinutesMode,
     'eventPreferenceIntents.usualDurationMinutes.value': eventPreferenceIntentsUsualDurationMinutesValue,
-    'eventPrivateAccessDocument.clubId': eventPrivateAccessDocumentClubId,
     'eventPrivateAccessDocument.createdAt._nanoseconds': eventPrivateAccessDocumentCreatedAtNanoseconds,
     'eventPrivateAccessDocument.createdAt._seconds': eventPrivateAccessDocumentCreatedAtSeconds,
     'eventPrivateAccessDocument.eventId': eventPrivateAccessDocumentEventId,
@@ -188458,7 +183745,6 @@ abstract final class CatchContractConstraints {
     'eventRehearsalDocument.assistanceSettings.runtime.configuration.routes': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationRoutes,
     'eventRehearsalDocument.assistanceSettings.runtime.configuration.routes.items': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationRoutesItems,
     'eventRehearsalDocument.assistanceSettings.runtime.status': eventRehearsalDocumentAssistanceSettingsRuntimeStatus,
-    'eventRehearsalDocument.clubId': eventRehearsalDocumentClubId,
     'eventRehearsalDocument.completedAt._nanoseconds': eventRehearsalDocumentCompletedAtNanoseconds,
     'eventRehearsalDocument.completedAt._seconds': eventRehearsalDocumentCompletedAtSeconds,
     'eventRehearsalDocument.createdAt._nanoseconds': eventRehearsalDocumentCreatedAtNanoseconds,
@@ -189473,7 +184759,6 @@ abstract final class CatchContractConstraints {
     'eventRehearsalRouteDecisionDocument.sessionId': eventRehearsalRouteDecisionDocumentSessionId,
     'eventRehearsalRouteDecisionDocument.sourceHash': eventRehearsalRouteDecisionDocumentSourceHash,
     'eventRehearsalSummaryCallableResponse.hasCompletedRehearsal': eventRehearsalSummaryCallableResponseHasCompletedRehearsal,
-    'eventRosterHandoffDocument.clubId': eventRosterHandoffDocumentClubId,
     'eventRosterHandoffDocument.createdAt._nanoseconds': eventRosterHandoffDocumentCreatedAtNanoseconds,
     'eventRosterHandoffDocument.createdAt._seconds': eventRosterHandoffDocumentCreatedAtSeconds,
     'eventRosterHandoffDocument.eventId': eventRosterHandoffDocumentEventId,
@@ -189492,7 +184777,6 @@ abstract final class CatchContractConstraints {
     'eventRuntimeAccess.walkInPolicy': eventRuntimeAccessWalkInPolicy,
     'eventRuntimeClaimRequestDocument.candidateAttendeeIds': eventRuntimeClaimRequestDocumentCandidateAttendeeIds,
     'eventRuntimeClaimRequestDocument.candidateAttendeeIds.items': eventRuntimeClaimRequestDocumentCandidateAttendeeIdsItems,
-    'eventRuntimeClaimRequestDocument.clubId': eventRuntimeClaimRequestDocumentClubId,
     'eventRuntimeClaimRequestDocument.createdAt._nanoseconds': eventRuntimeClaimRequestDocumentCreatedAtNanoseconds,
     'eventRuntimeClaimRequestDocument.createdAt._seconds': eventRuntimeClaimRequestDocumentCreatedAtSeconds,
     'eventRuntimeClaimRequestDocument.displayName': eventRuntimeClaimRequestDocumentDisplayName,
@@ -189553,7 +184837,6 @@ abstract final class CatchContractConstraints {
     'eventRuntimeParticipantDocument.claimedAt._nanoseconds': eventRuntimeParticipantDocumentClaimedAtNanoseconds,
     'eventRuntimeParticipantDocument.claimedAt._seconds': eventRuntimeParticipantDocumentClaimedAtSeconds,
     'eventRuntimeParticipantDocument.claimMethod': eventRuntimeParticipantDocumentClaimMethod,
-    'eventRuntimeParticipantDocument.clubId': eventRuntimeParticipantDocumentClubId,
     'eventRuntimeParticipantDocument.completedFieldIds': eventRuntimeParticipantDocumentCompletedFieldIds,
     'eventRuntimeParticipantDocument.completedFieldIds.items': eventRuntimeParticipantDocumentCompletedFieldIdsItems,
     'eventRuntimeParticipantDocument.consents.runtimeTermsVersion': eventRuntimeParticipantDocumentConsentsRuntimeTermsVersion,
@@ -189588,7 +184871,6 @@ abstract final class CatchContractConstraints {
     'eventRuntimeParticipantDocument.uid': eventRuntimeParticipantDocumentUid,
     'eventRuntimeParticipantDocument.updatedAt._nanoseconds': eventRuntimeParticipantDocumentUpdatedAtNanoseconds,
     'eventRuntimeParticipantDocument.updatedAt._seconds': eventRuntimeParticipantDocumentUpdatedAtSeconds,
-    'eventSafetyReportDocument.clubId': eventSafetyReportDocumentClubId,
     'eventSafetyReportDocument.createdAt._nanoseconds': eventSafetyReportDocumentCreatedAtNanoseconds,
     'eventSafetyReportDocument.createdAt._seconds': eventSafetyReportDocumentCreatedAtSeconds,
     'eventSafetyReportDocument.eventId': eventSafetyReportDocumentEventId,
@@ -189718,7 +185000,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessArrivalMissionDocument.answerOptions': eventSuccessArrivalMissionDocumentAnswerOptions,
     'eventSuccessArrivalMissionDocument.answerOptions.items.id': eventSuccessArrivalMissionDocumentAnswerOptionsItemsId,
     'eventSuccessArrivalMissionDocument.answerOptions.items.label': eventSuccessArrivalMissionDocumentAnswerOptionsItemsLabel,
-    'eventSuccessArrivalMissionDocument.clubId': eventSuccessArrivalMissionDocumentClubId,
     'eventSuccessArrivalMissionDocument.completedAt._nanoseconds': eventSuccessArrivalMissionDocumentCompletedAtNanoseconds,
     'eventSuccessArrivalMissionDocument.completedAt._seconds': eventSuccessArrivalMissionDocumentCompletedAtSeconds,
     'eventSuccessArrivalMissionDocument.createdAt._nanoseconds': eventSuccessArrivalMissionDocumentCreatedAtNanoseconds,
@@ -189745,7 +185026,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDocument.assignmentFeatureAudit.algorithmVersion': eventSuccessAssignmentDocumentAssignmentFeatureAuditAlgorithmVersion,
     'eventSuccessAssignmentDocument.assignmentFeatureAudit.configHash': eventSuccessAssignmentDocumentAssignmentFeatureAuditConfigHash,
     'eventSuccessAssignmentDocument.assignmentFeatureAudit.inputSnapshotId': eventSuccessAssignmentDocumentAssignmentFeatureAuditInputSnapshotId,
-    'eventSuccessAssignmentDocument.clubId': eventSuccessAssignmentDocumentClubId,
     'eventSuccessAssignmentDocument.confirmedLayoutUnitId': eventSuccessAssignmentDocumentConfirmedLayoutUnitId,
     'eventSuccessAssignmentDocument.createdAt._nanoseconds': eventSuccessAssignmentDocumentCreatedAtNanoseconds,
     'eventSuccessAssignmentDocument.createdAt._seconds': eventSuccessAssignmentDocumentCreatedAtSeconds,
@@ -189826,7 +185106,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDraftDocument.assignment.assignmentFeatureAudit.algorithmVersion': eventSuccessAssignmentDraftDocumentAssignmentAssignmentFeatureAuditAlgorithmVersion,
     'eventSuccessAssignmentDraftDocument.assignment.assignmentFeatureAudit.configHash': eventSuccessAssignmentDraftDocumentAssignmentAssignmentFeatureAuditConfigHash,
     'eventSuccessAssignmentDraftDocument.assignment.assignmentFeatureAudit.inputSnapshotId': eventSuccessAssignmentDraftDocumentAssignmentAssignmentFeatureAuditInputSnapshotId,
-    'eventSuccessAssignmentDraftDocument.assignment.clubId': eventSuccessAssignmentDraftDocumentAssignmentClubId,
     'eventSuccessAssignmentDraftDocument.assignment.confirmedLayoutUnitId': eventSuccessAssignmentDraftDocumentAssignmentConfirmedLayoutUnitId,
     'eventSuccessAssignmentDraftDocument.assignment.createdAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentCreatedAtNanoseconds,
     'eventSuccessAssignmentDraftDocument.assignment.createdAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentCreatedAtSeconds,
@@ -189923,7 +185202,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.value.value': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsValueValue,
     'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.versionId': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsVersionId,
     'eventSuccessAssignmentDraftDocument.baseAssignmentRevision': eventSuccessAssignmentDraftDocumentBaseAssignmentRevision,
-    'eventSuccessAssignmentDraftDocument.clubId': eventSuccessAssignmentDraftDocumentClubId,
     'eventSuccessAssignmentDraftDocument.createdAt._nanoseconds': eventSuccessAssignmentDraftDocumentCreatedAtNanoseconds,
     'eventSuccessAssignmentDraftDocument.createdAt._seconds': eventSuccessAssignmentDraftDocumentCreatedAtSeconds,
     'eventSuccessAssignmentDraftDocument.eventId': eventSuccessAssignmentDraftDocumentEventId,
@@ -189935,7 +185213,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDraftDocument.updatedAt._seconds': eventSuccessAssignmentDraftDocumentUpdatedAtSeconds,
     'eventSuccessCompatibilityResponseDocument.answerIds': eventSuccessCompatibilityResponseDocumentAnswerIds,
     'eventSuccessCompatibilityResponseDocument.answerIds.items': eventSuccessCompatibilityResponseDocumentAnswerIdsItems,
-    'eventSuccessCompatibilityResponseDocument.clubId': eventSuccessCompatibilityResponseDocumentClubId,
     'eventSuccessCompatibilityResponseDocument.createdAt._nanoseconds': eventSuccessCompatibilityResponseDocumentCreatedAtNanoseconds,
     'eventSuccessCompatibilityResponseDocument.createdAt._seconds': eventSuccessCompatibilityResponseDocumentCreatedAtSeconds,
     'eventSuccessCompatibilityResponseDocument.demoOps': eventSuccessCompatibilityResponseDocumentDemoOps,
@@ -189951,7 +185228,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessCompatibilityResponseDocument.updatedAt._seconds': eventSuccessCompatibilityResponseDocumentUpdatedAtSeconds,
     'eventSuccessConversationGraphDocument.assignedCandidateCount': eventSuccessConversationGraphDocumentAssignedCandidateCount,
     'eventSuccessConversationGraphDocument.assignedSelectedCount': eventSuccessConversationGraphDocumentAssignedSelectedCount,
-    'eventSuccessConversationGraphDocument.clubId': eventSuccessConversationGraphDocumentClubId,
     'eventSuccessConversationGraphDocument.consentMode': eventSuccessConversationGraphDocumentConsentMode,
     'eventSuccessConversationGraphDocument.createdAt._nanoseconds': eventSuccessConversationGraphDocumentCreatedAtNanoseconds,
     'eventSuccessConversationGraphDocument.createdAt._seconds': eventSuccessConversationGraphDocumentCreatedAtSeconds,
@@ -189963,7 +185239,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessConversationGraphDocument.uid': eventSuccessConversationGraphDocumentUid,
     'eventSuccessConversationGraphDocument.updatedAt._nanoseconds': eventSuccessConversationGraphDocumentUpdatedAtNanoseconds,
     'eventSuccessConversationGraphDocument.updatedAt._seconds': eventSuccessConversationGraphDocumentUpdatedAtSeconds,
-    'eventSuccessFeedbackDocument.clubId': eventSuccessFeedbackDocumentClubId,
     'eventSuccessFeedbackDocument.createdAt._nanoseconds': eventSuccessFeedbackDocumentCreatedAtNanoseconds,
     'eventSuccessFeedbackDocument.createdAt._seconds': eventSuccessFeedbackDocumentCreatedAtSeconds,
     'eventSuccessFeedbackDocument.demoOps': eventSuccessFeedbackDocumentDemoOps,
@@ -189983,7 +185258,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessFeedbackDocument.updatedAt._seconds': eventSuccessFeedbackDocumentUpdatedAtSeconds,
     'eventSuccessFeedbackDocument.welcomeRating': eventSuccessFeedbackDocumentWelcomeRating,
     'eventSuccessLateArrivalDocument.assignmentDraftRevision': eventSuccessLateArrivalDocumentAssignmentDraftRevision,
-    'eventSuccessLateArrivalDocument.clubId': eventSuccessLateArrivalDocumentClubId,
     'eventSuccessLateArrivalDocument.createdAt._nanoseconds': eventSuccessLateArrivalDocumentCreatedAtNanoseconds,
     'eventSuccessLateArrivalDocument.createdAt._seconds': eventSuccessLateArrivalDocumentCreatedAtSeconds,
     'eventSuccessLateArrivalDocument.eventId': eventSuccessLateArrivalDocumentEventId,
@@ -190028,7 +185302,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessPlanDocument.assignmentFeatureRules.items.versionId': eventSuccessPlanDocumentAssignmentFeatureRulesItemsVersionId,
     'eventSuccessPlanDocument.assignmentFeatureRules.items.weight': eventSuccessPlanDocumentAssignmentFeatureRulesItemsWeight,
     'eventSuccessPlanDocument.attendeePrompt': eventSuccessPlanDocumentAttendeePrompt,
-    'eventSuccessPlanDocument.clubId': eventSuccessPlanDocumentClubId,
     'eventSuccessPlanDocument.compatibilityAffectsRanking': eventSuccessPlanDocumentCompatibilityAffectsRanking,
     'eventSuccessPlanDocument.completedAt._nanoseconds': eventSuccessPlanDocumentCompletedAtNanoseconds,
     'eventSuccessPlanDocument.completedAt._seconds': eventSuccessPlanDocumentCompletedAtSeconds,
@@ -190090,7 +185363,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessPlanDocument.updatedAt._nanoseconds': eventSuccessPlanDocumentUpdatedAtNanoseconds,
     'eventSuccessPlanDocument.updatedAt._seconds': eventSuccessPlanDocumentUpdatedAtSeconds,
     'eventSuccessPlanDocument.wingmanRequestsEnabled': eventSuccessPlanDocumentWingmanRequestsEnabled,
-    'eventSuccessPreferenceDocument.clubId': eventSuccessPreferenceDocumentClubId,
     'eventSuccessPreferenceDocument.createdAt._nanoseconds': eventSuccessPreferenceDocumentCreatedAtNanoseconds,
     'eventSuccessPreferenceDocument.createdAt._seconds': eventSuccessPreferenceDocumentCreatedAtSeconds,
     'eventSuccessPreferenceDocument.demoOps': eventSuccessPreferenceDocumentDemoOps,
@@ -190106,7 +185378,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessPreferenceDocument.uid': eventSuccessPreferenceDocumentUid,
     'eventSuccessPreferenceDocument.updatedAt._nanoseconds': eventSuccessPreferenceDocumentUpdatedAtNanoseconds,
     'eventSuccessPreferenceDocument.updatedAt._seconds': eventSuccessPreferenceDocumentUpdatedAtSeconds,
-    'eventSuccessPresenceDocument.clubId': eventSuccessPresenceDocumentClubId,
     'eventSuccessPresenceDocument.createdAt._nanoseconds': eventSuccessPresenceDocumentCreatedAtNanoseconds,
     'eventSuccessPresenceDocument.createdAt._seconds': eventSuccessPresenceDocumentCreatedAtSeconds,
     'eventSuccessPresenceDocument.eventId': eventSuccessPresenceDocumentEventId,
@@ -190127,7 +185398,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessScorecardDocument.catchSentCount': eventSuccessScorecardDocumentCatchSentCount,
     'eventSuccessScorecardDocument.chatStartedCount': eventSuccessScorecardDocumentChatStartedCount,
     'eventSuccessScorecardDocument.checkedInCount': eventSuccessScorecardDocumentCheckedInCount,
-    'eventSuccessScorecardDocument.clubId': eventSuccessScorecardDocumentClubId,
     'eventSuccessScorecardDocument.conversationGraph.assignedConversationCount': eventSuccessScorecardDocumentConversationGraphAssignedConversationCount,
     'eventSuccessScorecardDocument.conversationGraph.assignedOpportunityCount': eventSuccessScorecardDocumentConversationGraphAssignedOpportunityCount,
     'eventSuccessScorecardDocument.conversationGraph.attendeesWithTwoPlusConversations': eventSuccessScorecardDocumentConversationGraphAttendeesWithTwoPlusConversations,
@@ -190188,7 +185458,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessSpatialActionCallableResponse.destinations.items.unitId': eventSuccessSpatialActionCallableResponseDestinationsItemsUnitId,
     'eventSuccessSpatialActionCallableResponse.destinations.items.valid': eventSuccessSpatialActionCallableResponseDestinationsItemsValid,
     'eventSuccessSpatialActionCallableResponse.revision': eventSuccessSpatialActionCallableResponseRevision,
-    'eventSuccessStandingsDocument.clubId': eventSuccessStandingsDocumentClubId,
     'eventSuccessStandingsDocument.createdAt._nanoseconds': eventSuccessStandingsDocumentCreatedAtNanoseconds,
     'eventSuccessStandingsDocument.createdAt._seconds': eventSuccessStandingsDocumentCreatedAtSeconds,
     'eventSuccessStandingsDocument.entries': eventSuccessStandingsDocumentEntries,
@@ -190212,7 +185481,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessStandingsDocument.unitOutcome': eventSuccessStandingsDocumentUnitOutcome,
     'eventSuccessStandingsDocument.updatedAt._nanoseconds': eventSuccessStandingsDocumentUpdatedAtNanoseconds,
     'eventSuccessStandingsDocument.updatedAt._seconds': eventSuccessStandingsDocumentUpdatedAtSeconds,
-    'eventSuccessUnitOutcomesDocument.clubId': eventSuccessUnitOutcomesDocumentClubId,
     'eventSuccessUnitOutcomesDocument.createdAt._nanoseconds': eventSuccessUnitOutcomesDocumentCreatedAtNanoseconds,
     'eventSuccessUnitOutcomesDocument.createdAt._seconds': eventSuccessUnitOutcomesDocumentCreatedAtSeconds,
     'eventSuccessUnitOutcomesDocument.eventId': eventSuccessUnitOutcomesDocumentEventId,
@@ -190229,7 +185497,6 @@ abstract final class CatchContractConstraints {
     'eventSuccessUnitOutcomesDocument.unitOutcome': eventSuccessUnitOutcomesDocumentUnitOutcome,
     'eventSuccessUnitOutcomesDocument.updatedAt._nanoseconds': eventSuccessUnitOutcomesDocumentUpdatedAtNanoseconds,
     'eventSuccessUnitOutcomesDocument.updatedAt._seconds': eventSuccessUnitOutcomesDocumentUpdatedAtSeconds,
-    'eventSuccessWingmanRequestDocument.clubId': eventSuccessWingmanRequestDocumentClubId,
     'eventSuccessWingmanRequestDocument.createdAt._nanoseconds': eventSuccessWingmanRequestDocumentCreatedAtNanoseconds,
     'eventSuccessWingmanRequestDocument.createdAt._seconds': eventSuccessWingmanRequestDocumentCreatedAtSeconds,
     'eventSuccessWingmanRequestDocument.demoOps': eventSuccessWingmanRequestDocumentDemoOps,
@@ -190264,7 +185531,6 @@ abstract final class CatchContractConstraints {
     'eventVenueSessionRedemptionDocument.redeemedAt._seconds': eventVenueSessionRedemptionDocumentRedeemedAtSeconds,
     'eventVenueSessionRedemptionDocument.sessionId': eventVenueSessionRedemptionDocumentSessionId,
     'eventVenueSessionRedemptionDocument.uid': eventVenueSessionRedemptionDocumentUid,
-    'eventWaitlistOfferDocument.clubId': eventWaitlistOfferDocumentClubId,
     'eventWaitlistOfferDocument.cohortAtOffer': eventWaitlistOfferDocumentCohortAtOffer,
     'eventWaitlistOfferDocument.createdAt._nanoseconds': eventWaitlistOfferDocumentCreatedAtNanoseconds,
     'eventWaitlistOfferDocument.createdAt._seconds': eventWaitlistOfferDocumentCreatedAtSeconds,
@@ -190483,8 +185749,6 @@ abstract final class CatchContractConstraints {
     'exploreSearchCallablePayload.cityName': exploreSearchCallablePayloadCityName,
     'exploreSearchCallablePayload.limit': exploreSearchCallablePayloadLimit,
     'exploreSearchCallablePayload.query': exploreSearchCallablePayloadQuery,
-    'exploreSearchCallableResponse.clubIds': exploreSearchCallableResponseClubIds,
-    'exploreSearchCallableResponse.clubIds.items': exploreSearchCallableResponseClubIdsItems,
     'exploreSearchCallableResponse.eventIds': exploreSearchCallableResponseEventIds,
     'exploreSearchCallableResponse.eventIds.items': exploreSearchCallableResponseEventIdsItems,
     'exploreSearchCallableResponse.organizerIds': exploreSearchCallableResponseOrganizerIds,
@@ -190525,7 +185789,6 @@ abstract final class CatchContractConstraints {
     'externalEventDocument.booking.externalLinks.items.url': externalEventDocumentBookingExternalLinksItemsUrl,
     'externalEventDocument.booking.mode': externalEventDocumentBookingMode,
     'externalEventDocument.canonicalHostId': externalEventDocumentCanonicalHostId,
-    'externalEventDocument.compatibilityClubId': externalEventDocumentCompatibilityClubId,
     'externalEventDocument.createdAt._nanoseconds': externalEventDocumentCreatedAtNanoseconds,
     'externalEventDocument.createdAt._seconds': externalEventDocumentCreatedAtSeconds,
     'externalEventDocument.dedupe.conflictPolicy': externalEventDocumentDedupeConflictPolicy,
@@ -191021,7 +186284,6 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.event.title': getEventRuntimeBootstrapCallableResponseEventTitle,
     'getEventRuntimeBootstrapCallableResponse.participant.accessStatus': getEventRuntimeBootstrapCallableResponseParticipantAccessStatus,
     'getEventRuntimeBootstrapCallableResponse.participant.attendanceStatus': getEventRuntimeBootstrapCallableResponseParticipantAttendanceStatus,
-    'getEventRuntimeBootstrapCallableResponse.participant.clubId': getEventRuntimeBootstrapCallableResponseParticipantClubId,
     'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds': getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIds,
     'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds.items': getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIdsItems,
     'getEventRuntimeBootstrapCallableResponse.participant.eventAttendeeId': getEventRuntimeBootstrapCallableResponseParticipantEventAttendeeId,
@@ -191802,9 +187064,6 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsCallableResponse.reviewSummary.publicReviews': hostAnalyticsCallableResponseReviewSummaryPublicReviews,
     'hostAnalyticsCallableResponse.reviewSummary.publishedReviews': hostAnalyticsCallableResponseReviewSummaryPublishedReviews,
     'hostAnalyticsCallableResponse.reviewSummary.verifiedReviews': hostAnalyticsCallableResponseReviewSummaryVerifiedReviews,
-    'hostAnalyticsCallableResponse.scope.clubIds': hostAnalyticsCallableResponseScopeClubIds,
-    'hostAnalyticsCallableResponse.scope.clubIds.items': hostAnalyticsCallableResponseScopeClubIdsItems,
-    'hostAnalyticsCallableResponse.scope.clubName': hostAnalyticsCallableResponseScopeClubName,
     'hostAnalyticsCallableResponse.scope.eventIds': hostAnalyticsCallableResponseScopeEventIds,
     'hostAnalyticsCallableResponse.scope.eventIds.items': hostAnalyticsCallableResponseScopeEventIdsItems,
     'hostAnalyticsCallableResponse.scope.eventTitle': hostAnalyticsCallableResponseScopeEventTitle,
@@ -191834,7 +187093,6 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsCallableResponse.topEvents.items.checkInRate': hostAnalyticsCallableResponseTopEventsItemsCheckInRate,
     'hostAnalyticsCallableResponse.topEvents.items.checkoutDropoffCount': hostAnalyticsCallableResponseTopEventsItemsCheckoutDropoffCount,
     'hostAnalyticsCallableResponse.topEvents.items.checkoutStartedCount': hostAnalyticsCallableResponseTopEventsItemsCheckoutStartedCount,
-    'hostAnalyticsCallableResponse.topEvents.items.clubId': hostAnalyticsCallableResponseTopEventsItemsClubId,
     'hostAnalyticsCallableResponse.topEvents.items.currency': hostAnalyticsCallableResponseTopEventsItemsCurrency,
     'hostAnalyticsCallableResponse.topEvents.items.demandCount': hostAnalyticsCallableResponseTopEventsItemsDemandCount,
     'hostAnalyticsCallableResponse.topEvents.items.eventId': hostAnalyticsCallableResponseTopEventsItemsEventId,
@@ -191871,7 +187129,6 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsEvent.source': hostAnalyticsEventSource,
     'hostAnalyticsEvent.target_event_id': hostAnalyticsEventTargetEventId,
     'hostAnalyticsEvent.traffic_source': hostAnalyticsEventTrafficSource,
-    'hostAnalyticsQueryCallablePayload.clubId': hostAnalyticsQueryCallablePayloadClubId,
     'hostAnalyticsQueryCallablePayload.endDate': hostAnalyticsQueryCallablePayloadEndDate,
     'hostAnalyticsQueryCallablePayload.eventId': hostAnalyticsQueryCallablePayloadEventId,
     'hostAnalyticsQueryCallablePayload.granularity': hostAnalyticsQueryCallablePayloadGranularity,
@@ -191918,9 +187175,6 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsSnapshotDocument.response.reviewSummary.publicReviews': hostAnalyticsSnapshotDocumentResponseReviewSummaryPublicReviews,
     'hostAnalyticsSnapshotDocument.response.reviewSummary.publishedReviews': hostAnalyticsSnapshotDocumentResponseReviewSummaryPublishedReviews,
     'hostAnalyticsSnapshotDocument.response.reviewSummary.verifiedReviews': hostAnalyticsSnapshotDocumentResponseReviewSummaryVerifiedReviews,
-    'hostAnalyticsSnapshotDocument.response.scope.clubIds': hostAnalyticsSnapshotDocumentResponseScopeClubIds,
-    'hostAnalyticsSnapshotDocument.response.scope.clubIds.items': hostAnalyticsSnapshotDocumentResponseScopeClubIdsItems,
-    'hostAnalyticsSnapshotDocument.response.scope.clubName': hostAnalyticsSnapshotDocumentResponseScopeClubName,
     'hostAnalyticsSnapshotDocument.response.scope.eventIds': hostAnalyticsSnapshotDocumentResponseScopeEventIds,
     'hostAnalyticsSnapshotDocument.response.scope.eventIds.items': hostAnalyticsSnapshotDocumentResponseScopeEventIdsItems,
     'hostAnalyticsSnapshotDocument.response.scope.eventTitle': hostAnalyticsSnapshotDocumentResponseScopeEventTitle,
@@ -191950,7 +187204,6 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsSnapshotDocument.response.topEvents.items.checkInRate': hostAnalyticsSnapshotDocumentResponseTopEventsItemsCheckInRate,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.checkoutDropoffCount': hostAnalyticsSnapshotDocumentResponseTopEventsItemsCheckoutDropoffCount,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.checkoutStartedCount': hostAnalyticsSnapshotDocumentResponseTopEventsItemsCheckoutStartedCount,
-    'hostAnalyticsSnapshotDocument.response.topEvents.items.clubId': hostAnalyticsSnapshotDocumentResponseTopEventsItemsClubId,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.currency': hostAnalyticsSnapshotDocumentResponseTopEventsItemsCurrency,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.demandCount': hostAnalyticsSnapshotDocumentResponseTopEventsItemsDemandCount,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.eventId': hostAnalyticsSnapshotDocumentResponseTopEventsItemsEventId,
@@ -192351,8 +187604,8 @@ abstract final class CatchContractConstraints {
     'hostProfileDocument.createdAt._nanoseconds': hostProfileDocumentCreatedAtNanoseconds,
     'hostProfileDocument.createdAt._seconds': hostProfileDocumentCreatedAtSeconds,
     'hostProfileDocument.displayName': hostProfileDocumentDisplayName,
-    'hostProfileDocument.linkedClubIds': hostProfileDocumentLinkedClubIds,
-    'hostProfileDocument.linkedClubIds.items': hostProfileDocumentLinkedClubIdsItems,
+    'hostProfileDocument.linkedOrganizerIds': hostProfileDocumentLinkedOrganizerIds,
+    'hostProfileDocument.linkedOrganizerIds.items': hostProfileDocumentLinkedOrganizerIdsItems,
     'hostProfileDocument.roleTitle': hostProfileDocumentRoleTitle,
     'hostProfileDocument.status': hostProfileDocumentStatus,
     'hostProfileDocument.updatedAt._nanoseconds': hostProfileDocumentUpdatedAtNanoseconds,
@@ -193607,20 +188860,6 @@ abstract final class CatchContractConstraints {
     'listProgramTripsCallablePayload.cursor': listProgramTripsCallablePayloadCursor,
     'listProgramTripsCallablePayload.limit': listProgramTripsCallablePayloadLimit,
     'listProgramTripsCallablePayload.programId': listProgramTripsCallablePayloadProgramId,
-    'listPublicClubReviewsCallablePayload.clubId': listPublicClubReviewsCallablePayloadClubId,
-    'listPublicClubReviewsCallableResponse.reviews': listPublicClubReviewsCallableResponseReviews,
-    'listPublicClubReviewsCallableResponse.reviews.items.comment': listPublicClubReviewsCallableResponseReviewsItemsComment,
-    'listPublicClubReviewsCallableResponse.reviews.items.createdAt': listPublicClubReviewsCallableResponseReviewsItemsCreatedAt,
-    'listPublicClubReviewsCallableResponse.reviews.items.id': listPublicClubReviewsCallableResponseReviewsItemsId,
-    'listPublicClubReviewsCallableResponse.reviews.items.isAnonymous': listPublicClubReviewsCallableResponseReviewsItemsIsAnonymous,
-    'listPublicClubReviewsCallableResponse.reviews.items.ownerResponse.hostAvatarUrl': listPublicClubReviewsCallableResponseReviewsItemsOwnerResponseHostAvatarUrl,
-    'listPublicClubReviewsCallableResponse.reviews.items.ownerResponse.hostName': listPublicClubReviewsCallableResponseReviewsItemsOwnerResponseHostName,
-    'listPublicClubReviewsCallableResponse.reviews.items.ownerResponse.message': listPublicClubReviewsCallableResponseReviewsItemsOwnerResponseMessage,
-    'listPublicClubReviewsCallableResponse.reviews.items.ownerResponse.updatedAt': listPublicClubReviewsCallableResponseReviewsItemsOwnerResponseUpdatedAt,
-    'listPublicClubReviewsCallableResponse.reviews.items.rating': listPublicClubReviewsCallableResponseReviewsItemsRating,
-    'listPublicClubReviewsCallableResponse.reviews.items.reviewerName': listPublicClubReviewsCallableResponseReviewsItemsReviewerName,
-    'listPublicClubReviewsCallableResponse.reviews.items.source': listPublicClubReviewsCallableResponseReviewsItemsSource,
-    'listPublicClubReviewsCallableResponse.reviews.items.verificationStatus': listPublicClubReviewsCallableResponseReviewsItemsVerificationStatus,
     'listPublicOrganizerReviewsCallablePayload.organizerId': listPublicOrganizerReviewsCallablePayloadOrganizerId,
     'listPublicOrganizerReviewsCallableResponse.reviews': listPublicOrganizerReviewsCallableResponseReviews,
     'listPublicOrganizerReviewsCallableResponse.reviews.items.comment': listPublicOrganizerReviewsCallableResponseReviewsItemsComment,
@@ -194077,7 +189316,6 @@ abstract final class CatchContractConstraints {
     'matchDocument.blockedBy': matchDocumentBlockedBy,
     'matchDocument.closedAt._nanoseconds': matchDocumentClosedAtNanoseconds,
     'matchDocument.closedAt._seconds': matchDocumentClosedAtSeconds,
-    'matchDocument.clubId': matchDocumentClubId,
     'matchDocument.conversationType': matchDocumentConversationType,
     'matchDocument.createdAt._nanoseconds': matchDocumentCreatedAtNanoseconds,
     'matchDocument.createdAt._seconds': matchDocumentCreatedAtSeconds,
@@ -195223,21 +190461,6 @@ abstract final class CatchContractConstraints {
     'organizerDocument.claim.claimHref': organizerDocumentClaimClaimHref,
     'organizerDocument.claim.lastClaimRequestId': organizerDocumentClaimLastClaimRequestId,
     'organizerDocument.claim.state': organizerDocumentClaimState,
-    'organizerDocument.clubPhotos': organizerDocumentClubPhotos,
-    'organizerDocument.clubPhotos.items.createdAt._nanoseconds': organizerDocumentClubPhotosItemsCreatedAtNanoseconds,
-    'organizerDocument.clubPhotos.items.createdAt._seconds': organizerDocumentClubPhotosItemsCreatedAtSeconds,
-    'organizerDocument.clubPhotos.items.id': organizerDocumentClubPhotosItemsId,
-    'organizerDocument.clubPhotos.items.moderation.reason': organizerDocumentClubPhotosItemsModerationReason,
-    'organizerDocument.clubPhotos.items.moderation.reviewedAt._nanoseconds': organizerDocumentClubPhotosItemsModerationReviewedAtNanoseconds,
-    'organizerDocument.clubPhotos.items.moderation.reviewedAt._seconds': organizerDocumentClubPhotosItemsModerationReviewedAtSeconds,
-    'organizerDocument.clubPhotos.items.moderation.status': organizerDocumentClubPhotosItemsModerationStatus,
-    'organizerDocument.clubPhotos.items.position': organizerDocumentClubPhotosItemsPosition,
-    'organizerDocument.clubPhotos.items.storagePath': organizerDocumentClubPhotosItemsStoragePath,
-    'organizerDocument.clubPhotos.items.thumbnailStoragePath': organizerDocumentClubPhotosItemsThumbnailStoragePath,
-    'organizerDocument.clubPhotos.items.thumbnailUrl': organizerDocumentClubPhotosItemsThumbnailUrl,
-    'organizerDocument.clubPhotos.items.updatedAt._nanoseconds': organizerDocumentClubPhotosItemsUpdatedAtNanoseconds,
-    'organizerDocument.clubPhotos.items.updatedAt._seconds': organizerDocumentClubPhotosItemsUpdatedAtSeconds,
-    'organizerDocument.clubPhotos.items.url': organizerDocumentClubPhotosItemsUrl,
     'organizerDocument.countryCode': organizerDocumentCountryCode,
     'organizerDocument.countryName': organizerDocumentCountryName,
     'organizerDocument.createdAt._nanoseconds': organizerDocumentCreatedAtNanoseconds,
@@ -196477,6 +191700,10 @@ abstract final class CatchContractConstraints {
     'organizerFormVersionDocument.publishedAt._seconds': organizerFormVersionDocumentPublishedAtSeconds,
     'organizerFormVersionDocument.sourceDraftRevision': organizerFormVersionDocumentSourceDraftRevision,
     'organizerFormVersionDocument.version': organizerFormVersionDocumentVersion,
+    'organizerHostClaimDocument.createdAt._nanoseconds': organizerHostClaimDocumentCreatedAtNanoseconds,
+    'organizerHostClaimDocument.createdAt._seconds': organizerHostClaimDocumentCreatedAtSeconds,
+    'organizerHostClaimDocument.organizerId': organizerHostClaimDocumentOrganizerId,
+    'organizerHostClaimDocument.uid': organizerHostClaimDocumentUid,
     'organizerIntakeCurationDecisionDocument.decision': organizerIntakeCurationDecisionDocumentDecision,
     'organizerIntakeCurationDecisionDocument.entityId': organizerIntakeCurationDecisionDocumentEntityId,
     'organizerIntakeCurationDecisionDocument.fieldProvenance': organizerIntakeCurationDecisionDocumentFieldProvenance,
@@ -196630,6 +191857,24 @@ abstract final class CatchContractConstraints {
     'organizerManualSendTaskDocument.updatedAt._nanoseconds': organizerManualSendTaskDocumentUpdatedAtNanoseconds,
     'organizerManualSendTaskDocument.updatedAt._seconds': organizerManualSendTaskDocumentUpdatedAtSeconds,
     'organizerManualSendTaskDocument.updatedByUid': organizerManualSendTaskDocumentUpdatedByUid,
+    'organizerMembershipCallablePayload.organizerId': organizerMembershipCallablePayloadOrganizerId,
+    'organizerMembershipDocument.deletedAt._nanoseconds': organizerMembershipDocumentDeletedAtNanoseconds,
+    'organizerMembershipDocument.deletedAt._seconds': organizerMembershipDocumentDeletedAtSeconds,
+    'organizerMembershipDocument.demoOps': organizerMembershipDocumentDemoOps,
+    'organizerMembershipDocument.demoOpsCommand': organizerMembershipDocumentDemoOpsCommand,
+    'organizerMembershipDocument.demoOpsId': organizerMembershipDocumentDemoOpsId,
+    'organizerMembershipDocument.joinedAt._nanoseconds': organizerMembershipDocumentJoinedAtNanoseconds,
+    'organizerMembershipDocument.joinedAt._seconds': organizerMembershipDocumentJoinedAtSeconds,
+    'organizerMembershipDocument.leftAt._nanoseconds': organizerMembershipDocumentLeftAtNanoseconds,
+    'organizerMembershipDocument.leftAt._seconds': organizerMembershipDocumentLeftAtSeconds,
+    'organizerMembershipDocument.organizerId': organizerMembershipDocumentOrganizerId,
+    'organizerMembershipDocument.pushNotificationsEnabled': organizerMembershipDocumentPushNotificationsEnabled,
+    'organizerMembershipDocument.role': organizerMembershipDocumentRole,
+    'organizerMembershipDocument.scenario': organizerMembershipDocumentScenario,
+    'organizerMembershipDocument.seedPrefix': organizerMembershipDocumentSeedPrefix,
+    'organizerMembershipDocument.status': organizerMembershipDocumentStatus,
+    'organizerMembershipDocument.synthetic': organizerMembershipDocumentSynthetic,
+    'organizerMembershipDocument.uid': organizerMembershipDocumentUid,
     'organizerMessageTemplateDocument.buttonKinds': organizerMessageTemplateDocumentButtonKinds,
     'organizerMessageTemplateDocument.buttonKinds.items': organizerMessageTemplateDocumentButtonKindsItems,
     'organizerMessageTemplateDocument.buttonLabels': organizerMessageTemplateDocumentButtonLabels,
@@ -197400,13 +192645,19 @@ abstract final class CatchContractConstraints {
     'organizerSavedAudienceDocument.updatedAt._nanoseconds': organizerSavedAudienceDocumentUpdatedAtNanoseconds,
     'organizerSavedAudienceDocument.updatedAt._seconds': organizerSavedAudienceDocumentUpdatedAtSeconds,
     'organizerSavedAudienceDocument.updatedByUid': organizerSavedAudienceDocumentUpdatedByUid,
+    'organizerScheduleLockDocument.demoOps': organizerScheduleLockDocumentDemoOps,
+    'organizerScheduleLockDocument.demoOpsCommand': organizerScheduleLockDocumentDemoOpsCommand,
+    'organizerScheduleLockDocument.demoOpsId': organizerScheduleLockDocumentDemoOpsId,
     'organizerScheduleLockDocument.endTimeMillis': organizerScheduleLockDocumentEndTimeMillis,
     'organizerScheduleLockDocument.eventId': organizerScheduleLockDocumentEventId,
     'organizerScheduleLockDocument.organizerId': organizerScheduleLockDocumentOrganizerId,
     'organizerScheduleLockDocument.ownerId': organizerScheduleLockDocumentOwnerId,
     'organizerScheduleLockDocument.ownerType': organizerScheduleLockDocumentOwnerType,
+    'organizerScheduleLockDocument.scenario': organizerScheduleLockDocumentScenario,
+    'organizerScheduleLockDocument.seedPrefix': organizerScheduleLockDocumentSeedPrefix,
     'organizerScheduleLockDocument.slot': organizerScheduleLockDocumentSlot,
     'organizerScheduleLockDocument.startTimeMillis': organizerScheduleLockDocumentStartTimeMillis,
+    'organizerScheduleLockDocument.synthetic': organizerScheduleLockDocumentSynthetic,
     'organizerSenderConnectionActionCallablePayload.connectionId': organizerSenderConnectionActionCallablePayloadConnectionId,
     'organizerSenderConnectionActionCallablePayload.organizerId': organizerSenderConnectionActionCallablePayloadOrganizerId,
     'organizerSenderConnectionDocument.businessId': organizerSenderConnectionDocumentBusinessId,
@@ -199922,7 +195173,6 @@ abstract final class CatchContractConstraints {
     'recordEventSuccessUnitOutcomesCallableResponse.replayed': recordEventSuccessUnitOutcomesCallableResponseReplayed,
     'recordEventSuccessUnitOutcomesCallableResponse.revision': recordEventSuccessUnitOutcomesCallableResponseRevision,
     'recordEventSuccessUnitOutcomesCallableResponse.standingCount': recordEventSuccessUnitOutcomesCallableResponseStandingCount,
-    'recordOrganizerAnalyticsEventCallablePayload.clubId': recordOrganizerAnalyticsEventCallablePayloadClubId,
     'recordOrganizerAnalyticsEventCallablePayload.eventId': recordOrganizerAnalyticsEventCallablePayloadEventId,
     'recordOrganizerAnalyticsEventCallablePayload.eventName': recordOrganizerAnalyticsEventCallablePayloadEventName,
     'recordOrganizerAnalyticsEventCallablePayload.linkId': recordOrganizerAnalyticsEventCallablePayloadLinkId,
@@ -200001,8 +195251,8 @@ abstract final class CatchContractConstraints {
     'registerSalesPartnerCallablePayload.displayName': registerSalesPartnerCallablePayloadDisplayName,
     'registerSalesPartnerCallablePayload.requestId': registerSalesPartnerCallablePayloadRequestId,
     'registerSalesPartnerCallablePayload.termsVersion': registerSalesPartnerCallablePayloadTermsVersion,
-    'removeClubHostCallablePayload.clubId': removeClubHostCallablePayloadClubId,
-    'removeClubHostCallablePayload.uid': removeClubHostCallablePayloadUid,
+    'removeOrganizerHostCallablePayload.organizerId': removeOrganizerHostCallablePayloadOrganizerId,
+    'removeOrganizerHostCallablePayload.uid': removeOrganizerHostCallablePayloadUid,
     'removeOrganizerManagerCallablePayload.organizerId': removeOrganizerManagerCallablePayloadOrganizerId,
     'removeOrganizerManagerCallablePayload.uid': removeOrganizerManagerCallablePayloadUid,
     'repairEventAssistanceDeliveryCallablePayload.command.context.clockId': repairEventAssistanceDeliveryCallablePayloadCommandContextClockId,
@@ -200043,16 +195293,6 @@ abstract final class CatchContractConstraints {
     'reportUserCallablePayload.reasonCode': reportUserCallablePayloadReasonCode,
     'reportUserCallablePayload.source': reportUserCallablePayloadSource,
     'reportUserCallablePayload.targetUserId': reportUserCallablePayloadTargetUserId,
-    'requestClubClaimCallablePayload.businessEmail': requestClubClaimCallablePayloadBusinessEmail,
-    'requestClubClaimCallablePayload.businessPhone': requestClubClaimCallablePayloadBusinessPhone,
-    'requestClubClaimCallablePayload.clubId': requestClubClaimCallablePayloadClubId,
-    'requestClubClaimCallablePayload.message': requestClubClaimCallablePayloadMessage,
-    'requestClubClaimCallablePayload.proofUrls': requestClubClaimCallablePayloadProofUrls,
-    'requestClubClaimCallablePayload.proofUrls.items': requestClubClaimCallablePayloadProofUrlsItems,
-    'requestClubClaimCallablePayload.requesterName': requestClubClaimCallablePayloadRequesterName,
-    'requestClubClaimCallablePayload.requesterRole': requestClubClaimCallablePayloadRequesterRole,
-    'requestClubClaimCallableResponse.requestId': requestClubClaimCallableResponseRequestId,
-    'requestClubClaimCallableResponse.status': requestClubClaimCallableResponseStatus,
     'requestOrganizerClaimCallablePayload.businessEmail': requestOrganizerClaimCallablePayloadBusinessEmail,
     'requestOrganizerClaimCallablePayload.businessPhone': requestOrganizerClaimCallablePayloadBusinessPhone,
     'requestOrganizerClaimCallablePayload.message': requestOrganizerClaimCallablePayloadMessage,
@@ -201659,8 +196899,6 @@ abstract final class CatchContractConstraints {
     'sendOrganizerWhatsappTestCallablePayload.templateId': sendOrganizerWhatsappTestCallablePayloadTemplateId,
     'sendOrganizerWhatsappTestCallablePayload.templateVariables': sendOrganizerWhatsappTestCallablePayloadTemplateVariables,
     'sendOrganizerWhatsappTestCallablePayload.toE164': sendOrganizerWhatsappTestCallablePayloadToE164,
-    'setClubNotificationPreferenceCallablePayload.clubId': setClubNotificationPreferenceCallablePayloadClubId,
-    'setClubNotificationPreferenceCallablePayload.enabled': setClubNotificationPreferenceCallablePayloadEnabled,
     'setCrossPathsEventConsentCallablePayload.enabled': setCrossPathsEventConsentCallablePayloadEnabled,
     'setCrossPathsEventConsentCallablePayload.eventId': setCrossPathsEventConsentCallablePayloadEventId,
     'setCrossPathsEventConsentCallablePayload.source': setCrossPathsEventConsentCallablePayloadSource,
@@ -201854,9 +197092,6 @@ abstract final class CatchContractConstraints {
     'setProgramTravelReadinessCallablePayload.programId': setProgramTravelReadinessCallablePayloadProgramId,
     'setReviewResponseCallablePayload.message': setReviewResponseCallablePayloadMessage,
     'setReviewResponseCallablePayload.reviewId': setReviewResponseCallablePayloadReviewId,
-    'startClubHostConversationCallablePayload.clubId': startClubHostConversationCallablePayloadClubId,
-    'startClubHostConversationCallablePayload.eventId': startClubHostConversationCallablePayloadEventId,
-    'startClubHostConversationCallablePayload.hostUid': startClubHostConversationCallablePayloadHostUid,
     'startEventSuccessFirstHelloMissionCallablePayload.eventId': startEventSuccessFirstHelloMissionCallablePayloadEventId,
     'startEventSuccessFirstHelloMissionCallablePayload.venueSessionToken': startEventSuccessFirstHelloMissionCallablePayloadVenueSessionToken,
     'startOrganizerClaimVerificationCallablePayload.method': startOrganizerClaimVerificationCallablePayloadMethod,
@@ -201874,6 +197109,9 @@ abstract final class CatchContractConstraints {
     'startOrganizerConversationCallablePayload.eventId': startOrganizerConversationCallablePayloadEventId,
     'startOrganizerConversationCallablePayload.hostUid': startOrganizerConversationCallablePayloadHostUid,
     'startOrganizerConversationCallablePayload.organizerId': startOrganizerConversationCallablePayloadOrganizerId,
+    'startOrganizerHostConversationCallablePayload.eventId': startOrganizerHostConversationCallablePayloadEventId,
+    'startOrganizerHostConversationCallablePayload.hostUid': startOrganizerHostConversationCallablePayloadHostUid,
+    'startOrganizerHostConversationCallablePayload.organizerId': startOrganizerHostConversationCallablePayloadOrganizerId,
     'stripeCheckoutSessionCallableResponse.amountMinor': stripeCheckoutSessionCallableResponseAmountMinor,
     'stripeCheckoutSessionCallableResponse.checkoutUrl': stripeCheckoutSessionCallableResponseCheckoutUrl,
     'stripeCheckoutSessionCallableResponse.currency': stripeCheckoutSessionCallableResponseCurrency,
@@ -202165,8 +197403,6 @@ abstract final class CatchContractConstraints {
     'syncOrganizerProviderEventCallableResponse.status': syncOrganizerProviderEventCallableResponseStatus,
     'syncOrganizerProviderEventCallableResponse.truncated': syncOrganizerProviderEventCallableResponseTruncated,
     'syncOrganizerProviderEventCallableResponse.updatedCount': syncOrganizerProviderEventCallableResponseUpdatedCount,
-    'transferClubOwnershipCallablePayload.clubId': transferClubOwnershipCallablePayloadClubId,
-    'transferClubOwnershipCallablePayload.uid': transferClubOwnershipCallablePayloadUid,
     'transferEventAssistanceGroupCallablePayload.command.context.clockId': transferEventAssistanceGroupCallablePayloadCommandContextClockId,
     'transferEventAssistanceGroupCallablePayload.command.context.eventId': transferEventAssistanceGroupCallablePayloadCommandContextEventId,
     'transferEventAssistanceGroupCallablePayload.command.context.mode': transferEventAssistanceGroupCallablePayloadCommandContextMode,
@@ -202308,97 +197544,6 @@ abstract final class CatchContractConstraints {
     'unmergeOrganizerContactsCallablePayload.idempotencyKey': unmergeOrganizerContactsCallablePayloadIdempotencyKey,
     'unmergeOrganizerContactsCallablePayload.mergeReceiptId': unmergeOrganizerContactsCallablePayloadMergeReceiptId,
     'unmergeOrganizerContactsCallablePayload.organizerId': unmergeOrganizerContactsCallablePayloadOrganizerId,
-    'updateClubPatch.area': updateClubPatchArea,
-    'updateClubPatch.clubPhotos': updateClubPatchClubPhotos,
-    'updateClubPatch.clubPhotos.items.createdAt._nanoseconds': updateClubPatchClubPhotosItemsCreatedAtNanoseconds,
-    'updateClubPatch.clubPhotos.items.createdAt._seconds': updateClubPatchClubPhotosItemsCreatedAtSeconds,
-    'updateClubPatch.clubPhotos.items.id': updateClubPatchClubPhotosItemsId,
-    'updateClubPatch.clubPhotos.items.moderation.reason': updateClubPatchClubPhotosItemsModerationReason,
-    'updateClubPatch.clubPhotos.items.moderation.reviewedAt._nanoseconds': updateClubPatchClubPhotosItemsModerationReviewedAtNanoseconds,
-    'updateClubPatch.clubPhotos.items.moderation.reviewedAt._seconds': updateClubPatchClubPhotosItemsModerationReviewedAtSeconds,
-    'updateClubPatch.clubPhotos.items.moderation.status': updateClubPatchClubPhotosItemsModerationStatus,
-    'updateClubPatch.clubPhotos.items.position': updateClubPatchClubPhotosItemsPosition,
-    'updateClubPatch.clubPhotos.items.storagePath': updateClubPatchClubPhotosItemsStoragePath,
-    'updateClubPatch.clubPhotos.items.thumbnailStoragePath': updateClubPatchClubPhotosItemsThumbnailStoragePath,
-    'updateClubPatch.clubPhotos.items.thumbnailUrl': updateClubPatchClubPhotosItemsThumbnailUrl,
-    'updateClubPatch.clubPhotos.items.updatedAt._nanoseconds': updateClubPatchClubPhotosItemsUpdatedAtNanoseconds,
-    'updateClubPatch.clubPhotos.items.updatedAt._seconds': updateClubPatchClubPhotosItemsUpdatedAtSeconds,
-    'updateClubPatch.clubPhotos.items.url': updateClubPatchClubPhotosItemsUrl,
-    'updateClubPatch.description': updateClubPatchDescription,
-    'updateClubPatch.email': updateClubPatchEmail,
-    'updateClubPatch.hostAvatarUrl': updateClubPatchHostAvatarUrl,
-    'updateClubPatch.hostDefaults.eventPolicy.admissionPreset': updateClubPatchHostDefaultsEventPolicyAdmissionPreset,
-    'updateClubPatch.hostDefaults.eventPolicy.cancellationPolicyId': updateClubPatchHostDefaultsEventPolicyCancellationPolicyId,
-    'updateClubPatch.hostDefaults.eventPolicy.crossPathsPairCapacity': updateClubPatchHostDefaultsEventPolicyCrossPathsPairCapacity,
-    'updateClubPatch.hostDefaults.eventPolicy.dynamicPricingEnabled': updateClubPatchHostDefaultsEventPolicyDynamicPricingEnabled,
-    'updateClubPatch.hostDefaults.eventPolicy.dynamicPricingMaxInPaise': updateClubPatchHostDefaultsEventPolicyDynamicPricingMaxInPaise,
-    'updateClubPatch.hostDefaults.eventPolicy.dynamicPricingStepInPaise': updateClubPatchHostDefaultsEventPolicyDynamicPricingStepInPaise,
-    'updateClubPatch.hostDefaults.eventPolicy.maxAge': updateClubPatchHostDefaultsEventPolicyMaxAge,
-    'updateClubPatch.hostDefaults.eventPolicy.maxMen': updateClubPatchHostDefaultsEventPolicyMaxMen,
-    'updateClubPatch.hostDefaults.eventPolicy.maxWomen': updateClubPatchHostDefaultsEventPolicyMaxWomen,
-    'updateClubPatch.hostDefaults.eventPolicy.minAge': updateClubPatchHostDefaultsEventPolicyMinAge,
-    'updateClubPatch.hostDefaults.eventSuccess.attendeePrompt': updateClubPatchHostDefaultsEventSuccessAttendeePrompt,
-    'updateClubPatch.hostDefaults.eventSuccess.compatibilityAffectsRanking': updateClubPatchHostDefaultsEventSuccessCompatibilityAffectsRanking,
-    'updateClubPatch.hostDefaults.eventSuccess.contextualOpenersEnabled': updateClubPatchHostDefaultsEventSuccessContextualOpenersEnabled,
-    'updateClubPatch.hostDefaults.eventSuccess.enabled': updateClubPatchHostDefaultsEventSuccessEnabled,
-    'updateClubPatch.hostDefaults.eventSuccess.hostGoal': updateClubPatchHostDefaultsEventSuccessHostGoal,
-    'updateClubPatch.hostDefaults.eventSuccess.layoutId': updateClubPatchHostDefaultsEventSuccessLayoutId,
-    'updateClubPatch.hostDefaults.eventSuccess.moduleSelectionConfigured': updateClubPatchHostDefaultsEventSuccessModuleSelectionConfigured,
-    'updateClubPatch.hostDefaults.eventSuccess.playbookId': updateClubPatchHostDefaultsEventSuccessPlaybookId,
-    'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions': updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestions,
-    'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.id': updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsId,
-    'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options': updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptions,
-    'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options.items.id': updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptionsItemsId,
-    'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.options.items.label': updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel,
-    'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customQuestions.items.prompt': updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomQuestionsItemsPrompt,
-    'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.customTitle': updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigCustomTitle,
-    'updateClubPatch.hostDefaults.eventSuccess.questionnaireConfig.templateId': updateClubPatchHostDefaultsEventSuccessQuestionnaireConfigTemplateId,
-    'updateClubPatch.hostDefaults.eventSuccess.selectedModuleIds': updateClubPatchHostDefaultsEventSuccessSelectedModuleIds,
-    'updateClubPatch.hostDefaults.eventSuccess.selectedModuleIds.items': updateClubPatchHostDefaultsEventSuccessSelectedModuleIdsItems,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.balanceActivityAttributes': updateClubPatchHostDefaultsEventSuccessStructureConfigBalanceActivityAttributes,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.balanceActivityAttributes.items': updateClubPatchHostDefaultsEventSuccessStructureConfigBalanceActivityAttributesItems,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes': updateClubPatchHostDefaultsEventSuccessStructureConfigClusterActivityAttributes,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.clusterActivityAttributes.items': updateClubPatchHostDefaultsEventSuccessStructureConfigClusterActivityAttributesItems,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': updateClubPatchHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.concurrentUnits': updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacityConcurrentUnits,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.resourceLabelId': updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacityResourceLabelId,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.resourceCapacity.seatsPerUnit': updateClubPatchHostDefaultsEventSuccessStructureConfigResourceCapacitySeatsPerUnit,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': updateClubPatchHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': updateClubPatchHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': updateClubPatchHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.topology': updateClubPatchHostDefaultsEventSuccessStructureConfigTopology,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.unitCount': updateClubPatchHostDefaultsEventSuccessStructureConfigUnitCount,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.unitKind': updateClubPatchHostDefaultsEventSuccessStructureConfigUnitKind,
-    'updateClubPatch.hostDefaults.eventSuccess.structureConfig.unitSize': updateClubPatchHostDefaultsEventSuccessStructureConfigUnitSize,
-    'updateClubPatch.hostDefaults.eventSuccess.wingmanRequestsEnabled': updateClubPatchHostDefaultsEventSuccessWingmanRequestsEnabled,
-    'updateClubPatch.hostDefaults.eventSuccessByActivityKind': updateClubPatchHostDefaultsEventSuccessByActivityKind,
-    'updateClubPatch.hostDefaults.primaryActivityKind': updateClubPatchHostDefaultsPrimaryActivityKind,
-    'updateClubPatch.hostDefaults.supportedActivityKinds': updateClubPatchHostDefaultsSupportedActivityKinds,
-    'updateClubPatch.hostDefaults.supportedActivityKinds.items': updateClubPatchHostDefaultsSupportedActivityKindsItems,
-    'updateClubPatch.hostName': updateClubPatchHostName,
-    'updateClubPatch.imageUrl': updateClubPatchImageUrl,
-    'updateClubPatch.instagramHandle': updateClubPatchInstagramHandle,
-    'updateClubPatch.location': updateClubPatchLocation,
-    'updateClubPatch.logoPhoto.createdAt._nanoseconds': updateClubPatchLogoPhotoCreatedAtNanoseconds,
-    'updateClubPatch.logoPhoto.createdAt._seconds': updateClubPatchLogoPhotoCreatedAtSeconds,
-    'updateClubPatch.logoPhoto.id': updateClubPatchLogoPhotoId,
-    'updateClubPatch.logoPhoto.moderation.reason': updateClubPatchLogoPhotoModerationReason,
-    'updateClubPatch.logoPhoto.moderation.reviewedAt._nanoseconds': updateClubPatchLogoPhotoModerationReviewedAtNanoseconds,
-    'updateClubPatch.logoPhoto.moderation.reviewedAt._seconds': updateClubPatchLogoPhotoModerationReviewedAtSeconds,
-    'updateClubPatch.logoPhoto.moderation.status': updateClubPatchLogoPhotoModerationStatus,
-    'updateClubPatch.logoPhoto.position': updateClubPatchLogoPhotoPosition,
-    'updateClubPatch.logoPhoto.storagePath': updateClubPatchLogoPhotoStoragePath,
-    'updateClubPatch.logoPhoto.thumbnailStoragePath': updateClubPatchLogoPhotoThumbnailStoragePath,
-    'updateClubPatch.logoPhoto.thumbnailUrl': updateClubPatchLogoPhotoThumbnailUrl,
-    'updateClubPatch.logoPhoto.updatedAt._nanoseconds': updateClubPatchLogoPhotoUpdatedAtNanoseconds,
-    'updateClubPatch.logoPhoto.updatedAt._seconds': updateClubPatchLogoPhotoUpdatedAtSeconds,
-    'updateClubPatch.logoPhoto.url': updateClubPatchLogoPhotoUrl,
-    'updateClubPatch.name': updateClubPatchName,
-    'updateClubPatch.organizerType': updateClubPatchOrganizerType,
-    'updateClubPatch.phoneNumber': updateClubPatchPhoneNumber,
-    'updateClubPatch.profileImageUrl': updateClubPatchProfileImageUrl,
-    'updateClubPatch.tags': updateClubPatchTags,
-    'updateClubPatch.tags.items': updateClubPatchTagsItems,
     'updateEventCallablePayload.eventId': updateEventCallablePayloadEventId,
     'updateEventCallablePayload.expectedSetupRevision': updateEventCallablePayloadExpectedSetupRevision,
     'updateEventCallablePayload.fields.capacityLimit': updateEventCallablePayloadFieldsCapacityLimit,
@@ -203100,11 +198245,11 @@ abstract final class CatchContractConstraints {
     'updateUserProfilePatch.minAgePreference': updateUserProfilePatchMinAgePreference,
     'updateUserProfilePatch.name': updateUserProfilePatchName,
     'updateUserProfilePatch.occupation': updateUserProfilePatchOccupation,
-    'updateUserProfilePatch.prefsClubUpdates': updateUserProfilePatchPrefsClubUpdates,
     'updateUserProfilePatch.prefsCrossPathsInvitations': updateUserProfilePatchPrefsCrossPathsInvitations,
     'updateUserProfilePatch.prefsEventReminders': updateUserProfilePatchPrefsEventReminders,
     'updateUserProfilePatch.prefsMessages': updateUserProfilePatchPrefsMessages,
     'updateUserProfilePatch.prefsNewCatches': updateUserProfilePatchPrefsNewCatches,
+    'updateUserProfilePatch.prefsOrganizerUpdates': updateUserProfilePatchPrefsOrganizerUpdates,
     'updateUserProfilePatch.prefsRunStatusUpdates': updateUserProfilePatchPrefsRunStatusUpdates,
     'updateUserProfilePatch.prefsShowInCrossPaths': updateUserProfilePatchPrefsShowInCrossPaths,
     'updateUserProfilePatch.prefsShowOnMap': updateUserProfilePatchPrefsShowOnMap,
@@ -203460,7 +198605,6 @@ abstract final class CatchContractConstraints {
     'userAnalyticsQueryCallablePayload.rangePreset': userAnalyticsQueryCallablePayloadRangePreset,
     'userAnalyticsQueryCallablePayload.startDate': userAnalyticsQueryCallablePayloadStartDate,
     'userAnalyticsQueryCallablePayload.userId': userAnalyticsQueryCallablePayloadUserId,
-    'userEventScheduleLockDocument.clubId': userEventScheduleLockDocumentClubId,
     'userEventScheduleLockDocument.demoOps': userEventScheduleLockDocumentDemoOps,
     'userEventScheduleLockDocument.demoOpsCommand': userEventScheduleLockDocumentDemoOpsCommand,
     'userEventScheduleLockDocument.demoOpsId': userEventScheduleLockDocumentDemoOpsId,
@@ -203518,11 +198662,11 @@ abstract final class CatchContractConstraints {
     'userProfileDocument.name': userProfileDocumentName,
     'userProfileDocument.occupation': userProfileDocumentOccupation,
     'userProfileDocument.phoneNumber': userProfileDocumentPhoneNumber,
-    'userProfileDocument.prefsClubUpdates': userProfileDocumentPrefsClubUpdates,
     'userProfileDocument.prefsCrossPathsInvitations': userProfileDocumentPrefsCrossPathsInvitations,
     'userProfileDocument.prefsEventReminders': userProfileDocumentPrefsEventReminders,
     'userProfileDocument.prefsMessages': userProfileDocumentPrefsMessages,
     'userProfileDocument.prefsNewCatches': userProfileDocumentPrefsNewCatches,
+    'userProfileDocument.prefsOrganizerUpdates': userProfileDocumentPrefsOrganizerUpdates,
     'userProfileDocument.prefsRunStatusUpdates': userProfileDocumentPrefsRunStatusUpdates,
     'userProfileDocument.prefsShowInCrossPaths': userProfileDocumentPrefsShowInCrossPaths,
     'userProfileDocument.prefsShowOnMap': userProfileDocumentPrefsShowOnMap,

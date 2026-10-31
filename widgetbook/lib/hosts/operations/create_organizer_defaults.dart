@@ -18,7 +18,7 @@ import 'preview.dart';
 )
 Widget organizerHostDefaultsStepCatalogStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'ClubHostDefaultsStep',
+    title: 'OrganizerHostDefaultsStep',
     contractId: 'component.host.club.host_defaults_step',
     children: [
       WidgetbookPageStateCard(
@@ -38,7 +38,7 @@ Widget organizerHostDefaultsStepCatalogStates(BuildContext context) {
 )
 Widget organizerPolicyDefaultsCardCatalogStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'ClubPolicyDefaultsCard',
+    title: 'OrganizerPolicyDefaultsCard',
     contractId: 'component.host.club.policy_defaults_card',
     children: [
       WidgetbookPageStateCard(
@@ -58,7 +58,7 @@ Widget organizerPolicyDefaultsCardCatalogStates(BuildContext context) {
 )
 Widget organizerEventSuccessDefaultsStepCatalogStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'ClubEventSuccessDefaultsStep',
+    title: 'OrganizerEventSuccessDefaultsStep',
     contractId: 'component.host.club.event_success_defaults_step',
     children: [
       WidgetbookPageStateCard(
@@ -78,7 +78,7 @@ Widget organizerEventSuccessDefaultsStepCatalogStates(BuildContext context) {
 )
 Widget createOrganizerStepHeaderCatalogStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'CreateClubStepHeader',
+    title: 'CreateOrganizerStepHeader',
     contractId: 'component.host.club.step_header',
     children: [
       WidgetbookPageStateCard(

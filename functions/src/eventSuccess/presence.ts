@@ -183,8 +183,7 @@ export async function heartbeatEventSuccessPresenceHandler(
     const current = await transaction.get(presenceRef);
     transaction.set(presenceRef, {
       eventId: payload.eventId,
-      clubId: event.clubId,
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       uid,
       surface: payload.surface,
       heartbeatAt: now,

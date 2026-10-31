@@ -62,7 +62,7 @@ export async function recordOrganizerAnalyticsEventHandler(
   );
   if (!isPublicId(payload.organizerId) ||
       (payload.eventId && !isPublicId(payload.eventId)) ||
-      (payload.clubId && payload.clubId !== payload.organizerId)) {
+      (payload.organizerId && payload.organizerId !== payload.organizerId)) {
     throw new HttpsError("invalid-argument", "Invalid analytics scope.");
   }
   const clientIp = clientIpFromRequest(request);
@@ -174,12 +174,12 @@ async function assertOrganizerScope(
       throw new HttpsError("not-found", "Event not found.");
     }
     const ownerId = eventSnapshot.exists ?
-      snapshot.get("organizerId") ?? snapshot.get("clubId") :
+      snapshot.get("organizerId") ?? snapshot.get("organizerId") :
       snapshot.get("canonicalHostId");
     if (ownerId !== organizerId ||
         (eventSnapshot.exists && snapshot.get("organizerId") &&
-         snapshot.get("clubId") &&
-         snapshot.get("organizerId") !== snapshot.get("clubId"))) {
+         snapshot.get("organizerId") &&
+         snapshot.get("organizerId") !== snapshot.get("organizerId"))) {
       throw new HttpsError(
         "invalid-argument", "Event does not belong to that organizer."
       );
@@ -226,10 +226,9 @@ function normalizePayload(data: unknown): unknown {
     return data;
   }
   const input = data as Record<string, unknown>;
-  const organizerId = input.organizerId ?? input.clubId;
+  const organizerId = input.organizerId;
   return {
     ...input,
-    clubId: trimmedString(input.clubId),
     organizerId: trimmedString(organizerId),
     eventId: nullableTrimmedString(input.eventId),
     pagePath: trimmedString(input.pagePath),

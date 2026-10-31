@@ -138,12 +138,12 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
     final organizer = buildOrganizer(id: 'today-club', ownerUserId: _hostUid);
     final hero = buildEvent(
       id: 'hero-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 6, 15, 17),
     );
     final later = buildEvent(
       id: 'later-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 6, 16, 20),
       waitlistedCount: 3,
     );
@@ -193,7 +193,7 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
     final organizer = buildOrganizer(id: 'live-club', ownerUserId: _hostUid);
     final live = buildEvent(
       id: 'live-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 6, 15, 11),
       endTime: DateTime(2026, 6, 15, 13),
     );
@@ -329,7 +329,7 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
     );
     final event = buildEvent(
       id: 'large-text-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 6, 15, 17),
       waitlistedCount: 23,
     );
@@ -412,12 +412,12 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
     );
     final hero = buildEvent(
       id: 'wide-hero-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 6, 15, 17),
     );
     final later = buildEvent(
       id: 'wide-later-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 6, 16, 20),
       waitlistedCount: 3,
     );
@@ -542,7 +542,7 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
     );
     final past = buildEvent(
       id: 'history-only-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 5, 27, 9),
       endTime: DateTime(2026, 5, 27, 10),
     );
@@ -583,31 +583,31 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
     final organizer = buildOrganizer(id: 'club-host', ownerUserId: _hostUid);
     final past = buildEvent(
       id: 'past-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 6, 14, 9),
       endTime: DateTime(2026, 6, 14, 10),
     );
     final olderPast = buildEvent(
       id: 'older-past-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 5, 27, 9),
       endTime: DateTime(2026, 5, 27, 10),
     );
     final oldestPast = buildEvent(
       id: 'oldest-past-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 5, 18, 9),
       endTime: DateTime(2026, 5, 18, 10),
     );
     final live = buildEvent(
       id: 'live-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 6, 15, 11),
       endTime: DateTime(2026, 6, 15, 13),
     );
     final upcoming = buildEvent(
       id: 'upcoming-event',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime(2026, 6, 16, 18),
     );
 
@@ -790,12 +790,12 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
     );
     final ownedEvent = buildEvent(
       id: 'owned-event',
-      clubId: ownedOrganizer.id,
+      organizerId: ownedOrganizer.id,
       startTime: DateTime(2026, 6, 15, 17),
     );
     final hostedEvent = buildEvent(
       id: 'hosted-event',
-      clubId: cohostOrganizer.id,
+      organizerId: cohostOrganizer.id,
       startTime: DateTime(2026, 6, 16, 20),
     );
 

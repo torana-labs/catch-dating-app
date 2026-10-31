@@ -154,7 +154,7 @@ void main() {
           '/organizers/club-1/events/event-1',
         );
         expect(destination?.pathParameters, {
-          'clubId': fixture.event.clubId,
+          'organizerId': fixture.event.organizerId,
           'eventId': fixture.event.id,
         });
         expect(destination?.extra, same(fixture.event));

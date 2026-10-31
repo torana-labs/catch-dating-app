@@ -63,8 +63,8 @@ export const adminGetOverviewCallableResponseSchema: Record<string, unknown> = {
         "moderationFlags",
         "eventSafetyReports",
         "accessApplications",
-        "clubClaimRequests",
-        "clubIndexReviews",
+        "organizerClaimRequests",
+        "organizerIndexReviews",
         "paymentIssues"
       ],
       "properties": {
@@ -276,7 +276,7 @@ export const adminGetOverviewCallableResponseSchema: Record<string, unknown> = {
             }
           }
         },
-        "clubClaimRequests": {
+        "organizerClaimRequests": {
           "type": "array",
           "items": {
             "type": "object",
@@ -328,7 +328,7 @@ export const adminGetOverviewCallableResponseSchema: Record<string, unknown> = {
             }
           }
         },
-        "clubIndexReviews": {
+        "organizerIndexReviews": {
           "type": "array",
           "items": {
             "type": "object",

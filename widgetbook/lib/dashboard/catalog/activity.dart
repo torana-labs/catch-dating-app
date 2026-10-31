@@ -162,7 +162,7 @@ List<NotificationDayGroup> _notificationDayGroups() {
       label: 'Earlier',
       rows: [
         NotificationRowDisplay(
-          type: ActivityNotificationType.clubUpdate,
+          type: ActivityNotificationType.organizerUpdate,
           title: 'New club update',
           subtitle: 'Sea Face Social added a monsoon breakfast run.',
           createdAt: DashboardSurfaceFixtures.now.subtract(

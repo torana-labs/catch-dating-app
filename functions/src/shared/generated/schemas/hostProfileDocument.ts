@@ -62,7 +62,7 @@ export const hostProfileDocumentSchema: Record<string, unknown> = {
     "verified": {
       "type": "boolean"
     },
-    "linkedClubIds": {
+    "linkedOrganizerIds": {
       "type": "array",
       "maxItems": 20,
       "uniqueItems": true,

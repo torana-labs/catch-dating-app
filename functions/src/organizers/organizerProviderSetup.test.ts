@@ -89,7 +89,6 @@ test("returns host-safe Luma event choices with exact timestamps", () => {
 test("provider check-in confirms attendance and increments revision", () => {
   const document = lumaAttendeeDocument({
     eventId: "event-1",
-    clubId: "org-1",
     organizerId: "org-1",
     connectionId: "connection-1",
     guest: guest({checkedInAt: "2026-08-12T10:00:00.000Z"}),
@@ -108,7 +107,6 @@ test("provider absence never erases a Catch manual check-in", () => {
   );
   const document = lumaAttendeeDocument({
     eventId: "event-1",
-    clubId: "org-1",
     organizerId: "org-1",
     connectionId: "connection-1",
     guest: guest({checkedInAt: null}),
@@ -132,7 +130,6 @@ test("provider absence never erases a Catch manual check-in", () => {
 test("provider enriches but never relabels a Catch booking", () => {
   const document = lumaAttendeeDocument({
     eventId: "event-1",
-    clubId: "org-1",
     organizerId: "org-1",
     connectionId: "connection-1",
     guest: guest({displayName: "New name", ticketType: "VIP"}),
@@ -164,7 +161,6 @@ function attendee(
 ): EventAttendeeDocument {
   return {
     eventId: "event-1",
-    clubId: "org-1",
     organizerId: "org-1",
     displayName: "Asha Shah",
     searchName: "asha shah",

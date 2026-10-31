@@ -693,7 +693,7 @@ async function prepareVerifiedUidAttendeeEnrollmentInternal(params: Parameters<
   const phoneAlias = phoneAliasSnap.data();
   const uidAlias = uidAliasSnap.data();
   const proof = proofSnap.data();
-  if (!event || event.clubId !== organizerId ||
+  if (!event || event.organizerId !== organizerId ||
       event.organizerId !== undefined && event.organizerId !== organizerId ||
       event.status !== "active" || !ledger || ledger.eventId !== eventId ||
       ledger.state !== "ready" ||

@@ -36,7 +36,7 @@ final _now = DateTime(2026, 6, 15, 12);
 final _organizer = buildOrganizer(id: _organizerId, ownerUserId: _actor);
 final _draft = EventDraft(
   id: 'draft-1',
-  clubId: _organizerId,
+  organizerId: _organizerId,
   savedAt: DateTime(2026, 6, 14, 10),
   customActivityLabel: 'Quiz night',
 );
@@ -112,7 +112,7 @@ void main() {
       fixture.events.active.add(
         buildEvent(
           id: 'new-published',
-          clubId: _organizerId,
+          organizerId: _organizerId,
           name: 'Harbour sunrise run',
           startTime: _now.add(const Duration(days: 3)),
         ),
@@ -266,7 +266,7 @@ class _Fixture {
           eventRepositoryProvider.overrideWithValue(events),
           privateEventSetupTimelineRepositoryProvider.overrideWithValue(setups),
           organizerEventDraftsProvider(
-            clubId: _organizerId,
+            organizerId: _organizerId,
           ).overrideWith((_) async => [_draft]),
           programEventsControllerProvider.overrideWith((ref, _) {
             final controller = ProgramEventsController(
@@ -331,7 +331,7 @@ class _Events extends Fake implements EventRepository {
     items: [
       buildEvent(
         id: 'past-event',
-        clubId: organizerId,
+        organizerId: organizerId,
         startTime: _now.subtract(const Duration(days: 5)),
         endTime: _now.subtract(const Duration(days: 5, hours: -2)),
       ),

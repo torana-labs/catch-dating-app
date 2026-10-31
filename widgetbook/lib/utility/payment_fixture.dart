@@ -78,7 +78,7 @@ class WidgetbookPaymentScope extends StatelessWidget {
             EventsByIdQuery(eventIds),
           ).overrideWith((ref) => eventsStream ?? Stream.value(batchedEvents)),
         watchOrganizerProvider(
-          widgetbookUtilityEvent.clubId,
+          widgetbookUtilityEvent.organizerId,
         ).overrideWith((ref) => Stream<Organizer?>.value(null)),
         ...eventOverrides,
         ...paymentOverrides,

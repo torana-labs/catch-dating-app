@@ -404,7 +404,7 @@ void main() {
               event.id,
             ).overrideWith((ref) => Stream.value(event)),
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            fetchOrganizerProvider(event.clubId).overrideWith(
+            fetchOrganizerProvider(event.organizerId).overrideWith(
               (ref) async => buildOrganizer(hostUserId: 'host-77'),
             ),
             watchReviewsForEventProvider(
@@ -419,7 +419,7 @@ void main() {
               user.uid,
             ).overrideWith((ref) => Stream.value(null)),
             watchOrganizerMembershipProvider(
-              event.clubId,
+              event.organizerId,
               user.uid,
             ).overrideWith((ref) => Stream.value(null)),
           ],
@@ -442,7 +442,7 @@ void main() {
           watchEventParticipationProvider(event.id, user.uid).future,
         );
         await container.read(
-          watchOrganizerMembershipProvider(event.clubId, user.uid).future,
+          watchOrganizerMembershipProvider(event.organizerId, user.uid).future,
         );
         await container.pump();
         await container.pump();
@@ -588,7 +588,7 @@ EventParticipation _participation({
   return EventParticipation(
     id: eventParticipationId(eventId: eventId, uid: uid),
     eventId: eventId,
-    clubId: 'club-1',
+    organizerId: 'club-1',
     uid: uid,
     status: status,
     createdAt: now,

@@ -1119,7 +1119,7 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
               'type': 'string',
               'enum': <Object?>[
                 'unclaimedScraped',
-                'appCreatedClub',
+                'appCreatedOrganizer',
               ],
             },
             'dataOrigin': <String, Object?>{

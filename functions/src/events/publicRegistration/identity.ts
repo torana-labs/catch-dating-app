@@ -95,7 +95,7 @@ export async function preparePublicGuestIdentity(input: {
       !["registered", "checkedIn"].includes(existing.status) ||
       participation?.eventId !== eventId ||
       participation?.uid !== uid ||
-      (participation?.organizerId ?? participation?.clubId) !==
+      (participation?.organizerId) !==
         organizerId ||
       !["signedUp", "attended"].includes(participation?.status) ||
       resolved?.key !== prepared.identity.key ||

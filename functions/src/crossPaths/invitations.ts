@@ -584,7 +584,7 @@ export async function respondCrossPathsInvitationHandler(
       ));
       const seatHold = await preparePairSeatTransition({db, tx, event,
         eventId: invitation.eventId,
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
         requesterUid: invitation.senderUid, holdId,
         expiresAtMillis: holdExpiresAt.toMillis(), nowMillis: now.toMillis(),
         operation: "temporaryHold",
@@ -609,7 +609,7 @@ export async function respondCrossPathsInvitationHandler(
       const hold: CrossPathsPairHoldDocument = {
         eventId: invitation.eventId,
         invitationId: data.invitationId,
-        organizerId: event.organizerId ?? event.clubId,
+        organizerId: event.organizerId,
         requesterUid: invitation.senderUid,
         attendeeUid: invitation.recipientUid,
         participantIds: [invitation.senderUid, invitation.recipientUid],

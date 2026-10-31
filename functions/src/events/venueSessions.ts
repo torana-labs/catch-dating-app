@@ -146,7 +146,7 @@ export async function createEventVenueSessionHandler(
   const claims: EventVenueSessionClaims = {
     version: 1,
     eventId: payload.eventId,
-    organizerId: event.organizerId ?? event.clubId,
+    organizerId: event.organizerId,
     sessionId,
     issuedAtMillis: now.toMillis(),
     expiresAtMillis,

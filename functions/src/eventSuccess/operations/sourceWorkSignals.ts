@@ -75,7 +75,7 @@ export function rosterEnrollmentRequests(change: AssistanceSourceChange):
   const collection = change.source.collection;
   let fields: string[];
   switch (collection) {
-  case "eventAttendees": fields = ["eventId", "organizerId", "clubId",
+  case "eventAttendees": fields = ["eventId", "organizerId",
     "status", "createdAt"]; break;
   case "eventAssistanceGuests": fields = ["context", "attendeeId",
     "episodeId", "sourceGeneration", "attendeeGeneration"]; break;
@@ -122,14 +122,14 @@ function scopeFor(collection: Collection, documentId: string,
     return readinessScope(collection, documentId, value);
   case "events":
     context = {mode: "live", eventId: documentId,
-      organizerId: value.organizerId ?? value.clubId};
+      organizerId: value.organizerId};
     attendeeId = null;
     break;
   case "eventAttendees":
   case "eventStaffGrants":
   case "eventSuccessPlans":
     context = {mode: "live", eventId: value.eventId ?? documentId,
-      organizerId: value.organizerId ?? value.clubId};
+      organizerId: value.organizerId};
     attendeeId = collection === "eventAttendees" ? documentId : null;
     break;
   case "eventAssistanceSettings":
@@ -183,15 +183,16 @@ function projection(collection: Collection, snapshot: Snapshot) {
   case "eventAssistanceRcsSubscriptions":
   case "organizerContactChannelStates": fields = readinessFields(collection)!;
     break;
-  case "events": fields = ["organizerId", "clubId", "status", "eventFormat",
+  case "events": fields = ["organizerId", "status",
+    "eventFormat",
     "startTime", "endTime", "meetingLocation", "itinerary", "eventPolicy",
     "constraints", "capacityLimit", "priceInPaise", "currency",
     "publicRegistrationEnabled"]; break;
-  case "eventAttendees": fields = ["eventId", "organizerId", "clubId",
+  case "eventAttendees": fields = ["eventId", "organizerId",
     "status", "attendanceRevision", "checkedInAt", "createdAt", "phoneE164",
     "linkedUid"];
     break;
-  case "eventSuccessPlans": fields = ["eventId", "organizerId", "clubId",
+  case "eventSuccessPlans": fields = ["eventId", "organizerId",
     "status"]; break;
   case "eventStaffGrants": fields = ["eventId", "organizerId", "uid",
     "status", "expiresAt", "groupDuties"]; break;
@@ -214,7 +215,8 @@ function projection(collection: Collection, snapshot: Snapshot) {
 
 function checkpointMemberProjection(snapshot: Snapshot) {
   if (!snapshot) return null;
-  const fields = ["eventId", "organizerId", "clubId", "status", "createdAt",
+  const fields = ["eventId", "organizerId", "status",
+    "createdAt",
     "attendanceRevision", "checkedInAt", "accountabilityRevision",
     "accountabilityResolution", "accountabilityResolvedAt",
     "accountabilityResolvedBy", "accountabilityResolvedForCheckInAt"];

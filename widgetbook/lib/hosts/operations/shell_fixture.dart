@@ -167,18 +167,18 @@ class WidgetbookHostShellScope extends StatelessWidget {
         const _WidgetbookTrackingSettingsRepository(),
       ),
     ];
-    for (final clubId in eventOrganizerIds) {
-      final organizer = organizersById[clubId];
+    for (final organizerId in eventOrganizerIds) {
+      final organizer = organizersById[organizerId];
       if (organizer != null) {
         overrides.add(
-          organizerDetailViewModelProvider(clubId).overrideWithValue(
+          organizerDetailViewModelProvider(organizerId).overrideWithValue(
             AsyncData<OrganizerDetailViewModel?>(
               OrganizerDetailViewModel(
                 organizer: organizer,
                 isHost: true,
                 isMember: false,
                 upcomingEvents:
-                    HostOperationsFixtures.eventsByOrganizer[clubId] ??
+                    HostOperationsFixtures.eventsByOrganizer[organizerId] ??
                     const [],
                 reviews: const [],
                 userProfile: uid == null ? null : HostOperationsFixtures.owner,
@@ -190,16 +190,17 @@ class WidgetbookHostShellScope extends StatelessWidget {
         );
       }
       overrides.addAll([
-        watchEventsForOrganizerProvider(clubId).overrideWith(
+        watchEventsForOrganizerProvider(organizerId).overrideWith(
           (ref) =>
-              organizerEventStreams[clubId] ??
+              organizerEventStreams[organizerId] ??
               Stream<List<Event>>.value(
-                HostOperationsFixtures.eventsByOrganizer[clubId] ?? const [],
+                HostOperationsFixtures.eventsByOrganizer[organizerId] ??
+                    const [],
               ),
         ),
         hostCrmSummaryProvider(
-          clubId,
-        ).overrideWithValue(AsyncData(widgetbookHostCrmSummary(clubId))),
+          organizerId,
+        ).overrideWithValue(AsyncData(widgetbookHostCrmSummary(organizerId))),
       ]);
     }
 
@@ -339,7 +340,7 @@ final class _NoopHostOrganizerEditActions implements HostOrganizerEditActions {
 
   @override
   Future<void> updateOrganizer({
-    required String clubId,
+    required String organizerId,
     required UpdateOrganizerPatch patch,
   }) async {}
 

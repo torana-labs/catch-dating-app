@@ -49,7 +49,7 @@ import type {OrganizerEntitlementCallableResponse} from
 import type {OrganizerEntitlementMutationCallableResponse} from
   "../../generated/contracts/organizerEntitlementMutationCallableResponse";
 import {
-  sampleClubDetails,
+  sampleOrganizerDetails,
   sampleEventDetails,
   sampleExternalEventRows,
   sampleHostAnalytics,
@@ -93,11 +93,11 @@ import {
   AdminDecideAccessApplicationResponse,
   AdminGetAccessApplicationDetailsPayload,
   AdminGetAccessApplicationDetailsResponse,
-  AdminDecideClubClaimPayload,
-  AdminDecideClubClaimResponse,
-  AdminGetClubClaimRequestDetailsPayload,
-  AdminGetClubClaimRequestDetailsResponse,
-  AdminListClubClaimRequestsResponse,
+  AdminDecideOrganizerClaimPayload,
+  AdminDecideOrganizerClaimResponse,
+  AdminGetOrganizerClaimRequestDetailsPayload,
+  AdminGetOrganizerClaimRequestDetailsResponse,
+  AdminListOrganizerClaimRequestsResponse,
   AdminDecideOrganizerIntakePayload,
   AdminDecideOrganizerIntakeResponse,
   AdminDecideOrganizerPolicyGapPayload,
@@ -118,22 +118,22 @@ import {
   AdminSetAdminUserRolesPayload,
   AdminSetAdminUserRolesResponse,
   AdminUserRoleRecord,
-  AdminClubListRow,
-  AdminGetClubDetailsPayload,
-  AdminGetClubDetailsResponse,
+  AdminOrganizerListRow,
+  AdminGetOrganizerDetailsPayload,
+  AdminGetOrganizerDetailsResponse,
   AdminListEventDetailsPayload,
   AdminListEventDetailsResponse,
   AdminListExternalEventDetailsPayload,
   AdminListExternalEventDetailsResponse,
-  AdminListClubDetailsPayload,
-  AdminListClubDetailsResponse,
+  AdminListOrganizerDetailsPayload,
+  AdminListOrganizerDetailsResponse,
   AdminOverviewResponse,
-  AdminSetClubIndexStatusPayload,
-  AdminSetClubIndexStatusResponse,
+  AdminSetOrganizerIndexStatusPayload,
+  AdminSetOrganizerIndexStatusResponse,
   AdminUpdateEventDetailsPayload,
   AdminUpdateEventDetailsResponse,
-  AdminUpdateClubDetailsPayload,
-  AdminUpdateClubDetailsResponse,
+  AdminUpdateOrganizerDetailsPayload,
+  AdminUpdateOrganizerDetailsResponse,
   HostAnalyticsQueryPayload,
   HostAnalyticsResponse,
   MarketingOpsBridge,
@@ -605,7 +605,7 @@ function sampleSafetyTriageDetails(
     eventId: kind === "eventSafetyReport" ?
       row.title.replace(/^Event\s+/u, "") :
       null,
-    clubId: extractDetailValue(detailParts, "club"),
+    organizerId: extractDetailValue(detailParts, "club"),
     source: kind === "eventSafetyReport" ? "event_success_feedback" : source,
     contextId: kind === "moderationFlag" ?
       "local-preview/moderation/context" :
@@ -618,7 +618,7 @@ function sampleSafetyTriageDetails(
     },
     sla: sampleSafetySla(row.createdAt, severity),
     evidence: sampleSafetyEvidence({
-      clubId: extractDetailValue(detailParts, "club"),
+      organizerId: extractDetailValue(detailParts, "club"),
       contextId: kind === "moderationFlag" ?
         "local-preview/moderation/context" :
         kind === "eventSafetyReport" ? "local-preview/feedback" : "local-preview/context",
@@ -902,7 +902,7 @@ function sampleSafetySlaState(
 }
 
 function sampleSafetyEvidence({
-  clubId,
+  organizerId,
   contextId,
   detail,
   eventId,
@@ -911,7 +911,7 @@ function sampleSafetyEvidence({
   source,
   title,
 }: {
-  clubId: string | null;
+  organizerId: string | null;
   contextId: string | null;
   detail: string;
   eventId: string | null;
@@ -929,8 +929,8 @@ function sampleSafetyEvidence({
       false),
     safetyEvidence(
       "Organizer",
-      clubId,
-      clubId ? `organizers/${clubId}` : null,
+      organizerId,
+      organizerId ? `organizers/${organizerId}` : null,
       false
     ),
     safetyEvidence("Source", source, null, false),
@@ -1431,36 +1431,36 @@ export async function getAccessApplicationDetails(
 }
 
 export async function decideOrganizerClaim(
-  payload: AdminDecideClubClaimPayload
-): Promise<AdminDecideClubClaimResponse> {
+  payload: AdminDecideOrganizerClaimPayload
+): Promise<AdminDecideOrganizerClaimResponse> {
   if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 240));
     return {
       requestId: payload.requestId,
-      clubId: "local-preview-club",
+      organizerId: "local-preview-club",
       decision: payload.decision,
       status: payload.decision === "approve" ? "approved" : "rejected",
     };
   }
 
   const callable = httpsCallable<
-    AdminDecideClubClaimPayload,
-    AdminDecideClubClaimResponse
+    AdminDecideOrganizerClaimPayload,
+    AdminDecideOrganizerClaimResponse
   >(functions, "adminDecideOrganizerClaim");
   const result = await callable(payload);
   return result.data;
 }
 
 export async function listOrganizerClaimRequests():
-Promise<AdminListClubClaimRequestsResponse> {
+Promise<AdminListOrganizerClaimRequestsResponse> {
   if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 180));
     return {
       generatedAt: sampleOverview.generatedAt,
-      rows: sampleOverview.queues.clubClaimRequests.map((row, index) => ({
+      rows: sampleOverview.queues.organizerClaimRequests.map((row, index) => ({
         requestId: row.targetPath.split("/").at(-1) ?? row.id,
         targetPath: row.targetPath,
-        clubId: index === 0 ? "afterfly" : "bhag",
+        organizerId: index === 0 ? "afterfly" : "bhag",
         requesterUid: index === 0 ? "local-preview-afterfly-owner" : "local-preview-bhag-manager",
         requesterName: row.title,
         requesterRole: index === 0 ? "founder" : "manager",
@@ -1472,7 +1472,7 @@ Promise<AdminListClubClaimRequestsResponse> {
     };
   }
 
-  const callable = httpsCallable<unknown, AdminListClubClaimRequestsResponse>(
+  const callable = httpsCallable<unknown, AdminListOrganizerClaimRequestsResponse>(
     functions,
     "adminListOrganizerClaimRequests"
   );
@@ -1481,8 +1481,8 @@ Promise<AdminListClubClaimRequestsResponse> {
 }
 
 export async function getOrganizerClaimRequestDetails(
-  payload: AdminGetClubClaimRequestDetailsPayload
-): Promise<AdminGetClubClaimRequestDetailsResponse> {
+  payload: AdminGetOrganizerClaimRequestDetailsPayload
+): Promise<AdminGetOrganizerClaimRequestDetailsResponse> {
   if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 140));
     const list = await listOrganizerClaimRequests();
@@ -1493,49 +1493,49 @@ export async function getOrganizerClaimRequestDetails(
         ...row,
         businessEmail: row.contact?.includes("@") ? row.contact : null,
         businessPhone: row.contact && !row.contact.includes("@") ? row.contact : null,
-        proofUrls: row.clubId === "afterfly" ? [
+        proofUrls: row.organizerId === "afterfly" ? [
           "https://www.instagram.com/afterfly.in/",
           "https://luma.com/pxgmph3b",
         ] : ["https://thebhag.in/"],
         message: "Please verify this claim against the listed public sources.",
         updatedAt: row.createdAt,
-        requesterProfile: {exists: true, profileComplete: row.clubId === "afterfly"},
-        club: {
+        requesterProfile: {exists: true, profileComplete: row.organizerId === "afterfly"},
+        organizer: {
           exists: true,
-          name: row.clubId === "afterfly" ? "AFTER FLY" : "Bhag Club",
+          name: row.organizerId === "afterfly" ? "AFTER FLY" : "Bhag Club",
           claimState: "claimPending",
           ownershipState: "programmatic",
           ownerUserId: null,
-          canonicalPath: `/organizers/${row.clubId}/`,
+          canonicalPath: `/organizers/${row.organizerId}/`,
         },
       },
     };
   }
 
   const callable = httpsCallable<
-    AdminGetClubClaimRequestDetailsPayload,
-    AdminGetClubClaimRequestDetailsResponse
+    AdminGetOrganizerClaimRequestDetailsPayload,
+    AdminGetOrganizerClaimRequestDetailsResponse
   >(functions, "adminGetOrganizerClaimRequestDetails");
   const result = await callable(payload);
   return result.data;
 }
 
 export async function setOrganizerIndexStatus(
-  payload: AdminSetClubIndexStatusPayload
-): Promise<AdminSetClubIndexStatusResponse> {
+  payload: AdminSetOrganizerIndexStatusPayload
+): Promise<AdminSetOrganizerIndexStatusResponse> {
   if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 240));
-    const club = sampleClubDetails[payload.clubId];
-    if (club) {
-      club.publicPage.indexStatus = payload.indexStatus;
-      club.publicPage.publishStatus =
+    const organizer = sampleOrganizerDetails[payload.organizerId];
+    if (organizer) {
+      organizer.publicPage.indexStatus = payload.indexStatus;
+      organizer.publicPage.publishStatus =
         payload.indexStatus === "noindex" ? "qa" : "published";
-      club.publicPage.robots = payload.indexStatus === "noindex" ?
+      organizer.publicPage.robots = payload.indexStatus === "noindex" ?
         "noindex, follow" :
         "index, follow";
     }
     return {
-      clubId: payload.clubId,
+      organizerId: payload.organizerId,
       indexStatus: payload.indexStatus,
       publishStatus: payload.indexStatus === "noindex" ? "qa" : "published",
       robots: payload.indexStatus === "noindex" ?
@@ -1545,8 +1545,8 @@ export async function setOrganizerIndexStatus(
   }
 
   const callable = httpsCallable<
-    AdminSetClubIndexStatusPayload,
-    AdminSetClubIndexStatusResponse
+    AdminSetOrganizerIndexStatusPayload,
+    AdminSetOrganizerIndexStatusResponse
   >(functions, "adminSetOrganizerIndexStatus");
   const result = await callable(payload);
   return result.data;
@@ -1736,39 +1736,39 @@ function eventIntakeDecisionStatus(
   return "needs_changes";
 }
 
-export async function loadClubDetails(
-  payload: AdminGetClubDetailsPayload
-): Promise<AdminGetClubDetailsResponse> {
+export async function loadOrganizerDetails(
+  payload: AdminGetOrganizerDetailsPayload
+): Promise<AdminGetOrganizerDetailsResponse> {
   if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 180));
-    const club = sampleClubDetails[payload.clubId];
-    if (!club) {
+    const organizer = sampleOrganizerDetails[payload.organizerId];
+    if (!organizer) {
       throw new Error(
-        `Organizer ${payload.clubId} was not found in local preview data.`
+        `Organizer ${payload.organizerId} was not found in local preview data.`
       );
     }
-    return {club};
+    return {organizer};
   }
 
   const callable = httpsCallable<
     {organizerId: string},
-    {organizer: Omit<AdminGetClubDetailsResponse["club"], "clubId"> & {
+    {organizer: Omit<AdminGetOrganizerDetailsResponse["organizer"], "organizerId"> & {
       organizerId: string;
     }}
   >(functions, "adminGetOrganizerDetails");
-  const result = await callable({organizerId: payload.clubId});
+  const result = await callable({organizerId: payload.organizerId});
   const {organizerId, ...organizer} = result.data.organizer;
-  return {club: {...organizer, clubId: organizerId}};
+  return {organizer: {...organizer, organizerId: organizerId}};
 }
 
-export async function listClubDetails(
-  payload: AdminListClubDetailsPayload = {}
-): Promise<AdminListClubDetailsResponse> {
+export async function listOrganizerDetails(
+  payload: AdminListOrganizerDetailsPayload = {}
+): Promise<AdminListOrganizerDetailsResponse> {
   if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 180));
-    const rows = Object.values(sampleClubDetails)
-      .map(sampleClubListRow)
-      .filter((row) => sampleClubListRowMatches(row, payload))
+    const rows = Object.values(sampleOrganizerDetails)
+      .map(sampleOrganizerListRow)
+      .filter((row) => sampleOrganizerListRowMatches(row, payload))
       .sort((a, b) => a.name.localeCompare(b.name))
       .slice(0, payload.limit ?? 50);
     return {
@@ -1778,10 +1778,10 @@ export async function listClubDetails(
   }
 
   const callable = httpsCallable<
-    AdminListClubDetailsPayload,
+    AdminListOrganizerDetailsPayload,
     {
       generatedAt: string;
-      rows: Array<Omit<AdminClubListRow, "clubId"> & {organizerId: string}>;
+      rows: Array<Omit<AdminOrganizerListRow, "organizerId"> & {organizerId: string}>;
     }
   >(functions, "adminListOrganizerDetails");
   const result = await callable(payload);
@@ -1789,32 +1789,32 @@ export async function listClubDetails(
     generatedAt: result.data.generatedAt,
     rows: result.data.rows.map(({organizerId, ...row}) => ({
       ...row,
-      clubId: organizerId,
+      organizerId: organizerId,
     })),
   };
 }
 
-export async function saveClubDetails(
-  payload: AdminUpdateClubDetailsPayload
-): Promise<AdminUpdateClubDetailsResponse> {
+export async function saveOrganizerDetails(
+  payload: AdminUpdateOrganizerDetailsPayload
+): Promise<AdminUpdateOrganizerDetailsResponse> {
   if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 280));
-    const club = sampleClubDetails[payload.clubId];
-    if (club) applySampleClubDetailsPatch(club, payload.fields);
+    const organizer = sampleOrganizerDetails[payload.organizerId];
+    if (organizer) applySampleOrganizerDetailsPatch(organizer, payload.fields);
     return {
-      clubId: payload.clubId,
+      organizerId: payload.organizerId,
       updatedFieldCount: Object.keys(payload.fields).length,
     };
   }
 
   const callable = httpsCallable<
-    Omit<AdminUpdateClubDetailsPayload, "clubId"> & {organizerId: string},
+    Omit<AdminUpdateOrganizerDetailsPayload, "organizerId"> & {organizerId: string},
     {organizerId: string; updatedFieldCount: number}
   >(functions, "adminUpdateOrganizerDetails");
-  const {clubId, ...fields} = payload;
-  const result = await callable({...fields, organizerId: clubId});
+  const {organizerId, ...fields} = payload;
+  const result = await callable({...fields, organizerId: organizerId});
   return {
-    clubId: result.data.organizerId,
+    organizerId: result.data.organizerId,
     updatedFieldCount: result.data.updatedFieldCount,
   };
 }
@@ -1954,30 +1954,30 @@ export async function saveEventDetails(
   return result.data;
 }
 
-function sampleClubListRow(club: AdminGetClubDetailsResponse["club"]):
-  AdminClubListRow {
+function sampleOrganizerListRow(organizer: AdminGetOrganizerDetailsResponse["organizer"]):
+  AdminOrganizerListRow {
   return {
-    clubId: club.clubId,
-    name: club.name,
-    organizerType: club.organizerType,
-    publicCategoryLabel: club.publicCategoryLabel,
-    displayCategory: club.displayCategory,
-    cityName: club.cityName ?? club.area,
-    citySlug: club.location ?? club.publicPage.citySlug,
-    regionName: club.regionName,
-    countryCode: club.countryCode,
-    appVisibility: club.appVisibility,
-    claimState: club.claimState,
-    ownershipState: club.ownershipState,
-    canonicalPath: club.publicPage.canonicalPath,
-    publishStatus: club.publicPage.publishStatus,
-    indexStatus: club.publicPage.indexStatus,
-    robots: club.publicPage.robots,
-    sourceConfidence: club.provenance.sourceConfidence,
-    verificationStatus: club.provenance.verificationStatus,
-    routeStatus: club.publicPage.canonicalPath ? "valid" : "missing",
+    organizerId: organizer.organizerId,
+    name: organizer.name,
+    organizerType: organizer.organizerType,
+    publicCategoryLabel: organizer.publicCategoryLabel,
+    displayCategory: organizer.displayCategory,
+    cityName: organizer.cityName ?? organizer.area,
+    citySlug: organizer.location ?? organizer.publicPage.citySlug,
+    regionName: organizer.regionName,
+    countryCode: organizer.countryCode,
+    appVisibility: organizer.appVisibility,
+    claimState: organizer.claimState,
+    ownershipState: organizer.ownershipState,
+    canonicalPath: organizer.publicPage.canonicalPath,
+    publishStatus: organizer.publicPage.publishStatus,
+    indexStatus: organizer.publicPage.indexStatus,
+    robots: organizer.publicPage.robots,
+    sourceConfidence: organizer.provenance.sourceConfidence,
+    verificationStatus: organizer.provenance.verificationStatus,
+    routeStatus: organizer.publicPage.canonicalPath ? "valid" : "missing",
     routeReservationStatus:
-      club.publicPage.canonicalPath ? "reserved" : "missing",
+      organizer.publicPage.canonicalPath ? "reserved" : "missing",
     searchIndexStatus: "indexed",
   };
 }
@@ -1986,7 +1986,7 @@ function sampleEventListRow(event: AdminGetEventDetailsResponse["event"]):
   AdminEventListRow {
   return {
     eventId: event.eventId,
-    clubId: event.clubId,
+    organizerId: event.organizerId,
     organizerName: event.organizerName,
     title: event.title,
     activityKind: event.eventFormat.activityKind,
@@ -2005,9 +2005,9 @@ function sampleEventListRow(event: AdminGetEventDetailsResponse["event"]):
   };
 }
 
-function sampleClubListRowMatches(
-  row: AdminClubListRow,
-  payload: AdminListClubDetailsPayload
+function sampleOrganizerListRowMatches(
+  row: AdminOrganizerListRow,
+  payload: AdminListOrganizerDetailsPayload
 ): boolean {
   if (payload.citySlug && row.citySlug !== payload.citySlug) return false;
   if (
@@ -2026,7 +2026,7 @@ function sampleClubListRowMatches(
   const query = (payload.query ?? "").trim().toLowerCase();
   if (!query) return true;
   const haystack = [
-    row.clubId,
+    row.organizerId,
     row.name,
     row.displayCategory,
     row.cityName,
@@ -2055,7 +2055,7 @@ function sampleEventListRowMatches(
   row: AdminEventListRow,
   payload: AdminListEventDetailsPayload
 ): boolean {
-  if (payload.clubId && row.clubId !== payload.clubId) return false;
+  if (payload.organizerId && row.organizerId !== payload.organizerId) return false;
   if (payload.citySlug && row.citySlug !== payload.citySlug) return false;
   if (
     payload.citySlugs &&
@@ -2073,7 +2073,7 @@ function sampleEventListRowMatches(
   if (!query) return true;
   const haystack = [
     row.eventId,
-    row.clubId,
+    row.organizerId,
     row.organizerName,
     row.title,
     row.activityKind,
@@ -2120,7 +2120,7 @@ function sampleExternalEventListRowMatches(
     row.eventId,
     row.targetPath,
     row.canonicalHostId,
-    row.compatibilityClubId,
+    row.canonicalHostId,
     row.title,
     row.citySlug,
     row.countryCode,
@@ -2171,11 +2171,11 @@ function sampleExternalEventMatchesTimeWindow(
     startMillis < now;
 }
 
-function applySampleClubDetailsPatch(
-  club: AdminGetClubDetailsResponse["club"],
-  fields: AdminUpdateClubDetailsPayload["fields"]
+function applySampleOrganizerDetailsPatch(
+  organizer: AdminGetOrganizerDetailsResponse["organizer"],
+  fields: AdminUpdateOrganizerDetailsPayload["fields"]
 ) {
-  Object.assign(club, {
+  Object.assign(organizer, {
     ...copyDefined(fields, [
       "name",
       "description",
@@ -2198,16 +2198,16 @@ function applySampleClubDetailsPatch(
     ]),
   });
   if (fields.publicPage) {
-    Object.assign(club.publicPage, fields.publicPage);
+    Object.assign(organizer.publicPage, fields.publicPage);
   }
   if (fields.provenance) {
-    Object.assign(club.provenance, fields.provenance);
+    Object.assign(organizer.provenance, fields.provenance);
   }
   if (fields.publicProfile) {
-    Object.assign(club.publicProfile, fields.publicProfile);
+    Object.assign(organizer.publicProfile, fields.publicProfile);
   }
   if (fields.ownerLinks) {
-    club.ownerLinks = fields.ownerLinks.map((link) => ({...link}));
+    organizer.ownerLinks = fields.ownerLinks.map((link) => ({...link}));
   }
 }
 

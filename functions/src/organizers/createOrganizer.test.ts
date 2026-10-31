@@ -121,7 +121,7 @@ test("app creation keeps opaque identity separate from the public route",
       (firestore.get(`organizers/${organizerId}`)?.publicPage as FakeData).slug,
       publicSlug
     );
-    assert.equal(routes[0].clubId, organizerId);
+    assert.equal(routes[0].organizerId, organizerId);
     assert.equal(routes[0].canonicalPath, `/organizers/${publicSlug}/`);
     assert.equal(routes[0].source, "createOrganizer");
     assert.equal(

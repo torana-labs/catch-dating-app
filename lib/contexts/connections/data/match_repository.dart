@@ -247,7 +247,7 @@ List<Match> collapseMatchesByOtherUser(List<Match> matches, String uid) {
       <
         ({
           MatchConversationType type,
-          String? clubId,
+          String? organizerId,
           String? eventId,
           String otherId,
         }),
@@ -258,13 +258,13 @@ List<Match> collapseMatchesByOtherUser(List<Match> matches, String uid) {
     final bucketKey = match.isScopedConversation
         ? (
             type: match.conversationType,
-            clubId: match.clubId,
+            organizerId: match.organizerId,
             eventId: match.latestEventId,
             otherId: otherId,
           )
         : (
             type: match.conversationType,
-            clubId: null,
+            organizerId: null,
             eventId: null,
             otherId: otherId,
           );

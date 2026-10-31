@@ -92,7 +92,7 @@ class EventDetailDock extends ConsumerWidget {
     super.key,
     required this.event,
     required this.userProfile,
-    required this.clubId,
+    required this.organizerId,
     required this.participation,
     this.organizerCapabilities =
         const OrganizerSupplyCapabilities.claimedManaged(),
@@ -107,7 +107,7 @@ class EventDetailDock extends ConsumerWidget {
 
   final Event event;
   final UserProfile userProfile;
-  final String clubId;
+  final String organizerId;
   final EventParticipation? participation;
   final OrganizerSupplyCapabilities organizerCapabilities;
   final bool isSaved;

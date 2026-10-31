@@ -145,7 +145,7 @@ function testerProfile(city: string, overrides: FakeData = {}): FakeData {
     prefsMessages: true,
     prefsEventReminders: true,
     prefsRunStatusUpdates: true,
-    prefsClubUpdates: true,
+    prefsOrganizerUpdates: true,
     prefsWeeklyDigest: false,
     prefsShowOnMap: false,
     ...overrides,

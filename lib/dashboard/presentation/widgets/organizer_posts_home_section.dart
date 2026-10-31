@@ -51,7 +51,7 @@ class OrganizerPostsHomeSection extends ConsumerWidget {
   }
 
   String? _organizerIdFor(ActivityNotification notification) =>
-      notification.organizerId ?? notification.clubId;
+      notification.organizerId ?? notification.organizerId;
 }
 
 class OrganizerPostHomeCard extends StatelessWidget {

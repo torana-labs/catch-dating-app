@@ -179,7 +179,7 @@ class _CompanionRouteScope extends StatelessWidget {
         ),
       ],
       child: EventSuccessCompanionRouteScreen(
-        clubId: event.clubId,
+        organizerId: event.organizerId,
         eventId: event.id,
       ),
     );

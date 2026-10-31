@@ -288,7 +288,6 @@ export function useEventRuntimeController(
     let unsubscribe: () => void = () => undefined;
     void watchEventRuntimeLiveState({
       eventId: participant.eventId,
-      clubId: participant.clubId,
       organizerId: participant.organizerId,
       uid: user.uid,
     }, (next) => {
@@ -624,7 +623,6 @@ export function useEventRuntimeController(
     await runAction(async (current) => {
       await saveEventRuntimeCompatibilityAnswers({
         eventId: participant.eventId,
-        clubId: participant.clubId,
         organizerId: participant.organizerId,
         uid: user.uid,
       }, Object.values(questionAnswers));
@@ -684,7 +682,6 @@ export function useEventRuntimeController(
     await runAction(async (current) => {
       await saveEventRuntimeFeedback({
         eventId: participant.eventId,
-        clubId: participant.clubId,
         organizerId: participant.organizerId,
         uid: user.uid,
       }, {

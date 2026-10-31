@@ -7,7 +7,6 @@
  */
 export interface EventSuccessConversationGraphDocument {
   eventId: string;
-  clubId: string;
   organizerId: string;
   uid: string;
   status: "submitted" | "skipped";

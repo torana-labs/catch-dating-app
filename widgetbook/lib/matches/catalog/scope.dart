@@ -81,7 +81,7 @@ class WidgetbookMatchesMatchesListRouteScope extends StatelessWidget {
           MatchesChatSurfaceFixtures.eventId,
         ).overrideWith((ref) => Stream<Event?>.value(widgetbookMatchesEvent)),
         watchOrganizerProvider(
-          MatchesChatSurfaceFixtures.clubId,
+          MatchesChatSurfaceFixtures.organizerId,
         ).overrideWith((ref) => Stream.value(widgetbookMatchesOrganizer)),
         ..._publicProfileOverrides,
       ],
@@ -173,7 +173,7 @@ class WidgetbookMatchesChatRouteScope extends StatelessWidget {
           ),
         ),
         watchOrganizerProvider(
-          MatchesChatSurfaceFixtures.clubId,
+          MatchesChatSurfaceFixtures.organizerId,
         ).overrideWith((ref) => Stream.value(widgetbookMatchesOrganizer)),
         ..._publicProfileOverrides,
       ],

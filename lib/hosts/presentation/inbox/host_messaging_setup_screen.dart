@@ -9,13 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HostMessagingSetupScreen extends ConsumerWidget {
-  const HostMessagingSetupScreen({super.key, required this.clubId});
+  const HostMessagingSetupScreen({super.key, required this.organizerId});
 
-  final String clubId;
+  final String organizerId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final organizer = ref.watch(watchOrganizerProvider(clubId));
+    final organizer = ref.watch(watchOrganizerProvider(organizerId));
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: context.l10n.hostSendsSettings,
@@ -30,7 +30,7 @@ class HostMessagingSetupScreen extends ConsumerWidget {
         slivers: [
           CatchAsyncBoundary.sliver(
             value: organizer,
-            onRetry: () => ref.invalidate(watchOrganizerProvider(clubId)),
+            onRetry: () => ref.invalidate(watchOrganizerProvider(organizerId)),
             errorContext: AppErrorContext.organizer,
             builder: (context, value) => SliverToBoxAdapter(
               child: value == null
@@ -38,7 +38,7 @@ class HostMessagingSetupScreen extends ConsumerWidget {
                       StateError('Organizer not found.'),
                       context: AppErrorContext.organizer,
                       onRetry: () =>
-                          ref.invalidate(watchOrganizerProvider(clubId)),
+                          ref.invalidate(watchOrganizerProvider(organizerId)),
                     )
                   : HostWhatsappSetupSection(organizer: value),
             ),

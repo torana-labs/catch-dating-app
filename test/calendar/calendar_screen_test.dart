@@ -99,7 +99,7 @@ void main() {
             'runner-1',
           ).overrideWithValue(AsyncData<List<Event>>([event])),
           organizerNameLookupProvider(
-            OrganizerNameLookupQuery([event.clubId]),
+            OrganizerNameLookupQuery([event.organizerId]),
           ).overrideWith((ref) => organizerNames.future),
         ],
       );
@@ -142,7 +142,7 @@ void main() {
               'runner-1',
             ).overrideWithValue(const AsyncData<List<Event>>([])),
             organizerNameLookupProvider(
-              OrganizerNameLookupQuery([event.clubId]),
+              OrganizerNameLookupQuery([event.organizerId]),
             ).overrideWithValue(
               const AsyncData<Map<String, String>>({'club-1': 'Stride Social'}),
             ),
@@ -708,7 +708,7 @@ void main() {
               path: app_router.Routes.calendarEventDetailScreen.path,
               name: app_router.Routes.calendarEventDetailScreen.name,
               builder: (context, state) => EventDetailScreen(
-                clubId: state.pathParameters['clubId']!,
+                organizerId: state.pathParameters['organizerId']!,
                 eventId: state.pathParameters['eventId']!,
                 initialEvent: state.extra as Event?,
               ),
@@ -748,7 +748,7 @@ void main() {
                 ),
               ),
               watchOrganizerMembershipProvider(
-                event.clubId,
+                event.organizerId,
                 user.uid,
               ).overrideWithValue(const AsyncData(null)),
               organizersRepositoryProvider.overrideWith(
@@ -849,7 +849,7 @@ EventParticipation _participation({
   return EventParticipation(
     id: eventParticipationId(eventId: event.id, uid: uid),
     eventId: event.id,
-    clubId: event.clubId,
+    organizerId: event.organizerId,
     uid: uid,
     status: status,
     createdAt: now,

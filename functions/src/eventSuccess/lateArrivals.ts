@@ -455,8 +455,7 @@ export async function resolveEventSuccessLateArrivalHandler(
     });
     transaction.set(resolutionRef, {
       eventId: payload.eventId,
-      clubId: event.clubId,
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       uid: payload.uid,
       resolvedByUid: hostUid,
       status: resolution.status,

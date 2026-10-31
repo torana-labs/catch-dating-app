@@ -4,11 +4,12 @@ import 'package:catch_dating_app/routing/route_contract.dart';
 
 String? hostOrganizerAudienceRedirect(Uri uri) {
   if (uri.queryParameters['tab'] != 'audience') return null;
-  final clubId = uri.queryParameters['clubId']?.trim();
+  final organizerId = uri.queryParameters['organizerId']?.trim();
   return Uri(
     path: Routes.hostAudienceScreen.path,
     queryParameters: {
-      if (clubId != null && clubId.isNotEmpty) 'organizerId': clubId,
+      if (organizerId != null && organizerId.isNotEmpty)
+        'organizerId': organizerId,
     },
   ).toString();
 }

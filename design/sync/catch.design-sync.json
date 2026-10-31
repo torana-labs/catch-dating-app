@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-10-30",
+  "updated": "2026-10-31",
   "sourceOfTruth": {
     "behavior": "Contracts in design/components/catch.components.json; Flutter is the reference implementation",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "1222fade9de778289f6246e132a2158b4a52d10d038a0a51bca6199a79cb1c65",
+  "sourceDigest": "65d4a20018feb6369a6b810a06c1cc2c6d49c1d650843c8000c07991182ae703",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "1222fade9de778289f6246e132a2158b4a52d10d038a0a51bca6199a79cb1c65",
-    "contractDigest": "1222fade9de778289f6246e132a2158b4a52d10d038a0a51bca6199a79cb1c65"
+    "digest": "65d4a20018feb6369a6b810a06c1cc2c6d49c1d650843c8000c07991182ae703",
+    "contractDigest": "65d4a20018feb6369a6b810a06c1cc2c6d49c1d650843c8000c07991182ae703"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "2d9d682f7fee2ec2653a76553cfd864288068a20ec642bb4e68dc7b32721fd61",
+    "handoffRequestDigest": "6fb666d1a4913d9548d7d9f744a9b3c6b2a36d1fb6c7a9899fa1ba16eec603bf",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -2215,7 +2215,7 @@
       "reactSymbol": null,
       "reactFile": null,
       "reactApi": null,
-      "figmaName": "Catch/ClubDock",
+      "figmaName": "Catch/OrganizerDock",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
       "figmaPropertySources": {},
@@ -2237,7 +2237,7 @@
       "figmaDrift": [],
       "codeConnectStatus": "planned",
       "codeConnectTemplate": null,
-      "claudeHandoffName": "ClubDock",
+      "claudeHandoffName": "OrganizerDock",
       "claudeAllowed": true,
       "contractDigest": "8c50d33ac7d037ea446fb91562c564f280e7fcca648971d3f655d20993ca6355"
     },
@@ -2511,7 +2511,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 7,
-      "figmaExpectedPropertyDigest": "5a05adae9a23f2e5009c8b3452614fe30f1cd9c360c0f0337a058f8f4d9137f8",
+      "figmaExpectedPropertyDigest": "70c53ce5aa4d5e3d8600a3eb64b029704113ed540596f7d8a4f4bf4a49e57168",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2519,7 +2519,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "NotificationRow",
       "claudeAllowed": true,
-      "contractDigest": "ed8f6b06279229f0f5276578429c60a5f6f59678aaa5c2a65b9cf9e12f8bce9e"
+      "contractDigest": "487ba6f513e64666cb36d4e0613e7757b4e06d3bfab4e71e879df86259608160"
     },
     {
       "contractId": "catch.chat_composer",
@@ -2775,7 +2775,7 @@
       "reactSymbol": null,
       "reactFile": null,
       "reactApi": null,
-      "figmaName": "Catch/ClubCover",
+      "figmaName": "Catch/OrganizerCover",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
       "figmaPropertySources": {},

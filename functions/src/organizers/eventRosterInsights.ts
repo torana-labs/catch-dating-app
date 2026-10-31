@@ -225,7 +225,7 @@ export async function getEventRosterInsightsHandler(
   const eventSnap = await db.collection("events").doc(data.eventId).get();
   if (!eventSnap.exists) throw new HttpsError("not-found", "Event not found.");
   const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-  const organizerId = event.organizerId ?? event.clubId;
+  const organizerId = event.organizerId;
   await requireOrganizerManager({db, organizerId, actorUid});
 
   const attendeeSnap = await db.collection("eventAttendees")
@@ -445,7 +445,7 @@ async function getOrganizerEvents(
   const [canonical, compatibility] = await Promise.all([
     db.collection("events").where("organizerId", "==", organizerId)
       .limit(maxOrganizerEvents + 1).get(),
-    db.collection("events").where("clubId", "==", organizerId)
+    db.collection("events").where("organizerId", "==", organizerId)
       .limit(maxOrganizerEvents + 1).get(),
   ]);
   const rows = new Map<string, {id: string}>();

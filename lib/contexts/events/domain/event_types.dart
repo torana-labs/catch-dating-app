@@ -92,4 +92,4 @@ enum EventSignUpStatus {
 }
 
 Object? readEventOrganizerId(Map<dynamic, dynamic> json, String key) =>
-    json[key] ?? json['clubId'];
+    json[key] ?? json['organizerId'];

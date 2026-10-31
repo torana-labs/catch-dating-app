@@ -40,7 +40,7 @@ class OrganizerDetailsStep extends StatelessWidget {
                   copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsOrganizerDetailsStepTitleDescription,
                   contract: CatchContractConstraints
-                      .createClubCallablePayloadDescription,
+                      .createOrganizerCallablePayloadDescription,
                   controller: descriptionController,
                   icon: CatchIcons.note,
                   maxLines: 4,

@@ -43,7 +43,7 @@
     "id": {"$ref": "#/definitions/nonEmptyString"},
     "listingVariant": {
       "type": "string",
-      "enum": ["unclaimedScraped", "appCreatedClub"]
+      "enum": ["unclaimedScraped", "appCreatedOrganizer"]
     },
     "dataOrigin": {
       "type": "string",

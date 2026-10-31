@@ -120,6 +120,6 @@ export async function publicGuestMembership(input: {
   if (!admission?.membershipRequired && admission?.format !== "membersOnly" &&
       admission?.approvedMembersSkipReview !== true) return false;
   return (await readCommunityMembership({...input,
-    organizerId: input.event.organizerId ?? input.event.clubId}))?.state ===
+    organizerId: input.event.organizerId}))?.state ===
       "active";
 }

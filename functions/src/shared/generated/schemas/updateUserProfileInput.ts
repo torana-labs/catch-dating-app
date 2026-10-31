@@ -546,7 +546,7 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
         "prefsRunStatusUpdates": {
           "type": "boolean"
         },
-        "prefsClubUpdates": {
+        "prefsOrganizerUpdates": {
           "type": "boolean"
         },
         "prefsWeeklyDigest": {

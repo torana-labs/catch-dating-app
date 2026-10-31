@@ -455,7 +455,7 @@ function participation(
 ): FakeData {
   return {
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid,
     status,
     cohortAtSignup,
@@ -466,7 +466,7 @@ function participation(
 function offer(overrides: FakeData = {}): FakeData {
   return {
     eventId: "event-1",
-    clubId: "club-1",
+    organizerId: "club-1",
     uid: "runner-2",
     cohortAtOffer: "menInterestedInWomen",
     status: "active",

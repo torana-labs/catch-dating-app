@@ -106,12 +106,11 @@ export function deriveEventSeatPolicy(value: unknown): {
   if (!object(value) ||
       (typeof value.organizerId !== "string" ||
         value.organizerId.length === 0) &&
-        (typeof value.clubId !== "string" ||
-          value.clubId.length === 0) ||
+        (typeof value.organizerId !== "string" ||
+          value.organizerId.length === 0) ||
       typeof value.organizerId === "string" &&
         value.organizerId.length > 0 &&
-        typeof value.clubId === "string" && value.clubId.length > 0 &&
-        value.organizerId !== value.clubId ||
+        value.organizerId !== value.organizerId ||
       !Number.isSafeInteger(value.capacityLimit) ||
       Number(value.capacityLimit) < 1 ||
       !["active", "cancelled"].includes(String(value.status))) {
@@ -136,7 +135,8 @@ export function deriveEventSeatPolicy(value: unknown): {
     capacity: value.capacityLimit, policyVersion, admissionPolicy,
   }))).digest("hex");
   return {organizerId: typeof value.organizerId === "string" &&
-    value.organizerId.length > 0 ? value.organizerId : String(value.clubId),
+    value.organizerId.length > 0 ? value.organizerId : String(
+      value.organizerId),
   capacity: value.capacityLimit as number, policyHash, policyVersion,
   status: value.status as "active" | "cancelled"};
 }

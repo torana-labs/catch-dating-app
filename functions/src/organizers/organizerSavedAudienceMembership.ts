@@ -107,7 +107,7 @@ export async function savedAudienceSpendMatches(params: {
   const eventSnapshots = await Promise.all([
     db.collection("events").where("organizerId", "==", organizerId)
       .limit(maxEvents + 1).get(),
-    db.collection("events").where("clubId", "==", organizerId)
+    db.collection("events").where("organizerId", "==", organizerId)
       .limit(maxEvents + 1).get(),
   ]);
   const events = new Map(eventSnapshots.flatMap((snap) =>
@@ -118,7 +118,7 @@ export async function savedAudienceSpendMatches(params: {
       "Exact spend evaluation exceeds 1,000 organizer events.");
   }
   const eventIds = [...events].filter(([, event]) =>
-    (event.organizerId ?? event.clubId) === organizerId).map(([id]) => id);
+    (event.organizerId) === organizerId).map(([id]) => id);
   const payments: PaymentDocument[] = [];
   for (let offset = 0; offset < eventIds.length; offset += 30) {
     const snap = await db.collection("payments")

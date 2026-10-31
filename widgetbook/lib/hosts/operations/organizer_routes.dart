@@ -17,7 +17,7 @@ import 'shell_fixture.dart';
 )
 Widget hostOrganizersRouteStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostClubsScreen',
+    title: 'HostOrganizersScreen',
     contractId: 'screen.host.clubs',
     children: [
       WidgetbookPageStateCard(

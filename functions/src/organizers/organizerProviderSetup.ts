@@ -621,7 +621,7 @@ export async function reconcileLumaGuests(params: {
       transaction: tx});
     const eventSnap = await tx.get(params.db.collection("events").doc(eventId));
     const event = eventSnap.data() as EventDocument | undefined;
-    if (!event || (event.organizerId ?? event.clubId) !==
+    if (!event || (event.organizerId) !==
         params.run.organizerId || event.status === "cancelled" ||
         event.eventOrigin?.mode !== "externalCompanion" ||
         event.eventOrigin.provider !== "luma") {
@@ -672,7 +672,7 @@ export async function reconcileLumaGuests(params: {
     }));
     if (existing.some((row) => row.data.eventId !== eventId ||
         row.data.organizerId !== params.run.organizerId ||
-        row.data.clubId !== event.clubId)) {
+        row.data.organizerId !== event.organizerId)) {
       throw new HttpsError("failed-precondition",
         "Provider roster contains an attendee from another tenant.");
     }
@@ -713,7 +713,6 @@ export async function reconcileLumaGuests(params: {
       const old = matched?.data;
       const document = lumaAttendeeDocument({
         eventId,
-        clubId: event.clubId,
         organizerId: params.run.organizerId,
         connectionId: params.connectionId,
         guest,
@@ -775,7 +774,6 @@ export async function reconcileLumaGuests(params: {
 
 export function lumaAttendeeDocument(params: {
   eventId: string;
-  clubId: string;
   organizerId: string;
   connectionId: string;
   guest: LumaGuest;
@@ -795,7 +793,6 @@ export function lumaAttendeeDocument(params: {
     old?.source ?? "providerSync";
   return {
     eventId: params.eventId,
-    clubId: params.clubId,
     organizerId: params.organizerId,
     displayName: guest.displayName,
     searchName: guest.displayName.toLocaleLowerCase("en"),
@@ -883,7 +880,7 @@ async function requireScopedEvent(
 ): Promise<EventDocument> {
   const snap = await db.collection("events").doc(eventId).get();
   const event = snap.data() as EventDocument | undefined;
-  if (!event || (event.organizerId ?? event.clubId) !== organizerId) {
+  if (!event || (event.organizerId) !== organizerId) {
     throw new HttpsError("not-found", "Event not found for this organizer.");
   }
   if (expectedProvider &&

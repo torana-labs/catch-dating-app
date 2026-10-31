@@ -1,5 +1,5 @@
 {
-  "clubId": "club-1",
+  "organizerId": "club-1",
   "startTime": {
     "_seconds": 1778889600,
     "_nanoseconds": 0

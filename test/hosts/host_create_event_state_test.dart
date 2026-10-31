@@ -171,7 +171,7 @@ void main() {
       CreateEventSuccessNavigationDestination.manageEventRoute,
     );
     expect(manageEffect.pathParameters, {
-      'clubId': 'club-1',
+      'organizerId': 'club-1',
       'eventId': 'event-created',
     });
     expect(manageEffect.extra, event);
@@ -896,7 +896,7 @@ void main() {
     );
     final draft = EventDraft(
       id: 'picker-draft',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       savedAt: DateTime(2026, 7),
     );
 
@@ -923,7 +923,7 @@ void main() {
     final selectedDate = DateTime(2026, 7);
     final draft = EventDraft(
       id: 'draft-restore',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       savedAt: DateTime(2026, 6, 30),
       distance: '5',
       capacity: '24',
@@ -1006,7 +1006,7 @@ void main() {
   test('CreateEventDraftRestoreState marks restored past schedule invalid', () {
     final draft = EventDraft(
       id: 'draft-past-schedule',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       savedAt: DateTime(2026, 6, 30),
       selectedDateMillis: DateTime(2026, 7).millisecondsSinceEpoch,
       selectedStartHour: 8,
@@ -1074,12 +1074,12 @@ void main() {
 
     final draft = snapshot.toDraft(
       id: 'draft-1',
-      clubId: 'club-1',
+      organizerId: 'club-1',
       savedAt: savedAt,
     );
 
     expect(draft.id, 'draft-1');
-    expect(draft.clubId, 'club-1');
+    expect(draft.organizerId, 'club-1');
     expect(draft.savedAt, savedAt);
     expect(draft.distance, '5');
     expect(draft.capacity, '24');

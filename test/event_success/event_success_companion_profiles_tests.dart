@@ -125,7 +125,7 @@ void _registerEventSuccessCompanionProfilesTests() {
         uid: 'runner-1',
       ),
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       uid: 'runner-1',
       moduleId: EventSuccessModuleCatalog.microPods.id,
       label: 'Pod A',
@@ -194,7 +194,7 @@ void _registerEventSuccessCompanionProfilesTests() {
         uid: 'runner-1',
       ),
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       uid: 'runner-1',
       moduleId: EventSuccessModuleCatalog.microPods.id,
       label: 'Table rotations',
@@ -687,7 +687,7 @@ void _registerEventSuccessCompanionProfilesTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: EventSuccessCompanionRouteScreen(
-            clubId: event.clubId,
+            organizerId: event.organizerId,
             eventId: event.id,
             initialEvent: event,
           ),
@@ -773,7 +773,7 @@ void _registerEventSuccessCompanionProfilesTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: EventSuccessCompanionRouteScreen(
-            clubId: event.clubId,
+            organizerId: event.organizerId,
             eventId: event.id,
             initialEvent: event,
           ),
@@ -867,7 +867,7 @@ void _registerEventSuccessCompanionProfilesTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: EventSuccessCompanionRouteScreen(
-            clubId: event.clubId,
+            organizerId: event.organizerId,
             eventId: event.id,
             initialEvent: event,
           ),

@@ -141,7 +141,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `getOrganizerClaimVerificationOptions` / `startOrganizerClaimVerification` | `src/organizers/organizerClaimVerification.ts` | Which proofs a listing offers, and a 30-minute claim code bound to one listing and account; Instagram stays off until `CATCH_INSTAGRAM_CLAIMS_ENABLED` |
 | `confirmOrganizerClaimVerification` | `src/organizers/organizerClaimVerification.ts` | Checks the listing's public Luma calendar for the attempt's `catch-<code>` marker through the guarded page fetcher; a match approves the claim. Hidden while page fetching is off |
 | `instagramClaimWebhook` | `src/organizers/instagramClaimWebhook.ts` | Meta webhook for direct messages to Catch's Instagram account: signed, once per message, rate-limited per sender; a code from the listing's own account approves the claim |
-| `startOrganizerConversation` | `src/clubs/clubHostConversations.ts` | Start or resume a viewer conversation with an organizer |
+| `startOrganizerConversation` | `src/clubs/organizerHostConversations.ts` | Start or resume a viewer conversation with an organizer |
 | `sendEventBroadcast` | `src/events/` | Host-only, event-scoped Activity and preference-gated push broadcast with an idempotent receipt and organizer Sends projection |
 | `importEventAttendees` / `markEventAttendeeAttendance` | `src/events/eventAttendees.ts` | Import or manually add an external roster and manage operational check-in without Consumer booking |
 | `manageHostRosterIntake` | `src/events/hostRosterIntakeApply.ts` | Save, review, revise, and idempotently apply a bounded event-scoped Host roster upload through the canonical attendee writer |
@@ -241,7 +241,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `getEventRosterInsights` | `src/organizers/eventRosterInsights.ts` | Manager-only, event-relative customer labels for the live operational roster; incomplete identity/history fails closed and spend is limited to completed Catch payments |
 | `listOrganizerContacts` / `getOrganizerContactDetail` / `createOrganizerContact` / `mutateOrganizerContact` / `createOrganizerContactNote` / `mutateOrganizerContactNote` / `recordOrganizerContactOutreach` / `exportOrganizerContacts` | `src/organizers/organizerContacts.ts` | Search, inspect, manually add, safely update, append/edit author-stamped notes, log manager-asserted outreach attempts, and export the organizer-owned audience directory; notes and outreach never enter exports |
 | `resolveOrganizerCommunicationPlan` | `src/organizers/organizerCommunicationPlans.ts` | Resolve one manager-authorized communication intent into server-derived route availability, execution ownership, and blockers without mutating delivery state |
-| `startOrganizerContactConversation` | `src/clubs/clubHostConversations.ts` | Start or resume a conversation with a verified, unambiguous linked organizer contact |
+| `startOrganizerContactConversation` | `src/clubs/organizerHostConversations.ts` | Start or resume a conversation with a verified, unambiguous linked organizer contact |
 | `mergeOrganizerContacts` / `unmergeOrganizerContacts` | `src/organizers/organizerContactMerges.ts` | Reversible manager-reviewed contact identity reconciliation |
 | `listOrganizerContactMergeCandidates` / `reviewOrganizerContactMergeCandidate` | `src/organizers/organizerContactMergeReview.ts` | Review verified or proposed identity evidence, durably dismiss distinct people, and reopen only the reviewing manager's decision |
 | `getOrganizerMessagingSetup` / `completeOrganizerWhatsappConnection` / `syncOrganizerWhatsappTemplates` / `sendOrganizerWhatsappTest` / `disconnectOrganizerWhatsappConnection` | `src/organizers/organizerMessagingSetup.ts` | Connect and verify an organizer-owned Meta WhatsApp sender and synchronize approved templates |
@@ -314,8 +314,8 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminAssignSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue assignment |
 | `adminDecideSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue reviewed/dismissed status decision |
 | `adminGetAccessApplicationDetails` | `src/admin/accessApplications.ts` | Admin read-only launch access application detail and overlap signals |
-| `adminListOrganizerClaimRequests` / `adminGetOrganizerClaimRequestDetails` | `src/admin/clubClaimReview.ts` | Admin pending organizer claim queue and review-safe evidence detail |
-| `adminSetOrganizerIndexStatus` | `src/admin/clubIndexing.ts` | Admin audited organizer index/noindex publishing decision |
+| `adminListOrganizerClaimRequests` / `adminGetOrganizerClaimRequestDetails` | `src/admin/organizerClaimReview.ts` | Admin pending organizer claim queue and review-safe evidence detail |
+| `adminSetOrganizerIndexStatus` | `src/admin/organizerIndexing.ts` | Admin audited organizer index/noindex publishing decision |
 | `adminListEventDetails` | `src/admin/eventDetails.ts` | Admin canonical `events/{id}` directory for event publishing ops |
 | `adminGetEventDetails` | `src/admin/eventDetails.ts` | Admin-safe canonical event detail snapshot |
 | `adminUpdateEventDetails` | `src/admin/eventDetails.ts` | Admin audited safe app-facing event field patch |
@@ -334,7 +334,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminGetMarketingOpsDashboard` | `src/admin/marketingOps.ts` | Admin read-only marketing ops dashboard bridge |
 | `adminRecordMarketingReviewDecision` | `src/admin/marketingOps.ts` | Admin audited marketing review decision, no publish |
 | `adminCreateMarketingContentDraft` | `src/admin/marketingOps.ts` | Admin editable marketing draft creation, no post publish |
-| `adminListOrganizerDetails` / `adminGetOrganizerDetails` / `adminUpdateOrganizerDetails` | `src/admin/clubDetails.ts` | Admin canonical organizer directory, detail, and audited safe patch surface |
+| `adminListOrganizerDetails` / `adminGetOrganizerDetails` / `adminUpdateOrganizerDetails` | `src/admin/organizerDetails.ts` | Admin canonical organizer directory, detail, and audited safe patch surface |
 
 Event chat notification candidates are checked after a new message commits, but
 dispatch is disabled by default. The seam uses current admission, membership,

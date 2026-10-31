@@ -303,7 +303,7 @@ test("plans save as drafts and publish with provider prices", async () => {
 
 test("event rules validate plans and anchor early access", async () => {
   const start = now + 10 * dayMillis;
-  const db = seedStore({"events/event-1": {organizerId, clubId: organizerId,
+  const db = seedStore({"events/event-1": {organizerId,
     startTime: Timestamp.fromMillis(start)}});
   const deps = testDeps(db);
   const save = (extra: Record<string, unknown>) =>

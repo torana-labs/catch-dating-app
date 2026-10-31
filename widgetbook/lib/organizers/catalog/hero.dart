@@ -23,7 +23,7 @@ final _logoOnlyHeroOrganizer = widgetbookOrganizerMinimalOrganizer.copyWith(
 )
 Widget organizerPhotoStripStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubPhotoRail',
+    title: 'OrganizerPhotoRail',
     catalogId: 'section.club.photos',
     children: [
       WidgetbookPageStateCard(
@@ -34,7 +34,9 @@ Widget organizerPhotoStripStates(BuildContext context) {
         label: 'single photo',
         child: OrganizerPhotoRail(
           organizer: widgetbookOrganizerOrganizer.copyWith(
-            clubPhotos: [widgetbookOrganizerOrganizer.clubPhotos.first],
+            organizerPhotos: [
+              widgetbookOrganizerOrganizer.organizerPhotos.first,
+            ],
           ),
         ),
       ),
@@ -49,7 +51,7 @@ Widget organizerPhotoStripStates(BuildContext context) {
 )
 Widget organizerHeroAppBarStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubHeroTopBar',
+    title: 'OrganizerHeroTopBar',
     catalogId: 'section.club.hero',
     children: [
       WidgetbookPageStateCard(
@@ -111,7 +113,7 @@ Widget organizerHeroAppBarStates(BuildContext context) {
 )
 Widget organizerHeroModuleStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubHeroHeader',
+    title: 'OrganizerHeroHeader',
     catalogId: 'section.club.hero.module',
     children: [
       WidgetbookPageStateCard(

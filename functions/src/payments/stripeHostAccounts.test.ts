@@ -23,8 +23,8 @@ test("createStripeHostOnboardingLinkHandler creates and stores host account",
         email: "host@example.com",
         displayName: "Catch Host",
       },
-      "clubHostClaims/host-1": {
-        clubIds: ["club-1"],
+      "organizerHostClaims/host-1": {
+        organizerIds: ["club-1"],
       },
     });
     const accountInputs: StripeAccountCreateInput[] = [];

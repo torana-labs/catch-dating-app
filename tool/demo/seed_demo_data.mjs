@@ -39,9 +39,9 @@ import {
   validateProfilePromptAnswer,
   validatePublicProfileDocument,
   validateReviewDocument,
-  validateClubScheduleLockDocument,
-  validateClubDocument,
-  validateClubMembershipDocument,
+  validateOrganizerScheduleLockDocument,
+  validateOrganizerDocument,
+  validateOrganizerMembershipDocument,
   validateEventDocument,
   validateEventParticipationDocument,
   validateSavedEventDocument,
@@ -152,40 +152,40 @@ const scenarios = {
     description: "Small seed for quick local/dev checks.",
     cities: ["mumbai", "bangalore", "indore"],
     usersPerCity: 4,
-    clubsPerCity: 1,
-    eventsPerClub: 5,
+    organizersPerCity: 1,
+    eventsPerOrganizer: 5,
     anchorsPerRun: 2,
   },
   "beta-full": {
     description: "Full TestFlight-style world across every supported city.",
     cities: allCities,
     usersPerCity: 8,
-    clubsPerCity: 2,
-    eventsPerClub: 8,
+    organizersPerCity: 2,
+    eventsPerOrganizer: 8,
     anchorsPerRun: 4,
   },
   "city-dense": {
     description: "Dense one-city discovery, map, and list stress scenario.",
     cities: ["mumbai"],
     usersPerCity: 36,
-    clubsPerCity: 5,
-    eventsPerClub: 8,
+    organizersPerCity: 5,
+    eventsPerOrganizer: 8,
     anchorsPerRun: 5,
   },
   "empty-edge-cases": {
     description: "Sparse world with empty, expired, cancelled, and waitlist states.",
     cities: ["mumbai", "delhi", "bangalore", "indore"],
     usersPerCity: 4,
-    clubsPerCity: 1,
-    eventsPerClub: 7,
+    organizersPerCity: 1,
+    eventsPerOrganizer: 7,
     anchorsPerRun: 1,
   },
   "paid-flow-demo": {
     description: "Paid booking, payment history, refund, and sign-up-failed states.",
     cities: ["mumbai", "bangalore", "delhi", "indore"],
     usersPerCity: 6,
-    clubsPerCity: 1,
-    eventsPerClub: 6,
+    organizersPerCity: 1,
+    eventsPerOrganizer: 6,
     anchorsPerRun: 3,
     preferPaidEvents: true,
   },
@@ -414,7 +414,7 @@ const profilePhotos = [
   "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=900&q=80",
   "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=900&q=80",
 ];
-const clubImages = [
+const organizerImages = [
   "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=1400&q=80",
   "https://images.unsplash.com/photo-1486218119243-13883505764c?auto=format&fit=crop&w=1400&q=80",
   "https://images.unsplash.com/photo-1546483875-ad9014c88eba?auto=format&fit=crop&w=1400&q=80",
@@ -689,8 +689,8 @@ function normalizeSeedWorldScenario(config) {
     sourceScenarioId: config.id,
     cities: config.seedWorld.cities,
     usersPerCity: config.seedWorld.usersPerCity,
-    clubsPerCity: config.seedWorld.clubsPerCity,
-    eventsPerClub: config.seedWorld.eventsPerClub,
+    organizersPerCity: config.seedWorld.organizersPerCity,
+    eventsPerOrganizer: config.seedWorld.eventsPerOrganizer,
     anchorsPerRun: config.seedWorld.anchorsPerRun,
     preferPaidEvents: config.seedWorld.preferPaidEvents === true,
     eventPatterns: config.seedWorld.eventPatterns ?? null,
@@ -817,7 +817,7 @@ function buildSeed({
     seedMarker,
     personaProjection,
   });
-  const clubs = [];
+  const organizers = [];
   const memberships = [];
   const events = [];
   const participations = [];
@@ -839,33 +839,33 @@ function buildSeed({
   for (const city of scenario.cities) {
     const cityAnchors = anchorProfiles.filter((person) => person.city === city);
     const syntheticCityUsers = users.filter((person) => person.city === city);
-    for (let clubIndex = 0; clubIndex < scenario.clubsPerCity; clubIndex += 1) {
-      const host = syntheticCityUsers[clubIndex % syntheticCityUsers.length] ?? users[clubIndex % users.length];
-      const club = buildClub({seedPrefix, seedMarker, city, clubIndex, host});
-      clubs.push(club);
+    for (let organizerIndex = 0; organizerIndex < scenario.organizersPerCity; organizerIndex += 1) {
+      const host = syntheticCityUsers[organizerIndex % syntheticCityUsers.length] ?? users[organizerIndex % users.length];
+      const organizer = buildOrganizer({seedPrefix, seedMarker, city, organizerIndex, host});
+      organizers.push(organizer);
 
-      const clubMembers = uniqueByUid([
+      const organizerMembers = uniqueByUid([
         host,
         ...cityAnchors.slice(0, scenario.anchorsPerRun),
-        ...rotate(syntheticCityUsers, clubIndex).slice(0, Math.min(10, syntheticCityUsers.length)),
+        ...rotate(syntheticCityUsers, organizerIndex).slice(0, Math.min(10, syntheticCityUsers.length)),
       ]);
-      for (const member of clubMembers) {
-        memberships.push(buildMembership({seedMarker, clubId: club.id, uid: member.uid, role: member.uid === host.uid ? "owner" : "member", now}));
+      for (const member of organizerMembers) {
+        memberships.push(buildMembership({seedMarker, organizerId: organizer.id, uid: member.uid, role: member.uid === host.uid ? "owner" : "member", now}));
       }
 
-      for (let runIndex = 0; runIndex < scenario.eventsPerClub; runIndex += 1) {
+      for (let runIndex = 0; runIndex < scenario.eventsPerOrganizer; runIndex += 1) {
         const event = buildEvent({
           seedPrefix,
           seedMarker,
           scenario,
           city,
-          club,
+          organizer,
           runIndex,
-          clubIndex,
+          organizerIndex,
           now,
           preferPaid: scenario.preferPaidEvents,
         });
-        const roster = buildRoster({event, runIndex, clubMembers, anchorProfiles: cityAnchors});
+        const roster = buildRoster({event, runIndex, organizerMembers, anchorProfiles: cityAnchors});
         applyRosterAggregates(event, roster);
         const eventSuccessDocs = buildEventSuccessDocs({
           seedMarker,
@@ -907,14 +907,14 @@ function buildSeed({
           notifications.push(...relationshipDocs.notifications);
         }
         if (event.kind === "pastOld") {
-          reviews.push(...buildReviews({seedPrefix, seedMarker, club, event, roster, now}));
+          reviews.push(...buildReviews({seedPrefix, seedMarker, organizer, event, roster, now}));
         }
       }
     }
   }
 
-  updateClubAggregates({clubs, memberships, reviews, events});
-  notifications.push(...buildGeneralNotifications({seedMarker, anchorProfiles, clubs, events, now}));
+  updateOrganizerAggregates({organizers, memberships, reviews, events});
+  notifications.push(...buildGeneralNotifications({seedMarker, anchorProfiles, organizers, events, now}));
   payments.push(...buildPaymentHistoryEdges({seedPrefix, seedMarker, anchorProfiles, events, now}));
   const suvbotDocs = buildSuvbotSeedDocs({seedPrefix, seedMarker, anchorProfiles, now});
   assertScheduleCompliance({events, participations});
@@ -928,8 +928,8 @@ function buildSeed({
       {path: `users/${user.uid}`, data: user.userDoc},
       {path: `publicProfiles/${user.uid}`, data: user.publicProfileDoc},
     ]),
-    ...clubs.map((club) => ({path: `clubs/${club.id}`, data: club.doc})),
-    ...memberships.map((membership) => ({path: `clubMemberships/${membership.id}`, data: membership.doc})),
+    ...organizers.map((organizer) => ({path: `organizers/${organizer.id}`, data: organizer.doc})),
+    ...memberships.map((membership) => ({path: `organizerMemberships/${membership.id}`, data: membership.doc})),
     ...events.map((event) => ({path: `events/${event.id}`, data: event.doc})),
     ...participations.map((participation) => ({path: `eventParticipations/${participation.id}`, data: participation.doc})),
     ...eventSuccessPlans.map((plan) => ({path: `eventSuccessPlans/${plan.id}`, data: plan.doc})),
@@ -1049,7 +1049,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker, personaProjectio
         prefsMessages: true,
         prefsEventReminders: true,
         prefsRunStatusUpdates: true,
-        prefsClubUpdates: true,
+        prefsOrganizerUpdates: true,
         prefsWeeklyDigest: index % 3 === 0,
         prefsShowOnMap: true,
       };
@@ -1281,11 +1281,11 @@ function profilePhotoIdForStoragePath(storagePath, position) {
   return normalized || `photo_${position}`;
 }
 
-function buildClub({seedPrefix, seedMarker, city, clubIndex, host}) {
+function buildOrganizer({seedPrefix, seedMarker, city, organizerIndex, host}) {
   const cityMeta = cityMetaForScenarioCity(city);
   const market = cityMeta.market;
-  const area = cityMeta.areas[clubIndex % cityMeta.areas.length];
-  const id = `${seedPrefix}_club_${city}_${String(clubIndex + 1).padStart(2, "0")}`;
+  const area = cityMeta.areas[organizerIndex % cityMeta.areas.length];
+  const id = `${seedPrefix}_club_${city}_${String(organizerIndex + 1).padStart(2, "0")}`;
   const hostName = host.displayName || host.firstName;
   const hostAvatarUrl = primaryProfilePhotoThumbnailUrl(host.profilePhotos);
   return {
@@ -1314,17 +1314,20 @@ function buildClub({seedPrefix, seedMarker, city, clubIndex, host}) {
         avatarUrl: hostAvatarUrl,
         role: "owner",
       }],
-      createdAt: admin.firestore.Timestamp.fromDate(daysFromNow(-35 - clubIndex)),
-      imageUrl: clubImages[clubIndex % clubImages.length],
+      createdAt: admin.firestore.Timestamp.fromDate(daysFromNow(-35 - organizerIndex)),
+      imageUrl: organizerImages[organizerIndex % organizerImages.length],
       profileImageUrl: null,
-      tags: ["social", clubIndex % 2 === 0 ? "beginner-friendly" : "tempo", cityMeta.label.toLowerCase()],
+      tags: ["social", organizerIndex % 2 === 0 ? "beginner-friendly" : "tempo", cityMeta.label.toLowerCase()],
       memberCount: 0,
+      followerCount: 0,
+      organizerType: "club",
+      organizerPhotos: [],
       rating: 0,
       reviewCount: 0,
       nextEventAt: null,
       nextEventLabel: null,
       instagramHandle: `${area.toLowerCase().replace(/\s+/g, "")}events`,
-      phoneNumber: `+918800${String(clubIndex + 1).padStart(6, "0")}`,
+      phoneNumber: `+918800${String(organizerIndex + 1).padStart(6, "0")}`,
       email: `${area.toLowerCase().replace(/\s+/g, ".")}@catch.demo`,
       status: "active",
       archived: false,
@@ -1334,12 +1337,12 @@ function buildClub({seedPrefix, seedMarker, city, clubIndex, host}) {
   };
 }
 
-function buildMembership({seedMarker, clubId, uid, role, now}) {
+function buildMembership({seedMarker, organizerId, uid, role, now}) {
   return {
-    id: `${clubId}_${uid}`,
+    id: `${organizerId}_${uid}`,
     doc: {
       ...seedMarker,
-      clubId,
+      organizerId,
       uid,
       role,
       status: "active",
@@ -1356,9 +1359,9 @@ function buildEvent({
   seedMarker,
   scenario,
   city,
-  club,
+  organizer,
   runIndex,
-  clubIndex,
+  organizerIndex,
   now,
   preferPaid,
 }) {
@@ -1366,13 +1369,13 @@ function buildEvent({
   const market = cityMeta.market;
   const patterns = scenario.eventPatterns ?? defaultEventPatterns(preferPaid);
   const pattern = patterns[runIndex % patterns.length];
-  const start = offsetDate(now, {hours: pattern.offsetHours + clubIndex * 8 + runIndex * 2});
+  const start = offsetDate(now, {hours: pattern.offsetHours + organizerIndex * 8 + runIndex * 2});
   const end = offsetDate(start, {minutes: pattern.durationMinutes});
-  const id = `${seedPrefix}_run_${city}_${String(clubIndex + 1).padStart(2, "0")}_${String(runIndex + 1).padStart(2, "0")}`;
+  const id = `${seedPrefix}_run_${city}_${String(organizerIndex + 1).padStart(2, "0")}_${String(runIndex + 1).padStart(2, "0")}`;
   const pace = ["easy", "moderate", "fast", "competitive"][runIndex % 4];
   const meetingPoint = meetingPointForRun({
     city,
-    clubIndex,
+    organizerIndex,
     runIndex,
     key: pattern.meetingPointKey,
   });
@@ -1383,14 +1386,14 @@ function buildEvent({
     meetingPoint.detail;
   return {
     id,
-    clubId: club.id,
+    organizerId: organizer.id,
     city,
     cityMarketId: market.marketId,
     kind: pattern.kind,
     priceInPaise: pattern.price,
     doc: {
       ...seedMarker,
-      clubId: club.id,
+      organizerId: organizer.id,
       startTime: admin.firestore.Timestamp.fromDate(start),
       endTime: admin.firestore.Timestamp.fromDate(end),
       meetingPoint: meetingPoint.label,
@@ -1511,7 +1514,7 @@ function singlesMixerEventFormat() {
   };
 }
 
-function meetingPointForRun({city, clubIndex, runIndex, key = null}) {
+function meetingPointForRun({city, organizerIndex, runIndex, key = null}) {
   const points = meetingPointData[city] ?? [];
   if (key) {
     const point = points.find((item) => item.key === key);
@@ -1526,7 +1529,7 @@ function meetingPointForRun({city, clubIndex, runIndex, key = null}) {
       detail: "Meet near the Catch demo pacer.",
     };
   }
-  return points[(clubIndex + runIndex) % points.length];
+  return points[(organizerIndex + runIndex) % points.length];
 }
 
 function eventPolicyForSeedEvent({capacityLimit, priceInPaise, kind}) {
@@ -1598,9 +1601,9 @@ function assertRunCoordinateQuality({events}) {
   }
 }
 
-function buildRoster({event, runIndex, clubMembers, anchorProfiles}) {
+function buildRoster({event, runIndex, organizerMembers, anchorProfiles}) {
   if (event.kind === "cancelled") return [];
-  const members = uniqueByUid([...anchorProfiles, ...rotate(clubMembers, runIndex)]);
+  const members = uniqueByUid([...anchorProfiles, ...rotate(organizerMembers, runIndex)]);
   const signedCount = event.kind === "upcomingFull" || event.kind === "upcomingWaitlist" ?
     event.doc.capacityLimit :
     Math.min(event.doc.capacityLimit - 1, 6 + (runIndex % 4));
@@ -1663,8 +1666,8 @@ function applySeedEventDiscoveryProjection(event) {
     event.doc,
     eventDiscoveryProjection({
       event: event.doc,
-      clubLocation: event.city,
-      clubLocationMarketId: event.cityMarketId,
+      organizerLocation: event.city,
+      organizerLocationMarketId: event.cityMarketId,
       bookedCount: event.doc.bookedCount,
     })
   );
@@ -1689,7 +1692,7 @@ function buildParticipation({seedMarker, event, entry, now}) {
     doc: {
       ...seedMarker,
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       uid: entry.person.uid,
       status: entry.status,
       createdAt: admin.firestore.Timestamp.fromDate(createdAt),
@@ -1761,7 +1764,7 @@ function buildEventSuccessDocs({seedMarker, event, roster, now}) {
     doc: {
       ...seedMarker,
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       playbookId: "algorithmic_mixer_reveal",
       selectedModuleIds: [
         "qr_check_in",
@@ -1807,7 +1810,7 @@ function buildEventSuccessDocs({seedMarker, event, roster, now}) {
     doc: {
       ...seedMarker,
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       uid: entry.person.uid,
       microPodsOptedOut: false,
       guidedRotationsOptedOut: index % 7 === 0,
@@ -1821,7 +1824,7 @@ function buildEventSuccessDocs({seedMarker, event, roster, now}) {
     doc: {
       ...seedMarker,
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       uid: entry.person.uid,
       answerIds: compatibilityAnswerIdsForIndex(index),
       createdAt,
@@ -1843,7 +1846,7 @@ function buildEventSuccessDocs({seedMarker, event, roster, now}) {
     doc: {
       ...seedMarker,
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       uid: entry.person.uid,
       welcomeRating: 4 + (index % 2),
       structureRating: index % 3 === 0 ? 5 : 4,
@@ -1862,7 +1865,7 @@ function buildEventSuccessDocs({seedMarker, event, roster, now}) {
     doc: {
       ...seedMarker,
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       requesterUid: completedParticipants[0].person.uid,
       targetUid: completedParticipants[1].person.uid,
       status: "active",
@@ -1891,7 +1894,7 @@ function buildEventSuccessDocs({seedMarker, event, roster, now}) {
     doc: {
       ...seedMarker,
       eventId: event.id,
-      clubId: event.clubId,
+      organizerId: event.organizerId,
       bookedCount: event.doc.bookedCount,
       checkedInCount: event.doc.checkedInCount,
       feedbackCount: feedback.length,
@@ -1991,7 +1994,7 @@ function buildEventSuccessAssignments({seedMarker, event, participants, createdA
       doc: {
         ...seedMarker,
         eventId: event.id,
-        clubId: event.clubId,
+        organizerId: event.organizerId,
         uid: entry.person.uid,
         moduleId: "guided_rotations",
         label: "Live reveal rotations",
@@ -2215,7 +2218,7 @@ function buildSuvbotSeedDocs({seedPrefix, seedMarker, anchorProfiles, now}) {
   return docs;
 }
 
-function buildReviews({seedPrefix, seedMarker, club, event, roster, now}) {
+function buildReviews({seedPrefix, seedMarker, organizer, event, roster, now}) {
   return roster
     .filter((entry) => entry.status === "attended")
     .slice(0, 4)
@@ -2223,11 +2226,11 @@ function buildReviews({seedPrefix, seedMarker, club, event, roster, now}) {
       const id = `${event.id}~${entry.person.uid}`;
       return {
         id,
-        clubId: club.id,
+        organizerId: organizer.id,
         rating: 4 + (index % 2),
         doc: {
           ...seedMarker,
-          organizerId: club.id,
+          organizerId: organizer.id,
           eventId: event.id,
           reviewerUserId: entry.person.uid,
           reviewerName: entry.person.name || entry.person.displayName || "Runner",
@@ -2271,11 +2274,11 @@ function buildPaymentHistoryEdges({seedPrefix, seedMarker, anchorProfiles, event
   return result;
 }
 
-function buildGeneralNotifications({seedMarker, anchorProfiles, clubs, events, now}) {
+function buildGeneralNotifications({seedMarker, anchorProfiles, organizers, events, now}) {
   const result = [];
   const upcoming = events.find((event) => event.kind === "upcomingFree") ?? events[0];
   const paid = events.find((event) => event.kind === "upcomingPaid") ?? upcoming;
-  const club = clubs[0];
+  const organizer = organizers[0];
   for (const anchor of anchorProfiles) {
     if (upcoming) {
       result.push(notificationDoc({
@@ -2287,7 +2290,7 @@ function buildGeneralNotifications({seedMarker, anchorProfiles, clubs, events, n
         body: "Your demo event starts tomorrow morning.",
         createdAt: offsetDate(now, {hours: -1}),
         eventId: upcoming.id,
-        clubId: upcoming.clubId,
+        organizerId: upcoming.organizerId,
       }));
     }
     if (paid) {
@@ -2300,20 +2303,20 @@ function buildGeneralNotifications({seedMarker, anchorProfiles, clubs, events, n
         body: "Your paid demo event booking is confirmed.",
         createdAt: offsetDate(now, {hours: -5}),
         eventId: paid.id,
-        clubId: paid.clubId,
+        organizerId: paid.organizerId,
         readAt: offsetDate(now, {hours: -4}),
       }));
     }
-    if (club) {
+    if (organizer) {
       result.push(notificationDoc({
         seedMarker,
         uid: anchor.uid,
-        id: `clubUpdate_${club.id}`,
-        type: "clubUpdate",
-        title: `${club.doc.name} update`,
+        id: `organizerUpdate_${organizer.id}`,
+        type: "organizerUpdate",
+        title: `${organizer.doc.name} update`,
         body: "New demo events were added for this week.",
         createdAt: offsetDate(now, {days: -1}),
-        clubId: club.id,
+        organizerId: organizer.id,
       }));
     }
   }
@@ -2331,7 +2334,7 @@ function notificationDoc({
   readAt = null,
   matchId = null,
   eventId = null,
-  clubId = null,
+  organizerId = null,
   actorUid = null,
   actorName = null,
 }) {
@@ -2348,35 +2351,35 @@ function notificationDoc({
       readAt: readAt ? admin.firestore.Timestamp.fromDate(readAt) : null,
       matchId,
       eventId,
-      clubId,
+      organizerId,
       actorUid,
       actorName,
     },
   };
 }
 
-function updateClubAggregates({clubs, memberships, reviews, events}) {
-  const membersByClub = groupBy(memberships, (membership) => membership.doc.clubId);
-  const reviewsByClub = groupBy(reviews, (review) => review.clubId);
-  const upcomingByClub = groupBy(
+function updateOrganizerAggregates({organizers, memberships, reviews, events}) {
+  const membersByOrganizer = groupBy(memberships, (membership) => membership.doc.organizerId);
+  const reviewsByOrganizer = groupBy(reviews, (review) => review.organizerId);
+  const upcomingByOrganizer = groupBy(
     events
       .filter((event) => event.doc.status === "active" && event.doc.startTime.toDate() > new Date())
       .sort((a, b) => a.doc.startTime.toMillis() - b.doc.startTime.toMillis()),
-    (event) => event.clubId
+    (event) => event.organizerId
   );
-  for (const club of clubs) {
-    const activeMembers = (membersByClub.get(club.id) ?? [])
+  for (const organizer of organizers) {
+    const activeMembers = (membersByOrganizer.get(organizer.id) ?? [])
       .filter((membership) => membership.doc.status === "active");
-    const clubReviews = reviewsByClub.get(club.id) ?? [];
-    const totalRating = clubReviews.reduce((sum, review) => sum + review.rating, 0);
-    const nextEvent = upcomingByClub.get(club.id)?.[0];
-    club.doc.memberCount = activeMembers.length;
-    club.doc.reviewCount = clubReviews.length;
-    club.doc.rating = clubReviews.length > 0 ?
-      Number((totalRating / clubReviews.length).toFixed(1)) :
+    const organizerReviews = reviewsByOrganizer.get(organizer.id) ?? [];
+    const totalRating = organizerReviews.reduce((sum, review) => sum + review.rating, 0);
+    const nextEvent = upcomingByOrganizer.get(organizer.id)?.[0];
+    organizer.doc.memberCount = activeMembers.length;
+    organizer.doc.reviewCount = organizerReviews.length;
+    organizer.doc.rating = organizerReviews.length > 0 ?
+      Number((totalRating / organizerReviews.length).toFixed(1)) :
       0;
-    club.doc.nextEventAt = nextEvent?.doc.startTime ?? null;
-    club.doc.nextEventLabel = nextEvent ? nextEvent.doc.meetingPoint : null;
+    organizer.doc.nextEventAt = nextEvent?.doc.startTime ?? null;
+    organizer.doc.nextEventLabel = nextEvent ? nextEvent.doc.meetingPoint : null;
   }
 }
 
@@ -2392,8 +2395,8 @@ export function validateSeedDocuments(writePlan) {
   const result = {
     users: 0,
     publicProfiles: 0,
-    clubs: 0,
-    clubMemberships: 0,
+    organizers: 0,
+    organizerMemberships: 0,
     events: 0,
     eventParticipations: 0,
     eventSuccessPlans: 0,
@@ -2403,7 +2406,7 @@ export function validateSeedDocuments(writePlan) {
     eventSuccessAssignments: 0,
     eventSuccessFeedback: 0,
     eventSuccessScorecards: 0,
-    clubScheduleLocks: 0,
+    organizerScheduleLocks: 0,
     userEventScheduleLocks: 0,
     savedEvents: 0,
     payments: 0,
@@ -2453,20 +2456,20 @@ export function validateSeedDocuments(writePlan) {
         doc.path
       );
       result.publicProfiles += 1;
-    } else if (isClubPath(doc.path)) {
+    } else if (isOrganizerPath(doc.path)) {
       assertValidSchemaPayload(
-        validateClubDocument,
+        validateOrganizerDocument,
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.clubs += 1;
-    } else if (isClubMembershipPath(doc.path)) {
+      result.organizers += 1;
+    } else if (isOrganizerMembershipPath(doc.path)) {
       assertValidSchemaPayload(
-        validateClubMembershipDocument,
+        validateOrganizerMembershipDocument,
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.clubMemberships += 1;
+      result.organizerMemberships += 1;
     } else if (isRunPath(doc.path)) {
       const data = schemaSerializableFirestoreData(doc.data);
       assertValidSchemaPayload(
@@ -2535,13 +2538,13 @@ export function validateSeedDocuments(writePlan) {
         doc.path
       );
       result.eventSuccessScorecards += 1;
-    } else if (isClubScheduleLockPath(doc.path)) {
+    } else if (isOrganizerScheduleLockPath(doc.path)) {
       assertValidSchemaPayload(
-        validateClubScheduleLockDocument,
+        validateOrganizerScheduleLockDocument,
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.clubScheduleLocks += 1;
+      result.organizerScheduleLocks += 1;
     } else if (isUserEventScheduleLockPath(doc.path)) {
       assertValidSchemaPayload(
         validateUserEventScheduleLockDocument,
@@ -2642,8 +2645,8 @@ function assertSyntheticEventDiscoveryProjection({path: docPath, data}) {
 
   const expected = eventDiscoveryProjection({
     event: data,
-    clubLocation: data.discoveryCityName,
-    clubLocationMarketId: data.discoveryMarketId,
+    organizerLocation: data.discoveryCityName,
+    organizerLocationMarketId: data.discoveryMarketId,
     bookedCount: data.bookedCount,
   });
   const mismatches = requiredEventDiscoveryProjectionFields.filter((field) =>
@@ -2723,12 +2726,12 @@ function isPublicProfilePath(docPath) {
   return /^publicProfiles\/[^/]+$/.test(docPath);
 }
 
-function isClubPath(docPath) {
-  return /^clubs\/[^/]+$/.test(docPath);
+function isOrganizerPath(docPath) {
+  return /^organizers\/[^/]+$/.test(docPath);
 }
 
-function isClubMembershipPath(docPath) {
-  return /^clubMemberships\/[^/]+$/.test(docPath);
+function isOrganizerMembershipPath(docPath) {
+  return /^organizerMemberships\/[^/]+$/.test(docPath);
 }
 
 function isRunPath(docPath) {
@@ -2767,8 +2770,8 @@ function isEventSuccessScorecardPath(docPath) {
   return /^eventSuccessScorecards\/[^/]+$/.test(docPath);
 }
 
-function isClubScheduleLockPath(docPath) {
-  return /^clubScheduleLocks\/[^/]+$/.test(docPath);
+function isOrganizerScheduleLockPath(docPath) {
+  return /^organizerScheduleLocks\/[^/]+$/.test(docPath);
 }
 
 function isUserEventScheduleLockPath(docPath) {
@@ -2966,7 +2969,7 @@ async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
 
 function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
   const parts = doc.path.split("/");
-  if (doc.path.startsWith("clubMemberships/")) {
+  if (doc.path.startsWith("organizerMemberships/")) {
     return newAnchorSet.has(doc.data.uid);
   }
   if (doc.path.startsWith("eventParticipations/")) {
@@ -3017,27 +3020,27 @@ function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
 
 async function filterAppendDocsForExistingTargets(firestore, docs) {
   const eventIds = new Set();
-  const clubIds = new Set();
+  const organizerIds = new Set();
 
   for (const doc of docs) {
     collectString(doc.data.eventId, eventIds);
-    collectString(doc.data.clubId, clubIds);
-    collectString(doc.data.clubId, clubIds);
+    collectString(doc.data.organizerId, organizerIds);
+    collectString(doc.data.organizerId, organizerIds);
     if (Array.isArray(doc.data.eventIds)) {
       for (const eventId of doc.data.eventIds) collectString(eventId, eventIds);
     }
   }
 
-  const [existingEventIds, existingClubIds] = await Promise.all([
+  const [existingEventIds, existingOrganizerIds] = await Promise.all([
     existingDocumentIds(firestore, "events", eventIds),
-    existingDocumentIds(firestore, "clubs", clubIds),
+    existingDocumentIds(firestore, "organizers", organizerIds),
   ]);
 
   const skippedPaths = [];
   let kept = docs.filter((doc) => {
     const hasExistingTargets = docTargetsExist(doc, {
       existingEventIds,
-      existingClubIds,
+      existingOrganizerIds,
     });
     if (!hasExistingTargets) skippedPaths.push(doc.path);
     return hasExistingTargets;
@@ -3072,14 +3075,14 @@ async function existingDocumentIds(firestore, collection, ids) {
   return existing;
 }
 
-function docTargetsExist(doc, {existingEventIds, existingClubIds}) {
+function docTargetsExist(doc, {existingEventIds, existingOrganizerIds}) {
   if (doc.path.startsWith("matches/suvbot_") ||
       doc.path.startsWith("demoSelfServiceAccess/")) {
     return true;
   }
   if (!stringTargetExists(doc.data.eventId, existingEventIds)) return false;
-  if (!stringTargetExists(doc.data.clubId, existingClubIds)) return false;
-  if (!stringTargetExists(doc.data.clubId, existingClubIds)) return false;
+  if (!stringTargetExists(doc.data.organizerId, existingOrganizerIds)) return false;
+  if (!stringTargetExists(doc.data.organizerId, existingOrganizerIds)) return false;
   if (Array.isArray(doc.data.eventIds)) {
     return doc.data.eventIds.every((eventId) =>
       stringTargetExists(eventId, existingEventIds)
@@ -3254,13 +3257,13 @@ function matchIdForSwipe(doc) {
 
 function buildAppendAggregateUpdates(docs) {
   const eventUpdates = new Map();
-  const clubUpdates = new Map();
+  const organizerUpdates = new Map();
 
   for (const doc of docs) {
-    if (doc.path.startsWith("clubMemberships/") &&
+    if (doc.path.startsWith("organizerMemberships/") &&
         doc.data.status === "active") {
-      const clubUpdate = mapEntry(clubUpdates, `clubs/${doc.data.clubId}`);
-      clubUpdate.memberCount = (clubUpdate.memberCount ?? 0) + 1;
+      const organizerUpdate = mapEntry(organizerUpdates, `organizers/${doc.data.organizerId}`);
+      organizerUpdate.memberCount = (organizerUpdate.memberCount ?? 0) + 1;
     }
 
     if (!doc.path.startsWith("eventParticipations/")) continue;
@@ -3287,7 +3290,7 @@ function buildAppendAggregateUpdates(docs) {
   }
 
   return [
-    ...[...clubUpdates.entries()].map(([docPath, increments]) => ({
+    ...[...organizerUpdates.entries()].map(([docPath, increments]) => ({
       path: docPath,
       op: "update",
       data: incrementPatch(increments),
@@ -3403,7 +3406,7 @@ function printSummary({
   console.log(
     `Schema-validated docs: ${schemaValidation.users} users, ` +
     `${schemaValidation.publicProfiles} public profiles, ` +
-    `${schemaValidation.clubs} clubs, ` +
+    `${schemaValidation.organizers} clubs, ` +
     `${schemaValidation.events} events, ` +
     `${schemaValidation.eventParticipations} participations, ` +
     `${schemaValidation.profileDecisions} decisions, ` +

@@ -305,7 +305,6 @@
       "draft-event": null,
       "cancelled-event": null,
       "synthetic-event": null,
-      "mismatched-club": null,
       "reversed-times": null
     },
     "externalEvents": {

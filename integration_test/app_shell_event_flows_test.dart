@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/events/presentation/event_action_keys.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
@@ -21,7 +20,7 @@ void main() {
     final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'run-1',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 1,
@@ -72,7 +71,7 @@ void main() {
       final organizer = organizer_helpers.buildOrganizer();
       final run = event_helpers.buildEvent(
         id: 'paid-run-1',
-        clubId: organizer.id,
+        organizerId: organizer.id,
         startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
         meetingPoint: 'Carter Road Amphitheatre',
         bookedCount: 1,
@@ -136,7 +135,7 @@ void main() {
     final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'run-1',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 1,
@@ -181,7 +180,7 @@ void main() {
     final organizer = organizer_helpers.buildOrganizer();
     final run = event_helpers.buildEvent(
       id: 'run-1',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 20,

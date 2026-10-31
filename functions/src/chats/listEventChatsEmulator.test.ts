@@ -38,13 +38,13 @@ test("Firestore directory discovers admitted native and imported rooms only",
         hostUserId: other, hostUserIds: [], hostProfiles: []});
       for (const key of ["native", "imported", "cancelled", "waiting",
         "conflict", "duplicate", "closed", "foreign", "inactive"]) {
-        await put("events", id(key), {organizerId, clubId: organizerId,
-          name: key, status: key === "inactive" ? "cancelled" : "active"});
+        await put("events", id(key), {organizerId, name: key,
+          status: key === "inactive" ? "cancelled" : "active"});
       }
       for (const key of ["native", "cancelled", "conflict", "closed",
         "inactive"]) {
         await put("eventParticipations", `${id(key)}_${uid}`, {
-          eventId: id(key), organizerId, clubId: organizerId, uid,
+          eventId: id(key), organizerId, uid,
           status: ["cancelled", "conflict"].includes(key) ?
             "cancelled" : "signedUp"});
       }

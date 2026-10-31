@@ -1300,7 +1300,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'clubId'**
+  /// **'organizerId'**
   String get organizersOrganizerDetailScreenBodyOrganizerid;
 
   /// Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (body).
@@ -2258,7 +2258,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/presentation/event_detail_screen.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'clubId'**
+  /// **'organizerId'**
   String get eventsEventDetailScreenBodyOrganizerid;
 
   /// Product copy used by lib/events/presentation/event_location_map_body_screen.dart (label).

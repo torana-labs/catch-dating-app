@@ -37,4 +37,4 @@ jobs:
       - run: node --check tool/demo/demo_ops_core.mjs
       - run: node --check tool/demo/demo_ops_core.test.mjs
       - run: node --check tool/demo/seed_demo_data.mjs
-      - run: node --test tool/demo/demo_ops_core.test.mjs tool/data/recompute_event_aggregate_counts.test.mjs tool/data/recompute_club_member_counts.test.mjs
+      - run: node --test tool/demo/demo_ops_core.test.mjs tool/data/recompute_event_aggregate_counts.test.mjs tool/data/recompute_organizer_member_counts.test.mjs

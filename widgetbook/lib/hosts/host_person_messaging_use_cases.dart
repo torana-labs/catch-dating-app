@@ -90,8 +90,8 @@ class _MessageFixtureState extends State<_MessageFixture> {
       id: 'catch-person',
       user1Id: 'host',
       user2Id: 'person',
-      clubId: 'org',
-      conversationType: MatchConversationType.clubHostInquiry,
+      organizerId: 'org',
+      conversationType: MatchConversationType.organizerHostInquiry,
       createdAt: now,
       eventIds: const [],
     );

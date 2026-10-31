@@ -31,7 +31,7 @@ Widget dashboardOrganizerPostsHomeSectionReviewStates(BuildContext context) {
   ];
 
   return WidgetbookPageCatalogFrame(
-    title: 'ClubPostsHomeSection',
+    title: 'OrganizerPostsHomeSection',
     contractId: 'dashboard.home.club_posts',
     children: [
       WidgetbookPageStateCard(
@@ -66,7 +66,7 @@ Widget dashboardOrganizerPostsHomeSectionReviewStates(BuildContext context) {
 )
 Widget dashboardOrganizerPostHomeCardReviewStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'ClubPostHomeCard',
+    title: 'OrganizerPostHomeCard',
     contractId: 'dashboard.home.club_post_card',
     children: [
       WidgetbookPageStateCard(
@@ -111,11 +111,11 @@ ActivityNotification _organizerPostNotification({
   return ActivityNotification(
     id: id,
     uid: widgetbookDashboardViewer.uid,
-    type: ActivityNotificationType.clubUpdate,
+    type: ActivityNotificationType.organizerUpdate,
     title: 'New update from ${widgetbookDashboardOrganizer.name}',
     body: body,
     createdAt: DashboardSurfaceFixtures.now.subtract(const Duration(hours: 1)),
-    clubId: widgetbookDashboardOrganizer.id,
+    organizerId: widgetbookDashboardOrganizer.id,
     postId: postId,
     eventId: eventId,
     actorName: widgetbookDashboardOrganizer.name,

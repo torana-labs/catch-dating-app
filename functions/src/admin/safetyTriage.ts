@@ -116,7 +116,7 @@ export interface AdminSafetyTriageDetails {
   primaryUserId: string | null;
   secondaryUserId: string | null;
   eventId: string | null;
-  clubId: string | null;
+  organizerId: string | null;
   source: string | null;
   contextId: string | null;
   assignment: AdminSafetyTriageAssignment;
@@ -708,7 +708,7 @@ function normalizeEventSafetyDetail(
   now: Date
 ): AdminSafetyTriageDetails {
   const eventId = stringValue(data.eventId);
-  const clubId = stringValue(data.clubId);
+  const organizerId = stringValue(data.organizerId);
   const reporterUserId = stringValue(data.reporterUserId);
   const feedbackId = stringValue(data.feedbackId);
   const source = stringValue(data.source);
@@ -718,17 +718,17 @@ function normalizeEventSafetyDetail(
     title: eventId ? `Event ${eventId}` : "Event safety report",
     summary: [
       eventId ? `event ${eventId}` : "event unknown",
-      clubId ? `club ${clubId}` : "club unknown",
+      organizerId ? `club ${organizerId}` : "club unknown",
     ].join(" - "),
     primaryUserId: reporterUserId,
     secondaryUserId: null,
     eventId,
-    clubId,
+    organizerId,
     source,
     contextId: feedbackId,
     fields: [
       field("Event", eventId),
-      field("Club", clubId),
+      field("Club", organizerId),
       field("Reporter", reporterUserId),
       field("Feedback id", feedbackId),
       field("Source", source),
@@ -736,7 +736,8 @@ function normalizeEventSafetyDetail(
     ],
     evidence: [
       evidence("Event", eventId, eventId ? `events/${eventId}` : null, false),
-      evidence("Club", clubId, clubId ? `clubs/${clubId}` : null, false),
+      evidence("Club", organizerId, organizerId ? `clubs/${organizerId}` :
+        null, false),
       evidence("Reporter", reporterUserId, userPath(reporterUserId), false),
       evidence("Feedback", feedbackId, sourcePathFromValue(feedbackId), false),
       evidence("Note preview", notePreview, null, true),
@@ -770,7 +771,7 @@ function normalizeEventAssistanceCaseDetail(
     primaryUserId: null,
     secondaryUserId: null,
     eventId: context.eventId,
-    clubId: context.organizerId,
+    organizerId: context.organizerId,
     source: "event_assistance_guest_response",
     contextId: restricted.responseId,
     fields: [
@@ -811,7 +812,7 @@ function baseDetail(
     primaryUserId: string | null;
     secondaryUserId: string | null;
     eventId?: string | null;
-    clubId?: string | null;
+    organizerId?: string | null;
     source: string | null;
     contextId: string | null;
     fields: Array<AdminSafetyTriageField | null>;
@@ -831,7 +832,7 @@ function baseDetail(
     primaryUserId: input.primaryUserId,
     secondaryUserId: input.secondaryUserId,
     eventId: input.eventId ?? null,
-    clubId: input.clubId ?? null,
+    organizerId: input.organizerId ?? null,
     source: input.source,
     contextId: input.contextId,
     assignment: assignmentFor(target, data, severity),
@@ -906,15 +907,15 @@ async function loadPriorHistory(
         target.targetPath
       ) :
       null,
-    item.clubId ?
+    item.organizerId ?
       loadHistorySignal(
         db.collection("eventSafetyReports").where(
-          "clubId",
+          "organizerId",
           "==",
-          item.clubId
+          item.organizerId
         ).limit(12),
         "eventSafetyReports",
-        "eventSafetyForClub",
+        "eventSafetyForOrganizer",
         "Event safety reports for organizer",
         target.targetPath
       ) :

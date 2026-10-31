@@ -35,7 +35,7 @@ import 'shell_fixture.dart';
 )
 Widget hostHomeEventSectionStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostEventsClubCard',
+    title: 'HostEventsOrganizerCard',
     contractId: 'section.host.home_events',
     children: [
       WidgetbookPageStateCard(

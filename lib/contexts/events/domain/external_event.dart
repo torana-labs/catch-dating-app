@@ -50,7 +50,7 @@ abstract class ExternalEvent with _$ExternalEvent {
     return _ExternalEvent(
       id: _string(json['eventId']) ?? '',
       canonicalHostId: _string(json['canonicalHostId']) ?? '',
-      compatibilityOrganizerId: _string(json['compatibilityClubId']) ?? '',
+      compatibilityOrganizerId: _string(json['canonicalHostId']) ?? '',
       title: _string(json['title']) ?? '',
       description: _string(json['description']) ?? '',
       startTime: _requiredTimestamp(json['startTime'], 'startTime'),

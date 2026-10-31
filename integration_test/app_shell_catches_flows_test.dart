@@ -20,7 +20,7 @@ void main() {
     final organizer = organizer_helpers.buildOrganizer();
     final attendedRun = event_helpers.buildEvent(
       id: 'attended-run-1',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().subtract(const Duration(hours: 11)),
       endTime: DateTime.now().subtract(const Duration(hours: 10)),
       meetingPoint: 'Bandstand Steps',
@@ -50,7 +50,7 @@ void main() {
     final organizer = organizer_helpers.buildOrganizer();
     final attendedRun = event_helpers.buildEvent(
       id: 'attended-run-1',
-      clubId: organizer.id,
+      organizerId: organizer.id,
       startTime: DateTime.now().subtract(const Duration(hours: 11)),
       endTime: DateTime.now().subtract(const Duration(hours: 10)),
       meetingPoint: 'Bandstand Steps',

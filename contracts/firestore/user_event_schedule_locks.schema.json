@@ -22,7 +22,7 @@
     "ownerId",
     "slot",
     "eventId",
-    "clubId",
+    "organizerId",
     "uid",
     "startTimeMillis",
     "endTimeMillis"
@@ -43,10 +43,6 @@
       "x-catch-ownership": "callable-owned"
     },
     "eventId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
-      "x-catch-ownership": "callable-owned"
-    },
-    "clubId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
       "x-catch-ownership": "callable-owned"
     },

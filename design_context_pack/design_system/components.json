@@ -14895,8 +14895,8 @@
       "kind": "composite",
       "tier": "T4",
       "aliases": [
-        "ClubActionBar",
-        "ClubBottomBar",
+        "OrganizerActionBar",
+        "OrganizerBottomBar",
         "MembershipBar"
       ],
       "summary": "Club-detail membership dock with role-specific guest, visitor, member, and owner action states.",
@@ -14910,7 +14910,7 @@
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/ClubDock",
+          "componentName": "Catch/OrganizerDock",
           "componentUrl": null
         },
         "codeConnect": {
@@ -14919,7 +14919,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "ClubDock",
+          "handoffName": "OrganizerDock",
           "allowed": true
         }
       },
@@ -16986,7 +16986,7 @@
               "waitlistPromotion",
               "eventCancelled",
               "eventUpdated",
-              "clubUpdate"
+              "organizerUpdate"
             ]
           },
           {
@@ -18659,9 +18659,9 @@
       "kind": "primitive",
       "tier": "T2",
       "aliases": [
-        "ClubCoverImage",
-        "ClubImage",
-        "ClubPhoto"
+        "OrganizerCoverImage",
+        "OrganizerImage",
+        "OrganizerPhoto"
       ],
       "summary": "Canonical club-cover resolver for uploaded photos, the global image grade, deterministic club artwork, and compact fallbacks.",
       "dart": {
@@ -18674,7 +18674,7 @@
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/ClubCover",
+          "componentName": "Catch/OrganizerCover",
           "componentUrl": null
         },
         "codeConnect": {
@@ -18745,7 +18745,7 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use whenever a club cover is rendered; do not resolve imageUrl, clubPhotos, or fallback artwork independently at call sites."
+          "Use whenever a club cover is rendered; do not resolve imageUrl, organizerPhotos, or fallback artwork independently at call sites."
         ]
       },
       "governance": {

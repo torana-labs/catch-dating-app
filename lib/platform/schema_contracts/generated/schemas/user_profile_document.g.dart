@@ -34,7 +34,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
     'prefsMessages',
     'prefsEventReminders',
     'prefsRunStatusUpdates',
-    'prefsClubUpdates',
+    'prefsOrganizerUpdates',
     'prefsWeeklyDigest',
     'prefsShowOnMap',
   ],
@@ -758,7 +758,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
       'type': 'boolean',
       'x-catch-ownership': 'client-writable',
     },
-    'prefsClubUpdates': <String, Object?>{
+    'prefsOrganizerUpdates': <String, Object?>{
       'type': 'boolean',
       'x-catch-ownership': 'client-writable',
     },

@@ -32,7 +32,7 @@ Lab/manual-QA screens (`event_policy_lab`, `event_success_lab`,
   ActivityTypeRow/MoreActivityTypesRow (browse grid), VibeTile, PhotoSlotTile,
   OrganizerProfileImageTile, DraftCard, PlaceSuggestionRow, HostAnalyticsEventTile,
   HostCapacityTile, CatchRosterTileCell (+ roster table grammar),
-  ChatShareCard/EventShareCard/ClubShareCard (+ pills as share-material),
+  ChatShareCard/EventShareCard/OrganizerShareCard (+ pills as share-material),
   MessageBubble/ShareCardBubble (chat material), RecapHeader, OrganizerHeroHeader,
   analytics metric-tile grids (kit v1).
 - **R2 actionable modules:** EventDetailHostCard (actions earn the box),
@@ -41,7 +41,7 @@ Lab/manual-QA screens (`event_policy_lab`, `event_success_lab`,
   HostTodayEventHero, HostTodayTaskCard, HostEmptyActionCard,
   HostInviteLinkRow, HostWaitlistBulkOfferAction, SuvbotResetActionRow,
   LiveCheckInQrCard, HostCheckInQrPanel, HostPaymentAccount* cards,
-  HostClubManagementPanel, HostOrganizerPayoutPrompt, BookingConflictEventRow,
+  HostOrganizerManagementPanel, HostOrganizerPayoutPrompt, BookingConflictEventRow,
   Group/RotationOverride editors, _SetupDisclosureSection, PromptField,
   OnboardingRunningPrefsStep (form input modules), PhoneCountryCodePicker
   (control chrome), HostParticipationLifecycleBoard, TargetAttendeeControl.

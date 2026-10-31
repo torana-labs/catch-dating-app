@@ -137,12 +137,12 @@ GoRouter _router({bool custom = false}) => GoRouter(
     GoRoute(
       path: '/start',
       builder: (_, state) => HostEventRehearsalStartScreen(
-        clubId: 'club-1',
+        organizerId: 'club-1',
         startFromOrganizerDefaults: custom,
       ),
     ),
     GoRoute(
-      path: '/runtime/:clubId/:sessionId',
+      path: '/runtime/:organizerId/:sessionId',
       name: Routes.hostEventRehearsalScreen.name,
       builder: (_, state) =>
           Scaffold(body: Text('runtime: ${state.pathParameters['sessionId']}')),

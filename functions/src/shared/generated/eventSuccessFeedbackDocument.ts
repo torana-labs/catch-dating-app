@@ -7,8 +7,7 @@
  */
 export interface EventSuccessFeedbackDocument {
   eventId: string;
-  clubId: string;
-  organizerId?: string;
+  organizerId: string;
   uid: string;
   welcomeRating: number;
   structureRating: number;

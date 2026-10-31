@@ -8,7 +8,6 @@ import {
 } from "../shared/businessRules";
 
 const MINUTE_MS = 60 * 1000;
-const CLUB_LOCK_COLLECTION = "clubScheduleLocks";
 const ORGANIZER_LOCK_COLLECTION = "organizerScheduleLocks";
 const USER_LOCK_COLLECTION = "userEventScheduleLocks";
 const USER_SCHEDULE_STATUSES = ["signedUp", "waitlisted", "attended"];
@@ -20,18 +19,17 @@ interface ScheduleWindow {
   endTimeMillis: number;
 }
 
-interface ClaimClubScheduleParams extends ScheduleWindow {
-  clubId: string;
-  organizerId?: string;
+interface ClaimOrganizerScheduleParams extends ScheduleWindow {
+  organizerId: string;
   eventId: string;
 }
 
-interface ReplaceClubScheduleParams extends ClaimClubScheduleParams {
+interface ReplaceOrganizerScheduleParams extends ClaimOrganizerScheduleParams {
   previousStartTimeMillis: number;
   previousEndTimeMillis: number;
 }
 
-interface ClaimUserScheduleParams extends ClaimClubScheduleParams {
+interface ClaimUserScheduleParams extends ClaimOrganizerScheduleParams {
   uid: string;
 }
 
@@ -45,7 +43,6 @@ interface ScheduleLockDocument {
   ownerId: string;
   slot: number;
   eventId: string;
-  clubId?: string;
   organizerId?: string;
   uid?: string;
   startTimeMillis: number;
@@ -81,28 +78,27 @@ export function assertValidEventTimeRange(
  * Claims server-owned club schedule locks for a new active event.
  * @param {FirebaseFirestore.Transaction} tx Firestore transaction.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {ClaimClubScheduleParams} params Event schedule params.
+ * @param {ClaimOrganizerScheduleParams} params Event schedule params.
  */
-export async function claimClubScheduleInTransaction(
+export async function claimOrganizerScheduleInTransaction(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
-  params: ClaimClubScheduleParams
+  params: ClaimOrganizerScheduleParams
 ) {
   assertValidEventTimeRange(params.startTimeMillis, params.endTimeMillis);
-  await assertNoClubConflictByEventsQuery(tx, db, params);
+  await assertNoOrganizerConflictByEventsQuery(tx, db, params);
   await claimLocksInTransaction(
     tx,
     db,
-    clubLockRefs(db, params.clubId, params, params.organizerId !== undefined),
+    organizerLockRefs(db, params.organizerId, params),
     params.eventId,
     "This club already has an event during that time.",
     (slot) => ({
-      ownerType: params.organizerId ? "organizer" : "club",
-      ownerId: params.clubId,
+      ownerType: "organizer",
+      ownerId: params.organizerId,
       slot,
       eventId: params.eventId,
-      clubId: params.clubId,
-      organizerId: params.organizerId ?? params.clubId,
+      organizerId: params.organizerId,
       startTimeMillis: params.startTimeMillis,
       endTimeMillis: params.endTimeMillis,
     })
@@ -113,21 +109,20 @@ export async function claimClubScheduleInTransaction(
  * Replaces club schedule locks after a host schedule edit.
  * @param {FirebaseFirestore.Transaction} tx Firestore transaction.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {ReplaceClubScheduleParams} params Event schedule params.
+ * @param {ReplaceOrganizerScheduleParams} params Event schedule params.
  */
-export async function replaceClubScheduleInTransaction(
+export async function replaceOrganizerScheduleInTransaction(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
-  params: ReplaceClubScheduleParams
+  params: ReplaceOrganizerScheduleParams
 ) {
   assertValidEventTimeRange(params.startTimeMillis, params.endTimeMillis);
-  await assertNoClubConflictByEventsQuery(tx, db, params);
+  await assertNoOrganizerConflictByEventsQuery(tx, db, params);
 
-  const nextRefs = clubLockRefs(
+  const nextRefs = organizerLockRefs(
     db,
-    params.clubId,
-    params,
-    params.organizerId !== undefined
+    params.organizerId,
+    params
   );
   await claimLocksInTransaction(
     tx,
@@ -136,22 +131,21 @@ export async function replaceClubScheduleInTransaction(
     params.eventId,
     "This club already has an event during that time.",
     (slot) => ({
-      ownerType: params.organizerId ? "organizer" : "club",
-      ownerId: params.clubId,
+      ownerType: "organizer",
+      ownerId: params.organizerId,
       slot,
       eventId: params.eventId,
-      clubId: params.clubId,
-      organizerId: params.organizerId ?? params.clubId,
+      organizerId: params.organizerId,
       startTimeMillis: params.startTimeMillis,
       endTimeMillis: params.endTimeMillis,
     })
   );
 
   const nextSlots = new Set(nextRefs.map(({slot}) => slot));
-  for (const {ref, slot} of clubLockRefs(db, params.clubId, {
+  for (const {ref, slot} of organizerLockRefs(db, params.organizerId, {
     startTimeMillis: params.previousStartTimeMillis,
     endTimeMillis: params.previousEndTimeMillis,
-  }, params.organizerId !== undefined)) {
+  })) {
     if (!nextSlots.has(slot)) {
       tx.delete(ref);
     }
@@ -162,18 +156,17 @@ export async function replaceClubScheduleInTransaction(
  * Releases club locks when an event is cancelled or hard-deleted.
  * @param {FirebaseFirestore.Transaction} tx Firestore transaction.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {ClaimClubScheduleParams} params Event schedule params.
+ * @param {ClaimOrganizerScheduleParams} params Event schedule params.
  */
-export function releaseClubScheduleInTransaction(
+export function releaseOrganizerScheduleInTransaction(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
-  params: ClaimClubScheduleParams
+  params: ClaimOrganizerScheduleParams
 ) {
-  for (const {ref} of clubLockRefs(
+  for (const {ref} of organizerLockRefs(
     db,
-    params.clubId,
-    params,
-    params.organizerId !== undefined
+    params.organizerId,
+    params
   )) {
     tx.delete(ref);
   }
@@ -221,8 +214,7 @@ export async function prepareUserEventScheduleClaimInTransaction(
         ownerId: params.uid,
         slot,
         eventId: params.eventId,
-        clubId: params.clubId,
-        organizerId: params.organizerId ?? params.clubId,
+        organizerId: params.organizerId,
         uid: params.uid,
         startTimeMillis: params.startTimeMillis,
         endTimeMillis: params.endTimeMillis,
@@ -308,17 +300,15 @@ function scheduleSlots(params: ScheduleWindow): number[] {
   return slots;
 }
 
-function clubLockRefs(
+function organizerLockRefs(
   db: FirebaseFirestore.Firestore,
-  clubId: string,
-  params: ScheduleWindow,
-  canonicalOrganizer = false
+  organizerId: string,
+  params: ScheduleWindow
 ) {
   return scheduleSlots(params).map((slot) => ({
     slot,
-    ref: db.collection(canonicalOrganizer ?
-      ORGANIZER_LOCK_COLLECTION : CLUB_LOCK_COLLECTION)
-      .doc(`${clubId}_${slot}`),
+    ref: db.collection(ORGANIZER_LOCK_COLLECTION)
+      .doc(`${organizerId}_${slot}`),
   }));
 }
 
@@ -357,17 +347,17 @@ async function claimLocksInTransaction(
   }
 }
 
-async function assertNoClubConflictByEventsQuery(
+async function assertNoOrganizerConflictByEventsQuery(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
-  params: ClaimClubScheduleParams
+  params: ClaimOrganizerScheduleParams
 ) {
   const snap = await tx.get(db
     .collection("events")
     .where(
-      params.organizerId ? "organizerId" : "clubId",
+      params.organizerId ? "organizerId" : "organizerId",
       "==",
-      params.organizerId ?? params.clubId
+      params.organizerId
     )
     .where("status", "==", "active"));
 

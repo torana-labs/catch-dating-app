@@ -16,7 +16,7 @@ import 'fixtures.dart';
 )
 Widget exploreOrganizerPosterCardStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubCard',
+    title: 'OrganizerCard',
     catalogId: 'card.explore.feed.club_card',
     children: [
       WidgetbookPageStateCard(
@@ -44,7 +44,7 @@ Widget exploreOrganizerPosterCardStates(BuildContext context) {
 )
 Widget exploreFeedOrganizerRowStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ExploreFeedClubRow',
+    title: 'ExploreFeedOrganizerRow',
     catalogId: 'row.explore.feed.club',
     children: [
       WidgetbookPageStateCard(
@@ -74,7 +74,7 @@ Widget exploreFeedOrganizerRowStates(BuildContext context) {
 )
 Widget exploreOrganizerCoverStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubCover',
+    title: 'OrganizerCover',
     catalogId: 'card.explore.feed.club_cover',
     children: [
       WidgetbookPageStateCard(
@@ -106,7 +106,7 @@ Widget exploreOrganizerCoverStates(BuildContext context) {
 )
 Widget exploreOrganizerTagsStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ExploreClubTagList',
+    title: 'ExploreOrganizerTagList',
     catalogId: 'card.explore.feed.club_tags',
     children: [
       WidgetbookPageStateCard(

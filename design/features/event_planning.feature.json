@@ -34,7 +34,7 @@
         ],
         "componentContracts": ["catch.badge", "catch.button", "catch.empty_state", "catch.error_state", "catch.surface", "catch.top_bar"],
         "dataContracts": [
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/event_participations.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/firestore/saved_events.schema.json"
@@ -71,7 +71,7 @@
           "owner": "calendar_screen",
           "codeValue": "organizerNameLookupProvider",
           "cardinality": "singleton",
-          "scopeKeys": ["clubIdSet", "lookupGeneration"],
+          "scopeKeys": ["organizerIdSet", "lookupGeneration"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["club_names_loading_error", "planned_events"]}],
           "description": "Retries the secondary organizer-name lookup without discarding the already loaded event agenda."
         },
@@ -212,7 +212,7 @@
         ],
         "componentContracts": ["catch.empty_state", "catch.error_state", "catch.surface", "catch.top_bar"],
         "dataContracts": [
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/firestore/saved_events.schema.json"
         ]
@@ -257,7 +257,7 @@
           "owner": "saved_events_screen",
           "codeValue": "organizerNameLookupProvider",
           "cardinality": "singleton",
-          "scopeKeys": ["clubIdSet", "lookupGeneration"],
+          "scopeKeys": ["organizerIdSet", "lookupGeneration"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["club_names_loading_error", "populated_saved_events"]}],
           "description": "Retries organizer-name enrichment without discarding loaded saved-event rows."
         },

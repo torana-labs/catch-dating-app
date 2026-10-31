@@ -21,7 +21,6 @@ test("practice settings commit once, isolate effects and fence reset",
     }
     const db = getEmulatorFirestore(); const h = harness();
     h.session.organizerId = "practice-settings-" + h.id;
-    h.session.clubId = h.session.organizerId;
     const sessionRef = db.collection("eventRehearsals").doc(h.id);
     const orgRef = db.collection("organizers").doc(h.session.organizerId);
     const batch = db.batch();

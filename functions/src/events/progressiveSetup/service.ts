@@ -100,7 +100,6 @@ export async function createPrivateEventSetup(params: {
         defaultsSnap.data(), db),
     });
     const event = {
-      clubId: command.organizerId,
       organizerId: command.organizerId,
       name: basics.name,
       eventCityId: basics.eventCityId,
@@ -179,8 +178,7 @@ export async function updatePrivateEventBasics(params: {
       organizerSnap, deletedSnap, actorUid
     );
     const event = eventSnap.data() as Record<string, unknown> | undefined;
-    if (!event || event.organizerId !== command.organizerId ||
-        event.clubId !== command.organizerId) {
+    if (!event || event.organizerId !== command.organizerId) {
       throw new HttpsError("not-found", "Event not found.");
     }
     if (receiptSnap.exists) {

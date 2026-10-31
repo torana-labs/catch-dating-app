@@ -19,7 +19,7 @@ async function fixture() {
   const settlement = () => payment().settlement!;
   const event = h.store.get(`events/${eventId}`)!;
   event.endTime = Timestamp.fromMillis(5_500_000);
-  const plan = {eventId, clubId: org, organizerId: org,
+  const plan = {eventId, organizerId: org,
     playbookId: "casual", selectedModuleIds: [], targetAttendeeCount: 2,
     hostGoal: "Meet people", wingmanRequestsEnabled: false,
     contextualOpenersEnabled: false, activeStepIndex: 0,
@@ -105,7 +105,7 @@ test("missing completion, cancelled event and unelapsed end never release",
         delete (h.plan as Record<string, unknown>).completedAt;
       },
       (h) => {
-        h.plan.clubId = "other";
+        h.plan.organizerId = "other";
       },
       (h) => {
         h.plan.completedAt = Timestamp.fromMillis(7_000_000);

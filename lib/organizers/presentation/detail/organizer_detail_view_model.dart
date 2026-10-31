@@ -44,11 +44,11 @@ abstract class OrganizerDetailViewModel with _$OrganizerDetailViewModel {
 @riverpod
 AsyncValue<OrganizerDetailViewModel?> organizerDetailViewModel(
   Ref ref,
-  String clubId,
+  String organizerId,
 ) {
-  final organizerAsync = ref.watch(watchOrganizerProvider(clubId));
-  final eventsAsync = ref.watch(watchEventsForOrganizerProvider(clubId));
-  final reviewsAsync = ref.watch(watchReviewsForOrganizerProvider(clubId));
+  final organizerAsync = ref.watch(watchOrganizerProvider(organizerId));
+  final eventsAsync = ref.watch(watchEventsForOrganizerProvider(organizerId));
+  final reviewsAsync = ref.watch(watchReviewsForOrganizerProvider(organizerId));
   final userProfileAsync = ref.watch(watchUserProfileProvider);
   final uidAsync = ref.watch(uidProvider);
   final reviewsState = catchAsyncStateFromAsyncValue(reviewsAsync);
@@ -57,7 +57,7 @@ AsyncValue<OrganizerDetailViewModel?> organizerDetailViewModel(
   final uid = uidState.value;
   final membershipAsync = uid == null
       ? const AsyncData<OrganizerMembership?>(null)
-      : ref.watch(watchOrganizerMembershipProvider(clubId, uid));
+      : ref.watch(watchOrganizerMembershipProvider(organizerId, uid));
 
   // Log errors from secondary (non-blocking) providers so they don't
   // silently disappear when discarded while building
@@ -68,7 +68,7 @@ AsyncValue<OrganizerDetailViewModel?> organizerDetailViewModel(
         .logError(
           reviewsState.error!,
           reviewsState.stackTrace,
-          reason: 'Failed to load reviews for club $clubId',
+          reason: 'Failed to load reviews for club $organizerId',
         );
   }
   if (userProfileState.hasError) {

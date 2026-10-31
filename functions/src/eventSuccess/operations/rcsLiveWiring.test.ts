@@ -24,7 +24,7 @@ async function fixture(db?: Firestore) {
   const h = await rcsHarness(db, randomUUID(), ["catchEventRcs"]);
   await h.write(h.attendeePath, {...JSON.parse(readFileSync(
     "../contracts/fixtures/valid/event_attendee_doc.json", "utf8")),
-  ...await h.read(h.attendeePath), clubId: h.context.organizerId,
+  ...await h.read(h.attendeePath), organizerId: h.context.organizerId,
   checkedInAt: null, checkedInBy: null, attendanceRevision: 0,
   updatedAt: Timestamp.fromMillis(start)});
   const settings = new EventAssistanceSettingsStore(h.db, () => h.clock.now);

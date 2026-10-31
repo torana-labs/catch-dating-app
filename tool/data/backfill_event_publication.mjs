@@ -48,7 +48,7 @@ export function classifyEventPublication(data) {
       owns(data, "eventLocalDate") || owns(data, "publicRegistrationEnabled")) {
     return {action: "blocked", reason: "unlabelled_progressive_event"};
   }
-  if (owns(data, "organizerId") && data.organizerId !== data.clubId) {
+  if (owns(data, "organizerId") && data.organizerId !== data.organizerId) {
     return {action: "blocked", reason: "organizer_mismatch"};
   }
   if (!validateEventDocument(data)) {

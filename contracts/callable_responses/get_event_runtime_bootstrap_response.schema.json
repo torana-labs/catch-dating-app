@@ -126,7 +126,6 @@
             "accessStatus",
             "attendanceStatus",
             "eventId",
-            "clubId",
             "organizerId",
             "requiredFieldIds",
             "completedFieldIds",
@@ -143,7 +142,6 @@
               "enum": ["invited", "registered", "waitlisted", "checkedIn", "cancelled", null]
             },
             "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-            "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
             "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
             "requiredFieldIds": {
               "type": "array",

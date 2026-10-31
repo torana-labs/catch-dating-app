@@ -522,7 +522,10 @@ void _registerHostOperationsCustomerDetailTests() {
             onOpenFormResponse: (_) {},
             onOpenEvent: (eventId) => context.pushNamed(
               Routes.hostAppEventDetailScreen.name,
-              pathParameters: {'clubId': 'organizer-1', 'eventId': eventId},
+              pathParameters: {
+                'organizerId': 'organizer-1',
+                'eventId': eventId,
+              },
             ),
             onOpenCatchThread: (_) {},
             onOpenWhatsappThread: (_) {},

@@ -7,7 +7,6 @@
  */
 export interface EventRehearsalDocument {
   organizerId: string;
-  clubId: string;
   ownerUid: string;
   sourceEventId: string | null;
   sourceEventRevision: string | null;

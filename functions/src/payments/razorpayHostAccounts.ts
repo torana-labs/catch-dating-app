@@ -107,7 +107,7 @@ export async function createRazorpayHostPaymentAccountHandler(
   await deps.checkRateLimit?.(db, uid, "createRazorpayHostPaymentAccount", {
     maxRequests: 5, windowMs: 60 * 1000,
   });
-  const hostClaim = await db.collection("clubHostClaims").doc(uid).get();
+  const hostClaim = await db.collection("organizerHostClaims").doc(uid).get();
   if (!hostClaim.exists) {
     throw new HttpsError(
       "permission-denied",

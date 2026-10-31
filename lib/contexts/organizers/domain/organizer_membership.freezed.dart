@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OrganizerMembership {
 
-@JsonKey(includeToJson: false) String get id; String get clubId; String get uid; OrganizerMembershipRole get role; OrganizerMembershipStatus get status; bool get pushNotificationsEnabled;@TimestampConverter() DateTime get joinedAt;@NullableTimestampConverter() DateTime? get leftAt;@NullableTimestampConverter() DateTime? get deletedAt;
+@JsonKey(includeToJson: false) String get id; String get organizerId; String get uid; OrganizerMembershipRole get role; OrganizerMembershipStatus get status; bool get pushNotificationsEnabled;@TimestampConverter() DateTime get joinedAt;@NullableTimestampConverter() DateTime? get leftAt;@NullableTimestampConverter() DateTime? get deletedAt;
 /// Create a copy of OrganizerMembership
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $OrganizerMembershipCopyWith<OrganizerMembership> get copyWith => _$OrganizerMem
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrganizerMembership&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.pushNotificationsEnabled, pushNotificationsEnabled) || other.pushNotificationsEnabled == pushNotificationsEnabled)&&(identical(other.joinedAt, joinedAt) || other.joinedAt == joinedAt)&&(identical(other.leftAt, leftAt) || other.leftAt == leftAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrganizerMembership&&(identical(other.id, id) || other.id == id)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.pushNotificationsEnabled, pushNotificationsEnabled) || other.pushNotificationsEnabled == pushNotificationsEnabled)&&(identical(other.joinedAt, joinedAt) || other.joinedAt == joinedAt)&&(identical(other.leftAt, leftAt) || other.leftAt == leftAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,clubId,uid,role,status,pushNotificationsEnabled,joinedAt,leftAt,deletedAt);
+int get hashCode => Object.hash(runtimeType,id,organizerId,uid,role,status,pushNotificationsEnabled,joinedAt,leftAt,deletedAt);
 
 @override
 String toString() {
-  return 'OrganizerMembership(id: $id, clubId: $clubId, uid: $uid, role: $role, status: $status, pushNotificationsEnabled: $pushNotificationsEnabled, joinedAt: $joinedAt, leftAt: $leftAt, deletedAt: $deletedAt)';
+  return 'OrganizerMembership(id: $id, organizerId: $organizerId, uid: $uid, role: $role, status: $status, pushNotificationsEnabled: $pushNotificationsEnabled, joinedAt: $joinedAt, leftAt: $leftAt, deletedAt: $deletedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $OrganizerMembershipCopyWith<$Res>  {
   factory $OrganizerMembershipCopyWith(OrganizerMembership value, $Res Function(OrganizerMembership) _then) = _$OrganizerMembershipCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String clubId, String uid, OrganizerMembershipRole role, OrganizerMembershipStatus status, bool pushNotificationsEnabled,@TimestampConverter() DateTime joinedAt,@NullableTimestampConverter() DateTime? leftAt,@NullableTimestampConverter() DateTime? deletedAt
+@JsonKey(includeToJson: false) String id, String organizerId, String uid, OrganizerMembershipRole role, OrganizerMembershipStatus status, bool pushNotificationsEnabled,@TimestampConverter() DateTime joinedAt,@NullableTimestampConverter() DateTime? leftAt,@NullableTimestampConverter() DateTime? deletedAt
 });
 
 
@@ -65,10 +65,10 @@ class _$OrganizerMembershipCopyWithImpl<$Res>
 
 /// Create a copy of OrganizerMembership
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? clubId = null,Object? uid = null,Object? role = null,Object? status = null,Object? pushNotificationsEnabled = null,Object? joinedAt = null,Object? leftAt = freezed,Object? deletedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? organizerId = null,Object? uid = null,Object? role = null,Object? status = null,Object? pushNotificationsEnabled = null,Object? joinedAt = null,Object? leftAt = freezed,Object? deletedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
+as String,organizerId: null == organizerId ? _self.organizerId : organizerId // ignore: cast_nullable_to_non_nullable
 as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as OrganizerMembershipRole,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
@@ -161,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String clubId,  String uid,  OrganizerMembershipRole role,  OrganizerMembershipStatus status,  bool pushNotificationsEnabled, @TimestampConverter()  DateTime joinedAt, @NullableTimestampConverter()  DateTime? leftAt, @NullableTimestampConverter()  DateTime? deletedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String organizerId,  String uid,  OrganizerMembershipRole role,  OrganizerMembershipStatus status,  bool pushNotificationsEnabled, @TimestampConverter()  DateTime joinedAt, @NullableTimestampConverter()  DateTime? leftAt, @NullableTimestampConverter()  DateTime? deletedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OrganizerMembership() when $default != null:
-return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.pushNotificationsEnabled,_that.joinedAt,_that.leftAt,_that.deletedAt);case _:
+return $default(_that.id,_that.organizerId,_that.uid,_that.role,_that.status,_that.pushNotificationsEnabled,_that.joinedAt,_that.leftAt,_that.deletedAt);case _:
   return orElse();
 
 }
@@ -182,10 +182,10 @@ return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.pu
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String clubId,  String uid,  OrganizerMembershipRole role,  OrganizerMembershipStatus status,  bool pushNotificationsEnabled, @TimestampConverter()  DateTime joinedAt, @NullableTimestampConverter()  DateTime? leftAt, @NullableTimestampConverter()  DateTime? deletedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String organizerId,  String uid,  OrganizerMembershipRole role,  OrganizerMembershipStatus status,  bool pushNotificationsEnabled, @TimestampConverter()  DateTime joinedAt, @NullableTimestampConverter()  DateTime? leftAt, @NullableTimestampConverter()  DateTime? deletedAt)  $default,) {final _that = this;
 switch (_that) {
 case _OrganizerMembership():
-return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.pushNotificationsEnabled,_that.joinedAt,_that.leftAt,_that.deletedAt);case _:
+return $default(_that.id,_that.organizerId,_that.uid,_that.role,_that.status,_that.pushNotificationsEnabled,_that.joinedAt,_that.leftAt,_that.deletedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +202,10 @@ return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.pu
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String clubId,  String uid,  OrganizerMembershipRole role,  OrganizerMembershipStatus status,  bool pushNotificationsEnabled, @TimestampConverter()  DateTime joinedAt, @NullableTimestampConverter()  DateTime? leftAt, @NullableTimestampConverter()  DateTime? deletedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String organizerId,  String uid,  OrganizerMembershipRole role,  OrganizerMembershipStatus status,  bool pushNotificationsEnabled, @TimestampConverter()  DateTime joinedAt, @NullableTimestampConverter()  DateTime? leftAt, @NullableTimestampConverter()  DateTime? deletedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _OrganizerMembership() when $default != null:
-return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.pushNotificationsEnabled,_that.joinedAt,_that.leftAt,_that.deletedAt);case _:
+return $default(_that.id,_that.organizerId,_that.uid,_that.role,_that.status,_that.pushNotificationsEnabled,_that.joinedAt,_that.leftAt,_that.deletedAt);case _:
   return null;
 
 }
@@ -217,11 +217,11 @@ return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.pu
 @JsonSerializable()
 
 class _OrganizerMembership implements OrganizerMembership {
-  const _OrganizerMembership({@JsonKey(includeToJson: false) required this.id, required this.clubId, required this.uid, required this.role, required this.status, this.pushNotificationsEnabled = false, @TimestampConverter() required this.joinedAt, @NullableTimestampConverter() this.leftAt, @NullableTimestampConverter() this.deletedAt});
+  const _OrganizerMembership({@JsonKey(includeToJson: false) required this.id, required this.organizerId, required this.uid, required this.role, required this.status, this.pushNotificationsEnabled = false, @TimestampConverter() required this.joinedAt, @NullableTimestampConverter() this.leftAt, @NullableTimestampConverter() this.deletedAt});
   factory _OrganizerMembership.fromJson(Map<String, dynamic> json) => _$OrganizerMembershipFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
-@override final  String clubId;
+@override final  String organizerId;
 @override final  String uid;
 @override final  OrganizerMembershipRole role;
 @override final  OrganizerMembershipStatus status;
@@ -243,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrganizerMembership&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.pushNotificationsEnabled, pushNotificationsEnabled) || other.pushNotificationsEnabled == pushNotificationsEnabled)&&(identical(other.joinedAt, joinedAt) || other.joinedAt == joinedAt)&&(identical(other.leftAt, leftAt) || other.leftAt == leftAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrganizerMembership&&(identical(other.id, id) || other.id == id)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.pushNotificationsEnabled, pushNotificationsEnabled) || other.pushNotificationsEnabled == pushNotificationsEnabled)&&(identical(other.joinedAt, joinedAt) || other.joinedAt == joinedAt)&&(identical(other.leftAt, leftAt) || other.leftAt == leftAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,clubId,uid,role,status,pushNotificationsEnabled,joinedAt,leftAt,deletedAt);
+int get hashCode => Object.hash(runtimeType,id,organizerId,uid,role,status,pushNotificationsEnabled,joinedAt,leftAt,deletedAt);
 
 @override
 String toString() {
-  return 'OrganizerMembership(id: $id, clubId: $clubId, uid: $uid, role: $role, status: $status, pushNotificationsEnabled: $pushNotificationsEnabled, joinedAt: $joinedAt, leftAt: $leftAt, deletedAt: $deletedAt)';
+  return 'OrganizerMembership(id: $id, organizerId: $organizerId, uid: $uid, role: $role, status: $status, pushNotificationsEnabled: $pushNotificationsEnabled, joinedAt: $joinedAt, leftAt: $leftAt, deletedAt: $deletedAt)';
 }
 
 
@@ -263,7 +263,7 @@ abstract mixin class _$OrganizerMembershipCopyWith<$Res> implements $OrganizerMe
   factory _$OrganizerMembershipCopyWith(_OrganizerMembership value, $Res Function(_OrganizerMembership) _then) = __$OrganizerMembershipCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String clubId, String uid, OrganizerMembershipRole role, OrganizerMembershipStatus status, bool pushNotificationsEnabled,@TimestampConverter() DateTime joinedAt,@NullableTimestampConverter() DateTime? leftAt,@NullableTimestampConverter() DateTime? deletedAt
+@JsonKey(includeToJson: false) String id, String organizerId, String uid, OrganizerMembershipRole role, OrganizerMembershipStatus status, bool pushNotificationsEnabled,@TimestampConverter() DateTime joinedAt,@NullableTimestampConverter() DateTime? leftAt,@NullableTimestampConverter() DateTime? deletedAt
 });
 
 
@@ -280,10 +280,10 @@ class __$OrganizerMembershipCopyWithImpl<$Res>
 
 /// Create a copy of OrganizerMembership
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? clubId = null,Object? uid = null,Object? role = null,Object? status = null,Object? pushNotificationsEnabled = null,Object? joinedAt = null,Object? leftAt = freezed,Object? deletedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? organizerId = null,Object? uid = null,Object? role = null,Object? status = null,Object? pushNotificationsEnabled = null,Object? joinedAt = null,Object? leftAt = freezed,Object? deletedAt = freezed,}) {
   return _then(_OrganizerMembership(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
+as String,organizerId: null == organizerId ? _self.organizerId : organizerId // ignore: cast_nullable_to_non_nullable
 as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as OrganizerMembershipRole,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable

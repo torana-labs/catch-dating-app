@@ -58,10 +58,10 @@ import {
 } from "../shared/relationshipDocuments";
 import {
   assertValidEventTimeRange,
-  claimClubScheduleInTransaction,
-  releaseClubScheduleInTransaction,
+  claimOrganizerScheduleInTransaction,
+  releaseOrganizerScheduleInTransaction,
   releaseUserEventScheduleInTransaction,
-  replaceClubScheduleInTransaction,
+  replaceOrganizerScheduleInTransaction,
 } from "./scheduleConflicts";
 import {refreshOrganizerNextEvent as defaultRefreshOrganizerNextEvent} from
   "../organizers/syncOrganizerNextEvent";
@@ -194,10 +194,10 @@ type NotificationUserDocument = {
   fcmToken?: string;
   prefsEventReminders?: boolean;
   prefsRunStatusUpdates?: boolean;
-  prefsClubUpdates?: boolean;
+  prefsOrganizerUpdates?: boolean;
 };
 
-type ClubMembershipNotificationDocument = {
+type OrganizerMembershipNotificationDocument = {
   uid?: string;
   pushNotificationsEnabled?: boolean;
 };
@@ -251,7 +251,7 @@ export async function createEventHandler(
   await deps.checkRateLimit?.(db, hostUserId, "createEvent", {
     maxRequests: 10, windowMs: 60 * 1000,
   });
-  const organizerId = data.organizerId ?? data.clubId;
+  const organizerId = data.organizerId;
 
   const eventRef = data.eventId ?
     db.collection("events").doc(data.eventId) :
@@ -333,7 +333,6 @@ export async function createEventHandler(
     organizerName = organizer.name;
     const eventBase: EventDocumentBeforeDiscovery = {
       ...buildCreateEventDoc(data, deps, hostUserId),
-      clubId: organizerId,
       organizerId,
       bookedCount: 0,
       crossPathsPairHeldCount: 0,
@@ -350,8 +349,8 @@ export async function createEventHandler(
       ...eventBase,
       ...eventDiscoveryProjection({
         event: eventBase,
-        clubLocation: organizer.location,
-        clubLocationMarketId: organizer.locationMarketId,
+        organizerLocation: organizer.location,
+        organizerLocationMarketId: organizer.locationMarketId,
       }),
     };
     const eventPolicy = event.eventPolicy;
@@ -382,8 +381,7 @@ export async function createEventHandler(
       );
     }
 
-    await claimClubScheduleInTransaction(tx, db, {
-      clubId: organizerId,
+    await claimOrganizerScheduleInTransaction(tx, db, {
       organizerId,
       eventId: eventRef.id,
       startTimeMillis: data.startTimeMillis,
@@ -393,7 +391,6 @@ export async function createEventHandler(
     if (inviteCode) {
       tx.create(privateAccessRef, {
         eventId: eventRef.id,
-        clubId: organizerId,
         organizerId,
         inviteCode,
         createdAt: deps.serverTimestamp?.() ??
@@ -411,15 +408,14 @@ export async function createEventHandler(
       firestore: deps.firestore,
       nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
-    await notifyClubMembersForNewEvent({
+    await notifyOrganizerMembersForNewEvent({
       db,
       deps,
       eventId: eventRef.id,
-      clubId: organizerId,
       organizerId,
       useLegacyFollowerProjection,
       hostUserId,
-      clubName: organizerName,
+      organizerName: organizerName,
       event: createdEvent,
     });
   }
@@ -463,7 +459,7 @@ export async function updateEventHandler(
     .doc(data.eventId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
   let updatedEvent: EventDocument | null = null;
-  let affectedClubId: string | null = null;
+  let affectedOrganizerId: string | null = null;
   let shouldNotifyParticipants = false;
   let removedStoragePaths: string[] = [];
 
@@ -541,8 +537,8 @@ export async function updateEventHandler(
       ...patch,
       ...eventDiscoveryProjection({
         event: {...event, ...patch},
-        clubLocation: organizer.location,
-        clubLocationMarketId: organizer.locationMarketId,
+        organizerLocation: organizer.location,
+        organizerLocationMarketId: organizer.locationMarketId,
       }),
     };
     const nextEvent = {...event, ...patch};
@@ -593,8 +589,8 @@ export async function updateEventHandler(
     }
     const nextPolicy = patch.eventPolicy ?? event.eventPolicy ?? null;
     if (scheduleChanged) {
-      await replaceClubScheduleInTransaction(tx, db, {
-        clubId: organizerId,
+      await replaceOrganizerScheduleInTransaction(tx, db, {
+        organizerId: organizerId,
         eventId: data.eventId,
         previousStartTimeMillis: event.startTime.toMillis(),
         previousEndTimeMillis: requiredEventEndTime(event).toMillis(),
@@ -622,14 +618,14 @@ export async function updateEventHandler(
         privateAccessRef,
         privateAccessSnap,
         eventId: data.eventId,
-        clubId: organizerId,
+        organizerId: organizerId,
         fields: data.fields,
         eventPolicy: nextPolicy,
         serverTimestamp: deps.serverTimestamp,
       });
     }
     updatedEvent = {...event, ...patch};
-    affectedClubId = organizerId;
+    affectedOrganizerId = organizerId;
     shouldNotifyParticipants = changedFields.length > 0;
   });
 
@@ -644,8 +640,8 @@ export async function updateEventHandler(
       type: "eventUpdated",
     });
   }
-  if (affectedClubId) {
-    await deps.refreshOrganizerNextEvent?.(affectedClubId, {
+  if (affectedOrganizerId) {
+    await deps.refreshOrganizerNextEvent?.(affectedOrganizerId, {
       firestore: deps.firestore,
       nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
@@ -727,11 +723,11 @@ export async function cancelEventHandler(
       ...cancelledPatch,
       ...eventDiscoveryProjection({
         event: {...event, status: "cancelled" as const},
-        clubLocation: organizer.location,
+        organizerLocation: organizer.location,
       }),
     });
-    releaseClubScheduleInTransaction(tx, db, {
-      clubId: organizerId,
+    releaseOrganizerScheduleInTransaction(tx, db, {
+      organizerId: organizerId,
       eventId: data.eventId,
       startTimeMillis: event.startTime.toMillis(),
       endTimeMillis: requiredEventEndTime(event).toMillis(),
@@ -797,7 +793,7 @@ export async function deleteEventHandler(
 
   const eventRef = db.collection("events").doc(data.eventId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
-  let deletedClubId: string | null = null;
+  let deletedOrganizerId: string | null = null;
   let removedStoragePaths: string[] = [];
 
   await db.runTransaction(async (tx) => {
@@ -864,9 +860,9 @@ export async function deleteEventHandler(
       after: {},
       owner: {kind: "event", id: data.eventId},
     });
-    deletedClubId = organizerId;
-    releaseClubScheduleInTransaction(tx, db, {
-      clubId: organizerId,
+    deletedOrganizerId = organizerId;
+    releaseOrganizerScheduleInTransaction(tx, db, {
+      organizerId: organizerId,
       eventId: data.eventId,
       startTimeMillis: event.startTime.toMillis(),
       endTimeMillis: requiredEventEndTime(event).toMillis(),
@@ -875,8 +871,8 @@ export async function deleteEventHandler(
 
   await cleanupRemovedEventMedia(deps, data.eventId, removedStoragePaths);
 
-  if (deletedClubId) {
-    await deps.refreshOrganizerNextEvent?.(deletedClubId, {
+  if (deletedOrganizerId) {
+    await deps.refreshOrganizerNextEvent?.(deletedOrganizerId, {
       firestore: deps.firestore,
       nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
@@ -910,7 +906,7 @@ function buildCreateEventDoc(
   data: CreateEventCallablePayload,
   deps: EventMutationDeps,
   hostUserId: string
-): Omit<EventDocument, "clubId" | "genderCounts" |
+): Omit<EventDocument, "organizerId" | "genderCounts" |
   "status" | "cancelledAt" | "cancellationReason" | EventDiscoveryField> {
   const eventPhotos = normalizeUploadedPhotosForFirestore(data.eventPhotos);
   const meetingLocation = normalizeMeetingLocationForCreate(data);
@@ -1069,8 +1065,7 @@ function buildCreateEventSuccessPlanDoc(params: {
 
   return {
     eventId: params.eventId,
-    clubId: params.data.clubId,
-    organizerId: params.event.organizerId ?? params.data.clubId,
+    organizerId: params.event.organizerId ?? params.data.organizerId,
     layoutId: defaults.layoutId ?? null,
     affinityConstraints: [],
     spatialOverrides: [],
@@ -1788,7 +1783,7 @@ function syncPrivateAccessForPolicyUpdate(params: {
   privateAccessRef: FirebaseFirestore.DocumentReference;
   privateAccessSnap: FirebaseFirestore.DocumentSnapshot;
   eventId: string;
-  clubId: string;
+  organizerId: string;
   fields: EventHostUpdateFields;
   eventPolicy: EventPolicyBundleDocument;
   serverTimestamp?: () => FirebaseFirestore.FieldValue;
@@ -1815,7 +1810,7 @@ function syncPrivateAccessForPolicyUpdate(params: {
 
   params.tx.set(params.privateAccessRef, {
     eventId: params.eventId,
-    clubId: params.clubId,
+    organizerId: params.organizerId,
     inviteCode: nextCode,
     createdAt: params.privateAccessSnap.data()?.createdAt ??
       params.serverTimestamp?.() ??
@@ -2004,38 +1999,37 @@ function assertStandalonePublicRegistrationPolicy(
  * @param {FirebaseFirestore.Firestore} params.db Firestore instance.
  * @param {EventMutationDeps} params.deps Injectable dependencies.
  * @param {string} params.eventId Created event id.
- * @param {string} params.clubId Club id.
+ * @param {string} params.organizerId Club id.
  * @param {string} params.hostUserId Host user id to exclude.
- * @param {string} params.clubName Club display name.
+ * @param {string} params.organizerName Club display name.
  * @param {EventDocument} params.event Created event document.
  */
-async function notifyClubMembersForNewEvent(params: {
+async function notifyOrganizerMembersForNewEvent(params: {
   db: FirebaseFirestore.Firestore;
   deps: EventMutationDeps;
   eventId: string;
-  clubId: string;
   organizerId: string;
   useLegacyFollowerProjection: boolean;
   hostUserId: string;
-  clubName: string;
+  organizerName: string;
   event: EventDocument;
 }) {
   try {
     const members = await params.db
       .collection(params.useLegacyFollowerProjection ?
-        "clubMemberships" : "organizerFollows")
+        "organizerMemberships" : "organizerFollows")
       .where(
-        params.useLegacyFollowerProjection ? "clubId" : "organizerId",
+        params.useLegacyFollowerProjection ? "organizerId" : "organizerId",
         "==",
         params.organizerId
       )
       .where("status", "==", "active")
       .get();
     const memberEntries = members.docs
-      .map((doc) => doc.data() as ClubMembershipNotificationDocument)
+      .map((doc) => doc.data() as OrganizerMembershipNotificationDocument)
       .filter((membership): membership is
-        Required<Pick<ClubMembershipNotificationDocument, "uid">> &
-        ClubMembershipNotificationDocument =>
+        Required<Pick<OrganizerMembershipNotificationDocument, "uid">> &
+        OrganizerMembershipNotificationDocument =>
         typeof membership.uid === "string" &&
         membership.uid !== params.hostUserId
       );
@@ -2046,7 +2040,8 @@ async function notifyClubMembersForNewEvent(params: {
         params.db.collection("users").doc(membership.uid).get()
       )
     );
-    const copy = newClubEventNotificationCopy(params.clubName, params.event);
+    const copy = newOrganizerEventNotificationCopy(params.organizerName,
+      params.event);
 
     await Promise.all(userSnaps.map(async (snap, index) => {
       const membership = memberEntries[index];
@@ -2070,7 +2065,7 @@ async function notifyClubMembersForNewEvent(params: {
       if (
         membership.pushNotificationsEnabled === true &&
         user.fcmToken &&
-        allowsPushPreference(user, "clubUpdates")
+        allowsPushPreference(user, "organizerUpdates")
       ) {
         await params.deps.sendNotification?.({
           token: user.fcmToken,
@@ -2085,7 +2080,7 @@ async function notifyClubMembersForNewEvent(params: {
   } catch (error) {
     logger.error("Failed to fan out new-event notifications", {
       eventId: params.eventId,
-      clubId: params.clubId,
+      organizerId: params.organizerId,
       error,
     });
   }
@@ -2171,17 +2166,17 @@ async function notifyEventParticipants(params: {
 
 /**
  * Builds user-facing copy for a newly hosted club event.
- * @param {string} clubName Club display name.
+ * @param {string} organizerName Club display name.
  * @param {EventDocument} event Created event.
  * @return {{title: string, body: string}} Notification copy.
  */
-function newClubEventNotificationCopy(
-  clubName: string,
+function newOrganizerEventNotificationCopy(
+  organizerName: string,
   event: EventDocument
 ): {title: string; body: string} {
   const distance = eventDistanceLabel(event);
   return {
-    title: `${clubName} posted an event`,
+    title: `${organizerName} posted an event`,
     body:
       distance ?
         `${distance} from ` +

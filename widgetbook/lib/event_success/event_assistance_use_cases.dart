@@ -235,8 +235,7 @@ class _AssistancePreviewState extends State<_AssistancePreview> {
       final guest = EventAttendee(
         id: 'guest-1',
         eventId: event.id,
-        clubId: event.clubId,
-        organizerId: event.clubId,
+        organizerId: event.organizerId,
         displayName: 'Asha Menon',
         searchName: 'asha menon',
         source: EventAttendeeSource.hostManual,
@@ -252,7 +251,7 @@ class _AssistancePreviewState extends State<_AssistancePreview> {
         ),
         _Surface.liveMembership => EventAssistanceMembershipSheet(
           scope: EventAssistanceGuestScope(
-            organizerId: event.clubId,
+            organizerId: event.organizerId,
             eventId: event.id,
             attendeeId: guest.id,
           ),
@@ -273,7 +272,7 @@ class _AssistancePreviewState extends State<_AssistancePreview> {
           guestName: guest.displayName,
           scope: EventAssistanceAccountabilityScope(
             group: EventAssistanceGroupScope(
-              organizerId: event.clubId,
+              organizerId: event.organizerId,
               eventId: event.id,
               groupId: 'event:whole',
             ),

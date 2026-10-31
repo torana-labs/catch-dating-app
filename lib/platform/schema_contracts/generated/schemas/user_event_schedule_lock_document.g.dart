@@ -28,7 +28,7 @@ const schemaUserEventScheduleLockDocumentSchema = <String, Object?>{
     'ownerId',
     'slot',
     'eventId',
-    'clubId',
+    'organizerId',
     'uid',
     'startTimeMillis',
     'endTimeMillis',
@@ -51,12 +51,6 @@ const schemaUserEventScheduleLockDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'callable-owned',
     },
     'eventId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-      'x-catch-ownership': 'callable-owned',
-    },
-    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

@@ -32,7 +32,7 @@ final _longNameCoHostedOrganizer = HostOperationsFixtures.coHostedOrganizer
 
 final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
   id: 'design-host-long-name-event',
-  clubId: _longNameOwnerOrganizer.id,
+  organizerId: _longNameOwnerOrganizer.id,
   meetingPoint: 'Bandra West Promenade amphitheatre',
   meetingLocation: HostOperationsFixtures.upcomingEvent.meetingLocation!
       .copyWith(name: 'Bandra West Promenade amphitheatre'),

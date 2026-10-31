@@ -12,7 +12,6 @@ import {removeOrganizerManagerHandler, transferOrganizerOwnershipHandler} from
 import {getOrganizerEventSetupDefaultsHandler} from
   "../organizers/eventSetupDefaults/callables";
 import {isOrganizerManager} from "../shared/organizerHosts";
-import {isClubHost} from "../shared/clubHosts";
 
 type FakeData = Record<string, unknown>;
 
@@ -506,7 +505,7 @@ for (const syncingUid of ["manager", "owner"]) {
       const organizer = db.get("organizers/org-1")!;
       assert.deepEqual(organizer.hostUserIds, ["owner"]);
       assert.equal(isOrganizerManager(organizer as never, "manager"), false);
-      assert.equal(isClubHost(organizer as never, "manager"), false);
+      assert.equal(isOrganizerManager(organizer as never, "manager"), false);
       assert.deepEqual((organizer.hostProfiles as Array<{uid: string}>)
         .map((host) => host.uid), ["owner"]);
       await assert.rejects(getOrganizerEventSetupDefaultsHandler({

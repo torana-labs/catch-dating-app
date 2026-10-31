@@ -13,6 +13,14 @@ export const organizerScheduleLockDocumentSchema: Record<string, unknown> = {
   "x-firestore-path": "organizerScheduleLocks/{lockId}",
   "x-document-id-field": "lockId",
   "x-owner": "event schedule conflict callables",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
   "required": [
     "ownerType",
     "ownerId",
@@ -60,6 +68,38 @@ export const organizerScheduleLockDocumentSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 0,
       "x-catch-ownership": "callable-owned"
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
     }
   }
 } as const;

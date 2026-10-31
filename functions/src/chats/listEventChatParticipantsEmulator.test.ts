@@ -46,8 +46,8 @@ test("Firestore room participants are current, bounded and private",
       organizerId, status, revision: 1, termsVersion: "event-chat-v1",
       joinedAt: now, leftAt: null, createdAt: now, updatedAt: now});
     try {
-      await put("events", eventId, {organizerId, clubId: organizerId,
-        name: "Private event", status: "active"});
+      await put("events", eventId, {organizerId, name: "Private event",
+        status: "active"});
       await put("organizers", organizerId, {ownerUserId: host, hostUserId: host,
         hostUserIds: [], hostProfiles: []});
       const room = await put("eventChatRooms", eventId, {eventId, organizerId,
@@ -60,7 +60,7 @@ test("Firestore room participants are current, bounded and private",
         await put("eventChatMemberships", memberId(eventId, uid), member(uid));
       }
       const admission = await put("eventParticipations", `${eventId}_${person}`,
-        {eventId, organizerId, clubId: organizerId, uid: person,
+        {eventId, organizerId, uid: person,
           status: "signedUp"});
       await t.test("silent participants expose no answers", async () => {
         const result = await read();

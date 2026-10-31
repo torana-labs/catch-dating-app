@@ -532,13 +532,13 @@ class _Rig {
   late final event = buildEvent(
     id: 'available-event',
     name: 'Available event before optional sources',
-    clubId: 'organizer-105',
+    organizerId: 'organizer-105',
     startTime: boundary.add(const Duration(hours: 2)),
     endTime: boundary.add(const Duration(hours: 4)),
   );
   late final pastEvent = buildEvent(
     id: 'past-event',
-    clubId: 'organizer-105',
+    organizerId: 'organizer-105',
     startTime: boundary.subtract(const Duration(hours: 2)),
     endTime: boundary.subtract(const Duration(hours: 1)),
   );

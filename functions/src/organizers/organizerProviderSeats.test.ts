@@ -31,7 +31,7 @@ const reservationPath = `eventSeatReservations/${digest([eventId, key])}`;
 
 function fixture(options: {active?: boolean; occupied?: number;
   linkedUid?: string | null} = {}) {
-  const event = {clubId: organizerId, organizerId,
+  const event = {organizerId,
     status: "active", capacityLimit: 2, constraints: {}};
   const policy = deriveEventSeatPolicy(event);
   const docs: Record<string, Record<string, unknown>> = {
@@ -43,7 +43,7 @@ function fixture(options: {active?: boolean; occupied?: number;
       policyVersion: policy.policyVersion},
   };
   const old = options.active ? lumaAttendeeDocument({eventId,
-    clubId: organizerId, organizerId, connectionId: "connection1",
+    organizerId, connectionId: "connection1",
     guest, now}) : undefined;
   if (old) {
     old.linkedUid = options.linkedUid ?? null;
@@ -106,8 +106,8 @@ function write(old: ReturnType<typeof fixture>["old"],
   approvalStatus: "approved" | "declined" = "approved"):
   ProviderSeatWrite {
   return {id: attendeeId, old,
-    document: lumaAttendeeDocument({eventId, clubId: organizerId,
-      organizerId, connectionId: "connection1",
+    document: lumaAttendeeDocument({eventId, organizerId,
+      connectionId: "connection1",
       guest: {...guest, approvalStatus}, old, now})};
 }
 
@@ -177,12 +177,12 @@ function reconcileFixture(options: {locked?: boolean; ready?: boolean;
   changedMapping?: boolean; checkedInBeforeTx?: boolean;
   uncertainCommit?: boolean; withoutRun?: boolean} = {}) {
   const runId = providerSyncRunId(eventId, "host1", operationId);
-  const event = {clubId: organizerId, organizerId, status: "active",
+  const event = {organizerId, status: "active",
     eventOrigin: {mode: "externalCompanion", provider: "luma"},
     capacityLimit: 2, constraints: {},
     bookedCount: 0, checkedInCount: 1};
-  const old = lumaAttendeeDocument({eventId, clubId: organizerId,
-    organizerId, connectionId: "connection1", guest, now});
+  const old = lumaAttendeeDocument({eventId, organizerId,
+    connectionId: "connection1", guest, now});
   const docs: Record<string, Record<string, unknown>> = {
     [`organizers/${organizerId}`]: {hostUserId: "host1",
       hostUserIds: [], hostProfiles: []},
@@ -395,7 +395,7 @@ test("oversize ready handler records failure without a partial roster",
 
 test("ready provider rejects a matched attendee owned by another tenant",
   async () => {
-    for (const field of ["organizerId", "clubId"] as const) {
+    for (const field of ["organizerId"] as const) {
       const h = fixture({active: true});
       h.old![field] = "foreignOrg";
       await assert.rejects(prepareProviderSeatChanges({db: h.db, tx: h.tx,
@@ -453,7 +453,7 @@ test("provider failure cannot revoke a concurrently rotated credential",
 
 test("legacy provider sync refuses a foreign-owned matched attendee",
   async () => {
-    for (const field of ["organizerId", "clubId"] as const) {
+    for (const field of ["organizerId"] as const) {
       const h = reconcileFixture();
       h.docs[`eventAttendees/${attendeeId}`][field] = "foreignOrg";
       await assert.rejects(reconcileFixtureRun(h),

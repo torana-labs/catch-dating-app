@@ -147,7 +147,7 @@ function safetyDetailFixture(targetPath: string) {
     primaryUserId: "user-primary",
     secondaryUserId: "user-secondary",
     eventId: null,
-    clubId: null,
+    organizerId: null,
     source: "chat",
     contextId: "chat-1",
     assignment: {

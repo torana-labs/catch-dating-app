@@ -136,7 +136,6 @@ void main() {
         expect(decoded?.meetingPoint, 'Carter Road');
         expect(encoded.containsKey('id'), isFalse);
         expect(encoded['organizerId'], 'club-1');
-        expect(encoded.containsKey('clubId'), isFalse);
         expect(encoded['constraints'], {
           'minAge': 21,
           'maxAge': 99,
@@ -196,37 +195,37 @@ void main() {
     });
 
     test(
-      'watchEventsForClub filters by club id and orders by start time',
+      'watchEventsForOrganizer filters by club id and orders by start time',
       () async {
         final later = buildEvent(
           id: 'later',
-          clubId: 'club-2',
+          organizerId: 'club-2',
           startTime: DateTime.now().add(const Duration(hours: 5)),
         );
         final earlier = buildEvent(
           id: 'earlier',
-          clubId: 'club-2',
+          organizerId: 'club-2',
           startTime: DateTime.now().add(const Duration(hours: 2)),
         );
         await _seedEvent(firestore, later);
         await _seedEvent(firestore, earlier);
         await _seedEvent(
           firestore,
-          buildEvent(id: 'other-club', clubId: 'club-3'),
+          buildEvent(id: 'other-club', organizerId: 'club-3'),
         );
 
         await expectLater(
-          repository.watchEventsForOrganizer(clubId: 'club-2'),
+          repository.watchEventsForOrganizer(organizerId: 'club-2'),
           emits([earlier, later]),
         );
       },
     );
 
-    test('watchEventsForClub excludes synthetic QA events', () async {
-      final real = buildEvent(id: 'real', clubId: 'club-2');
+    test('watchEventsForOrganizer excludes synthetic QA events', () async {
+      final real = buildEvent(id: 'real', organizerId: 'club-2');
       final synthetic = buildEvent(
         id: 'synthetic',
-        clubId: 'club-2',
+        organizerId: 'club-2',
         synthetic: true,
         seedPrefix: 'cross_paths_mumbai_qa',
       );
@@ -238,7 +237,7 @@ void main() {
       });
 
       await expectLater(
-        repository.watchEventsForOrganizer(clubId: 'club-2'),
+        repository.watchEventsForOrganizer(organizerId: 'club-2'),
         emits([real]),
       );
     });
@@ -246,8 +245,8 @@ void main() {
     test(
       'public organizer queries exclude unlabelled and private events',
       () async {
-        final published = buildEvent(id: 'public', clubId: 'club-2');
-        final legacy = buildEvent(id: 'legacy', clubId: 'club-2');
+        final published = buildEvent(id: 'public', organizerId: 'club-2');
+        final legacy = buildEvent(id: 'legacy', organizerId: 'club-2');
         await _seedEvent(firestore, published);
         await firestore
             .collection('events')
@@ -260,7 +259,7 @@ void main() {
         });
 
         await expectLater(
-          repository.watchEventsForOrganizer(clubId: 'club-2'),
+          repository.watchEventsForOrganizer(organizerId: 'club-2'),
           emits([published]),
         );
         await expectLater(
@@ -278,13 +277,13 @@ void main() {
       final boundary = DateTime(2026, 8, 18, 12);
       final legacy = buildEvent(
         id: 'legacy-first',
-        clubId: 'club-2',
+        organizerId: 'club-2',
         startTime: boundary.add(const Duration(hours: 1)),
         endTime: boundary.add(const Duration(hours: 2)),
       );
       final published = buildEvent(
         id: 'published-second',
-        clubId: 'club-2',
+        organizerId: 'club-2',
         startTime: boundary.add(const Duration(hours: 3)),
         endTime: boundary.add(const Duration(hours: 4)),
       );
@@ -306,37 +305,37 @@ void main() {
         final boundary = DateTime(2026, 8, 18, 12);
         final next = buildEvent(
           id: 'next',
-          clubId: 'club-2',
+          organizerId: 'club-2',
           startTime: boundary.add(const Duration(hours: 1)),
           endTime: boundary.add(const Duration(hours: 2)),
         );
         final later = buildEvent(
           id: 'later',
-          clubId: 'club-2',
+          organizerId: 'club-2',
           startTime: boundary.add(const Duration(days: 1)),
           endTime: boundary.add(const Duration(days: 1, hours: 1)),
         );
         final cancelledSoon = buildEvent(
           id: 'cancelled-soon',
-          clubId: 'club-2',
+          organizerId: 'club-2',
           startTime: boundary.add(const Duration(hours: 2)),
           endTime: boundary.add(const Duration(hours: 3)),
         ).copyWith(status: EventLifecycleStatus.cancelled);
         final recentPast = buildEvent(
           id: 'recent-past',
-          clubId: 'club-2',
+          organizerId: 'club-2',
           startTime: boundary.subtract(const Duration(hours: 2)),
           endTime: boundary.subtract(const Duration(hours: 1)),
         );
         final cancelledPast = buildEvent(
           id: 'cancelled-past',
-          clubId: 'club-2',
+          organizerId: 'club-2',
           startTime: boundary.subtract(const Duration(minutes: 45)),
           endTime: boundary.subtract(const Duration(minutes: 15)),
         ).copyWith(status: EventLifecycleStatus.cancelled);
         final olderPast = buildEvent(
           id: 'older-past',
-          clubId: 'club-2',
+          organizerId: 'club-2',
           startTime: boundary.subtract(const Duration(days: 2)),
           endTime: boundary.subtract(const Duration(days: 2, hours: -1)),
         );
@@ -386,11 +385,11 @@ void main() {
     );
 
     test(
-      'watchEventsForClubs merges hosted clubs in start-time order',
+      'watchEventsForOrganizers merges hosted clubs in start-time order',
       () async {
         final later = buildEvent(
           id: 'later',
-          clubId: 'club-2',
+          organizerId: 'club-2',
           startTime: DateTime(2026, 7, 10, 20),
         );
         final earlier = buildEvent(
@@ -399,7 +398,8 @@ void main() {
         );
         await _seedEvent(firestore, later);
         await _seedEvent(firestore, earlier);
-        await _seedEvent(firestore, buildEvent(id: 'other', clubId: 'club-3'));
+        final other = buildEvent(id: 'other', organizerId: 'club-3');
+        await _seedEvent(firestore, other);
 
         await expectLater(
           repository.watchEventsForOrganizers(
@@ -554,7 +554,7 @@ void main() {
     });
 
     test(
-      'fetchUpcomingEventsForClubs returns empty without querying for no clubs',
+      'fetchUpcomingEventsForOrganizers returns empty without querying for no clubs',
       () async {
         await _seedEvent(firestore, buildEvent());
         expect(
@@ -565,21 +565,21 @@ void main() {
     );
 
     test(
-      'fetchUpcomingEventsForClubs filters upcoming events and limits results',
+      'fetchUpcomingEventsForOrganizers filters upcoming events and limits results',
       () async {
-        final event = buildEvent(clubId: 'club-3');
+        final event = buildEvent(organizerId: 'club-3');
         await _seedEvent(firestore, event);
         await _seedEvent(
           firestore,
           buildEvent(
             id: 'past',
-            clubId: 'club-3',
+            organizerId: 'club-3',
             startTime: DateTime.now().subtract(const Duration(hours: 2)),
           ),
         );
         await _seedEvent(
           firestore,
-          buildEvent(id: 'other-club', clubId: 'club-11'),
+          buildEvent(id: 'other-club', organizerId: 'club-11'),
         );
 
         final results = await repository.fetchUpcomingEventsForOrganizers(
@@ -591,7 +591,7 @@ void main() {
     );
 
     test(
-      'fetchUpcomingEventsForClubs queries beyond the whereIn club cap',
+      'fetchUpcomingEventsForOrganizers queries beyond the whereIn club cap',
       () async {
         final early = buildEvent(
           id: 'early',
@@ -599,7 +599,7 @@ void main() {
         );
         final late = buildEvent(
           id: 'late',
-          clubId: 'club-12',
+          organizerId: 'club-12',
           startTime: DateTime.now().add(const Duration(hours: 4)),
         );
         await _seedEvent(firestore, early);
@@ -632,7 +632,6 @@ void main() {
           {
             'eventId': 'event-42',
             'name': event.name,
-            'clubId': event.clubId,
             'organizerId': event.organizerId,
             'startTimeMillis': event.startTime.millisecondsSinceEpoch,
             'endTimeMillis': event.endTime.millisecondsSinceEpoch,
@@ -1083,7 +1082,7 @@ void main() {
       'watchEventsForOrganizersProvider delegates to the repository',
       () async {
         final first = buildEvent(id: 'first');
-        final second = buildEvent(id: 'second', clubId: 'club-2');
+        final second = buildEvent(id: 'second', organizerId: 'club-2');
         await _seedEvent(firestore, first);
         await _seedEvent(firestore, second);
 

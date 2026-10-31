@@ -12,7 +12,7 @@ const terms = {capacityLimit: 20, priceInPaise: 50000, currency: "INR",
   cancellationPolicyId: "standard" as const};
 function setup() {
   const store = new Store();
-  const before = {organizerId: "org1", clubId: "org1", status: "active",
+  const before = {organizerId: "org1", status: "active",
     bookedCount: 0, checkedInCount: 0, waitlistedCount: 0} as EventDocument;
   const after = {...before, ...eventListingTermsPatch(before, terms)};
   const run = () => store.db().runTransaction(async (tx) => {

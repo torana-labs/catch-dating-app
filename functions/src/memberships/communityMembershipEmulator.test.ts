@@ -36,7 +36,7 @@ async function runMembershipRace(
         version: 1, paceMinSecsPerKm: 300, paceMaxSecsPerKm: 420,
         preferredDistances: [], runningReasons: [], preferredRunTimes: [],
       }}};
-    const event = {organizerId: org, clubId: org, status: "active",
+    const event = {organizerId: org, status: "active",
       eventOrigin: catchNativeEventOrigin(),
       startTime: Timestamp.fromMillis(future),
       endTime: Timestamp.fromMillis(future + 3600000),

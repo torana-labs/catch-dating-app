@@ -7,7 +7,6 @@
  */
 export interface EventAttendeeImportDocument {
   eventId: string;
-  clubId: string;
   organizerId: string;
   uploadedBy: string;
   importKey: string;

@@ -3430,7 +3430,7 @@ The founding packs are:
 | Mixer/open | Social groups or whole group | Rounds or continuous beats | Optional reveal or no outcome | Uses only saved interaction primitives |
 
 Format-specific language belongs at the edges. The generic Host route remains
-`/host/organizers/:clubId/events/:eventId/success`; the runtime derives whether
+`/host/organizers/:organizerId/events/:eventId/success`; the runtime derives whether
 the primary nouns are team/round/points, pod/leg/sweep, pair/round/rank, or
 table/course/prompt. Separate navigation routes per event type would fragment
 the operating model and are not part of this contract.
@@ -3957,7 +3957,7 @@ shape is:
 ```json
 {
   "eventId": "event-id",
-  "clubId": "organizer-compatibility-id",
+  "organizerId": "organizer-compatibility-id",
   "organizerId": "organizer-id",
   "uid": "firebase-auth-uid",
   "eventAttendeeId": "opaque-roster-id",

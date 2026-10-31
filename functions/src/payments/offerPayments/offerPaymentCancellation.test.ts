@@ -47,7 +47,7 @@ test("cancellation preserves an independent booking's shared canonical seat",
   async () => {
     const h = await fixture();
     h.store.put("eventParticipations/" + eventParticipationId(eventId, uid),
-      {eventId, uid, organizerId: org, clubId: org, status: "signedUp"});
+      {eventId, uid, organizerId: org, status: "signedUp"});
     await h.cancel();
     assert.equal(h.payment().cancellation?.seatRetained, true);
     assert.equal(h.store.get(`eventSeatLedgers/${eventId}`)!.occupied, 1);

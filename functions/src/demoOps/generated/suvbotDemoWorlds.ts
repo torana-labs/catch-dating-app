@@ -2047,8 +2047,8 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
           "new-york"
         ],
         "usersPerCity": 24,
-        "clubsPerCity": 1,
-        "eventsPerClub": 5,
+        "organizersPerCity": 1,
+        "eventsPerOrganizer": 5,
         "anchorsPerRun": 4,
         "preferPaidEvents": true,
         "eventPatterns": [

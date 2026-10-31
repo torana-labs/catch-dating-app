@@ -123,7 +123,7 @@ abstract final class HostAnalyticsMetricIds {
 
 class HostAnalyticsQuery {
   const HostAnalyticsQuery({
-    this.clubId,
+    this.organizerId,
     this.eventId,
     this.rangePreset = HostAnalyticsRangePreset.thirtyDays,
     this.startDate,
@@ -132,7 +132,7 @@ class HostAnalyticsQuery {
     this.timezone,
   });
 
-  final String? clubId;
+  final String? organizerId;
   final String? eventId;
   final HostAnalyticsRangePreset rangePreset;
   final DateTime? startDate;
@@ -142,7 +142,7 @@ class HostAnalyticsQuery {
 
   HostAnalyticsQueryCallableRequest toCallableRequest() =>
       HostAnalyticsQueryCallableRequest(
-        clubId: clubId,
+        organizerId: organizerId,
         eventId: eventId,
         rangePreset: rangePreset.wireValue,
         startDate: rangePreset == HostAnalyticsRangePreset.custom
@@ -158,7 +158,7 @@ class HostAnalyticsQuery {
   @override
   bool operator ==(Object other) {
     return other is HostAnalyticsQuery &&
-        other.clubId == clubId &&
+        other.organizerId == organizerId &&
         other.eventId == eventId &&
         other.rangePreset == rangePreset &&
         other.startDate == startDate &&
@@ -169,7 +169,7 @@ class HostAnalyticsQuery {
 
   @override
   int get hashCode => Object.hash(
-    clubId,
+    organizerId,
     eventId,
     rangePreset,
     startDate,
@@ -234,7 +234,7 @@ class HostAnalyticsTrendPoint {
 class HostAnalyticsEventRow {
   const HostAnalyticsEventRow({
     required this.eventId,
-    required this.clubId,
+    required this.organizerId,
     required this.title,
     required this.startTime,
     required this.status,
@@ -265,7 +265,7 @@ class HostAnalyticsEventRow {
   factory HostAnalyticsEventRow.fromMap(Map<Object?, Object?> map) {
     return HostAnalyticsEventRow(
       eventId: _string(map['eventId']),
-      clubId: _string(map['clubId']),
+      organizerId: _string(map['organizerId']),
       title: _string(map['title']),
       startTime: _dateTime(map['startTime']),
       status: _string(map['status'], fallback: 'unknown'),
@@ -295,7 +295,7 @@ class HostAnalyticsEventRow {
   }
 
   final String eventId;
-  final String clubId;
+  final String organizerId;
   final String title;
   final DateTime startTime;
   final String status;

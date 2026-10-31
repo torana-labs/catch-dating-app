@@ -240,7 +240,7 @@ export const adminRecordOrganizerCurationCallablePayloadSchema: Record<string, u
                 "type": "string",
                 "enum": [
                   "hostDiscoveryRun",
-                  "seedClub",
+                  "seedOrganizer",
                   "userReportedSearchResult",
                   "manualNote"
                 ]
@@ -455,7 +455,7 @@ export const adminRecordOrganizerCurationCallablePayloadSchema: Record<string, u
                 "type": "string",
                 "enum": [
                   "hostDiscoveryRun",
-                  "seedClub",
+                  "seedOrganizer",
                   "userReportedSearchResult",
                   "manualNote"
                 ]
@@ -494,7 +494,7 @@ export const adminRecordOrganizerCurationCallablePayloadSchema: Record<string, u
           "type": "string",
           "enum": [
             "hostDiscoveryRun",
-            "seedClub",
+            "seedOrganizer",
             "userReportedSearchResult",
             "manualNote"
           ]

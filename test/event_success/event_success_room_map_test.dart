@@ -224,7 +224,7 @@ const _layout = EventSuccessLayout(
 EventSuccessAssignment _assignment() => EventSuccessAssignment(
   id: 'event-1_micro_pods_user-1',
   eventId: 'event-1',
-  clubId: 'club-1',
+  organizerId: 'club-1',
   uid: 'user-1',
   moduleId: 'micro_pods',
   label: 'Pod A',

@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
-  "sourceDigest": "sha256:ce3058cef6e12cb8982d25727faad6f618e2c27e7ac43961b5d7732c4a285ff3",
+  "sourceDigest": "sha256:c88c3d152fbd1c13635573fecb91dfd164b38b0517f6f52dabf1a3ff4f9c3144",
   "resolvedDigest": "sha256:b8400979ed1a555bbc64d083ce718445e4aed28e2e1e990bc9d53c27ce7499ec",
   "feature": {
     "id": "feature.host_home",
@@ -125,11 +125,10 @@
           "contracts/callable_responses/list_organizer_attention_items_response.schema.json",
           "contracts/callables/list_organizer_attention_items_payload.schema.json",
           "contracts/catalogs/host_attention_policies.json",
-          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/organizers.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/firestore/organizer_attention_items.schema.json",
           "contracts/firestore/organizer_team_memberships.schema.json",
-          "contracts/firestore/organizers.schema.json",
           "contracts/shared/host_attention_common.schema.json"
         ]
       },
@@ -245,7 +244,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "failureStateVersion"
           ],
           "outcomes": [
@@ -291,7 +290,7 @@
           "scopeKeys": [
             "viewerUid",
             "routeInstanceId",
-            "clubId"
+            "organizerId"
           ],
           "outcomes": [
             {
@@ -314,7 +313,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "sessionBoundary",
             "activeCursor"
           ],
@@ -337,7 +336,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "sessionBoundary",
             "pastCursor"
           ],
@@ -361,7 +360,7 @@
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "sessionBoundary",
             "failureStateVersion"
           ],
@@ -384,7 +383,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "tapAttemptId"
           ],
           "outcomes": [
@@ -406,7 +405,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "eventId",
             "tapAttemptId"
           ],
@@ -429,7 +428,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "eventId",
             "tapAttemptId"
           ],
@@ -452,7 +451,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "eventId",
             "eventClockState"
           ],
@@ -475,7 +474,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "eventId",
             "taskDestination"
           ],
@@ -540,7 +539,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "tapAttemptId"
           ],
           "outcomes": [
@@ -562,7 +561,7 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
-            "clubId",
+            "organizerId",
             "tapAttemptId"
           ],
           "outcomes": [

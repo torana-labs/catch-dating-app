@@ -20,14 +20,14 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 typedef EventDetailMessageHostCallback =
-    void Function(String clubId, String hostUid);
+    void Function(String organizerId, String hostUid);
 
 class EventDetailBody extends StatelessWidget {
   const EventDetailBody({
     super.key,
     required this.event,
     required this.userProfile,
-    required this.clubId,
+    required this.organizerId,
     required this.reviews,
     required this.isAuthenticated,
     required this.sectionVisibility,
@@ -65,7 +65,7 @@ class EventDetailBody extends StatelessWidget {
 
   final Event event;
   final UserProfile? userProfile;
-  final String clubId;
+  final String organizerId;
   final List<Review> reviews;
   final bool isAuthenticated;
   final EventDetailSectionVisibilityState sectionVisibility;
@@ -190,7 +190,7 @@ class EventDetailBody extends StatelessWidget {
             ),
             EventDetailSocialSection(
               event: event,
-              clubId: clubId,
+              organizerId: organizerId,
               reviews: reviews,
               userProfile: userProfile,
               state: socialState,
@@ -369,7 +369,7 @@ class EventDetailHostsSection extends StatelessWidget {
           mode: CatchErrorStateMode.compact,
         );
       case EventDetailHostStatus.content:
-        final clubId = state.clubId!;
+        final organizerId = state.organizerId!;
         final hostUid = state.hostUid;
         final canMessage = state.canMessage && hostUid != null;
 
@@ -377,7 +377,7 @@ class EventDetailHostsSection extends StatelessWidget {
           title: context.l10n.eventsEventDetailBodyTitleHostedBy,
           children: [
             CatchField.navigate(
-              onActivate: () => onViewOrganizer(clubId),
+              onActivate: () => onViewOrganizer(organizerId),
               content: CatchPersonLayout(
                 name: state.hostName!,
                 imageUrl: state.photoUrl,
@@ -400,7 +400,7 @@ class EventDetailHostsSection extends StatelessWidget {
                       label:
                           context.l10n.eventsEventDetailBodyTooltipMessageHost,
                       icon: CatchIcons.chat,
-                      onActivate: () => onMessageHost(clubId, hostUid),
+                      onActivate: () => onMessageHost(organizerId, hostUid),
                     )
                   : null,
             ),

@@ -47,7 +47,7 @@ async function setup(count = 1, realDb?: Firestore) {
           policy: {maxAttempts: 2, maxAttemptsPerRoute: 1,
             minimumRetrySeconds: 1}}}}}});
   const original = {...attendeeFixture(), eventId: h.context.eventId,
-    clubId: h.context.organizerId, organizerId: h.context.organizerId,
+    organizerId: h.context.organizerId,
     status: "registered", linkedUid: h.actor.uid, phoneE164: h.actor.phone,
     createdAt: stamp(start - 10_000), updatedAt: stamp(start - 1_000),
     registeredAt: stamp(start - 10_000), checkedInAt: null,
@@ -153,7 +153,7 @@ test("post-event fanout waits and skips guests who did not attend",
             policy: {maxAttempts: 2, maxAttemptsPerRoute: 1,
               minimumRetrySeconds: 1}}}}}});
     const checkedIn = {...attendeeFixture(), eventId: h.context.eventId,
-      clubId: h.context.organizerId, organizerId: h.context.organizerId,
+      organizerId: h.context.organizerId,
       status: "checkedIn", linkedUid: h.actor.uid, phoneE164: h.actor.phone,
       createdAt: stamp(start - 10_000), updatedAt: stamp(start - 1_000),
       registeredAt: stamp(start - 10_000), checkedInAt: stamp(start - 1_000),

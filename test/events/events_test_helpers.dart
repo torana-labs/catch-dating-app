@@ -44,7 +44,7 @@ Event buildEvent({
   String id = 'event-1',
   bool synthetic = false,
   String? seedPrefix,
-  String clubId = 'club-1',
+  String organizerId = 'club-1',
   String name = '',
   DateTime? startTime,
   DateTime? endTime,
@@ -86,7 +86,7 @@ Event buildEvent({
     id: id,
     synthetic: synthetic,
     seedPrefix: seedPrefix,
-    clubId: clubId,
+    organizerId: organizerId,
     name: name,
     startTime: start,
     endTime: endTime ?? start.add(const Duration(hours: 1)),
@@ -139,7 +139,7 @@ EventParticipation buildEventParticipation({
   return EventParticipation(
     id: eventParticipationId(eventId: event.id, uid: uid),
     eventId: event.id,
-    clubId: event.clubId,
+    organizerId: event.organizerId,
     uid: uid,
     status: status,
     createdAt: timestamp,
@@ -212,7 +212,7 @@ UserProfile buildUser({
 
 Review buildReview({
   String id = 'review-1',
-  String clubId = 'club-1',
+  String organizerId = 'club-1',
   String? eventId = 'event-1',
   String reviewerUserId = 'runner-1',
   String reviewerName = 'Runner 1',
@@ -223,7 +223,7 @@ Review buildReview({
 }) {
   return Review(
     id: id,
-    organizerId: clubId,
+    organizerId: organizerId,
     eventId: eventId,
     reviewerUserId: reviewerUserId,
     reviewerName: reviewerName,
@@ -487,8 +487,8 @@ class FakeEventRepository extends Fake implements EventRepository {
       Stream.value(inviteLinksByEventId[eventId] ?? const []);
 
   @override
-  Stream<List<Event>> watchEventsForOrganizer({required String clubId}) =>
-      Stream.value(organizerEvents[clubId] ?? const []);
+  Stream<List<Event>> watchEventsForOrganizer({required String organizerId}) =>
+      Stream.value(organizerEvents[organizerId] ?? const []);
 
   @override
   Future<List<Event>> fetchUpcomingEventsForOrganizers(
@@ -565,12 +565,12 @@ class FakeEventRepository extends Fake implements EventRepository {
     fetchedEvent = event;
     final receipt = <Object?, Object?>{
       'actorUid': mediaActorUid,
-      'organizerId': event.clubId,
+      'organizerId': event.organizerId,
       'eventId': event.id,
       'requestId': requestId,
       'payloadHash': eventPhotoRecoveryHash([
         mediaActorUid,
-        event.clubId,
+        event.organizerId,
         event.id,
         requestId,
         expectedMediaHash,

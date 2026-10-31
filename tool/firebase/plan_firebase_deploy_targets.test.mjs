@@ -21,7 +21,7 @@ import {
 const exportsList = [
   "functions:createEvent",
   "functions:sendEventBroadcast",
-  "functions:startClubHostConversation",
+  "functions:startOrganizerHostConversation",
 ];
 
 const cliPath = fileURLToPath(

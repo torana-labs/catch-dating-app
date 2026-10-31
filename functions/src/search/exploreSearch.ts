@@ -107,7 +107,6 @@ export async function searchExploreWithAlgolia(
   const organizerIds = uniqueHitIds(organizersResult);
   return {
     organizerIds,
-    clubIds: organizerIds,
     eventIds: uniqueHitIds(eventsResult),
   };
 }
@@ -165,17 +164,13 @@ function algoliaEndpoint(): string {
 }
 
 /**
- * Reads the organizer index name with rollout-compatible fallbacks.
+ * Reads the organizer index name with a local-test fallback.
  * @return {string} Algolia organizers index name.
  */
 export function organizersIndexName(): string {
   return process.env.ALGOLIA_ORGANIZERS_INDEX ||
-    process.env.ALGOLIA_CLUBS_INDEX ||
     "organizers";
 }
-
-/** @deprecated Use organizersIndexName. */
-export const clubsIndexName = organizersIndexName;
 
 /**
  * Reads the event index name with a local-test fallback.

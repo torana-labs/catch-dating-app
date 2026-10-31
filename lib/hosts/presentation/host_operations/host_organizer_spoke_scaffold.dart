@@ -2,12 +2,12 @@ part of '../host_operations_screen.dart';
 
 class HostOrganizerSpokeAsyncBoundary extends ConsumerWidget {
   const HostOrganizerSpokeAsyncBoundary._({
-    required this.clubId,
+    required this.organizerId,
     required this.title,
     required this.builder,
   });
 
-  final String clubId;
+  final String organizerId;
   final String title;
   final Widget Function(
     BuildContext context,
@@ -94,7 +94,7 @@ class HostOrganizerSpokeAsyncBoundary extends ConsumerWidget {
       ),
       builder: (context, organizers) {
         final organizer = organizers
-            .where((item) => item.id == clubId)
+            .where((item) => item.id == organizerId)
             .firstOrNull;
         if (organizer == null) {
           return CatchRouteScaffold(
@@ -198,7 +198,7 @@ class _HostOrganizerDefaultsEditorState
             (tx) => tx
                 .get(hostOrganizerEditControllerProvider)
                 .updateOrganizer(
-                  clubId: widget.organizer.id,
+                  organizerId: widget.organizer.id,
                   patch: UpdateOrganizerPatch(hostDefaults: defaults),
                 ),
           ),

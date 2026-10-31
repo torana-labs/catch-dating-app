@@ -1,5 +1,5 @@
 import {describe, expect, it} from "vitest";
-import {sampleClubDetails} from "../../../shared/api/sampleData";
+import {sampleOrganizerDetails} from "../../../shared/api/sampleData";
 import {
   buildOrganizerSavePayload,
   countIncompletePublishChecklist,
@@ -15,7 +15,7 @@ import {
 } from "./organizerPublishingHelpers";
 
 const courtsideForm: OrganizerPublishingFormState = {
-  clubId: "courtside",
+  organizerId: "courtside",
   name: "Courtside",
   description: "Mumbai padel socials and community play.",
   location: "in-mh-mumbai",
@@ -114,13 +114,13 @@ describe("organizerPublishingHelpers", () => {
   });
 
   it("saves the page links only when they change, as one ordered list", () => {
-    const club = sampleClubDetails.afterfly;
-    const form = formFromOrganizerProfile(club);
+    const organizer = sampleOrganizerDetails.afterfly;
+    const form = formFromOrganizerProfile(organizer);
     expect(form.ownerLinks.map((link) => link.id))
       .toEqual(["diwali-run", "whatsapp"]);
-    expect(buildOrganizerSavePayload(club, form).fields.ownerLinks)
+    expect(buildOrganizerSavePayload(organizer, form).fields.ownerLinks)
       .toBeUndefined();
-    expect(diffOrganizerProfile(club, form)).toEqual([]);
+    expect(diffOrganizerProfile(organizer, form)).toEqual([]);
 
     const [diwali, whatsapp] = form.ownerLinks;
     const edited = {
@@ -128,11 +128,11 @@ describe("organizerPublishingHelpers", () => {
       ownerLinks: [{...whatsapp, subtitle: "  ", label: " Community chat "},
         {...diwali, pinned: false, showUntil: ""}],
     };
-    expect(buildOrganizerSavePayload(club, edited).fields.ownerLinks).toEqual([
-      {...club.ownerLinks[1], label: "Community chat", subtitle: null},
-      {...club.ownerLinks[0], pinned: false, showUntil: null},
+    expect(buildOrganizerSavePayload(organizer, edited).fields.ownerLinks).toEqual([
+      {...organizer.ownerLinks[1], label: "Community chat", subtitle: null},
+      {...organizer.ownerLinks[0], pinned: false, showUntil: null},
     ]);
-    expect(diffOrganizerProfile(club, edited)).toEqual([{
+    expect(diffOrganizerProfile(organizer, edited)).toEqual([{
       field: "Page links",
       before: "Diwali night run tickets (pinned), Join the WhatsApp community",
       after: "Community chat, Diwali night run tickets",
@@ -140,11 +140,11 @@ describe("organizerPublishingHelpers", () => {
   });
 
   it("keeps the show-until time when the form round-trips it", () => {
-    const club = sampleClubDetails.afterfly;
-    const form = formFromOrganizerProfile(club);
+    const organizer = sampleOrganizerDetails.afterfly;
+    const form = formFromOrganizerProfile(organizer);
     expect(form.ownerLinks[0].showUntil).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/u);
     expect(new Date(form.ownerLinks[0].showUntil).toISOString())
-      .toBe(club.ownerLinks[0].showUntil);
+      .toBe(organizer.ownerLinks[0].showUntil);
   });
 
   it("asks for a label and an https address on every page link", () => {

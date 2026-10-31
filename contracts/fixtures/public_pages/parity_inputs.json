@@ -518,7 +518,7 @@
             "publicationState": "published",
             "currency": "INR",
             "eventTimezone": "Asia/Kolkata",
-            "clubId": "next-proof"
+            "organizerId": "next-proof"
           }
         },
         {
@@ -790,96 +790,6 @@
           }
         },
         {
-          "id": "mismatched-club",
-          "data": {
-            "name": "Sunrise Social 5K",
-            "startTime": {
-              "_seconds": 1778889600,
-              "_nanoseconds": 0
-            },
-            "endTime": {
-              "_seconds": 1778893800,
-              "_nanoseconds": 0
-            },
-            "meetingPoint": "Race Course Road gate",
-            "meetingLocation": {
-              "name": "Race Course Road gate",
-              "address": "Race Course Road, Indore",
-              "placeId": "race-course-road-gate",
-              "latitude": 22.7196,
-              "longitude": 75.8577,
-              "notes": "Meet near the main gate."
-            },
-            "startingPointLat": 22.7196,
-            "startingPointLng": 75.8577,
-            "locationDetails": "Meet near the main gate.",
-            "itinerary": [
-              {
-                "id": "gather",
-                "kind": "gather",
-                "offsetMinutes": 0,
-                "durationMinutes": 15,
-                "title": "Gather at the main gate"
-              },
-              {
-                "id": "run",
-                "kind": "activity",
-                "offsetMinutes": 15,
-                "title": "Social 5K"
-              }
-            ],
-            "eventFormat": {
-              "version": 1,
-              "activityKind": "socialRun",
-              "interactionModel": "pacePods",
-              "defaultPlaybookId": "social_run_light"
-            },
-            "distanceKm": 5,
-            "pace": "easy",
-            "capacityLimit": 12,
-            "description": "Easy social 5K with coffee after.",
-            "priceInPaise": 0,
-            "bookedCount": 4,
-            "checkedInCount": 0,
-            "waitlistedCount": 0,
-            "status": "active",
-            "cancelledAt": null,
-            "cancellationReason": null,
-            "genderCounts": {
-              "man": 2,
-              "woman": 2
-            },
-            "cohortCounts": {
-              "menInterestedInWomen": 2,
-              "womenInterestedInMen": 2
-            },
-            "waitlistedCohortCounts": {},
-            "discoveryCityName": "indore",
-            "discoveryMarketId": "in-mp-indore",
-            "discoveryActivityKind": "socialRun",
-            "discoveryGeoCell": "283:948",
-            "discoveryHasOpenSpots": true,
-            "discoveryAvailability": "open",
-            "discoveryOpenCohorts": [
-              "menInterestedInWomen",
-              "womenInterestedInMen",
-              "queerOrOpen",
-              "nonBinaryOrOther"
-            ],
-            "discoveryWaitlistCohorts": [],
-            "discoveryInviteRequired": false,
-            "discoveryMembershipRequired": false,
-            "discoveryManualApprovalRequired": false,
-            "discoveryMinAge": 21,
-            "discoveryMaxAge": 45,
-            "organizerId": "next-proof",
-            "publicationState": "published",
-            "currency": "INR",
-            "eventTimezone": "Asia/Kolkata",
-            "clubId": "someone-else"
-          }
-        },
-        {
           "id": "reversed-times",
           "data": {
             "name": "Sunrise Social 5K",
@@ -976,7 +886,6 @@
             "schemaVersion": 1,
             "eventId": "ext-public",
             "canonicalHostId": "next-proof",
-            "compatibilityClubId": "next-proof",
             "title": "Takeoff: Run + Rave",
             "description": "Reviewed external event listing.",
             "startTime": {
@@ -1094,7 +1003,6 @@
             "schemaVersion": 1,
             "eventId": "ext-taken-down",
             "canonicalHostId": "next-proof",
-            "compatibilityClubId": "next-proof",
             "title": "Takeoff: Run + Rave",
             "description": "Reviewed external event listing.",
             "startTime": {
@@ -1212,7 +1120,6 @@
             "schemaVersion": 1,
             "eventId": "ext-synthetic",
             "canonicalHostId": "next-proof",
-            "compatibilityClubId": "next-proof",
             "title": "Takeoff: Run + Rave",
             "description": "Reviewed external event listing.",
             "startTime": {
@@ -1331,7 +1238,6 @@
             "schemaVersion": 1,
             "eventId": "ext-catch-booking",
             "canonicalHostId": "next-proof",
-            "compatibilityClubId": "next-proof",
             "title": "Takeoff: Run + Rave",
             "description": "Reviewed external event listing.",
             "startTime": {

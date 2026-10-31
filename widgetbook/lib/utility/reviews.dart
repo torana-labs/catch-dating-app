@@ -459,7 +459,7 @@ Widget writeReviewSheetStates(BuildContext context) {
         child: WidgetbookUtilitySheetFrame(
           child: IgnorePointer(
             child: WriteReviewSheet(
-              clubId: 'widgetbook-club',
+              organizerId: 'widgetbook-club',
               eventId: widgetbookUtilityEvent.id,
               reviewer: widgetbookUtilityViewer,
             ),
@@ -471,7 +471,7 @@ Widget writeReviewSheetStates(BuildContext context) {
         child: WidgetbookUtilitySheetFrame(
           child: IgnorePointer(
             child: WriteReviewSheet(
-              clubId: 'widgetbook-club',
+              organizerId: 'widgetbook-club',
               eventId: widgetbookUtilityEvent.id,
               reviewer: widgetbookUtilityViewer,
               existingReview: _reviews.first,

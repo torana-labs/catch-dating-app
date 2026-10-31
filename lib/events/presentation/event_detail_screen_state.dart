@@ -704,7 +704,7 @@ EventDetailHostState eventDetailHostStateFrom({
           currentUid != hostUid;
 
       return EventDetailHostState.content(
-        clubId: organizer.id,
+        organizerId: organizer.id,
         hostUid: hostUid,
         hostName: organizer.displayHostName,
         photoUrl: hostProfile?.avatarUrl ?? organizer.logoPhotoUrl,

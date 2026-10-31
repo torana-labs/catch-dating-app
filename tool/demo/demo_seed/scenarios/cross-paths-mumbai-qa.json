@@ -14,8 +14,8 @@
     "description": "Exactly three synthetic Mumbai profiles and one upcoming event rebound to the hidden courtside organizer for the participation-scoped Cross Paths QA path.",
     "cities": ["mumbai"],
     "usersPerCity": 3,
-    "clubsPerCity": 1,
-    "eventsPerClub": 1,
+    "organizersPerCity": 1,
+    "eventsPerOrganizer": 1,
     "anchorsPerRun": 0,
     "preferPaidEvents": false,
     "eventPatterns": [

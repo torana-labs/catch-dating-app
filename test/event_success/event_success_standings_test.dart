@@ -8,7 +8,7 @@ void main() {
     final standings = EventSuccessStandings.fromJson({
       'id': 'event-1',
       'eventId': 'event-1',
-      'clubId': 'club-1',
+      'organizerId': 'club-1',
       'unitOutcome': 'score',
       'revision': 2,
       'latestRoundIndex': 1,

@@ -130,16 +130,18 @@ export async function readEventViewerStateSource(params: {
       EventParticipationDocument | undefined;
     if (participation && (!validateEventParticipationDocument(participation) ||
         participation.eventId !== eventId ||
-        participation.uid !== uid || participation.clubId !== event.clubId ||
+        participation.uid !== uid ||
+            participation.organizerId !== event.organizerId ||
         participation.organizerId !== undefined &&
-          participation.organizerId !== (event.organizerId ?? event.clubId))) {
+          participation.organizerId !== (event.organizerId))) {
       return null;
     }
     const offer = offerSnap.data();
     if (offer && (!validateEventWaitlistOfferDocument(offer) ||
         offer.uid !== uid || offer.eventId !== eventId ||
-        offer.clubId !== event.clubId || offer.organizerId !== undefined &&
-          offer.organizerId !== (event.organizerId ?? event.clubId))) {
+        offer.organizerId !== event.organizerId ||
+            offer.organizerId !== undefined &&
+          offer.organizerId !== (event.organizerId))) {
       return null;
     }
     // An active owned offer unlocks its accept command, never direct booking.
@@ -151,7 +153,7 @@ export async function readEventViewerStateSource(params: {
     const confirmed = ["signedUp", "attended"]
       .includes(participation?.status ?? "");
     const result: EventViewerStateSource = {eventId,
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId: event.organizerId,
       observedAtMillis: nowMillis,
       membership: {state: "notRequired", revision: null, decisionId: null},
       review: hostApproved ? "approved" :
@@ -281,8 +283,7 @@ export async function readEventViewerStateSource(params: {
             "eventUnavailable");
       }
       const scheduleConflict = await readUserEventScheduleConflictInTransaction(
-        tx, db, {uid, eventId, clubId: event.clubId,
-          organizerId: result.organizerId,
+        tx, db, {uid, eventId, organizerId: result.organizerId,
           startTimeMillis: event.startTime.toMillis(),
           endTimeMillis: event.endTime.toMillis()}, {readLimit});
       if (scheduleConflict === null) return deny("eventUnavailable");

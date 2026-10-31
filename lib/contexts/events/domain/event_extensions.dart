@@ -14,8 +14,6 @@ import 'package:catch_dating_app/platform/time/time_formatters.dart';
 const _legacyUnattributedCohortId = 'legacyUnattributed';
 
 extension EventX on Event {
-  String get organizerId => clubId;
-
   double get distanceMiles => distanceKm * 0.621371;
   ActivityKind get activityKind => eventFormat.activityKind;
   int get signedUpCount => bookedCount ?? 0;
@@ -27,6 +25,11 @@ extension EventX on Event {
   bool get isCancelled => status == EventLifecycleStatus.cancelled;
   bool get isExternalCompanion => eventOrigin?.isExternal ?? false;
   bool get hasWebRuntime => runtimeAccess?.isJoinable ?? false;
+  // The path parameters of the event detail routes.
+  Map<String, String> get detailRouteParameters => {
+    'organizerId': organizerId,
+    'eventId': id,
+  };
   Uri? runtimeJoinUri({String baseUrl = Brand.webOrigin}) {
     final runtimeId = runtimeAccess?.publicRuntimeId;
     if (runtimeId == null || runtimeId.isEmpty) return null;

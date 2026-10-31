@@ -31,7 +31,7 @@ void main() {
           bottomNavigationBar: _withCurrentViewer(
             EventDetailDock(
               event: buildEvent(bookedCount: 2),
-              clubId: 'club1',
+              organizerId: 'club1',
               userProfile: buildUser(),
               participation: null,
             ),
@@ -69,7 +69,7 @@ void main() {
           bottomNavigationBar: _withCurrentViewer(
             EventDetailDock(
               event: buildEvent(bookedCount: 2),
-              clubId: 'club1',
+              organizerId: 'club1',
               userProfile: buildUser(runPreferencesVersion: 0),
               participation: null,
             ),
@@ -110,7 +110,7 @@ void main() {
           bottomNavigationBar: _withCurrentViewer(
             EventDetailDock(
               event: event,
-              clubId: 'club1',
+              organizerId: 'club1',
               userProfile: buildUser(),
               participation: null,
               inviteCode: 'CATCH-DELHI',
@@ -151,7 +151,7 @@ void main() {
                   basePriceInPaise: 0,
                 ),
               ),
-              clubId: 'club1',
+              organizerId: 'club1',
               userProfile: buildUser(),
               participation: null,
             ),
@@ -182,7 +182,7 @@ void main() {
           bottomNavigationBar: _withCurrentViewer(
             EventDetailDock(
               event: buildEvent(),
-              clubId: 'club1',
+              organizerId: 'club1',
               userProfile: buildUser(),
               participation: null,
             ),
@@ -225,7 +225,7 @@ void main() {
           bottomNavigationBar: _withCurrentViewer(
             EventDetailDock(
               event: buildEvent(priceInPaise: 15000),
-              clubId: 'club1',
+              organizerId: 'club1',
               userProfile: buildUser(),
               participation: null,
             ),
@@ -258,7 +258,7 @@ void main() {
           bottomNavigationBar: _withCurrentViewer(
             EventDetailDock(
               event: buildEvent(bookedCount: 1),
-              clubId: 'club1',
+              organizerId: 'club1',
               userProfile: buildUser(),
               participation: _participation(),
             ),
@@ -289,7 +289,7 @@ void main() {
           bottomNavigationBar: _withCurrentViewer(
             EventDetailDock(
               event: buildEvent(bookedCount: 1),
-              clubId: 'club1',
+              organizerId: 'club1',
               userProfile: buildUser(),
               participation: null,
             ),
@@ -319,7 +319,7 @@ void main() {
             bottomNavigationBar: _withCurrentViewer(
               EventDetailDock(
                 event: buildEvent(startTime: startTime, bookedCount: 1),
-                clubId: 'club1',
+                organizerId: 'club1',
                 now: startTime.subtract(const Duration(minutes: 5)),
                 userProfile: buildUser(),
                 participation: _participation(),
@@ -381,7 +381,7 @@ void main() {
                           EventCohortIds.menInterestedInWomen: 1,
                         },
                       ),
-                      clubId: 'club1',
+                      organizerId: 'club1',
                       userProfile: buildUser(uid: 'runner-9'),
                       participation: null,
                     ),
@@ -390,7 +390,7 @@ void main() {
                   _withCurrentViewer(
                     EventDetailDock(
                       event: buildEvent(waitlistedCount: 1),
-                      clubId: 'club1',
+                      organizerId: 'club1',
                       userProfile: buildUser(uid: 'runner-9'),
                       participation: _participation(
                         uid: 'runner-9',
@@ -447,7 +447,7 @@ void main() {
                 bottomNavigationBar: _withCurrentViewer(
                   EventDetailDock(
                     event: buildEvent(),
-                    clubId: 'club1',
+                    organizerId: 'club1',
                     now: DateTime(2026, 1, 1, 12),
                     userProfile: buildUser(uid: 'runner-9'),
                     participation: _participation(
@@ -527,7 +527,7 @@ void main() {
                   _withCurrentViewer(
                     EventDetailDock(
                       event: event,
-                      clubId: 'club1',
+                      organizerId: 'club1',
                       userProfile: buildUser(uid: 'runner-9'),
                       participation: null,
                     ),
@@ -536,7 +536,7 @@ void main() {
                   _withCurrentViewer(
                     EventDetailDock(
                       event: event,
-                      clubId: 'club1',
+                      organizerId: 'club1',
                       userProfile: buildUser(uid: 'runner-9'),
                       participation: _participation(
                         uid: 'runner-9',
@@ -552,7 +552,7 @@ void main() {
                   _withCurrentViewer(
                     EventDetailDock(
                       event: event,
-                      clubId: 'club1',
+                      organizerId: 'club1',
                       userProfile: buildUser(uid: 'runner-9'),
                       participation: _participation(
                         uid: 'runner-9',
@@ -600,7 +600,7 @@ void main() {
                     endTime: pastStart.add(const Duration(hours: 1)),
                     checkedInCount: 1,
                   ),
-                  clubId: 'club1',
+                  organizerId: 'club1',
                   userProfile: buildUser(),
                   participation: _participation(
                     status: EventParticipationStatus.attended,
@@ -620,7 +620,7 @@ void main() {
                     ),
                     endTime: DateTime.now().subtract(const Duration(hours: 1)),
                   ),
-                  clubId: 'club1',
+                  organizerId: 'club1',
                   userProfile: buildUser(),
                   participation: null,
                 ),
@@ -658,7 +658,7 @@ void main() {
                 bookedCount: 9,
                 checkedInCount: 1,
               ),
-              clubId: 'club1',
+              organizerId: 'club1',
               now: now,
               userProfile: buildUser(),
               participation: _participation(
@@ -706,7 +706,7 @@ void main() {
                   event: buildEvent(
                     constraints: const EventConstraints(minAge: 18),
                   ),
-                  clubId: 'club1',
+                  organizerId: 'club1',
                   userProfile: tooYoungUser,
                   participation: null,
                 ),
@@ -717,7 +717,7 @@ void main() {
                   event: buildEvent(
                     constraints: const EventConstraints(maxAge: 40),
                   ),
-                  clubId: 'club1',
+                  organizerId: 'club1',
                   userProfile: olderUser,
                   participation: null,
                 ),
@@ -729,7 +729,7 @@ void main() {
                     constraints: const EventConstraints(maxMen: 1),
                     genderCounts: const {'man': 1},
                   ),
-                  clubId: 'club1',
+                  organizerId: 'club1',
                   userProfile: buildUser(uid: 'runner-3'),
                   participation: null,
                 ),
@@ -766,7 +766,7 @@ EventParticipation _participation({
   return EventParticipation(
     id: eventParticipationId(eventId: eventId, uid: uid),
     eventId: eventId,
-    clubId: 'club-1',
+    organizerId: 'club-1',
     uid: uid,
     status: status,
     createdAt: now,

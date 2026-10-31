@@ -77,11 +77,11 @@ async function completedEvent<P extends EventSeatPaymentState>(input: {
   const end = millis(event?.endTime);
   const completed = millis(plan?.completedAt);
   if (!event || event.status !== "active" ||
-      (event.organizerId ?? event.clubId) !== organizerId ||
+      (event.organizerId) !== organizerId ||
       !Number.isSafeInteger(end) || end <= 0 || end > nowMillis ||
       !validateEventSuccessPlanDocument(plan) || plan.eventId !== eventId ||
-      plan.clubId !== event.clubId ||
-      (plan.organizerId ?? plan.clubId) !== organizerId ||
+      plan.organizerId !== event.organizerId ||
+      (plan.organizerId) !== organizerId ||
       plan.status !== "complete" || !plan.liveControlRevision ||
       !Number.isSafeInteger(completed) || completed <= 0 ||
       completed < payment.admittedAt.toMillis() || completed > nowMillis ||

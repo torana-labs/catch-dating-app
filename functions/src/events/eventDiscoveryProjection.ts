@@ -16,8 +16,8 @@ type DiscoveryAvailability = "open" | "waitlist" | "gated" | "full" |
 
 type EventDiscoveryProjectionInput = {
   event: EventDiscoveryProjectionSource;
-  clubLocation?: string | null;
-  clubLocationMarketId?: string | null;
+  organizerLocation?: string | null;
+  organizerLocationMarketId?: string | null;
   bookedCount?: number;
 };
 
@@ -115,12 +115,12 @@ export function eventDiscoveryProjection(
 
   return {
     discoveryMarketId: normalizeDiscoveryMarketId({
-      marketId: input.clubLocationMarketId,
-      location: input.clubLocation,
+      marketId: input.organizerLocationMarketId,
+      location: input.organizerLocation,
     }),
     discoveryCityName: normalizeDiscoveryCityName({
-      location: input.clubLocation,
-      marketId: input.clubLocationMarketId,
+      location: input.organizerLocation,
+      marketId: input.organizerLocationMarketId,
     }),
     discoveryActivityKind:
       event.eventFormat?.activityKind ?? "socialRun",

@@ -34,7 +34,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _app(
-        const HostEventRehearsalStartScreen(clubId: 'club-1'),
+        const HostEventRehearsalStartScreen(organizerId: 'club-1'),
         overrides: [
           eventRehearsalEntryProvider('club-1', null).overrideWith(
             (ref) async => EventRehearsalEntryData(
@@ -101,7 +101,7 @@ void main() {
     await tester.pumpWidget(
       _app(
         const HostEventRehearsalScreen(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           sessionId: 'session-1',
         ),
         overrides: [
@@ -216,7 +216,7 @@ void main() {
     await tester.pumpWidget(
       _app(
         const HostEventRehearsalScreen(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           sessionId: 'session-1',
         ),
         overrides: [
@@ -280,7 +280,7 @@ void main() {
     await tester.pumpWidget(
       _app(
         const HostEventRehearsalScreen(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           sessionId: 'session-1',
         ),
         textScale: 2,
@@ -332,7 +332,7 @@ void main() {
     await tester.pumpWidget(
       _app(
         const HostEventRehearsalScreen(
-          clubId: 'club-1',
+          organizerId: 'club-1',
           sessionId: 'session-1',
         ),
         overrides: [
