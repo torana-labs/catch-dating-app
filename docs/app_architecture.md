@@ -770,7 +770,8 @@ A `FeatureScreen` owns:
 - the single vertical scroll owner when the surface scrolls;
 - the top-level async boundary for initial data, unless the screen is static;
 - screen-level mutation listeners for transient action failures;
-- retry invalidation for the provider/view model that failed;
+- a retry that re-runs the read that failed (see
+  [Retrying a composed view model](#retrying-a-composed-view-model));
 - navigation callbacks and route exits;
 - deciding which feature body/state widget is shown.
 
@@ -1857,6 +1858,20 @@ explicit destination action) instead. Inline errors may inherit recovery from
 their surrounding section. The `catch_error_state_requires_action` analyzer
 diagnostic rejects actionless full-screen and sliver error surfaces in feature
 presentation code.
+
+### Retrying a composed view model
+
+Invalidating a provider does not re-run the providers it watches. A Retry that
+only invalidates a view model composed from several reads rebuilds it over the
+same cached failure, so the button does nothing. Retry with
+`ref.retryFailedReads(error, composition: viewModelProvider)`
+(`lib/platform/riverpod_ui/failed_reads.dart`). The app container's
+`FailedReadRecorder` notes which provider each failure came from, family key
+included, so the helper re-runs exactly the reads that failed with the error
+the screen shows, then rebuilds the view model. Healthy reads keep their
+state, so session-wide ones such as `uidProvider`, which the router watches,
+do not restart. Pass the error the screen is showing; a load timeout has none,
+and then only the view model is rebuilt.
 
 Use a feature-owned typed UI state when a screen has richer behavior, such as:
 
@@ -4774,8 +4789,10 @@ Widget build(BuildContext context) {
     return CatchLocalizedErrorScaffold(
       vmAsync.error!,
       context: AppErrorContext.event,
-      onRetry: () =>
-          ref.invalidate(eventDetailViewModelProvider(widget.eventId)),
+      onRetry: () => ref.retryFailedReads(
+        vmAsync.error,
+        composition: eventDetailViewModelProvider(widget.eventId),
+      ),
     );
   }
 

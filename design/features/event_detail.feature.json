@@ -954,7 +954,7 @@
         {
           "id": "retry_event_location",
           "owner": "location_map_route",
-          "codeValue": "invalidate",
+          "codeValue": "retryFailedReads",
           "cardinality": "singleton",
           "scopeKeys": [
             "eventId",
