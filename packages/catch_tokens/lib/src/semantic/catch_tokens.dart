@@ -33,6 +33,8 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     required this.positiveText,
     required this.attentionText,
     required this.affinityText,
+    required this.dangerText,
+    required this.goldText,
     required this.gold,
     required this.heroGrad,
   });
@@ -105,6 +107,12 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
 
   /// Readable categorical status foreground, paired with a subtle fill.
   final Color affinityText;
+
+  /// Readable destructive text on neutral surfaces and badge tints.
+  final Color dangerText;
+
+  /// Readable gold text on neutral surfaces and badge tints.
+  final Color goldText;
 
   final Color gold;
 
@@ -185,6 +193,8 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     positiveText: GeneratedCatchColorTokens.lightPositiveText,
     attentionText: GeneratedCatchColorTokens.lightAttentionText,
     affinityText: GeneratedCatchColorTokens.lightAffinityText,
+    dangerText: GeneratedCatchColorTokens.lightDangerText,
+    goldText: GeneratedCatchColorTokens.lightGoldText,
     gold: GeneratedCatchColorTokens.lightGold,
     // deprecated: hero gradients now derive from ActivityPalette
     heroGrad: GeneratedCatchGradientTokens.lightHeroGrad,
@@ -217,6 +227,8 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     positiveText: GeneratedCatchColorTokens.darkPositiveText,
     attentionText: GeneratedCatchColorTokens.darkAttentionText,
     affinityText: GeneratedCatchColorTokens.darkAffinityText,
+    dangerText: GeneratedCatchColorTokens.darkDangerText,
+    goldText: GeneratedCatchColorTokens.darkGoldText,
     gold: GeneratedCatchColorTokens.darkGold,
     heroGrad: GeneratedCatchGradientTokens.darkHeroGrad,
   );
@@ -253,6 +265,8 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     Color? positiveText,
     Color? attentionText,
     Color? affinityText,
+    Color? dangerText,
+    Color? goldText,
     Color? gold,
     Gradient? heroGrad,
   }) => CatchTokens(
@@ -278,6 +292,8 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     positiveText: positiveText ?? this.positiveText,
     attentionText: attentionText ?? this.attentionText,
     affinityText: affinityText ?? this.affinityText,
+    dangerText: dangerText ?? this.dangerText,
+    goldText: goldText ?? this.goldText,
     gold: gold ?? this.gold,
     heroGrad: heroGrad ?? this.heroGrad,
   );
@@ -308,6 +324,8 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
       positiveText: Color.lerp(positiveText, other.positiveText, t)!,
       attentionText: Color.lerp(attentionText, other.attentionText, t)!,
       affinityText: Color.lerp(affinityText, other.affinityText, t)!,
+      dangerText: Color.lerp(dangerText, other.dangerText, t)!,
+      goldText: Color.lerp(goldText, other.goldText, t)!,
       gold: Color.lerp(gold, other.gold, t)!,
       heroGrad: Gradient.lerp(heroGrad, other.heroGrad, t)!,
     );

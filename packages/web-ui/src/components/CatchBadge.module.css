@@ -172,22 +172,22 @@
 }
 
 .badge[data-tone="success"] {
-  --catch-badge-ink: var(--catch-theme-success);
-  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-ink)
+  --catch-badge-ink: var(--catch-theme-positive-text);
+  --catch-badge-fill: color-mix(in srgb, var(--catch-theme-success)
     calc(var(--catch-badge-subtle-fill-alpha) * 100%), transparent);
   --catch-badge-border: transparent;
 }
 
 .badge[data-tone="warning"] {
-  --catch-badge-ink: var(--catch-theme-warning);
-  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-ink)
+  --catch-badge-ink: var(--catch-theme-attention-text);
+  --catch-badge-fill: color-mix(in srgb, var(--catch-theme-warning)
     calc(var(--catch-badge-warning-fill-alpha) * 100%), transparent);
   --catch-badge-border: transparent;
 }
 
 .badge[data-tone="danger"] {
-  --catch-badge-ink: var(--catch-theme-danger);
-  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-ink)
+  --catch-badge-ink: var(--catch-theme-danger-text);
+  --catch-badge-fill: color-mix(in srgb, var(--catch-theme-danger)
     calc(var(--catch-badge-danger-fill-alpha) * 100%), transparent);
   --catch-badge-border: transparent;
 }
@@ -200,10 +200,10 @@
 }
 
 .badge[data-tone="gold"] {
-  --catch-badge-ink: var(--catch-theme-gold);
-  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-ink)
+  --catch-badge-ink: var(--catch-theme-gold-text);
+  --catch-badge-fill: color-mix(in srgb, var(--catch-theme-gold)
     calc(var(--catch-badge-subtle-fill-alpha) * 100%), transparent);
-  --catch-badge-border: color-mix(in srgb, var(--catch-badge-ink)
+  --catch-badge-border: color-mix(in srgb, var(--catch-theme-gold)
     calc(var(--catch-badge-subtle-border-alpha) * 100%), transparent);
 }
 
@@ -251,7 +251,7 @@
 
 .badge[data-recipe="privacy"] {
   --catch-badge-icon-size: var(--catch-badge-icon-micro);
-  --catch-badge-ink: var(--catch-theme-ink3);
+  --catch-badge-ink: var(--catch-theme-ink2);
   --catch-badge-fill: transparent;
   --catch-badge-border: var(--catch-theme-line2);
 }
@@ -260,8 +260,9 @@
 .badge[data-recipe="ticketStatus"][data-functional] {
   --catch-badge-padding: var(--catch-space-s1) var(--catch-space-s2);
   --catch-badge-border-width: 0;
-  --catch-badge-ink: var(--catch-badge-pigment, var(--catch-theme-ink2));
-  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-ink)
+  --catch-badge-ink: color-mix(in srgb, var(--catch-theme-ink)
+    calc(var(--catch-opacity-badge-pigment-ink) * 100%), var(--catch-badge-pigment, var(--catch-theme-ink2)));
+  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-pigment, var(--catch-theme-ink2))
     calc(var(--catch-badge-subtle-fill-alpha) * 100%), transparent);
   --catch-badge-font: var(--catch-typography-brand-mono-label-family), var(--catch-font-mono), monospace;
   --catch-badge-size: var(--catch-typography-brand-mono-label-size);
@@ -283,7 +284,7 @@
   --catch-badge-padding: var(--catch-space-micro2) var(--catch-space-micro6);
   --catch-badge-radius: var(--catch-radius-sm);
   --catch-badge-border-width: 0;
-  --catch-badge-ink: var(--catch-theme-ink3);
+  --catch-badge-ink: var(--catch-theme-ink2);
   --catch-badge-fill: var(--catch-theme-raised);
   --catch-badge-size: var(--catch-typography-web-secondary-size);
   --catch-badge-line-height: var(--catch-typography-web-secondary-line-height);
@@ -294,7 +295,7 @@
 }
 
 .badge[data-recipe="optional"][data-tone="danger"] {
-  --catch-badge-ink: var(--catch-theme-danger);
+  --catch-badge-ink: var(--catch-theme-danger-text);
   --catch-badge-fill: color-mix(in srgb, var(--catch-theme-danger)
     calc(var(--catch-badge-overlay-pressed-alpha) * 100%), transparent);
 }

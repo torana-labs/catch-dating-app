@@ -285,11 +285,7 @@ const SPECS = [
         {
           "name": "organizerId",
           "dartType": "String",
-          "forceRequired": true,
-          "jsonKey": {
-            "name": "'organizerId'",
-            "readValue": "readEventOrganizerId"
-          }
+          "forceRequired": true
         },
         {
           "name": "sourceVenueId",

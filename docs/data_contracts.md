@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.182.0
-updated: 2026-10-31
+version: 1.183.0
+updated: 2026-11-01
 owner: recursive_audit_loop
 status: active
 ---
@@ -3339,6 +3339,23 @@ leaves a second account in `needsAttention` if another became ready meanwhile.
 A connection whose `lastErrorCode` is set cannot take payments even while its
 status reads `ready`; the Host app shows it as needing reconnection and replaces
 it by disconnecting it before a new `begin`.
+
+Checkout readiness rejects a connection whose `tokenExpiresAt` has passed, and
+a checkout refreshes the access token only in its last two minutes, so token
+upkeep cannot wait for a checkout. `refreshOrganizerFormPaymentTokens` runs
+hourly. It refreshes each `ready` connection in the partner client's mode whose
+`tokenExpiresAt` falls within seven days, including one already expired, at
+most 50 per run, earliest expiry first. It uses the same refresh path and
+exclusive `refreshLeaseUntil` lease as a checkout or the Host's "Check
+connection", so only one refresh is ever in flight. A successful refresh saves
+a new vault version and moves `secretVersionResource`, `tokenExpiresAt` and
+`publicToken` forward. An uncertain refresh (`refreshOutcomeUnknown`, including
+a lease that expired mid-refresh) or a rejected one (`refreshRejected`) moves
+the connection to `needsAttention` and is never sent again: the refresh token
+may already have rotated, so the Host reconnects. A refresh that never left the
+process is retried on the next run. When the current token still has more than
+two minutes left, such a failure leaves the connection ready; otherwise it sets
+`refreshNotSent`, which blocks checkout until a refresh succeeds.
 
 `organizerFormPayments` freezes the fee, merchant, verified respondent,
 version, draft revision and answer hash before creating an order. The draft's

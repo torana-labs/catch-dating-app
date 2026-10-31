@@ -37,7 +37,7 @@ case "$environment" in
   dev)
     project=catchdates-dev
     project_number=619661127800
-    mode=test
+    mode="test"
     if [[ "$live" == true ]]; then
       echo "dev only takes Razorpay test-mode credentials; run without --live." >&2
       exit 2

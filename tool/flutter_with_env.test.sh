@@ -227,6 +227,11 @@ run_stubbed_ios_build() {
 }
 
 retry_counter="$state_dir/retry-count"
+# The run_stubbed_* helpers assign these through printf -v, which shellcheck
+# cannot follow; declaring them keeps its unassigned-variable check useful.
+retry_output='' retry_status='' compile_output='' compile_status=''
+exhausted_output='' exhausted_status='' gradle_output='' gradle_status=''
+gradle_unrelated_output='' gradle_unrelated_status='' local_output='' local_status=''
 run_stubbed_ios_build tls-once true "$retry_counter" retry_output retry_status
 if [[ "$retry_status" != "0" || "$(<"$retry_counter")" != "2" ]]; then
   echo "Expected exact CocoaPods Git TLS failure to succeed on bounded retry." >&2
