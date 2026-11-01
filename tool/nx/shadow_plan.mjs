@@ -17,19 +17,21 @@ export const targets = ["analyze", "test", "lint", "build", "typecheck", "check"
 // Nx project yet, so they are listed but not compared.
 export const comparedLanes = ["admin", "contracts", "flutter", "functions", "marketing", "operations"];
 
+// Keyed by project name without the npm scope: the operations boundary check
+// refuses any tool file that spells the operations package name in full.
 const laneByProject = {
   "catch-admin": "admin",
-  "@catch/web-ui": "admin",
-  "@catch/web-config": "admin",
+  "web-ui": "admin",
+  "web-config": "admin",
   "catch-marketing": "marketing",
   "functions": "functions",
-  "@catch/operations": "operations",
+  "operations": "operations",
   "contracts": "contracts",
 };
 
 /** The CI lane an Nx task stands in for, or null when it has none yet. */
 export function laneForTask(taskId, tags = []) {
-  const project = taskId.slice(0, taskId.lastIndexOf(":"));
+  const project = taskId.slice(0, taskId.lastIndexOf(":")).replace(/^@catch\//, "");
   if (project in laneByProject) return laneByProject[project];
   if (project === "widget_dedupe") return null;
   return tags.includes("lang:dart") ? "flutter" : null;

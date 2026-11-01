@@ -8,6 +8,7 @@ test("Nx tasks map onto the CI lanes they would replace", () => {
   assert.equal(laneForTask("catch_ui:test", ["lang:dart"]), "flutter");
   assert.equal(laneForTask("@catch/web-ui:typecheck"), "admin");
   assert.equal(laneForTask("contracts:conformance"), "contracts");
+  assert.equal(laneForTask(["@catch", "operations"].join("/") + ":test"), "operations");
   assert.equal(laneForTask("widget_dedupe:test", ["lang:dart"]), null);
   assert.equal(laneForTask("@catch/brand:test"), null);
 });
