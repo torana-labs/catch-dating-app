@@ -39,6 +39,8 @@
       "workspace_sales_records",
       "workspace_sales_import",
       "workspace_organizer_publishing",
+      "route_support",
+      "route_support_live_controller",
       "route_now",
       "route_money",
       "route_marketplace",
@@ -802,7 +804,7 @@
           "money"
         ]
       },
-      "notes": "One organizer in the CatchPaneLayout reading pattern with CatchPageTabBar tabs Overview, Page, Events, Sales, Money and History, read from adminGetOrganizerOverview. Facts and the journey use interim local rows until CatchMetaRow and the CatchSection timeline land; the Page tab hosts the Organizer Publishing editor for this organizer."
+      "notes": "One organizer in the CatchPaneLayout reading pattern with CatchPageTabBar tabs Overview, Page, Events, Sales, Money and History, read from adminGetOrganizerOverview, with CatchMetaRow facts and the CatchSection timeline journey; the Page tab hosts the Organizer Publishing editor for this organizer."
     },
     {
       "id": "route_organizer_records_live_controller",
@@ -4587,6 +4589,40 @@
         ]
       },
       "notes": "Reviewed private scoring, grounded draft preparation and manual copy; no messaging provider."
+    },
+    {
+      "id": "route_support",
+      "kind": "route",
+      "owner": "features/support",
+      "source": "admin/src/features/support/ui/SupportScreen.tsx",
+      "exportName": "SupportScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "SupportRouteStory",
+        "states": [
+          "open-conversations",
+          "conversation"
+        ]
+      },
+      "notes": "Support (board AdminSupport) in the quiet register: guest and organizer conversations from WhatsApp, Instagram and logged email, longest waiting first, in a CatchTable on the queue pattern with Open, Mine, Waiting on them and Closed views. The conversation beside it shows who it is, how long they have waited, its links to a booking, money issue or safety case, the messages, saved replies, and recording a reply or note. The WhatsApp reply trial stays reachable at /support/trial."
+    },
+    {
+      "id": "route_support_live_controller",
+      "kind": "route",
+      "owner": "features/support",
+      "source": "admin/src/features/support/ui/SupportRouteScreen.tsx",
+      "exportName": "SupportRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the support inbox controller and the conversation URL; deterministic prop-driven visual coverage remains on route_support."
     },
     {
       "id": "workspace_catch_whatsapp_trial",

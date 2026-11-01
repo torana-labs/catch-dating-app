@@ -1,5 +1,6 @@
 import {useEffect, useMemo, useRef, useState} from "react";
 import {trackCatchAcquisitionEvent} from "../../analytics";
+import {organizerPolicyForListing} from "../organizers/organizerPolicy";
 import {usePublicHostListings} from "../organizers/usePublicEventListingsController";
 import {
   isClaimSubmissionEnabledListing,
@@ -45,7 +46,7 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
     if (previousCatalog.current === hostListings) return;
     previousCatalog.current = hostListings;
     setListing(current => current ? hostListings.find(item => item.id === current.id &&
-      isClaimSubmissionEnabledListing(item)) ?? null : null);
+      canStillBeClaimed(item)) ?? null : null);
   }, [hostListings]);
 
   function markClaimStarted() {
@@ -82,6 +83,12 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
     selectListing,
     setQuery,
   };
+}
+
+/** A pending review doesn't stop the organiser proving it with a code. */
+function canStillBeClaimed(listing: HostListing) {
+  return isClaimSubmissionEnabledListing(listing) ||
+    organizerPolicyForListing(listing).claimState === "claimPending";
 }
 
 export type ClaimFlowController = ReturnType<typeof useClaimFlowController>;

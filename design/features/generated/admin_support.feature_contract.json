@@ -1,0 +1,600 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/admin_support.feature.json",
+  "generatedFor": "2026-11-01",
+  "sourceDigest": "sha256:aa21aacf61cb66d245011b86ddee89a1458a05888f35f0aaba2dd97a73575143",
+  "resolvedDigest": "sha256:20b8102f7b250a2b26b29fed7e13e72890becbeb9e327de40284ca519dddca39",
+  "feature": {
+    "id": "feature.admin_support",
+    "name": "Admin Support",
+    "owner": "admin_console",
+    "status": "pilot",
+    "description": "Lists guest and organizer conversations from WhatsApp, Instagram and logged email, longest waiting first, and shows one beside the list with its links, messages and saved replies; replies, notes, owner and status are recorded."
+  },
+  "coverage": {
+    "surfaces": 2,
+    "states": 4,
+    "scenarios": 4,
+    "actionCases": 4,
+    "actions": 9,
+    "captures": 0,
+    "previews": 1,
+    "testFiles": 2,
+    "evidenceExceptions": 0
+  },
+  "surfaces": [
+    {
+      "id": "admin_support",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_support"
+      },
+      "actionScope": {
+        "included": "Switching views and audience, opening a conversation, recording a reply or note, taking it, closing or reopening it, and opening the WhatsApp reply trial.",
+        "excluded": [
+          "Replies are recorded, not sent; staff send them from the channel or through the WhatsApp reply trial.",
+          "Logging an email and editing links and saved replies have controller actions but are not drawn yet."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "admin/src/stories/AdminRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/support/controllers/useSupportInboxController.ts",
+            "symbol": "useSupportInboxController"
+          },
+          {
+            "id": "screen",
+            "language": "typescript",
+            "file": "admin/src/features/support/ui/SupportScreen.tsx",
+            "symbol": "SupportScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_support"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListSupportConversations",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetSupportConversation",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminUpdateSupportConversation",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminRecordSupportMessage",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListSupportSavedReplies",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "open-conversations": [
+            "admin/src/features/support/controllers/useSupportInboxController.test.tsx",
+            "admin/src/features/support/ui/SupportScreen.test.tsx"
+          ],
+          "conversation": [
+            "admin/src/features/support/controllers/useSupportInboxController.test.tsx",
+            "admin/src/features/support/ui/SupportScreen.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 2,
+        "scenarios": 2,
+        "actionCases": 2,
+        "actions": 8,
+        "captures": 0,
+        "previews": 1,
+        "testFiles": 2,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "view": {
+          "default": "open",
+          "values": [
+            "open",
+            "mine",
+            "waiting_on_them",
+            "closed"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "switch_support_view",
+          "owner": "controller",
+          "codeValue": "setView",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "view"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "open-conversations"
+              ]
+            }
+          ],
+          "description": "Shows open, mine, waiting on them or closed.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "filter_support_audience",
+          "owner": "controller",
+          "codeValue": "setAudience",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "audience"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "open-conversations"
+              ]
+            }
+          ],
+          "description": "Shows guests, organizers or both.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_conversation",
+          "owner": "screen",
+          "codeValue": "onSelect",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "conversationId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "conversation"
+              ]
+            }
+          ],
+          "description": "Opens a conversation beside the list.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "record_reply",
+          "owner": "controller",
+          "codeValue": "reply",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "conversationId"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.support_reply_recorded"
+            }
+          ],
+          "description": "Records a reply sent from the channel; the conversation then waits on them.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "add_note",
+          "owner": "controller",
+          "codeValue": "addNote",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "conversationId"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.support_note_added"
+            }
+          ],
+          "description": "Adds a note only the team sees.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "take_conversation",
+          "owner": "controller",
+          "codeValue": "assign",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "conversationId"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.support_owner_set"
+            }
+          ],
+          "description": "Makes the viewer its owner.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "set_conversation_status",
+          "owner": "controller",
+          "codeValue": "setStatus",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "conversationId"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.support_status_set"
+            }
+          ],
+          "description": "Closes or reopens it.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_whatsapp_trial",
+          "owner": "screen",
+          "codeValue": "onOpenTrial",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.whatsapp_trial_opened"
+            }
+          ],
+          "description": "Opens the WhatsApp reply trial.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "open_conversations",
+          "stateId": "open-conversations",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "view": "open"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_support/SupportRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/support/controllers/useSupportInboxController.test.tsx",
+              "admin/src/features/support/ui/SupportScreen.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "view": "open"
+              },
+              "actions": {
+                "enabled": [
+                  "switch_support_view",
+                  "filter_support_audience",
+                  "open_conversation",
+                  "open_whatsapp_trial"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "record_reply",
+                  "add_note",
+                  "take_conversation",
+                  "set_conversation_status"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "conversation",
+          "stateId": "conversation",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "view": "open"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_support/SupportRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/support/controllers/useSupportInboxController.test.tsx",
+              "admin/src/features/support/ui/SupportScreen.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "view": "open"
+              },
+              "actions": {
+                "enabled": [
+                  "record_reply",
+                  "add_note",
+                  "take_conversation",
+                  "set_conversation_status"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "switch_support_view",
+                  "filter_support_audience",
+                  "open_conversation",
+                  "open_whatsapp_trial"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_support",
+          "source": "admin/src/features/support/ui/SupportScreen.tsx",
+          "exportName": "SupportScreen"
+        },
+        "components": [
+          {
+            "id": "route_support",
+            "kind": "route",
+            "source": "admin/src/features/support/ui/SupportScreen.tsx",
+            "exportName": "SupportScreen",
+            "storybook": {
+              "status": "ready",
+              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "exportName": "SupportRouteStory",
+              "states": [
+                "open-conversations",
+                "conversation"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "route_support/SupportRouteStory"
+        ]
+      }
+    },
+    {
+      "id": "admin_support_live_controller",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_support_live_controller"
+      },
+      "actionScope": {
+        "included": "Owning the live query and URL seam for the prop-driven Support actions.",
+        "excluded": [
+          "Deterministic visual state remains on route_support."
+        ]
+      },
+      "bindings": {
+        "previewSources": [],
+        "actionOwners": [
+          {
+            "id": "route",
+            "language": "typescript",
+            "file": "admin/src/features/support/ui/SupportRouteScreen.tsx",
+            "symbol": "SupportRouteScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_support_live_controller"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListSupportConversations",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetSupportConversation",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminUpdateSupportConversation",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminRecordSupportMessage",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListSupportSavedReplies",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "live-query-wrapper": [
+            "admin/src/features/support/ui/SupportScreen.test.tsx"
+          ],
+          "route-lazy-boundary": [
+            "admin/src/features/support/ui/SupportScreen.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 2,
+        "scenarios": 2,
+        "actionCases": 2,
+        "actions": 1,
+        "captures": 0,
+        "previews": 0,
+        "testFiles": 1,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "boundary": {
+          "default": "resolved",
+          "values": [
+            "resolved",
+            "loading"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "navigate_support",
+          "owner": "route",
+          "codeValue": "onNavigate",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "path"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.support_route_changed"
+            }
+          ],
+          "description": "Keeps the open conversation in the URL.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "live_query_wrapper",
+          "stateId": "live-query-wrapper",
+          "kind": "route_state",
+          "status": "not-required",
+          "dimensions": {
+            "boundary": "resolved"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "admin/src/features/support/ui/SupportScreen.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "resolved",
+              "dimensions": {
+                "boundary": "resolved"
+              },
+              "actions": {
+                "enabled": [
+                  "navigate_support"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "route_lazy_boundary",
+          "stateId": "route-lazy-boundary",
+          "kind": "route_state",
+          "status": "not-required",
+          "dimensions": {
+            "boundary": "loading"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "admin/src/features/support/ui/SupportScreen.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "lazy_loading",
+              "dimensions": {
+                "boundary": "loading"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "navigate_support"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_support_live_controller",
+          "source": "admin/src/features/support/ui/SupportRouteScreen.tsx",
+          "exportName": "SupportRouteScreen"
+        },
+        "components": [
+          {
+            "id": "route_support_live_controller",
+            "kind": "route",
+            "source": "admin/src/features/support/ui/SupportRouteScreen.tsx",
+            "exportName": "SupportRouteScreen",
+            "storybook": {
+              "status": "not-required",
+              "states": [
+                "live-query-wrapper",
+                "route-lazy-boundary"
+              ]
+            }
+          }
+        ],
+        "previews": []
+      }
+    }
+  ]
+}
