@@ -35,6 +35,8 @@ export interface OrganizerPageLinks {
   moneyBills: ReactNode;
   /** Null for those who cannot open Payment setup. */
   onOpenTerms: (() => void) | null;
+  onCheckForEvents: () => void;
+  isCheckingForEvents: boolean;
   onBack: () => void;
   onTabChanged: (tab: OrganizerPageTab) => void;
   onOpenEvent: (source: "catch" | "imported", eventId: string) => void;
@@ -120,7 +122,15 @@ function upcoming(overview: OrganizerOverview, links: OrganizerPageLinks) {
 function tabBody(tab: OrganizerPageTab, overview: OrganizerOverview, links: OrganizerPageLinks): {main: ReactNode; aside?: ReactNode} {
   switch (tab) {
   case "events":
-    return {main: links.eventsTab};
+    return {main: (
+      <CatchGap size="related">
+        {overview.organizer.publishStatus === "published" && overview.organizer.claimState === "unclaimed" ? (
+          <CatchButton label={links.isCheckingForEvents ? "Checking" : "Check for new events"}
+            onPressed={links.isCheckingForEvents ? null : links.onCheckForEvents} size="sm" variant="secondary" />
+        ) : null}
+        {links.eventsTab}
+      </CatchGap>
+    )};
   case "sales":
     return {main: (
       <CatchGap size="majorSection">

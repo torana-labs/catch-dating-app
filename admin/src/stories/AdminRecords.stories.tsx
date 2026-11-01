@@ -56,6 +56,8 @@ function organizerBills(): OrganizerBillsController {
 const organizerLinks: OrganizerPageLinks = {
   eventsTab: <OrganizerEventsWorkspace controller={eventDirectory("afterfly")} onOpenEvent={noop} />,
   moneyBills: <OrganizerBillsWorkspace controller={organizerBills()} nowMillis={moneySampleNowMillis} onOpenBill={noop} />,
+  onCheckForEvents: noop,
+  isCheckingForEvents: false,
   onBack: noop,
   onTabChanged: noop,
   onOpenEvent: noop,

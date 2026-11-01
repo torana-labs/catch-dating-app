@@ -80,11 +80,6 @@
       "status": "required"
     },
     {
-      "source": "admin/src/features/intake/organizer/controllers/useListingEventImportsController.ts",
-      "test": "admin/src/features/intake/organizer/controllers/useListingEventImportsController.test.tsx",
-      "status": "required"
-    },
-    {
       "source": "admin/src/features/intake/organizer/controllers/useSupplyNominatorController.ts",
       "test": "admin/src/features/intake/organizer/controllers/useSupplyNominatorController.test.tsx",
       "status": "required"

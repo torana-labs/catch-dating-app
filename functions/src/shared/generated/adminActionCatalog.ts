@@ -180,16 +180,6 @@ export const ADMIN_ACTION_CATALOG = {
       "support"
     ]
   },
-  "organizer-intake.list-listing-event-imports": {
-    "callable": "adminListListingEventImports",
-    "controlPlane": false,
-    "kind": "read",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "support"
-    ]
-  },
   "organizer-intake.publish-listing-events": {
     "callable": "adminPublishListingEvents",
     "controlPlane": false,
@@ -1480,6 +1470,16 @@ export const ADMIN_ACTION_CATALOG = {
   },
   "inbox.get-listing-review": {
     "callable": "adminGetOrganizerListingReview",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support"
+    ]
+  },
+  "inbox.get-listing-event-review": {
+    "callable": "adminGetListingEventReview",
     "controlPlane": false,
     "kind": "read",
     "roles": [

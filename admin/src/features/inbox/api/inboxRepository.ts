@@ -13,6 +13,12 @@ import type {AdminRecommendOrganizerClaimCallablePayload} from
   "../../../generated/contracts/adminRecommendOrganizerClaimCallablePayload";
 import type {AdminRecommendOrganizerClaimCallableResponse} from
   "../../../generated/contracts/adminRecommendOrganizerClaimCallableResponse";
+import type {AdminGetListingEventReviewCallableResponse} from
+  "../../../generated/contracts/adminGetListingEventReviewCallableResponse";
+import type {AdminPublishListingEventsCallablePayload} from
+  "../../../generated/contracts/adminPublishListingEventsCallablePayload";
+import type {AdminPublishListingEventsCallableResponse} from
+  "../../../generated/contracts/adminPublishListingEventsCallableResponse";
 import {decideAccessApplication, decideOrganizerClaim, listOrganizerDetails} from "../../../shared/api/adminApi";
 import type {AdminApproveOrganizerListingCallablePayload} from
   "../../../generated/contracts/adminApproveOrganizerListingCallablePayload";
@@ -22,7 +28,7 @@ import type {AdminGetOrganizerListingReviewCallableResponse} from
   "../../../generated/contracts/adminGetOrganizerListingReviewCallableResponse";
 import {dataMode} from "../../../shared/api/dataMode";
 import {functions} from "../../../shared/api/firebaseFunctions";
-import {sampleInboxItems as sampleItems, sampleInboxJourneys as sampleJourneys, sampleNow} from "./inboxSampleData";
+import {sampleEventReviews, sampleInboxItems as sampleItems, sampleInboxJourneys as sampleJourneys, sampleNow} from "./inboxSampleData";
 
 export type InboxPage = AdminListInboxItemsCallableResponse;
 export type InboxQuery = AdminListInboxItemsCallablePayload;
@@ -36,6 +42,9 @@ export type ClaimRecommendationInput = AdminRecommendOrganizerClaimCallablePaylo
 export type ListingReviewDetail = AdminGetOrganizerListingReviewCallableResponse;
 export type ListingReview = ListingReviewDetail["review"];
 export type ListingApprovalInput = AdminApproveOrganizerListingCallablePayload;
+export type ListingEventReview = AdminGetListingEventReviewCallableResponse;
+export type ListingEventRef = NonNullable<InboxItem["listingEvent"]>;
+export type ListingEventPublishInput = AdminPublishListingEventsCallablePayload;
 
 // The validators load on first call, not in the inbox chunk.
 async function call<Request extends object, Response>(name: string, payload: Request): Promise<Response> {
@@ -50,6 +59,7 @@ async function call<Request extends object, Response>(name: string, payload: Req
 
 const sampleState = new Map(sampleItems.map((item) => [item.itemId, item]));
 const sampleUpdates = new Map<string, JourneyStep[]>();
+const sampleDismissedStates = new Map<string, InboxItem["state"]>();
 
 function samplePage(query: InboxQuery): InboxPage {
   const items = [...sampleState.values()];
@@ -96,9 +106,11 @@ export async function updateInboxItem(input: InboxUpdate): Promise<AdminUpdateIn
   const before = sampleState.get(input.itemId);
   if (!before) throw new Error("This inbox item was not found.");
   const dismissed = input.action === "dismiss";
+  if (dismissed) sampleDismissedStates.set(before.itemId, before.state);
   const item: InboxItem = {...before,
     ...(dismissed ? {status: "done" as const, state: {code: "dismissed", label: "Dismissed", tone: "neutral" as const},
       doneAt: new Date().toISOString()} : {}),
+    ...(input.action === "reopen" ? {state: sampleDismissedStates.get(before.itemId) ?? before.state, doneAt: null} : {}),
     assigneeUid: input.action === "assign" ? input.assigneeUid : input.action === "unassign" ? null : before.assigneeUid,
     status: dismissed ? "done" : input.action === "snooze" ? "snoozed" : input.action === "wake" || input.action === "reopen" ? "waiting" : before.status,
     snoozedUntil: input.action === "snooze" ? input.snoozedUntil : input.action === "wake" ? null : before.snoozedUntil};
@@ -199,4 +211,23 @@ export async function approveListing(input: ListingApprovalInput, requestId: str
   sampleApprovals.set(input.listingWorkItemId, approval);
   closeSampleItem("supplyIntakeRequest", requestId, "Approved and published");
   return approval;
+}
+
+/** One imported event of an approved listing, with what a reviewer must check to publish it. */
+export async function getListingEventReview(ref: ListingEventRef): Promise<ListingEventReview> {
+  if (dataMode() !== "sample") return call("adminGetListingEventReview", ref);
+  const review = sampleEventReviews[ref.eventWorkItemId];
+  if (!review) throw new Error("This event is no longer part of an approved listing.");
+  return review;
+}
+
+/** Publishes the event on the organizer's page; a blocked one is reported, not written. */
+export async function publishListingEvent(input: ListingEventPublishInput): Promise<AdminPublishListingEventsCallableResponse> {
+  if (dataMode() !== "sample") return call("adminPublishListingEvents", input);
+  const reviews = input.eventWorkItemIds.map((id) => sampleEventReviews[id]);
+  for (const review of reviews) if (review?.event.eventId) closeSampleItem("externalEvent", review.event.eventId, "Published");
+  return {intakeRequestId: input.intakeRequestId, organizerId: reviews[0]?.organizer.organizerId ?? null,
+    executionMode: input.executionMode, counts: {published: input.eventWorkItemIds.length, wouldPublish: 0, alreadyPublished: 0, withdrawn: 0, blocked: 0},
+    results: input.eventWorkItemIds.map((eventWorkItemId) => ({eventWorkItemId, eventId: sampleEventReviews[eventWorkItemId]?.event.eventId ?? null,
+      blockers: [], outcome: "published" as const, receiptPath: null, idempotent: false}))};
 }
