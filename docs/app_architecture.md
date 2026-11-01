@@ -3299,9 +3299,8 @@ node tool/run.mjs check copy:event-success-questionnaires
 node tool/run.mjs check copy:structured-domain-content
 ```
 
-The baselines in `tool/copy/mobile_copy_baseline.json` and
-`tool/copy/l10n_orphan_baseline.json` must remain empty. New inline findings or
-missing catalog getters or zero-use ARB keys fail immediately. Exact usage
+Both checks are plain gates with no baseline: any inline finding, missing
+catalog getter or zero-use ARB key fails immediately. Exact usage
 locations are available from live `--json` output; no generated usage inventory
 is committed. An allowlist entry is only appropriate for a technical
 identifier, test/demo fixture, or user-authored value and must contain a narrow

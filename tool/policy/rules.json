@@ -251,32 +251,23 @@
       "applies_to": [
         "website/src/**",
         "tool/web/check_website_copy_ownership.mjs",
-        "tool/web/website_copy_baseline.json",
         "tool/web/website_copy_allowlist.json",
         "website/package.json"
       ],
-      "instruction": "User-visible marketing-authored strings belong under website/src/content. Existing component strings are temporary baseline debt; do not add new entries. Move strings into page-specific content modules and shrink the baseline as pages migrate. Permanent technical exceptions require an exact-string allowlist entry with a reason.",
+      "instruction": "User-visible marketing-authored strings belong under website/src/content, in page-specific content modules. Permanent technical exceptions require an exact-string allowlist entry with a reason.",
       "sunset_when": [
-        "The website copy baseline is empty and remains empty for five copy changes"
+        "Never; keeping marketing-authored strings in the content layer is permanent website architecture"
       ],
       "sunset_signals": [
         {
-          "type": "baseline-empty",
-          "baseline": "tool/web/website_copy_baseline.json",
-          "countKey": "entries"
+          "type": "manual"
         }
       ],
-      "sunset_review": {
-        "date": "2026-07-16",
-        "decision": "keep",
-        "note": "The recovered baseline is empty, but this rule remains the regression guard that keeps marketing-authored strings in the content layer."
-      },
       "enforcement": [
         {
           "tool": "web:website-copy-ownership",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/marketing_website_architecture.md#architecture-rules",
-          "baseline": "tool/web/website_copy_baseline.json"
+          "stage": "scanner-gate",
+          "docAnchor": "docs/marketing_website_architecture.md#architecture-rules"
         }
       ]
     },
@@ -485,14 +476,12 @@
         "website/src/features/**",
         "admin/src/features/**",
         "tool/web/check_react_query_state.mjs",
-        "tool/web/react_query_state_baseline.json",
         "package.json",
         "website/package.json",
         "admin/package.json"
       ],
       "instruction": "React feature controllers and feature use* hooks should not add new manual loading, saving, submitting, pending, or in-flight state for server reads or mutations. Use TanStack Query query/mutation state and explicit query-key invalidation for server state; keep only view-local form, filter, selection, and client-only rendering state in React state. Run node tool/run.mjs check web:react-query-state before handoff.",
       "sunset_when": [
-        "The React query-state baseline is empty for website and admin feature controllers/hooks",
         "New React server-state work consistently uses query keys, mutation pending state, and explicit invalidation without manual async-state flags"
       ],
       "sunset_signals": [
@@ -503,9 +492,8 @@
       "enforcement": [
         {
           "tool": "web:react-query-state",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/marketing_website_architecture.md#server-state-direction",
-          "baseline": "tool/web/react_query_state_baseline.json"
+          "stage": "scanner-gate",
+          "docAnchor": "docs/marketing_website_architecture.md#server-state-direction"
         },
         {
           "stage": "manual",
@@ -2367,15 +2355,13 @@
         },
         {
           "tool": "copy:mobile-ownership",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary",
-          "baseline": "tool/copy/mobile_copy_baseline.json"
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary"
         },
         {
           "tool": "copy:l10n-key-usage",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary",
-          "baseline": "tool/copy/l10n_orphan_baseline.json"
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary"
         },
         {
           "tool": "copy:native-sync",

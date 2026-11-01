@@ -287,25 +287,7 @@
       "website/src/shared/ui/primitives/publicForms.tsx::PublicFormSection",
       "website/src/shared/ui/primitives/publicForms.tsx::PublicFormSignatureInput",
       "website/src/shared/ui/primitives/publicForms.tsx::PublicFormVerification"
-    ],
-    "screens.web_page_css_lines": {
-      "admin/src/styles.css": 3543,
-      "website/src/styles.css": 17,
-      "website/src/styles/consumer-home.css": 29,
-      "website/src/styles/event-runtime.css": 663,
-      "website/src/styles/flows.css": 513,
-      "website/src/styles/home.css": 405,
-      "website/src/styles/host-foundation.css": 42,
-      "website/src/styles/host-landing.css": 222,
-      "website/src/styles/host.css": 174,
-      "website/src/styles/legal.css": 96,
-      "website/src/styles/organizers.css": 466,
-      "website/src/styles/public-forms.css": 428,
-      "website/src/styles/responsive.css": 79,
-      "website/src/styles/reveal.css": 33,
-      "website/src/styles/site-footer.css": 52,
-      "website/src/styles/site-shell.css": 385
-    }
+    ]
   },
   "strandedByRetirement": {
     "screens.web_single_use_shared": {
