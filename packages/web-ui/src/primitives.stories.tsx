@@ -1,13 +1,13 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
   CheckboxControl,
-  EmptyStateControl,
   ToggleButtonControl,
   ToggleGroupControl,
   UiLabel,
 } from "./primitives";
 import {ButtonControl} from "./components/ButtonControl";
 import {DataTableControl} from "./components/DataTableControl";
+import {EmptyStateControl} from "./components/EmptyStateControl";
 
 const meta = {
   title: "Web UI/Primitives",

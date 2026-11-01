@@ -99,3 +99,45 @@
   font-size: var(--catch-typography-web-status-size);
   text-align: center;
 }
+
+/*
+ * The pane recipe: the decision bar at the foot of a detail pane, sticky at
+ * the bottom over the surface with a hairline above. An optional note field
+ * (13px label over a 40px input), the next line in 14px ink2 on its own
+ * line, then one row: an optional summary, and quiet danger, secondary and
+ * primary actions at the end. On a narrow pane the actions wrap onto more
+ * lines, ending on the right, rather than overflowing the pane.
+ */
+.dock[data-recipe="pane"] {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s3);
+  margin-top: auto;
+  margin-inline: calc(-1 * var(--catch-pane-inline, 0px));
+  padding: var(--catch-space-s4) var(--catch-pane-inline, var(--catch-space-s4)) calc(var(--catch-space-s4) + env(safe-area-inset-bottom));
+  border-top: var(--catch-stroke-hairline) solid var(--catch-theme-line);
+}
+
+.note { display: flex; flex-direction: column; gap: var(--catch-space-s1); }
+.noteLabel { color: var(--catch-theme-ink2); font-size: 13px; font-weight: 600; }
+
+.noteInput {
+  box-sizing: border-box;
+  height: 40px;
+  padding: 0 var(--catch-space-s3);
+  border: var(--catch-stroke-hairline) solid var(--catch-theme-line2);
+  border-radius: var(--catch-radius-sm);
+  background: var(--catch-theme-surface);
+  color: var(--catch-theme-ink);
+  font: inherit;
+  font-size: 15px;
+}
+
+.noteInput:focus-visible { outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink); outline-offset: 1px; }
+.paneRow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--catch-space-s3); }
+.next { margin: 0; color: var(--catch-theme-ink2); font-size: 14px; font-weight: 500; overflow-wrap: anywhere; }
+.summary { min-width: 0; flex: 1 1 12rem; }
+.paneActions { display: flex; flex: 1 1 auto; flex-wrap: wrap; justify-content: flex-end; gap: var(--catch-space-s2); min-width: 0; margin-inline-start: auto; }

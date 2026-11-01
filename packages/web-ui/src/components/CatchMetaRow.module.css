@@ -1,0 +1,41 @@
+/*
+ * Flutter CatchMetaRow on the web. Grid: a 13px ink2 label over a 15px
+ * value, in columns 32px apart with 16px between rows; wide entries span
+ * the row; phones fold to one column. Flow: one 14px ink2 line with " · "
+ * between values. Tones colour the value; links underline on hover.
+ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--catch-meta-columns), minmax(0, 1fr));
+  gap: var(--catch-space-s4) var(--catch-space-s8);
+  margin: 0;
+}
+
+:global([data-size="compact"]) .grid { grid-template-columns: minmax(0, 1fr); }
+.entry { display: flex; flex-direction: column; gap: var(--catch-space-micro2); min-width: 0; }
+.entry[data-wide] { grid-column: 1 / -1; }
+.entry dt { color: var(--catch-theme-ink2); font-size: 13px; font-weight: 500; }
+.entry dd { margin: 0; overflow-wrap: anywhere; color: var(--catch-theme-ink); font-size: 15px; }
+
+.flow {
+  margin: 0;
+  overflow: hidden;
+  color: var(--catch-theme-ink2);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flow > span + span::before { content: " · "; }
+
+.entry dd[data-tone="secondary"],
+.flow > [data-tone="secondary"] { color: var(--catch-theme-ink2); }
+.entry dd[data-tone="success"],
+.flow > [data-tone="success"] { color: var(--catch-theme-positive-text); }
+.entry dd[data-tone="warning"],
+.flow > [data-tone="warning"] { color: var(--catch-theme-attention-text); }
+.entry dd[data-tone="danger"],
+.flow > [data-tone="danger"] { color: var(--catch-theme-danger-text); }
+
+.link { color: inherit; text-decoration: underline; text-decoration-color: var(--catch-theme-line2); text-underline-offset: 3px; }
+.link:hover { text-decoration-color: currentColor; }

@@ -7,20 +7,15 @@
       "catch.banner",
       "catch.chip",
       "catch.chip.field",
-      "catch.confirm_dialog",
       "catch.control_shell",
-      "catch.empty_state",
       "catch.icon_button",
-      "catch.icon_tile",
       "catch.search_field",
-      "catch.section",
       "catch.surface",
       "catch.typography"
     ],
     "library.priority_t2_web": [
       "catch.club_cover",
       "catch.event_card",
-      "catch.meta_row",
       "catch.organizer_poster",
       "catch.person_polaroid",
       "catch.ticket"
@@ -28,7 +23,6 @@
     "library.headless_controls": [
       "catch.chip",
       "catch.chip.field",
-      "catch.empty_state",
       "catch.toggle",
       "catch.typography"
     ],
@@ -40,7 +34,6 @@
       "catch.chip.field",
       "catch.confirm_dialog",
       "catch.control_shell",
-      "catch.empty_state",
       "catch.field",
       "catch.icon_button",
       "catch.icon_tile",
