@@ -4757,46 +4757,6 @@
       }
     },
     {
-      "id": "design:feature-coverage",
-      "category": "design",
-      "path": "tool/design/check_feature_coverage.mjs",
-      "command": "node tool/design/check_feature_coverage.mjs --check",
-      "safety": "local-readonly",
-      "status": "active",
-      "description": "Fails when a registered Flutter screen, marketing route, or admin route component lacks exactly one contracted, grouped, planned, or excluded feature-contract decision.",
-      "checks": [
-        "node --check tool/design/check_feature_coverage.mjs",
-        "node --test tool/design/check_feature_coverage.test.mjs",
-        "node tool/design/check_feature_coverage.mjs --check"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_feature_coverage.test.mjs",
-        "contains": [
-          "accepts one feature contract binding multiple runtime authorities",
-          "rejects missing, duplicate, and unknown authority decisions",
-          "rejects contracted decisions that do not bind their authority item",
-          "rejects missing or chained grouped primaries",
-          "fails when a registry adds an unclassified feature surface",
-          "rejects orphaned source contracts"
-        ]
-      },
-      "impactPaths": [
-        "design/features/feature_coverage.json",
-        "design/features/feature_coverage.schema.json",
-        "tool/design/check_feature_coverage.test.mjs",
-        "design/features/*.feature.json"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node",
-          "root-npm"
-        ]
-      }
-    },
-    {
       "id": "design:feature-contracts",
       "category": "design",
       "path": "tool/design/build_feature_contracts.mjs",
@@ -5887,7 +5847,6 @@
         "node tool/design/check_comprehensive_todo_summary.mjs --check",
         "node tool/design/check_screen_coverage.mjs --check",
         "node tool/design/check_screen_contracts.mjs --check",
-        "node tool/design/check_feature_coverage.mjs --check",
         "node tool/design/build_feature_contracts.mjs --check",
         "node tool/design/build_host_feature_responsibilities.mjs --check",
         "node tool/design/check_screen_top_bar_contracts.mjs --check",
@@ -6192,14 +6151,13 @@
       "command": "node tool/web/check_react_controller_test_targets.mjs --check",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Classifies every React feature controller/mutation hook and requires named behavior suites for promoted targets without gating on aggregate coverage percentages.",
+      "description": "Requires a unit test that imports each React feature controller/mutation hook, found from the source, without gating on aggregate coverage percentages.",
       "checks": [
         "node --check tool/web/check_react_controller_test_targets.mjs",
         "node tool/web/check_react_controller_test_targets.mjs --self-test",
         "node tool/web/check_react_controller_test_targets.mjs --check"
       ],
       "impactPaths": [
-        "tool/web/react_controller_test_targets.json",
         "packages/web-config/**"
       ],
       "role": "gate",

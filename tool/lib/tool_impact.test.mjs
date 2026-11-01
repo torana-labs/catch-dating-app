@@ -239,9 +239,6 @@ test("design authority ledgers select their exact consuming checks", () => {
 
 test("feature coverage and context manifests select executable owners without full fanout", () => {
   const owners = new Map([
-    ["design/features/feature_coverage.json", "design:feature-coverage"],
-    ["design/features/feature_coverage.schema.json", "design:feature-coverage"],
-    ["tool/design/check_feature_coverage.test.mjs", "design:feature-coverage"],
     ["design_context_pack/MANIFEST.json", "design:context-pack"],
     ["design_context_pack/gallery/manifest.json", "design:context-pack"],
     ["tool/design/context_pack_builder_test.dart", "design:context-pack"],
@@ -307,9 +304,9 @@ const consumedInputs = new Map([
   ["artifacts/marketing/app-screenshots/host-live-console.png", ["marketing:app-media-sync",
     "marketing:app-screenshot-export", "marketing:hosted-capture-export"]],
   ["design/features/event_detail.feature.json", ["design:feature-contracts",
-    "design:feature-coverage", "design:host-feature-responsibilities", "design:screen-contracts"]],
+    "design:host-feature-responsibilities", "design:screen-contracts"]],
   ["design/features/admin_finance_ops.feature.json", ["agent:harness-v2", "design:feature-contracts",
-    "design:feature-coverage", "web:admin-pending-operations"]],
+    "web:admin-pending-operations"]],
   ["design/features/generated/event_detail.feature_contract.json", ["design:feature-contracts",
     "design:parity-matrix", "design:screen-contracts"]],
   ["tool/architecture/pattern_adoption.json", ["audit:adopted-architecture-boundaries",
@@ -451,8 +448,8 @@ test("combined layout inputs preserve all owner checks and mixed runtime require
   assert.deepEqual(layoutPlan(layoutPaths, unannotated).toolIds, combined.toolIds);
   for (const [paths, setup] of [
     [["tool/design/context_pack_builder_test.dart"], ["node", "flutter", "flutter-pub"]],
-    [["tool/design/check_feature_coverage.test.mjs"], ["node", "root-npm"]],
-    [["tool/design/context_pack_builder_test.dart", "tool/design/check_feature_coverage.test.mjs"],
+    [["tool/design/check_public_surface_behavior.test.mjs"], ["node", "root-npm"]],
+    [["tool/design/context_pack_builder_test.dart", "tool/design/check_public_surface_behavior.test.mjs"],
       ["node", "flutter", "flutter-pub", "root-npm"]],
   ]) {
     const companion = layoutPlan(paths);

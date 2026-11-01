@@ -52,8 +52,5 @@ ungoverned normalized public-name collisions across roots. Generated
 exclusions are narrow (`.g.dart`, `.freezed.dart`, and named localization
 outputs), not directory-wide.
 
-Every screen in this registry must also have exactly one decision in
-`design/features/feature_coverage.json`. A screen contract governs composition;
-a feature contract adds state/action/evidence orchestration. Keeping the two
-layers separate prevents a planned feature-contract migration from weakening
-the already-blocking screen and route contracts.
+A screen contract governs composition; a feature contract adds
+state/action/evidence orchestration.

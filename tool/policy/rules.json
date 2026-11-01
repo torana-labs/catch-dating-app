@@ -3017,12 +3017,11 @@
       "applies_to": [
         "admin/src/features/**",
         "website/src/features/**",
-        "tool/web/react_controller_test_targets.json",
         "tool/web/check_react_controller_test_targets.mjs",
         ".github/workflows/admin-website.yml",
         ".github/workflows/marketing-website.yml"
       ],
-      "instruction": "Classify every React feature controller or mutation hook in the target manifest. Promote behavior-critical hooks to required with a named importing test suite; use planned for an explicit coverage queue and exempt only for behavior-free compatibility re-exports with a reason. Keep aggregate percentage reports informational.",
+      "instruction": "Every React feature controller or mutation hook needs a unit test that imports it and registers a test, normally beside it. Keep aggregate percentage reports informational.",
       "sunset_when": [
         "A replacement mutation/controller contract system enforces equivalent named behavior coverage"
       ],

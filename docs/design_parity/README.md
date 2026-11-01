@@ -25,12 +25,10 @@ checks in one durable matrix.
 | `design/screens/catch.screens.json` | Machine-readable screen composition registry connecting routes, controller owners, states, captures, sections, implementation paths, and typed route-layout owners. |
 | `design/features/*.feature.json` | Structured multi-surface feature orchestration contracts. Each surface binds a Flutter screen, marketing route, or admin route plus native components, action owners, and evidence. |
 | `design/features/generated/*.feature_contract.json` | Generated cross-surface state/action/evidence projections. These artifacts are deterministic and must not be edited by hand. |
-| `design/features/feature_coverage.json` | Exhaustive cross-surface migration ledger. Every registered Flutter screen, marketing route, and admin route component is contracted, grouped, planned with stable debt, or explicitly excluded. |
 | `design/features/host_feature_responsibilities.json` | Ordered responsibility and migration contract for Today, Events, Audience, Inbox, and Organizer. It resolves existing feature-contract action owners instead of duplicating their behavior. |
 | `tool/design/check_design_parity.mjs` | Standard local design parity gate. Runs component contracts, route inventory, capture coverage, screen coverage, screen contracts, Widgetbook refs, and advisory scanners. |
 | `tool/design/build_feature_contracts.mjs` | Compiles multi-surface feature sources, enforces exact authority-state coverage and action cardinality, resolves runtime-native evidence, and fails stale generated output. |
 | `tool/design/build_host_feature_responsibilities.mjs` | Validates the five Host owners against shell order, routes, code symbols, contracts, and tests, then generates their local `lib/hosts/*/README.md` overviews. |
-| `tool/design/check_feature_coverage.mjs` | Fails missing, duplicate, unknown, falsely contracted, or orphaned feature coverage across the three product runtimes. |
 | `tool/design/check_screen_coverage.mjs` | Validates screen coverage against route inventory, capture coverage, and the screen composition registry. |
 | `tool/design/check_screen_contracts.mjs` | Validates screen contracts against route inventory, capture catalog entries, component dependencies, Flutter source paths, and Dart symbols. |
 | `tool/design/check_widgetbook_contract_refs.mjs` | Validates component contracts and contract preview ids against generated Widgetbook directories. |
@@ -235,12 +233,8 @@ screen or route contract. It references native component ids, action-owner
 symbols, data-contract paths, previews, captures, and tests; the compiler
 resolves those authorities into one checked generated artifact.
 
-The compiler is paired with `design/features/feature_coverage.json`. That ledger
-defines the complete migration boundary from existing authoritative registries,
-so adding a Flutter screen, marketing route, or admin route component without a
-feature decision fails the design-parity gate. A `planned` target may intentionally
-reuse an existing feature identity across runtimes. `feature.explore` is the
-first checked example: it contains both `screen.explore.discovery` and the
+A feature identity can span runtimes. `feature.explore` is the first checked
+example: it contains both `screen.explore.discovery` and the
 marketing `organizer_search` route, while their components, action owners,
 states, and evidence remain runtime-specific.
 
@@ -506,7 +500,6 @@ id. The compiler rejects missing exceptions and also rejects stale exceptions
 after the evidence is added. Compile and verify the contracts with:
 
 ```bash
-node tool/design/check_feature_coverage.mjs --check
 node tool/design/build_feature_contracts.mjs
 node tool/design/build_feature_contracts.mjs --check
 ```

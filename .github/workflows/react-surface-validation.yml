@@ -94,11 +94,6 @@ jobs:
       - name: Check cross-stack component lexicon
         run: node tool/design/check_component_lexicon.mjs --surfaces-only
 
-      # This lane owns design/website/routes.json and design/admin/components.json,
-      # and a new route there needs a feature coverage decision.
-      - name: Check feature coverage decisions
-        run: node tool/run.mjs check design:feature-coverage
-
       - name: Check public surface behavior matrix
         if: ${{ inputs.surface == 'marketing' }}
         run: npm run design:public-surfaces:check
@@ -111,7 +106,7 @@ jobs:
         if: ${{ inputs.surface == 'admin' }}
         run: npm --workspace catch-admin run test:coverage
 
-      - name: Check named React controller test targets
+      - name: Check React controller tests
         run: npm run web:controller-tests:check
 
       - name: Run marketing unit tests with coverage

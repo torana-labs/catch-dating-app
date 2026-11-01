@@ -36,7 +36,6 @@ on:
       - "tool/web/check_storybook_visuals.mjs"
       - "tool/web/check_react_controller_test_targets.mjs"
       - "tool/web/check_admin_live_data_sources.mjs"
-      - "tool/web/react_controller_test_targets.json"
       - "tool/web/react_dependency_graph.mjs"
       - "tool/web/check_admin_review_bridge.mjs"
   workflow_dispatch:
