@@ -428,6 +428,7 @@ which moves the conversation to `waitingOnThem`. Links point at existing
 bookings, payments or safety cases. Staff log emails by hand until inbound
 email exists, and replies are recorded rather than sent through a provider.
 All support documents are callable-only.
+
 ### Account Safety Actions
 
 Owner policy of 1 Nov 2026. `accountSafetyActions/{actionId}` records each

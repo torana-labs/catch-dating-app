@@ -989,6 +989,9 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /supportSavedReplies/{replyId} {
+      allow read, write: if false;
+    }
+
     // Account safety: the account may read its own standing and notices;
     // everything else (actions, appeals, banned phone and device hashes,
     // blocked sign-ups, organizer block lists, settings) is callable-only.
