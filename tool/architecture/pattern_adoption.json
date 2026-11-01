@@ -2450,9 +2450,7 @@
         "functions/src/organizers/organizerAudienceProjection.ts",
         "functions/src/organizers/organizerContactMerges.ts",
         "functions/src/organizers/organizerCampaigns.ts",
-        "functions/src/organizers/organizerCampaignDispatcher.ts",
-        "tool/data/backfill_organizer_crm_authority_v2.mjs",
-        "tool/data/backfill_organizer_crm_authority_v2.test.mjs"
+        "functions/src/organizers/organizerCampaignDispatcher.ts"
       ],
       "adopters": [
         {
@@ -2489,11 +2487,6 @@
           "path": "functions/src/organizers/organizerCampaignDispatcher.ts",
           "role": "final delivery recheck requires current complete grant evidence independently of organizer suppression",
           "status": "aligned"
-        },
-        {
-          "path": "tool/data/backfill_organizer_crm_authority_v2.mjs",
-          "role": "dry-run-first migration that creates only source-backed origins and records zero inferred grants",
-          "status": "aligned"
         }
       ],
       "candidateQueue": [
@@ -2513,7 +2506,6 @@
       "requiredChecks": [
         "./tool/check_data_contract.sh",
         "npm --prefix functions run lint && npm --prefix functions run build",
-        "node --test tool/data/backfill_organizer_crm_authority_v2.test.mjs",
         "node tool/contracts/check_firestore_contract.mjs",
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs"

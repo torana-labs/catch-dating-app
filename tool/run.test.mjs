@@ -298,7 +298,7 @@ const restoredProofOwners = [
   ["audit:route-string-literals", "tool/architecture/check_route_string_literals.test.mjs"],
   ["web:admin-callable-validators", "tool/admin/callable_inventory.test.mjs"],
   ["demo:ops", "tool/demo/demo_seed_scenario_catalog.test.mjs"],
-  ["data:backfill-location-markets", "tool/data/backfill_location_market_fields.test.mjs"],
+  ["design:component-enforcement-coverage", "tool/design/check_component_enforcement_coverage.test.mjs"],
   ["design:reference-screens", "tool/design/check_reference_screens.test.mjs"],
 ];
 

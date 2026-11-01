@@ -6,8 +6,6 @@
   "findings": [
     "devDependency package.json react-dom",
     "duplicate functions/src/search/exploreSearch.ts organizersIndexName|organizersIndexName",
-    "duplicate tool/data/repair_future_event_attendance.mjs applyFutureEventAttendanceRepairPlan|applyFutureRunAttendanceRepairPlan",
-    "duplicate tool/data/repair_future_event_attendance.mjs buildFutureEventAttendanceRepairPlan|buildFutureRunAttendanceRepairPlan",
     "duplicate tool/demo/seed_demo_data.mjs validateSeedDocuments|validateSeedProfileDocuments",
     "export functions/src/admin/salesIntelligence/job.ts failDraftJob",
     "export functions/src/catchMessaging/whatsappReply.ts CATCH_SUPPORT_PURPOSE",

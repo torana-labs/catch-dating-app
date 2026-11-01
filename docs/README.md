@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 5.12.0
-updated: 2026-10-30
+version: 5.12.1
+updated: 2026-11-01
 owner: agent_operating_model
 status: active
 ---
@@ -102,7 +102,7 @@ impact graph; do not create a parallel dependency graph or tracked run history.
 | Marketing landing page research | `marketing_landing_page_research.md` | Reference-site research, production rewrite rationale, guardrails, and residual marketing-site product decisions after the old tracker was folded in. |
 | Organizer/event discovery and claimable listings | `operations_platform.md` | Current Supply Intake workflow and durable Operations ownership. |
 | Data contracts and Firestore/Functions ownership | `data_contracts.md` | Firestore document shape, repository query/index discipline, schema tooling, relationship documents, rules-test workflow, migration policy, and data-contract watch items. |
-| Clubs-to-organizers migration | `migrations/clubs_to_organizers.md`, `../contracts/migrations/clubs_to_organizers.json` | Organizer subtype taxonomy, canonical/compatibility authority map, dry-run/apply order, parity evidence, recovery, and legacy retirement boundary. |
+| Clubs-to-organizers migration | `migrations/clubs_to_organizers.md` | Organizer subtype taxonomy, canonical/compatibility authority map, and the record of the completed July 2026 migration. |
 | Backend operation ownership | `backend_operation_catalog.md` | Human-readable catalog of direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points. |
 | Event success | `event_success.md` | Live event-success architecture, product guardrails, Firestore contracts, manual QA, and participant metrics. |
 | Host product and Forms | `../lib/hosts/audience/README.md`, `host_product.md`, `host_forms.md` | Read Audience first for current feature answers and source references. The central contracts own the cross-surface product promise, capability/consent gates, remaining Host tooling decisions, and Forms lifecycle, respondent, distribution, analytics, automation, and conversion requirements. |

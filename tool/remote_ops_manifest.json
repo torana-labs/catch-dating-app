@@ -206,18 +206,6 @@
         },
         {
           "kind": "tool-id",
-          "ref": "data:repair-future-attendance"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "data:backfill-profile-photos"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "data:backfill-event-meeting-locations"
-        },
-        {
-          "kind": "tool-id",
           "ref": "data:backfill-event-discovery"
         },
         {

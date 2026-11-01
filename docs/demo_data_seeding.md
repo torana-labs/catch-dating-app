@@ -1,7 +1,7 @@
 ---
 doc_id: demo_data_seeding
-version: 1.4.3
-updated: 2026-10-30
+version: 1.4.4
+updated: 2026-11-01
 owner: recursive_audit_loop
 status: active
 ---
@@ -964,13 +964,8 @@ Validate the result:
 node tool/data/validate_firestore_data.mjs --env dev
 ```
 
-If validation reports future events with `attended` participation edges, repair
-those stale edges before testing event detail or swipe flows:
-
-```bash
-node tool/data/repair_future_event_attendance.mjs --env dev --apply
-node tool/data/validate_firestore_data.mjs --env dev
-```
+If validation reports future events with `attended` participation edges,
+reseed the environment; the one-off repair script for those edges is retired.
 
 For staging:
 

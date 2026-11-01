@@ -46,10 +46,6 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
       "club", "community", "individual", "eventProducer", "venue", "brand",
     ]}},
   }));
-  write(root, "contracts/migrations/clubs_to_organizers.json", JSON.stringify({
-    selectedFutureName: "organizers",
-    currentPhase: "retire_legacy",
-  }));
   for (const [file, markers] of new Map([
     ["lib/contexts/organizers/data/organizers_repository.dart", [
       "_collectionPath = 'organizers'", "createOrganizer",
@@ -72,7 +68,6 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
       "adminListOrganizerClaimRequests", "adminSetOrganizerIndexStatus",
     ]],
     ["lib/platform/analytics/app_analytics.dart", ["static const organizerId = 'organizer_id';"]],
-    ["tool/data/migrate_clubs_to_organizers.mjs", ["--confirm-migration"]],
     ["docs/migrations/clubs_to_organizers.md", ["organizerType"]],
   ])) write(root, file, markers.join("\n"));
   write(root, "lib/l10n/app_en.arb", JSON.stringify({
