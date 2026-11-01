@@ -11,7 +11,10 @@ import {
   organizerClaimLabel,
   organizerPageLabel,
   organizerSubtitle,
+  paymentsLabel,
+  salesOwnerShortName,
   termsLabel,
+  upcomingLabel,
 } from "./organizerRecordLabels";
 
 describe("useOrganizerDirectoryController", () => {
@@ -21,21 +24,22 @@ describe("useOrganizerDirectoryController", () => {
       {wrapper});
 
     await waitFor(() => expect(result.current.loadState).toBe("ready"));
-    expect(result.current.total).toBe(6);
+    expect(result.current.total).toBe(4);
     expect(result.current.views).toEqual(
-      {all: 6, live: 4, unclaimed: 3, hidden: 1});
-    expect(result.current.rows[0].name).toBe("Afterfly");
+      {all: 4, live: 3, unclaimed: 2, hidden: 0});
+    expect(result.current.rows.map((row) => row.organizerId)).toEqual(
+      ["afterfly", "bhag", "bandra-runners", "mumbai-padel-social"]);
+    expect(result.current.rows[0].upcomingEventCount).toBe(2);
 
-    act(() => result.current.toggleCity("in-mp-indore"));
-    await waitFor(() => expect(result.current.total).toBe(1));
-    expect(result.current.rows.map((row) => row.name)).toEqual(["AFTER FLY"]);
+    act(() => result.current.toggleCity("in-mh-mumbai"));
+    await waitFor(() => expect(result.current.total).toBe(3));
     // The city chips keep counting as if no city were picked.
     expect(result.current.facets?.cities.map((city) => city.count))
-      .toEqual([5, 1]);
+      .toEqual([3, 1]);
 
-    act(() => result.current.toggleCity("in-mp-indore"));
+    act(() => result.current.toggleCity("in-mh-mumbai"));
     act(() => result.current.toggleMine());
-    await waitFor(() => expect(result.current.total).toBe(3));
+    await waitFor(() => expect(result.current.total).toBe(2));
   });
 });
 
@@ -72,6 +76,14 @@ describe("organizer record labels", () => {
       capMinor: 1_000_000})).toBe("Platform: 5%, capped at ₹10,000 a month");
     expect(termsLabel({source: "unset", rateBasisPoints: null,
       capMinor: null})).toBe("Not set up yet");
+    expect(salesOwnerShortName({uid: "r", name: "Riya Sharma"})).toBe("Riya");
+    expect(salesOwnerShortName(null)).toBe("—");
+    expect(upcomingLabel(0)).toBe("None");
+    expect(upcomingLabel(3)).toBe("3 upcoming");
+    expect(paymentsLabel({state: "connected", webhookVerified: true}).tone)
+      .toBe("success");
+    expect(paymentsLabel({state: "notConnected", webhookVerified: false}).text)
+      .toBe("Razorpay not connected");
   });
 
   it("writes journey steps as sentences", () => {

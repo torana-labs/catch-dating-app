@@ -337,10 +337,10 @@
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
         "exportName": "EventPublishingRouteStory",
         "states": [
-          "canonical-directory"
+          "canonical-detail"
         ]
       },
-      "notes": "Route wrapper owns TanStack Query canonical event, external event, and readiness fetches plus safe event/external publish mutations; preview renders the registered EventPublishingWorkspace with deterministic canonical directory and external supply fixtures in AdminRoutes.stories.tsx."
+      "notes": "The editors the event page's tabs host: a Catch event's canonical editor (Page) or an imported event's source record and takedown (Takedown). The Events directory replaced its directory and External inventory lists; preview renders the registered EventPublishingWorkspace editor in AdminRoutes.stories.tsx."
     },
     {
       "id": "workspace_event_publishing",
@@ -356,7 +356,6 @@
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
         "exportName": "EventPublishingWorkspaceStory",
         "states": [
-          "canonical-directory",
           "canonical-detail"
         ]
       },
@@ -708,10 +707,10 @@
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
         "exportName": "OrganizerPublishingRouteStory",
         "states": [
-          "canonical-directory"
+          "canonical-detail"
         ]
       },
-      "notes": "Organizer Publishing route wrapper delegates to OrganizerPublishingWorkspace with admin feedback providers; deterministic preview coverage uses shared sample organizer details in AdminRoutes.stories.tsx."
+      "notes": "The editor the organizer page's Page tab hosts, and the claims review kept under Organizers until the Inbox decides claims. The Organizers directory replaced its directory list; deterministic preview coverage uses shared sample organizer details in AdminRoutes.stories.tsx."
     },
     {
       "id": "workspace_organizer_publishing",
@@ -727,11 +726,11 @@
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
         "exportName": "OrganizerPublishingWorkspaceStory",
         "states": [
-          "canonical-directory",
+          "canonical-detail",
           "blocked-draft"
         ]
       },
-      "notes": "Prop-driven Organizer Publishing workspace used by the route wrapper and deterministic Storybook previews; canonical directory rows, the stateful blocked-draft editor, route readiness, and actionable publishing blockers come from shared sample organizer fixtures without backend implementation telemetry."
+      "notes": "Prop-driven Organizer Publishing workspace used by the route wrapper and deterministic Storybook previews; the canonical editor, the stateful blocked-draft editor, route readiness, and actionable publishing blockers come from shared sample organizer fixtures without backend implementation telemetry."
     },
     {
       "id": "route_now",
@@ -768,6 +767,145 @@
         ]
       },
       "notes": "Lazy live route wrapper owns the Needs you controller/query seam; deterministic prop-driven visual coverage remains on route_now."
+    },
+    {
+      "id": "route_organizer_directory",
+      "kind": "route",
+      "owner": "features/organizers",
+      "source": "admin/src/features/organizers/ui/OrganizerDirectoryScreen.tsx",
+      "exportName": "OrganizerDirectoryScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "OrganizerDirectoryRouteStory",
+        "states": [
+          "all",
+          "views",
+          "chips"
+        ]
+      },
+      "notes": "Organizers: every listed organizer in one CatchTable on CatchPaneLayout wide-table with real totals from adminListOrganizerDirectory; CatchWorkspaceHeader carries the views (all, live, unclaimed, hidden), the city, kind, claim-waiting and Mine chips and search. It replaces the Organizer Publishing directory."
+    },
+    {
+      "id": "route_organizer_page",
+      "kind": "route",
+      "owner": "features/organizers",
+      "source": "admin/src/features/organizers/ui/OrganizerPageScreen.tsx",
+      "exportName": "OrganizerPageScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "OrganizerPageRouteStory",
+        "states": [
+          "overview",
+          "journey",
+          "upcoming",
+          "money"
+        ]
+      },
+      "notes": "One organizer in the CatchPaneLayout reading pattern with CatchPageTabBar tabs Overview, Page, Events, Sales, Money and History, read from adminGetOrganizerOverview. Facts and the journey use interim local rows until CatchMetaRow and the CatchSection timeline land; the Page tab hosts the Organizer Publishing editor for this organizer."
+    },
+    {
+      "id": "route_organizer_records_live_controller",
+      "kind": "route",
+      "owner": "features/organizers",
+      "source": "admin/src/features/organizers/ui/OrganizersRouteScreen.tsx",
+      "exportName": "OrganizersRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Organizers directory and organizer page controllers and keeps the claims review reachable until the Inbox decides claims; deterministic prop-driven coverage remains on route_organizer_directory and route_organizer_page."
+    },
+    {
+      "id": "route_event_directory",
+      "kind": "route",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventDirectoryScreen.tsx",
+      "exportName": "EventDirectoryScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "EventDirectoryRouteStory",
+        "states": [
+          "upcoming",
+          "catch-and-imported"
+        ]
+      },
+      "notes": "Events: Catch and imported events in one CatchTable on CatchPaneLayout wide-table with exact view totals from adminListEventDirectory; each row names its source. It replaces the Event Publishing directory and External inventory."
+    },
+    {
+      "id": "workspace_organizer_events",
+      "kind": "workspace",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventDirectoryScreen.tsx",
+      "exportName": "OrganizerEventsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "OrganizerEventsWorkspaceStory",
+        "states": [
+          "upcoming"
+        ]
+      },
+      "notes": "One organizer's events, Catch and imported, for the Events tab of the organizer page."
+    },
+    {
+      "id": "route_event_page",
+      "kind": "route",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventPageScreen.tsx",
+      "exportName": "EventPageScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "EventPageRouteStory",
+        "states": [
+          "catch-event",
+          "imported-event"
+        ]
+      },
+      "notes": "One event in the CatchPaneLayout reading pattern: a Catch event's facts and bookings with a Page tab hosting the Event Publishing editor, or an imported event's facts, checks and source link."
+    },
+    {
+      "id": "route_event_records_live_controller",
+      "kind": "route",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventsRouteScreen.tsx",
+      "exportName": "EventsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Events directory and event page controllers; the old External inventory address opens the directory filtered to imported events."
+    },
+    {
+      "id": "workspace_organizer_events_live_controller",
+      "kind": "workspace",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventsRouteScreen.tsx",
+      "exportName": "OrganizerEventsRouteWorkspace",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper"
+        ]
+      },
+      "notes": "Live wrapper that reads one organizer's events for the organizer page's Events tab; coverage remains on workspace_organizer_events."
     },
     {
       "id": "route_marketplace",

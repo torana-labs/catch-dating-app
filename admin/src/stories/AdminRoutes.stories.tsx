@@ -1401,11 +1401,6 @@ const renderAccessReviewWorkspace = () => (
   </AdminWorkspace>
 );
 
-const renderEventPublishingWorkspace = () => (
-  <AdminWorkspace>
-    <EventPublishingWorkspace controller={eventController} />
-  </AdminWorkspace>
-);
 
 const renderEventPublishingDetail = () => (
   <AdminWorkspace>
@@ -1446,7 +1441,7 @@ const renderMarketingOpsWorkspace = () => (
 
 const renderOrganizerPublishingWorkspace = () => (
   <AdminWorkspace>
-    <OrganizerPublishingWorkspace controller={organizerPublishingController} />
+    <OrganizerPublishingWorkspace controller={{...organizerPublishingController, view: "detail"}} />
   </AdminWorkspace>
 );
 
@@ -1662,10 +1657,10 @@ export const EventPublishingRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_event_publishing",
-      states: ["canonical-directory"],
+      states: ["canonical-detail"],
     },
   },
-  render: renderEventPublishingWorkspace,
+  render: renderEventPublishingDetail,
 };
 
 export const EventPublishingWorkspaceStory: Story = {
@@ -1673,10 +1668,10 @@ export const EventPublishingWorkspaceStory: Story = {
   parameters: {
     catchComponent: {
       id: "workspace_event_publishing",
-      states: ["canonical-directory"],
+      states: ["canonical-detail"],
     },
   },
-  render: renderEventPublishingWorkspace,
+  render: renderEventPublishingDetail,
 };
 
 export const EventPublishingDetailStory: Story = {
@@ -1799,7 +1794,7 @@ export const OrganizerPublishingRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_organizer_publishing",
-      states: ["canonical-directory"],
+      states: ["canonical-detail"],
     },
   },
   render: renderOrganizerPublishingWorkspace,
@@ -1810,7 +1805,7 @@ export const OrganizerPublishingWorkspaceStory: Story = {
   parameters: {
     catchComponent: {
       id: "workspace_organizer_publishing",
-      states: ["canonical-directory"],
+      states: ["canonical-detail"],
     },
   },
   render: renderOrganizerPublishingWorkspace,

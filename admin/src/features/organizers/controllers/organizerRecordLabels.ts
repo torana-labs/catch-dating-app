@@ -152,3 +152,28 @@ export function nextStepCopy(
   default: return null;
   }
 }
+
+/** "Riya" in the table; the full name sits on the organizer page. */
+export function salesOwnerShortName(
+  owner: OrganizerDirectoryRow["salesOwner"]
+): string {
+  return owner?.name?.split(/\s+/u)[0] ?? "—";
+}
+
+export function upcomingLabel(count: number): string {
+  return count === 0 ? "None" : `${count} upcoming`;
+}
+
+export function paymentsLabel(
+  payments: OrganizerOverview["payments"]
+): ToneText {
+  switch (payments.state) {
+  case "connected":
+    return payments.webhookVerified ?
+      {text: "Razorpay connected · webhook working", tone: "success"} :
+      {text: "Razorpay connected · webhook not checked", tone: "warning"};
+  case "needsAttention":
+    return {text: "Razorpay needs attention", tone: "danger"};
+  default: return {text: "Razorpay not connected", tone: null};
+  }
+}
