@@ -38,7 +38,9 @@ import {
   prepareOrganizerClaimApproval,
 } from "./organizerClaimApproval";
 
-const claimReviewRoles = ["admin", "adminOwner", "support"] as const;
+// Ops recommend a claim (adminRecommendOrganizerClaim); only the owner
+// approves or rejects it.
+export const claimDecisionRoles = ["admin", "adminOwner"] as const;
 
 interface OrganizerClaimDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -168,7 +170,7 @@ export async function adminDecideOrganizerClaimHandler(
   request: CallableRequest<unknown>,
   deps: OrganizerClaimDeps = defaultDeps
 ): Promise<AdminDecideOrganizerClaimResponse> {
-  const adminContext = requireAdminRole(request, claimReviewRoles);
+  const adminContext = requireAdminRole(request, claimDecisionRoles);
   const data = validateCallableWithAjv<
     AdminDecideOrganizerClaimCallablePayload
   >(

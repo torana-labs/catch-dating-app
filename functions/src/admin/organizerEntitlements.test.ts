@@ -18,7 +18,7 @@ const now = 1_800_000_000_000;
 
 function callableRequest(
   data: FakeData,
-  token: Record<string, unknown> = {finance: true},
+  token: Record<string, unknown> = {adminOwner: true},
   uid = "finance-1"
 ): CallableRequest<unknown> {
   return {
@@ -302,7 +302,7 @@ test("revoke marks the grant and refuses unknown or repeated revokes",
     );
   });
 
-test("non-finance admin roles cannot mutate entitlements", async () => {
+test("only the owner can mutate entitlements", async () => {
   const firestore = new FakeFirestore();
   const {deps} = depsFor(firestore);
   await assert.rejects(
@@ -423,11 +423,11 @@ test("getOrganizerEntitlement serves an empty projection and fences managers",
     );
   });
 
-test("Finance and Admin Owner can read without organizer membership",
+test("Admin Owner can read without organizer membership",
   async () => {
     const firestore = new FakeFirestore();
     const {deps} = depsFor(firestore);
-    for (const role of ["finance", "adminOwner"]) {
+    for (const role of ["adminOwner"]) {
       const result = await getOrganizerEntitlementHandler(
         callableRequest({organizerId: "organizer-1"}, {[role]: true}), deps);
       assert.equal(result.organizerId, "organizer-1");

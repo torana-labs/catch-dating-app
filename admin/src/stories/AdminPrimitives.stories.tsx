@@ -537,7 +537,7 @@ export const AdminTopbarStory: Story = {
           <AdminAccountMenu
             mode="live"
             onSignOut={() => undefined}
-            roles={["admin", "analyticsViewer"]}
+            roles={["admin", "salesStaff"]}
             userLabel="+91 91314 04263"
           />
         </AdminTopbarActions>

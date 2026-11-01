@@ -28,8 +28,6 @@ export const adminSetAdminUserRolesCallablePayloadSchema: Record<string, unknown
           "adminOwner",
           "safetyReviewer",
           "support",
-          "finance",
-          "analyticsViewer",
           "salesStaff"
         ]
       }
@@ -48,8 +46,6 @@ export const adminSetAdminUserRolesCallablePayloadSchema: Record<string, unknown
         "adminOwner",
         "safetyReviewer",
         "support",
-        "finance",
-        "analyticsViewer",
         "salesStaff"
       ]
     }

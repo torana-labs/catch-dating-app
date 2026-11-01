@@ -3813,6 +3813,132 @@ const schemaSpecs = [
     ],
   },
   {
+    name: "AdminListInboxItemsCallablePayload",
+    source: "callables/admin_list_inbox_items_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListInboxItemsCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListInboxItemsCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminListInboxItemsCallableResponse",
+    source: "callable_responses/admin_list_inbox_items_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListInboxItemsCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListInboxItemsCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminGetInboxItemCallablePayload",
+    source: "callables/admin_get_inbox_item_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetInboxItemCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminGetInboxItemCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminGetInboxItemCallableResponse",
+    source: "callable_responses/admin_get_inbox_item_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetInboxItemCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminGetInboxItemCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminUpdateInboxItemCallablePayload",
+    source: "callables/admin_update_inbox_item_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminUpdateInboxItemCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminUpdateInboxItemCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminUpdateInboxItemCallableResponse",
+    source: "callable_responses/admin_update_inbox_item_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminUpdateInboxItemCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminUpdateInboxItemCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminRebuildInboxCallablePayload",
+    source: "callables/admin_rebuild_inbox_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminRebuildInboxCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminRebuildInboxCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminRebuildInboxCallableResponse",
+    source: "callable_responses/admin_rebuild_inbox_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminRebuildInboxCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminRebuildInboxCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminRecommendOrganizerClaimCallablePayload",
+    source: "callables/admin_recommend_organizer_claim_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminRecommendOrganizerClaimCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminRecommendOrganizerClaimCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminRecommendOrganizerClaimCallableResponse",
+    source: "callable_responses/admin_recommend_organizer_claim_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminRecommendOrganizerClaimCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminRecommendOrganizerClaimCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminSearchPeopleCallablePayload",
+    source: "callables/admin_search_people_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminSearchPeopleCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminSearchPeopleCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminSearchPeopleCallableResponse",
+    source: "callable_responses/admin_search_people_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminSearchPeopleCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminSearchPeopleCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminListActivityLogCallablePayload",
+    source: "callables/admin_list_activity_log_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListActivityLogCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListActivityLogCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminListActivityLogCallableResponse",
+    source: "callable_responses/admin_list_activity_log_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListActivityLogCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListActivityLogCallableResponse.ts",
+    ],
+  },
+  {
     name: "AdminListOrganizerListingReviewsCallablePayload",
     source: "callables/admin_list_organizer_listing_reviews_payload.schema.json",
     typeOutput:

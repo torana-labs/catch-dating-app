@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_recommend_organizer_claim_response.schema.json",
+  "title": "AdminRecommendOrganizerClaimCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "status",
+    "recommendation"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "status": {
+      "const": "pending"
+    },
+    "recommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision",
+        "byUid",
+        "at",
+        "note"
+      ],
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "reject"
+          ]
+        },
+        "byUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      }
+    }
+  }
+}

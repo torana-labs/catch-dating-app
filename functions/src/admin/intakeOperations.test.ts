@@ -290,7 +290,7 @@ test("adminListIntakeOperations rejects non-operator admin roles", async () => {
   const h = await harness();
   await assert.rejects(
     adminListIntakeOperationsHandler(
-      callableRequest("viewer-1", {}, {analyticsViewer: true}),
+      callableRequest("viewer-1", {}, {salesStaff: true}),
       h.deps
     ),
     (error: unknown) => {
@@ -536,7 +536,7 @@ test("callable auth, input, rate-limit and query failures still propagate",
       callableRequest(null, {}, {}), h.deps
     ), {code: "unauthenticated"});
     await assert.rejects(adminListIntakeOperationsHandler(
-      callableRequest("viewer", {}, {analyticsViewer: true}), h.deps
+      callableRequest("viewer", {}, {salesStaff: true}), h.deps
     ), {code: "permission-denied"});
     await assert.rejects(adminListIntakeOperationsHandler(
       callableRequest("admin-1", {workItemLimit: 201}, {admin: true}), h.deps

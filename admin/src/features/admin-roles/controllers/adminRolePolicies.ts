@@ -47,20 +47,6 @@ export const adminRolePolicies: Record<AdminRoleClaim, AdminRolePolicy> = {
     risk: "standard",
     confirmationRequired: false,
   },
-  finance: {
-    role: "finance",
-    label: "Finance",
-    capability: "Recognized claim; dedicated Finance surface authorization remains contract-first deferred.",
-    risk: "high",
-    confirmationRequired: true,
-  },
-  analyticsViewer: {
-    role: "analyticsViewer",
-    label: "Analytics viewer",
-    capability: "Read-only product and host analytics surfaces.",
-    risk: "standard",
-    confirmationRequired: false,
-  },
 };
 
 export const adminRolePolicyList = adminRoleClaimKeys.map(

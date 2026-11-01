@@ -260,23 +260,20 @@ const navRoleMap: Record<AdminNavId, readonly AdminRoleClaim[]> = {
   safety: ["admin", "adminOwner", "safetyReviewer", "support"],
   access: ["admin", "adminOwner", "support"],
   "cross-paths": ["admin", "adminOwner", "safetyReviewer", "support"],
-  growth: ["adminOwner", "analyticsViewer"],
+  growth: ["adminOwner"],
   "marketing-ops": ["admin", "adminOwner", "support"],
   sales: ["admin", "adminOwner", "salesStaff"],
   "organizer-intake": ["admin", "adminOwner", "support"],
   organizers: ["admin", "adminOwner", "support"],
   events: ["admin", "adminOwner", "support"],
-  users: ["adminOwner", "analyticsViewer"],
-  finance: ["adminOwner", "analyticsViewer", "finance"],
+  users: ["adminOwner"],
+  finance: ["adminOwner"],
   quality: ["adminOwner"],
   operations: ["admin", "adminOwner", "support"],
   "admin-roles": ["adminOwner"],
 };
 
-const hostAnalyticsRoles: readonly AdminRoleClaim[] = [
-  "adminOwner",
-  "analyticsViewer",
-];
+const hostAnalyticsRoles: readonly AdminRoleClaim[] = ["adminOwner"];
 
 const adminSidebarPreferenceKey = "catch-admin.sidebar-collapsed.v1";
 
@@ -411,10 +408,9 @@ function AdminRouteApp() {
     visibleNavigation[0]?.id ?? "overview";
   const canResolveNavigation = mode !== "live" ||
     (user !== null && rolesResolved && adminRoles.length > 0);
-  // Commercial terms and payment routing are Finance and Admin Owner only,
-  // even though Analytics viewers can open the rest of Finance.
+  // Commercial terms and payment routing are Admin Owner only.
   const canManageCommercialTerms = mode === "sample" ||
-    hasAnyAdminRole(adminRoles, ["adminOwner", "finance"]);
+    hasAnyAdminRole(adminRoles, ["adminOwner"]);
   const financeWorkspaceSwitch = canManageCommercialTerms ? (
     <SegmentedControl<FinanceWorkspace>
       ariaLabel="Finance workspaces"

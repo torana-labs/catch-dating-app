@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-10-19",
-  "sourceDigest": "sha256:0680743ecf3c5394b5b0784adaefa76a3971bcc6f4f8de19cb19d6cc05f7ad48",
+  "sourceDigest": "sha256:3cda7626833da6790f5c18bc59851a49355b57961a77325076dd1ff4aecd99d2",
   "resolvedDigest": "sha256:6f2eafd8c79be9f18a8e507e31d350380c26f6a2c969d570ade4a8e60ca4a560",
   "feature": {
     "id": "feature.organizer_detail",
@@ -144,7 +144,7 @@
         {
           "id": "retry_detail",
           "owner": "route_screen",
-          "codeValue": "invalidate",
+          "codeValue": "retryFailedReads",
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
@@ -1330,7 +1330,7 @@
         {
           "id": "retry_detail",
           "owner": "route_screen",
-          "codeValue": "invalidate",
+          "codeValue": "retryFailedReads",
           "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",

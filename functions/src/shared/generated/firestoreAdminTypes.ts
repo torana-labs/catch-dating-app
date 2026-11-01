@@ -13781,6 +13781,15 @@ export interface OrganizerClaimRequestDocument {
   decidedByUid: string | null;
   decisionReason: string | null;
   previousRequestId: string | null;
+  /**
+   * What ops recommend for a pending claim, set by adminRecommendOrganizerClaim. The owner decides the claim; a later recommendation replaces this one. Absent until someone recommends.
+   */
+  recommendation?: null | {
+    decision: "approve" | "reject";
+    byUid: string;
+    at: string;
+    note: string;
+  };
 }
 
 /**

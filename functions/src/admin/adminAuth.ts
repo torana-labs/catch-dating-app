@@ -5,9 +5,17 @@ export const ADMIN_ROLE_CLAIMS = [
   "adminOwner",
   "safetyReviewer",
   "support",
+  "salesStaff",
+] as const;
+
+/**
+ * Claims Admin no longer grants. Admin is three jobs (owner, sales associate,
+ * ops and support), so finance and analytics belong to the owner; a role
+ * save strips these from the account, and no endpoint admits them.
+ */
+export const RETIRED_ADMIN_ROLE_CLAIMS = [
   "finance",
   "analyticsViewer",
-  "salesStaff",
 ] as const;
 
 export type AdminRoleClaim = typeof ADMIN_ROLE_CLAIMS[number];

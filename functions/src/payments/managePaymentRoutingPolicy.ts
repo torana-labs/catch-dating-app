@@ -31,7 +31,7 @@ const defaults: Dependencies = {db: () => admin.firestore(),
 export async function managePaymentRoutingPolicyHandler(
   request: CallableRequest<unknown>, deps: Dependencies = defaults):
   Promise<Result> {
-  const actor = requireAdminRole(request, ["adminOwner", "finance"]);
+  const actor = requireAdminRole(request, ["adminOwner"]);
   const data = validateCallableWithAjv<Payload>(request,
     validateManagePaymentRoutingPolicyCallablePayload);
   if (data.action === "read" ? data.expectedRevision !== null ||
