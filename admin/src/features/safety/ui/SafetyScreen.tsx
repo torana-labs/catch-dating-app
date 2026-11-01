@@ -1,6 +1,5 @@
 import {
   CatchButton,
-  CatchEmptyState,
   CatchField,
   CatchGap,
   CatchIndexRow,
@@ -156,8 +155,10 @@ export function SafetyScreen({
         views={views}
       />
       {shown.length === 0 ? (
-        <CatchEmptyState message={triage.isLoading || access.isLoading ?
-          "Loading cases" : "No open cases."} title="Nothing waiting" />
+        <CatchText as="p" color="ink2" variant="bodyM">
+          {triage.isLoading || access.isLoading ? "Loading cases" :
+            "Nothing is waiting."}
+        </CatchText>
       ) : (
         <CatchTable
           columns={caseColumns}
@@ -184,10 +185,11 @@ export function SafetyScreen({
         views={views}
       />
       {actionRows.length === 0 ? (
-        <CatchEmptyState message={actions.loadState === "loading" ?
-          "Loading account actions" : view === "appeals" ?
-          "No appeals are waiting." : "No account actions in force."}
-        title={view === "appeals" ? "No appeals" : "Nothing in force"} />
+        <CatchText as="p" color="ink2" variant="bodyM">
+          {actions.loadState === "loading" ? "Loading account actions" :
+            view === "appeals" ? "No appeals are waiting." :
+              "No account actions are in force."}
+        </CatchText>
       ) : (
         <CatchTable
           columns={actionColumns}
