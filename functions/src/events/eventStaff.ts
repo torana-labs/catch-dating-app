@@ -40,6 +40,7 @@ import {
   requireEventOrganizer,
 } from "../shared/eventOrganizers";
 import {checkRateLimit} from "../shared/rateLimit";
+import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {normalizeRosterPhone} from "./eventAttendees";
 import {eventTitleLabel} from "../shared/eventLabels";
@@ -76,7 +77,7 @@ export async function getEventOperatorAccessHandler(
     normalizeEventPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getEventOperatorAccess", {
+  checkInstanceRateLimit(actorUid, "getEventOperatorAccess", {
     maxRequests: 60, windowMs: 60 * 1000,
   });
   const eventSnap = await db.collection("events").doc(data.eventId).get();

@@ -3,6 +3,7 @@ import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../../shared/auth";
 import {appCheckCallableOptions} from "../../shared/callableOptions";
 import {checkRateLimit} from "../../shared/rateLimit";
+import {checkInstanceRateLimit} from "../../shared/instanceRateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
 import {validateGetOrganizerEventSetupDefaultsCallablePayload} from
   "../../shared/generated/validators/getOrganizerEventSetupDefaultsInput";
@@ -33,7 +34,7 @@ export async function getOrganizerEventSetupDefaultsHandler(
   const {organizerId} = validateCallableWithAjv(request,
     validateGetOrganizerEventSetupDefaultsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerEventSetupDefaults", {
+  checkInstanceRateLimit(actorUid, "getOrganizerEventSetupDefaults", {
     maxRequests: 60, windowMs: 60 * 1000,
   });
   const result = await getManagerEventSetupDefaults({actorUid, organizerId,

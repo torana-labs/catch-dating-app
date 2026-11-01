@@ -50,6 +50,7 @@ import {
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
+import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {eventAttendeeId, normalizeRosterPhone} from
   "../events/eventAttendees";
@@ -119,7 +120,7 @@ export async function getOrganizerProviderSetupHandler(
     normalizePayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerProviderSetup", {
+  checkInstanceRateLimit(actorUid, "getOrganizerProviderSetup", {
     maxRequests: 60, windowMs: 60 * 1000,
   });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});

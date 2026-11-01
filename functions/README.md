@@ -503,6 +503,17 @@ Firestore transactions.
 Counter documents are written to `rateLimits/{uid}_{action}_{windowKey}`.
 A TTL policy on `expiresAt` auto-deletes counters after their window expires.
 
+A small read uses `checkInstanceRateLimit()` from
+`src/shared/instanceRateLimit.ts` instead. It counts in the instance's memory,
+so it adds no database call, but each running instance counts on its own.
+Use it for a read of a few known documents that shows only the caller's own
+state or one organizer's settings, such as `listMyHostAssignments` or
+`getOrganizerTrackingSettings`. Keep `checkRateLimit()` for writes and for any
+read that returns other people's data, scans a list, or does work that costs
+money, because its count holds across instances. It also runs before the read,
+so an over-limit caller stops before any billed work; do not start it alongside
+the read.
+
 The `joinWaitlist` HTTP endpoint uses `checkIpRateLimit()` — an in-memory
 per-IP counter (3 POSTs per hour). This does not survive cold starts.
 

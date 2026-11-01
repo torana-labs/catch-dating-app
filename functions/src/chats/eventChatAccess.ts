@@ -6,6 +6,7 @@ import {HttpsError, onCall, type CallableRequest} from
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
+import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {eventOrganizerId, eventOrganizerRef, requireEventOrganizer,
   isEventOrganizerManager} from "../shared/eventOrganizers";
@@ -153,7 +154,7 @@ export async function getEventChatAccessHandler(
   const data = validateCallableWithAjv(request,
     validateGetEventChatAccessCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventChatAccess", {
+  checkInstanceRateLimit(uid, "getEventChatAccess", {
     maxRequests: 120, windowMs: 60 * 1000,
   });
   return db.runTransaction(async (tx) =>
