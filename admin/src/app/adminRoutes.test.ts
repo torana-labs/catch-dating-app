@@ -96,6 +96,11 @@ describe("Admin route contract", () => {
   it("keeps unknown nested paths in their workspace without borrowing a record", () => {
     expect(resolveAdminRoute("/events/unknown/extra")).toMatchObject({nav: "events", eventWorkspace: "directory"});
     expect(resolveAdminRoute("/events/unknown/extra").params.eventId).toBeUndefined();
+    expect(resolveAdminRoute("/events/trivia/page")).toMatchObject({nav: "events", eventTab: "page",
+      params: {eventId: "trivia"}});
+    expect(resolveAdminRoute("/organizers/afterfly/money")).toMatchObject({nav: "organizers",
+      organizerTab: "money", params: {organizerId: "afterfly"}});
+    expect(resolveAdminRoute("/organizers/afterfly/unknown").params.organizerId).toBeUndefined();
     expect(resolveAdminRoute("/not-a-section").nav).toBeNull();
     expect(resolveAdminRoute("/")).toMatchObject({nav: "now", redirect: "/now"});
     expect(resolveAdminRoute("/overview")).toMatchObject({nav: "now", redirect: "/now"});

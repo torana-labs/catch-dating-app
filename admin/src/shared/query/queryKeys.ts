@@ -27,6 +27,8 @@ export const adminQueryKeys = {
       [...adminQueryKeys.all, "events", "detail", eventId] as const,
     directory: (payloadKey: string) =>
       [...adminQueryKeys.all, "events", "directory", payloadKey] as const,
+    page: (source: string, eventId: string) =>
+      [...adminQueryKeys.all, "events", "page", source, eventId] as const,
   },
   eventIntake: {
     dashboardBridge: () =>

@@ -20,8 +20,8 @@ const platformLabels: Record<NonNullable<EventDirectoryRow["platform"]>,
 /** "Catch" for events made in Catch, else the platform it came from. */
 export function eventSourceLabel(
   row: Pick<EventDirectoryRow, "source" | "platform">
-): {label: string; tone: RecordTone} {
-  if (row.source === "catch") return {label: "Catch", tone: "info"};
+): {label: string; tone: "brand" | "neutral"} {
+  if (row.source === "catch") return {label: "Catch", tone: "brand"};
   return {
     label: row.platform ? platformLabels[row.platform] : "Imported",
     tone: "neutral",
@@ -56,4 +56,13 @@ export function eventBookedLabel(
   if (row.bookedCount === null) return "—";
   return row.capacityLimit ? `${row.bookedCount} of ${row.capacityLimit}` :
     String(row.bookedCount);
+}
+
+const inr = new Intl.NumberFormat("en-IN", {
+  style: "currency", currency: "INR", maximumFractionDigits: 0,
+});
+
+/** "₹499" for a paid ticket, "Free" otherwise. */
+export function eventPriceLabel(priceInPaise: number): string {
+  return priceInPaise > 0 ? inr.format(Math.round(priceInPaise / 100)) : "Free";
 }

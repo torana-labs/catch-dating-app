@@ -26,7 +26,7 @@
   },
   "src/features/events/ui/eventPublishingSupplyPanels.tsx": {
     "react/forbid-elements": {
-      "count": 15
+      "count": 3
     }
   },
   "src/features/finance/ui/FinanceOpsScreen.tsx": {
@@ -81,7 +81,7 @@
   },
   "src/features/organizers/ui/organizerDetailPanels.tsx": {
     "react/forbid-elements": {
-      "count": 15
+      "count": 9
     }
   },
   "src/features/organizers/ui/organizerDirectoryPanels.tsx": {
