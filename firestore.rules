@@ -983,6 +983,15 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Support conversations, their messages and saved replies hold contact
+    // details; only the role-gated Admin support callables read or write.
+    match /supportConversations/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /supportSavedReplies/{replyId} {
+      allow read, write: if false;
+    }
+
     // Account safety: the account may read its own standing and notices;
     // everything else (actions, appeals, banned phone and device hashes,
     // blocked sign-ups, organizer block lists, settings) is callable-only.

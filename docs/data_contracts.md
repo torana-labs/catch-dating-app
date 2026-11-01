@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.184.0
+version: 1.185.0
 updated: 2026-11-01
 owner: recursive_audit_loop
 status: active
@@ -412,6 +412,22 @@ only that nested safety assignment. Both mutations validate the complete case,
 preserve its event/attendee/message binding and write an Admin audit record;
 they do not perform an account, content, payment or event mutation.
 See `docs/event_success.md` for lifecycle and integration boundaries.
+
+### Support Inbox
+
+`supportConversations/{channel-hash}` holds one person's conversation with
+Catch per channel; the id is a SHA-256 of the channel and normalized address,
+so every message from one number joins one thread. The WhatsApp receipt
+consumer records each inbound text that is not a nomination (all of them while
+`SUPPLY_MESSAGE_NOMINATIONS_ENABLED` is off) and the Instagram webhook does the
+same for direct messages without a claim code. Receipt and message keys make
+recording idempotent. A WhatsApp number is matched to its Catch account
+(`audience` organizer when the account manages one). `waitingSince` starts at
+the first unanswered inbound message and clears when a reply is recorded,
+which moves the conversation to `waitingOnThem`. Links point at existing
+bookings, payments or safety cases. Staff log emails by hand until inbound
+email exists, and replies are recorded rather than sent through a provider.
+All support documents are callable-only.
 
 ### Account Safety Actions
 

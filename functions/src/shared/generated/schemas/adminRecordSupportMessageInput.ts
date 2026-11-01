@@ -1,0 +1,81 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const adminRecordSupportMessageCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_record_support_message_payload.schema.json",
+  "title": "AdminRecordSupportMessageCallablePayload",
+  "description": "Records a message in a support conversation: a reply staff sent (outbound; the conversation then waits on them), an email that came in (inbound, starting the conversation when conversationId is null), or an internal note. Replies are recorded, not sent: staff send them from WhatsApp, Instagram or email until replies go out through the provider.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversationId",
+    "channel",
+    "contactAddress",
+    "displayName",
+    "direction",
+    "text",
+    "savedReplyId"
+  ],
+  "properties": {
+    "conversationId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "whatsapp",
+        "instagram",
+        "email"
+      ]
+    },
+    "contactAddress": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 3,
+      "maxLength": 200
+    },
+    "displayName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound",
+        "note"
+      ]
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "savedReplyId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminRecordSupportMessage"
+  ]
+} as const;
