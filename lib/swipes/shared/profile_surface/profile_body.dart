@@ -1,3 +1,4 @@
+// architecture: provider-free
 import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_backdrop_image.dart';
 import 'package:catch_dating_app/kernel/activity_taxonomy.dart';

@@ -1,3 +1,4 @@
+// architecture: provider-free
 import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_state.dart';

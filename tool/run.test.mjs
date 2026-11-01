@@ -292,7 +292,6 @@ test("the runner executes manifest checks without task authority metadata", (con
 });
 
 const restoredProofOwners = [
-  ["audit:adopted-architecture-boundaries", "tool/architecture/check_adopted_architecture_boundaries.test.mjs"],
   ["audit:mutation-error-surfaces", "tool/architecture/check_mutation_error_surfaces.test.mjs"],
   ["audit:route-string-literals", "tool/architecture/check_route_string_literals.test.mjs"],
   ["web:admin-callable-validators", "tool/admin/callable_inventory.test.mjs"],

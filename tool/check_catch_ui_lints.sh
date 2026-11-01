@@ -1167,6 +1167,9 @@ lib/contexts/bookings/domain/booking.dart|catch_arch_context_barrel_bypass|impor
 lib/weddings/domain/wedding.dart|catch_arch_unmapped_file|class Wedding {}
 lib/contexts/weddings/domain/wedding.dart|catch_arch_unknown_context|class Wedding {}
 lib/events/domain/event_model.dart|catch_arch_legacy_context_file|class EventModel {}
+lib/events/presentation/event_list_state.dart|catch_arch_provider_free_boundary|import 'package:go_router/go_router.dart';
+lib/contexts/events/parts/row_boundary.dart|catch_arch_provider_free_boundary|import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+lib/explore/presentation/widgets/marked_body.dart|catch_arch_provider_free_boundary|// architecture: provider-free\nimport 'package:flutter_riverpod/flutter_riverpod.dart';
 lib/chats/presentation/chat_route_widget.dart|catch_arch_invalid_ignore|// ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- stale exception\nclass ChatRouteWidget {}
 ARCH
 

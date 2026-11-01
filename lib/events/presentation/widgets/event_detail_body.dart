@@ -1,3 +1,4 @@
+// architecture: provider-free
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';

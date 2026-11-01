@@ -72,7 +72,7 @@
       ]
     },
     "EXHIBIT-FRESHNESS-001": {
-      "title": "Keep architecture exhibits fresh against their tracker anchors",
+      "title": "Keep architecture exhibits fresh against the code they quote",
       "status": "active",
       "kind": "contract",
       "introduced_in": {
@@ -81,10 +81,9 @@
       },
       "applies_to": [
         "docs/app_architecture.md",
-        "tool/architecture/pattern_adoption.json",
         "tool/architecture/check_app_architecture_exhibits.mjs"
       ],
-      "instruction": "Every architecture reference exhibit must declare an exhibit-freshness marker, point to its tracker source, keep the tracker architectureExhibit anchor in sync, and remove stale code snippets when the reference implementation changes.",
+      "instruction": "Every architecture reference exhibit must declare an exhibit-freshness marker naming the exhibit and its owner, and remove stale code snippets when the reference implementation changes.",
       "sunset_when": [
         "Architecture exhibit blocks are generated from source markers or another stronger source-backed mechanism"
       ],
@@ -1439,9 +1438,9 @@
         "lib/**",
         "apps/*/lib/**"
       ],
-      "instruction": "Layer imports follow the declared dependency direction. lib/*/domain/** must not import Flutter, Riverpod, Firebase, routing, or platform plugin packages; Timestamp/serialization handling routes through core/firestore_converters, and new domain code must not add direct imports. lib/*/data/** and lib/*/domain/** must not import feature presentation code. Feature presentation must not import sibling feature presentation internals. Sanctioned seams are (a) a sibling feature public controller (presentation/*_controller.dart) imported from a route screen (*_screen.dart) or another controller, and (b) symbols exported by the sibling feature root barrel (lib/<feature>/<feature>.dart), where every presentation export in a barrel requires a // public-api: annotation. Direct deep imports of sibling presentation files remain violations. Widgets, bodies, state adapters, and view models are feature internals \u2014 when another feature needs a read model, expose a narrow public provider/contract or annotated barrel seam instead. The same rules apply by placement to the bounded-context roots: lib/contexts/<context>/domain/** and lib/kernel/** are domain, lib/contexts/<context>/data/** is data, actions/ are controllers, parts/ stay provider-free, and lib/pages/** and apps/<app>/lib/<destination>/** are screens; findings under these roots take no exceptions. These are catch_arch_* analyzer lints; an exception elsewhere is a // ignore: catch_ui_lints/<code> -- <reason> next to the code, which the lints reject when it is file-wide, unreasoned or stale.",
+      "instruction": "Layer imports follow the declared dependency direction. lib/*/domain/** must not import Flutter, Riverpod, Firebase, routing, or platform plugin packages; Timestamp/serialization handling routes through core/firestore_converters, and new domain code must not add direct imports. lib/*/data/** and lib/*/domain/** must not import feature presentation code. Feature presentation must not import sibling feature presentation internals. Sanctioned seams are (a) a sibling feature public controller (presentation/*_controller.dart) imported from a route screen (*_screen.dart) or another controller, and (b) symbols exported by the sibling feature root barrel (lib/<feature>/<feature>.dart), where every presentation export in a barrel requires a // public-api: annotation. Direct deep imports of sibling presentation files remain violations. Widgets, bodies, state adapters, and view models are feature internals \u2014 when another feature needs a read model, expose a narrow public provider/contract or annotated barrel seam instead. The same rules apply by placement to the bounded-context roots: lib/contexts/<context>/domain/** and lib/kernel/** are domain, lib/contexts/<context>/data/** is data, actions/ are controllers, parts/ stay provider-free, and lib/pages/** and apps/<app>/lib/<destination>/** are screens; findings under these roots take no exceptions. These are catch_arch_* analyzer lints; an exception elsewhere is a // ignore: catch_ui_lints/<code> -- <reason> next to the code, which the lints reject when it is file-wide, unreasoned or stale. A provider-free file (a *_state.dart adapter, a context parts/ widget, or a file marked // architecture: provider-free) uses no Riverpod, routing, data-layer or repository API.",
       "sunset_when": [
-        "No catch_arch_* ignore remains and adopted architecture boundary checks cover aligned features"
+        "No catch_arch_* ignore remains"
       ],
       "sunset_signals": [
         {
@@ -1456,11 +1455,6 @@
         },
         {
           "tool": "lint:catch-ui-drift",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/app_architecture.md#dependency-direction"
-        },
-        {
-          "tool": "audit:adopted-architecture-boundaries",
           "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#dependency-direction"
         },

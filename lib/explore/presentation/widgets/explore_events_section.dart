@@ -1,3 +1,4 @@
+// architecture: provider-free
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';

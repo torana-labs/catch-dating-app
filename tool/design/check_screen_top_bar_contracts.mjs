@@ -6,9 +6,6 @@ import {repoRoot} from "../lib/repo_paths.mjs";
 import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
 const defaultManifestPath = "tool/design/screen_top_bar_contracts.json";
-const architectureAdoptionPath =
-  "tool/architecture/pattern_adoption.json";
-const screenChromeArchitectureId = "ARCH-SCREEN-CHROME-001";
 const appBarPattern = /\bappBar\s*:\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)/gu;
 const routeTopBarBuilderPattern =
   /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchTopBar\.(?:screen|primaryRail)|CatchTopBar(?:\.(?:route|identity))?)/gu;
@@ -101,6 +98,7 @@ if (isCliEntrypoint) runCli();
 export function checkScreenTopBarContracts({
   root = repoRoot,
   manifestPath = defaultManifestPath,
+  rootHeaderPaths = null,
 } = {}) {
   const findings = [];
   const absoluteManifestPath = path.join(root, manifestPath);
@@ -129,7 +127,8 @@ export function checkScreenTopBarContracts({
   });
   const rawChromeByPath = collectRawChrome(root);
   const manualHeadersByPath = collectManualHeaders(root);
-  const trackedRootHeaderPaths = collectTrackedRootHeaderPaths(root);
+  const trackedRootHeaderPaths =
+    rootHeaderPaths ?? collectTrackedRootHeaderPaths(rootHeaders);
   const contractsByPath = new Map(
     contracts.map((contract) => [contract.path, contract]),
   );
@@ -500,23 +499,23 @@ function collectManualHeaders(root) {
   return result;
 }
 
-function collectTrackedRootHeaderPaths(root) {
-  const absolutePath = path.join(root, architectureAdoptionPath);
-  if (!fs.existsSync(absolutePath)) return new Set();
-  const registry = JSON.parse(fs.readFileSync(absolutePath, "utf8"));
-  const pattern = (registry.patterns ?? []).find(
-    (candidate) => candidate.id === screenChromeArchitectureId,
-  );
+// A declared root surface is held to a canonical owner wherever it sits; the
+// old copy of this list lived in the retired architecture pattern registry.
+function collectTrackedRootHeaderPaths(rootHeaders) {
   return new Set(
-    (pattern?.adopters ?? [])
+    (rootHeaders ?? [])
+      .flatMap((rootHeader) => rootHeader.surfaces ?? [])
+      // Screen-named surfaces only; a section that renders the header is
+      // classified by its exact symbol in checkRootHeaders.
+      .filter((surface) =>
+        /(?:Screen|Scaffold|Header|TopBar)(?:State)?$/u.test(surface.symbol ?? ""))
+      .map((surface) => surface.path)
       .filter(
-        (adopter) =>
-          typeof adopter.path === "string" &&
-          adopter.path.startsWith("lib/") &&
-          !isAppSharedWidgetSource(adopter.path) &&
-          adopter.status === "aligned",
-      )
-      .map((adopter) => adopter.path),
+        (surfacePath) =>
+          typeof surfacePath === "string" &&
+          surfacePath.startsWith("lib/") &&
+          !isAppSharedWidgetSource(surfacePath),
+      ),
   );
 }
 

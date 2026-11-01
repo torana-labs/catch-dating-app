@@ -7,6 +7,7 @@ import 'package:analyzer/error/error.dart';
 
 import 'architecture_context_map.dart';
 import 'architecture_findings.dart';
+import 'architecture_provider_free.dart';
 
 /// Dependency direction, bounded-context placement and the provider-boundary
 /// rules that go with them. An exception is a reasoned `// ignore:` next to the
@@ -52,6 +53,11 @@ class _ArchitectureVisitor extends SimpleAstVisitor<void> {
     final map = contextMapFor(absolutePath);
     final findings = [
       ...dependencyDirectionFindings(
+        relativePath: relativePath,
+        source: unit.content,
+        unit: node,
+      ),
+      ...providerFreeFindings(
         relativePath: relativePath,
         source: unit.content,
         unit: node,

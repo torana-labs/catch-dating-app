@@ -1,3 +1,4 @@
+// architecture: provider-free
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
