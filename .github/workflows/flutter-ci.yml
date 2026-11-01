@@ -228,7 +228,7 @@ jobs:
           node tool/design/check_icon_family_usage.mjs --check
 
       - name: Design token drift check
-        run: dart run tool/design_tokens.dart --check
+        run: node tool/design_tokens.mjs --check
 
       - name: Check affected design handoff inputs
         if: ${{ !inputs.design_handoff_in_tools }}

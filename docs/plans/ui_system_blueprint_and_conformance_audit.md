@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.30.3
-updated: 2026-10-31
+version: 1.30.4
+updated: 2026-11-02
 owner: app_architecture
 status: active
 ---
@@ -1074,7 +1074,7 @@ Phase 2 continuation.
 
 ### Phase 2 — `packages/catch_tokens`
 
-Scope: create the package; retarget `tool/design_tokens.dart` generator
+Scope: create the package; retarget `tool/design_tokens.mjs` generator
 output; move generated primitive tokens plus the semantic token classes,
 splitting the token monolith by tier during the move (D6);
 rewrite imports
@@ -1085,7 +1085,7 @@ pointed at the new package. Theme wiring, typography, icon assets, gap widgets,
 and app-coupled activity palettes remain app-side until Phase 3.
 
 DoD: old files gone; `flutter analyze` green across workspace members and
-widgetbook; `dart run tool/design_tokens.dart --check` green; goldens
+widgetbook; `node tool/design_tokens.mjs --check` green; goldens
 unchanged (Phase 1 proof of no visual drift); lint probe corpus green.
 
 Implementation: `packages/catch_tokens` is a Flutter-only production dependency

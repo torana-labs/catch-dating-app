@@ -4666,7 +4666,8 @@
         "lib/platform/theme/**",
         "packages/catch_tokens/lib/**",
         "packages/catch_ui/**",
-        "tool/design_tokens.dart",
+        "tool/design_tokens.mjs",
+        "tool/design_tokens/**",
         "tool/design/test/platform_token_coverage.test.mjs",
         "test/core/catch_platform_tokens_test.dart",
         "test/core/platform_typography_test.dart"
@@ -4747,14 +4748,19 @@
     {
       "id": "design:tokens",
       "category": "design",
-      "path": "tool/design_tokens.dart",
-      "command": "dart run tool/design_tokens.dart",
+      "path": "tool/design_tokens.mjs",
+      "impactPaths": [
+        "tool/design_tokens/**"
+      ],
+      "command": "node tool/design_tokens.mjs",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Generates shared web CSS, synced web fonts, and Flutter Dart constants from canonical design-token JSON.",
+      "description": "Generates shared web CSS, synced web fonts, and Flutter Dart constants from canonical design-token JSON with Style Dictionary.",
       "checks": [
-        "dart analyze tool/design_tokens.dart packages/catch_tokens/lib/generated/catch_design_tokens.g.dart",
-        "dart run tool/design_tokens.dart --check"
+        "node --check tool/design_tokens.mjs",
+        "node --test tool/design_tokens/design_tokens.test.mjs",
+        "dart analyze packages/catch_tokens/lib/generated/catch_design_tokens.g.dart",
+        "node tool/design_tokens.mjs --check"
       ],
       "role": "finder"
     },

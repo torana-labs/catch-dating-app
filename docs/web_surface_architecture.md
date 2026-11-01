@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.48.1
-updated: 2026-11-01
+version: 0.48.2
+updated: 2026-11-02
 owner: web_platform
 status: active
 ---
@@ -732,7 +732,7 @@ only `firebase.ts` to import the generated callable types.
 - `apps/consumer/build/web` is the Flutter web deploy artifact for `app.catchdates.com`; the `app` target's predeploy builds it with `./tool/flutter_with_env.sh prod --role consumer build web --release`.
 
 Design-token CSS and web font copies are generated into
-`packages/web-config/generated/` by `dart run tool/design_tokens.dart`, then
+`packages/web-config/generated/` by `node tool/design_tokens.mjs`, then
 bundled by Vite through `packages/web-config/styles/catch-web.css`.
 
 ## React Dependency Topology

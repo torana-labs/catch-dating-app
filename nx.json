@@ -67,11 +67,12 @@
             "root": "design/tokens",
             "targets": {
               "check": {
-                "command": "dart run tool/design_tokens.dart --check",
+                "command": "node tool/design_tokens.mjs --check",
                 "cache": false,
                 "inputs": [
                   "{projectRoot}/**/*",
-                  "{workspaceRoot}/tool/design_tokens.dart",
+                  "{workspaceRoot}/tool/design_tokens.mjs",
+                  "{workspaceRoot}/tool/design_tokens/**/*",
                   "{workspaceRoot}/packages/web-config/generated/**/*",
                   "{workspaceRoot}/packages/catch_tokens/lib/generated/**/*"
                 ]

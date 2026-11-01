@@ -1651,11 +1651,10 @@ arbitrary JSX/CSS exports as visual proposal material, not implementation
 source. A handoff is implementation-ready only when it names component contract
 ids, props, slots, and any missing primitive/token deltas.
 
-Style Dictionary is a candidate token transformation engine, not a component
-translator. Keep `dart run tool/design_tokens.dart` as the production generator
-until a spike proves generated Dart/CSS equivalence, custom gradient/semantic
-formats, deterministic `--check`, and real Figma/Tokens Studio value. Component
-contracts remain separate; no Style Dictionary output is widget implementation.
+Style Dictionary is the token transformation engine, not a component
+translator: `node tool/design_tokens.mjs` is the production generator, and
+`--check` fails when a tracked output differs. Component contracts remain
+separate; no Style Dictionary output is widget implementation.
 
 Validate the component registry with:
 

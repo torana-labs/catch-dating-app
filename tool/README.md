@@ -1183,15 +1183,20 @@ network-free, and the standard design-parity gate owns freshness.
 
 ## Design Tokens
 
-The canonical UI primitive source is `design/tokens/catch.tokens.json`. It
-generates the customer website token CSS, website font assets, and Flutter Dart
-constants in `packages/catch_tokens/lib/generated/catch_design_tokens.g.dart`.
+The canonical UI primitive source is `design/tokens/catch.tokens.json`.
+[Style Dictionary](https://styledictionary.com) reads and resolves it;
+`tool/design_tokens/` holds the two formats that write the customer website
+token CSS and the Flutter Dart constants in
+`packages/catch_tokens/lib/generated/catch_design_tokens.g.dart`, and every
+format rejects a value it cannot represent. Website font assets are copied
+alongside. The Dart output goes through `dart format`, so generating still needs
+the Dart SDK on `PATH`.
 The Flutter-only `catch_tokens` workspace package exports these scales and its
 handwritten semantic/component tokens to the apps and Widgetbook.
 
 ```sh
-dart run tool/design_tokens.dart
-dart run tool/design_tokens.dart --check
+node tool/design_tokens.mjs
+node tool/design_tokens.mjs --check
 node tool/run.mjs run design:tokens
 node tool/run.mjs check design:tokens
 ```
@@ -1203,7 +1208,7 @@ or muscle memory already depend on them:
 
 - `tool/check_data_contract.sh`
 - `tool/check_catch_ui_lint_drift.sh`
-- `tool/design_tokens.dart`
+- `tool/design_tokens.mjs`
 - `tool/check_riverpod_lint.sh`
 - `tool/check_catch_ui_lints.sh`
 - `tool/deploy_firebase_targets.sh`

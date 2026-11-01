@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.13.0
-updated: 2026-10-25
+version: 1.13.1
+updated: 2026-11-02
 owner: marketing_website
 status: active
 ---
@@ -68,7 +68,7 @@ authored until each launch format has a demo world to capture.
 
 Marketing styling imports the shared React web token layer from
 `packages/web-config/styles/catch-web.css`; the generated token CSS itself is
-owned by `dart run tool/design_tokens.dart`.
+owned by `node tool/design_tokens.mjs`.
 
 ## Website Safari Captures
 
