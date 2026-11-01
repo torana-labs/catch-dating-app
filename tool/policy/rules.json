@@ -644,11 +644,6 @@
           "tool": "contracts:migration-contracts",
           "stage": "scanner-gate",
           "docAnchor": "tool/policy/rules.json"
-        },
-        {
-          "tool": "data:migrate-clubs-to-organizers",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/migrations/clubs_to_organizers.md#environment-run-order"
         }
       ]
     },
@@ -680,11 +675,6 @@
           "tool": "contracts:storage-contract",
           "stage": "scanner-gate",
           "docAnchor": "tool/policy/rules.json"
-        },
-        {
-          "tool": "data:migrate-clubs-to-organizers",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/migrations/clubs_to_organizers.md#what-the-migration-copies"
         },
         {
           "stage": "manual",
@@ -1369,11 +1359,6 @@
         {
           "stage": "manual",
           "docAnchor": "tool/policy/rules.json"
-        },
-        {
-          "tool": "data:migrate-clubs-to-organizers",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/migrations/clubs_to_organizers.md#what-the-migration-copies"
         }
       ]
     },

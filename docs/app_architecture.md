@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.96.0
-updated: 2026-10-31
+version: 1.96.1
+updated: 2026-11-01
 owner: app_architecture
 status: active
 ---
@@ -2858,12 +2858,10 @@ The migration shape is:
    blocker set remains. Remove that compatibility state after the repair tool,
    read-only validation, and rollout receipt all report zero blockers.
 
-Event meeting locations are the reference migration. New and edited events are
-strict, while Dart reads remain compatibility-nullable because the 2026-07-16
-production dry run still has nine coordinate-less historical records. The
-exact cutover state and proof live in
-`contracts/migrations/event_meeting_location.json`; do not copy the strict
-branch implementation into production reads until that contract advances.
+Event meeting locations followed this pattern. New and edited events are
+strict, and Dart reads are still compatibility-nullable. The historical-record
+repair they waited on is moot under wipe-and-reseed, so its migration contract
+and backfill are retired.
 `RunClub` next-event projections and `Payment` legacy fields are candidates for
 this pattern only after their own source-of-truth, repair, and cutover contracts
 exist.
@@ -4266,7 +4264,6 @@ Reference files:
 - `functions/src/organizers/organizerContactMerges.ts`
 - `functions/src/organizers/organizerCampaigns.ts`
 - `functions/src/organizers/organizerCampaignDispatcher.ts`
-- `tool/data/backfill_organizer_crm_authority_v2.mjs`
 
 Contact creation, identity convergence, communication permission, and
 operational suppression are separate authorities. Every approved contact

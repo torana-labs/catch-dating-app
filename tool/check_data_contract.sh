@@ -33,15 +33,11 @@ node tool/contracts/check_firestore_rules_semantics.mjs
 echo "==> Checking demo seed contract validation"
 node --check tool/demo/seed_demo_data.mjs
 node --check tool/data/recompute_public_profiles.mjs
-node --check tool/data/backfill_profile_photos.mjs
-node --check tool/data/repair_future_event_attendance.mjs
 node --check functions/scripts/backfill-profile-thumbnails.cjs
 node --test tool/demo/seed_demo_data_append.test.mjs \
   tool/demo/seed_demo_data_schema.test.mjs \
   tool/lib/firebase_project.test.mjs \
-  tool/data/recompute_public_profiles.test.mjs \
-  tool/data/backfill_profile_photos.test.mjs \
-  tool/data/repair_future_event_attendance.test.mjs
+  tool/data/recompute_public_profiles.test.mjs
 node tool/demo/seed_demo_data.mjs --scenario smoke --json >/dev/null
 
 echo "==> Checking Firestore contract metadata"

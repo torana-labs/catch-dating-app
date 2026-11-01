@@ -1,7 +1,7 @@
 ---
 doc_id: clubs_to_organizers_migration
-version: 1.2.2
-updated: 2026-09-05
+version: 1.2.3
+updated: 2026-11-01
 owner: data_platform
 status: active
 ---
@@ -10,14 +10,13 @@ status: active
 
 This document records the completed one-time authority cutover from `clubs` to
 `organizers`. `Organizer` is the durable entity; `club` is one value of its
-required `organizerType`. The machine-readable state lives in
-`contracts/migrations/clubs_to_organizers.json`.
+required `organizerType`.
 
 The original migration was additive and idempotent. The application has not
 launched, and the owner has approved local retirement of its legacy contracts,
-callable aliases, rule paths, storage paths, and client fallbacks. This
-historical runbook does not authorize remote deletion; any synthetic-data reset
-and deployment still require a separate explicit approval.
+callable aliases, rule paths, storage paths, and client fallbacks. This record
+does not authorize remote deletion; any synthetic-data reset and deployment
+still require a separate explicit approval.
 
 ## Canonical Type Model
 
@@ -69,143 +68,21 @@ are not local read/write projections, callable aliases, or rule paths. Existing
 remote synthetic data must be reset or migrated before a deployment that removes
 those legacy surfaces.
 
-## What The Migration Copies
+## Migration Record
 
-`tool/data/migrate_clubs_to_organizers.mjs` inventories and plans:
+The one-time migration tool copied every `clubs/{id}` document
+into `organizers/{id}` (defaulting the type to `club`), split host and member
+edges into `organizerTeamMemberships` and `organizerFollows`, backfilled
+`organizerId` on dependent documents, and copied Storage objects from `clubs/`
+to `organizers/`. It never deleted source data.
 
-- every `clubs/{id}` document, defaulting its type to `club` and deriving
-  `organizerPhotos`, `followerCount`, type audit fields, and organizer route;
-- owner/co-host membership edges into `organizerTeamMemberships` and member
-  edges into `organizerFollows`;
-- `clubHostClaims` not already represented by a team edge;
-- claim requests, schedule locks, nested posts, and organizer route
-  reservations;
-- `organizerId` on events, reviews, matches, notifications, broadcasts,
-  invite/access/participation/waitlist documents, Event Success documents, and
-  user schedule locks;
-- all Storage objects below `clubs/` into the equivalent `organizers/` path.
+The read-only dry run ran on 2026-07-20. Staging and production were applied
+and reached parity on 2026-07-22: production created 41 canonical organizers
+through 6,780 writes, and an independent reread found zero remaining writes,
+blockers, or Storage copies.
 
-An existing canonical value must either match the legacy source or be missing,
-except for backend-owned organizer projections such as next-event and review
-aggregates. Once a canonical organizer exists, those trigger-recomputed values
-are authoritative and the migration verifier preserves them instead of
-comparing them to a stale legacy projection. Follower parity is checked against
-active canonical `organizerFollows` after projecting the plan's missing-only
-fills for new and partial legacy member edges, deduplicated by target document
-ID. Blocked fills never count as applied. This preserves followers
-added after the cutover and still validates initial/partial migrations. A count
-that differs from that resulting edge set remains a blocker. A conflicting
-canonical follow (including a later unfollow) is never overwritten by a frozen
-legacy membership. Other differences remain blockers and are never overwritten.
-Existing Storage targets require a matching CRC32C
-or MD5 checksum; different or incomparable objects block apply.
-
-## Environment Run Order
-
-Complete this sequence independently in dev, staging, and production:
-
-1. Deploy the additive contracts, Firestore indexes, Firestore rules, Storage
-   rules, and canonical Functions. Do not remove legacy support.
-2. Run a Firestore and Storage dry run and retain the JSON output:
-
-   ```sh
-   node tool/data/migrate_clubs_to_organizers.mjs \
-     --env dev --include-storage --json
-   ```
-
-   The CLI resolves the environment bucket from
-   `lib/firebase_options_<env>.dart`. Use `--storage-bucket <name>` only for a
-   deliberately selected non-default bucket.
-
-   The original read-only inventory is recorded in
-   `docs/migrations/evidence/clubs_to_organizers_2026-07-20_dry_run.json`.
-   Applied staging and production results are recorded in
-   `docs/migrations/evidence/clubs_to_organizers_2026-07-22_rollout.json`.
-
-3. Resolve every blocker. Review source counts, planned writes by kind, and
-   Storage copy count. Create an owner-restricted backup directory outside the
-   repository and choose a new, unused file path within it. The backup contains
-   full Firestore documents and must never be committed or stored as an ordinary
-   build artifact.
-
-   On macOS/Linux, the tool verifies that directory mode is `0700` and writes
-   the new backup file as `0600`.
-4. Apply only after the environment and plan have been explicitly approved:
-
-   ```sh
-   node tool/data/migrate_clubs_to_organizers.mjs \
-     --env dev \
-     --include-storage \
-     --apply \
-     --confirm-migration \
-     --backup-file /secure/path/dev-clubs-to-organizers.json
-   ```
-
-   Production additionally requires `--allow-prod`.
-5. The apply command rereads Firestore and Storage. It succeeds only when the
-   second plan contains zero writes and zero blockers.
-6. Deploy Flutter and React clients that read organizer authority. Exercise
-   discovery, follow/unfollow, organizer detail, owner edit including type,
-   manager access, event creation/edit, posts, claim/review, analytics, admin
-   publishing, media upload, and public listing routes.
-7. Monitor missing-document, permission, callable-not-found, Storage, search,
-   and analytics errors across at least the supported released-client window.
-
-Do not run apply against any shared environment from an ordinary code-change
-session. The backup file and explicit confirmation flags are required, and the
-production mutation must be separately approved.
-
-## Parity Evidence
-
-Before calling an environment migrated, record:
-
-- legacy club count equals canonical organizer count for the migrated set;
-- every canonical organizer validates against `organizers.schema.json` and has
-  one allowed `organizerType`;
-- active host/member legacy edges reconcile with active team/follow edges;
-- every dependent record with `clubId` has the same `organizerId`;
-- nested post counts and content match;
-- route reservations point at `organizers/{id}`;
-- Storage source/target object counts and checksums match;
-- the migration's post-apply plan is empty;
-- organizer-first app, website, and admin smoke flows pass.
-
-Staging and production Firestore/Storage parity completed on 2026-07-22. The
-production apply created 41 canonical organizers through 6,780 planned writes;
-an independent reread found zero remaining writes, blockers, or Storage copies.
-The legacy side remains a compatibility projection after parity. Client
-fallback reads are retired, but deleting legacy fields, collections, rules,
-indexes, Storage paths, or callable wrappers remains a separate operation that
-requires released-client and operational-tool evidence.
-
-## Failure And Recovery
-
-The tool never deletes source data. If it stops on a blocker, correct the
-specific canonical conflict or source defect and rerun the dry run. If an apply
-fails partway through, retain the backup, do not delete successful target
-writes, and rerun: equal writes are idempotent and remaining writes are planned
-again. A checksum conflict is investigated manually; it is never resolved by
-blind overwrite.
-
-### Legacy count trigger recovery
-
-`clubs.memberCount` counts every active legacy membership, including owner and
-manager edges. `organizers.followerCount` counts consumer follow edges only;
-these aggregates must not be mirrored as equal values. If a deployed follower
-trigger incorrectly rewrites the legacy count, first deploy the corrected
-`syncOrganizerFollowerStats`, then audit the deterministic repair:
-
-```sh
-node tool/data/migrate_clubs_to_organizers.mjs \
-  --env dev --include-storage --repair-legacy-member-counts --json
-```
-
-Apply with the ordinary `--apply`, `--confirm-migration`, and secure
-`--backup-file` gates. The repair derives each legacy count from active
-`clubMemberships`; it never copies `followerCount` into `memberCount`.
-
-Rollback during the compatibility window preserves canonical data and the
-owner-restricted pre-apply backup for diagnosis. Reintroducing a legacy client
-read would be a reviewed source change, not an automatic runtime fallback. It
-does not mean deleting `organizers` or copied media. Any destructive rollback
-needs its own exact target list, export, approval, and receipt.
+The migration is complete. The tool, its migration contract and the dry-run
+and rollout evidence files were deleted on 2026-11-01 and remain in git
+history. Remaining
+legacy data goes with the owner-approved wipe-and-reseed after the
+Club-to-Organizer wire rename (#1296), not with another migration.

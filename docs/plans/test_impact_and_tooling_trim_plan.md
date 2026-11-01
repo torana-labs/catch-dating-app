@@ -1,7 +1,7 @@
 ---
 doc_id: test_impact_and_tooling_trim_plan
-version: 1.3.1
-updated: 2026-10-29
+version: 1.3.2
+updated: 2026-11-01
 owner: agent_operating_model
 status: proposed
 ---
@@ -270,13 +270,10 @@ Luma capture, event-source ingestion, location resolution, crawl planning,
 curation and review decisions, Firestore exports, promotion pipeline) and
 related helpers.
 
-No caller (16), for example:
+No caller (16; four one-off data backfills among them were deleted on
+2026-11-01), for example:
 `tool/analytics/user_analytics_live_status.mjs`,
 `tool/copy/migrate_simple_mobile_copy.dart`,
-`tool/data/backfill_location_market_fields.mjs`,
-`tool/data/backfill_organizer_audience.mjs`,
-`tool/data/backfill_organizer_candidate_provenance.mjs`,
-`tool/data/backfill_organizer_intake_visibility_decisions.mjs`,
 `tool/design/check_host_event_field_contracts.mjs`,
 `tool/design/check_option_group_usage.mjs`,
 `tool/design/check_rail_contracts.mjs`,

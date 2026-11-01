@@ -226,7 +226,7 @@ test("a moved fixture loaded by file name or stem follows the move", () => {
 test("the codemods, generated outputs and the migration record are left alone", () => {
   const {plan} = fixture();
   for (const file of ["tool/architecture/rename_wire_to_organizer.mjs", "functions/src/shared/generated/x.ts",
-    "docs/migrations/clubs_to_organizers.md", "contracts/migrations/clubs_to_organizers.json"]) {
+    "docs/migrations/clubs_to_organizers.md", "contracts/migrations/swipes_to_profile_decisions.json"]) {
     assert.equal(transformFile({file, source: "const clubId = 1;\n", plan}), "const clubId = 1;\n", file);
   }
 });
