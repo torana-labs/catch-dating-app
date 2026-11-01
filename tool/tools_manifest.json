@@ -4404,13 +4404,12 @@
       "command": "node tool/marketing/export_app_screenshots.mjs",
       "safety": "local-writes-artifacts",
       "status": "active",
-      "description": "Renders active app marketing captures and wraps them in the configured device frame.",
+      "description": "Renders active app marketing captures and wraps them in the configured device frame. Tools checks recipes and the design context; the capture producer and the release import check image bytes and provenance.",
       "checks": [
         "node --check tool/marketing/export_app_screenshots.mjs",
         "node --test tool/marketing/capture_pipeline.test.mjs",
         "dart analyze tool/marketing/frame_device_capture.dart",
         "dart run tool/marketing/frame_device_capture_test.dart",
-        "node tool/marketing/export_app_screenshots.mjs --check",
         "node tool/marketing/export_app_screenshots.mjs --check-design-json",
         "node --test tool/marketing/web_captures.test.mjs"
       ],
@@ -4511,12 +4510,11 @@
       "command": "node tool/marketing/sync_website_media.mjs",
       "safety": "local-writes-website-assets",
       "status": "active",
-      "description": "Syncs app-derived marketing capture slots into website assets and checks drift.",
+      "description": "Syncs app-derived marketing capture slots into website assets. Tools checks the authored manifest; the capture producer and the release import check image bytes and provenance.",
       "checks": [
         "node --check tool/marketing/sync_website_media.mjs",
         "node --test tool/marketing/capture_pipeline.test.mjs",
-        "node --test tool/marketing/sync_website_media.test.mjs",
-        "node tool/marketing/sync_website_media.mjs --check"
+        "node --test tool/marketing/sync_website_media.test.mjs"
       ],
       "role": "finder",
       "impactPaths": [

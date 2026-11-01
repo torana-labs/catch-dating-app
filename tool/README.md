@@ -847,12 +847,11 @@ wrapper/workflow checks run through `marketing:hosted-capture-export`.
 Node, `gh` and Python 3's standard ZIP reader to validate the complete artifact
 before replacing generated outputs. Consumers run it before dependency setup;
 `--check-dist` verifies actual website build bytes before Hosting packaging.
-Tools uses `--marketing-captures-imported` with the same run's binding to verify
-all 26 imported outputs before and after selected checks, then reuse only the
-three exact exporter/design-context/sync freshness commands. Missing or changed
-proof fails; standalone commands, syntax/unit checks and Dart framing checks
-still execute. Strict import precedes bootstrap; later proof tolerates only the
-standalone widget-dedupe analyzer's generated dependency cache and lockfile.
+Tools imports no captures and does not run the exporter or sync `--check`
+commands, because app source moves ahead of the tracked images. The capture
+producer runs those commands and the import above verifies them again before a
+build. Tools keeps syntax, unit and Dart framing checks and
+`--check-design-json`.
 The Figma/AI-friendly metadata shape is checked into
 `tool/marketing/app_screenshots_design_context.json` so downstream consumers do
 not depend on ad hoc stdout.

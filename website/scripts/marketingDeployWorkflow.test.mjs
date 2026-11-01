@@ -135,8 +135,17 @@ test("native capture inputs publish exact-source media through the canonical pro
     const changedPath = input.replace("packages/*", "packages/catch_ui").replace("**", "example.dart");
     const plan = planAffected({changedPaths: [changedPath], graph, mode: "main"});
     assert.ok(plan.complete, `Uncovered capture input: ${changedPath}`);
-    assert.ok(plan.operations.ciTargets.includes("capture_freshness"), `Missing capture obligation: ${changedPath}`);
+    // App changes select no capture job in CI, so this workflow's own producer
+    // must run for them. Capture tooling and website lanes still exercise it in CI.
+    assert.equal(plan.operations.ciTargets.includes("capture_freshness"),
+      input === "tool/ui_capture/**" || plan.operations.ciTargets.includes("marketing"), changedPath);
   }
+  const standalone = workflow.slice(workflow.indexOf("\n  captures:\n"), workflow.indexOf("\n  validate:\n"));
+  assert.match(standalone, /uses: \.\/\.github\/workflows\/marketing-captures\.yml/u);
+  assert.match(standalone, /needs\.ci-validation\.outputs\.validated == 'false' &&\s+needs\.ci-validation\.outputs\.capture_binding == ''/u);
+  const packaging = workflow.slice(workflow.indexOf("\n  package:\n"), workflow.indexOf("\n  promote:\n"));
+  assert.match(packaging, /needs\.ci-validation\.outputs\.validated == 'false' && needs\.validate\.result == 'success'/u);
+  assert.match(packaging, /capture_binding: \$\{\{ needs\.ci-validation\.outputs\.capture_binding \|\| needs\.captures\.outputs\.capture_binding \}\}/u);
   const producer = ci.slice(ci.indexOf("\n  capture-freshness:"), ci.indexOf("\n  operations:"));
   assert.match(producer, /uses: \.\/\.github\/workflows\/marketing-captures\.yml/u);
   assert.match(producer, /automatic_source_sha: \$\{\{ needs\.plan\.outputs\.source_sha \}\}/u);
