@@ -75,11 +75,14 @@ try {
 const knownStoryIds = new Set(
   resolveStories(allReadyStories, storyIndex.entries ?? {}).map((story) => story.id)
 );
-thresholdOverrides = thresholdsForSurface(thresholdOverrides, args.surface);
-const unusedOverrides = [...thresholdOverrides.keys()].filter((id) => !knownStoryIds.has(id));
-if (unusedOverrides.length > 0) {
-  fail(`storybook_visual_thresholds.json lists unknown ready-story id(s): ${unusedOverrides.join(", ")}`);
-}
+// A deleted or renamed story leaves its override behind. That must not fail
+// whichever PR runs next: the override is ignored, named, and pruned by --update.
+const {active: activeOverrides, stale: staleOverrides} = splitThresholdOverrides(
+  thresholdsForSurface(thresholdOverrides, args.surface),
+  knownStoryIds
+);
+thresholdOverrides = activeOverrides;
+if (staleOverrides.length > 0) console.warn(staleOverridesNotice(staleOverrides));
 // Report mode lists changed, missing and stale baselines instead of failing;
 // a story that cannot render still fails.
 const failures = [];
@@ -123,6 +126,12 @@ const source = {
   }).trim() !== "",
 };
 if (args.components.length === 0) {
+  if (args.update && staleOverrides.length > 0) {
+    fs.writeFileSync(
+      thresholdsPath,
+      `${JSON.stringify(withoutStaleOverrides(readJson(thresholdsPath), staleOverrides), null, 2)}\n`
+    );
+  }
   const expectedFiles = new Set(jobs.map(({story, viewport}) => captureFileName(story, viewport)));
   const staleFiles = fs.readdirSync(baselineRoot)
     .filter((fileName) => fileName.endsWith(".png") && !expectedFiles.has(fileName));
@@ -230,7 +239,7 @@ try {
 }
 
 if (args.report) {
-  const report = visualReportMarkdown(args.surface, changes, jobs.length);
+  const report = visualReportMarkdown(args.surface, changes, jobs.length, staleOverrides);
   console.log(report);
   if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${report}\n`);
   // Only ever set true, so a later surface in the same step cannot clear it.
@@ -476,6 +485,27 @@ function thresholdsForSurface(overrides, surface) {
   return new Map([...overrides].filter(([, entry]) => entry.surface === surface));
 }
 
+function splitThresholdOverrides(overrides, knownStoryIds) {
+  const entries = [...overrides];
+  return {
+    active: new Map(entries.filter(([id]) => knownStoryIds.has(id))),
+    stale: entries.map(([id]) => id).filter((id) => !knownStoryIds.has(id)),
+  };
+}
+
+function withoutStaleOverrides(document, staleIds) {
+  const stale = new Set(staleIds);
+  return {
+    ...document,
+    stories: Object.fromEntries(Object.entries(document.stories ?? {}).filter(([id]) => !stale.has(id))),
+  };
+}
+
+function staleOverridesNotice(staleIds) {
+  return `Ignoring storybook_visual_thresholds.json override(s) for story id(s) that are no longer ready: ` +
+    `${staleIds.join(", ")}. A full --update removes them; a renamed story needs its override re-keyed.`;
+}
+
 function currentDateKey() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -512,13 +542,15 @@ function comparePng(expectedBuffer, actualBuffer, ratioThreshold) {
   return {matches: ratio <= ratioThreshold, ratio, diff: PNG.sync.write(diff)};
 }
 
-function visualReportMarkdown(surface, changes, captureCount) {
+function visualReportMarkdown(surface, changes, captureCount, staleOverrides = []) {
   const heading = `### Storybook visual changes: ${surface}`;
-  if (changes.length === 0) return `${heading}\n\nNo visual changes across ${captureCount} capture(s).\n`;
+  const notice = staleOverrides.length > 0 ? `${staleOverridesNotice(staleOverrides)}\n\n` : "";
+  if (changes.length === 0) return `${heading}\n\n${notice}No visual changes across ${captureCount} capture(s).\n`;
   const escape = (value) => String(value).replaceAll("|", "\\|");
   return [
     heading,
     "",
+    ...(notice ? [notice.trimEnd(), ""] : []),
     `${changes.length} of ${captureCount} capture(s) differ from their baselines. ` +
       "Report only: nothing here blocks the merge. Diff images are in this run's visual diagnostics artifact.",
     "",
@@ -920,6 +952,36 @@ async function runSelfTest() {
     ["story-a"]
   );
   assert.deepEqual(expiredThresholdOverrides(overrides, "2099-01-01"), []);
+  // A stale override is named and dropped, and its expiry cannot fail the run.
+  // An override for a story that still exists keeps widening that story only.
+  const split = splitThresholdOverrides(overrides, new Set(["story-a"]));
+  assert.deepEqual(split.stale, ["story-b"]);
+  assert.deepEqual([...split.active.keys()], ["story-a"]);
+  assert.deepEqual(expiredThresholdOverrides(split.active, "2099-01-15").map(([id]) => id), ["story-a"]);
+  assert.deepEqual(expiredThresholdOverrides(split.active, "2099-01-01"), []);
+  assert.deepEqual(splitThresholdOverrides(overrides, new Set(["story-a", "story-b"])).stale, []);
+  const effectiveThreshold = (id) => split.active.get(id)?.threshold ?? 0.001;
+  const drift = new PNG({width: 1000, height: 1});
+  drift.data.fill(255);
+  const driftBase = PNG.sync.write(drift);
+  drift.data.set([0, 0, 0, 255, 0, 0, 0, 255]);
+  const twoPixels = PNG.sync.write(drift);
+  assert.equal(comparePng(driftBase, twoPixels, effectiveThreshold("story-a")).matches, true,
+    "an active override must widen its own story");
+  assert.equal(comparePng(driftBase, twoPixels, effectiveThreshold("story-b")).matches, false,
+    "a stale override must not widen anything");
+  drift.data.set([0, 0, 0, 255, 0, 0, 0, 255], 8);
+  assert.equal(comparePng(driftBase, PNG.sync.write(drift), effectiveThreshold("story-a")).matches, false,
+    "an active override must still fail drift above its threshold");
+  assert.deepEqual(
+    withoutStaleOverrides({version: 1, stories: {a: {threshold: 0.1}, b: {threshold: 0.2}}}, ["a"]),
+    {version: 1, stories: {b: {threshold: 0.2}}}
+  );
+  assert.match(visualReportMarkdown("admin", [], 4, ["gone"]), /Ignoring .*: gone\. .*\n\nNo visual changes/u);
+  assert.match(
+    visualReportMarkdown("admin", [{capture: "c", detail: "d"}], 4, ["gone"]),
+    /Ignoring .*: gone\. [^\n]*\n\n1 of 4 capture/u
+  );
   console.log("Storybook visual checker self-test passed.");
 }
 
@@ -942,9 +1004,9 @@ Options:
 
 Per-story overrides live in tool/web/storybook_visual_thresholds.json:
 {"version": 1, "stories": {"<story-id>": {"surface": "admin|website|webui", "threshold": <ratio>, "reason": "...", "expires": "YYYY-MM-DD"}}}
-Overrides apply only to the named surface, cover both viewports, and must reference a
-registry-ready story, and fail the check once their expires date passes (report mode
-only warns).
+Overrides apply only to the named surface, cover both viewports, and fail the check once
+their expires date passes (report mode only warns). An override whose story is no longer
+registry-ready is ignored with a notice, whatever the mode; a full --update removes it.
 `);
 }
 
