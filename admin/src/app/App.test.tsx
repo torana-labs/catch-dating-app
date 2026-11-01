@@ -167,6 +167,23 @@ describe("App live deep-link ownership", () => {
     expect(window.location.pathname).toBe("/organizers/afterfly");
   });
 
+  it("sends an old address where its redirect names", async () => {
+    const user = {email: "owner@catch.local", uid: "owner-uid"};
+    mocks.onIdTokenChanged.mockImplementation((
+      _auth: unknown,
+      callback: (nextUser: typeof user) => void
+    ) => {
+      callback(user);
+      return () => undefined;
+    });
+    mocks.getIdTokenResult.mockResolvedValue({claims: {adminOwner: true}});
+    window.history.replaceState({}, "", "/finance/issues/payments%2Fpay-1");
+
+    render(<App />);
+
+    await waitFor(() => expect(window.location.pathname).toBe("/money"));
+  });
+
   it("limits Sales staff navigation and resets authority after account switch", async () => {
     type User = {email: string; uid: string};
     let authChanged: ((user: User | null) => void) | undefined;

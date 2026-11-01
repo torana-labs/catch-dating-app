@@ -743,6 +743,24 @@
     },
     {
       "authority": "admin_routes",
+      "authorityId": "route_money",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Money's payment issues and bills are governed by the adminManagePaymentIssues and adminManageOrganizerBills callable contracts, owner-only roles, the payment processors' reconcile, and focused controller and screen tests. A compiled Money feature contract remains planned.",
+      "targetFeature": "feature.admin_money",
+      "debtId": "FEATURE-ADMIN-MONEY-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_money_live_controller",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Live route wrapper of route_money; its query and lazy-boundary states follow the planned Money feature contract.",
+      "targetFeature": "feature.admin_money",
+      "debtId": "FEATURE-ADMIN-MONEY-001"
+    },
+    {
+      "authority": "admin_routes",
       "authorityId": "route_inbox",
       "status": "grouped",
       "priority": "P1",

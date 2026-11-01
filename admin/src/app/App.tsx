@@ -195,7 +195,8 @@ function AdminRouteApp() {
   useEffect(() => {
     if (!canResolveNavigation) return;
     if (routeNav === currentNav && !route.redirect) return;
-    navigate(adminPathForNav(currentNav), {replace: true});
+    // An old address goes where its redirect names, when the person may open that area.
+    navigate(route.redirect && routeNav === currentNav ? route.redirect : adminPathForNav(currentNav), {replace: true});
   }, [canResolveNavigation, currentNav, navigate, route.redirect, routeNav]);
 
   const handleRequestPhoneCode = useCallback(async () => {

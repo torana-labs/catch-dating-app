@@ -395,6 +395,16 @@
       "status": "required"
     },
     {
+      "source": "admin/src/features/money/controllers/useBillsController.ts",
+      "test": "admin/src/features/money/controllers/useBillsController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/money/controllers/useMoneyIssuesController.ts",
+      "test": "admin/src/features/money/controllers/useMoneyIssuesController.test.tsx",
+      "status": "required"
+    },
+    {
       "source": "admin/src/features/settings/controllers/useTeamController.ts",
       "test": "admin/src/features/settings/controllers/useTeamController.test.tsx",
       "status": "required"
