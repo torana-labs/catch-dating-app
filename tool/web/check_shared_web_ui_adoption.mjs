@@ -117,7 +117,11 @@ function validateRequiredSourceContracts(readSource = readRepoSource) {
     },
     {
       path: "packages/web-ui/src/primitives.tsx",
-      includes: ["role=\"region\"", "ariaLabel", "aria-invalid"],
+      includes: ["aria-invalid"],
+    },
+    {
+      path: "packages/web-ui/src/components/DataTableControl.tsx",
+      includes: ["role=\"region\"", "ariaLabel"],
     },
     {
       path: "packages/web-ui/src/components/ButtonControl.tsx",

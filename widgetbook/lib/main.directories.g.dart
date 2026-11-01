@@ -459,6 +459,8 @@ import 'package:widgetbook_workspace/primitives/contracts/page_body.dart'
     as _widgetbook_workspace_primitives_contracts_page_body;
 import 'package:widgetbook_workspace/primitives/contracts/pane_layout.dart'
     as _widgetbook_workspace_primitives_contracts_pane_layout;
+import 'package:widgetbook_workspace/primitives/contracts/rail.dart'
+    as _widgetbook_workspace_primitives_contracts_rail;
 import 'package:widgetbook_workspace/primitives/contracts/root_screen.dart'
     as _widgetbook_workspace_primitives_contracts_root_screen;
 import 'package:widgetbook_workspace/primitives/contracts/roster.dart'
@@ -3381,6 +3383,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_layout_motion_use_cases
                         .pagerFocusStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRail',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_rail
+                    .catchRailContractStates,
               ),
             ],
           ),

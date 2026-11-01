@@ -1,5 +1,6 @@
 import type {ChangeEvent, ReactNode} from "react";
 import {CatchIcon} from "./CatchIcon";
+import {CatchRail} from "./CatchRail";
 import {useCatchPane} from "./catchPaneLayoutContext";
 import styles from "./CatchWorkspaceHeader.module.css";
 
@@ -124,13 +125,15 @@ export function CatchWorkspaceHeader({title, kicker, count, note, back, position
       {filters ? (
         <div className={styles.filters}>
           {filters.chips && filters.chips.length > 0 ? (
-            <div aria-label="Filters" className={styles.chips} role="group">
-              {filters.chips.map((chip) => (
-                <button aria-pressed={chip.selected ?? false} className={styles.chip} key={chip.label} onClick={chip.onPressed} type="button">
-                  {chip.label}
-                  {chip.count != null ? <>{" "}<span className={styles.chipCount}>{chip.count}</span></> : null}
-                </button>
-              ))}
+            <div className={styles.chips}>
+              <CatchRail itemWidth="auto" label="Filters" wrap="never">
+                {filters.chips.map((chip) => (
+                  <button aria-pressed={chip.selected ?? false} className={styles.chip} key={chip.label} onClick={chip.onPressed} type="button">
+                    {chip.label}
+                    {chip.count != null ? <>{" "}<span className={styles.chipCount}>{chip.count}</span></> : null}
+                  </button>
+                ))}
+              </CatchRail>
             </div>
           ) : null}
           {filters.search ? (

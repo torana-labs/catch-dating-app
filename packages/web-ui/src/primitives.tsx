@@ -81,46 +81,6 @@ export function SelectControl({
   );
 }
 
-type DataTableAccessibleName =
-  | {ariaLabel: string; ariaLabelledBy?: never}
-  | {ariaLabel?: never; ariaLabelledBy: string};
-
-export type DataTableControlProps = Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "aria-label" | "aria-labelledby" | "children" | "role"
-> &
-  DataTableAccessibleName & {
-    children: ReactNode;
-    tableClassName?: string;
-  };
-
-export function DataTableControl({
-  ariaLabel,
-  ariaLabelledBy,
-  children,
-  tableClassName,
-  tabIndex = 0,
-  ...props
-}: DataTableControlProps) {
-  return (
-    <div
-      {...props}
-      aria-label={ariaLabel}
-      aria-labelledby={ariaLabelledBy}
-      role="region"
-      tabIndex={tabIndex}
-    >
-      <table
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
-        className={tableClassName}
-      >
-        {children}
-      </table>
-    </div>
-  );
-}
-
 export type ToggleGroupControlProps =
   Omit<HTMLAttributes<HTMLDivElement>, "aria-label" | "aria-labelledby" | "role"> &
   (

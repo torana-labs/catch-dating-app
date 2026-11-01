@@ -260,6 +260,10 @@ export {CatchPaneLayout} from "./components/CatchPaneLayout";
 export type {CatchPaneLayoutMode, CatchPaneLayoutProps} from "./components/CatchPaneLayout";
 export {useCatchPane} from "./components/catchPaneLayoutContext";
 export type {CatchPaneSlot, CatchPaneState} from "./components/catchPaneLayoutContext";
+export {CatchPageTabBar} from "./components/CatchPageTabBar";
+export type {CatchPageTabBarOption, CatchPageTabBarProps} from "./components/CatchPageTabBar";
+export {CatchRail} from "./components/CatchRail";
+export type {CatchRailProps} from "./components/CatchRail";
 export {CatchTabBar} from "./components/CatchTabBar";
 export type {
   CatchTabBarAction,
@@ -290,6 +294,18 @@ export type {
   CatchWorkspaceHeaderView,
   CatchWorkspaceHeaderViews,
 } from "./components/CatchWorkspaceHeader";
+export {CatchTable} from "./components/CatchTable";
+export {DataTableControl} from "./components/DataTableControl";
+export type {DataTableControlProps} from "./components/DataTableControl";
+export type {
+  CatchTableBulkAction,
+  CatchTableCellMarker,
+  CatchTableCellText,
+  CatchTableCellTitle,
+  CatchTableCellTone,
+  CatchTableColumn,
+  CatchTableProps,
+} from "./components/CatchTable";
 export {CatchText} from "./components/CatchText";
 export type {
   CatchTextAccent,
@@ -301,7 +317,6 @@ export type {
 } from "./components/CatchText";
 export {
   CheckboxControl,
-  DataTableControl,
   EmptyStateControl,
   SelectControl,
   ToggleButtonControl,
@@ -311,7 +326,6 @@ export {
 } from "./primitives";
 export type {
   CheckboxControlProps,
-  DataTableControlProps,
   EmptyStateAnnouncement,
   EmptyStateControlProps,
   SelectControlProps,

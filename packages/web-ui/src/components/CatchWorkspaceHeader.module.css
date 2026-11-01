@@ -130,17 +130,7 @@
   padding-inline: var(--catch-pane-filter-inline, var(--catch-viewport-gutter, var(--catch-space-s5)));
 }
 
-.chips {
-  display: flex;
-  flex: 1 1 auto;
-  gap: var(--catch-space-s2);
-  min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-  mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
-}
-
-.chips::-webkit-scrollbar { display: none; }
+.chips { flex: 1 1 auto; min-width: 0; }
 
 .chip {
   display: inline-flex;

@@ -1,0 +1,121 @@
+/*
+ * Flutter CatchTable on the web. A sticky 13px ink2 header over hairline
+ * rows with 12px padding (8px compact); the first column starts flush. Title
+ * cells stack a bold line over a 13px ink2 line; numbers align right in
+ * tabular figures; markers are 8px dots. A checked row takes a light tile,
+ * the row open beside the table and a hovered pressable row the full tile.
+ * The bulk bar sits on the tile above the table while rows are checked. The
+ * quiet register (Admin) keeps every cell to one line ending in "…".
+ */
+.wrap { min-width: 0; overflow-x: auto; }
+.wrap:focus-visible { outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink); outline-offset: 2px; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--catch-theme-ink);
+  font-size: 15px;
+}
+
+.table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--catch-space-micro10) var(--catch-space-s3);
+  background: var(--catch-theme-surface);
+  box-shadow: inset 0 calc(-1 * var(--catch-stroke-hairline)) 0 var(--catch-theme-line);
+  color: var(--catch-theme-ink2);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: start;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: var(--catch-space-s3);
+  box-shadow: inset 0 calc(-1 * var(--catch-stroke-hairline)) 0 var(--catch-theme-line);
+  vertical-align: middle;
+}
+
+.wrap[data-density="compact"] .table td { padding-block: var(--catch-space-s2); }
+.table tr:last-child td { box-shadow: none; }
+.table th:first-child, .table td:first-child { padding-left: 0; }
+.table [data-align="end"] { text-align: end; font-variant-numeric: tabular-nums; }
+.table [data-align="center"] { text-align: center; }
+
+.table tr[data-pressable] { cursor: pointer; }
+.table tr[data-pressable]:focus-visible { outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink); outline-offset: -2px; }
+.table tr[data-checked] td { background: color-mix(in srgb, var(--catch-theme-bg) 60%, transparent); }
+.table tr[aria-selected="true"] td,
+.table tr[data-pressable]:hover td { background: var(--catch-theme-bg); }
+
+.check { width: 40px; padding-inline: var(--catch-space-s3) 0 !important; }
+
+.check input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  vertical-align: middle;
+  accent-color: var(--catch-theme-ink);
+}
+
+.sort { color: var(--catch-theme-ink2); }
+
+.title { display: flex; flex-direction: column; gap: var(--catch-space-micro2); }
+.title > :first-child { font-weight: 600; }
+.subtitle { color: var(--catch-theme-ink2); font-size: 13px; font-weight: 500; }
+
+.text[data-tone="secondary"] { color: var(--catch-theme-ink2); }
+.text[data-tone="success"] { color: var(--catch-theme-positive-text); }
+.text[data-tone="warning"] { color: var(--catch-theme-attention-text); }
+.text[data-tone="danger"] { color: var(--catch-theme-danger-text); }
+
+.marker {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-ink3);
+  vertical-align: middle;
+}
+
+.marker[data-tone="success"] { background: var(--catch-theme-success); }
+.marker[data-tone="warning"] { background: var(--catch-theme-warning); }
+.marker[data-tone="danger"] { background: var(--catch-theme-danger); }
+
+.bulk {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--catch-space-s2);
+  margin-bottom: var(--catch-space-s2);
+  padding: var(--catch-space-s2) var(--catch-space-s3);
+  border-radius: var(--catch-radius-sm);
+  background: var(--catch-theme-bg);
+  color: var(--catch-theme-ink);
+}
+
+.bulkCount { margin-right: auto; font-size: 14px; font-weight: 600; }
+.list { display: flex; flex-direction: column; }
+
+/* ---------- the quiet register (Admin): one-line cells ---------- */
+:global([data-register="quiet"]) .table { table-layout: fixed; }
+:global([data-register="quiet"]) .table th { font-weight: 500; }
+
+:global([data-register="quiet"]) .table td:not(.check) {
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:global([data-register="quiet"]) .title > * {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:global([data-register="quiet"]) .text[data-tone="success"] { color: var(--catch-theme-ink); }
