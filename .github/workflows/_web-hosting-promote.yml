@@ -44,7 +44,8 @@ jobs:
   promote:
     name: Promote exact ${{ inputs.surface }} Hosting bytes
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    # Long enough for the Admin callable check to wait out a backend deploy.
+    timeout-minutes: 120
     environment: prod-hosting
     concurrency:
       group: web-hosting-${{ inputs.surface }}
@@ -218,7 +219,9 @@ jobs:
 
       - name: Verify production Admin callable dependencies
         if: ${{ inputs.surface == 'admin' && steps.authorize.outputs.superseded != 'true' }}
-        run: node tool/web/check_admin_live_data_sources.mjs --check --verify-live --environment prod --summary
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tool/web/check_admin_live_data_sources.mjs --check --verify-live --wait-for-backend-deploy --environment prod --summary
 
       - name: Install the pinned Firebase CLI before deployment credentials
         if: ${{ steps.authorize.outputs.superseded != 'true' }}

@@ -14,6 +14,8 @@ const repository = vi.hoisted(() => ({
   getListingReview: vi.fn(),
   approveListing: vi.fn(),
   searchOrganizers: vi.fn(),
+  getListingEventReview: vi.fn(),
+  publishListingEvent: vi.fn(),
 }));
 vi.mock("../api/inboxRepository", () => repository);
 
@@ -125,6 +127,37 @@ describe("useInboxController", () => {
     expect(second).toBe(first);
     expect(onSelect).toHaveBeenCalledWith("bhag");
     expect(result.current.listingReview).toBeNull();
+  });
+
+  it("opens an event's review and publishes it, keeping its key across a retry and moving on", async () => {
+    const {wrapper} = createQueryHarness();
+    const onSelect = vi.fn();
+    const onError = vi.fn();
+    const onNotice = vi.fn();
+    const review = {policy: {mode: "staff_review", policyVersion: "v1"}, organizer: {organizerId: "afterfly"}, event: {eventWorkItemId: "work-1"}};
+    repository.getListingEventReview.mockResolvedValue(review);
+    const outcome = (entry: Record<string, unknown>) => ({results: [{eventWorkItemId: "work-1", blockers: [], ...entry}]});
+    repository.publishListingEvent
+      .mockRejectedValueOnce(new Error("network"))
+      .mockResolvedValueOnce(outcome({outcome: "blocked", blockers: ["missing_end_time"]}))
+      .mockResolvedValueOnce(outcome({outcome: "published"}));
+    const {result} = renderHook(() => useInboxController({onError, onNotice, selectedItemId: "afterfly", onSelect}), {wrapper});
+    await waitFor(() => expect(result.current.nextItem?.itemId).toBe("bhag"));
+    act(() => result.current.openEventReview({intakeRequestId: "req", eventWorkItemId: "work-1"}));
+    await waitFor(() => expect(result.current.eventReview).toEqual(review));
+
+    const request = {intakeRequestId: "req", eventWorkItemIds: ["work-1"], reviewNote: "Checked it on Luma."} as never;
+    await act(async () => { expect(await result.current.publishEvent(request, "Mixer")).toBe(false); });
+    await act(async () => { expect(await result.current.publishEvent(request, "Mixer")).toBe(false); });
+    expect(onError).toHaveBeenLastCalledWith("Mixer is still blocked: no end time.");
+    expect(onSelect).not.toHaveBeenCalled();
+    await act(async () => { expect(await result.current.publishEvent(request, "Mixer")).toBe(true); });
+    const keys = repository.publishListingEvent.mock.calls.map(([input]) => input.idempotencyKey);
+    expect(new Set(keys).size).toBe(1);
+    expect(repository.publishListingEvent.mock.calls[0][0].executionMode).toBe("apply");
+    expect(onNotice).toHaveBeenLastCalledWith("Mixer is published on the organizer's page.");
+    expect(onSelect).toHaveBeenLastCalledWith("bhag");
+    await waitFor(() => expect(result.current.eventReview).toBeNull());
   });
 
   it("reports a failed action and stays on the item", async () => {

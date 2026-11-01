@@ -127,6 +127,8 @@ describe("Admin route contract", () => {
     expect(resolveAdminRoute("/not-a-section").nav).toBeNull();
     expect(resolveAdminRoute("/")).toMatchObject({nav: "now", redirect: "/now"});
     expect(resolveAdminRoute("/overview")).toMatchObject({nav: "now", redirect: "/now"});
+    expect(resolveAdminRoute("/cross-paths")).toMatchObject({nav: "now", redirect: "/now"});
+    expect(resolveAdminRoute("/users").redirect).toBeNull();
     expect(resolveAdminRoute("/now").redirect).toBeNull();
   });
 

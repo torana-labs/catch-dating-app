@@ -7,8 +7,8 @@ export const adminSections = {
   support: {path: "/support", title: "Support"},
   marketplace: {path: "/marketplace", title: "Marketplace"},
   more: {path: "/more", title: "More"},
+  system: {path: "/system", title: "System"},
   safety: {path: "/safety", title: "Safety"},
-  "cross-paths": {path: "/cross-paths", title: "Cross Paths showcase"},
   growth: {path: "/growth", title: "Growth"},
   "marketing-ops": {path: "/marketing", title: "Marketing"},
   sales: {path: "/sales/today", title: "Sales"},
@@ -65,6 +65,8 @@ export const adminRoutes: AdminRoute[] = [
   route("/", "now", {redirect: "/now"}),
   // Overview split in two: its queues are Needs you, its analytics Marketplace.
   route("/overview/*", "now", {redirect: "/now"}),
+  // The Cross Paths page is retired; old links land on Needs you.
+  route("/cross-paths/*", "now", {redirect: "/now"}),
   ...Object.entries(adminSections).filter(([nav]) => !["intake-review", "sales-hosts", "sales-deals", "nominations"].includes(nav)).map(([nav, {path}]) => route(
     `/${path.split("/")[1]}/*`, nav as AdminNavId
   )),

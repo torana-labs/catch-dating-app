@@ -223,41 +223,6 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
-      "actionId": "cross-paths-showcase.list",
-      "callable": "adminListCrossPathsShowcaseCandidates",
-      "workflowIds": [
-        "cross-paths-showcase"
-      ],
-      "guiPath": "/cross-paths",
-      "kind": "read",
-      "risk": "sensitive-read",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "safetyReviewer",
-        "support"
-      ],
-      "summary": "List a bounded, score-free Cross Paths showcase review queue from public profile projections.",
-      "controlPlane": false
-    },
-    {
-      "actionId": "cross-paths-showcase.set-eligibility",
-      "callable": "adminSetCrossPathsShowcaseEligibility",
-      "workflowIds": [
-        "cross-paths-showcase"
-      ],
-      "guiPath": "/cross-paths",
-      "kind": "mutation",
-      "risk": "high",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "safetyReviewer"
-      ],
-      "summary": "Record an audited, fingerprint-bound Cross Paths showcase eligibility decision without storing an attractiveness score.",
-      "controlPlane": false
-    },
-    {
       "actionId": "marketing.get",
       "callable": "adminGetMarketingOpsDashboard",
       "workflowIds": [
@@ -362,29 +327,13 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
-      "actionId": "organizer-intake.list-listing-event-imports",
-      "callable": "adminListListingEventImports",
-      "workflowIds": [
-        "organizer-intake"
-      ],
-      "guiPath": "/intake/organizers",
-      "kind": "read",
-      "risk": "read",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "summary": "List one page of approved Supply Intake listings with the events each imported and where each stands: published, withdrawn, ready, needing a check, or blocked.",
-      "controlPlane": false
-    },
-    {
       "actionId": "organizer-intake.publish-listing-events",
       "callable": "adminPublishListingEvents",
       "workflowIds": [
-        "organizer-intake"
+        "organizer-intake",
+        "inbox"
       ],
-      "guiPath": "/intake/organizers",
+      "guiPath": "/inbox",
       "kind": "mutation",
       "risk": "critical",
       "roles": [
@@ -401,7 +350,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "organizer-intake"
       ],
-      "guiPath": "/intake/organizers",
+      "guiPath": "/organizers",
       "kind": "mutation",
       "risk": "medium",
       "roles": [
@@ -2663,6 +2612,23 @@ export const adminActionCatalog = {
       ],
       "summary": "Read one Supply Intake listing awaiting approval, by its request, with what a reviewer needs to approve it.",
       "controlPlane": false
+    },
+    {
+      "actionId": "inbox.get-listing-event-review",
+      "callable": "adminGetListingEventReview",
+      "workflowIds": [
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "summary": "Read one imported event of an approved listing, with what a reviewer must check to publish it.",
+      "controlPlane": false
     }
   ],
   "workflows": [
@@ -2741,7 +2707,6 @@ export const adminActionCatalog = {
       "guiPath": "/intake/organizers",
       "actions": [
         "organizer-intake.approve-listing",
-        "organizer-intake.list-listing-event-imports",
         "organizer-intake.publish-listing-events",
         "organizer-intake.list-supply-intake-policies",
         "organizer-intake.refresh-organizer-events",
@@ -2810,15 +2775,6 @@ export const adminActionCatalog = {
       "guiPath": "/users",
       "actions": [
         "analytics.user"
-      ]
-    },
-    {
-      "workflowId": "cross-paths-showcase",
-      "label": "Cross Paths showcase",
-      "guiPath": "/cross-paths",
-      "actions": [
-        "cross-paths-showcase.list",
-        "cross-paths-showcase.set-eligibility"
       ]
     },
     {
@@ -2992,6 +2948,8 @@ export const adminActionCatalog = {
         "inbox.update",
         "organizer-claims.recommend",
         "inbox.get-listing-review",
+        "inbox.get-listing-event-review",
+        "organizer-intake.publish-listing-events",
         "organizer-intake.approve-listing"
       ]
     }

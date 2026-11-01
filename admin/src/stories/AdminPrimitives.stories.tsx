@@ -35,7 +35,6 @@ import {
   AdminMetricGrid,
   AdminSectionCaption,
   AdminPanel,
-  AdminProfilePhotoGrid,
   AdminRowTitle,
   AdminSecondaryDisclosure,
   AdminSignInActions,
@@ -1209,24 +1208,3 @@ function profilePhotoFixture(index: number): string {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 400"><rect width="320" height="400" fill="${background}"/><circle cx="160" cy="145" r="72" fill="#5d4650"/><path d="M55 400c8-102 55-156 105-156s97 54 105 156" fill="#8c6777"/></svg>`;
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
-
-export const AdminProfilePhotoGridStory: Story = {
-  name: "Profile photo grid",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_profile_photo_grid",
-      states: ["three-photos"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminProfilePhotoGrid
-        ariaLabel="Three public profile photos"
-        photos={[0, 1, 2].map((index) => ({
-          alt: `Sample public profile ${index + 1}`,
-          url: profilePhotoFixture(index),
-        }))}
-      />
-    </AdminWorkspace>
-  ),
-};

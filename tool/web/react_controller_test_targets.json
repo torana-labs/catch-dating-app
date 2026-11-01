@@ -30,11 +30,6 @@
       "status": "required"
     },
     {
-      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
-      "test": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.test.tsx",
-      "status": "required"
-    },
-    {
       "source": "admin/src/features/data-quality/controllers/useDataQualityController.ts",
       "test": "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
       "status": "required"
@@ -82,11 +77,6 @@
     {
       "source": "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts",
       "test": "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "admin/src/features/intake/organizer/controllers/useListingEventImportsController.ts",
-      "test": "admin/src/features/intake/organizer/controllers/useListingEventImportsController.test.tsx",
       "status": "required"
     },
     {
@@ -192,6 +182,11 @@
     {
       "source": "admin/src/features/sales/controllers/useSalesWorkspaceController.ts",
       "test": "admin/src/features/sales/controllers/useSalesWorkspaceController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/system/controllers/useSystemController.ts",
+      "test": "admin/src/features/system/controllers/useSystemController.test.tsx",
       "status": "required"
     },
     {

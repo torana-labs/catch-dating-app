@@ -1,6 +1,7 @@
 import {CatchWorkspaceHeader} from "@catch/web-ui";
 import {brand} from "@catch/brand";
 import type {ReactNode} from "react";
+import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
 import {useOrganizerDirectoryController} from "../controllers/useOrganizerDirectoryController";
 import {useOrganizerOverviewController} from "../controllers/useOrganizerOverviewController";
 import {OrganizerDirectoryScreen} from "./OrganizerDirectoryScreen";
@@ -30,13 +31,16 @@ function PageRoute({canChangeTerms, onNavigate, organizerId, renderBills, render
   renderEvents: (organizerId: string) => ReactNode;
   tab: OrganizerPageTab;
 }) {
-  const controller = useOrganizerOverviewController(organizerId);
+  const {setError: onError, setNotice: onNotice} = useAdminFeedback();
+  const controller = useOrganizerOverviewController(organizerId, {onError, onNotice});
   const base = `/organizers/${encodeURIComponent(organizerId)}`;
   return (
     <OrganizerPageScreen
       links={{
         eventsTab: tab === "events" ? renderEvents(organizerId) : null,
         moneyBills: tab === "money" && renderBills ? renderBills(organizerId) : null,
+        onCheckForEvents: () => void controller.checkForEvents(),
+        isCheckingForEvents: controller.isCheckingForEvents,
         onBack: () => onNavigate("/organizers"),
         onTabChanged: (next) => onNavigate(next === "overview" ? base : `${base}/${next}`),
         onOpenEvent: (source, eventId) => onNavigate(source === "catch" ?

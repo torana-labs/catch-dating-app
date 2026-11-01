@@ -129,8 +129,4 @@ export const adminQueryKeys = {
     analytics: (payloadKey: string) =>
       [...adminQueryKeys.all, "users", "analytics", payloadKey] as const,
   },
-  crossPaths: {
-    showcase: (status: string, cursor: string | null) =>
-      [...adminQueryKeys.all, "cross-paths", "showcase", status, cursor] as const,
-  },
 };
