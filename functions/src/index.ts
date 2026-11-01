@@ -638,6 +638,7 @@ export {
   adminApproveOrganizerListing,
 } from "./admin/organizerListingApproval";
 export {
+  adminGetOrganizerListingReview,
   adminListOrganizerListingReviews,
 } from "./admin/organizerListingReviewQueue";
 export {

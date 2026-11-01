@@ -436,6 +436,11 @@ jobs:
         if: ${{ inputs.surface == 'marketing' && steps.legacy-runtime.outputs.retired != 'true' && steps.authorize.outputs.superseded != 'true' && steps.freshness.outputs.superseded != 'true' }}
         run: node website/scripts/probeProduction.mjs --base-url "$(node -p 'require("./packages/brand/brand.json").web.origin')" --json
 
+      # Uses the Hosting origin: the custom domain's edge answers GitHub runners with 403.
+      - name: Verify Admin serves no-cache HTML, immutable chunks and real 404s
+        if: ${{ inputs.surface == 'admin' && steps.authorize.outputs.superseded != 'true' && steps.freshness.outputs.superseded != 'true' }}
+        run: node tool/web/verify_admin_hosting.mjs https://catchdates-admin.web.app
+
       - name: Verify the standalone Host web shell
         if: ${{ inputs.surface == 'host' && steps.authorize.outputs.superseded != 'true' && steps.freshness.outputs.superseded != 'true' }}
         run: curl --fail --location --silent --show-error https://catchdates-host.web.app/ > /dev/null

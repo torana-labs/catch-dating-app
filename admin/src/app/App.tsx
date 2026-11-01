@@ -16,6 +16,7 @@ import {
   useNavigate,
 } from "react-router";
 import {AlertTriangle, Lock} from "lucide-react";
+import {AdminRouteError} from "./AdminRouteError";
 import {
   AdminBrandMark,
   AdminButton,
@@ -64,17 +65,19 @@ export function App() {
   const [router] = useState(() => createBrowserRouter([
     {
       path: "/operator-session",
+      errorElement: <AdminRouteError />,
       element: <Suspense fallback={<AdminFeatureLoadingState label="Loading session handoff" />}>
         <OperatorSessionRoute />
       </Suspense>,
     },
     {
       path: "/partners/*",
+      errorElement: <AdminRouteError />,
       element: <Suspense fallback={<AdminFeatureLoadingState label="Loading partner workspace" />}>
         <PartnerRouteApp />
       </Suspense>,
     },
-    ...adminRoutes.map((route) => ({...route, element: <AdminRouteApp />})),
+    ...adminRoutes.map((route) => ({...route, element: <AdminRouteApp />, errorElement: <AdminRouteError />})),
   ]));
   return <RouterProvider router={router} />;
 }

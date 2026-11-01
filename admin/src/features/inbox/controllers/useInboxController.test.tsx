@@ -11,6 +11,8 @@ const repository = vi.hoisted(() => ({
   decideClaim: vi.fn(),
   decideAccess: vi.fn(),
   linkEnquiry: vi.fn(),
+  getListingReview: vi.fn(),
+  approveListing: vi.fn(),
   searchOrganizers: vi.fn(),
 }));
 vi.mock("../api/inboxRepository", () => repository);
@@ -100,6 +102,29 @@ describe("useInboxController", () => {
     });
     expect(repository.linkEnquiry.mock.calls[0]![0]).toEqual({intentId: "intent-1", organizerId: "harbor-social"});
     expect(onNotice).toHaveBeenCalledWith("Linked to Harbor Social Club. Their Sales work is open.");
+  });
+
+  it("opens a listing's review and approves it once, replaying the same request id on a retry", async () => {
+    repository.getListingReview.mockResolvedValue({canApprove: true, review: {requestId: "req-1", listingWorkItemId: "wi-1"}});
+    repository.approveListing.mockRejectedValueOnce(new Error("network"));
+    repository.approveListing.mockResolvedValue({created: true});
+    const {wrapper} = createQueryHarness();
+    const onSelect = vi.fn();
+    const onError = vi.fn();
+    const {result} = renderHook(() => useInboxController({onError, onNotice: vi.fn(), selectedItemId: "afterfly", onSelect}), {wrapper});
+    await waitFor(() => expect(result.current.items).toHaveLength(2));
+    act(() => result.current.openListingReview("req-1"));
+    await waitFor(() => expect(result.current.listingReview?.review.requestId).toBe("req-1"));
+    const input = {listingWorkItemId: "wi-1", contentHash: "a".repeat(64), name: "Afterfly", publicSlug: "afterfly",
+      marketId: "in-mh-mumbai", organizerType: "community", checklist: {}, note: "Checked the Luma calendar."} as never;
+    await act(async () => { expect(await result.current.approveListing(input, "req-1")).toBe(false); });
+    expect(onError).toHaveBeenLastCalledWith("network");
+    expect(result.current.listingReview).not.toBeNull();
+    await act(async () => { expect(await result.current.approveListing(input, "req-1")).toBe(true); });
+    const [first, second] = repository.approveListing.mock.calls.map((call) => (call[0] as {requestId: string}).requestId);
+    expect(second).toBe(first);
+    expect(onSelect).toHaveBeenCalledWith("bhag");
+    expect(result.current.listingReview).toBeNull();
   });
 
   it("reports a failed action and stays on the item", async () => {

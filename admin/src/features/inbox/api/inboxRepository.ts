@@ -14,6 +14,12 @@ import type {AdminRecommendOrganizerClaimCallablePayload} from
 import type {AdminRecommendOrganizerClaimCallableResponse} from
   "../../../generated/contracts/adminRecommendOrganizerClaimCallableResponse";
 import {decideAccessApplication, decideOrganizerClaim, listOrganizerDetails} from "../../../shared/api/adminApi";
+import type {AdminApproveOrganizerListingCallablePayload} from
+  "../../../generated/contracts/adminApproveOrganizerListingCallablePayload";
+import type {AdminApproveOrganizerListingCallableResponse} from
+  "../../../generated/contracts/adminApproveOrganizerListingCallableResponse";
+import type {AdminGetOrganizerListingReviewCallableResponse} from
+  "../../../generated/contracts/adminGetOrganizerListingReviewCallableResponse";
 import {dataMode} from "../../../shared/api/dataMode";
 import {functions} from "../../../shared/api/firebaseFunctions";
 import {sampleInboxItems as sampleItems, sampleInboxJourneys as sampleJourneys, sampleNow} from "./inboxSampleData";
@@ -27,6 +33,9 @@ export type InboxItemDetail = AdminGetInboxItemCallableResponse;
 export type JourneyStep = InboxItemDetail["journey"][number];
 export type InboxUpdate = AdminUpdateInboxItemCallablePayload;
 export type ClaimRecommendationInput = AdminRecommendOrganizerClaimCallablePayload;
+export type ListingReviewDetail = AdminGetOrganizerListingReviewCallableResponse;
+export type ListingReview = ListingReviewDetail["review"];
+export type ListingApprovalInput = AdminApproveOrganizerListingCallablePayload;
 
 // The validators load on first call, not in the inbox chunk.
 async function call<Request extends object, Response>(name: string, payload: Request): Promise<Response> {
@@ -160,4 +169,34 @@ export async function linkEnquiry(input: {intentId: string; organizerId: string}
   if (!intent) throw new Error("This enquiry is no longer waiting to be linked. Reload the inbox.");
   await call("adminLinkSalesInboundIntent", {intentId: input.intentId, organizerId: input.organizerId,
     requestId: crypto.randomUUID(), expectedRevision: intent.revision});
+}
+
+const sampleApprovals = new Map<string, AdminApproveOrganizerListingCallableResponse>();
+
+/** One listing awaiting approval, with what a reviewer needs to approve it. */
+export async function getListingReview(requestId: string): Promise<ListingReviewDetail> {
+  if (dataMode() !== "sample") return call("adminGetOrganizerListingReview", {requestId});
+  const item = sampleState.get(requestId) ?? [...sampleState.values()].find((entry) => entry.sourceId === requestId);
+  return {canApprove: true, review: {
+    requestId, listingWorkItemId: `work-item-${requestId}`, kind: "nomination", submittedByRole: "associate",
+    submittedAt: item?.waitingSince ?? new Date(sampleNow).toISOString(), origin: "message_nomination",
+    market: {slug: "mumbai", marketId: "in-mh-mumbai", label: "Mumbai · Maharashtra", open: true},
+    suggestedSlug: (item?.title ?? "listing").toLowerCase().replace(/[^a-z0-9]+/gu, "-"),
+    listing: {name: item?.title ?? "Listing", description: "Weekly social nights for people who would rather meet in person.",
+      categories: ["social"], links: [{platform: "luma", url: "https://lu.ma/afterfly"}], gaps: [], eventCount: 3,
+      researchNeeded: false, contentHash: "a".repeat(64), pageCount: 2, fetchedPageCount: 2},
+    duplicateCheck: {verdict: "none", organizersCompared: 12, citySlug: "mumbai", truncated: false, candidates: []},
+  }};
+}
+
+/** Publishes the listing unclaimed and noindex, hidden in the app, and opens its Sales work. */
+export async function approveListing(input: ListingApprovalInput, requestId: string): Promise<AdminApproveOrganizerListingCallableResponse> {
+  if (dataMode() !== "sample") return call("adminApproveOrganizerListing", input);
+  const approval: AdminApproveOrganizerListingCallableResponse = sampleApprovals.get(input.listingWorkItemId) ?? {
+    approvalId: `listing-${"0".repeat(40)}`, organizerId: "sample-afterfly", organizerPath: "organizers/sample-afterfly",
+    created: true, publishStatus: "published", indexStatus: "noindex", appVisibility: "hidden",
+    claimState: "unclaimed", salesOwnerUid: "sample-owner"};
+  sampleApprovals.set(input.listingWorkItemId, approval);
+  closeSampleItem("supplyIntakeRequest", requestId, "Approved and published");
+  return approval;
 }

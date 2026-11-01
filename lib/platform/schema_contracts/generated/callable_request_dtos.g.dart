@@ -42,6 +42,7 @@ export 'callables/admin_get_finance_month_callable_request.g.dart';
 export 'callables/admin_get_inbox_item_callable_request.g.dart';
 export 'callables/admin_get_listing_event_review_callable_request.g.dart';
 export 'callables/admin_get_organizer_details_callable_request.g.dart';
+export 'callables/admin_get_organizer_listing_review_callable_request.g.dart';
 export 'callables/admin_get_organizer_overview_callable_request.g.dart';
 export 'callables/admin_get_sales_account_callable_request.g.dart';
 export 'callables/admin_get_sales_commercial_detail_callable_request.g.dart';
