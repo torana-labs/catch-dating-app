@@ -266,7 +266,7 @@ test("adminDecideOrganizerPolicyGapHandler blocks viewer-only admins",
     await assert.rejects(
       () => adminDecideOrganizerPolicyGapHandler(
         callableRequest("admin-1", acceptancePayload(), {
-          analyticsViewer: true,
+          salesStaff: true,
         }),
         h.deps
       ),

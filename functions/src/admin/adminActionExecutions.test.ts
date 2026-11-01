@@ -162,7 +162,7 @@ test("record handler rejects callable drift from the catalog", async () => {
 test("list handler remains limited to action-monitor roles", async () => {
   await assert.rejects(
     () => adminListActionExecutionsHandler(
-      request({}, {analyticsViewer: true}),
+      request({}, {salesStaff: true}),
       {
         firestore: () => ({}) as FirebaseFirestore.Firestore,
         now: () => startedAt,

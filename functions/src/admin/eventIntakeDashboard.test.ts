@@ -260,7 +260,7 @@ test("blocks viewer-only admins", async () => {
   const h = await harness();
   await assert.rejects(
     adminGetEventIntakeDashboardHandler(
-      callableRequest("admin-1", {analyticsViewer: true}),
+      callableRequest("admin-1", {salesStaff: true}),
       h.deps
     ),
     (error: unknown) => {

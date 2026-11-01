@@ -237,12 +237,12 @@ test("normalizeSetAdminUserRolesPayload dedupes roles and needs note", () => {
   assert.deepEqual(
     normalizeSetAdminUserRolesPayload({
       targetUid: "support_1",
-      roles: ["support", "support", "analyticsViewer"],
+      roles: ["support", "support", "salesStaff"],
       note: " launch ops ",
     }),
     {
       targetUid: "support_1",
-      roles: ["support", "analyticsViewer"],
+      roles: ["support", "salesStaff"],
       note: "launch ops",
     }
   );
@@ -365,7 +365,8 @@ test("adminSetAdminUserRolesHandler updates claims and audit log", async () => {
       email: "support@example.com",
       displayName: "Support One",
       disabled: false,
-      customClaims: {analyticsViewer: true, betaTester: true},
+      customClaims: {salesStaff: true, analyticsViewer: true,
+        finance: true, betaTester: true},
     },
   });
   const firestore = new FakeFirestore();
@@ -373,23 +374,24 @@ test("adminSetAdminUserRolesHandler updates claims and audit log", async () => {
   const result = await adminSetAdminUserRolesHandler(
     request({
       targetUid: "support_1",
-      roles: ["support", "analyticsViewer"],
+      roles: ["support", "salesStaff"],
       note: "Support launch queue coverage.",
     }),
     deps(auth, firestore)
   );
 
-  assert.deepEqual(result.beforeRoles, ["analyticsViewer"]);
-  assert.deepEqual(result.afterRoles, ["support", "analyticsViewer"]);
-  assert.deepEqual(result.user.roles, ["support", "analyticsViewer"]);
+  assert.deepEqual(result.beforeRoles, ["salesStaff"]);
+  assert.deepEqual(result.afterRoles, ["support", "salesStaff"]);
+  assert.deepEqual(result.user.roles, ["support", "salesStaff"]);
+  // The retired finance and analytics claims leave the account on any save.
   assert.deepEqual((await auth.getUser("support_1")).customClaims, {
     betaTester: true,
     support: true,
-    analyticsViewer: true,
+    salesStaff: true,
   });
   assert.deepEqual(
     firestore.get("adminRoleAssignments/support_1")?.roles,
-    ["support", "analyticsViewer"]
+    ["support", "salesStaff"]
   );
   assert.equal(
     firestore.get("adminRoleAssignments/support_1")?.status,

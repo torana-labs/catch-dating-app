@@ -21,10 +21,10 @@ vi.mock("../features/admin-roles/api/adminRoleRepository", () => ({
   saveAdminUserRoles: mocks.save,
 }));
 vi.mock("../features/overview/ui/OverviewRouteScreen", () => ({
-  OverviewRouteScreen: () => <p>Permitted finance overview</p>,
+  OverviewRouteScreen: () => <p>Permitted support overview</p>,
 }));
 const owner = {uid: "owner", email: "owner@example.invalid"} as User;
-const finance = {uid: "finance", email: "finance@example.invalid"} as User;
+const support = {uid: "support", email: "support@example.invalid"} as User;
 const target = {
   targetUid: "private-target-uid", email: "target@example.invalid",
   displayName: "Target", disabled: false, roles: ["support"],
@@ -55,17 +55,17 @@ describe("App mutation session isolation", () => {
     await act(async () => { render(<App />); });
     await act(async () => { await vi.dynamicImportSettled(); });
     await screen.findByRole("button", {name: "Save role change"});
-    await user.click(screen.getByRole("checkbox", {name: /Analytics viewer/iu}));
+    await user.click(screen.getByRole("checkbox", {name: /^Support/iu}));
     await user.type(screen.getByLabelText("Review note"), "Synthetic approved review.");
     await user.click(screen.getByRole("button", {name: "Save role change"}));
     await waitFor(() => expect(mocks.save).toHaveBeenCalledOnce());
-    mocks.getIdTokenResult.mockResolvedValue({claims: {finance: true}});
-    act(() => tokenChanged(finance));
-    await screen.findByText("Permitted finance overview");
-    expect((screen.getByRole("button", {name: "Finance"}) as HTMLButtonElement).disabled).toBe(false);
+    mocks.getIdTokenResult.mockResolvedValue({claims: {support: true}});
+    act(() => tokenChanged(support));
+    await screen.findByText("Permitted support overview");
+    expect((screen.getByRole("button", {name: "Overview"}) as HTMLButtonElement).disabled).toBe(false);
     await act(async () => {
       if (outcome === "success") {
-        complete({user: {...target, roles: ["support", "analyticsViewer"]}, beforeRoles: ["support"], afterRoles: ["support", "analyticsViewer"]});
+        complete({user: {...target, roles: []}, beforeRoles: ["support"], afterRoles: []});
       } else {
         fail(new Error("Private role failure for private-target-uid"));
       }

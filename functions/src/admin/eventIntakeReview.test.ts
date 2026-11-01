@@ -290,7 +290,7 @@ test("adminRecordEventIntakeReviewDecisionHandler blocks viewer-only admins",
 
     await assert.rejects(
       () => adminRecordEventIntakeReviewDecisionHandler(
-        callableRequest("admin-1", approvalPayload(), {analyticsViewer: true}),
+        callableRequest("admin-1", approvalPayload(), {salesStaff: true}),
         h.deps
       ),
       (error) => assertHttpsCode(error, "permission-denied")

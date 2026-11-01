@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_inbox_item_payload.schema.json",
+  "title": "AdminGetInboxItemCallablePayload",
+  "description": "One Admin inbox item and every step it took, oldest first.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "itemId"
+  ],
+  "properties": {
+    "itemId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 220,
+      "pattern": "^[a-z]+-[A-Za-z0-9._:-]+$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetInboxItem"
+  ]
+}

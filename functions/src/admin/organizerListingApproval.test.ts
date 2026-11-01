@@ -198,12 +198,12 @@ test("a partner's or organizer's enquiry is linked to the organizer it became", 
     ["sales_inbound_intent", true]);
 });
 
-test("approval is refused for a stale review, a closed market, an unchecked item or a non-admin", async () => {
+test("approval is refused for a stale review, a closed market, an unchecked item or a non-ops role", async () => {
   const h = await harness();
   await assert.rejects(h.call(h.payload({contentHash: "f".repeat(64)})), /rebuilt after you reviewed it/);
   await assert.rejects(h.call(h.payload({marketId: "us-ny-new-york"})), /open organizer launch market/);
   await assert.rejects(h.call(h.payload({checklist: {...h.payload().checklist, impersonationReviewed: false}})));
-  for (const token of [{support: true}, {salesStaff: true}, {}]) {
+  for (const token of [{salesStaff: true}, {safetyReviewer: true}, {}]) {
     await assert.rejects(h.call(h.payload(), token), /permission|role|admin/i);
   }
   await assert.rejects(h.call(h.payload({listingWorkItemId: "missing-item"})), /not found/);

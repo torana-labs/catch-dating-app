@@ -116,7 +116,7 @@ export async function adminGetUserAnalyticsHandler(
 ): Promise<UserAnalyticsCallableResponse> {
   const adminContext = requireAdminRole(
     request,
-    ["adminOwner", "analyticsViewer"]
+    ["adminOwner"]
   );
   const payload = validateAnalyticsPayload(request);
   if (!payload.userId) {

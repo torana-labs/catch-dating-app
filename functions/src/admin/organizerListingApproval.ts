@@ -28,8 +28,10 @@ import {newSalesAccount} from "./sales/account";
 import type {SalesActivity, SalesOpportunity, SalesTask} from "./sales/types";
 import {growthFactsCollection, listingChannel, newGrowthFacts} from "../growth/organizerGrowthFacts";
 
-// Approving creates Sales records, which only admins and admin owners own.
-export const listingApprovalRoles = ["admin", "adminOwner"] as const;
+// Ops approve listings and events; claims stay the owner's (one of Admin's
+// three jobs: owner, sales associate, ops and support). Approving also opens
+// the listing's Sales records, owned by the Sales owner it names.
+export const listingApprovalRoles = ["admin", "adminOwner", "support"] as const;
 const curationCollection = "organizerIntakeCurationDecisions";
 const reviewDecisionCollection = "organizerIntakeReviewDecisions";
 

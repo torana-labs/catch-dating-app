@@ -20,8 +20,11 @@ import {
   submitSafetyAppealHandler,
 } from "./safetyAppeals";
 import {fileSafetyReport} from "./reporting";
-import {bannedIdentityId, screenNewAccountIdentities} from
-  "./bannedIdentities";
+import {
+  bannedIdentityId,
+  reconcileBannedIdentityScreensNow,
+  screenNewAccountIdentities,
+} from "./bannedIdentities";
 import {manageOrganizerGuestBlockHandler} from "./organizerGuestBlocks";
 import {
   purgeRetainedSafetyRecordsNow,
@@ -360,3 +363,20 @@ test("standing takes the strongest action and the latest hold", () => {
   assert.equal((state.booking.until as Timestamp).toMillis(), T0 + 7 * DAY);
   assert.deepEqual(state.activeActionIds, ["a1", "a2", "a3"]);
 });
+
+test("the nightly reconcile stops a new account the trigger missed",
+  async () => {
+    const h = harness();
+    await adminTakeAccountSafetyActionHandler(
+      adminRequest("owner-1", OWNER, takePayload({kind: "ban",
+        durationDays: null})), h.deps);
+    h.clock.millis += DAY;
+    const created = new Date(h.clock.millis).toUTCString();
+    h.authUsers.set("guest-8", {disabled: false,
+      phoneNumber: "+919800000001", creationTime: created});
+    const stopped = await reconcileBannedIdentityScreensNow(h.deps,
+      async () => ({users: [{uid: "guest-8", phoneNumber: "+919800000001",
+        disabled: false, metadata: {creationTime: created}}]}));
+    assert.equal(stopped, 1);
+    assert.equal(h.authUsers.get("guest-8")!.disabled, true);
+  });

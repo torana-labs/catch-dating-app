@@ -500,7 +500,7 @@ test(
       () => adminGetSafetyTriageDetailsHandler(
         request(
           {targetPath: "reports/report-1"},
-          {analyticsViewer: true}
+          {salesStaff: true}
         ),
         deps(new FakeFirestore({}))
       ),

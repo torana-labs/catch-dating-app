@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import {Timestamp} from "firebase-admin/firestore";
 import {onDocumentCreated, onDocumentWritten} from
   "firebase-functions/v2/firestore";
+import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
 import type {
   AccountSafetyStateDocument,
@@ -252,5 +253,61 @@ export const onPushInstallationSafetyScreen = onDocumentWritten(
     }
     await screenNewAccountIdentities(defaultDeps, event.params.uid,
       identities);
+  }
+);
+
+/**
+ * The screening triggers do not retry, so a missed run is caught here:
+ * every account created in the last two days is screened again by phone
+ * and by the devices it registered. Screening is idempotent.
+ * @param {BannedIdentityDeps} deps Dependencies.
+ * @param {(pageToken?: string) => Promise<object>} listUsers Auth listing.
+ * @return {Promise<number>} Accounts stopped.
+ */
+export async function reconcileBannedIdentityScreensNow(
+  deps: BannedIdentityDeps,
+  listUsers: (pageToken?: string) => Promise<{
+    users: Array<{uid: string; phoneNumber?: string; disabled: boolean;
+      metadata: {creationTime: string}}>;
+    pageToken?: string;
+  }>
+): Promise<number> {
+  const db = deps.firestore();
+  const since = deps.now().toMillis() - 2 * 24 * 3600_000;
+  let stopped = 0;
+  let pageToken: string | undefined;
+  do {
+    const page = await listUsers(pageToken);
+    for (const user of page.users) {
+      if (user.disabled ||
+          Date.parse(user.metadata.creationTime) < since) continue;
+      const identities: IdentityValue[] = user.phoneNumber ?
+        [{kind: "phone", value: user.phoneNumber}] : [];
+      const installations = await db
+        .collection(`users/${user.uid}/pushInstallations`).get();
+      for (const doc of installations.docs) {
+        identities.push({kind: "installation", value: doc.id});
+        const token = doc.data().token;
+        if (typeof token === "string" && token) {
+          identities.push({kind: "pushToken", value: token});
+        }
+      }
+      if (await screenNewAccountIdentities(deps, user.uid, identities)) {
+        stopped++;
+      }
+    }
+    pageToken = page.pageToken;
+  } while (pageToken);
+  return stopped;
+}
+
+export const reconcileBannedIdentityScreens = onSchedule(
+  {schedule: "every day 04:00", timeZone: "Asia/Kolkata"},
+  async () => {
+    const stopped = await reconcileBannedIdentityScreensNow(defaultDeps,
+      (pageToken) => admin.auth().listUsers(1000, pageToken));
+    if (stopped > 0) {
+      logger.warn("Nightly ban screening stopped accounts.", {stopped});
+    }
   }
 );

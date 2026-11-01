@@ -3074,6 +3074,70 @@
       ]
     },
     {
+      "id": "adminInboxItems",
+      "path": "adminInboxItems/{itemId}",
+      "rulesMatch": "/adminInboxItems/{itemId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "admin inbox triggers and callables",
+      "read": "server/admin callable only",
+      "write": "server only",
+      "exportedFunctions": [
+        "adminListInboxItems",
+        "adminGetInboxItem",
+        "adminUpdateInboxItem",
+        "adminRebuildInbox",
+        "onSupplyIntakeRequestWrittenSyncInbox",
+        "onOrganizerClaimRequestWrittenSyncInbox",
+        "onSalesInboundIntentWrittenSyncInbox",
+        "onAccessApplicationWrittenSyncInbox",
+        "onExternalEventWrittenSyncInbox",
+        "wakeSnoozedInboxItemsEvery30Minutes"
+      ],
+      "migrationNotes": [
+        "A rebuildable projection: one item per source document (Supply Intake request, organizer claim, sales inbound intent, access application, external event), re-derived on every source write; only assignee and snooze are staff-owned.",
+        "adminRebuildInbox re-projects documents written before the triggers existed."
+      ]
+    },
+    {
+      "id": "adminInboxJourney",
+      "path": "adminInboxJourney/{stepId}",
+      "rulesMatch": "/adminInboxJourney/{stepId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "admin inbox triggers and callables",
+      "read": "server/admin callable only",
+      "write": "server only",
+      "exportedFunctions": [
+        "adminGetInboxItem",
+        "adminUpdateInboxItem",
+        "onSupplyIntakeRequestWrittenSyncInbox",
+        "onOrganizerClaimRequestWrittenSyncInbox",
+        "onSalesInboundIntentWrittenSyncInbox",
+        "onAccessApplicationWrittenSyncInbox",
+        "onExternalEventWrittenSyncInbox",
+        "wakeSnoozedInboxItemsEvery30Minutes"
+      ],
+      "migrationNotes": [
+        "Append-only: each step is created once with the time Catch first saw it, keyed {itemId}~{stepId}."
+      ]
+    },
+    {
+      "id": "adminPeopleIndex",
+      "path": "adminPeopleIndex/{uid}",
+      "rulesMatch": "/adminPeopleIndex/{uid}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "people search trigger and callable",
+      "read": "server/admin callable only",
+      "write": "server only",
+      "exportedFunctions": [
+        "adminSearchPeople",
+        "onUserWrittenIndexPeople",
+        "adminRebuildInbox"
+      ],
+      "migrationNotes": [
+        "Rebuildable from users/{uid}: name prefixes, phone digit tokens, a masked phone, city and the deleted flag; deleted with the profile."
+      ]
+    },
+    {
       "id": "eventMessagingBudgetDecisions",
       "path": "eventMessagingBudgetDecisions/{decisionId}",
       "rulesMatch": "/eventMessagingBudgetDecisions/{decisionId}",
