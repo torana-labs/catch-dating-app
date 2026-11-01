@@ -745,7 +745,7 @@
         "admin/src/shared/ui/AdminPrimitives/actions.tsx",
         "admin/src/shared/ui/AdminPrimitives/shell.tsx",
         "admin/src/features/safety/controllers/useAccessReviewController.ts",
-        "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
+        "admin/src/features/settings/controllers/useTeamController.ts",
         "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
         "admin/src/features/events/controllers/useEventPublishingController.ts",
         "admin/src/features/intake/events/controllers/useEventIntakeController.ts",

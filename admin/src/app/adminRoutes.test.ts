@@ -26,7 +26,8 @@ describe("Admin route contract", () => {
     ["/finance/issues/payments%2Fpayment-1", "finance", "financeIssueId", "payments/payment-1"],
     ["/finance/commercial-terms/organizers/org%2F1", "finance", "termsOrganizerId", "org/1"],
     ["/quality/signals/source-1", "quality", "qualitySignalId", "source-1"],
-    ["/admin-roles/user-1", "admin-roles", "adminRoleTargetUid", "user-1"],
+    ["/settings/team/user-1", "settings", "teamMemberUid", "user-1"],
+    ["/settings/safety", "settings", "settingsPage", "safety"],
     ["/sales/hosts/host-1", "sales", "salesOrganizerId", "host-1"],
     ["/marketing/drafts/draft%20one/copy", "marketing-ops", "draftId", "draft one"],
   ])("resolves %s", (path, nav, key, value) => {
@@ -40,6 +41,10 @@ describe("Admin route contract", () => {
     expect(resolveAdminRoute("/safety/actions").safetyView).toBe("actions");
     expect(resolveAdminRoute("/safety/appeals/a1").safetyView).toBe("appeals");
     expect(resolveAdminRoute("/access/user-1").redirect).toBe("/safety");
+  });
+
+  it("sends old Admin roles links to Team and roles", () => {
+    expect(resolveAdminRoute("/admin-roles/user-1").redirect).toBe("/settings/team");
   });
 
   it.each([
