@@ -6,16 +6,22 @@ import {onSchedule} from "firebase-functions/v2/scheduler";
 import {
   INBOX_ITEMS_COLLECTION,
   INBOX_JOURNEY_COLLECTION,
+  INBOX_SOURCE_KINDS,
   InboxItemDocument,
   InboxSourceKind,
   journeyStepDocId,
   sourceCollections,
 } from "./model";
 import {journeyStepDocument, syncInboxSource} from "./store";
+import {syncPeopleIndex} from "../peopleSearch";
 
-/** Every source write re-projects its one inbox item; a retry is harmless. */
+/**
+ * Every source write re-projects its one inbox item. The triggers are not
+ * retried (a retrying trigger needs a forced deploy); reconcileAdminInboxNightly
+ * re-projects every source, so an item a failed trigger missed catches up.
+ */
 function inboxTrigger(kind: InboxSourceKind) {
-  return onDocumentWritten({document: `${sourceCollections[kind]}/{sourceId}`, retry: true},
+  return onDocumentWritten({document: `${sourceCollections[kind]}/{sourceId}`},
     async (event) => {
       const result = await syncInboxSource(admin.firestore(), kind, event.params.sourceId,
         event.data?.after.data(), new Date());
@@ -56,4 +62,67 @@ export const wakeSnoozedInboxItemsEvery30Minutes = onSchedule({
 }, async () => {
   const woken = await wakeSnoozedInboxItems(admin.firestore(), new Date());
   if (woken) logger.info("Snoozed inbox items woken.", {woken});
+});
+
+const reconcilePageSize = 300;
+const reconcileSourceLimit = 10_000;
+
+export interface InboxReconcileSummary {
+  scanned: number;
+  written: number;
+  failed: number;
+  truncated: string[];
+}
+
+/**
+ * Re-projects every inbox source and the people index from their documents.
+ * Syncing is idempotent: an item already in step is left as it is and a
+ * journey step is written once, so a rerun changes nothing. One document
+ * that fails is logged and counted, never fatal to the rest.
+ */
+export async function reconcileAdminInbox(db: FirebaseFirestore.Firestore, now: () => Date,
+  pageSize = reconcilePageSize, sourceLimit = reconcileSourceLimit): Promise<InboxReconcileSummary> {
+  const summary: InboxReconcileSummary = {scanned: 0, written: 0, failed: 0, truncated: []};
+  const sources: Array<InboxSourceKind | "people"> = [...INBOX_SOURCE_KINDS, "people"];
+  for (const source of sources) {
+    const collection = source === "people" ? "users" : sourceCollections[source];
+    let cursor: string | null = null;
+    let seen = 0;
+    for (;;) {
+      let query = db.collection(collection).orderBy(admin.firestore.FieldPath.documentId()).limit(pageSize);
+      if (cursor) query = query.startAfter(cursor);
+      const page = await query.get();
+      for (const doc of page.docs) {
+        summary.scanned += 1;
+        try {
+          if (source === "people") {
+            if (await syncPeopleIndex(db, doc.id, doc.data(), now())) summary.written += 1;
+          } else if ((await syncInboxSource(db, source, doc.id, doc.data(), now())).outcome === "written") {
+            summary.written += 1;
+          }
+        } catch (error) {
+          summary.failed += 1;
+          logger.error("Inbox reconcile could not sync a document.", {source, id: doc.id, error: String(error)});
+        }
+      }
+      seen += page.docs.length;
+      if (page.docs.length < pageSize) break;
+      cursor = page.docs[page.docs.length - 1].id;
+      if (seen >= sourceLimit) {
+        const more = await db.collection(collection).orderBy(admin.firestore.FieldPath.documentId())
+          .startAfter(cursor).limit(1).get();
+        if (!more.empty) summary.truncated.push(source);
+        break;
+      }
+    }
+  }
+  return summary;
+}
+
+export const reconcileAdminInboxNightly = onSchedule({
+  schedule: "10 3 * * *", timeZone: "Asia/Kolkata", region: "asia-south1", maxInstances: 1,
+  timeoutSeconds: 540, memory: "512MiB",
+}, async () => {
+  const summary = await reconcileAdminInbox(admin.firestore(), () => new Date());
+  logger.info("Admin inbox reconciled.", {...summary});
 });

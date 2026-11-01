@@ -15,7 +15,7 @@ import {
   adminRebuildInboxHandler,
   adminUpdateInboxItemHandler,
 } from "./callables";
-import {wakeSnoozedInboxItems} from "./triggers";
+import {reconcileAdminInbox, wakeSnoozedInboxItems} from "./triggers";
 
 const validateList = contractValidator<AdminListInboxItemsCallableResponse>("AdminListInboxItemsCallableResponse");
 const validateGet = contractValidator<AdminGetInboxItemCallableResponse>("AdminGetInboxItemCallableResponse");
@@ -227,4 +227,22 @@ test("rebuild projects documents written before the triggers, owner only", async
   assert.equal(rest.written, 1);
   assert.equal((h.db.read("adminInboxItems/supply-req-2") as {status: string}).status, "working");
   await assert.rejects(adminRebuildInboxHandler(h.request({source: "people", limit: 1, cursor: null}), h.deps), /not authorized/);
+});
+
+test("the nightly reconcile projects every source and the people index, and a rerun changes nothing", async () => {
+  const h = harness();
+  h.db.write("supplyIntakeRequests/req-1", nomination("req-1"));
+  h.db.write("supplyIntakeRequests/req-2", nomination("req-2", {status: "failed", result: null,
+    failure: {code: "page_unreadable", message: "Sign-in wall.", at: "2026-10-31T11:03:00.000Z", attempts: 1}}));
+  h.db.write("salesInboundIntents/intent-1", {source: "website", status: "needs_identity_review", fullName: "Harbor",
+    city: "mumbai", createdAt: "2026-10-27T10:00:00.000Z"});
+  h.db.write("users/riya", {name: "Riya Sharma", phoneNumber: "+919820040000"});
+  const first = await reconcileAdminInbox(h.firestore, () => now, 1);
+  assert.deepEqual({...first, scanned: undefined}, {scanned: undefined, written: 4, failed: 0, truncated: []});
+  assert.equal((h.db.read("adminInboxItems/supply-req-2") as {type: string}).type, "stuck");
+  assert.ok(h.db.read("adminPeopleIndex/riya"));
+  const again = await reconcileAdminInbox(h.firestore, () => new Date("2026-11-01T00:00:00.000Z"), 1);
+  assert.equal(again.written, 0);
+  // A source with more documents than the limit says so; one that fits exactly does not.
+  assert.deepEqual((await reconcileAdminInbox(h.firestore, () => now, 1, 1)).truncated, ["supplyIntakeRequest"]);
 });
