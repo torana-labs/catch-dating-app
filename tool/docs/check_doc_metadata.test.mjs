@@ -127,7 +127,11 @@ test("governed source requires complete metadata and unique identity", () => {
       "docs/incomplete.md",
       "---\ndoc_id: incomplete\nversion: 1.0.0\n---\n",
     ),
-    /missing updated, owner, status/u,
+    /missing owner, status/u,
+  );
+  assert.equal(
+    parseGovernedDocument("docs/plain.md", "---\ndoc_id: plain\nowner: docs\nstatus: active\n---\n").version,
+    null,
   );
   const source = "---\ndoc_id: duplicate\nversion: 1.0.0\nupdated: 2026-08-07\nowner: docs\nstatus: active\n---\n";
   assert.throws(
