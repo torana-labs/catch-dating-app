@@ -457,7 +457,7 @@
           "best-organizers"
         ]
       },
-      "notes": "Growth: organizer cohorts by listing month, channels and what they cost, nominators with credit approval on the CatchDock pane, and the best organizers, on CatchWorkspaceHeader views and CatchPaneLayout feed, queue and wide-table. It replaces the Growth KPI signal directory, whose overview and host analytics sources stay on Needs you and Data quality. Backed by admin/src/features/growth/api/growthSamples.ts."
+      "notes": "Growth: organizer cohorts by listing month, channels and what they cost, nominators with credit approval on the CatchDock pane, and the best organizers, on CatchWorkspaceHeader views and CatchPaneLayout feed, queue and wide-table. It replaces the Growth KPI signal directory, whose signups and completed profiles moved to Needs you, and whose host analytics stay on Marketplace and Data quality. Backed by admin/src/features/growth/api/growthSamples.ts."
     },
     {
       "id": "route_growth_live_controller",

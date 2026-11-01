@@ -69,6 +69,8 @@ export interface NowModel {
   overTwoDays: number;
   completedPayments: number | null;
   activeHosts: number | null;
+  signupsThisWeek: number | null;
+  completedProfiles: number | null;
   sources: NowSourceNote[];
   generatedAt: string;
 }
@@ -134,6 +136,8 @@ export function buildNowModel(overview: AdminOverviewResponse, now: number): Now
     overTwoDays: items.filter((item) => item.tone !== "neutral").length,
     completedPayments: metric(overview, "completedPayments"),
     activeHosts: metric(overview, "activeHosts"),
+    signupsThisWeek: metric(overview, "signupsThisWeek"),
+    completedProfiles: metric(overview, "completedProfiles"),
     sources: overview.dataQuality.map((source) => ({
       id: source.id,
       title: source.label,

@@ -376,8 +376,9 @@ Current adherence:
   the address (`/growth/channels`, `/growth/nominators/:uid`).
 - Weak: ad spend waits for the Meta token (GitHub issue #1364), Google Ads is
   not connected, and there is no per-campaign table or export yet.
-- Retired: the Growth KPI signal directory. Its overview metrics and host
-  analytics remain on Needs you and Data quality.
+- Retired: the Growth KPI signal directory. Signups this week and completed
+  profiles moved to Needs you, and its host analytics stay on Marketplace and
+  Data quality.
 
 Recommended next work:
 
