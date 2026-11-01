@@ -21,7 +21,7 @@ const item = (itemId: string, type = "listing") => ({itemId, type, sourceKind: "
   sourcePath: `supplyIntakeRequests/${itemId}`, title: itemId, subtitle: null, cameFrom: "Website form",
   nominatorUid: null, city: "mumbai", state: {code: "ready", label: "Ready to decide", tone: "success"},
   status: "waiting", waitingSince: "2026-10-30T10:00:00.000Z", doneAt: null, assigneeUid: null,
-  snoozedUntil: null, recommendation: null});
+  snoozedUntil: null, recommendation: null, listingEvent: null});
 const totals = {scopes: {waiting: 3, mine: 0, snoozed: 0, working: 0},
   types: {all: 3, listing: 2, event: 0, claim: 1, enquiry: 0, access: 0, stuck: 0}};
 

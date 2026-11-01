@@ -58,7 +58,7 @@ export async function getNomination(itemId: string): Promise<NominationDetail> {
     item: {itemId: row.itemId, type: row.type, sourceKind: "supplyIntakeRequest", sourceId: row.itemId,
       sourcePath: `supplyIntakeRequests/${row.itemId}`, title: row.title, subtitle: row.subtitle, cameFrom: "You on WhatsApp",
       nominatorUid: "sample-owner", city: row.city, state: row.state, status: row.status, waitingSince: row.sentAt,
-      doneAt: row.doneAt, assigneeUid: null, snoozedUntil: null, recommendation: null},
+      doneAt: row.doneAt, assigneeUid: null, snoozedUntil: null, recommendation: null, listingEvent: null},
     journey: [{stepId: "submitted", occurredAt: row.sentAt, title: "You sent a link on WhatsApp", detail: row.subtitle,
       actorUid: "sample-owner", tone: "ink"}],
     canWork: false, canDecideClaim: false,

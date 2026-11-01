@@ -27,10 +27,13 @@ import {
   InboxItemType,
   InboxJourneyStepDocument,
   InboxSourceKind,
+  dismissedInboxItem,
   journeyStepDocId,
+  reopenedInboxItem,
   sourceCollections,
 } from "./model";
-import {journeyStepDocument, syncInboxSource} from "./store";
+import {syncInboxDocument} from "./listingEvents";
+import {journeyStepDocument} from "./store";
 
 /** Ops and the owner work the inbox; a sales associate may open their own nominations. */
 export const inboxRoles = ["admin", "adminOwner", "support"] as const;
@@ -142,6 +145,9 @@ export async function adminGetInboxItemHandler(request: CallableRequest<unknown>
 }
 
 /** Assign, unassign, snooze or wake one item. Audited, and a step in its journey. */
+/** The items nothing else closes: an imported event nobody will publish, intake nobody will rescue. */
+const dismissableTypes: InboxItemType[] = ["event", "stuck"];
+
 export async function adminUpdateInboxItemHandler(request: CallableRequest<unknown>,
   deps: InboxDeps = defaultDeps): Promise<AdminUpdateInboxItemCallableResponse> {
   const adminContext = requireAdminRole(request, inboxRoles);
@@ -163,13 +169,21 @@ export async function adminUpdateInboxItemHandler(request: CallableRequest<unkno
   const itemRef = db.collection(INBOX_ITEMS_COLLECTION).doc(data.itemId);
   const assigneeRef = data.action === "assign" && data.assigneeUid && data.assigneeUid !== adminContext.uid ?
     db.collection("adminRoleAssignments").doc(data.assigneeUid) : null;
+  if (data.action === "dismiss" && !data.note?.trim()) {
+    throw new HttpsError("invalid-argument", "Say why this item needs nothing more.");
+  }
   const item = await db.runTransaction(async (tx) => {
     const [itemSnap, assigneeSnap] = await tx.getAll(itemRef, ...(assigneeRef ? [assigneeRef] : []));
     if (!itemSnap.exists) throw new HttpsError("not-found", "This inbox item was not found.");
     const before = itemSnap.data() as InboxItemDocument;
-    if (before.status !== "waiting" && before.status !== "snoozed") {
+    if (data.action === "reopen") {
+      if (!before.dismissal) throw new HttpsError("failed-precondition", "Only a dismissed item can come back.");
+    } else if (before.status !== "waiting" && before.status !== "snoozed") {
       throw new HttpsError("failed-precondition", before.status === "done" ?
         "This item is already done." : "Catch is still working on this item.");
+    }
+    if (data.action === "dismiss" && !dismissableTypes.includes(before.type)) {
+      throw new HttpsError("failed-precondition", "Decide this item instead of dismissing it.");
     }
     if (assigneeSnap) {
       const assignment = assigneeSnap.data();
@@ -178,9 +192,17 @@ export async function adminUpdateInboxItemHandler(request: CallableRequest<unkno
         throw new HttpsError("failed-precondition", "Items can only be assigned to Catch staff.");
       }
     }
-    const next: InboxItemDocument = {...before, updatedAt: nowIso};
+    let next: InboxItemDocument = {...before, updatedAt: nowIso};
     let title: string;
     switch (data.action) {
+    case "dismiss":
+      next = dismissedInboxItem(before, adminContext.uid, (data.note as string).trim(), now);
+      title = "Dismissed";
+      break;
+    case "reopen":
+      next = reopenedInboxItem(before, now);
+      title = "Back in the inbox";
+      break;
     case "assign":
       next.assigneeUid = data.assigneeUid;
       title = data.assigneeUid === adminContext.uid ? "Picked up" : "Assigned";
@@ -241,8 +263,8 @@ export async function adminRebuildInboxHandler(request: CallableRequest<unknown>
     if (data.source === "people") {
       if (await syncPeopleIndex(db, doc.id, doc.data(), deps.now())) written += 1;
     } else {
-      const result = await syncInboxSource(db, data.source as InboxSourceKind, doc.id, doc.data(), deps.now());
-      if (result.outcome === "written") written += 1;
+      const results = await syncInboxDocument(db, data.source as InboxSourceKind, doc.id, doc.data(), deps.now());
+      written += results.filter((result) => result.outcome === "written").length;
     }
   }
   return {
@@ -259,7 +281,7 @@ function itemRow(item: InboxItemDocument): ListResponse["items"][number] {
     sourcePath: item.sourcePath, title: item.title, subtitle: item.subtitle, cameFrom: item.cameFrom,
     nominatorUid: item.nominatorUid, city: item.city, state: item.state, status: item.status,
     waitingSince: item.waitingSince, doneAt: item.doneAt, assigneeUid: item.assigneeUid,
-    snoozedUntil: item.snoozedUntil, recommendation: item.recommendation,
+    snoozedUntil: item.snoozedUntil, recommendation: item.recommendation, listingEvent: item.listingEvent ?? null,
   };
 }
 

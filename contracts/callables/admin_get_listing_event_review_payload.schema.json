@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_listing_event_review_payload.schema.json",
+  "title": "AdminGetListingEventReviewCallablePayload",
+  "description": "Reads one imported event of an approved listing for the inbox's publish sheet.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "intakeRequestId",
+    "eventWorkItemId"
+  ],
+  "properties": {
+    "intakeRequestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "eventWorkItemId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+}
