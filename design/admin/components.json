@@ -1,7 +1,7 @@
 {
   "$schema": "./admin.components.schema.json",
-  "version": 44,
-  "updated": "2026-10-30",
+  "version": 45,
+  "updated": "2026-11-01",
   "owner": "admin_dashboard",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -41,7 +41,8 @@
       "workspace_sales_records",
       "workspace_sales_import",
       "workspace_organizer_publishing",
-      "route_overview",
+      "route_now",
+      "route_marketplace",
       "route_safety_triage",
       "workspace_safety_triage",
       "route_user_analytics",
@@ -733,34 +734,68 @@
       "notes": "Prop-driven Organizer Publishing workspace used by the route wrapper and deterministic Storybook previews; canonical directory rows, the stateful blocked-draft editor, route readiness, and actionable publishing blockers come from shared sample organizer fixtures without backend implementation telemetry."
     },
     {
-      "id": "route_overview",
+      "id": "route_now",
       "kind": "route",
-      "owner": "features/overview",
-      "source": "admin/src/features/overview/ui/OverviewScreen.tsx",
-      "exportName": "OverviewScreen",
+      "owner": "features/now",
+      "source": "admin/src/features/now/ui/NowScreen.tsx",
+      "exportName": "NowScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "NowRouteStory",
+        "states": [
+          "oldest-first",
+          "by-kind",
+          "data-sources",
+          "stats"
+        ]
+      },
+      "notes": "Needs you: every overview queue item waiting on a person in one list, oldest first, beside counts by kind and data-source freshness, in the quiet register on CatchWorkspaceHeader and CatchPaneLayout feed. Rows open the role-checked owning area. It replaces the Overview action digest."
+    },
+    {
+      "id": "route_now_live_controller",
+      "kind": "route",
+      "owner": "features/now",
+      "source": "admin/src/features/now/ui/NowRouteScreen.tsx",
+      "exportName": "NowRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Needs you controller/query seam; deterministic prop-driven visual coverage remains on route_now."
+    },
+    {
+      "id": "route_marketplace",
+      "kind": "route",
+      "owner": "features/marketplace",
+      "source": "admin/src/features/marketplace/ui/MarketplaceScreen.tsx",
+      "exportName": "MarketplaceScreen",
       "css": [
         "admin/src/styles.css"
       ],
       "preview": {
         "status": "ready",
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "OverviewRouteStory",
+        "exportName": "MarketplaceRouteStory",
         "states": [
           "default",
           "analytics-controls",
-          "queue-router",
-          "metric-ownership",
           "scoped-analytics"
         ]
       },
-      "notes": "Admin Overview is a read-only router: complete headline metrics and live queue rows appear before analytics, queue rows open their role-checked owning workflow, and range/entity controls apply only to the analysis below. The preview is backed by sample overview and host analytics fixtures in admin/src/stories/AdminRoutes.stories.tsx."
+      "notes": "Marketplace analytics, split from the old Overview (its queues moved to Needs you): range and entity controls apply to host analytics. The Marketplace board (PR 14) replaces it. Backed by sample host analytics fixtures in admin/src/stories/AdminRoutes.stories.tsx."
     },
     {
-      "id": "route_overview_live_controller",
+      "id": "route_marketplace_live_controller",
       "kind": "route",
-      "owner": "features/overview",
-      "source": "admin/src/features/overview/ui/OverviewRouteScreen.tsx",
-      "exportName": "OverviewRouteScreen",
+      "owner": "features/marketplace",
+      "source": "admin/src/features/marketplace/ui/MarketplaceRouteScreen.tsx",
+      "exportName": "MarketplaceRouteScreen",
       "css": [
         "admin/src/styles.css"
       ],
@@ -771,7 +806,7 @@
           "route-lazy-boundary"
         ]
       },
-      "notes": "Lazy live route wrapper owns the Overview controller/query seam; deterministic prop-driven visual coverage remains on route_overview."
+      "notes": "Lazy live route wrapper owns the Marketplace analytics controller/query seam; deterministic prop-driven visual coverage remains on route_marketplace."
     },
     {
       "id": "route_safety_triage",
@@ -915,86 +950,6 @@
       "notes": "Prop-driven User Analytics workspace surface used by the route wrapper and deterministic Storybook previews; query, handoff, and sample-mode autoload logic stay in UserAnalyticsScreen."
     },
     {
-      "id": "shared_admin_app_shell",
-      "kind": "feature-component",
-      "owner": "app",
-      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-      "exportName": "AdminAppShell",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminAppShellStory",
-        "states": [
-          "expanded",
-          "collapsed",
-          "workspace"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_account_menu",
-      "kind": "feature-component",
-      "owner": "app",
-      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-      "exportName": "AdminAccountMenu",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminAccountMenuStory",
-        "states": [
-          "open",
-          "role-summary",
-          "sign-out"
-        ]
-      },
-      "notes": "Shared admin shell disclosure keeps identity, role claims, and sign-out behind one keyboard-accessible account control."
-    },
-    {
-      "id": "shared_admin_brand_block",
-      "kind": "feature-component",
-      "owner": "app",
-      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-      "exportName": "AdminBrandBlock",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminBrandBlockStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_brand_copy",
-      "kind": "feature-component",
-      "owner": "app",
-      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-      "exportName": "AdminBrandCopy",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminBrandCopyStory",
-        "states": [
-          "title-only"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_brand_mark",
       "kind": "feature-component",
       "owner": "app",
@@ -1010,25 +965,6 @@
         "states": [
           "default",
           "large"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_brand_title",
-      "kind": "feature-component",
-      "owner": "app",
-      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-      "exportName": "AdminBrandTitle",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminBrandTitleStory",
-        "states": [
-          "default"
         ]
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
@@ -1372,27 +1308,6 @@
       "componentId": "catch.section"
     },
     {
-      "id": "shared_admin_environment_status",
-      "kind": "feature-component",
-      "owner": "app",
-      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
-      "exportName": "AdminEnvironmentStatus",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminEnvironmentStatusStory",
-        "states": [
-          "development",
-          "staging",
-          "production-hidden"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_event_supply_detail",
       "kind": "feature-component",
       "owner": "features/events",
@@ -1665,7 +1580,7 @@
     {
       "id": "shared_admin_filter_bar",
       "kind": "feature-component",
-      "owner": "features/overview",
+      "owner": "features/marketplace",
       "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
       "exportName": "AdminFilterBar",
       "css": [
@@ -1722,8 +1637,8 @@
     },
     {
       "id": "shared_admin_icon_button",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
       "css": [
         "admin/src/styles.css"
@@ -3498,66 +3413,6 @@
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
     },
     {
-      "id": "shared_admin_nav_button",
-      "kind": "feature-component",
-      "owner": "app",
-      "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
-      "exportName": "AdminNavButton",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminNavButtonStory",
-        "states": [
-          "selected",
-          "unselected"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_nav_group",
-      "kind": "feature-component",
-      "owner": "app",
-      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-      "exportName": "AdminNavGroup",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminNavGroupStory",
-        "states": [
-          "label",
-          "items"
-        ]
-      },
-      "notes": "Role-aware navigation grouping reduces flat-sidebar scanning cost while retaining a named region for assistive technology and hiding only the visible label in collapsed mode."
-    },
-    {
-      "id": "shared_admin_nav_list",
-      "kind": "feature-component",
-      "owner": "app",
-      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-      "exportName": "AdminNavList",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminNavListStory",
-        "states": [
-          "selected",
-          "unselected"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_organizer_intake_checkbox_field",
       "kind": "feature-component",
       "owner": "features/intake",
@@ -3578,28 +3433,9 @@
       "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
     },
     {
-      "id": "shared_admin_overview_analytics_clear_button",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminOverviewAnalyticsClearButton",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminOverviewAnalyticsClearButtonStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
       "id": "shared_admin_overview_main_grid",
       "kind": "feature-component",
-      "owner": "features/overview",
+      "owner": "features/marketplace",
       "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
       "exportName": "AdminOverviewMainGrid",
       "css": [
@@ -3611,103 +3447,6 @@
         "exportName": "AdminOverviewMainGridStory",
         "states": [
           "summary-and-detail"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_overview_queue_decision_button",
-      "kind": "feature-component",
-      "owner": "features/overview",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminOverviewQueueDecisionButton",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminOverviewQueueDecisionButtonStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_overview_queue_detail_panel",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminOverviewQueueDetailPanel",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminOverviewQueueDetailPanelStory",
-        "states": [
-          "details"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_overview_queue_items",
-      "kind": "feature-component",
-      "owner": "features/overview",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminOverviewQueueItems",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminOverviewQueueItemsStory",
-        "states": [
-          "stacked"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_overview_queue_row",
-      "kind": "feature-component",
-      "owner": "features/overview",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminOverviewQueueRow",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminOverviewQueueRowStory",
-        "states": [
-          "neutral",
-          "warning",
-          "selected"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_overview_queue_row_actions",
-      "kind": "feature-component",
-      "owner": "features/overview",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminOverviewQueueRowActions",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminOverviewQueueRowActionsStory",
-        "states": [
-          "actions"
         ]
       },
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
@@ -3883,47 +3622,6 @@
         ]
       },
       "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/events renders it. admin/src/features/events/ui/eventPublishingSupplyPanels.tsx binds the external event's title and review status."
-    },
-    {
-      "id": "shared_admin_sidebar",
-      "kind": "feature-component",
-      "owner": "app",
-      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-      "exportName": "AdminSidebar",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminSidebarStory",
-        "states": [
-          "expanded",
-          "collapsed",
-          "navigation"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_sidebar_toggle",
-      "kind": "feature-component",
-      "owner": "app",
-      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-      "exportName": "AdminSidebarToggle",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminSidebarToggleStory",
-        "states": [
-          "expanded",
-          "collapsed"
-        ]
-      },
-      "notes": "Shared sidebar disclosure control composed from AdminIconButton with deterministic expanded and collapsed Storybook states."
     },
     {
       "id": "shared_admin_sign_in_actions",
@@ -4176,45 +3874,6 @@
         "catch.top_bar"
       ],
       "comparisonReason": "A legacy admin row of filter and action controls. Not a top bar: a row of controls inside a pane, not the top of a screen."
-    },
-    {
-      "id": "shared_admin_topbar",
-      "kind": "feature-component",
-      "owner": "app",
-      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-      "exportName": "AdminTopbar",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminTopbarStory",
-        "states": [
-          "status",
-          "actions"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_topbar_actions",
-      "kind": "feature-component",
-      "owner": "app",
-      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-      "exportName": "AdminTopbarActions",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminTopbarActionsStory",
-        "states": [
-          "controls"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
       "id": "shared_admin_secondary_disclosure",

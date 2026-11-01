@@ -17,19 +17,13 @@ import {
   Users,
 } from "lucide-react";
 import {
-  AdminAccountMenu,
-  AdminAppShell,
-  AdminBrandBlock,
-  AdminBrandCopy,
   AdminBrandMark,
-  AdminBrandTitle,
   AdminButton,
   AdminCard,
   AdminCardList,
   AdminDecisionFooterShell,
   AdminDetailScreenStack,
   AdminDirectoryScreenStack,
-  AdminEnvironmentStatus,
   AdminEyebrow,
   AdminFeatureLoadingState,
   AdminFieldGrid,
@@ -40,15 +34,10 @@ import {
   AdminMetricCard,
   AdminMetricGrid,
   AdminSectionCaption,
-  AdminNavButton,
-  AdminNavGroup,
-  AdminNavList,
   AdminPanel,
   AdminProfilePhotoGrid,
   AdminRowTitle,
   AdminSecondaryDisclosure,
-  AdminSidebar,
-  AdminSidebarToggle,
   AdminSignInActions,
   AdminSignInMeta,
   AdminSignInPanel,
@@ -60,8 +49,6 @@ import {
   AdminTagList,
   AdminTagRow,
   AdminToolbar,
-  AdminTopbar,
-  AdminTopbarActions,
   AdminTrendSeries,
   AdminWorkbenchNote,
   AdminWorkbenchStack,
@@ -96,58 +83,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-function CollapsibleAdminShellPreview() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  return (
-    <AdminAppShell sidebarCollapsed={isCollapsed}>
-      <AdminSidebar aria-label="Admin preview sections" id="admin-preview-sidebar">
-        <AdminBrandBlock>
-          <AdminBrandMark>C</AdminBrandMark>
-          <AdminBrandCopy>
-            <AdminBrandTitle>Catch Admin</AdminBrandTitle>
-          </AdminBrandCopy>
-        </AdminBrandBlock>
-        <AdminNavList aria-label="Admin preview navigation">
-          <AdminNavButton
-            icon={<Home size={16} />}
-            label="Overview"
-            selected
-            title={isCollapsed ? "Overview" : undefined}
-          />
-          <AdminNavButton
-            icon={<Users size={16} />}
-            label="Organizers"
-            selected={false}
-            title={isCollapsed ? "Organizers" : undefined}
-          />
-        </AdminNavList>
-        <AdminSidebarToggle
-          collapsed={isCollapsed}
-          controlsId="admin-preview-sidebar"
-          onCollapsedChange={setIsCollapsed}
-        />
-      </AdminSidebar>
-      <AdminWorkspace>
-        <AdminTopbar>
-          <h1>Overview</h1>
-          <AdminTopbarActions>
-            <AdminEnvironmentStatus environment="dev" />
-            <AdminAccountMenu
-              mode="sample"
-              roles={[]}
-              userLabel="Local preview"
-            />
-          </AdminTopbarActions>
-        </AdminTopbar>
-        <PageHeader eyebrow="Preview" title="Registered app shell">
-          Collapse the sidebar to give the active workspace more room.
-        </PageHeader>
-      </AdminWorkspace>
-    </AdminAppShell>
-  );
-}
 
 export const PageHeaderStory: Story = {
   name: "Page header",
@@ -342,59 +277,6 @@ export const DataTableStory: Story = {
   ),
 };
 
-export const AdminAppShellStory: Story = {
-  name: "App shell",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_app_shell",
-      states: ["expanded", "collapsed", "workspace"],
-    },
-  },
-  render: () => <CollapsibleAdminShellPreview />,
-};
-
-export const AdminSidebarStory: Story = {
-  name: "Sidebar",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_sidebar",
-      states: ["expanded", "collapsed", "navigation"],
-    },
-  },
-  render: () => <CollapsibleAdminShellPreview />,
-};
-
-export const AdminSidebarToggleStory: Story = {
-  name: "Sidebar toggle",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_sidebar_toggle",
-      states: ["expanded", "collapsed"],
-    },
-  },
-  render: () => <CollapsibleAdminShellPreview />,
-};
-
-export const AdminBrandBlockStory: Story = {
-  name: "Brand block",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_brand_block",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminBrandBlock>
-        <AdminBrandMark size="large">C</AdminBrandMark>
-        <AdminBrandCopy>
-          <AdminBrandTitle>Catch Admin</AdminBrandTitle>
-        </AdminBrandCopy>
-      </AdminBrandBlock>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminBrandMarkStory: Story = {
   name: "Brand mark",
   parameters: {
@@ -408,94 +290,6 @@ export const AdminBrandMarkStory: Story = {
       <AdminBrandMark>C</AdminBrandMark>
       <AdminBrandMark size="large">C</AdminBrandMark>
     </AdminWorkspace>
-  ),
-};
-
-export const AdminBrandCopyStory: Story = {
-  name: "Brand copy",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_brand_copy",
-      states: ["title-only"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminBrandCopy>
-        <AdminBrandTitle>Catch Admin</AdminBrandTitle>
-      </AdminBrandCopy>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminBrandTitleStory: Story = {
-  name: "Brand title",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_brand_title",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminBrandTitle>Catch Admin</AdminBrandTitle>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminNavListStory: Story = {
-  name: "Navigation list",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_nav_list",
-      states: ["selected", "unselected"],
-    },
-  },
-  render: () => (
-    <AdminSidebar>
-      <AdminNavList aria-label="Admin sections">
-        <AdminNavGroup label="Work queues">
-          <AdminNavButton icon={<Home size={16} />} label="Overview" selected />
-        </AdminNavGroup>
-        <AdminNavGroup label="Supply">
-          <AdminNavButton icon={<CalendarDays size={16} />} label="Events" selected={false} />
-        </AdminNavGroup>
-      </AdminNavList>
-    </AdminSidebar>
-  ),
-};
-
-export const AdminNavGroupStory: Story = {
-  name: "Navigation group",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_nav_group",
-      states: ["label", "items"],
-    },
-  },
-  render: () => (
-    <AdminSidebar>
-      <AdminNavGroup label="Growth & insights">
-        <AdminNavButton icon={<Sparkles size={16} />} label="Growth" selected />
-        <AdminNavButton icon={<Users size={16} />} label="Users" selected={false} />
-      </AdminNavGroup>
-    </AdminSidebar>
-  ),
-};
-
-export const AdminNavButtonStory: Story = {
-  name: "Navigation button",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_nav_button",
-      states: ["selected", "unselected"],
-    },
-  },
-  render: () => (
-    <AdminSidebar>
-      <AdminNavButton icon={<Home size={16} />} label="Overview" selected />
-      <AdminNavButton icon={<Settings size={16} />} label="Settings" selected={false} />
-    </AdminSidebar>
   ),
 };
 
@@ -520,50 +314,6 @@ export const AdminWorkspaceStory: Story = {
   ),
 };
 
-export const AdminTopbarStory: Story = {
-  name: "Topbar",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_topbar",
-      states: ["status", "actions"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminTopbar>
-        <h1>Organizers</h1>
-        <AdminTopbarActions>
-          <AdminEnvironmentStatus environment="staging" />
-          <AdminAccountMenu
-            mode="live"
-            onSignOut={() => undefined}
-            roles={["admin", "salesStaff"]}
-            userLabel="+91 91314 04263"
-          />
-        </AdminTopbarActions>
-      </AdminTopbar>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminTopbarActionsStory: Story = {
-  name: "Topbar actions",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_topbar_actions",
-      states: ["controls"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminTopbarActions>
-        <AdminButton icon={<SearchIcon size={16} />}>Lookup</AdminButton>
-        <AdminButton variant="primary">Run check</AdminButton>
-      </AdminTopbarActions>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminSignInScreenStory: Story = {
   name: "Sign in screen",
   parameters: {
@@ -575,12 +325,7 @@ export const AdminSignInScreenStory: Story = {
   render: () => (
     <AdminSignInScreen>
       <AdminSignInPanel>
-        <AdminBrandBlock>
-          <AdminBrandMark size="large">C</AdminBrandMark>
-          <AdminBrandCopy>
-            <AdminBrandTitle>Catch Admin</AdminBrandTitle>
-          </AdminBrandCopy>
-        </AdminBrandBlock>
+        <AdminBrandMark size="large">C</AdminBrandMark>
         <AdminSignInMeta>Use an account with approved admin claims.</AdminSignInMeta>
         <CatchField
           recipe="input"
@@ -608,12 +353,7 @@ export const AdminPhoneOtpSignInScreenStory: Story = {
   render: () => (
     <AdminSignInScreen>
       <AdminSignInPanel>
-        <AdminBrandBlock>
-          <AdminBrandMark size="large">C</AdminBrandMark>
-          <AdminBrandCopy>
-            <AdminBrandTitle>Catch Admin</AdminBrandTitle>
-          </AdminBrandCopy>
-        </AdminBrandBlock>
+        <AdminBrandMark size="large">C</AdminBrandMark>
         <AdminSignInMeta>
           Verification code sent to +91 90000 00000.
         </AdminSignInMeta>
@@ -646,7 +386,7 @@ export const AdminSignInPanelStory: Story = {
   render: () => (
     <AdminSignInScreen>
       <AdminSignInPanel>
-        <AdminBrandTitle>Catch Admin</AdminBrandTitle>
+        <AdminBrandMark size="large">C</AdminBrandMark>
         <AdminSignInMeta>Admin access is claim-gated.</AdminSignInMeta>
       </AdminSignInPanel>
     </AdminSignInScreen>
@@ -683,32 +423,6 @@ export const AdminSignInActionsStory: Story = {
         <AdminButton>Open local preview</AdminButton>
       </AdminSignInActions>
     </AdminSignInPanel>
-  ),
-};
-
-export const AdminAccountMenuStory: Story = {
-  name: "Account menu",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_account_menu",
-      states: ["open", "role-summary", "sign-out"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminTopbar>
-        <div />
-        <AdminTopbarActions>
-          <AdminAccountMenu
-            defaultOpen
-            mode="live"
-            onSignOut={() => undefined}
-            roles={["admin"]}
-            userLabel="+91 91314 04263"
-          />
-        </AdminTopbarActions>
-      </AdminTopbar>
-    </AdminWorkspace>
   ),
 };
 
@@ -967,23 +681,6 @@ export const AdminFeatureLoadingStateStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminFeatureLoadingState label="Loading organizer bridge" />
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminEnvironmentStatusStory: Story = {
-  name: "Environment status",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_environment_status",
-      states: ["development", "staging", "production-hidden"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminEnvironmentStatus environment="dev" />
-      <AdminEnvironmentStatus environment="staging" />
-      <AdminEnvironmentStatus environment="prod" title="Production badge is hidden" />
     </AdminWorkspace>
   ),
 };

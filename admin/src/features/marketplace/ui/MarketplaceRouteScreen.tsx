@@ -1,31 +1,22 @@
-import {FileWarning} from "lucide-react";
 import type {DataMode} from "../../../shared/types/adminTypes";
-import {
-  AdminFeatureLoadingState,
-  StatusBanner,
-} from "../../../shared/ui/AdminPrimitives";
-import {useOverviewController} from "../controllers/useOverviewController";
-import {
-  OverviewScreen,
-  type OverviewQueueDestination,
-} from "./OverviewScreen";
+import {useMarketplaceController} from "../controllers/useMarketplaceController";
+import {MarketplaceScreen} from "./MarketplaceScreen";
 
-export function OverviewRouteScreen({
+/** Marketplace analytics, split from the old Overview until the Marketplace board replaces it. */
+export function MarketplaceRouteScreen({
   adminRoles,
   isSessionReady,
   mode,
   onError,
   onNotice,
-  onOpenQueue,
 }: {
   adminRoles: string[];
   isSessionReady: boolean;
   mode: DataMode;
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
-  onOpenQueue: (destination: OverviewQueueDestination) => void;
 }) {
-  const controller = useOverviewController({
+  const controller = useMarketplaceController({
     adminRoles,
     isSessionReady,
     mode,
@@ -33,21 +24,8 @@ export function OverviewRouteScreen({
     onNotice,
   });
 
-  if (!controller.overview) {
-    return controller.overviewError ? (
-      <StatusBanner
-        icon={<FileWarning size={17} strokeWidth={1.9} />}
-        tone="error"
-      >
-        {controller.overviewError}
-      </StatusBanner>
-    ) : (
-      <AdminFeatureLoadingState label="Loading live overview" />
-    );
-  }
-
   return (
-    <OverviewScreen
+    <MarketplaceScreen
       analyticsOrganizerId={controller.analyticsOrganizerId}
       analyticsEndDate={controller.analyticsEndDate}
       analyticsError={controller.analyticsError}
@@ -60,10 +38,6 @@ export function OverviewRouteScreen({
       hostAnalytics={controller.hostAnalytics}
       isLoading={controller.isLoading}
       isAnalyticsLoading={controller.isAnalyticsLoading}
-      isOverviewLoading={controller.isOverviewLoading}
-      overview={controller.overview}
-      overviewError={controller.overviewError}
-      overviewLoadedAt={controller.overviewLoadedAt}
       onAnalyticsOrganizerIdChange={controller.setAnalyticsOrganizerId}
       onAnalyticsEndDateChange={controller.setAnalyticsEndDate}
       onAnalyticsEventIdChange={controller.setAnalyticsEventId}
@@ -71,10 +45,7 @@ export function OverviewRouteScreen({
       onAnalyticsRangePresetChange={controller.setAnalyticsRangePreset}
       onAnalyticsStartDateChange={controller.setAnalyticsStartDate}
       onClearAnalyticsScope={controller.clearAnalyticsScope}
-      onOpenQueue={onOpenQueue}
       onRefresh={() => void controller.refresh()}
-      onRefreshAnalytics={() => void controller.refreshAnalytics()}
-      onRefreshOverview={() => void controller.refreshOverview()}
     />
   );
 }

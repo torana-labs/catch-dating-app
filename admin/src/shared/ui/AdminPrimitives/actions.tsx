@@ -133,32 +133,6 @@ export function FilePickerButton({
   );
 }
 
-export function AdminNavButton({
-  icon,
-  label,
-  selected,
-  type = "button",
-  ...props
-}: {
-  icon: ReactNode;
-  label: string;
-  selected: boolean;
-} & ButtonHTMLAttributes<HTMLButtonElement>) {
-  const operationPending = useAdminOperationPending();
-  return (
-    <button
-      aria-label={label}
-      className={`nav-item ${selected ? "selected" : ""}`}
-      {...props}
-      disabled={operationPending || props.disabled}
-      type={type}
-    >
-      {icon}
-      <span className="nav-item-label">{label}</span>
-    </button>
-  );
-}
-
 export function SearchField({
   ariaLabel,
   className = "",

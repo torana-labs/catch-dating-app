@@ -1,14 +1,14 @@
 import {act, renderHook, waitFor} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {createQueryHarness} from "../../../shared/test/queryHarness";
-import {useOverviewController} from "./useOverviewController";
+import {useMarketplaceController} from "./useMarketplaceController";
 
-describe("useOverviewController", () => {
+describe("useMarketplaceController", () => {
   afterEach(() => vi.unstubAllEnvs());
 
   it("never substitutes sample records before a live session is ready", () => {
     const {wrapper} = createQueryHarness();
-    const {result} = renderHook(() => useOverviewController({
+    const {result} = renderHook(() => useMarketplaceController({
       adminRoles: ["adminOwner"],
       isSessionReady: false,
       mode: "live",
@@ -16,16 +16,14 @@ describe("useOverviewController", () => {
       onNotice: vi.fn(),
     }), {wrapper});
 
-    expect(result.current.overview).toBeNull();
     expect(result.current.hostAnalytics).toBeNull();
-    expect(result.current.overviewLoadedAt).toBeNull();
     expect(result.current.analyticsLoadedAt).toBeNull();
   });
 
-  it("loads the sample overview and clears a scoped analytics query", async () => {
+  it("loads sample analytics and clears a scoped analytics query", async () => {
     vi.stubEnv("VITE_ADMIN_DATA_MODE", "sample");
     const {wrapper} = createQueryHarness();
-    const {result} = renderHook(() => useOverviewController({
+    const {result} = renderHook(() => useMarketplaceController({
       adminRoles: [],
       isSessionReady: true,
       mode: "sample",
@@ -34,7 +32,6 @@ describe("useOverviewController", () => {
     }), {wrapper});
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.overview!.metrics.length).toBeGreaterThan(0);
     expect(result.current.hostAnalytics!.summaryCards.length).toBeGreaterThan(0);
 
     act(() => {

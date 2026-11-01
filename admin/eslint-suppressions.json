@@ -99,11 +99,6 @@
       "count": 3
     }
   },
-  "src/features/overview/ui/OverviewScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 2
-    }
-  },
   "src/features/partners/ui/PartnerDemoReviewWorkspace.tsx": {
     "react/forbid-elements": {
       "count": 2
@@ -154,10 +149,10 @@
       "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 10
+      "count": 8
     },
     "react/forbid-elements": {
-      "count": 13
+      "count": 11
     }
   },
   "src/shared/ui/AdminPrimitives/cards.tsx": {
@@ -274,24 +269,24 @@
   },
   "src/shared/ui/AdminPrimitives/overview.tsx": {
     "react/forbid-component-props": {
-      "count": 3
+      "count": 1
     },
     "react/forbid-dom-props": {
-      "count": 5
+      "count": 1
     },
     "react/forbid-elements": {
-      "count": 5
+      "count": 1
     }
   },
   "src/shared/ui/AdminPrimitives/shell.tsx": {
     "react/forbid-component-props": {
-      "count": 4
+      "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 29
+      "count": 6
     },
     "react/forbid-elements": {
-      "count": 30
+      "count": 6
     }
   },
   "src/shared/ui/AdminPrimitives/trends.tsx": {
@@ -307,10 +302,10 @@
       "count": 5
     },
     "react/forbid-dom-props": {
-      "count": 12
+      "count": 11
     },
     "react/forbid-elements": {
-      "count": 16
+      "count": 15
     }
   }
 }

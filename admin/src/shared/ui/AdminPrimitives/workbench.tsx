@@ -332,28 +332,3 @@ export function AdminLoadingIcon({
     />
   );
 }
-
-export function AdminEnvironmentStatus({
-  environment,
-  title = "Configured by Vite environment variables",
-}: {
-  environment: string;
-  title?: string;
-}) {
-  const normalized = environment.trim().toLowerCase();
-  if (normalized === "prod" || normalized === "production") return null;
-
-  const label = normalized === "dev" ?
-    "Development" :
-    normalized === "local" ?
-      "Local" :
-      normalized === "staging" ?
-        "Staging" :
-        environment;
-
-  return (
-    <span className="admin-env-status" title={title}>
-      {label}
-    </span>
-  );
-}

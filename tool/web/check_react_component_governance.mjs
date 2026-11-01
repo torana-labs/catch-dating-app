@@ -1241,7 +1241,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminAppShell, AdminSidebar, AdminBrand*, AdminNavList, AdminSidebarFooter, AdminWorkspace, AdminTopbar, AdminTopbarActions, and AdminSignIn* primitives instead of passing raw admin app/auth shell classes from app or feature code.",
+    guidance: "Use CatchViewport and CatchTabBar (through the AdminShellFrame), AdminWorkspace, AdminBrandMark, and AdminSignIn* primitives instead of passing raw admin app/auth shell classes from app or feature code.",
   },
   {
     family: "admin-intake-status-chip",

@@ -1,0 +1,549 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/admin_now.feature.json",
+  "generatedFor": "2026-11-01",
+  "sourceDigest": "sha256:5cb46ec71f03d656a26cd45e09119e77b506946c8564305deb70f4c83f3f02aa",
+  "resolvedDigest": "sha256:2a8a786407abdf12aa057443dcf42852e888801283e6d4264e4508e75377e975",
+  "feature": {
+    "id": "feature.admin_now",
+    "name": "Admin Needs you",
+    "owner": "admin_console",
+    "status": "pilot",
+    "description": "Lists every overview queue item waiting on a person, oldest first, beside counts by kind and data-source freshness, and opens each item in its role-checked owning area."
+  },
+  "coverage": {
+    "surfaces": 2,
+    "states": 6,
+    "scenarios": 6,
+    "actionCases": 6,
+    "actions": 5,
+    "captures": 0,
+    "previews": 1,
+    "testFiles": 1,
+    "evidenceExceptions": 0
+  },
+  "surfaces": [
+    {
+      "id": "admin_now",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_now"
+      },
+      "actionScope": {
+        "included": "Refreshing the queue snapshot and opening the role-checked area that owns an item or a kind.",
+        "excluded": [
+          "Needs you is read-only: it does not resolve queue items or alter metrics.",
+          "Marketplace analytics moved to the Marketplace route."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "admin/src/stories/AdminRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/now/controllers/useNowController.ts",
+            "symbol": "useNowController"
+          },
+          {
+            "id": "screen",
+            "language": "typescript",
+            "file": "admin/src/features/now/ui/NowScreen.tsx",
+            "symbol": "NowScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_now"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetOverview",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "oldest-first": [
+            "admin/src/features/now/controllers/useNowController.test.tsx"
+          ],
+          "by-kind": [
+            "admin/src/features/now/controllers/useNowController.test.tsx"
+          ],
+          "data-sources": [
+            "admin/src/features/now/controllers/useNowController.test.tsx"
+          ],
+          "stats": [
+            "admin/src/features/now/controllers/useNowController.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 4,
+        "scenarios": 4,
+        "actionCases": 4,
+        "actions": 3,
+        "captures": 0,
+        "previews": 1,
+        "testFiles": 1,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "overview_source": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "failed"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "refresh_needs_you",
+          "owner": "controller",
+          "codeValue": "refresh",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "overviewVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "oldest-first",
+                "by-kind",
+                "data-sources",
+                "stats"
+              ]
+            }
+          ],
+          "description": "Refetches the overview queue snapshot.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_needs_you_item",
+          "owner": "screen",
+          "codeValue": "onOpenItem",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "destination",
+            "targetPath"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.queue_owner_opened"
+            }
+          ],
+          "description": "Opens an item in its role-checked owning area, at the record when the area has a record route.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_needs_you_kind",
+          "owner": "screen",
+          "codeValue": "onOpenKind",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "destination"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.queue_owner_opened"
+            }
+          ],
+          "description": "Opens the area that owns a kind of item.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "oldest_first",
+          "stateId": "oldest-first",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "overview_source": "ready"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_now/NowRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/now/controllers/useNowController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "overview_source": "ready"
+              },
+              "actions": {
+                "enabled": [
+                  "refresh_needs_you",
+                  "open_needs_you_item"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_needs_you_kind"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "by_kind",
+          "stateId": "by-kind",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "overview_source": "ready"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_now/NowRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/now/controllers/useNowController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "overview_source": "ready"
+              },
+              "actions": {
+                "enabled": [
+                  "open_needs_you_kind"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "refresh_needs_you",
+                  "open_needs_you_item"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "data_sources",
+          "stateId": "data-sources",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "overview_source": "ready"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_now/NowRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/now/controllers/useNowController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "overview_source": "ready"
+              },
+              "actions": {
+                "enabled": [
+                  "refresh_needs_you"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_needs_you_item",
+                  "open_needs_you_kind"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "stats",
+          "stateId": "stats",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "overview_source": "ready"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_now/NowRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/now/controllers/useNowController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "overview_source": "ready"
+              },
+              "actions": {
+                "enabled": [
+                  "refresh_needs_you"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_needs_you_item",
+                  "open_needs_you_kind"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_now",
+          "source": "admin/src/features/now/ui/NowScreen.tsx",
+          "exportName": "NowScreen"
+        },
+        "components": [
+          {
+            "id": "route_now",
+            "kind": "route",
+            "source": "admin/src/features/now/ui/NowScreen.tsx",
+            "exportName": "NowScreen",
+            "storybook": {
+              "status": "ready",
+              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "exportName": "NowRouteStory",
+              "states": [
+                "oldest-first",
+                "by-kind",
+                "data-sources",
+                "stats"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "route_now/NowRouteStory"
+        ]
+      }
+    },
+    {
+      "id": "admin_now_live_controller",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_now_live_controller"
+      },
+      "actionScope": {
+        "included": "Owning the live query seam for the prop-driven Needs you actions.",
+        "excluded": [
+          "Deterministic visual state remains on route_now."
+        ]
+      },
+      "bindings": {
+        "previewSources": [],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/now/controllers/useNowController.ts",
+            "symbol": "useNowController"
+          },
+          {
+            "id": "route",
+            "language": "typescript",
+            "file": "admin/src/features/now/ui/NowRouteScreen.tsx",
+            "symbol": "NowRouteScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_now_live_controller"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetOverview",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "live-query-wrapper": [
+            "admin/src/features/now/controllers/useNowController.test.tsx"
+          ],
+          "route-lazy-boundary": [
+            "admin/src/features/now/controllers/useNowController.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 2,
+        "scenarios": 2,
+        "actionCases": 2,
+        "actions": 2,
+        "captures": 0,
+        "previews": 0,
+        "testFiles": 1,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "boundary": {
+          "default": "resolved",
+          "values": [
+            "resolved",
+            "loading"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "refresh_needs_you",
+          "owner": "controller",
+          "codeValue": "refresh",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "overviewVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "live-query-wrapper"
+              ]
+            }
+          ],
+          "description": "Refetches the live queue snapshot.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_needs_you_item",
+          "owner": "route",
+          "codeValue": "onOpen",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "destination",
+            "targetPath"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.queue_owner_opened"
+            }
+          ],
+          "description": "Forwards item routing to the owning app route.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "live_query_wrapper",
+          "stateId": "live-query-wrapper",
+          "kind": "route_state",
+          "status": "not-required",
+          "dimensions": {
+            "boundary": "resolved"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "admin/src/features/now/controllers/useNowController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "resolved",
+              "dimensions": {
+                "boundary": "resolved"
+              },
+              "actions": {
+                "enabled": [
+                  "refresh_needs_you",
+                  "open_needs_you_item"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "route_lazy_boundary",
+          "stateId": "route-lazy-boundary",
+          "kind": "route_state",
+          "status": "not-required",
+          "dimensions": {
+            "boundary": "loading"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "admin/src/features/now/controllers/useNowController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "lazy_loading",
+              "dimensions": {
+                "boundary": "loading"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "refresh_needs_you",
+                  "open_needs_you_item"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_now_live_controller",
+          "source": "admin/src/features/now/ui/NowRouteScreen.tsx",
+          "exportName": "NowRouteScreen"
+        },
+        "components": [
+          {
+            "id": "route_now_live_controller",
+            "kind": "route",
+            "source": "admin/src/features/now/ui/NowRouteScreen.tsx",
+            "exportName": "NowRouteScreen",
+            "storybook": {
+              "status": "not-required",
+              "states": [
+                "live-query-wrapper",
+                "route-lazy-boundary"
+              ]
+            }
+          }
+        ],
+        "previews": []
+      }
+    }
+  ]
+}

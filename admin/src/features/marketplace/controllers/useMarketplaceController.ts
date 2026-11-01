@@ -6,21 +6,18 @@ import type {
   HostAnalyticsResponse,
 } from "../../../shared/types/adminTypes";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
-import {
-  loadOverviewHostAnalytics,
-  loadOverviewSnapshot,
-} from "../api/overviewRepository";
+import {loadMarketplaceHostAnalytics} from "../api/marketplaceRepository";
 
-export type OverviewAnalyticsRangePreset = NonNullable<
+export type MarketplaceAnalyticsRangePreset = NonNullable<
   HostAnalyticsQueryPayload["rangePreset"]
 >;
-export type OverviewAnalyticsGranularity = NonNullable<
+export type MarketplaceAnalyticsGranularity = NonNullable<
   HostAnalyticsQueryPayload["granularity"]
 >;
 
 const hostAnalyticsRoles = ["adminOwner"] as const;
 
-export function useOverviewController({
+export function useMarketplaceController({
   adminRoles,
   isSessionReady,
   mode,
@@ -34,9 +31,9 @@ export function useOverviewController({
   onNotice: (message: string | null) => void;
 }) {
   const [analyticsRangePreset, setAnalyticsRangePreset] =
-    useState<OverviewAnalyticsRangePreset>("30d");
+    useState<MarketplaceAnalyticsRangePreset>("30d");
   const [analyticsGranularity, setAnalyticsGranularity] =
-    useState<OverviewAnalyticsGranularity>("day");
+    useState<MarketplaceAnalyticsGranularity>("day");
   const [analyticsStartDate, setAnalyticsStartDate] =
     useState(defaultAnalyticsDate(29));
   const [analyticsEndDate, setAnalyticsEndDate] =
@@ -70,12 +67,6 @@ export function useOverviewController({
   );
   const analyticsAccess = canLoadAnalytics ? "allowed" : "role-restricted";
 
-  const overviewQuery = useQuery({
-    enabled: isSessionReady,
-    queryKey: adminQueryKeys.overview.snapshot(mode),
-    queryFn: loadOverviewSnapshot,
-    placeholderData: (previousData) => previousData,
-  });
   const hostAnalyticsQuery = useQuery({
     enabled: isSessionReady && canLoadAnalytics,
     queryKey: adminQueryKeys.overview.analytics(
@@ -83,27 +74,13 @@ export function useOverviewController({
       mode,
       analyticsAccess
     ),
-    queryFn: () => loadOverviewHostAnalytics(analyticsPayload),
+    queryFn: () => loadMarketplaceHostAnalytics(analyticsPayload),
     placeholderData: (previousData) => previousData,
   });
-  const overview = overviewQuery.data ?? null;
   const hostAnalytics = hostAnalyticsQuery.data ?? null;
-  const isOverviewLoading = isSessionReady &&
-    (overviewQuery.isPending || overviewQuery.isFetching);
   const isAnalyticsLoading = isSessionReady && canLoadAnalytics &&
     (hostAnalyticsQuery.isPending || hostAnalyticsQuery.isFetching);
-  const isLoading = isOverviewLoading || isAnalyticsLoading;
-
-  const refreshOverview = useCallback(async () => {
-    if (!isSessionReady) return false;
-    const result = await overviewQuery.refetch();
-    if (result.error) {
-      onError(messageFromError(result.error, "Unable to load admin overview."));
-      return false;
-    }
-    onError(null);
-    return true;
-  }, [isSessionReady, onError, overviewQuery]);
+  const isLoading = isAnalyticsLoading;
 
   const refreshAnalytics = useCallback(async () => {
     if (!isSessionReady || !canLoadAnalytics) return false;
@@ -116,41 +93,22 @@ export function useOverviewController({
     return true;
   }, [canLoadAnalytics, hostAnalyticsQuery, isSessionReady, onError]);
 
-  const refresh = useCallback(async () => {
-    if (!isSessionReady) return false;
-    onError(null);
-    const results = await Promise.all([
-      refreshOverview(),
-      canLoadAnalytics ? refreshAnalytics() : Promise.resolve(true),
-    ]);
-    return results.every(Boolean);
-  }, [canLoadAnalytics, isSessionReady, onError, refreshAnalytics, refreshOverview]);
+  const refresh = refreshAnalytics;
 
   useEffect(() => {
-    if (!isSessionReady) return;
-    const loadError = overviewQuery.isError ?
-      overviewQuery.error :
-      canLoadAnalytics && hostAnalyticsQuery.isError ?
-        hostAnalyticsQuery.error :
-        null;
-    if (loadError) {
-      onError(messageFromError(loadError, "Unable to load admin overview."));
-      return;
-    }
-    if (overviewQuery.isSuccess &&
-      (!canLoadAnalytics || hostAnalyticsQuery.isSuccess)) {
+    if (!isSessionReady || !canLoadAnalytics) return;
+    if (hostAnalyticsQuery.isError) {
+      onError(messageFromError(hostAnalyticsQuery.error, "Unable to load host analytics."));
+    } else if (hostAnalyticsQuery.isSuccess) {
       onError(null);
     }
   }, [
+    canLoadAnalytics,
     hostAnalyticsQuery.error,
     hostAnalyticsQuery.isError,
     hostAnalyticsQuery.isSuccess,
-    canLoadAnalytics,
     isSessionReady,
     onError,
-    overviewQuery.error,
-    overviewQuery.isError,
-    overviewQuery.isSuccess,
   ]);
 
   const clearAnalyticsScope = useCallback(() => {
@@ -175,18 +133,9 @@ export function useOverviewController({
     hostAnalytics,
     isAnalyticsLoading,
     isLoading,
-    isOverviewLoading,
-    overview,
-    overviewError: overviewQuery.error ?
-      messageFromError(overviewQuery.error, "Unable to load admin overview.") :
-      null,
-    overviewLoadedAt: overviewQuery.dataUpdatedAt ?
-      new Date(overviewQuery.dataUpdatedAt).toISOString() :
-      null,
     clearAnalyticsScope,
     refresh,
     refreshAnalytics,
-    refreshOverview,
     setAnalyticsOrganizerId,
     setAnalyticsEndDate,
     setAnalyticsEventId,
@@ -207,8 +156,8 @@ function buildHostAnalyticsPayload({
   organizerId: string;
   endDate: string;
   eventId: string;
-  granularity: OverviewAnalyticsGranularity;
-  rangePreset: OverviewAnalyticsRangePreset;
+  granularity: MarketplaceAnalyticsGranularity;
+  rangePreset: MarketplaceAnalyticsRangePreset;
   startDate: string;
 }): HostAnalyticsQueryPayload {
   const isCustom = rangePreset === "custom";

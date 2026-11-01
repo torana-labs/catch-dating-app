@@ -80,7 +80,9 @@ describe("Admin route contract", () => {
     expect(resolveAdminRoute("/events/unknown/extra")).toMatchObject({nav: "events", eventWorkspace: "directory"});
     expect(resolveAdminRoute("/events/unknown/extra").params.eventId).toBeUndefined();
     expect(resolveAdminRoute("/not-a-section").nav).toBeNull();
-    expect(resolveAdminRoute("/").nav).toBe("overview");
+    expect(resolveAdminRoute("/")).toMatchObject({nav: "now", redirect: "/now"});
+    expect(resolveAdminRoute("/overview")).toMatchObject({nav: "now", redirect: "/now"});
+    expect(resolveAdminRoute("/now").redirect).toBeNull();
   });
 
   it.each(["a/b", "a%2Fb", "a%25b", "a b", "a?b", "a#b"])("round-trips the opaque ID %s without decoding it twice", (id) => {
