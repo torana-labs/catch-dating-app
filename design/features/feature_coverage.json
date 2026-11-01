@@ -663,6 +663,22 @@
     },
     {
       "authority": "admin_routes",
+      "authorityId": "route_support",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Support contract covers the conversation queue by view and audience, the conversation with its links, and recording replies, notes, owner and status.",
+      "featureContract": "feature.admin_support"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_support_live_controller",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states.",
+      "featureContract": "feature.admin_support"
+    },
+    {
+      "authority": "admin_routes",
       "authorityId": "route_now",
       "status": "contracted",
       "priority": "P1",

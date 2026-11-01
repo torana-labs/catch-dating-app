@@ -38,6 +38,7 @@ interface RouteState {
   eventTab?: "overview" | "page" | "takedown";
   organizerTab?: "overview" | "page" | "events" | "sales" | "money" | "history";
   financeWorkspace?: FinanceWorkspace;
+  supportWorkspace?: "inbox" | "trial";
   safetyView?: "open" | "actions" | "appeals";
   marketingTab?: MarketingTab;
   composerStep?: MarketingStep;
@@ -63,6 +64,8 @@ export const adminRoutes: AdminRoute[] = [
   route("/marketing-ops/*", "marketing-ops"),
   route("/organizer-intake/*", "organizer-intake", {title: "Organizer intake"}),
   route("/safety/:targetPath", "safety", {title: "Safety case"}),
+  route("/support/:supportConversationId", "support", {title: "Support conversation"}),
+  route("/support/trial/*", "support", {supportWorkspace: "trial", title: "WhatsApp reply trial"}),
   route("/safety/actions/*", "safety", {safetyView: "actions", title: "Account actions"}),
   route("/safety/actions/:safetyActionId", "safety", {safetyView: "actions", title: "Account action"}),
   route("/safety/appeals/*", "safety", {safetyView: "appeals", title: "Appeals"}),
@@ -132,6 +135,7 @@ export function resolveAdminRoute(pathname: string) {
     eventTab: state?.eventTab ?? "overview",
     organizerTab: state?.organizerTab ?? "overview",
     financeWorkspace: state?.financeWorkspace ?? "issues",
+    supportWorkspace: state?.supportWorkspace ?? "inbox",
     safetyView: state?.safetyView ?? "open",
     marketingTab: state?.marketingTab ?? "posts",
     composerStep: state?.composerStep ?? "source",
