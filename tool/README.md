@@ -462,9 +462,8 @@ dart run tool/architecture/provider_graph.dart --summary
 dart run tool/architecture/provider_graph.dart --json
 ```
 
-Architecture candidates are exhaustively reviewed in
-`tool/architecture/provider_graph_reviews.json`; this small authored ledger is
-the durable decision authority. The live gate rejects cycles, unresolved
+Architecture candidates are exhaustively reviewed by `// provider-graph:`
+comments next to the code. The live gate rejects cycles, unresolved
 provider-internal references, new unreviewed relationships, and obsolete review
 entries. Redirect `--json` or `--summary` into `build/` when a temporary local or
 CI artifact is useful.

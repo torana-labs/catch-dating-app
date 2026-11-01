@@ -164,6 +164,7 @@ class _EventSuccessAssignmentFeaturesSectionState
       _error = null;
     });
     try {
+      // provider-graph: ownership-widget-async-callback:_EventSuccessAssignmentFeaturesSectionState._load:await:widget.onPreview watch CAT156 max=2 -- Existing bounded review signal at _EventSuccessAssignmentFeaturesSectionState._load (await:widget.onPreview). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       var next = await widget.onPreview(
         eventId: eventId,
         rules: resetDraft ? const [] : draft,
@@ -226,6 +227,7 @@ class _EventSuccessAssignmentFeaturesSectionState
       _error = null;
     });
     try {
+      // provider-graph: ownership-widget-async-callback:_EventSuccessAssignmentFeaturesSectionState._save:await:widget.onSave watch CAT156 -- Existing bounded review signal at _EventSuccessAssignmentFeaturesSectionState._save (await:widget.onSave). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final saved = await widget.onSave(
         eventId: eventId,
         expectedRevision: preview.revision,

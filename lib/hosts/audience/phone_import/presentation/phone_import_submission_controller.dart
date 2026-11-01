@@ -19,6 +19,7 @@ enum PhoneImportSubmissionPhase {
   recovery,
 }
 
+// provider-graph: ownership-listenable:PhoneImportSubmissionController:reactive-state planned CAT156 -- PhoneImportSubmissionController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees.
 /// Explicit preview/commit over the canonical gateway. A confirmed command is
 /// persisted before any commit, and restored commands never replay themselves.
 class PhoneImportSubmissionController extends ChangeNotifier {

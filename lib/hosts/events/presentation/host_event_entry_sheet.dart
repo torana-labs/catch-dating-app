@@ -80,6 +80,7 @@ class _HostEventEntrySheetState extends State<HostEventEntrySheet> {
     if (confirmed != true || !mounted) return;
     setState(() => _deletingDraftId = draft.id);
     try {
+      // provider-graph: ownership-widget-async-callback:_HostEventEntrySheetState._deleteDraft:await:widget.onDeleteDraft watch CAT156 -- Existing bounded review signal at _HostEventEntrySheetState._deleteDraft (await:widget.onDeleteDraft). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await widget.onDeleteDraft!(draft);
       if (mounted) setState(() => _drafts.removeWhere((d) => d.id == draft.id));
     } catch (error) {

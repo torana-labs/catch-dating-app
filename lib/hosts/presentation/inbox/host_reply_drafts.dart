@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+// provider-graph: ownership-listenable:HostReplyDrafts:reactive-state watch CAT156 -- Mixed workspace text/selected-route mechanics and sending/payload-bound retry identity. Preserve the current operation key and draft lifetime; focused responsibility/caller tests must decide the business-owner split before migration. Not classified as a confirmed business ChangeNotifier violation in this slice.
 /// Workspace-owned drafts survive pane rebuilds and keep retries on one operation.
 class HostReplyDrafts extends ChangeNotifier {
   final Map<String, _Draft> _drafts = {};

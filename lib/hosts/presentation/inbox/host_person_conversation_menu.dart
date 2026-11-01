@@ -83,11 +83,13 @@ class _HostPersonConversationMenuState
             !mounted) {
           return;
         }
+        // provider-graph: ownership-widget-async:_HostPersonConversationMenuState._act:await:chatControllerProvider.blockUser watch CAT156 -- Existing bounded review signal at _HostPersonConversationMenuState._act (await:chatControllerProvider.blockUser). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
         await ref
             .read(chatControllerProvider.notifier)
             .blockUser(targetUserId: personUid);
         if (mounted) widget.onBlocked?.call();
       } else {
+        // provider-graph: ownership-widget-async:_HostPersonConversationMenuState._act:await:chatControllerProvider.reportUser watch CAT156 -- Existing bounded review signal at _HostPersonConversationMenuState._act (await:chatControllerProvider.reportUser). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
         await ref
             .read(chatControllerProvider.notifier)
             .reportUser(targetUserId: personUid, matchId: matchId);

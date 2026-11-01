@@ -67,6 +67,7 @@ AsyncValue<String?> exploreViewerCohortId(Ref ref) {
   return AsyncData(cohortId);
 }
 
+// provider-graph: high-fan-out:exploreFeedViewModelProvider watch -- The eighteen dependencies are a cohesive discovery aggregate spanning filters, viewer eligibility, memberships, participations, saves, internal and external supply, search, and club names. Splitting now would duplicate partial-loading and precedence logic; revisit if a second route needs a stable subset or fan-out rises above twenty.
 @riverpod
 AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final city = ref.watch(selectedExploreCityProvider);

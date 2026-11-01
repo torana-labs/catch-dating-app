@@ -62,6 +62,7 @@ enum SettingsPreference {
   }
 }
 
+// provider-graph: cross-feature-presentation:settingsControllerProvider->authSessionControllerProvider accepted -- Account deletion completes through the public auth-session command seam so auth and onboarding flow state are cleared centrally. Moving that cleanup into Safety would duplicate session ownership.
 /// **Pattern A: Action controller + static Mutations**
 ///
 /// Owns settings writes so the settings screen stays focused on local toggles,

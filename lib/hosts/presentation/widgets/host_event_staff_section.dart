@@ -149,6 +149,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
       });
     }
     try {
+      // provider-graph: ownership-widget-async:_HostEventStaffSectionState._load:await:hostEventStaffControllerProvider.list watch CAT156 -- Existing bounded review signal at _HostEventStaffSectionState._load (await:hostEventStaffControllerProvider.list). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final list = await ref
           .read(hostEventStaffControllerProvider)
           .list(widget.eventId);
@@ -169,6 +170,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
       _mutationError = null;
     });
     try {
+      // provider-graph: ownership-widget-async:_HostEventStaffSectionState._grant:await:hostEventStaffControllerProvider.grant watch CAT156 -- Existing bounded review signal at _HostEventStaffSectionState._grant (await:hostEventStaffControllerProvider.grant). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final list = await ref
           .read(hostEventStaffControllerProvider)
           .grant(
@@ -203,6 +205,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
       _mutationError = null;
     });
     try {
+      // provider-graph: ownership-widget-async:_HostEventStaffSectionState._revoke:await:hostEventStaffControllerProvider.revoke watch CAT156 -- Existing bounded review signal at _HostEventStaffSectionState._revoke (await:hostEventStaffControllerProvider.revoke). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final list = await ref
           .read(hostEventStaffControllerProvider)
           .revoke(eventId: widget.eventId, member: member);

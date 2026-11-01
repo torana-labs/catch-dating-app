@@ -164,6 +164,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     setState(() => _pendingExternalLink = action);
     var opened = false;
     try {
+      // provider-graph: ownership-widget-async-callback:_SettingsScreenState._launchExternalLink:await:launch watch CAT156 -- Existing bounded review signal at _SettingsScreenState._launchExternalLink (await:launch). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       opened = await launch();
     } catch (_) {
       // ExternalLinkController retains the backend context; this route owns

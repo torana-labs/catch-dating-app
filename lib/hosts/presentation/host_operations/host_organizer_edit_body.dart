@@ -146,6 +146,7 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
   }
 
   Future<HostPickedOrganizerLogo?> _pickLogo() async {
+    // provider-graph: ownership-widget-async:_HostOrganizerEditBodyState._pickLogo:await:hostOrganizerEditControllerProvider.pickOrganizerLogo watch CAT156 -- Existing bounded review signal at _HostOrganizerEditBodyState._pickLogo (await:hostOrganizerEditControllerProvider.pickOrganizerLogo). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
     final logo = await ref
         .read(hostOrganizerEditControllerProvider)
         .pickOrganizerLogo();
@@ -178,6 +179,7 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
   }
 
   Future<List<_HostPickedOrganizerMediaDraft>> _pickAndAppendPhotos() async {
+    // provider-graph: ownership-widget-async:_HostOrganizerEditBodyState._pickAndAppendPhotos:await:hostOrganizerEditControllerProvider.pickOrganizerPhotos watch CAT156 -- Existing bounded review signal at _HostOrganizerEditBodyState._pickAndAppendPhotos (await:hostOrganizerEditControllerProvider.pickOrganizerPhotos). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
     final photos = await ref
         .read(hostOrganizerEditControllerProvider)
         .pickOrganizerPhotos();
@@ -262,6 +264,7 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
     });
     _syncMediaManagerPhotos();
     if (stagedLogo?.uploadedPhoto != null) {
+      // provider-graph: ownership-widget-async:_HostOrganizerEditBodyState._removeLogo:await:hostOrganizerEditControllerProvider.discardOrganizerMedia watch CAT156 -- Existing bounded review signal at _HostOrganizerEditBodyState._removeLogo (await:hostOrganizerEditControllerProvider.discardOrganizerMedia). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(hostOrganizerEditControllerProvider)
           .discardOrganizerMedia(photoInputs: const [], logo: stagedLogo);
@@ -421,6 +424,7 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
     _mediaCommitInFlight = true;
     if (mounted) setState(() {});
     try {
+      // provider-graph: ownership-widget-async:_HostOrganizerEditBodyState._discardMedia:await:hostOrganizerEditControllerProvider.discardOrganizerMedia watch CAT156 -- Existing bounded review signal at _HostOrganizerEditBodyState._discardMedia (await:hostOrganizerEditControllerProvider.discardOrganizerMedia). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(hostOrganizerEditControllerProvider)
           .discardOrganizerMedia(

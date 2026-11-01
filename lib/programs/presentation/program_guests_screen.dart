@@ -271,6 +271,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
       _mutationError = null;
     });
     try {
+      // provider-graph: ownership-widget-async:_ProgramGuestsPageBodyState._recordRsvp:await:programWorkspaceControllerProvider.recordFunctionRsvp watch CAT156 -- Existing bounded review signal at _ProgramGuestsPageBodyState._recordRsvp (await:programWorkspaceControllerProvider.recordFunctionRsvp). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(programWorkspaceControllerProvider.notifier)
           .recordFunctionRsvp(
@@ -299,6 +300,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
       _mutationError = null;
     });
     try {
+      // provider-graph: ownership-widget-async:_ProgramGuestsPageBodyState._shareRsvpLink:await:programWorkspaceControllerProvider.issueHouseholdRsvpLink watch CAT156 -- Existing bounded review signal at _ProgramGuestsPageBodyState._shareRsvpLink (await:programWorkspaceControllerProvider.issueHouseholdRsvpLink). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final link = await ref
           .read(programWorkspaceControllerProvider.notifier)
           .issueHouseholdRsvpLink(
@@ -309,6 +311,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
         '/rsvp/${Uri.encodeComponent(link.token)}',
       );
       if (!mounted) return;
+      // provider-graph: ownership-widget-async:_ProgramGuestsPageBodyState._shareRsvpLink:await:externalShareControllerProvider.shareText watch CAT156 -- Existing bounded review signal at _ProgramGuestsPageBodyState._shareRsvpLink (await:externalShareControllerProvider.shareText). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(externalShareControllerProvider)
           .shareText(
@@ -553,6 +556,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
     if (draft == null || !mounted) return;
     setState(() => _mutationError = null);
     try {
+      // provider-graph: ownership-widget-async:_ProgramGuestsPageBodyState._addGuest:await:programWorkspaceControllerProvider.upsertGuest watch CAT156 -- Existing bounded review signal at _ProgramGuestsPageBodyState._addGuest (await:programWorkspaceControllerProvider.upsertGuest). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(programWorkspaceControllerProvider.notifier)
           .upsertGuest(
@@ -584,6 +588,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
     if (draft == null || !mounted) return;
     setState(() => _mutationError = null);
     try {
+      // provider-graph: ownership-widget-async:_ProgramGuestsPageBodyState._editGroup:await:programWorkspaceControllerProvider.upsertGuestGroup watch CAT156 -- Existing bounded review signal at _ProgramGuestsPageBodyState._editGroup (await:programWorkspaceControllerProvider.upsertGuestGroup). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(programWorkspaceControllerProvider.notifier)
           .upsertGuestGroup(
@@ -618,6 +623,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
     if (confirmed != true || !mounted) return;
     setState(() => _mutationError = null);
     try {
+      // provider-graph: ownership-widget-async:_ProgramGuestsPageBodyState._deleteGroup:await:programWorkspaceControllerProvider.deleteGuestGroup watch CAT156 -- Existing bounded review signal at _ProgramGuestsPageBodyState._deleteGroup (await:programWorkspaceControllerProvider.deleteGuestGroup). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(programWorkspaceControllerProvider.notifier)
           .deleteGuestGroup(

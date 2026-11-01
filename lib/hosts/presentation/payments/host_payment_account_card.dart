@@ -316,6 +316,7 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
       setState(() {});
       return;
     }
+    // provider-graph: ownership-widget-async-callback:_RazorpaySetupSheetState._submit:await:widget.onSubmit watch CAT156 -- Existing bounded review signal at _RazorpaySetupSheetState._submit (await:widget.onSubmit). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
     await widget.onSubmit(
       RazorpayHostOnboardingDetails(
         legalBusinessName: _legalBusinessName.text,

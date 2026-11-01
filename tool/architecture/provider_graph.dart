@@ -6,7 +6,6 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 
 const providerGraphSchemaVersion = 2;
-const providerGraphReviewPath = 'tool/architecture/provider_graph_reviews.json';
 
 const _providerConstructors = <String>{
   'Provider',
@@ -385,7 +384,6 @@ final class ProviderGraph {
       ),
       'features': _featureGraph(providerEdgeList),
       'architectureReview': {
-        'reviewPath': providerGraphReviewPath,
         'candidates': [
           for (final candidate in candidates)
             candidate.toJson(reviewDecisions[candidate.id]),
@@ -467,10 +465,7 @@ final class _ScannedFile {
   final List<ProviderGraphNode> providers;
 }
 
-Future<ProviderGraph> buildProviderGraph(
-  Directory root, {
-  String reviewPath = providerGraphReviewPath,
-}) async {
+Future<ProviderGraph> buildProviderGraph(Directory root) async {
   final absoluteRoot = root.absolute;
   final lib = Directory('${absoluteRoot.path}/lib');
   if (!lib.existsSync()) {
@@ -707,23 +702,16 @@ Future<ProviderGraph> buildProviderGraph(
     ..._architectureCandidates(providers, providerEdges),
     ..._ownershipCandidates(scannedFiles),
   ]..sort((a, b) => a.id.compareTo(b.id));
-  final decisions = _readReviewDecisions(
-    File('${absoluteRoot.path}/$reviewPath'),
-  );
+  final decisions = await _readReviewDecisions(absoluteRoot.path, files);
   final candidateIds = candidates.map((candidate) => candidate.id).toSet();
   final unreviewed =
       candidates
           .where((candidate) {
             final decision = decisions[candidate.id];
             if (decision == null) return true;
-            // Ownership reviews cover an exact operation, never a file or count.
+            // Ownership reviews bound the callsites they looked at.
             return candidate.kind.startsWith('ownership-') &&
-                (decision['path'] != candidate.path ||
-                    decision['symbol'] != candidate.symbol ||
-                    decision['operation'] != candidate.operation ||
-                    decision['maxCallsites'] is! int ||
-                    (decision['maxCallsites']! as int) <
-                        (candidate.metric ?? 1));
+                (decision['maxCallsites']! as int) < (candidate.metric ?? 1);
           })
           .map((candidate) => candidate.id)
           .toList()
@@ -1651,48 +1639,62 @@ List<ArchitectureCandidate> _architectureCandidates(
   return candidates;
 }
 
-Map<String, Map<String, Object?>> _readReviewDecisions(File file) {
-  if (!file.existsSync()) return {};
-  final decoded = jsonDecode(file.readAsStringSync()) as Map<String, Object?>;
-  final decisions = decoded['decisions'] as List<Object?>? ?? const [];
+final _reviewComment = RegExp(
+  r'^[ \t]*//[ \t]*provider-graph:(.*)$',
+  multiLine: true,
+);
+final _reviewBody = RegExp(
+  r'^\s*(\S+)\s+(accepted-exception|accepted|watch|planned)'
+  r'(?:\s+(?!max=|--)(\S+))?(?:\s+max=(\d+))?\s+--\s+(\S.*)$',
+);
+
+/// A review sits next to the code it reviews, so moving a file moves it:
+///
+///     // provider-graph: <candidate> <status> [debt id] [max=<callsites>] -- <why>
+///
+/// An ownership `<candidate>` is `<kind>:<symbol>:<operation>`, read in the
+/// file holding it. Any other names its providers, such as
+/// `manual-provider:lookupProvider`. A new symbol, a replaced operation or more
+/// callsites than `max` (default 1) need a new review.
+Future<Map<String, Map<String, Object?>>> _readReviewDecisions(
+  String rootPath,
+  List<File> files,
+) async {
   final result = <String, Map<String, Object?>>{};
-  for (final item in decisions) {
-    final decision = Map<String, Object?>.from(item! as Map);
-    final id = decision['id'] as String?;
-    if (id == null || id.isEmpty) {
-      throw const FormatException(
-        'Every provider graph review decision needs a non-empty id.',
-      );
+  for (final file in files) {
+    final source = await file.readAsString();
+    if (!source.contains('provider-graph:')) continue;
+    final path = _relativePath(rootPath, file.path);
+    for (final comment in _reviewComment.allMatches(source)) {
+      final body = _reviewBody.firstMatch(comment[1]!);
+      if (body == null) {
+        throw FormatException(
+          'Malformed provider graph review in $path: ${comment[0]!.trim()}',
+        );
+      }
+      final key = body[1]!;
+      final status = body[2]!;
+      final debtId = body[3];
+      if (status == 'planned' && debtId == null) {
+        throw FormatException(
+          'Planned provider graph review $key needs a stable debtId.',
+        );
+      }
+      final id = key.startsWith('ownership-')
+          ? key.replaceFirst(':', ':$path#')
+          : key;
+      if (result.containsKey(id)) {
+        throw FormatException('Duplicate provider graph review id: $id');
+      }
+      result[id] = {
+        'id': id,
+        'status': status,
+        'rationale': body[5],
+        'debtId': ?debtId,
+        'path': path,
+        'maxCallsites': int.parse(body[4] ?? '1'),
+      };
     }
-    if (result.containsKey(id)) {
-      throw FormatException('Duplicate provider graph review id: $id');
-    }
-    const allowedStatuses = {
-      'accepted',
-      'accepted-exception',
-      'watch',
-      'planned',
-    };
-    final status = decision['status'];
-    final rationale = decision['rationale'];
-    if (!allowedStatuses.contains(status)) {
-      throw FormatException(
-        'Provider graph review $id has unsupported status: $status',
-      );
-    }
-    if (rationale is! String || rationale.trim().isEmpty) {
-      throw FormatException(
-        'Provider graph review $id needs a non-empty rationale.',
-      );
-    }
-    if (status == 'planned' &&
-        (decision['debtId'] is! String ||
-            (decision['debtId']! as String).trim().isEmpty)) {
-      throw FormatException(
-        'Planned provider graph review $id needs a stable debtId.',
-      );
-    }
-    result[id] = decision;
   }
   return result;
 }

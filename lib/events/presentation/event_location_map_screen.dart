@@ -44,6 +44,7 @@ class _EventLocationMapRouteScreenState
     setState(() => _directionsPending = true);
     var opened = false;
     try {
+      // provider-graph: ownership-widget-async:_EventLocationMapRouteScreenState._openDirections:await:externalLinkControllerProvider.openExternal watch CAT156 -- Existing bounded review signal at _EventLocationMapRouteScreenState._openDirections (await:externalLinkControllerProvider.openExternal). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       opened = await ref
           .read(externalLinkControllerProvider)
           .openExternal(directionsUri);

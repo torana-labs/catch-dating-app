@@ -426,6 +426,7 @@ class _EventSuccessHostWorkspacePageBodyState
     _lastLiveActionAt = now;
     setState(() => _liveActionPending = true);
     try {
+      // provider-graph: ownership-widget-async-callback:_EventSuccessHostWorkspacePageBodyState._runLiveAction:await:action watch CAT156 -- Existing bounded review signal at _EventSuccessHostWorkspacePageBodyState._runLiveAction (await:action). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await action();
     } finally {
       if (mounted) setState(() => _liveActionPending = false);

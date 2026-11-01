@@ -34,11 +34,14 @@ typedef ProgramInventoryRowPredicate =
 /// cursor retained after this window.
 const programEventsMatchingPageReadLimit = 8;
 
+// provider-graph: manual-provider:programCreateJournalProvider planned CAT156 -- The Program creation command journal remains manually provided for the initial consolidation so its persistence instance and test override contract do not change in the source repair. CAT156 owns the equivalent Riverpod codegen migration.
 // ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- CAT156 migration debt; keeps value-equality scope, disposal, idempotency journal and test overrides until the bounded codegen move
 final programCreateJournalProvider = Provider<ProgramCreateJournal>(
   (ref) => const ProgramCreateJournal(),
 );
 
+// provider-graph: manual-provider:programCreateControllerProvider planned CAT156 -- The route-scoped Program creation controller landed with a manual family so its value-equality request key, auto-dispose lifecycle, future access, and focused overrides stay stable. CAT156 owns the equivalent Riverpod codegen migration and generated-output update.
+// provider-graph: cross-feature-presentation:programCreateControllerProvider->hostOrganizerSelectionProvider planned CAT156 -- Program creation currently watches the Host organizer selection to invalidate an in-flight account/organizer command when the actor changes. CAT156 will replace this presentation-to-presentation edge with an injected or feature-neutral actor fence while preserving draft retention, idempotency, and override contracts.
 // ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- CAT156 migration debt; keeps value-equality scope, disposal, idempotency journal and test overrides until the bounded codegen move
 final programCreateControllerProvider = FutureProvider.autoDispose
     .family<ProgramCreateController, ProgramEventsScope>((ref, scope) async {
@@ -87,6 +90,7 @@ final programCreateControllerProvider = FutureProvider.autoDispose
           timezone: suggestion.value.identifier,
         );
       }
+      // provider-graph: ownership-listenable-wrapper:programCreateControllerProvider:construct:ProgramCreateController planned CAT156 -- programCreateControllerProvider constructs the existing Programs business Listenable owner. Provider wiring alone does not own its published state; migrate with the exact manual-provider debt while retaining family identity, disposal, actor fences and durable command journal recovery.
       final controller = ProgramCreateController(
         organizerId: scope.organizerId,
         requestId: recovered?.requestId ?? _newProgramRequestId(),
@@ -206,6 +210,8 @@ enum ProgramLifecycleAction { archive, unarchive }
 /// Opaque continuation failure retained while already-loaded rows stay usable.
 typedef ProgramEventsPageError = Object;
 
+// provider-graph: manual-provider:programEventsControllerProvider planned CAT156 -- The account- and organizer-scoped Programs inventory controller landed with a manual family so its request identity, disposal, pagination, and override contracts stay stable. CAT156 owns the equivalent Riverpod codegen migration and generated-output update.
+// provider-graph: cross-feature-presentation:programEventsControllerProvider->hostOrganizerSelectionProvider planned CAT156 -- The Programs inventory controller currently watches the Host organizer selection to reject stale pages and mutations after an actor switch. CAT156 will replace this presentation-to-presentation edge with an injected or feature-neutral actor fence while preserving account and organizer isolation.
 /// Both account and organizer participate in the provider identity. An exact
 /// saved-ID anchor survives a route reopen without expanding the page size.
 // ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- CAT156 migration debt; keeps value-equality scope, disposal, idempotency journal and test overrides until the bounded codegen move
@@ -222,6 +228,7 @@ final programEventsControllerProvider = Provider.autoDispose
             (selected == null || selected == scope.organizerId);
       }
 
+      // provider-graph: ownership-listenable-wrapper:programEventsControllerProvider:construct:ProgramEventsController planned CAT156 -- programEventsControllerProvider constructs the existing Programs business Listenable owner. Provider wiring alone does not own its published state; migrate with the exact manual-provider debt while retaining family identity, disposal, actor fences and durable command journal recovery.
       final controller = ProgramEventsController(
         isActorCurrent: isCurrent,
         fetchPage: ({cursor, programId}) => inventory.listPage(
@@ -256,6 +263,7 @@ final programEventsControllerProvider = Provider.autoDispose
       return controller;
     });
 
+// provider-graph: ownership-listenable:ProgramEventsController:reactive-state planned CAT156 -- ProgramEventsController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees.
 class ProgramEventsController extends ChangeNotifier {
   factory ProgramEventsController({
     required bool Function() isActorCurrent,

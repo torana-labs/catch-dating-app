@@ -8,6 +8,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_session_controller.g.dart';
 
+// provider-graph: high-fan-out:authSessionControllerProvider accepted -- These eight dependencies belong to one sign-out boundary: auth repository, auth and onboarding flow controllers, four session-scoped Explore browse roots, and the existing FCM service. Installation removal runs while account authorization is still valid, without initializing an unused service; flow state is cleared centrally. Auth session and FCM lifecycle tests cover cleanup, in-flight sign-out deduplication and bounded unregister failure.
+// provider-graph: cross-feature-presentation:authSessionControllerProvider->selectedExploreCityWasUserSelectedProvider accepted -- Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's manual city-selection guard. The focused AuthSessionController test proves reset behavior.
+// provider-graph: cross-feature-presentation:authSessionControllerProvider->selectedExploreCityProvider accepted -- Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's selected city. The focused AuthSessionController test proves reset behavior.
+// provider-graph: cross-feature-presentation:authSessionControllerProvider->onboardingControllerProvider accepted -- Sign-out is the app-session boundary and must reset the public onboarding controller plus its Mutations. This is the documented controller-to-controller command seam, not a read-model or widget dependency.
+// provider-graph: cross-feature-presentation:authSessionControllerProvider->exploreSearchQueryProvider accepted -- Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's search query. The focused AuthSessionController test proves reset behavior.
+// provider-graph: cross-feature-presentation:authSessionControllerProvider->exploreFiltersProvider accepted -- Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's filters. The focused AuthSessionController test proves reset behavior.
 /// **Pattern A: Action controller + static Mutations**
 ///
 /// Owns session-level auth side effects such as sign-out. This keeps widgets
