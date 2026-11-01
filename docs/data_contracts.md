@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.185.0
+version: 1.185.1
 updated: 2026-11-01
 owner: recursive_audit_loop
 status: active
@@ -1693,10 +1693,9 @@ sources into the browser runtime validator registry.
 organizer subtype, never a peer top-level entity. The required
 `organizerType` enum is `club`, `community`, `individual`, `eventProducer`,
 `venue`, or `brand`; no legacy `entityKind` value is read. Missing
-`appVisibility` fails closed as `hidden`. The complete
-mapping, rollout, parity, and recovery procedure is owned by
-`docs/migrations/clubs_to_organizers.md` and
-`contracts/migrations/clubs_to_organizers.json`.
+`appVisibility` fails closed as `hidden`. The type model and authority map
+are recorded in `docs/migrations/clubs_to_organizers.md`; the one-time
+migration is complete and its tool is retired.
 
 New contracts use `organizerId`, `organizerTeamMemberships`,
 `organizerFollows`, `organizerClaimRequests`, `organizerScheduleLocks`, and
@@ -1802,12 +1801,8 @@ projection, not a UI inference:
 - missing or invalid capabilities fail closed.
 
 Create, claim, draft-scaffolding, and claim-decision callables write the
-projection. Existing canonical and compatibility documents were repaired with
-`tool/data/backfill_organizer_supply_capabilities.mjs`: the production apply on
-2026-07-27 repaired 44 organizers and 42 clubs, found no external events, and a
-post-apply dry run reported 86 current documents with zero repairs or invalid
-records. The migration contract is
-`contracts/migrations/organizer_supply_capabilities.json`.
+projection. A one-off backfill repaired the existing documents on 2026-07-27;
+it is retired, since wipe-and-reseed leaves no legacy documents.
 
 ### Required Event Meeting Location
 
@@ -1822,22 +1817,16 @@ them. They are not nullable escape hatches.
 - Update resolves the existing or supplied exact location and always rewrites
   the canonical object plus mirrors. It rejects a truly coordinate-less legacy
   document instead of preserving corruption.
-- Dart `Event` and `ExternalEvent` keep exact coordinates nullable on reads
-  until the production repair is complete. `Event.effectiveMeetingLocation`
+- Dart `Event` and `ExternalEvent` keep exact coordinates nullable on reads.
+  `Event.effectiveMeetingLocation`
   deterministically promotes a complete legacy pair, while coordinate-less
   records remain readable and fail closed anywhere an exact location is
   required.
 - Discovery and proximity check-in fail closed when the invariant is broken;
   they never publish a null geo cell or skip the distance guard.
-- `node tool/data/backfill_event_meeting_locations.mjs --env <env>` is the
-  dry-run-first repair path. It never invents coordinates or mixes latitude
-  and longitude from different sources.
 
-Dev was verified clean on 2026-07-13: 146/146 events have structured exact
-locations and the location-market and discovery repair tools report zero
-remaining work. The production dry run found 138 deterministic repairs and 9
-historical records without recoverable coordinates; production was not
-mutated, and strict production rollout remains blocked on resolving those nine.
+The repair of historical events is moot: all data is synthetic and is wiped
+and reseeded, so its one-off backfill is retired.
 
 ## Normal Workflow
 
@@ -2144,16 +2133,9 @@ Direct private event reads require a current organizer manager or active viewRos
 staff grant; deleted users, foreign tenants and expired/revoked staff grants
 are denied. Consumer bookmarks cannot target private events.
 
-`node tool/data/backfill_event_publication.mjs --project <id>` plans the legacy
-publication migration without writes. It validates complete legacy documents,
-rejects contradictory organizer identities and unlabelled progressive records,
-and scans bounded document-ID pages. Apply requires the reviewed plan digest and
-an explicit production flag for the production project. Each transaction
-rechecks the exact source update time and changes only publicationState; an
-interrupted or stale run requires a fresh reviewed plan. Existing private events,
-booking capabilities, provenance, counters and cancellation status are preserved.
-Before switching public readers/rules, deploy explicit publication writers and
-require a complete final dry run with zero legacy candidates and zero blockers.
+The one-off backfill that annotated legacy public events with
+`publicationState` is retired; wipe-and-reseed leaves no legacy events to
+annotate.
 
 These contracts and services are not rollout authorization. Private persistence
 remains disabled until the explicit legacy publication backfill, all public
@@ -2775,14 +2757,8 @@ backfill must never infer or promote permission from a phone number, contact
 source, roster membership, form answer not bound to the reviewed consent copy,
 or prior send.
 
-`tool/data/backfill_organizer_crm_authority_v2.mjs` is the dry-run-first
-additive migration. It creates contact origins only when a canonical attendee
-edge names both current and original contact identity. Existing non-unknown
-preference state without a complete referenced receipt becomes an immutable
-`legacyIncomplete` receipt and remains ineligible for managed delivery. The
-tool reports, rather than guesses, attendee rows whose canonical edge is
-missing. The migration is available in source but has not been applied to any
-environment.
+A one-off backfill for legacy CRM rows was written but never applied to any
+environment. It is retired, since wipe-and-reseed leaves no legacy rows.
 
 `organizerContactOrigins/{originId}` is the immutable multi-source provenance
 ledger for organizer CRM contacts. Each deterministic row records organizer,
@@ -3091,24 +3067,8 @@ a verified mirror. Provider-specific questions remain organizer-custom answers;
 they are not added to this catalog merely because one provider or organizer
 uses them.
 
-Historical rows created before this boundary can be assessed with
-`node tool/data/audit_legacy_host_contact_projection.mjs --env <environment>`.
-The command is permanently read-only, omits raw phone/email values, and splits
-exact unprovenanced private-profile matches from rows needing human
-reconciliation. It also counts affected CRM edges and contacts. Any repair must
-be a separate approval-gated operation because stale identity evidence and
-organizer-supplied contact history must be reconciled together; age or source
-labels alone are never deletion proof.
-
-After an explicit repair approval, the only supported mutation path is
-`node tool/data/repair_legacy_host_contact_projection.mjs`. It requires one
-organizer, exact expected high-confidence and reconciliation counts, and both
-production confirmation flags. Each row is reclassified transactionally before
-phone/email are set to null. The current deployed attendee trigger must then
-rebuild the event edge, contact, traits, identity evidence and audience summary;
-the repair verifies that postcondition and removes only orphaned phone claims.
-It never deletes an attendee, event, organizer contact, or organizer-supplied
-contact fact, and never prints raw contact values.
+Rows created before this boundary were handled by a one-off audit and repair
+pair. Both are retired, since wipe-and-reseed leaves no such rows.
 
 ### Generic Organizer Forms
 
@@ -4941,9 +4901,9 @@ assets remain separate: `organizerForms/...` and `organizer-form-exports/...`
 deny direct SDK access and are exposed only through short-lived backend-signed
 requests.
 
-Remote organizer backfill is complete in staging and production; legacy
-cleanup is intentionally not complete. Follow
-`docs/migrations/clubs_to_organizers.md`. Do not delete or reset Firestore data
+Remote organizer backfill completed in staging and production on 2026-07-22
+(`docs/migrations/clubs_to_organizers.md`). Legacy data goes with the
+owner-approved wipe-and-reseed rather than a migration. Do not delete or reset Firestore data
 in dev, staging, or prod without a separate explicit destructive-action
 confirmation. Preserve user documents and both canonical organizer documents
 and legacy club projections through any remote migration.

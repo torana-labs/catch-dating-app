@@ -1,10 +1,11 @@
-import {CatchGap, CatchText} from "@catch/web-ui";
+import {CatchField, CatchGap, CatchText} from "@catch/web-ui";
 import {claimVerificationCopy as copy} from "@content/claimVerification";
 import {
   ActionGroup,
   Button,
   ButtonLink,
   ChoiceCard,
+  Form,
   HostPreviewSection,
   HostPreviewSectionHead,
   VerificationMethodGrid,
@@ -14,15 +15,24 @@ import type {HostListing} from "../../organizers/types";
 import type {InstantClaimController} from "../useInstantClaimController";
 
 /**
- * Proving ownership straight away (WebOrgV2 claim band). It sits outside the
- * review workspace because the account step is a form of its own.
+ * The whole claim for one listing (WebOrgV2 claim band): a phone sign-in,
+ * then a code from the listing's Instagram or Luma, with staff review as the
+ * fallback when neither works.
  */
-export function InstantClaimPanel({controller, listing}: {controller: InstantClaimController; listing: HostListing}) {
-  if (controller.phase === "unavailable") return null;
+export function InstantClaimPanel({controller, listing, pendingReview = false}: {
+  controller: InstantClaimController; listing: HostListing; pendingReview?: boolean;
+}) {
+  if (controller.phase === "unavailable") {
+    return <HostPreviewSection aria-labelledby="instant-claim-title">
+      <HostPreviewSectionHead titleId="instant-claim-title" title={copy.title} body={copy.unavailable} />
+    </HostPreviewSection>;
+  }
   return (
     <HostPreviewSection aria-labelledby="instant-claim-title">
       <CatchGap size="section">
         <HostPreviewSectionHead titleId="instant-claim-title" title={copy.title} body={copy.body} />
+        {pendingReview && controller.phase !== "done" ?
+          <CatchText as="p" role="status" variant="supportingStrong">{copy.pendingReview}</CatchText> : null}
         {renderPhase(controller, listing)}
         {controller.error ? <CatchText as="p" role="alert" variant="bodyS">{controller.error}</CatchText> : null}
       </CatchGap>
@@ -35,7 +45,7 @@ function renderPhase(controller: InstantClaimController, listing: HostListing) {
   case "account":
     return <CatchGap size="related">
       <CatchText as="p" variant="bodyM">{copy.accountIntro}</CatchText>
-      {renderAccountForm(controller.account)}
+      {renderAccountForm(controller.account, {askBirthDate: false})}
     </CatchGap>;
   case "loading":
     return <CatchText as="p" role="status" variant="bodyS">{copy.loadingOptions}</CatchText>;
@@ -43,6 +53,14 @@ function renderPhase(controller: InstantClaimController, listing: HostListing) {
     return renderMethods(controller);
   case "code":
     return renderCode(controller);
+  case "review":
+    return renderReview(controller);
+  case "requested":
+    return <CatchGap size="related" role="status">
+      <CatchText as="h3" variant="displayS">{copy.requestedTitle}</CatchText>
+      <CatchText as="p" variant="bodyM">{copy.requestedBody}</CatchText>
+      <ActionGroup variant="marketing"><ButtonLink href={listing.path} variant="ghost">{copy.backToPage}</ButtonLink></ActionGroup>
+    </CatchGap>;
   case "done":
     return <CatchGap size="related" role="status">
       <CatchText as="h3" variant="displayS">{copy.doneTitle}</CatchText>
@@ -56,7 +74,7 @@ function renderPhase(controller: InstantClaimController, listing: HostListing) {
 
 function renderMethods(controller: InstantClaimController) {
   const {methods, chosen, catchInstagramHandle} = controller;
-  if (!chosen) return <CatchText as="p" variant="bodyM">{copy.noMethods}</CatchText>;
+  if (!chosen) return null;
   return <CatchGap size="related">
     <CatchText as="p" variant="supportingStrong">{copy.methodsLabel}</CatchText>
     <VerificationMethodGrid aria-label={copy.methodsLabel}>
@@ -74,8 +92,43 @@ function renderMethods(controller: InstantClaimController) {
     <ActionGroup variant="marketing">
       <Button type="button" onClick={() => void controller.showCode()} loading={controller.starting}
         loadingLabel={copy.showingCode}>{copy.showCode}</Button>
+      <Button type="button" variant="ghost" onClick={controller.openReview}>{copy.reviewOffer}</Button>
     </ActionGroup>
   </CatchGap>;
+}
+
+/** Staff review: the signed-in account supplies the name and phone, so only proof is asked for. */
+function renderReview(controller: InstantClaimController) {
+  const canGoBack = controller.methods.length > 0;
+  return <Form noValidate onSubmit={controller.requestReview} pending={controller.requesting}>
+    <CatchGap size="related">
+      <CatchText as="p" variant="bodyM">{canGoBack ? copy.reviewIntro : copy.noMethods}</CatchText>
+      <CatchField
+        recipe="input"
+        id="claim-proof-links"
+        title={copy.proofLinks}
+        maxLines={3}
+        value={controller.proofLinks}
+        inputHint={copy.proofLinksHint}
+        onChanged={(value) => controller.setProofLinks(value)}
+        required
+      />
+      <CatchField
+        recipe="input"
+        id="claim-note"
+        title={copy.note}
+        maxLines={3}
+        maxLength={1000}
+        value={controller.note}
+        onChanged={(value) => controller.setNote(value)}
+      />
+      <ActionGroup variant="marketing">
+        <Button type="submit" loading={controller.requesting} loadingLabel={copy.requestingReview}>
+          {copy.requestReview}</Button>
+        {canGoBack ? <Button type="button" variant="ghost" onClick={controller.chooseAgain}>{copy.useCode}</Button> : null}
+      </ActionGroup>
+    </CatchGap>
+  </Form>;
 }
 
 function renderCode(controller: InstantClaimController) {

@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-10-19",
+  "updated": "2026-11-01",
   "id": "feature.organizer_detail",
   "name": "Organizer Detail",
   "owner": "organizers",
@@ -1013,10 +1013,10 @@
             "symbol": "useOrganizerPageController"
           },
           {
-            "id": "claim_controller",
+            "id": "page_view",
             "language": "typescript",
-            "file": "website/src/features/claims/useListingClaimController.ts",
-            "symbol": "useListingClaimController"
+            "file": "website/src/features/organizers/organizerPageView.ts",
+            "symbol": "organizerPageView"
           },
           {
             "id": "review_controller",
@@ -1165,14 +1165,13 @@
           "description": "Opens the share panel with the page link and QR code, copies the link to the clipboard, and reports completion or failure."
         },
         {
-          "id": "request_claim",
-          "owner": "claim_controller",
-          "codeValue": "handleSubmit",
-          "cardinality": "singleton",
+          "id": "open_claim",
+          "owner": "page_view",
+          "codeValue": "claimHrefOf",
+          "cardinality": "unbounded",
           "scopeKeys": [
-            "requesterUid",
-            "listingId",
-            "claimRequestVersion"
+            "routeInstanceId",
+            "listingId"
           ],
           "outcomes": [
             {
@@ -1181,13 +1180,9 @@
                 "registry": "marketing_routes",
                 "id": "claim"
               }
-            },
-            {
-              "kind": "side_effect",
-              "id": "organizer.claim_request_submitted"
             }
           ],
-          "description": "Validates and submits one typed organizer claim request when policy, runtime, and authentication allow it."
+          "description": "Opens the claim route for this listing when it can be claimed; the claim itself happens there."
         },
         {
           "id": "submit_public_review",
@@ -1267,7 +1262,7 @@
                 "share_listing"
               ],
               "disabledActions": [
-                "request_claim",
+                "open_claim",
                 "submit_public_review"
               ]
             }
@@ -1297,7 +1292,7 @@
               "enabledActions": [
                 "follow_listing",
                 "share_listing",
-                "request_claim"
+                "open_claim"
               ]
             },
             {
@@ -1308,7 +1303,7 @@
               "enabledActions": [
                 "follow_listing",
                 "share_listing",
-                "request_claim",
+                "open_claim",
                 "submit_public_review"
               ]
             },
@@ -1322,7 +1317,7 @@
                 "share_listing"
               ],
               "disabledActions": [
-                "request_claim"
+                "open_claim"
               ]
             }
           ]

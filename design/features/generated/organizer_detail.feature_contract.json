@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/organizer_detail.feature.json",
-  "generatedFor": "2026-10-19",
-  "sourceDigest": "sha256:3cda7626833da6790f5c18bc59851a49355b57961a77325076dd1ff4aecd99d2",
+  "generatedFor": "2026-11-01",
+  "sourceDigest": "sha256:1deb66fdf988387ff3d84d799fb545b827d0d116d7f449d8bb2d7741c5e718b7",
   "resolvedDigest": "sha256:6f2eafd8c79be9f18a8e507e31d350380c26f6a2c969d570ade4a8e60ca4a560",
   "feature": {
     "id": "feature.organizer_detail",
@@ -2529,10 +2529,10 @@
             "symbol": "useOrganizerPageController"
           },
           {
-            "id": "claim_controller",
+            "id": "page_view",
             "language": "typescript",
-            "file": "website/src/features/claims/useListingClaimController.ts",
-            "symbol": "useListingClaimController"
+            "file": "website/src/features/organizers/organizerPageView.ts",
+            "symbol": "organizerPageView"
           },
           {
             "id": "review_controller",
@@ -2693,14 +2693,13 @@
           "implementationStatus": "implemented"
         },
         {
-          "id": "request_claim",
-          "owner": "claim_controller",
-          "codeValue": "handleSubmit",
-          "cardinality": "singleton",
+          "id": "open_claim",
+          "owner": "page_view",
+          "codeValue": "claimHrefOf",
+          "cardinality": "unbounded",
           "scopeKeys": [
-            "requesterUid",
-            "listingId",
-            "claimRequestVersion"
+            "routeInstanceId",
+            "listingId"
           ],
           "outcomes": [
             {
@@ -2709,13 +2708,9 @@
                 "registry": "marketing_routes",
                 "id": "claim"
               }
-            },
-            {
-              "kind": "side_effect",
-              "id": "organizer.claim_request_submitted"
             }
           ],
-          "description": "Validates and submits one typed organizer claim request when policy, runtime, and authentication allow it.",
+          "description": "Opens the claim route for this listing when it can be claimed; the claim itself happens there.",
           "implementationStatus": "implemented"
         },
         {
@@ -2792,7 +2787,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
-                  "request_claim",
+                  "open_claim",
                   "submit_public_review"
                 ]
               }
@@ -2815,7 +2810,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
-                  "request_claim"
+                  "open_claim"
                 ]
               }
             }
@@ -2860,7 +2855,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
-                  "request_claim",
+                  "open_claim",
                   "submit_public_review"
                 ]
               }
@@ -2908,7 +2903,7 @@
                   "share_listing"
                 ],
                 "disabled": [
-                  "request_claim",
+                  "open_claim",
                   "submit_public_review"
                 ],
                 "notAllowed": []
@@ -2957,7 +2952,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
-                  "request_claim",
+                  "open_claim",
                   "submit_public_review"
                 ]
               }
@@ -3004,7 +2999,7 @@
                 "enabled": [
                   "follow_listing",
                   "share_listing",
-                  "request_claim"
+                  "open_claim"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -3026,7 +3021,7 @@
                 "enabled": [
                   "follow_listing",
                   "share_listing",
-                  "request_claim",
+                  "open_claim",
                   "submit_public_review"
                 ],
                 "disabled": [],
@@ -3049,7 +3044,7 @@
                   "share_listing"
                 ],
                 "disabled": [
-                  "request_claim"
+                  "open_claim"
                 ],
                 "notAllowed": [
                   "submit_public_review"

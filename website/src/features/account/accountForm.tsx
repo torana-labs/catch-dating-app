@@ -6,8 +6,11 @@ import type {WebsiteAccountController} from "./useWebsiteAccountController";
 
 const noop = () => undefined;
 
-/** Inline account step shared by follow and event actions. */
-export function renderAccountForm(account: WebsiteAccountController) {
+/**
+ * Inline account step shared by follow, event and claim actions. A claim has
+ * no age rule, so it leaves the optional birth date out.
+ */
+export function renderAccountForm(account: WebsiteAccountController, {askBirthDate = true} = {}) {
   if (account.loading) return <CatchText as="p" color="ink2" role="status" variant="bodyS">{accountCopy.loading}</CatchText>;
   if (account.ageIneligible) return <CatchText as="p" role="status" variant="bodyM">{accountCopy.ageIneligible}</CatchText>;
   return <Form noValidate onSubmit={account.handleSubmit} pending={account.pending}>
@@ -32,7 +35,8 @@ export function renderAccountForm(account: WebsiteAccountController) {
         inputMode={account.verified || account.pending || account.stage === "code" ? "inactive" : "editable"}
         keyboardType="phone"
       />
-      {!account.account?.dateOfBirth && (account.ageRequired || optionalAccountFields.includes("dateOfBirth")) ? <CatchField
+      {!account.account?.dateOfBirth && (account.ageRequired ||
+        (askBirthDate && optionalAccountFields.includes("dateOfBirth"))) ? <CatchField
         recipe="input"
         id={`${account.id}-birth`}
         title={account.ageRequired ? accountCopy.requiredBirth : accountCopy.optionalBirth}

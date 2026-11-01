@@ -52,7 +52,7 @@ const generated = [
 const ownTests = /^tool\/(?:architecture\/(?:move_to_contexts|rename_to_organizer|rename_wire_to_organizer)|check_organizer_nomenclature)(?:\.test)?\.mjs$/u;
 const toolFixtures = /^(?:test\/)?tool\/(?:.*\/)?fixtures\//u;
 // The clubs-to-organizers migration record keeps the names it migrated.
-const migrationRecord = [/^contracts\/migrations\//u, /^docs\/migrations\//u, /^tool\/data\/migrate_clubs_to_organizers/u];
+const migrationRecord = [/^contracts\/migrations\//u, /^docs\/migrations\//u];
 const excluded = [...generated, ownTests, toolFixtures, ...migrationRecord];
 const scriptFile = /\.(?:ts|tsx|mts|cts|js|jsx|mjs|cjs)$/u;
 const rulesFile = /(?:^|\/)[\w.]*\.rules$/u;

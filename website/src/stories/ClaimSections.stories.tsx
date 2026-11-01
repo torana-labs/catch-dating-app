@@ -1,17 +1,10 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {brand} from "@catch/brand";
-import type {Dispatch, FormEvent, SetStateAction} from "react";
 import {
   ClaimHeroSection,
+  ClaimSearchSection,
   ClaimUrlStateSection,
-  ClaimWorkspaceSection,
 } from "../features/claims/sections/ClaimPageSections";
-import {
-  claimVerificationMethods,
-  type ClaimFlowStep,
-  type ClaimRole,
-  type ClaimVerificationMethodId,
-} from "../features/claims/claimModel";
 import type {ClaimFlowController} from "../features/claims/useClaimFlowController";
 import {InstantClaimPanel} from "../features/claims/sections/InstantClaimSection";
 import type {InstantClaimController} from "../features/claims/useInstantClaimController";
@@ -107,88 +100,28 @@ export const ClaimUrlStateNotFound: Story = {
   ),
 };
 
-export const ClaimWorkspace: Story = {
-  name: "Workspace · verify",
+export const ClaimSearch: Story = {
+  name: "Search · listing search",
   parameters: {
-    a11y: {test: "todo"},
     catchComponent: {
-      id: "claim_workspace_section",
-      routeIds: ["claim", "claim_lookup"],
-      states: ["verify"],
-    },
-  },
-  render: () => (
-    <ClaimWorkspaceSection
-      controller={mockClaimController({
-        currentStepIndex: 2,
-        step: "verify",
-      })}
-    />
-  ),
-};
-
-export const ClaimWorkspaceListingSearch: Story = {
-  name: "Workspace · listing search",
-  parameters: {
-    a11y: {test: "todo"},
-    catchComponent: {
-      id: "claim_workspace_section",
+      id: "claim_search_section",
       routeIds: ["claim", "claim_lookup"],
       states: ["listing-search"],
     },
   },
-  render: () => (
-    <ClaimWorkspaceSection
-      controller={mockClaimController({
-        currentStepIndex: 0,
-        listing: null,
-        query: "dinner",
-        searchResults: [claimableListing],
-        step: "listing",
-      })}
-    />
-  ),
+  render: () => <ClaimSearchSection controller={mockClaimController({listing: null, query: "dinner"})} />,
 };
 
-export const ClaimWorkspaceRole: Story = {
-  name: "Workspace · role",
+export const ClaimSearchSelected: Story = {
+  name: "Search · selected listing",
   parameters: {
-    a11y: {test: "todo"},
     catchComponent: {
-      id: "claim_workspace_section",
+      id: "claim_search_section",
       routeIds: ["claim", "claim_lookup"],
-      states: ["role"],
+      states: ["selected-listing"],
     },
   },
-  render: () => (
-    <ClaimWorkspaceSection
-      controller={mockClaimController({
-        currentStepIndex: 1,
-        step: "role",
-      })}
-    />
-  ),
-};
-
-export const ClaimWorkspaceSubmitted: Story = {
-  name: "Workspace · submitted",
-  parameters: {
-    a11y: {test: "todo"},
-    catchComponent: {
-      id: "claim_workspace_section",
-      routeIds: ["claim", "claim_lookup"],
-      states: ["submitted"],
-    },
-  },
-  render: () => (
-    <ClaimWorkspaceSection
-      controller={mockClaimController({
-        currentStepIndex: 3,
-        requestId: "claim_req_123",
-        step: "submitted",
-      })}
-    />
-  ),
+  render: () => <ClaimSearchSection controller={mockClaimController()} />,
 };
 
 const inHalfAnHour = "2026-10-31T12:30:00.000Z";
@@ -270,6 +203,56 @@ export const InstantClaimDone: Story = {
   render: () => <InstantClaimPanel controller={mockInstantController({phase: "done"})} listing={claimableListing} />,
 };
 
+export const InstantClaimReview: Story = {
+  name: "Instant check · review request",
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["review"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({phase: "review",
+    proofLinks: "https://carterroadrunners.in"})} listing={claimableListing} />,
+};
+
+export const InstantClaimNoMethods: Story = {
+  name: "Instant check · no code check, review only",
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["review-only"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({phase: "review", methods: [], chosen: undefined})}
+    listing={claimableListing} />,
+};
+
+export const InstantClaimRequested: Story = {
+  name: "Instant check · review requested",
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["requested"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({phase: "requested"})} listing={claimableListing} />,
+};
+
+export const InstantClaimPendingReview: Story = {
+  name: "Instant check · after a review request",
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["pending-review"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({})} listing={claimableListing} pendingReview />,
+};
+
 function mockInstantController(overrides: Partial<InstantClaimController>): InstantClaimController {
   const methods = [
     {method: "instagramMessage" as const, available: true, proofTarget: "carterroadrunners", unavailableReason: null},
@@ -281,64 +264,29 @@ function mockInstantController(overrides: Partial<InstantClaimController>): Inst
     account: {} as InstantClaimController["account"],
     phase: "choose", methods, chosen: methods[0], attempt: null, expired: false, copied: false, error: "",
     rejection: null, lumaMissing: false, starting: false, checking: false, catchInstagramHandle: brand.social.instagramHandle,
+    proofLinks: "", setProofLinks: noop, note: "", setNote: noop, requesting: false,
     setMethod: noop, showCode: async () => undefined, checkLuma: async () => undefined, copyCode: noop, chooseAgain: noop,
+    openReview: noop, requestReview: async () => undefined,
     ...overrides,
   };
 }
 
 function mockClaimController(overrides: Partial<ClaimFlowController> = {}): ClaimFlowController {
   const listing = claimableListing;
-  const setString = noopSetter<string>();
-  const setRole = noopSetter<ClaimRole>();
-  const setStep = noopSetter<ClaimFlowStep>();
-  const setVerificationMethod = noopSetter<ClaimVerificationMethodId>();
-
   return {
     activeRequestId: null,
-    authReady: true,
-    businessEmail: "host@example.com",
-    businessPhone: "",
-    canContinueRole: true,
-    claimRuntimeAvailable: true,
     claimLookup: null,
     claimUrlState: null,
-    currentStepIndex: 0,
-    handleClaimSubmit: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-    },
-    handleSignIn: async () => undefined,
-    handleSignOut: async () => undefined,
-    isSigningIn: false,
-    isSubmitting: false,
+    clearListing: () => undefined,
     listing,
-    message: "",
-    proofUrls: "https://example.com/events",
+    listingFromLink: false,
+    markClaimStarted: () => undefined,
     query: listing.name,
-    requesterName: "Taylor Host",
-    requesterRole: "owner",
-    requestId: null,
     searchResults: [listing],
-    selectedMethod: claimVerificationMethods[0],
     selectListing: (_listing: HostListing) => undefined,
-    setBusinessEmail: setString,
-    setBusinessPhone: setString,
-    setMessage: setString,
-    setProofUrls: setString,
-    setQuery: setString,
-    setRequesterName: setString,
-    setRequesterRole: setRole,
-    setStep,
-    setVerificationMethod,
-    status: {message: "", tone: ""},
-    step: "listing",
-    user: null,
-    verificationMethod: "publicProof",
+    setQuery: (_query: string) => undefined,
     ...overrides,
   };
-}
-
-function noopSetter<T>(): Dispatch<SetStateAction<T>> {
-  return () => undefined;
 }
 
 function requireListing(id: string): HostListing {

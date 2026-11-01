@@ -1075,7 +1075,7 @@
       "notes": "Claim lookup state section for already-claimed, pending, and not-found claim URLs."
     },
     {
-      "id": "claim_workspace_section",
+      "id": "claim_search_section",
       "kind": "section",
       "routeIds": [
         "claim",
@@ -1083,7 +1083,7 @@
       ],
       "owner": "features/claims/sections",
       "source": "website/src/features/claims/sections/ClaimPageSections.tsx",
-      "exportName": "ClaimWorkspaceSection",
+      "exportName": "ClaimSearchSection",
       "css": [
         "website/src/styles/flows.css",
         "website/src/styles/organizers.css",
@@ -1092,15 +1092,13 @@
       "storybook": {
         "status": "ready",
         "story": "website/src/stories/ClaimSections.stories.tsx",
-        "exportName": "ClaimWorkspace",
+        "exportName": "ClaimSearch",
         "states": [
           "listing-search",
-          "role",
-          "verify",
-          "submitted"
+          "selected-listing"
         ]
       },
-      "notes": "Claim route form workspace section; Storybook uses a mock controller so auth and Firebase side effects stay route-owned."
+      "notes": "Finding the page to claim when the visitor arrived without one; it collapses to the chosen page, and the claim panel takes over. Storybook uses a mock controller."
     },
     {
       "id": "claim_instant_check_panel",
@@ -1128,10 +1126,14 @@
           "instagram-wrong-sender",
           "luma-code",
           "expired",
-          "verified"
+          "verified",
+          "review",
+          "review-only",
+          "requested",
+          "pending-review"
         ]
       },
-      "notes": "Proves ownership straight away: a code sent from the listing's Instagram account to Catch's, or pasted into its Luma calendar (WebOrgV2 claim band, CAT-256). It sits above the review workspace and outside its form, because the account step is a form of its own. Storybook uses a mock controller; the route wraps it with useInstantClaimController."
+      "notes": "The whole claim for one listing (WebOrgV2 claim band, CAT-256): a phone sign-in, then a code sent from the listing's Instagram account to Catch's or pasted into its Luma calendar, with a staff review request (proof links and an optional note) as the fallback. Storybook uses a mock controller; the route wraps it with useInstantClaimController."
     },
     {
       "id": "shared_claim_flow_shell",
@@ -1672,31 +1674,6 @@
         ]
       },
       "notes": "Practice-mode notice above the runtime: an informational CatchBanner."
-    },
-    {
-      "id": "shared_auth_status_row",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "claim_lookup",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/feedback.tsx",
-      "exportName": "AuthStatusRow",
-      "css": [
-        "website/src/styles/flows.css",
-        "website/src/styles/organizers.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "default",
-          "flow"
-        ]
-      },
-      "notes": "Shared website component; Sign-in state sentence with an inline action; not passive metadata and not navigation."
     },
     {
       "id": "shared_checkbox_field",

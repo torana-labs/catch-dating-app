@@ -5,33 +5,38 @@ import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {hostListings} from "../../organizers/data";
 
 const firebase = vi.hoisted(() => ({
+  requestOrganizerClaim: vi.fn(),
   getOrganizerClaimVerificationOptions: vi.fn(),
   startOrganizerClaimVerification: vi.fn(),
   confirmOrganizerClaimVerification: vi.fn(),
   watchOrganizerClaimAttempt: vi.fn(),
 }));
-const account = vi.hoisted(() => ({ready: true, uid: "owner-1" as string | null}));
+const account = vi.hoisted(() => ({ready: true, uid: "owner-1" as string | null,
+  account: {displayName: "Asha Rao", phoneNumber: "+919800000000"}}));
+const accountForm = vi.hoisted(() => vi.fn((_account: unknown, _options?: unknown) => "account form"));
 
 vi.mock("../../../analytics", () => ({trackMarketingEvent: vi.fn()}));
 vi.mock("../../../firebase", () => firebase);
 vi.mock("../../../firebaseConfig", () => ({claimFirebaseConfigured: true}));
 vi.mock("../../account/useWebsiteAccountController", () => ({useWebsiteAccountController: () => account}));
-vi.mock("../../account/accountForm", () => ({renderAccountForm: () => "account form"}));
+vi.mock("../../account/accountForm", () => ({renderAccountForm: accountForm}));
 
 import type {HostListing} from "../../organizers/types";
 import {useInstantClaimController} from "../useInstantClaimController";
 import {InstantClaimPanel} from "./InstantClaimSection";
 
-function InstantClaimSection({listing}: {listing: HostListing}) {
-  return <InstantClaimPanel controller={useInstantClaimController(listing.id)} listing={listing} />;
+function InstantClaimSection({listing, pendingReview}: {listing: HostListing; pendingReview?: boolean}) {
+  return <InstantClaimPanel controller={useInstantClaimController(listing.id)} listing={listing}
+    pendingReview={pendingReview} />;
 }
 
 const listing = hostListings[0];
 const inAnHour = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-function renderSection() {
+function renderSection(pendingReview = false) {
   const client = new QueryClient({defaultOptions: {queries: {retry: false}, mutations: {retry: false}}});
-  return render(<QueryClientProvider client={client}><InstantClaimSection listing={listing} /></QueryClientProvider>);
+  return render(<QueryClientProvider client={client}>
+    <InstantClaimSection listing={listing} pendingReview={pendingReview} /></QueryClientProvider>);
 }
 
 function options(instagram: boolean, luma: boolean) {
@@ -51,10 +56,11 @@ beforeEach(() => {
 });
 
 describe("InstantClaimPanel", () => {
-  it("asks for an account before it offers any check", () => {
+  it("asks for a phone account, without a birth date, before it offers any check", () => {
     account.ready = false;
     renderSection();
     expect(screen.getByText("account form")).toBeTruthy();
+    expect(accountForm).toHaveBeenCalledWith(account, {askBirthDate: false});
     expect(firebase.getOrganizerClaimVerificationOptions).not.toHaveBeenCalled();
   });
 
@@ -100,10 +106,36 @@ describe("InstantClaimPanel", () => {
     expect(firebase.confirmOrganizerClaimVerification).toHaveBeenCalledWith({attemptId: "a2"});
   });
 
-  it("points to staff review when no check works for the listing", async () => {
+  it("goes straight to a review request when no check works for the listing", async () => {
     firebase.getOrganizerClaimVerificationOptions.mockResolvedValue(options(false, false));
     renderSection();
-    expect(await screen.findByText(/Ask for a review below instead/u)).toBeTruthy();
+    expect(await screen.findByText(/has no Instagram account or Luma calendar we can check yet/u)).toBeTruthy();
+    expect(screen.getByRole("button", {name: "Ask for a review"})).toBeTruthy();
+    expect(screen.queryByRole("button", {name: "Use a code instead"})).toBeNull();
+  });
+
+  it("asks only for proof links in a review, taking name and phone from the account", async () => {
+    firebase.getOrganizerClaimVerificationOptions.mockResolvedValue(options(true, false));
+    firebase.requestOrganizerClaim.mockResolvedValue({requestId: "r1"});
+    renderSection();
+    fireEvent.click(await screen.findByRole("button", {name: "Ask for a review instead"}));
+    fireEvent.click(screen.getByRole("button", {name: "Ask for a review"}));
+    expect(await screen.findByText("Add at least one link that shows the page is yours.")).toBeTruthy();
+    expect(firebase.requestOrganizerClaim).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText("Links that show it’s yours"), {target: {value: "carterroadrunners.in"}});
+    fireEvent.click(screen.getByRole("button", {name: "Ask for a review"}));
+    expect(await screen.findByText("We’ll check it.")).toBeTruthy();
+    expect(firebase.requestOrganizerClaim).toHaveBeenCalledWith({organizerId: listing.id, requesterName: "Asha Rao",
+      requesterRole: "owner", businessEmail: null, businessPhone: "+919800000000",
+      proofUrls: ["https://carterroadrunners.in"], message: null});
+  });
+
+  it("still offers a code after a review request is pending", async () => {
+    firebase.getOrganizerClaimVerificationOptions.mockResolvedValue(options(true, false));
+    renderSection(true);
+    expect(screen.getByText("Your review request is in. You can skip the wait and prove it now.")).toBeTruthy();
+    expect(await screen.findByRole("button", {name: "Show my code"})).toBeTruthy();
   });
 
   it("offers a new code once the attempt expires", async () => {
