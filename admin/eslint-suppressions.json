@@ -9,11 +9,6 @@
       "count": 1
     }
   },
-  "src/features/access/ui/AccessReviewScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 6
-    }
-  },
   "src/features/admin-roles/ui/AdminRoleManagementScreen.tsx": {
     "react/forbid-elements": {
       "count": 5
@@ -107,11 +102,6 @@
   "src/features/partners/ui/PartnerOutreachWorkspace.tsx": {
     "react/forbid-elements": {
       "count": 2
-    }
-  },
-  "src/features/safety/ui/SafetyTriageScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 5
     }
   },
   "src/features/sales/ui/SalesDemoPanel.tsx": {
