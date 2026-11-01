@@ -305,6 +305,11 @@ export function sampleGetOrganizerOverview(
     pendingClaim: row.claimState === "claimPending" ? {requestId:
       "sample-claim", requesterName: "Arjun Bhagat", requesterRole: "manager",
     createdAt: "2026-10-30T08:00:00.000Z"} : null,
+    growth: afterfly ? {channel: "sales_associate", nominator: {uid: sampleUid,
+      name: "Riya Sharma", role: "associate"}, firstPaidBookingAt: null} :
+      row.organizerId === "lantern" ? {channel: "partner", nominator: {
+        uid: "sample-partner", name: "Neha Kulkarni", role: "partner"},
+      firstPaidBookingAt: "2026-08-25T10:00:00.000Z"} : null,
     journey: afterfly ? [
       {kind: "nominated", at: "2026-10-28T16:11:00.000Z",
         actorName: "Riya Sharma", detail: "https://luma.com/afterfly"},

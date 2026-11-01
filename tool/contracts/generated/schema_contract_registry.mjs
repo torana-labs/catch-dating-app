@@ -61528,7 +61528,7 @@ export const adminGetOrganizerOverviewCallableResponseSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/admin_get_organizer_overview_response.schema.json",
   "title": "AdminGetOrganizerOverviewCallableResponse",
-  "description": "The Overview tab of an Admin organizer page: its facts, who owns it in Sales, its terms and payments, its journey from nomination to claim, and its next events from Catch and from the platforms Catch imports. The journey is read from the records each step left (the intake request, the approval, claim requests, ownership and events), oldest first; nextStep names what the organizer is waiting on.",
+  "description": "The Overview tab of an Admin organizer page: its facts, who owns it in Sales, its terms and payments, its journey from nomination to claim, its next events from Catch and from the platforms Catch imports, and where it came from (its acquisition channel and first nominator, from organizerGrowthFacts). The journey is read from the records each step left (the intake request, the approval, claim requests, ownership and events), oldest first; nextStep names what the organizer is waiting on.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -61540,6 +61540,7 @@ export const adminGetOrganizerOverviewCallableResponseSchema = {
     "terms",
     "payments",
     "pendingClaim",
+    "growth",
     "journey",
     "nextStep",
     "upcomingEvents",
@@ -61593,7 +61594,7 @@ export const adminGetOrganizerOverviewCallableResponseSchema = {
       ],
       "properties": {
         "kind": {
-          "description": "nominated (a person or a run sent Catch a link; detail is the first link), listingBuilt (Catch read the pages; detail is how many events it found), approved (staff approved the listing), listed (the organizer record was made), claimRequested (detail is the requester's role), claimApproved, claimRejected, claimed, firstEvent (detail is its title).",
+          "description": "nominated (a person or a run sent Catch a link; detail is the first link), listingBuilt (Catch read the pages; detail is how many events it found), approved (staff approved the listing), listed (the organizer record was made), claimRequested (detail is the requester's role), claimApproved, claimRejected, claimed, firstEvent (detail is its title), firstPaidBooking (its first paid booking was captured).",
           "type": "string",
           "enum": [
             "nominated",
@@ -61604,7 +61605,8 @@ export const adminGetOrganizerOverviewCallableResponseSchema = {
             "claimApproved",
             "claimRejected",
             "claimed",
-            "firstEvent"
+            "firstEvent",
+            "firstPaidBooking"
           ]
         },
         "at": {
@@ -62038,6 +62040,83 @@ export const adminGetOrganizerOverviewCallableResponseSchema = {
         }
       ]
     },
+    "growth": {
+      "description": "Where the organizer came from, from organizerGrowthFacts/{organizerId}. Null when no facts were recorded for it yet.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "channel",
+            "nominator",
+            "firstPaidBookingAt"
+          ],
+          "properties": {
+            "channel": {
+              "type": "string",
+              "enum": [
+                "imported",
+                "sales_associate",
+                "partner",
+                "guest",
+                "organizer",
+                "came_to_us",
+                "ads"
+              ]
+            },
+            "nominator": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "uid",
+                    "name",
+                    "role"
+                  ],
+                  "properties": {
+                    "uid": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "name": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 200
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "associate",
+                        "partner",
+                        "guest",
+                        "organizer"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "firstPaidBookingAt": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            }
+          }
+        }
+      ]
+    },
     "journey": {
       "type": "array",
       "maxItems": 40,
@@ -62052,7 +62131,7 @@ export const adminGetOrganizerOverviewCallableResponseSchema = {
         ],
         "properties": {
           "kind": {
-            "description": "nominated (a person or a run sent Catch a link; detail is the first link), listingBuilt (Catch read the pages; detail is how many events it found), approved (staff approved the listing), listed (the organizer record was made), claimRequested (detail is the requester's role), claimApproved, claimRejected, claimed, firstEvent (detail is its title).",
+            "description": "nominated (a person or a run sent Catch a link; detail is the first link), listingBuilt (Catch read the pages; detail is how many events it found), approved (staff approved the listing), listed (the organizer record was made), claimRequested (detail is the requester's role), claimApproved, claimRejected, claimed, firstEvent (detail is its title), firstPaidBooking (its first paid booking was captured).",
             "type": "string",
             "enum": [
               "nominated",
@@ -62063,7 +62142,8 @@ export const adminGetOrganizerOverviewCallableResponseSchema = {
               "claimApproved",
               "claimRejected",
               "claimed",
-              "firstEvent"
+              "firstEvent",
+              "firstPaidBooking"
             ]
           },
           "at": {

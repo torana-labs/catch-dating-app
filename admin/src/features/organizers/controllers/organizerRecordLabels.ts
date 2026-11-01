@@ -92,7 +92,47 @@ export function journeyStepCopy(
   case "claimed": return {title: who ? `${who} runs the page now` :
     "Claimed", subtitle: null};
   case "firstEvent": return {title: "First event", subtitle: step.detail};
+  case "firstPaidBooking": return {title: "First paid booking",
+    subtitle: null};
   }
+}
+
+const channelLabels: Record<NonNullable<OrganizerOverview["growth"]>[
+  "channel"], string> = {
+  imported: "Catch found it",
+  sales_associate: "A sales associate",
+  partner: "A partner",
+  guest: "A guest",
+  organizer: "Another organizer",
+  came_to_us: "They came to us",
+  ads: "Ads",
+};
+
+const nominatorRoles: Record<string, string> = {
+  associate: "sales associate", partner: "partner", guest: "guest",
+  organizer: "organizer",
+};
+
+/** "Riya Sharma, sales associate" or the channel when nobody nominated it. */
+export function cameFromLabel(growth: OrganizerOverview["growth"]): string {
+  if (!growth) return "Not recorded";
+  const nominator = growth.nominator;
+  if (nominator?.name) {
+    return `${nominator.name}, ${nominatorRoles[nominator.role]}`;
+  }
+  return channelLabels[growth.channel];
+}
+
+/**
+ * Who earns nominator credit: the first nominator, unless they work for
+ * Catch (sales associates earn none).
+ */
+export function creditToLabel(growth: OrganizerOverview["growth"]): string {
+  const nominator = growth?.nominator;
+  if (!nominator || nominator.role === "associate") return "No one";
+  return nominator.name ?
+    `${nominator.name}, ${nominatorRoles[nominator.role]}` :
+    `A ${nominatorRoles[nominator.role]}`;
 }
 
 /** The ringed "Next" row at the foot of the journey. */
