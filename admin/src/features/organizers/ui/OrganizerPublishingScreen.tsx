@@ -150,7 +150,6 @@ export function OrganizerPublishingWorkspace({
   claimReviewController,
   controller,
   onBackToClaims = () => undefined,
-  onWorkspaceChange = () => undefined,
 }: {
   activeWorkspace?: "directory" | "claims";
   claimReviewController?: OrganizerClaimReviewController;
@@ -158,44 +157,22 @@ export function OrganizerPublishingWorkspace({
   onBackToClaims?: () => void;
   onWorkspaceChange?: (workspace: "directory" | "claims") => void;
 }) {
-  const needsPublishCount = controller.rows.filter(organizerNeedsPublish).length;
-  const publishedCount = controller.rows.filter((row) =>
-    row.publishStatus === "published"
-  ).length;
-  const readinessIssueCount = controller.rows.filter((row) =>
-    row.routeStatus !== "valid" ||
-    row.routeReservationStatus !== "reserved" ||
-    row.searchIndexStatus !== "indexed"
-  ).length;
-
-  if (controller.view === "detail") {
-    return <organizerDetailPanels.OrganizerDetailView controller={controller} />;
-  }
-
-  return (
-    <AdminWorkbenchStack compact>
-      <SegmentedControl<"directory" | "claims">
-        ariaLabel="Organizer workspaces"
-        options={[
-          {id: "directory", label: "Directory"},
-          {id: "claims", label: "Claims"},
-        ]}
-        onChange={onWorkspaceChange}
-        value={activeWorkspace}
-      />
-      {activeWorkspace === "claims" && claimReviewController ? (
+  if (activeWorkspace === "claims" && claimReviewController) {
+    return (
+      <AdminWorkbenchStack compact>
         <organizerDirectoryPanels.OrganizerClaimReviewWorkspace
           controller={claimReviewController}
           onBackToList={onBackToClaims}
         />
-      ) : (
-        <organizerDirectoryPanels.OrganizerDirectoryView
-          controller={controller}
-          needsPublishCount={needsPublishCount}
-          publishedCount={publishedCount}
-          readinessIssueCount={readinessIssueCount}
-        />
-      )}
+      </AdminWorkbenchStack>
+    );
+  }
+  if (controller.view === "detail") {
+    return <organizerDetailPanels.OrganizerDetailView controller={controller} />;
+  }
+  return (
+    <AdminWorkbenchStack compact>
+      <EmptyState variant="workbench">Open an organizer from Organizers to edit its page.</EmptyState>
     </AdminWorkbenchStack>
   );
 }

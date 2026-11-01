@@ -608,6 +608,54 @@
     },
     {
       "authority": "admin_routes",
+      "authorityId": "route_organizer_directory",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Organizers records (directory, organizer page and its tabs, and the live route wrapper) are the front of Organizer Publishing: the Page tab hosts its canonical editor and claims stay in its review until the Inbox decides them, so its contract owns these states until the records get a contract of their own.",
+      "primaryAuthorityId": "route_organizer_publishing"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_organizer_page",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Organizers records (directory, organizer page and its tabs, and the live route wrapper) are the front of Organizer Publishing: the Page tab hosts its canonical editor and claims stay in its review until the Inbox decides them, so its contract owns these states until the records get a contract of their own.",
+      "primaryAuthorityId": "route_organizer_publishing"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_organizer_records_live_controller",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Organizers records (directory, organizer page and its tabs, and the live route wrapper) are the front of Organizer Publishing: the Page tab hosts its canonical editor and claims stay in its review until the Inbox decides them, so its contract owns these states until the records get a contract of their own.",
+      "primaryAuthorityId": "route_organizer_publishing"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_event_directory",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Events records (directory with Catch and imported events, event page, and the live route wrapper) are the front of Event Publishing: the Page tab hosts its canonical editor and the Takedown tab its external-event review, so its contract owns these states until the records get a contract of their own.",
+      "primaryAuthorityId": "route_event_publishing"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_event_page",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Events records (directory with Catch and imported events, event page, and the live route wrapper) are the front of Event Publishing: the Page tab hosts its canonical editor and the Takedown tab its external-event review, so its contract owns these states until the records get a contract of their own.",
+      "primaryAuthorityId": "route_event_publishing"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_event_records_live_controller",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Events records (directory with Catch and imported events, event page, and the live route wrapper) are the front of Event Publishing: the Page tab hosts its canonical editor and the Takedown tab its external-event review, so its contract owns these states until the records get a contract of their own.",
+      "primaryAuthorityId": "route_event_publishing"
+    },
+    {
+      "authority": "admin_routes",
       "authorityId": "route_operator_session",
       "status": "excluded",
       "priority": "P3",

@@ -38,6 +38,8 @@ interface RouteState {
   salesArea?: "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
   organizerWorkspace?: "directory" | "claims";
   eventWorkspace?: "directory" | "external";
+  eventTab?: "overview" | "page" | "takedown";
+  organizerTab?: "overview" | "page" | "events" | "sales" | "money" | "history";
   financeWorkspace?: FinanceWorkspace;
   safetyView?: "open" | "actions" | "appeals";
   moneyView?: MoneyView;
@@ -69,9 +71,15 @@ export const adminRoutes: AdminRoute[] = [
   // Launch access moved into the Safety queue.
   route("/access/*", "safety", {redirect: "/safety"}),
   route("/organizers/:organizerId", "organizers"),
+  ...(["page", "events", "sales", "money", "history"] as const).map((organizerTab) =>
+    route(`/organizers/:organizerId/${organizerTab}`, "organizers", {organizerTab})),
   route("/organizers/claims/*", "organizers", {organizerWorkspace: "claims"}),
   route("/organizers/claims/:claimRequestId", "organizers", {organizerWorkspace: "claims"}),
   route("/events/:eventId", "events", {title: "Event detail"}),
+  route("/events/:eventId/page", "events", {title: "Event page", eventTab: "page"}),
+  route("/events/external/:externalEventId/takedown", "events", {
+    eventWorkspace: "external", eventTab: "takedown", title: "External event takedown",
+  }),
   route("/events/external/*", "events", {eventWorkspace: "external", title: "External inventory"}),
   route("/events/external/:externalEventId", "events", {eventWorkspace: "external", title: "External event"}),
   // The retired readiness workspace: old links open the directory, not an event named "readiness".
@@ -131,6 +139,8 @@ export function resolveAdminRoute(pathname: string) {
     salesArea: state?.salesArea ?? "today",
     organizerWorkspace: state?.organizerWorkspace ?? "directory",
     eventWorkspace: state?.eventWorkspace ?? "directory",
+    eventTab: state?.eventTab ?? "overview",
+    organizerTab: state?.organizerTab ?? "overview",
     financeWorkspace: state?.financeWorkspace ?? "issues",
     safetyView: state?.safetyView ?? "open",
     moneyView: state?.moneyView ?? "issues",
