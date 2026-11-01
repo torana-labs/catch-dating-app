@@ -1,6 +1,6 @@
 import {httpsCallable} from "firebase/functions";
-import {validateAdminCallableRequest,
-  validateAdminCallableResponse} from "../../../generated/validators/adminCallableValidators";
+import {loadAdminCallableValidators} from
+  "../../../generated/validators/adminCallableValidators";
 import {dataMode} from "../../../shared/api/dataMode";
 import {functions} from "../../../shared/api/firebaseFunctions";
 import type {PrivacyApi} from "./salesPrivacyTypes";
@@ -9,6 +9,8 @@ async function call<Response>(name: string, payload: unknown): Promise<Response>
   if (dataMode() === "sample") {
     throw new Error("Private Sales privacy operations require live Admin access.");
   }
+  const {validateAdminCallableRequest, validateAdminCallableResponse} =
+    await loadAdminCallableValidators(name);
   validateAdminCallableRequest(name, payload);
   const response = await httpsCallable<unknown, Response>(functions, name)(payload);
   validateAdminCallableResponse(name, response.data);

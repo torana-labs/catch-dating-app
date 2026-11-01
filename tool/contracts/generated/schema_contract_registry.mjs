@@ -165232,7 +165232,7 @@ export const organizerDocumentSchema = {
           "type": "string",
           "minLength": 1,
           "maxLength": 160,
-          "pattern": "^[a-z0-9-]+(?:-[a-z0-9-]+)*$"
+          "pattern": "^[a-z0-9-]+$"
         },
         "updatedAt": {
           "type": "object",
@@ -201846,7 +201846,7 @@ export const eventDocumentSchema = {
           "type": "string",
           "minLength": 1,
           "maxLength": 160,
-          "pattern": "^[a-z0-9-]+(?:-[a-z0-9-]+)*$"
+          "pattern": "^[a-z0-9-]+$"
         },
         "updatedAt": {
           "type": "object",
