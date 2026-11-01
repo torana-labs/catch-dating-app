@@ -38,6 +38,7 @@ interface RouteState {
   organizerWorkspace?: "directory" | "claims";
   eventWorkspace?: "directory" | "external";
   financeWorkspace?: FinanceWorkspace;
+  supportWorkspace?: "inbox" | "trial";
   marketingTab?: MarketingTab;
   composerStep?: MarketingStep;
 }
@@ -59,6 +60,8 @@ export const adminRoutes: AdminRoute[] = [
   route("/marketing-ops/*", "marketing-ops"),
   route("/organizer-intake/*", "organizer-intake", {title: "Organizer intake"}),
   route("/safety/:targetPath", "safety", {title: "Safety case"}),
+  route("/support/:supportConversationId", "support", {title: "Support conversation"}),
+  route("/support/trial/*", "support", {supportWorkspace: "trial", title: "WhatsApp reply trial"}),
   route("/access/:applicationUid", "access"),
   route("/organizers/:organizerId", "organizers"),
   route("/organizers/claims/*", "organizers", {organizerWorkspace: "claims"}),
@@ -115,6 +118,7 @@ export function resolveAdminRoute(pathname: string) {
     organizerWorkspace: state?.organizerWorkspace ?? "directory",
     eventWorkspace: state?.eventWorkspace ?? "directory",
     financeWorkspace: state?.financeWorkspace ?? "issues",
+    supportWorkspace: state?.supportWorkspace ?? "inbox",
     marketingTab: state?.marketingTab ?? "posts",
     composerStep: state?.composerStep ?? "source",
   };

@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-10-30",
+  "updated": "2026-11-01",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -620,6 +620,22 @@
       "status": "excluded",
       "priority": "P3",
       "reason": "Internal operator credential handoff is governed by exact-account and source-bound transport, protected local-file permissions, and synthetic security/route tests. It exports an existing session only; it adds no product or business mutation, role grant, sign-in, or shared cross-surface feature workflow."
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_support",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Support contract covers the conversation queue by view and audience, the conversation with its links, and recording replies, notes, owner and status.",
+      "featureContract": "feature.admin_support"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_support_live_controller",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states.",
+      "featureContract": "feature.admin_support"
     },
     {
       "authority": "admin_routes",

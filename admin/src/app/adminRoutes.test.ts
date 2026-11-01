@@ -15,6 +15,7 @@ describe("Admin route contract", () => {
 
   it.each([
     ["/safety/reports%2Freport-1", "safety", "targetPath", "reports/report-1"],
+    ["/support/whatsapp-abc", "support", "supportConversationId", "whatsapp-abc"],
     ["/access/user-1/", "access", "applicationUid", "user-1"],
     ["/organizers/afterfly", "organizers", "organizerId", "afterfly"],
     ["/organizers/claims/request-1", "organizers", "claimRequestId", "request-1"],
