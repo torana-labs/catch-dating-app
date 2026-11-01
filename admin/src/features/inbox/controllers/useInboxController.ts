@@ -5,10 +5,12 @@ import {
   decideAccess,
   decideClaim,
   getInboxItem,
+  getListingEventReview,
   getListingReview,
   linkEnquiry,
   searchOrganizers,
   listInboxItems,
+  publishListingEvent,
   recommendOrganizerClaim,
   updateInboxItem,
   type ClaimRecommendationInput,
@@ -17,7 +19,9 @@ import {
   type InboxType,
   type InboxUpdate,
   type ListingApprovalInput,
+  type ListingEventRef,
 } from "../api/inboxRepository";
+import {blockerLabel, type ListingEventPublishRequest} from "./listingEventPublish";
 
 const pageSize = 25;
 const inboxKey = ["inbox"] as const;
@@ -69,6 +73,15 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
     approveListing(input, requestId)});
   // A retry of the same approval keeps its request id, so the server replays it.
   const approvalRequestIds = useRef(new Map<string, string>());
+  const [eventRef, setEventRef] = useState<ListingEventRef | null>(null);
+  const eventReview = useQuery({
+    queryKey: [...inboxKey, "event-review", eventRef?.eventWorkItemId],
+    queryFn: () => getListingEventReview(eventRef as ListingEventRef),
+    enabled: eventRef !== null,
+  });
+  const eventPublish = useMutation({mutationFn: publishListingEvent});
+  // A retry of the same publish keeps its key, so the server replays it.
+  const publishKeys = useRef(new Map<string, string>());
   const [hostQuery, setHostQuery] = useState("");
   const hostSearch = useQuery({
     queryKey: [...inboxKey, "host-search", hostQuery.trim()],
@@ -119,7 +132,7 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
     selectNext: () => { if (nextItem) onSelect(nextItem.itemId); },
     selectPrevious: () => { if (previousItem) onSelect(previousItem.itemId); },
     updateItem: (input: InboxUpdate, notice: string) => run(() => update.mutateAsync(input), notice,
-      input.action === "snooze"),
+      input.action === "snooze" || input.action === "dismiss"),
     recommendClaim: (input: ClaimRecommendationInput) => run(() => recommend.mutateAsync(input),
       input.decision === "approve" ? "Recommended for approval. The owner decides." :
         "Recommended for rejection. The owner decides.", true),
@@ -144,6 +157,28 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
       return done;
     },
     isApproving: approval.isPending,
+    /** Opens the publish sheet for an imported event; null closes it. */
+    openEventReview: setEventRef,
+    eventReview: eventRef !== null ? eventReview.data ?? null : null,
+    eventReviewFailed: eventRef !== null && eventReview.isError,
+    publishEvent: async (request: ListingEventPublishRequest, title: string) => {
+      const signature = JSON.stringify(request);
+      const idempotencyKey = publishKeys.current.get(signature) ?? `admin:${crypto.randomUUID()}`;
+      publishKeys.current.set(signature, idempotencyKey);
+      const done = await run(async () => {
+        const result = await eventPublish.mutateAsync({...request, executionMode: "apply", idempotencyKey});
+        const blocked = result.results.filter((entry) => entry.outcome === "blocked");
+        if (blocked.length) {
+          throw new Error(`${title} is still blocked: ${blocked.flatMap((entry) => entry.blockers).map(blockerLabel).join(", ")}.`);
+        }
+      }, `${title} is published on the organizer's page.`, true);
+      if (done) {
+        publishKeys.current.delete(signature);
+        setEventRef(null);
+      }
+      return done;
+    },
+    isPublishingEvent: eventPublish.isPending,
     hostQuery,
     setHostQuery,
     hostMatches: hostQuery.trim().length >= 2 ? hostSearch.data ?? [] : [],

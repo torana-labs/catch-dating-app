@@ -508,33 +508,13 @@
       }
     },
     {
-      "actionId": "organizer-intake.list-listing-event-imports",
-      "callable": "adminListListingEventImports",
-      "workflowIds": [
-        "organizer-intake"
-      ],
-      "guiPath": "/intake/organizers",
-      "kind": "read",
-      "risk": "read",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "requestSchema": "contracts/callables/admin_list_listing_event_imports_payload.schema.json",
-      "summary": "List one page of approved Supply Intake listings with the events each imported and where each stands: published, withdrawn, ready, needing a check, or blocked.",
-      "example": {
-        "limit": 5,
-        "cursor": null
-      }
-    },
-    {
       "actionId": "organizer-intake.publish-listing-events",
       "callable": "adminPublishListingEvents",
       "workflowIds": [
-        "organizer-intake"
+        "organizer-intake",
+        "inbox"
       ],
-      "guiPath": "/intake/organizers",
+      "guiPath": "/inbox",
       "kind": "mutation",
       "risk": "critical",
       "roles": [
@@ -568,7 +548,7 @@
       "workflowIds": [
         "organizer-intake"
       ],
-      "guiPath": "/intake/organizers",
+      "guiPath": "/organizers",
       "kind": "mutation",
       "risk": "medium",
       "roles": [
@@ -4096,6 +4076,27 @@
       "example": {
         "requestId": "example-request"
       }
+    },
+    {
+      "actionId": "inbox.get-listing-event-review",
+      "callable": "adminGetListingEventReview",
+      "workflowIds": [
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_listing_event_review_payload.schema.json",
+      "summary": "Read one imported event of an approved listing, with what a reviewer must check to publish it.",
+      "example": {
+        "intakeRequestId": "example-intake-request",
+        "eventWorkItemId": "example-event-work-item"
+      }
     }
   ],
   "workflows": [
@@ -4174,7 +4175,6 @@
       "guiPath": "/intake/organizers",
       "actions": [
         "organizer-intake.approve-listing",
-        "organizer-intake.list-listing-event-imports",
         "organizer-intake.publish-listing-events",
         "organizer-intake.list-supply-intake-policies",
         "organizer-intake.refresh-organizer-events",
@@ -4425,6 +4425,8 @@
         "inbox.update",
         "organizer-claims.recommend",
         "inbox.get-listing-review",
+        "inbox.get-listing-event-review",
+        "organizer-intake.publish-listing-events",
         "organizer-intake.approve-listing"
       ]
     }
