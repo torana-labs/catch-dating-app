@@ -617,7 +617,7 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | AdminListOrganizerListingReviewsCallableResponse | `callable_responses/admin_list_organizer_listing_reviews_response.schema.json` | `functions/src/shared/generated/adminListOrganizerListingReviewsCallableResponse.ts` | no |
 | AdminApproveOrganizerListingCallableResponse | `callable_responses/admin_approve_organizer_listing_response.schema.json` | `functions/src/shared/generated/adminApproveOrganizerListingCallableResponse.ts` | no |
 | AdminGetListingEventReviewCallablePayload | `callables/admin_get_listing_event_review_payload.schema.json` | `functions/src/shared/generated/adminGetListingEventReviewCallablePayload.ts` | yes |
-| AdminGetListingEventReviewCallableResponse | `callable_responses/admin_get_listing_event_review_response.schema.json` | `functions/src/shared/generated/adminGetListingEventReviewCallableResponse.ts` | yes |
+| AdminGetListingEventReviewCallableResponse | `callable_responses/admin_get_listing_event_review_response.schema.json` | `functions/src/shared/generated/adminGetListingEventReviewCallableResponse.ts` | no |
 | AdminListListingEventImportsCallablePayload | `callables/admin_list_listing_event_imports_payload.schema.json` | `functions/src/shared/generated/adminListListingEventImportsCallablePayload.ts` | yes |
 | AdminListListingEventImportsCallableResponse | `callable_responses/admin_list_listing_event_imports_response.schema.json` | `functions/src/shared/generated/adminListListingEventImportsCallableResponse.ts` | no |
 | AdminPublishListingEventsCallablePayload | `callables/admin_publish_listing_events_payload.schema.json` | `functions/src/shared/generated/adminPublishListingEventsCallablePayload.ts` | yes |
