@@ -279,6 +279,12 @@ import {
   manageCommercialTermsCallableResponseSchema,
   adminListCommercialTermsCallablePayloadSchema,
   adminListCommercialTermsCallableResponseSchema,
+  adminListOrganizerDirectoryCallablePayloadSchema,
+  adminListOrganizerDirectoryCallableResponseSchema,
+  adminListEventDirectoryCallablePayloadSchema,
+  adminListEventDirectoryCallableResponseSchema,
+  adminGetOrganizerOverviewCallablePayloadSchema,
+  adminGetOrganizerOverviewCallableResponseSchema,
   managePaymentRoutingPolicyCallablePayloadSchema,
   managePaymentRoutingPolicyCallableResponseSchema,
   manageEventOfferCheckoutCallablePayloadSchema,
@@ -1604,6 +1610,12 @@ export const validateManageCommercialTermsCallablePayload = ajv.compile(manageCo
 export const validateManageCommercialTermsCallableResponse = ajv.compile(manageCommercialTermsCallableResponseSchema);
 export const validateAdminListCommercialTermsCallablePayload = ajv.compile(adminListCommercialTermsCallablePayloadSchema);
 export const validateAdminListCommercialTermsCallableResponse = ajv.compile(adminListCommercialTermsCallableResponseSchema);
+export const validateAdminListOrganizerDirectoryCallablePayload = ajv.compile(adminListOrganizerDirectoryCallablePayloadSchema);
+export const validateAdminListOrganizerDirectoryCallableResponse = ajv.compile(adminListOrganizerDirectoryCallableResponseSchema);
+export const validateAdminListEventDirectoryCallablePayload = ajv.compile(adminListEventDirectoryCallablePayloadSchema);
+export const validateAdminListEventDirectoryCallableResponse = ajv.compile(adminListEventDirectoryCallableResponseSchema);
+export const validateAdminGetOrganizerOverviewCallablePayload = ajv.compile(adminGetOrganizerOverviewCallablePayloadSchema);
+export const validateAdminGetOrganizerOverviewCallableResponse = ajv.compile(adminGetOrganizerOverviewCallableResponseSchema);
 export const validateManagePaymentRoutingPolicyCallablePayload = ajv.compile(managePaymentRoutingPolicyCallablePayloadSchema);
 export const validateManagePaymentRoutingPolicyCallableResponse = ajv.compile(managePaymentRoutingPolicyCallableResponseSchema);
 export const validateManageEventOfferCheckoutCallablePayload = ajv.compile(manageEventOfferCheckoutCallablePayloadSchema);

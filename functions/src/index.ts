@@ -578,6 +578,15 @@ export {
   adminListExternalEventDetails,
 } from "./admin/externalEventDetails";
 export {
+  adminListOrganizerDirectory,
+} from "./admin/organizerDirectory";
+export {
+  adminListEventDirectory,
+} from "./admin/eventDirectory";
+export {
+  adminGetOrganizerOverview,
+} from "./admin/organizerOverview";
+export {
   adminTakedownExternalEvent,
 } from "./admin/externalEventTakedown";
 export {

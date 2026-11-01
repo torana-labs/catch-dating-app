@@ -55362,6 +55362,1755 @@ export const adminListCommercialTermsCallableResponseSchema = {
   }
 };
 
+export const adminListOrganizerDirectoryCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_organizer_directory_payload.schema.json",
+  "title": "AdminListOrganizerDirectoryCallablePayload",
+  "description": "Callable payload accepted by adminListOrganizerDirectory, the Admin Organizers directory. view picks one of the directory's views; the other fields narrow it. mine keeps organizers whose Sales account the caller owns. cursor is the opaque nextCursor of the previous page.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner, ops and support, sales associates)",
+  "properties": {
+    "view": {
+      "type": "string",
+      "enum": [
+        "all",
+        "live",
+        "unclaimed",
+        "hidden"
+      ]
+    },
+    "query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    },
+    "citySlug": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "kind": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z0-9-]{1,80}$"
+    },
+    "claimState": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "unclaimed",
+        "claimPending",
+        "claimed",
+        null
+      ]
+    },
+    "mine": {
+      "type": "boolean"
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^o:[0-9]{1,5}$"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  }
+};
+
+export const adminListOrganizerDirectoryCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_organizer_directory_response.schema.json",
+  "title": "AdminListOrganizerDirectoryCallableResponse",
+  "description": "One page of the Admin Organizers directory with real totals. views counts every organizer in each view, ignoring the other filters; total counts the rows the request's filters match; each facet counts what its chip would show with every other filter applied. scan says whether every organizer was read: the directory reads at most a bounded number of organizers, and complete is false when there were more, so totals then cover only what was read.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "total",
+    "views",
+    "facets",
+    "scan",
+    "rows",
+    "nextCursor"
+  ],
+  "definitions": {
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "facet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "label",
+        "count"
+      ],
+      "properties": {
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "name"
+      ],
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        }
+      }
+    },
+    "pageState": {
+      "description": "The public page and app listing in one word: live (published, in search and in the app), hiddenFromSearch (published, not indexed), hiddenInApp (published, hidden in the app), draft (draft or qa), suppressed or removed.",
+      "type": "string",
+      "enum": [
+        "live",
+        "hiddenFromSearch",
+        "hiddenInApp",
+        "draft",
+        "suppressed",
+        "removed"
+      ]
+    },
+    "claimState": {
+      "type": "string",
+      "enum": [
+        "unclaimed",
+        "claimPending",
+        "claimed",
+        "verified",
+        "suppressed"
+      ]
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "name",
+        "kindLabel",
+        "citySlug",
+        "cityLabel",
+        "area",
+        "pageState",
+        "claimState",
+        "claimedByName",
+        "salesOwner",
+        "upcomingEventCount",
+        "listedAt"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "kindLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "citySlug": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "cityLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "area": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "pageState": {
+          "description": "The public page and app listing in one word: live (published, in search and in the app), hiddenFromSearch (published, not indexed), hiddenInApp (published, hidden in the app), draft (draft or qa), suppressed or removed.",
+          "type": "string",
+          "enum": [
+            "live",
+            "hiddenFromSearch",
+            "hiddenInApp",
+            "draft",
+            "suppressed",
+            "removed"
+          ]
+        },
+        "claimState": {
+          "type": "string",
+          "enum": [
+            "unclaimed",
+            "claimPending",
+            "claimed",
+            "verified",
+            "suppressed"
+          ]
+        },
+        "claimedByName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "salesOwner": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "uid",
+                "name"
+              ],
+              "properties": {
+                "uid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 200
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "upcomingEventCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "listedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "views": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "all",
+        "live",
+        "unclaimed",
+        "hidden"
+      ],
+      "properties": {
+        "all": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "live": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unclaimed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hidden": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "facets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cities",
+        "kinds",
+        "claimStates",
+        "mine"
+      ],
+      "properties": {
+        "cities": {
+          "type": "array",
+          "maxItems": 60,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "label",
+              "count"
+            ],
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "kinds": {
+          "type": "array",
+          "maxItems": 60,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "label",
+              "count"
+            ],
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "claimStates": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "label",
+              "count"
+            ],
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "mine": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "scan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "complete",
+        "scanned"
+      ],
+      "properties": {
+        "complete": {
+          "type": "boolean"
+        },
+        "scanned": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "name",
+          "kindLabel",
+          "citySlug",
+          "cityLabel",
+          "area",
+          "pageState",
+          "claimState",
+          "claimedByName",
+          "salesOwner",
+          "upcomingEventCount",
+          "listedAt"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "kindLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "citySlug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "cityLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "area": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "pageState": {
+            "description": "The public page and app listing in one word: live (published, in search and in the app), hiddenFromSearch (published, not indexed), hiddenInApp (published, hidden in the app), draft (draft or qa), suppressed or removed.",
+            "type": "string",
+            "enum": [
+              "live",
+              "hiddenFromSearch",
+              "hiddenInApp",
+              "draft",
+              "suppressed",
+              "removed"
+            ]
+          },
+          "claimState": {
+            "type": "string",
+            "enum": [
+              "unclaimed",
+              "claimPending",
+              "claimed",
+              "verified",
+              "suppressed"
+            ]
+          },
+          "claimedByName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "salesOwner": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "uid",
+                  "name"
+                ],
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 200
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "upcomingEventCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "listedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^o:[0-9]{1,5}$"
+    }
+  }
+};
+
+export const adminListEventDirectoryCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_event_directory_payload.schema.json",
+  "title": "AdminListEventDirectoryCallablePayload",
+  "description": "Callable payload accepted by adminListEventDirectory, the Admin Events directory. Events made in Catch and events imported from other platforms are one table; source narrows it to one of them. needsCheck keeps imported events not yet public; thisWeek keeps events starting in the next seven days. cursor is the opaque nextCursor of the previous page.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner, ops and support, sales associates)",
+  "properties": {
+    "view": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "past",
+        "cancelled"
+      ]
+    },
+    "query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    },
+    "citySlug": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "catch",
+        "imported",
+        null
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "needsCheck": {
+      "type": "boolean"
+    },
+    "thisWeek": {
+      "type": "boolean"
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^o:[0-9]{1,5}$"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  }
+};
+
+export const adminListEventDirectoryCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_event_directory_response.schema.json",
+  "title": "AdminListEventDirectoryCallableResponse",
+  "description": "One page of the Admin Events directory: events made in Catch and events imported from other platforms in one table, each row naming its source. views are exact counts of every event in each view, ignoring the other filters; total counts the rows the request's filters match, and each facet what its chip would show with every other filter applied. The view is read up to a bounded number of events; scan.complete is false when there were more, so total and facets then cover only what was read.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "total",
+    "views",
+    "facets",
+    "scan",
+    "rows",
+    "nextCursor"
+  ],
+  "definitions": {
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "facet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "label",
+        "count"
+      ],
+      "properties": {
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "eventId",
+        "source",
+        "platform",
+        "title",
+        "organizerId",
+        "organizerName",
+        "startTime",
+        "citySlug",
+        "cityLabel",
+        "status",
+        "bookedCount",
+        "capacityLimit"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^(catch|imported):.{1,180}$"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "catch",
+            "imported"
+          ]
+        },
+        "platform": {
+          "description": "The platform an imported event came from; null for events made in Catch.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "bookMyShow",
+            "district",
+            "luma",
+            "partiful",
+            "sortMyScene",
+            null
+          ]
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "organizerId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "organizerName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "startTime": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "citySlug": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "cityLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "status": {
+          "description": "live (bookable or public), full, draft (a Catch event not published yet), needsCheck (an imported event not public yet), cancelled, or removed (an imported event taken down or archived).",
+          "type": "string",
+          "enum": [
+            "live",
+            "full",
+            "draft",
+            "needsCheck",
+            "cancelled",
+            "removed"
+          ]
+        },
+        "bookedCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "capacityLimit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "views": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "upcoming",
+        "past",
+        "cancelled"
+      ],
+      "properties": {
+        "upcoming": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "past": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cancelled": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "facets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "catch",
+        "imported",
+        "needsCheck",
+        "thisWeek",
+        "cities"
+      ],
+      "properties": {
+        "catch": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "imported": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "needsCheck": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "thisWeek": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cities": {
+          "type": "array",
+          "maxItems": 60,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "label",
+              "count"
+            ],
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "scan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "complete",
+        "scanned"
+      ],
+      "properties": {
+        "complete": {
+          "type": "boolean"
+        },
+        "scanned": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "eventId",
+          "source",
+          "platform",
+          "title",
+          "organizerId",
+          "organizerName",
+          "startTime",
+          "citySlug",
+          "cityLabel",
+          "status",
+          "bookedCount",
+          "capacityLimit"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^(catch|imported):.{1,180}$"
+          },
+          "eventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "catch",
+              "imported"
+            ]
+          },
+          "platform": {
+            "description": "The platform an imported event came from; null for events made in Catch.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "bookMyShow",
+              "district",
+              "luma",
+              "partiful",
+              "sortMyScene",
+              null
+            ]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "organizerId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "startTime": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "citySlug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "cityLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "status": {
+            "description": "live (bookable or public), full, draft (a Catch event not published yet), needsCheck (an imported event not public yet), cancelled, or removed (an imported event taken down or archived).",
+            "type": "string",
+            "enum": [
+              "live",
+              "full",
+              "draft",
+              "needsCheck",
+              "cancelled",
+              "removed"
+            ]
+          },
+          "bookedCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "capacityLimit": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^o:[0-9]{1,5}$"
+    }
+  }
+};
+
+export const adminGetOrganizerOverviewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_organizer_overview_payload.schema.json",
+  "title": "AdminGetOrganizerOverviewCallablePayload",
+  "description": "Callable payload accepted by adminGetOrganizerOverview, the Overview tab of an Admin organizer page.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner, ops and support, sales associates)",
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const adminGetOrganizerOverviewCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_organizer_overview_response.schema.json",
+  "title": "AdminGetOrganizerOverviewCallableResponse",
+  "description": "The Overview tab of an Admin organizer page: its facts, who owns it in Sales, its terms and payments, its journey from nomination to claim, and its next events from Catch and from the platforms Catch imports. The journey is read from the records each step left (the intake request, the approval, claim requests, ownership and events), oldest first; nextStep names what the organizer is waiting on.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "organizer",
+    "salesOwner",
+    "nextAction",
+    "nextTask",
+    "terms",
+    "payments",
+    "pendingClaim",
+    "journey",
+    "nextStep",
+    "upcomingEvents",
+    "upcomingEventCount"
+  ],
+  "definitions": {
+    "instant": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "name": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "name"
+      ],
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        }
+      }
+    },
+    "journeyStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "at",
+        "actorName",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "description": "nominated (a person or a run sent Catch a link; detail is the first link), listingBuilt (Catch read the pages; detail is how many events it found), approved (staff approved the listing), listed (the organizer record was made), claimRequested (detail is the requester's role), claimApproved, claimRejected, claimed, firstEvent (detail is its title).",
+          "type": "string",
+          "enum": [
+            "nominated",
+            "listingBuilt",
+            "approved",
+            "listed",
+            "claimRequested",
+            "claimApproved",
+            "claimRejected",
+            "claimed",
+            "firstEvent"
+          ]
+        },
+        "at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "actorName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "detail": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2000
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "eventId",
+        "source",
+        "platform",
+        "title",
+        "startTime",
+        "status"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^(catch|imported):.{1,180}$"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "catch",
+            "imported"
+          ]
+        },
+        "platform": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "bookMyShow",
+            "district",
+            "luma",
+            "partiful",
+            "sortMyScene",
+            null
+          ]
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "startTime": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "live",
+            "full",
+            "draft",
+            "needsCheck",
+            "cancelled",
+            "removed"
+          ]
+        }
+      }
+    }
+  },
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "organizer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "name",
+        "kindLabel",
+        "citySlug",
+        "cityLabel",
+        "area",
+        "pageState",
+        "publishStatus",
+        "indexStatus",
+        "canonicalPath",
+        "appVisibility",
+        "claimState",
+        "claimedByName",
+        "listedAt",
+        "hasImage",
+        "origin"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "kindLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "citySlug": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "cityLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "area": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "pageState": {
+          "type": "string",
+          "enum": [
+            "live",
+            "hiddenFromSearch",
+            "hiddenInApp",
+            "draft",
+            "suppressed",
+            "removed"
+          ]
+        },
+        "publishStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "draft",
+            "qa",
+            "published",
+            "suppressed",
+            "removed",
+            null
+          ]
+        },
+        "indexStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "noindex",
+            "indexReady",
+            "indexed",
+            null
+          ]
+        },
+        "canonicalPath": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "appVisibility": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "discoverable",
+            "hidden",
+            null
+          ]
+        },
+        "claimState": {
+          "type": "string",
+          "enum": [
+            "unclaimed",
+            "claimPending",
+            "claimed",
+            "verified",
+            "suppressed"
+          ]
+        },
+        "claimedByName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "listedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "hasImage": {
+          "description": "Whether the page has a cover or profile image; without one it shows a lettermark.",
+          "type": "boolean"
+        },
+        "origin": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "userCreated",
+            "scraper",
+            "adminSeed",
+            "import",
+            null
+          ]
+        }
+      }
+    },
+    "salesOwner": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "uid",
+            "name"
+          ],
+          "properties": {
+            "uid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nextAction": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 320
+    },
+    "nextTask": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "taskId",
+            "title",
+            "dueAt",
+            "ownerName"
+          ],
+          "properties": {
+            "taskId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "title": {
+              "type": "string",
+              "maxLength": 300
+            },
+            "dueAt": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "ownerName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200
+            }
+          }
+        }
+      ]
+    },
+    "terms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "rateBasisPoints",
+        "capMinor"
+      ],
+      "properties": {
+        "source": {
+          "description": "organizer when the organizer has its own terms, platform when it follows Catch's, unset while Catch's are not configured.",
+          "type": "string",
+          "enum": [
+            "platform",
+            "organizer",
+            "unset"
+          ]
+        },
+        "rateBasisPoints": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "capMinor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    "payments": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "webhookVerified"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "notConnected",
+            "connected",
+            "needsAttention"
+          ]
+        },
+        "webhookVerified": {
+          "type": "boolean"
+        }
+      }
+    },
+    "pendingClaim": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requestId",
+            "requesterName",
+            "requesterRole",
+            "createdAt"
+          ],
+          "properties": {
+            "requestId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "requesterName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200
+            },
+            "requesterRole": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "createdAt": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            }
+          }
+        }
+      ]
+    },
+    "journey": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "at",
+          "actorName",
+          "detail"
+        ],
+        "properties": {
+          "kind": {
+            "description": "nominated (a person or a run sent Catch a link; detail is the first link), listingBuilt (Catch read the pages; detail is how many events it found), approved (staff approved the listing), listed (the organizer record was made), claimRequested (detail is the requester's role), claimApproved, claimRejected, claimed, firstEvent (detail is its title).",
+            "type": "string",
+            "enum": [
+              "nominated",
+              "listingBuilt",
+              "approved",
+              "listed",
+              "claimRequested",
+              "claimApproved",
+              "claimRejected",
+              "claimed",
+              "firstEvent"
+            ]
+          },
+          "at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "actorName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "detail": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 2000
+          }
+        }
+      }
+    },
+    "nextStep": {
+      "description": "What the organizer is waiting on: the organizer claiming it, staff deciding a claim, or its first event. Null once it has run one.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "claim",
+        "decideClaim",
+        "firstEvent",
+        null
+      ]
+    },
+    "upcomingEvents": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "eventId",
+          "source",
+          "platform",
+          "title",
+          "startTime",
+          "status"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^(catch|imported):.{1,180}$"
+          },
+          "eventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "catch",
+              "imported"
+            ]
+          },
+          "platform": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "bookMyShow",
+              "district",
+              "luma",
+              "partiful",
+              "sortMyScene",
+              null
+            ]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "startTime": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "live",
+              "full",
+              "draft",
+              "needsCheck",
+              "cancelled",
+              "removed"
+            ]
+          }
+        }
+      }
+    },
+    "upcomingEventCount": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+};
+
 export const managePaymentRoutingPolicyCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/manage_payment_routing_policy_payload.schema.json",

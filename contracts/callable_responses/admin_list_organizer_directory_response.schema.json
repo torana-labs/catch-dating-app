@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_organizer_directory_response.schema.json",
+  "title": "AdminListOrganizerDirectoryCallableResponse",
+  "description": "One page of the Admin Organizers directory with real totals. views counts every organizer in each view, ignoring the other filters; total counts the rows the request's filters match; each facet counts what its chip would show with every other filter applied. scan says whether every organizer was read: the directory reads at most a bounded number of organizers, and complete is false when there were more, so totals then cover only what was read.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["generatedAt", "total", "views", "facets", "scan", "rows", "nextCursor"],
+  "definitions": {
+    "count": {"type": "integer", "minimum": 0},
+    "facet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "label", "count"],
+      "properties": {
+        "value": {"type": "string", "minLength": 1, "maxLength": 120},
+        "label": {"type": "string", "minLength": 1, "maxLength": 120},
+        "count": {"$ref": "#/definitions/count"}
+      }
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uid", "name"],
+      "properties": {
+        "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "name": {"type": ["string", "null"], "maxLength": 200}
+      }
+    },
+    "pageState": {
+      "description": "The public page and app listing in one word: live (published, in search and in the app), hiddenFromSearch (published, not indexed), hiddenInApp (published, hidden in the app), draft (draft or qa), suppressed or removed.",
+      "type": "string",
+      "enum": ["live", "hiddenFromSearch", "hiddenInApp", "draft", "suppressed", "removed"]
+    },
+    "claimState": {
+      "type": "string",
+      "enum": ["unclaimed", "claimPending", "claimed", "verified", "suppressed"]
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["organizerId", "name", "kindLabel", "citySlug", "cityLabel", "area", "pageState", "claimState", "claimedByName", "salesOwner", "upcomingEventCount", "listedAt"],
+      "properties": {
+        "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "name": {"type": "string", "maxLength": 200},
+        "kindLabel": {"type": ["string", "null"], "maxLength": 120},
+        "citySlug": {"type": ["string", "null"], "maxLength": 120},
+        "cityLabel": {"type": ["string", "null"], "maxLength": 120},
+        "area": {"type": ["string", "null"], "maxLength": 200},
+        "pageState": {"$ref": "#/definitions/pageState"},
+        "claimState": {"$ref": "#/definitions/claimState"},
+        "claimedByName": {"type": ["string", "null"], "maxLength": 200},
+        "salesOwner": {"anyOf": [{"$ref": "#/definitions/person"}, {"type": "null"}]},
+        "upcomingEventCount": {"$ref": "#/definitions/count"},
+        "listedAt": {"type": ["string", "null"], "format": "date-time"}
+      }
+    }
+  },
+  "properties": {
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "total": {"$ref": "#/definitions/count"},
+    "views": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["all", "live", "unclaimed", "hidden"],
+      "properties": {
+        "all": {"$ref": "#/definitions/count"},
+        "live": {"$ref": "#/definitions/count"},
+        "unclaimed": {"$ref": "#/definitions/count"},
+        "hidden": {"$ref": "#/definitions/count"}
+      }
+    },
+    "facets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cities", "kinds", "claimStates", "mine"],
+      "properties": {
+        "cities": {"type": "array", "maxItems": 60, "items": {"$ref": "#/definitions/facet"}},
+        "kinds": {"type": "array", "maxItems": 60, "items": {"$ref": "#/definitions/facet"}},
+        "claimStates": {"type": "array", "maxItems": 3, "items": {"$ref": "#/definitions/facet"}},
+        "mine": {"$ref": "#/definitions/count"}
+      }
+    },
+    "scan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["complete", "scanned"],
+      "properties": {
+        "complete": {"type": "boolean"},
+        "scanned": {"$ref": "#/definitions/count"}
+      }
+    },
+    "rows": {"type": "array", "maxItems": 100, "items": {"$ref": "#/definitions/row"}},
+    "nextCursor": {"type": ["string", "null"], "pattern": "^o:[0-9]{1,5}$"}
+  }
+}
