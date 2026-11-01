@@ -216,9 +216,12 @@ class _HostOrganizerMediaManagerDockState
     final error = _showError ? widget.errorText(context) : null;
     return SafeArea(
       top: false,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       child: DecoratedBox(
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         decoration: BoxDecoration(
           color: CatchTokens.of(context).bg,
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           border: Border(top: BorderSide(color: CatchTokens.of(context).line)),
         ),
         child: Padding(

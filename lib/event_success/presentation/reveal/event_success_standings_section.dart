@@ -26,6 +26,7 @@ class EventSuccessStandingsSection extends StatelessWidget {
       child: Column(
         children: [
           for (var index = 0; index < entries.length; index++) ...[
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             if (index > 0) Divider(height: CatchSpacing.s4, color: t.line),
             Row(
               children: [

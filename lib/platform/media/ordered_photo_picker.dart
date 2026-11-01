@@ -535,6 +535,7 @@ class OrderedPhotoTile extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               if (photo.bytes != null)
+                // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                 Image.memory(photo.bytes!, fit: BoxFit.cover)
               else
                 CatchNetworkImage(
@@ -581,10 +582,12 @@ class OrderedPhotoTile extends StatelessWidget {
                 Positioned(
                   top: CatchSpacing.s1,
                   right: CatchSpacing.s1,
+                  // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                   child: Material(
                     color: t.surface.withValues(
                       alpha: CatchOpacity.imageEditControlFill,
                     ),
+                    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                     shape: const CircleBorder(),
                     clipBehavior: Clip.antiAlias,
                     child: actionMenu!,

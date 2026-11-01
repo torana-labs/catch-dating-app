@@ -113,6 +113,7 @@ class ProfileSurfaceSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
+    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
     return ColoredBox(
       color: t.bg,
       child: NotificationListener<OverscrollNotification>(
@@ -179,6 +180,7 @@ class ProfileSurfaceHeroSkeleton extends StatelessWidget {
               child: CatchSkeleton.box(
                 width: double.infinity,
                 height: double.infinity,
+                // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                 borderRadius: BorderRadius.circular(
                   CatchLayout.personPolaroidMediaRadius,
                 ),

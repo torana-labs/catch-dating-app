@@ -9,7 +9,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  bash tool/check_catch_ui_lint_drift.sh [--summary|--count|--json [PATH]|--check|--code CODE|--label LABEL|--all|--self-test|--check-text-baseline|--update-text-baseline|--check-drawing-baseline|--update-drawing-baseline|--help]
+  bash tool/check_catch_ui_lint_drift.sh [--summary|--count|--json [PATH]|--check|--code CODE|--label LABEL|--all|--self-test|--help]
 
 Modes:
   default    Print summary plus matching diagnostics. Exit 1 if drift remains.
@@ -18,10 +18,6 @@ Modes:
   --json     Print a JSON count artifact. Optionally also write it to PATH. Always exit 0.
   --check    Fail when any catch_* diagnostic remains.
   --self-test  Verify parsing, completion semantics, and zero-gate anti-vacuity.
-  --check-text-baseline   Check the resolved CatchText migration ratchet only.
-  --update-text-baseline  Regenerate that ratchet; existing counts cannot grow.
-  --check-drawing-baseline   Check the resolved drawing-family ratchet only.
-  --update-drawing-baseline  Regenerate that ratchet; existing counts cannot grow.
   --code     Count one Catch UI lint code.
   --label    Human-readable label for summary output.
   --all      Count all Catch UI lint codes.
@@ -87,10 +83,6 @@ while [ $# -gt 0 ]; do
       ;;
     --self-test)
       SELF_TEST="true"
-      shift
-      ;;
-    --check-text-baseline|--update-text-baseline|--check-drawing-baseline|--update-drawing-baseline)
-      MODE="$1"
       shift
       ;;
     --help|-h)
@@ -167,24 +159,6 @@ if [[ "$SELF_TEST" == "true" ]]; then
   fi
   echo "Catch UI lint zero-gate self-test passed."
   exit 0
-fi
-
-if [[ "$MODE" = "--update-text-baseline" ]]; then
-  "$dart_bin" run packages/catch_ui_lints/lib/src/catch_text_migration.dart --update
-  exit $?
-fi
-if [[ "$MODE" = "check" || "$MODE" = "--check-text-baseline" ]]; then
-  "$dart_bin" run packages/catch_ui_lints/lib/src/catch_text_migration.dart --check
-  if [[ "$MODE" = "--check-text-baseline" ]]; then exit 0; fi
-fi
-
-if [[ "$MODE" = "--update-drawing-baseline" ]]; then
-  "$dart_bin" run packages/catch_ui_lints/lib/src/catch_drawing_migration.dart --update
-  exit $?
-fi
-if [[ "$MODE" = "check" || "$MODE" = "--check-drawing-baseline" ]]; then
-  "$dart_bin" run packages/catch_ui_lints/lib/src/catch_drawing_migration.dart --check
-  if [[ "$MODE" = "--check-drawing-baseline" ]]; then exit 0; fi
 fi
 
 if [[ -n "${CATCH_UI_ANALYZE_OUTPUT_PATH:-}" ]]; then

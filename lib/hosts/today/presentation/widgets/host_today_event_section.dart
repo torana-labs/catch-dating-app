@@ -117,6 +117,7 @@ class HostTodayEventSection extends StatelessWidget {
         : CatchSurface(
             borderRole: CatchBorderRole.separator,
             backgroundColor: t.surface,
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             borderRadius: BorderRadius.circular(CatchRadius.md),
             clipBehavior: Clip.antiAlias,
             padding: CatchInsets.contentRelaxed,

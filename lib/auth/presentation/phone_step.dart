@@ -160,6 +160,7 @@ class _PhoneStepState extends ConsumerState<PhoneStep> {
                             countrySelector,
                             SizedBox(
                               height: CatchField.mdControlHeight,
+                              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                               child: VerticalDivider(
                                 width: CatchSpacing.s1,
                                 thickness: CatchStroke.hairline,
@@ -339,9 +340,12 @@ class PhoneCountryCodePicker extends StatelessWidget {
       barrierColor: CatchTokens.editorialBlack.withValues(
         alpha: CatchOpacity.mutedBorder,
       ),
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       boxDecoration: BoxDecoration(
         color: t.surface,
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         borderRadius: BorderRadius.circular(CatchRadius.md),
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         border: Border.all(color: t.line),
       ),
       searchDecoration: InputDecoration(
@@ -349,16 +353,25 @@ class PhoneCountryCodePicker extends StatelessWidget {
         hintStyle: CatchTextStyles.bodyLead(context, color: t.ink2),
         filled: true,
         fillColor: t.raised,
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         border: OutlineInputBorder(
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           borderRadius: BorderRadius.circular(CatchRadius.sm),
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           borderSide: BorderSide(color: t.line),
         ),
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         enabledBorder: OutlineInputBorder(
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           borderRadius: BorderRadius.circular(CatchRadius.sm),
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           borderSide: BorderSide(color: t.line),
         ),
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         focusedBorder: OutlineInputBorder(
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           borderRadius: BorderRadius.circular(CatchRadius.sm),
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           borderSide: BorderSide(color: t.primary),
         ),
       ),
@@ -366,7 +379,9 @@ class PhoneCountryCodePicker extends StatelessWidget {
       padding: CatchInsets.inlineHorizontal,
       margin: CatchInsets.countryCodeFlagMargin,
       flagWidth: CatchSpacing.s6,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       flagDecoration: BoxDecoration(
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         borderRadius: BorderRadius.circular(CatchRadius.xs),
       ),
       builder: embedded
@@ -378,6 +393,7 @@ class PhoneCountryCodePicker extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (flagUri != null)
+                      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                       Image.asset(
                         flagUri,
                         package: 'country_code_picker',

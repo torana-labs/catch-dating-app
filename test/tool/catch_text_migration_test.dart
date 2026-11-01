@@ -10,113 +10,6 @@ import '../../tool/architecture/check_ui_composition_contracts.dart'
     show analysisDartSdkPath;
 
 void main() {
-  test('baseline rejects malformed rows, growth, and new file allowances', () {
-    for (final source in [
-      '{}',
-      '{"version":1,"files":{}}',
-      '{"version":3,"files":{}}',
-      '{"version":2,"files":{"lib/a.dart":{}}}',
-      '{"version":2,"files":{"lib/a.dart":{"supporting":0}}}',
-      '{"version":2,"files":{"lib/a.dart":{"supporting":1.5}}}',
-      '{"version":2,"files":{"lib/../a.dart":{"supporting":1}}}',
-      '{"version":2,"files":{"packages/catch_ui/lib/a.dart":{"supporting":1}}}',
-    ]) {
-      expect(() => parseTextMigrationBaseline(source), throwsFormatException);
-    }
-    const budget = {
-      'lib/a.dart': {'supporting': 2},
-    };
-    expect(
-      textMigrationGrowth({
-        'lib/a.dart': {'supporting': 2},
-      }, budget),
-      isEmpty,
-    );
-    expect(
-      textMigrationGrowth({
-        'lib/a.dart': {'supporting': 1},
-      }, budget),
-      isEmpty,
-    );
-    expect(textMigrationGrowth({}, budget), isEmpty);
-    expect(
-      textMigrationGrowth({
-        'lib/a.dart': {'supporting': 3},
-      }, budget),
-      hasLength(1),
-    );
-    expect(
-      textMigrationGrowth({
-        'lib/new.dart': {'supporting': 1},
-      }, budget),
-      hasLength(1),
-    );
-    expect(
-      textMigrationGrowth({
-        'lib/a.dart': {'bodyL': 2},
-      }, budget),
-      hasLength(1),
-    );
-  });
-
-  test('a moved file keeps its merge-base budget', () {
-    const budget = {
-      'lib/core/widgets/a.dart': {'supporting': 2},
-      'lib/b.dart': {'supporting': 1},
-    };
-    final moved = textMigrationRenamedBudget(budget, {
-      'lib/core/widgets/a.dart': 'lib/platform/media/a.dart',
-    });
-    expect(moved, {
-      'lib/platform/media/a.dart': {'supporting': 2},
-      'lib/b.dart': {'supporting': 1},
-    });
-    expect(
-      textMigrationGrowth({
-        'lib/platform/media/a.dart': {'supporting': 2},
-      }, moved),
-      isEmpty,
-    );
-  });
-
-  test('new variants activate only original legacy role allowances', () {
-    const initial = {
-      'lib/a.dart': {'supporting': 2, 'bodyM': 1},
-    };
-    expect(
-      textMigrationPrunedCounts(initial, initial, {'supporting'}),
-      initial,
-    );
-    final activated = textMigrationPrunedCounts(initial, initial, {
-      'supporting',
-      'bodyM',
-    });
-    expect(textMigrationGrowth(activated, initial), isEmpty);
-    const later = {
-      'lib/a.dart': {'supporting': 2, 'bodyM': 2, 'labelM': 1},
-    };
-    expect(textMigrationPrunedCounts(later, initial, {'supporting'}), initial);
-    expect(
-      textMigrationGrowth(
-        textMigrationPrunedCounts(later, initial, {'supporting', 'bodyM'}),
-        initial,
-      ),
-      hasLength(1),
-    );
-    expect(
-      textMigrationPrunedCounts(
-        {
-          'lib/a.dart': {'supporting': 1},
-        },
-        initial,
-        {'supporting'},
-      ),
-      {
-        'lib/a.dart': {'supporting': 1},
-      },
-    );
-  });
-
   test(
     'scope includes shared code and both apps, with narrow generated exclusions',
     () {
@@ -216,8 +109,7 @@ abstract final class OtherTheme {
   static ThemeData of(BuildContext context) => fw.Theme.of(context);
 }
 ''');
-      // Parts own their budgets; a larger defining-library budget cannot hide
-      // a new call in one part (the analyzer registers rules per library).
+      // A part is read on its own: the analyzer registers rules per library.
       Directory('${fixture.path}/.git').createSync();
       final variants = File(
         '${fixture.path}/packages/catch_ui/lib/src/primitives/catch_text_variant.dart',
@@ -226,24 +118,13 @@ abstract final class OtherTheme {
       variants.writeAsStringSync(
         'enum CatchTextVariant { supporting, titleL; }',
       );
-      final baseline = File('${fixture.path}/$textMigrationBaseline');
-      baseline.createSync(recursive: true);
-      baseline.writeAsStringSync(
-        jsonEncode({
-          'version': 2,
-          'files': {
-            'lib/host.dart': {'supporting': 100, 'titleL': 100, 'bodyM': 100},
-            'lib/parts.dart': {'supporting': 1, 'bodyM': 1},
-          },
-        }),
-      );
       Directory('${fixture.path}/lib').createSync();
       File('${fixture.path}/lib/host.dart').writeAsStringSync(
         "import 'package:catch_ui/catch_ui.dart';\nimport 'package:flutter/material.dart';\npart 'parts.dart';\n",
       );
       final partPath = '${fixture.path}/lib/parts.dart';
       File(partPath).writeAsStringSync(
-        "part of 'host.dart';\nWidget partText(BuildContext context) => Column(children: [Text('existing', style: CatchTextStyles.supporting(context)), Text('new', style: CatchTextStyles.titleL(context)), Text('existing body', style: CatchTextStyles.bodyM(context)), Text('later body', style: CatchTextStyles.bodyM(context))]);\n",
+        "part of 'host.dart';\nWidget partText(BuildContext context) => Column(children: [Text('covered', style: CatchTextStyles.supporting(context)), Text('covered', style: CatchTextStyles.titleL(context)), Text('no variant yet', style: CatchTextStyles.bodyM(context))]);\n",
       );
       final collection = AnalysisContextCollection(
         includedPaths: [fixture.path],
@@ -295,20 +176,20 @@ abstract final class OtherTheme {
                   .getResolvedUnit(partPath)
               as ResolvedUnitResult;
       expect(part.diagnostics, isEmpty);
-      expect(newTextMigrationSites(part.unit, partPath).single.role, 'titleL');
-      // Publishing a role activates its original allowance, not another role's
-      // quota. A later unsupported call acquires no extra reservation.
-      final enumSource = variants.readAsStringSync();
-      expect(enumSource, contains('titleL;'));
+      expect(
+        newTextMigrationSites(part.unit, partPath).map((site) => site.role),
+        ['supporting', 'titleL'],
+      );
+      // A new variant makes its existing calls report; nothing reserves them.
       variants.writeAsStringSync(
-        enumSource.replaceFirst('titleL;', 'titleL, bodyM;'),
+        'enum CatchTextVariant { supporting, titleL, bodyM; }',
       );
       variants.setLastModifiedSync(
-        DateTime.now().add(const Duration(seconds: 1)),
+        DateTime.now().add(const Duration(seconds: 2)),
       );
       expect(
         newTextMigrationSites(part.unit, partPath).map((site) => site.role),
-        ['titleL', 'bodyM'],
+        ['supporting', 'titleL', 'bodyM'],
       );
     },
   );

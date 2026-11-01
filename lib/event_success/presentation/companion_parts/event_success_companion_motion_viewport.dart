@@ -105,6 +105,7 @@ class CompanionBouncyChip extends StatelessWidget {
     final t = CatchTokens.of(context);
     final background = active ? t.ink : t.surface;
     final foreground = active ? t.surface : t.ink;
+    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
     final radius = BorderRadius.circular(CatchRadius.pill);
     return CompanionBouncySurface(
       onTap: onTap,
