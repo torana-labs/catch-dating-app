@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.1.2
+version: 3.2.0
 updated: 2026-11-01
 owner: recursive_audit_loop
 status: active
@@ -703,13 +703,14 @@ Firebase deploy and data-validation workflows use GitHub OIDC rather than
 long-lived service-account JSON secrets. Use GitHub Environments named `dev`,
 `staging`, `prod-hosting`, `prod-mobile`, `backend-review`, `prod-backend`, and `prod`. `prod-hosting` is
 approval-free and limited to the automatic web Hosting workflows and the
-main-only `Next Website Preview` and `Next Website Promotion` workflows. The preview requires current
-main's successful CI and exact-source captures, builds without cloud credentials,
+main-only `Next Website Preview` and `Next Website Promotion` workflows. The preview builds a commit
+of main (its `source_sha` input, or main's head) that is not older than live and
+has its own successful CI and exact-source captures. It builds without cloud credentials,
 and verifies the tested container archive before OIDC deployment to the fixed
 preview service/channel. Its scale-to-zero runtime has a one-instance cap and
 uses only the existing Firestore read-only web identity; it cannot publish the
-live Hosting channel. The separate promotion workflow accepts only a successful,
-browser-accepted preview of current main, verifies the tested image and Hosting
+live Hosting channel. The separate promotion workflow accepts only a successful
+preview, releases that preview's own source, verifies the tested image and Hosting
 bytes before OIDC, preserves the prior live version, tests an expiring production
 channel and clones that exact Hosting version to live. It shares the marketing
 Hosting lock; the legacy promoter checks actual live runtime ownership and
@@ -1912,6 +1913,44 @@ publishes a complete immutable artifact set.
 If a `Deploy backend` run fails, fix forward: merge the fix or re-run the
 workflow. The `deploy:backend` record only moves after success, so the next run
 redeploys everything since the last successful deploy.
+
+### Website release train
+
+`Website Release` (`.github/workflows/website-release.yml`, driven by
+`website/scripts/next/releaseTrain.mjs`) releases main to `catchdates.com`
+after main CI completes, with an hourly fallback. It plans main's head. When
+that head has no website validation of its own, it first runs full CI on it
+(about an hour). It then previews the planned commit, passes the `prod` gate
+and promotes that exact preview. Trains queue and never cancel each other.
+`docs/web_surface_architecture.md` ("Release train") describes each step.
+
+The train releases the commit it planned, even when main has moved on since.
+It passes that commit to `Next Website Preview` as `source_sha`. The preview
+runs main's release scripts and gates, but builds, smoke-tests and deploys a
+detached worktree of the source. Everything it names — artifact, image tag,
+runtime label and `CATCH_RELEASE_SHA` — carries the source commit. Promotion
+reads the source from the preview's artifact name. Before 1 Nov 2026 only
+main's current head could be previewed, so a train whose validation main moved
+past released nothing. With the merge queue busy, no train released for hours.
+
+These gates stay. The preview and the promotion each require the source's
+own successful CI with Marketing validation and captures. The source must be
+on main and not older than the live release (`deployed/prod-website`). Both
+recheck this right before they sign in, and promotion rechecks it before
+every production step. A train's commit that a newer release has overtaken is
+refused, so live only moves forward.
+
+Recovery:
+
+- **A train failed in validation.** Later trains skip that head
+  (`website_validation_failed`) until main moves on or someone re-runs that CI
+  run.
+- **A preview or promotion failed.** Fix forward. The next train plans main's
+  head again. To release a specific commit by hand, dispatch
+  `Next Website Preview` with `source_sha`. Then dispatch
+  `Next Website Promotion` with that preview's run id.
+- **Hold releases.** Add a required reviewer to the `prod` environment. Trains
+  then wait at the gate.
 
 ### Website rollback to the static Vite build
 
