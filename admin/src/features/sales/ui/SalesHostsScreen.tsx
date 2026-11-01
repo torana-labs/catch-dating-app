@@ -39,7 +39,7 @@ const tabs: Array<{value: HostTab; label: string}> = [
   {value: "deals", label: "Deals"}, {value: "notes", label: "Notes"},
 ];
 
-function hostPage(model: SalesHostsModel, host: SalesAccountDetail, onBack: () => void, onOpenOrganizer: () => void) {
+function hostPage(model: SalesHostsModel, host: SalesAccountDetail, onBack: () => void, onOpenOrganizer: () => void, onOpenTools: () => void) {
   const research = researchLabels[host.account.researchStatus];
   const deal = host.opportunities[0];
   const openTasks = host.tasks.filter((task) => task.status === "open");
@@ -79,7 +79,10 @@ function hostPage(model: SalesHostsModel, host: SalesAccountDetail, onBack: () =
   }
   return <>
     <CatchWorkspaceHeader title={host.organizerSummary.name} kicker="Sales · Hosts" back={{label: "Back to hosts", onPressed: onBack}}
-      actions={<CatchButton label="Organizer page" variant="secondary" size="sm" onPressed={onOpenOrganizer} />} />
+      actions={<>
+        <CatchButton label="All tools" variant="secondary" size="sm" onPressed={onOpenTools} />
+        <CatchButton label="Organizer page" variant="secondary" size="sm" onPressed={onOpenOrganizer} />
+      </>} />
     <CatchPageTabBar label="Host" selected={model.tab} size="sm" onChanged={(value) => model.setTab(value as HostTab)}
       options={tabs.map((tab) => ({...tab, ...(counts[tab.value] !== undefined ? {count: counts[tab.value]} : {})}))} />
     {body}
@@ -87,15 +90,20 @@ function hostPage(model: SalesHostsModel, host: SalesAccountDetail, onBack: () =
 }
 
 /** Hosts: the accounts in Sales, searchable, and one host's page with four tabs. */
-export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOrganizer}: {
+export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOrganizer, onOpenHostTools, onAddHost}: {
   model: SalesHostsModel;
   selectedOrganizerId: string | null;
   onSelect: (organizerId: string | null) => void;
+  /** The older host page: editing, stage moves, pilots, quotes, people and evidence. */
+  onOpenHostTools: (organizerId: string) => void;
+  /** The older form to add a host or nominate an organizer. */
+  onAddHost: () => void;
   onOpenOrganizer: (organizerId: string) => void;
 }) {
   if (selectedOrganizerId && model.host) {
     return <CatchPaneLayout pattern="reading"
-      main={hostPage(model, model.host, () => onSelect(null), () => onOpenOrganizer(selectedOrganizerId))} />;
+      main={hostPage(model, model.host, () => onSelect(null), () => onOpenOrganizer(selectedOrganizerId),
+        () => onOpenHostTools(selectedOrganizerId))} />;
   }
   const rows: Row[] = model.rows.map((row) => {
     const research = researchLabels[row.researchStatus];
@@ -109,6 +117,7 @@ export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOr
       <CatchWorkspaceHeader title="Hosts" count={model.rows.length}
         filters={{search: {placeholder: "Search hosts", value: model.query, onChanged: model.setQuery}}}
         actions={<>
+          <CatchButton label="Add or nominate" variant="secondary" size="sm" onPressed={onAddHost} />
           {model.hasPreviousPage ? <CatchButton label="Previous" variant="secondary" size="sm" onPressed={model.previousPage} /> : null}
           {model.hasNextPage ? <CatchButton label="More" variant="secondary" size="sm" onPressed={model.nextPage} /> : null}
         </>} />

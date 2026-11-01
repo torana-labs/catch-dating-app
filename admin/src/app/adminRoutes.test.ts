@@ -150,6 +150,13 @@ describe("Admin route contract", () => {
     }
   });
 
+  it("keeps a host's full tools and adding a host reachable from the new Sales screens", () => {
+    expect(resolveAdminRoute("/sales/hosts/host-1/tools")).toMatchObject({nav: "sales", salesArea: "hosts",
+      params: {salesOrganizerId: "host-1"}});
+    expect(resolveAdminRoute("/sales/add-host")).toMatchObject({nav: "sales", salesArea: "hosts"});
+    expect(resolveAdminRoute("/sales/hosts/host-1").nav).toBe("sales-hosts");
+  });
+
   it("keeps the older Sales pages reachable until their tools move", () => {
     for (const area of ["pipeline", "pilots", "research", "settings"] as const) {
       expect(resolveAdminRoute(`/sales/${area}`)).toMatchObject({nav: "sales", salesArea: area});
