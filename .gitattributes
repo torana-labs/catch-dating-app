@@ -1,0 +1,3 @@
+# One sorted line per action. Two PRs adding actions that sort side by side keep both lines;
+# generate_admin_action_catalog.mjs --check accepts them in any order.
+functions/src/shared/generated/adminActionCatalog.ts merge=union

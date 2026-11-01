@@ -66,7 +66,9 @@ for (const [outputPath, render] of outputs) {
   if (checkOnly) {
     const current = fs.existsSync(outputPath) ?
       fs.readFileSync(outputPath, "utf8") : "";
-    if (current !== output) {
+    // .gitattributes merges the Functions view by keeping both sides' lines, in either order.
+    const sameLines = (a, b) => a.split("\n").sort().join("\n") === b.split("\n").sort().join("\n");
+    if (!sameLines(current, output)) {
       stale = true;
       console.error(`${path.relative(repoRoot, outputPath)} is stale.`);
     }
