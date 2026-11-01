@@ -86,9 +86,9 @@ export async function readChannel(channelId, service, {runCommand = spawnSync, f
 }
 if (process.argv[1] === fileURLToPath(import.meta.url) && process.argv[2] === "pinned") {
   // pinned <channel.json> <service.json>: the recorded channel against the
-  // revision this run deployed and tagged.
+  // revision this run deployed and tagged, which serves the preview's source.
   const [channelFile, serviceFile] = process.argv.slice(3);
-  const sourceSha = process.env.GITHUB_SHA, tag = previewRevisionTag(process.env.GITHUB_RUN_ID, process.env.GITHUB_RUN_ATTEMPT);
+  const sourceSha = process.env.RELEASE_SHA || process.env.GITHUB_SHA, tag = previewRevisionTag(process.env.GITHUB_RUN_ID, process.env.GITHUB_RUN_ATTEMPT);
   const deployed = deployedRevision(JSON.parse(fs.readFileSync(serviceFile, "utf8")), "catch-website-next-preview", sourceSha, tag);
   const pinned = assertChannelPinsRevision(JSON.parse(fs.readFileSync(channelFile, "utf8")), deployed);
   await assertRevisionServes(deployed.url, sourceSha);

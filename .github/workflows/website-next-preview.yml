@@ -1,7 +1,15 @@
 name: Next Website Preview
+# The release train finds its own dispatch by this title.
+run-name: Next Website Preview of ${{ inputs.source_sha || github.sha }}
 
 on:
   workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Validated commit of main to preview (default main's head)
+        required: false
+        default: ""
+        type: string
 
 permissions:
   actions: read
@@ -22,6 +30,7 @@ jobs:
     outputs:
       artifact_id: ${{ steps.upload.outputs.artifact-id }}
       release_sha256: ${{ steps.package.outputs.release_sha256 }}
+      source_sha: ${{ steps.release.outputs.sha }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
@@ -32,8 +41,25 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
+      - id: release
+        name: Check out the release source beside the trusted scripts
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+        run: |
+          set -euo pipefail
+          # The release train previews a validated commit of main that main
+          # may have moved past; a manual dispatch previews main's head. This
+          # checkout of main supplies the release scripts and gates; the
+          # source's worktree supplies what is built and its own smoke checks.
+          [[ "$SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]]
+          git merge-base --is-ancestor "$SOURCE_SHA" "$GITHUB_SHA"
+          git worktree add --detach "$RUNNER_TEMP/release-source" "$SOURCE_SHA"
+          test "$(git -C "$RUNNER_TEMP/release-source" rev-parse HEAD)" = "$SOURCE_SHA"
+          echo "RELEASE_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
+          echo "RELEASE_SOURCE=$RUNNER_TEMP/release-source" >> "$GITHUB_ENV"
+          echo "sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
       - id: source
-        name: Require current-main CI and exact-source captures
+        name: Require the source's own CI and exact-source captures
         env:
           GH_TOKEN: ${{ github.token }}
         run: node website/scripts/next/previewRelease.mjs authorize
@@ -41,7 +67,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           CAPTURE_BINDING: ${{ steps.source.outputs.capture_binding }}
-        run: node tool/marketing/import_hosted_captures.mjs --import
+        # The source's own importer and capture manifest, into the source tree.
+        run: GITHUB_SHA="$RELEASE_SHA" node "$RELEASE_SOURCE/tool/marketing/import_hosted_captures.mjs" --import
       - name: Build with public configuration and no cloud credentials
         env:
           VITE_GTM_ID: ${{ vars.VITE_GTM_ID || 'GTM-K7KLNQXP' }}
@@ -66,8 +93,8 @@ jobs:
             VITE_FIREBASE_APP_ID VITE_FIREBASE_MEASUREMENT_ID; do
             args+=(--build-arg "$key")
           done
-          docker build --file website/Dockerfile --tag catch-website-preview:build \
-            --label "org.opencontainers.image.revision=$GITHUB_SHA" "${args[@]}" .
+          docker build --file "$RELEASE_SOURCE/website/Dockerfile" --tag catch-website-preview:build \
+            --label "org.opencontainers.image.revision=$RELEASE_SHA" "${args[@]}" "$RELEASE_SOURCE"
       - name: Exercise the actual container without runtime credentials
         run: |
           set -euo pipefail
@@ -75,7 +102,7 @@ jobs:
             --env CATCH_WEBSITE_STAGE=production \
             --env CATCH_PUBLIC_FIRESTORE_PROJECT=catch-dating-app-64e51 catch-website-preview:build
           trap 'docker logs next-smoke; docker rm -f next-smoke' EXIT
-          node website/scripts/next/containerSmoke.mjs http://127.0.0.1:3130
+          node "$RELEASE_SOURCE/website/scripts/next/containerSmoke.mjs" http://127.0.0.1:3130
       - id: package
         name: Preserve the tested image and Hosting bytes
         run: |
@@ -86,7 +113,7 @@ jobs:
       - id: upload
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: next-preview-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: next-preview-${{ steps.release.outputs.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: build/next-preview/release.tgz
           if-no-files-found: error
           retention-days: 30
@@ -111,6 +138,23 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
+      - id: release
+        name: Check out the release source beside the trusted scripts
+        env:
+          SOURCE_SHA: ${{ needs.build.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+          # The release train previews a validated commit of main that main
+          # may have moved past; a manual dispatch previews main's head. This
+          # checkout of main supplies the release scripts and gates; the
+          # source's worktree supplies what is built and its own smoke checks.
+          [[ "$SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]]
+          git merge-base --is-ancestor "$SOURCE_SHA" "$GITHUB_SHA"
+          git worktree add --detach "$RUNNER_TEMP/release-source" "$SOURCE_SHA"
+          test "$(git -C "$RUNNER_TEMP/release-source" rev-parse HEAD)" = "$SOURCE_SHA"
+          echo "RELEASE_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
+          echo "RELEASE_SOURCE=$RUNNER_TEMP/release-source" >> "$GITHUB_ENV"
+          echo "sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           artifact-ids: ${{ needs.build.outputs.artifact_id }}
@@ -158,7 +202,7 @@ jobs:
               --repository-format=docker --description='Verified Catch website runtime images'
           fi
           gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
-          image="asia-south1-docker.pkg.dev/$project/catch-website/next:$GITHUB_SHA-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          image="asia-south1-docker.pkg.dev/$project/catch-website/next:$RELEASE_SHA-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           docker tag catch-website-preview:build "$image"
           docker push "$image"
           pinned="$(docker image inspect "$image" --format '{{json .RepoDigests}}' | \
@@ -175,8 +219,8 @@ jobs:
             --image "$pinned" --tag "$tag" --service-account github-actions-web-reader@catch-dating-app-64e51.iam.gserviceaccount.com \
             --allow-unauthenticated --ingress all --cpu 1 --memory 512Mi --concurrency 40 \
             --min-instances 0 --max-instances 1 --timeout 30 --port 8080 \
-            --set-env-vars "CATCH_WEBSITE_STAGE=preview,CATCH_PUBLIC_FIRESTORE_PROJECT=$project,CATCH_RELEASE_SHA=$GITHUB_SHA" \
-            --labels "catch-surface=website-preview,source-sha=$GITHUB_SHA" --quiet
+            --set-env-vars "CATCH_WEBSITE_STAGE=preview,CATCH_PUBLIC_FIRESTORE_PROJECT=$project,CATCH_RELEASE_SHA=$RELEASE_SHA" \
+            --labels "catch-surface=website-preview,source-sha=$RELEASE_SHA" --quiet
           gcloud run services describe catch-website-next-preview --project "$project" --region "$region" \
             --format=json > build/next-preview/service.json
           printf '%s\n' "$pinned" > build/next-preview/image-digest.txt
@@ -196,7 +240,7 @@ jobs:
           node website/scripts/next/channelState.mjs pinned build/next-preview/channel.json build/next-preview/service.json \
             > build/next-preview/pinned-revision.json
           url="$(jq -er .url build/next-preview/channel.json)"
-          node website/scripts/next/deployedSmoke.mjs "$url" > build/next-preview/deployed-checks.json
+          node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" "$url" > build/next-preview/deployed-checks.json
       - name: Retain runtime and preview identities for acceptance
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
