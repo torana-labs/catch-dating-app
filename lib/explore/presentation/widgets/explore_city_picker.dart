@@ -204,6 +204,7 @@ class CityOptionTile extends StatelessWidget {
       child: CatchSurface(
         backgroundColor: selected ? t.primarySoft : Colors.transparent,
         radius: CatchRadius.none,
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         borderRadius: BorderRadius.circular(CatchRadius.sm),
         clipBehavior: Clip.antiAlias,
         onTap: onTap,

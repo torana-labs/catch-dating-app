@@ -170,6 +170,7 @@ class _OnboardingWelcomeBodyState extends ConsumerState<OnboardingWelcomeBody>
         systemNavigationBarColor: d.bg,
         systemNavigationBarIconBrightness: Brightness.light,
       ),
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       child: ColoredBox(
         color: d.bg,
         child: Semantics(
@@ -178,6 +179,7 @@ class _OnboardingWelcomeBodyState extends ConsumerState<OnboardingWelcomeBody>
               ? null
               : context.l10n.onboardingWelcomePageLabelSkipWelcomeAnimation,
           onTap: _landed ? null : _skip,
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           child: GestureDetector(
             key: OnboardingWelcomeBody.splashTapTargetKey,
             behavior: HitTestBehavior.opaque,
@@ -457,9 +459,11 @@ class WelcomeReelList extends StatelessWidget {
     final trackHeight =
         welcomePhraseBank.length * CatchWelcomeTokens.welcomeReelRowHeight;
 
+    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
     return ShaderMask(
       blendMode: BlendMode.dstIn,
       shaderCallback: (bounds) {
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         return const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -477,6 +481,7 @@ class WelcomeReelList extends StatelessWidget {
           ],
         ).createShader(bounds);
       },
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       child: ClipRect(
         child: OverflowBox(
           alignment: Alignment.topCenter,
@@ -587,6 +592,7 @@ class WelcomeReelRow extends StatelessWidget {
 
     return SizedBox(
       height: CatchWelcomeTokens.welcomeReelRowHeight,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       child: Opacity(
         opacity: effectiveOpacity.clamp(0, 1).toDouble(),
         child: Padding(
@@ -628,6 +634,7 @@ class WelcomeRevealTransition extends StatelessWidget {
   Widget build(BuildContext context) {
     final progress = _revealProgress(landingValue, order);
 
+    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
     return Opacity(
       opacity: progress,
       child: Transform.translate(

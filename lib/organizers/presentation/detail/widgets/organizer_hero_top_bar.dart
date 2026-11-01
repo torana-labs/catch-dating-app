@@ -76,6 +76,7 @@ class OrganizerHeroTopBar extends StatelessWidget {
         );
         final moduleHeight =
             mediaHeight + (organizerInteractionMediaInset * 2) + captionExtent;
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         final heroModule = Material(
           color: Colors.transparent,
           child: OrganizerHeroHeader(
@@ -158,6 +159,7 @@ class OrganizerHeroTopBar extends StatelessWidget {
           ],
           flexibleSpace: FlexibleSpaceBar(
             collapseMode: CollapseMode.pin,
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             background: ClipRect(
               child: OverflowBox(
                 alignment: Alignment.topCenter,
@@ -400,6 +402,7 @@ class OrganizerHeroHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         ClipRSuperellipse(
           key: const ValueKey('club-detail-viewport-curve-frame'),
           clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -525,6 +528,7 @@ double _organizerHeroViewportTopCornerRadius(MediaQueryData mediaQuery) {
   return derivedRadius.clamp(fallbackRadius, maxRadius).toDouble();
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _OrganizerHeroViewportCurveClipper extends CustomClipper<RSuperellipse> {
   const _OrganizerHeroViewportCurveClipper({
     required this.padding,
@@ -553,9 +557,13 @@ class _OrganizerHeroViewportCurveClipper extends CustomClipper<RSuperellipse> {
 
     return RSuperellipse.fromRectAndCorners(
       rect,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       topLeft: Radius.circular(math.min(topRadius, maxCorner)),
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       topRight: Radius.circular(math.min(topRadius, maxCorner)),
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       bottomLeft: Radius.circular(math.min(cornerRadius, maxCorner)),
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       bottomRight: Radius.circular(math.min(cornerRadius, maxCorner)),
     );
   }

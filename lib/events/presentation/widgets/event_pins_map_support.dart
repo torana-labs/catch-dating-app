@@ -79,6 +79,7 @@ Future<MapMarkerBitmap> _buildEventMapPinBitmap({
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         flagRect,
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         const Radius.circular(CatchRadius.pill),
       ),
       Paint()..color = inkColor,

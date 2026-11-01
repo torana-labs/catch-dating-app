@@ -14,6 +14,7 @@ class TicketStubTileData {
   final IconData? icon;
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _TicketStubNotchPainter extends CustomPainter {
   const _TicketStubNotchPainter({required this.color});
 
@@ -32,6 +33,7 @@ class _TicketStubNotchPainter extends CustomPainter {
       oldDelegate.color != color;
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _VerticalDashedPainter extends CustomPainter {
   const _VerticalDashedPainter({required this.color});
 

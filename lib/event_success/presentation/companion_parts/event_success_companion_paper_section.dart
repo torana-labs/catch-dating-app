@@ -295,6 +295,7 @@ class CompanionPaperTicketHeader extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             child: CustomPaint(
               painter: _CompanionPaperTicketHeaderPainter(
                 lineColor: swatch.accent.withValues(
@@ -385,6 +386,7 @@ class CompanionPaperTicketDivider extends StatelessWidget {
     final t = CatchTokens.of(context);
     return SizedBox(
       height: CatchSpacing.s3,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       child: CustomPaint(
         painter: _CompanionPaperTicketDividerPainter(color: t.line2),
       ),
@@ -421,6 +423,7 @@ class CompanionPaperTicketImage extends StatelessWidget {
     return SizedBox(
       width: CatchLayout.eventSuccessPaperBarcodeWidth,
       height: CatchLayout.eventSuccessPaperBarcodeHeight,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       child: CustomPaint(
         painter: _CompanionPaperTicketImagePainter(color: t.ink),
       ),

@@ -78,8 +78,11 @@ class HostPaymentAccountCard extends StatelessWidget {
       context: context,
       backgroundColor: t.bg,
       barrierColor: t.overlay,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       shape: const RoundedRectangleBorder(
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         borderRadius: BorderRadius.vertical(
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           top: Radius.circular(CatchRadius.lg),
         ),
       ),

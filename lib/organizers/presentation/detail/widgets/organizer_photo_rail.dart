@@ -27,6 +27,7 @@ class OrganizerPhotoRail extends StatelessWidget {
                     tone: CatchSurfaceTone.transparent,
                     radius: CatchRadius.infoTile,
                     clipBehavior: Clip.antiAlias,
+                    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                     child: ColoredBox(
                       color: t.primarySoft,
                       child: CatchNetworkImage(

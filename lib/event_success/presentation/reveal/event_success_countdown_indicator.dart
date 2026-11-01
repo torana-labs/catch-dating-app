@@ -38,6 +38,7 @@ class EventSuccessCountdownIndicator extends StatelessWidget {
                 fit: StackFit.expand,
                 alignment: Alignment.center,
                 children: [
+                  // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                   CustomPaint(
                     painter: _CountdownDialPainter(
                       progress: animatedProgress,
@@ -135,6 +136,7 @@ class EventSuccessCountdownIndicator extends StatelessWidget {
   }
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _CountdownDialPainter extends CustomPainter {
   const _CountdownDialPainter({
     required this.progress,
@@ -183,6 +185,7 @@ class _CountdownDialPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 10 + intensity * 4
       ..strokeCap = StrokeCap.round
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       ..shader = SweepGradient(
         transform: const GradientRotation(-math.pi / 2),
         colors: [
