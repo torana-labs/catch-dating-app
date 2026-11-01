@@ -27,6 +27,7 @@
       "tool:runner"
     ],
     "manifestCheckIds": [
+      "meta:ci-tool-category-coverage",
       "tool:runner"
     ]
   },
@@ -4231,7 +4232,7 @@
     },
     {
       "id": "web:verify-admin-hosting",
-      "category": "web",
+      "category": "lint",
       "path": "tool/web/verify_admin_hosting.mjs",
       "command": "node tool/web/verify_admin_hosting.mjs",
       "safety": "remote-read",
