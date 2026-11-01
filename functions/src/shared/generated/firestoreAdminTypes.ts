@@ -2582,6 +2582,75 @@ export interface SupplyNominatorDocument {
 }
 
 /**
+ * One person's support conversation with Catch on one channel (WhatsApp, Instagram or email). Inbound WhatsApp and Instagram messages that are not nominations land here; staff log emails by hand until inbound email exists. It has an owner, a status, how long the person has been waiting for a reply, and links to the booking, money issue or safety case it is about. Admin callables only.
+ */
+export interface SupportConversationDocument {
+  schemaVersion: 1;
+  conversationId: string;
+  channel: "whatsapp" | "instagram" | "email";
+  /**
+   * E.164 number, ig:<scoped id> or email address.
+   */
+  contactAddress: string;
+  /**
+   * Masked, for lists.
+   */
+  contactLabel: string;
+  displayName: string | null;
+  uid: string | null;
+  audience: "guest" | "organizer" | "unknown";
+  organizerId: string | null;
+  subject: string;
+  status: "open" | "waitingOnThem" | "closed";
+  ownerUid: string | null;
+  waitingSince: FirebaseFirestore.Timestamp | null;
+  lastInboundAt: FirebaseFirestore.Timestamp | null;
+  lastOutboundAt: FirebaseFirestore.Timestamp | null;
+  lastMessageAt: FirebaseFirestore.Timestamp;
+  lastMessagePreview: string;
+  messageCount: number;
+  /**
+   * @maxItems 10
+   */
+  links: {
+    kind: "booking" | "payment" | "safetyCase";
+    path: string;
+    label: string;
+  }[];
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * One message in a support conversation: what the person sent, a reply staff recorded, or an internal note only staff see. sourceEventId is the WhatsApp receipt or Instagram message key it came from, which makes inbound recording idempotent.
+ */
+export interface SupportConversationMessageDocument {
+  schemaVersion: 1;
+  messageId: string;
+  conversationId: string;
+  direction: "inbound" | "outbound" | "note";
+  text: string;
+  authorUid: string | null;
+  sourceEventId: string | null;
+  savedReplyId: string | null;
+  deliveryState: "received" | "recorded";
+  at: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * A saved reply ops can drop into a support conversation.
+ */
+export interface SupportSavedReplyDocument {
+  schemaVersion: 1;
+  replyId: string;
+  title: string;
+  body: string;
+  active: boolean;
+  updatedAt: FirebaseFirestore.Timestamp;
+  updatedByUid: string;
+}
+
+/**
  * One step Catch took against an account: warn, restrict (no messages or group chats), suspend (signed out, future bookings cancelled) or ban (Catch-wide, phone and device blocked from new accounts). Ops may warn and restrict; suspend and ban are owner-only; a severe report restricts automatically. The person may appeal once, and someone other than the decider reviews it. Kept 180 days after the account is deleted (retainUntil).
  */
 export interface AccountSafetyActionDocument {

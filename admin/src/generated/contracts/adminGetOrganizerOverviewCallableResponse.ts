@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * The Overview tab of an Admin organizer page: its facts, who owns it in Sales, its terms and payments, its journey from nomination to claim, and its next events from Catch and from the platforms Catch imports. The journey is read from the records each step left (the intake request, the approval, claim requests, ownership and events), oldest first; nextStep names what the organizer is waiting on.
+ * The Overview tab of an Admin organizer page: its facts, who owns it in Sales, its terms and payments, its journey from nomination to claim, its next events from Catch and from the platforms Catch imports, and where it came from (its acquisition channel and first nominator, from organizerGrowthFacts). The journey is read from the records each step left (the intake request, the approval, claim requests, ownership and events), oldest first; nextStep names what the organizer is waiting on.
  */
 export interface AdminGetOrganizerOverviewCallableResponse {
   generatedAt: string;
@@ -75,11 +75,30 @@ export interface AdminGetOrganizerOverviewCallableResponse {
     createdAt: string | null;
   };
   /**
+   * Where the organizer came from, from organizerGrowthFacts/{organizerId}. Null when no facts were recorded for it yet.
+   */
+  growth: null | {
+    channel:
+      | "imported"
+      | "sales_associate"
+      | "partner"
+      | "guest"
+      | "organizer"
+      | "came_to_us"
+      | "ads";
+    nominator: null | {
+      uid: string;
+      name: string | null;
+      role: "associate" | "partner" | "guest" | "organizer";
+    };
+    firstPaidBookingAt: string | null;
+  };
+  /**
    * @maxItems 40
    */
   journey: {
     /**
-     * nominated (a person or a run sent Catch a link; detail is the first link), listingBuilt (Catch read the pages; detail is how many events it found), approved (staff approved the listing), listed (the organizer record was made), claimRequested (detail is the requester's role), claimApproved, claimRejected, claimed, firstEvent (detail is its title).
+     * nominated (a person or a run sent Catch a link; detail is the first link), listingBuilt (Catch read the pages; detail is how many events it found), approved (staff approved the listing), listed (the organizer record was made), claimRequested (detail is the requester's role), claimApproved, claimRejected, claimed, firstEvent (detail is its title), firstPaidBooking (its first paid booking was captured).
      */
     kind:
       | "nominated"
@@ -90,7 +109,8 @@ export interface AdminGetOrganizerOverviewCallableResponse {
       | "claimApproved"
       | "claimRejected"
       | "claimed"
-      | "firstEvent";
+      | "firstEvent"
+      | "firstPaidBooking";
     at: string | null;
     actorName: string | null;
     detail: string | null;

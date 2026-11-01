@@ -212,6 +212,9 @@ jobs:
       # even when unchanged. After a failed full deploy the second attempt uses
       # plain `functions`, so whatever succeeded is skipped and only what
       # failed is rebuilt.
+      # A broad deploy that adds a Function retrying on failure is refused
+      # before any change, with those Functions listed; they deploy by name
+      # with --force (which then deletes nothing), and the retry does the rest.
       - name: Deploy Functions
         if: ${{ steps.guard.outputs.skip != 'true' }}
         env:
@@ -220,14 +223,25 @@ jobs:
           NAMED: ${{ steps.choose.outputs.mode == 'named' }}
         run: |
           set -euo pipefail
+          mkdir -p build
           only="$DEPLOY_ONLY"
           force=()
           if [[ "$NAMED" == "true" ]]; then force=(--force); fi
           for attempt in 1 2; do
             status=0
             ./tool/firebase_with_env.sh "$DEPLOY_ENVIRONMENT" deploy --only "$only" \
-              --config firebase.deploy.json --non-interactive "${force[@]}" || status=$?
+              --config firebase.deploy.json --non-interactive "${force[@]}" 2>&1 |
+              tee build/functions-deploy.log || status=$?
             if [[ "$status" == "0" ]]; then exit 0; fi
+            retrying="$(perl -ne 's/\e\[[0-9;]*m//g;
+              print "$1\n" if /newly be retried in case of failure: (.*?)\. Retried/' build/functions-deploy.log |
+              tr ',' '\n' | sed -E 's/^ +//; s/\([^)]*\)$//; /^$/d; s/^/functions:/' | paste -sd, -)"
+            if [[ -n "$retrying" && "$NAMED" != "true" ]]; then
+              echo "::notice::Deploying Functions that newly retry on failure: $retrying"
+              ./tool/firebase_with_env.sh "$DEPLOY_ENVIRONMENT" deploy --only "$retrying" \
+                --config firebase.deploy.json --non-interactive --force ||
+                echo "::warning::Deploying the newly retrying Functions failed."
+            fi
             echo "::warning::Functions deploy attempt $attempt failed; retrying only what did not deploy."
             if [[ "$NAMED" != "true" ]]; then only=functions; fi
             sleep 60

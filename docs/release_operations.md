@@ -1392,9 +1392,10 @@ When the CLI refuses:
   `firebase functions:delete` command for each Function it would delete.
   Delete them, or redeploy the commit after restoring the export, then re-run.
 - **A Function that newly retries on failure.** Firebase deploys it only with
-  `--force`. Run the workflow with `functions` naming it; named runs pass
-  `--force`, which reaches only those exact Functions. A broad run never does,
-  because `--force` would also delete Functions missing from source.
+  `--force`, and refuses a broad deploy before changing anything, listing
+  those Functions. The run then deploys exactly them with `--force` and
+  retries the rest, so no one has to act. A broad selector never takes
+  `--force`, because that would also delete Functions missing from source.
 - **A new Functions folder.** Packaging fails until the folder is added to a
   codebase in `functions/deploy-codebases.json`. Keep codebases grouped by
   shared code: a codebase redeploys whenever any file it loads changes.

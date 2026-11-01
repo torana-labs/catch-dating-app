@@ -1,3 +1,5 @@
+import {defaultSupportInboxDeps, recordWhatsappSupportReceipt} from
+  "../supportInbox/conversations";
 import {getFirestore} from "firebase-admin/firestore";
 import {defineBoolean, defineString} from "firebase-functions/params";
 import {onDocumentCreated, onDocumentWritten} from
@@ -194,11 +196,17 @@ export const onCatchWhatsappWebhookEventCreated = onDocumentCreated({
   const scope = configuredConsumerScope();
   if (!scope || !event.data) return;
   const db = getFirestore();
-  const routeInbound = messageNominationsEnabled.value() ?
-    async (receipt: CatchReceipt) => {
-      await routeCatchWhatsappInbound(inboundRouterDeps(db, scope), receipt);
-    } :
-    undefined;
+  const nominations = messageNominationsEnabled.value();
+  // Messages that are not nominations (or anything, while nominations are
+  // off) land in the Support inbox for the team.
+  const routeInbound = async (receipt: CatchReceipt) => {
+    const outcome = nominations ?
+      await routeCatchWhatsappInbound(inboundRouterDeps(db, scope), receipt) :
+      "support";
+    if (outcome === "support" || outcome === "clarify") {
+      await recordWhatsappSupportReceipt(defaultSupportInboxDeps, receipt);
+    }
+  };
   await processCatchWhatsappReceipt(db, event.params.eventId, scope,
     Date.now(), routeInbound);
 });

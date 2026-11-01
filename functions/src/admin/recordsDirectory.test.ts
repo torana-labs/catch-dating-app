@@ -86,6 +86,10 @@ function seed(): FakeFirestore {
   db.write("organizerClaimRequests/claim-1", {organizerId: "indore",
     requesterName: "Arjun Bhagat", requesterRole: "manager",
     status: "pending", createdAt: at("2026-10-30T08:00:00Z")});
+  db.write("organizerGrowthFacts/lantern", {organizerId: "lantern",
+    channel: "partner", nominator: {uid: "neha", role: "partner",
+      nominatedAt: at("2026-08-01T08:00:00Z")},
+    milestones: {firstPaidBookingAt: at("2026-08-25T10:00:00Z")}});
   db.write("salesTasks/task-1", {taskId: "task-1", organizerId: "afterfly",
     title: "Send Afterfly the claim link", ownerUid: "riya", status: "open",
     dueAt: "2026-11-04T04:00:00.000Z"});
@@ -230,6 +234,7 @@ test("organizer overview reads the journey from nomination on", async () => {
     ["listed", null, null],
   ]);
   assert.equal(response.nextStep, "claim");
+  assert.equal(response.growth, null);
   assert.deepEqual(response.upcomingEvents.map((event) =>
     [event.key, event.status]),
   [["imported:takeoff", "live"], ["imported:neon", "needsCheck"]]);
@@ -252,7 +257,10 @@ test("organizer overview shows a waiting claim and a host", async () => {
   assert.equal(lantern.organizer.claimedByName, "Meher");
   assert.equal(lantern.nextStep, null);
   assert.deepEqual(lantern.journey.map((step) => step.kind),
-    ["listed", "claimed", "firstEvent"]);
+    ["listed", "claimed", "firstPaidBooking", "firstEvent"]);
+  assert.deepEqual(lantern.growth, {channel: "partner",
+    nominator: {uid: "neha", name: null, role: "partner"},
+    firstPaidBookingAt: "2026-08-25T10:00:00.000Z"});
   assert.equal(lantern.upcomingEventCount, 2);
 
   await assert.rejects(adminGetOrganizerOverviewHandler(

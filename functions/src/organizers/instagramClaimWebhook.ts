@@ -2,6 +2,8 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {defineSecret} from "firebase-functions/params";
 import {onRequest} from "firebase-functions/v2/https";
+import {defaultSupportInboxDeps, recordSupportInbound} from
+  "../supportInbox/conversations";
 import {routeInstagramInbound} from
   "../catchMessaging/instagramInboundRouter";
 import {messageNominationsEnabled} from
@@ -79,15 +81,26 @@ async function handleInstagramMessages(messages: InstagramInboundMessage[]) {
         await processInstagramClaimMessages([message],
           {...defaultClaimVerificationDeps, provider: instagramClaimProvider});
       }
-    } else if (nominationsEnabled) {
-      const db = admin.firestore();
-      const outcome = await routeInstagramInbound({
-        ...defaultMessageNominationDeps(db,
-          (uid) => admin.auth().getUser(uid)),
-        provider: instagramClaimProvider,
-        serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
-      }, message);
-      if (outcome !== "support") {
+    } else {
+      let outcome = "support";
+      if (nominationsEnabled) {
+        const db = admin.firestore();
+        outcome = await routeInstagramInbound({
+          ...defaultMessageNominationDeps(db,
+            (uid) => admin.auth().getUser(uid)),
+          provider: instagramClaimProvider,
+          serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+        }, message);
+      }
+      if (outcome === "support") {
+        // Messages for the team land in the Support inbox.
+        await recordSupportInbound(defaultSupportInboxDeps, {
+          channel: "instagram",
+          contactAddress: `ig:${message.senderId}`,
+          text: message.text ?? "",
+          sourceEventId: `instagram-${message.messageKey}`,
+        });
+      } else {
         logger.info("Instagram message routed", {outcome});
       }
     }

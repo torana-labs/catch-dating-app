@@ -300,6 +300,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `updateUserProfile` | `src/profiles/` | Profile patch callable with generated contract validation |
 | `blockUser` / `unblockUser` | `src/safety/` | Block/unblock another user |
 | `requestAccountDeletion` | `src/safety/` | Anonymize + delete user data |
+| `adminListSupportConversations` / `adminGetSupportConversation` / `adminUpdateSupportConversation` / `adminRecordSupportMessage` / `adminListSupportSavedReplies` / `adminUpsertSupportSavedReply` | `src/supportInbox/adminSupport.ts` | Support inbox for ops: WhatsApp and Instagram messages that are not nominations, and logged emails, as one conversation per person per channel with owner, waiting time, links and saved replies |
 | `reportUser` / `reportGuest` | `src/safety/reporting.ts` | File a safety report (guest, or organizer and team); acknowledged at once, deadlines attached, severe reasons restrict at once |
 | `adminTakeAccountSafetyAction` / `adminLiftAccountSafetyAction` / `adminListAccountSafetyActions` / `expireAccountSafetyActions` | `src/safety/accountActions.ts` | Warn and restrict (ops), suspend and ban (owner), enforced at sign-in, messaging and booking; suspensions and bans cancel future bookings; expiry every 15 minutes |
 | `submitSafetyAppeal` / `adminDecideSafetyAppeal` | `src/safety/safetyAppeals.ts` | One appeal per action, reviewed by someone who did not decide |

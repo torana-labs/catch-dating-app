@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/support_conversation_messages.schema.json",
+  "title": "SupportConversationMessageDocument",
+  "description": "One message in a support conversation: what the person sent, a reply staff recorded, or an internal note only staff see. sourceEventId is the WhatsApp receipt or Instagram message key it came from, which makes inbound recording idempotent.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "supportConversationMessages",
+  "x-firestore-path": "supportConversations/{conversationId}/messages/{messageId}",
+  "x-document-id-field": "messageId",
+  "x-owner": "Support inbox service and Admin support callables",
+  "required": [
+    "schemaVersion",
+    "messageId",
+    "conversationId",
+    "direction",
+    "text",
+    "authorUid",
+    "sourceEventId",
+    "savedReplyId",
+    "deliveryState",
+    "at"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "messageId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 160
+    },
+    "conversationId": {
+      "type": "string",
+      "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound",
+        "note"
+      ]
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "authorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "sourceEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "savedReplyId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "deliveryState": {
+      "type": "string",
+      "enum": [
+        "received",
+        "recorded"
+      ]
+    },
+    "at": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    }
+  }
+}
