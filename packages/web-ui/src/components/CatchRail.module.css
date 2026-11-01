@@ -1,0 +1,33 @@
+/*
+ * Flutter CatchRail on the web: items 12px apart (8px when they fit their
+ * content), snapping to each item's start. Inside a pane or the shell it
+ * bleeds to the gutter so the next item peeks. A wrapped rail becomes a grid
+ * of the item width, or a wrapping row of fitted items. The edge that hides
+ * more fades over 40px.
+ */
+.rail {
+  display: grid;
+  grid-auto-columns: var(--catch-rail-item);
+  grid-auto-flow: column;
+  gap: var(--catch-space-s3);
+  min-width: 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.rail::-webkit-scrollbar { display: none; }
+.rail[data-auto] { gap: var(--catch-space-s2); }
+.item { min-width: 0; scroll-snap-align: start; }
+
+.rail[data-wrap] {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(auto-fill, minmax(var(--catch-rail-item), 1fr));
+  overflow: visible;
+}
+
+.rail[data-wrap][data-auto] { display: flex; flex-wrap: wrap; }
+
+.rail[data-fade="end"] { mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); }
+.rail[data-fade="start"] { mask-image: linear-gradient(to left, #000 calc(100% - 40px), transparent); }
+.rail[data-fade="both"] { mask-image: linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent); }

@@ -113,6 +113,7 @@ export 'src/components/catch_polaroid.dart';
 export 'src/components/catch_poster.dart';
 export 'src/components/catch_primary_rail.dart';
 export 'src/components/catch_privacy_badge.dart';
+export 'src/components/catch_rail.dart';
 export 'src/components/catch_range_input.dart';
 export 'src/components/catch_responsive_field_interaction_policy.dart';
 export 'src/components/catch_search_field.dart';

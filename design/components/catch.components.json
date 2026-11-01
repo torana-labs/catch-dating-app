@@ -12964,7 +12964,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
-      "aliases": ["SegmentedTabs", "TopTabs", "PageTabs", "TabStrip"],
+      "aliases": [
+        "SegmentedTabs",
+        "TopTabs",
+        "PageTabs",
+        "TabStrip"
+      ],
       "summary": "Scaled page-tab placement over the canonical inline selection renderer; value and controller recipes share geometry, targets and selection semantics.",
       "dart": {
         "symbol": "CatchPageTabBar",
@@ -13050,6 +13055,33 @@
             "dartType": "TabController?",
             "tsType": null,
             "notes": "Required by controlled. Caller-owned and never disposed by the component; options length must match and be nonzero."
+          },
+          {
+            "name": "size",
+            "type": "enum",
+            "required": false,
+            "default": "md",
+            "dartType": "CatchPageTabBarSize",
+            "tsType": "CatchPageTabBarSize",
+            "values": [
+              "md",
+              "sm"
+            ]
+          },
+          {
+            "name": "fill",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "tsType": "boolean"
+          },
+          {
+            "name": "label",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
           }
         ],
         "states": [
@@ -13130,6 +13162,171 @@
           "catch.chip.field"
         ],
         "reason": "Page peers occupy a text-scaled PreferredSize/root primary-rail slot and can track a pager. CatchTabBar owns product-level bottom destinations, drag contact, badges and safe-area chrome. The inline option parent supplies selection rendering without this placement protocol."
+      },
+      "react": {
+        "symbol": "CatchPageTabBar",
+        "file": "packages/web-ui/src/components/CatchPageTabBar.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchPageTabBar.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "two-option",
+            "four-option",
+            "selected-middle",
+            "counts",
+            "filled",
+            "small",
+            "scrolling"
+          ]
+        },
+        "notes": "Design system v15 Segmented: options with value, label, count and an optional href (a view that opens another screen); the chosen view is an ink pill that slides across filled bars; a bar that does not fit scrolls with a fading edge and keeps the chosen view in sight. TabController and groupKey are Flutter mechanisms."
+      }
+    },
+    {
+      "id": "catch.rail",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "The Flutter Widgetbook contract and the React Contract story cover scrolling, fitted items and wrapped rails; focused tests in both twins check the wrap rule."
+      },
+      "name": "CatchRail",
+      "status": "active",
+      "kind": "primitive",
+      "tier": "T2",
+      "aliases": [
+        "Carousel",
+        "HorizontalList",
+        "ChipRow",
+        "ScrollRow"
+      ],
+      "summary": "A horizontal row that scrolls with snapping and a peek of the next item, fading whichever edge hides more; on desktops it wraps into a grid unless told never to. A row of filter chips is a rail of fitted items.",
+      "dart": {
+        "symbol": "CatchRail",
+        "file": "packages/catch_ui/lib/src/components/catch_rail.dart",
+        "constructors": [
+          "CatchRail"
+        ]
+      },
+      "react": {
+        "symbol": "CatchRail",
+        "file": "packages/web-ui/src/components/CatchRail.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchRail.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "scrolling",
+            "fitted-items",
+            "wrapped"
+          ]
+        },
+        "notes": "Gives each child its own list item, snaps to item starts, and makes a scrolling rail keyboard-scrollable. CatchWorkspaceHeader draws its filter chips in one."
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Rail",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Rail",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "label",
+            "type": "string",
+            "required": true,
+            "dartType": "String",
+            "tsType": "string"
+          },
+          {
+            "name": "children",
+            "type": "widget",
+            "required": true,
+            "dartType": "List<Widget>",
+            "tsType": "ReactNode"
+          },
+          {
+            "name": "itemWidth",
+            "type": "object",
+            "required": false,
+            "dartType": "double?",
+            "tsType": "number | \"auto\"",
+            "notes": "Null in Flutter, \"auto\" in React: each item fits its content."
+          },
+          {
+            "name": "wrap",
+            "type": "enum",
+            "required": false,
+            "default": "auto",
+            "dartType": "CatchRailMode",
+            "tsType": "CatchRailMode",
+            "values": [
+              "auto",
+              "never",
+              "always"
+            ]
+          }
+        ],
+        "states": [
+          "scrolling",
+          "fitted-items",
+          "wrapped"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "space.s3"
+        ],
+        "dartRoles": [],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use for More from, format pickers and filter chips. Views of the same thing are catch.tab_rail."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.rail",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.rail"
+      },
+      "level": "L3",
+      "roleNoun": "Rail",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -19746,7 +19943,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
-      "aliases": ["DataTable", "DataGrid", "ListTable", "RecordTable"],
+      "aliases": [
+        "DataTable",
+        "DataGrid",
+        "ListTable",
+        "RecordTable"
+      ],
       "summary": "Bordered data table with an uppercase header row, flex-weighted columns with start or end placement, divided rows and an empty builder below the header.",
       "dart": {
         "symbol": "CatchTable",
@@ -19756,19 +19958,28 @@
         ]
       },
       "react": {
-        "symbol": "DataTableControl",
-        "file": "packages/web-ui/src/primitives.tsx",
-        "api": "headless-control",
+        "symbol": "CatchTable",
+        "file": "packages/web-ui/src/components/CatchTable.tsx",
+        "api": "styled",
         "storybook": {
           "status": "ready",
-          "story": "packages/web-ui/src/primitives.stories.tsx",
-          "exportName": "DataTable",
+          "story": "packages/web-ui/src/components/CatchTable.stories.tsx",
+          "exportName": "Contract",
           "states": [
-            "named-table",
-            "keyboard-scroll-region"
+            "populated",
+            "selection",
+            "bulk",
+            "selected-row",
+            "sort",
+            "compact",
+            "phone-rows",
+            "quiet-register"
           ]
         },
-        "notes": "Shared table frame requires an accessible name and makes overflow content keyboard reachable; table density and visual treatment remain surface-owned."
+        "notes": "Design system v15 Table: rows as plain data with title, badge, marker, text-with-tone and number cells; a checkbox column with a bulk bar; the row open beside the table; a sort arrow; compact density; list rows on phones. The quiet register keeps cells to one line. Replaces the headless DataTableControl record; admin's DataTable adapters move to it as their screens are redrawn.",
+        "additionalSymbols": [
+          "DataTableControl"
+        ]
       },
       "design": {
         "figma": {
@@ -19812,6 +20023,83 @@
             "dartType": "WidgetBuilder?",
             "tsType": "() => ReactNode",
             "notes": "Replaces the rows below the header when there is nothing to list."
+          },
+          {
+            "name": "rows",
+            "type": "list",
+            "required": false,
+            "dartType": "List<Map<String, Object?>>?",
+            "tsType": "readonly T[]",
+            "notes": "React and design system: rows as plain data; Flutter keeps row widgets in children until its mirror."
+          },
+          {
+            "name": "rowKey",
+            "type": "object",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "((row: T) => string) | (keyof T & string)"
+          },
+          {
+            "name": "label",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "onRowPressed",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<String>?",
+            "tsType": "(row: T) => void"
+          },
+          {
+            "name": "selectedKey",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "selectable",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "tsType": "boolean"
+          },
+          {
+            "name": "checked",
+            "type": "list",
+            "required": false,
+            "dartType": "Set<String>",
+            "tsType": "readonly string[]"
+          },
+          {
+            "name": "onChecked",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<Set<String>>?",
+            "tsType": "(keys: string[]) => void"
+          },
+          {
+            "name": "bulk",
+            "type": "list",
+            "required": false,
+            "dartType": "List<CatchTableBulkAction>?",
+            "tsType": "readonly CatchTableBulkAction[]"
+          },
+          {
+            "name": "density",
+            "type": "enum",
+            "required": false,
+            "default": "regular",
+            "dartType": "CatchTableDensity",
+            "tsType": "CatchTableDensity",
+            "values": [
+              "regular",
+              "compact"
+            ]
           }
         ],
         "states": [

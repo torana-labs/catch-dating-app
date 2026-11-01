@@ -15,8 +15,6 @@
       "catch.search_field",
       "catch.section",
       "catch.surface",
-      "catch.tab_rail",
-      "catch.table",
       "catch.typography"
     ],
     "library.priority_t2_web": [
@@ -31,7 +29,6 @@
       "catch.chip",
       "catch.chip.field",
       "catch.empty_state",
-      "catch.table",
       "catch.toggle",
       "catch.typography"
     ],
