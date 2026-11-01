@@ -46,10 +46,10 @@ jobs:
           HEAD_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
-          mode=pr
+          mode="pr"
           base="$PR_BASE_SHA"
           if [[ "$EVENT_NAME" == "merge_group" ]]; then
-            mode=merge_group
+            mode="merge_group"
             base="$MERGE_GROUP_BASE_SHA"
           fi
           mkdir -p build/ci
