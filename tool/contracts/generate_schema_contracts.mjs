@@ -3826,6 +3826,24 @@ const schemaSpecs = [
     ],
   },
   {
+    name: "AdminListMyNominationsCallablePayload",
+    source: "callables/admin_list_my_nominations_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListMyNominationsCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListMyNominationsCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminListMyNominationsCallableResponse",
+    source: "callable_responses/admin_list_my_nominations_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListMyNominationsCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListMyNominationsCallableResponse.ts",
+    ],
+  },
+  {
     name: "AdminListInboxItemsCallablePayload",
     source: "callables/admin_list_inbox_items_payload.schema.json",
     typeOutput:

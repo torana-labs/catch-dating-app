@@ -3092,7 +3092,8 @@
         "onAccessApplicationWrittenSyncInbox",
         "onExternalEventWrittenSyncInbox",
         "wakeSnoozedInboxItemsEvery30Minutes",
-        "reconcileAdminInboxNightly"
+        "reconcileAdminInboxNightly",
+        "adminListMyNominations"
       ],
       "migrationNotes": [
         "A rebuildable projection: one item per source document (Supply Intake request, organizer claim, sales inbound intent, access application, external event), re-derived on every source write; only assignee and snooze are staff-owned.",

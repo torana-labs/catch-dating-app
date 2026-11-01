@@ -338,6 +338,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminGetInboxItem` | `src/admin/inbox/callables.ts` | Admin, owner or support (or the sales associate who nominated it) read one inbox item and its journey, every step it took |
 | `adminUpdateInboxItem` | `src/admin/inbox/callables.ts` | Admin, owner or support assign, unassign, snooze or wake one inbox item; audited and recorded in its journey |
 | `adminRebuildInbox` | `src/admin/inbox/callables.ts` | Admin or owner re-project one page of an inbox source collection, or of users into the people index |
+| `adminListMyNominations` | `src/admin/inbox/myNominations.ts` | A sales associate (or ops and the owner) read the organizers they nominated, newest first, published, waiting or stuck, with `count()` totals per filter |
 | `adminRecommendOrganizerClaim` | `src/admin/organizerClaimRecommendation.ts` | Admin, owner or support recommend approving or rejecting a pending organizer claim; audited; only the owner decides it |
 | `adminSearchPeople` | `src/admin/peopleSearch.ts` | Admin, owner, support or safety reviewers search people by name, phone or uid in `adminPeopleIndex`; every search and its query is written to `adminAuditLogs` |
 | `adminListActivityLog` | `src/admin/activityLog.ts` | Admin or owner read the activity log newest first: audited decisions merged with agent execution receipts, filterable to problems |

@@ -271708,6 +271708,247 @@ export const adminApproveOrganizerListingCallablePayloadSchema = {
   ]
 };
 
+export const adminListMyNominationsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_my_nominations_payload.schema.json",
+  "title": "AdminListMyNominationsCallablePayload",
+  "description": "One page of the organizers the caller nominated, newest first, with what happened to each.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "filter",
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "filter": {
+      "type": "string",
+      "enum": [
+        "all",
+        "published",
+        "waiting",
+        "stuck"
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminListMyNominations"
+  ]
+};
+
+export const adminListMyNominationsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_my_nominations_response.schema.json",
+  "title": "AdminListMyNominationsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "filter",
+    "nominations",
+    "nextCursor",
+    "totals"
+  ],
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "filter": {
+      "type": "string",
+      "enum": [
+        "all",
+        "published",
+        "waiting",
+        "stuck"
+      ]
+    },
+    "nominations": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "itemId",
+          "type",
+          "title",
+          "subtitle",
+          "city",
+          "state",
+          "status",
+          "sentAt",
+          "updatedAt",
+          "doneAt"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 220
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "listing",
+              "event",
+              "claim",
+              "enquiry",
+              "access",
+              "stuck"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "label",
+              "tone"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "tone": {
+                "type": "string",
+                "enum": [
+                  "neutral",
+                  "info",
+                  "success",
+                  "warning",
+                  "danger"
+                ]
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "working",
+              "waiting",
+              "snoozed",
+              "done"
+            ]
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "doneAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "all",
+        "published",
+        "waiting",
+        "stuck"
+      ],
+      "properties": {
+        "all": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "published": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "waiting": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stuck": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+};
+
 export const adminListInboxItemsCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_list_inbox_items_payload.schema.json",
