@@ -1,5 +1,4 @@
-// GENERATED FILE. Run: npm --workspace catch-admin run generate:callable-validators
-export default {
+{
   "callables": [
     "adminDecideOrganizerClaim",
     "adminGetOrganizerClaimRequestDetails",
@@ -26,4 +25,4 @@ export default {
     "adminGetOrganizerOverview",
     "adminListOrganizerDirectory"
   ]
-} as const;
+}

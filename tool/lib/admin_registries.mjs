@@ -45,3 +45,19 @@ export function readAdminActionCatalog(catalogPath = fromRepo("contracts/admin/a
     }));
   return {...index, actions, workflows};
 }
+
+export const adminValidatorFacadePath = "admin/src/generated/validators/adminCallableValidators.ts";
+
+/**
+ * The validators' coverage, as JSON text. The generated facade finds its groups at build time and
+ * holds no list, so this adds up the groups' *.meta.json files instead.
+ */
+export function adminValidatorCoverageSource(repoRoot = fromRepo(".")) {
+  const metas = jsonFiles(path.join(repoRoot, "admin/src/generated/validators/groups")).map(readJson);
+  const all = (key) => metas.flatMap((meta) => meta[key]).sort();
+  return JSON.stringify({
+    names: all("callables"),
+    strictRequests: all("strictRequests"),
+    strictResponses: all("strictResponses"),
+  }, null, 2);
+}

@@ -7,7 +7,7 @@ import {fileURLToPath} from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
-import {readDesignRegistry} from "../lib/admin_registries.mjs";
+import {adminValidatorCoverageSource, adminValidatorFacadePath, readDesignRegistry} from "../lib/admin_registries.mjs";
 
 const featureRoot = fromRepo("design/features");
 const generatedRoot = fromRepo("design/features/generated");
@@ -102,7 +102,8 @@ async function runCli() {
       authorityRegistries,
       componentRegistries,
       pathExists: (filePath) => fs.existsSync(fromRepo(filePath)),
-      readPath: (filePath) => fs.readFileSync(fromRepo(filePath), "utf8"),
+      readPath: (filePath) => filePath === adminValidatorFacadePath ?
+        adminValidatorCoverageSource() : fs.readFileSync(fromRepo(filePath), "utf8"),
     });
     outputs.push({
       path: path.join(

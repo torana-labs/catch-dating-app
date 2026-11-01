@@ -1,5 +1,4 @@
-// GENERATED FILE. Run: npm --workspace catch-admin run generate:callable-validators
-export default {
+{
   "callables": [
     "adminDecideAccessApplication",
     "adminGetAccessApplicationDetails"
@@ -11,4 +10,4 @@ export default {
   "strictResponses": [
     "adminDecideAccessApplication"
   ]
-} as const;
+}

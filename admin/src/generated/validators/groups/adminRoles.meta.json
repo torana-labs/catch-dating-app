@@ -1,5 +1,4 @@
-// GENERATED FILE. Run: npm --workspace catch-admin run generate:callable-validators
-export default {
+{
   "callables": [
     "adminGetAdminUserRoles",
     "adminListAdminRoleAssignments",
@@ -13,4 +12,4 @@ export default {
   "strictResponses": [
     "adminSetAdminUserRoles"
   ]
-} as const;
+}

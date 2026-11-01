@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import {adminCallableNames, readAdminCallableSources} from
   "../../tool/admin/callable_inventory.mjs";
+import {adminValidatorCoverageSource} from "../../tool/lib/admin_registries.mjs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -38,17 +39,7 @@ export async function checkAdminActionCatalog({
     path.join(repoRoot, "functions", "src", "index.ts"),
     "utf8"
   );
-  const generatedSource = validatorSource ?? await fs.readFile(
-    path.join(
-      repoRoot,
-      "admin",
-      "src",
-      "generated",
-      "validators",
-      "adminCallableValidators.ts"
-    ),
-    "utf8"
-  );
+  const generatedSource = validatorSource ?? adminValidatorCoverageSource(repoRoot);
   const actionIds = resolvedCatalog.actions.map((action) => action.actionId);
   const guiCallables = callableNames(apiSource);
   // Control-plane authority is independent of presentation: an Owner-only

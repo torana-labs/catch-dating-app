@@ -1,5 +1,4 @@
-// GENERATED FILE. Run: npm --workspace catch-admin run generate:callable-validators
-export default {
+{
   "callables": [
     "adminApplyEventMessagingBudget",
     "adminDecideEventMessagingBudget",
@@ -28,4 +27,4 @@ export default {
     "manageCommercialTerms",
     "managePaymentRoutingPolicy"
   ]
-} as const;
+}

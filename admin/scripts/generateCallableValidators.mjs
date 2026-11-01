@@ -338,10 +338,10 @@ function renderFacade() {
 `  type AdminCallableValidators,\n` +
 `} from "./adminCallableValidation";\n\n` +
 `type GroupMeta = {callables: readonly string[]; strictRequests: readonly string[]; strictResponses: readonly string[]};\n\n` +
-`const metas = import.meta.glob<GroupMeta>("./groups/*.meta.ts", {eager: true, import: "default"});\n` +
-`const loaders = import.meta.glob<AdminCallableValidators>(["./groups/*.ts", "!./groups/*.meta.ts"]);\n` +
+`const metas = import.meta.glob<GroupMeta>("./groups/*.meta.json", {eager: true, import: "default"});\n` +
+`const loaders = import.meta.glob<AdminCallableValidators>("./groups/*.ts");\n` +
 `const groupOf = new Map(Object.entries(metas).flatMap(([file, meta]) =>\n` +
-`  meta.callables.map((callable) => [callable, file.replace(".meta.ts", ".ts")] as const)));\n` +
+`  meta.callables.map((callable) => [callable, file.replace(".meta.json", ".ts")] as const)));\n` +
 `const sorted = (key: keyof GroupMeta) => Object.values(metas).flatMap((meta) => meta[key]).sort();\n\n` +
 `export const adminCallableValidationCoverage = {\n` +
 `  callables: sorted("callables"),\n` +
@@ -360,12 +360,11 @@ function renderFacade() {
 
 function renderGroupMeta(model, {group}) {
   const callables = model.names.filter((name) => model.groups[name] === group);
-  const meta = {
+  return `${JSON.stringify({
     callables,
     strictRequests: model.strictRequests.filter((name) => callables.includes(name)),
     strictResponses: model.strictResponses.filter((name) => callables.includes(name)),
-  };
-  return header + `export default ${JSON.stringify(meta, null, 2)} as const;\n`;
+  }, null, 2)}\n`;
 }
 
 function render(model) {
@@ -376,7 +375,7 @@ function render(model) {
   ]);
   for (const groupModel of model.groupModels) {
     files.set(path.join(groupsDir, `${groupModel.group}.ts`), renderGroup(groupModel));
-    files.set(path.join(groupsDir, `${groupModel.group}.meta.ts`), renderGroupMeta(model, groupModel));
+    files.set(path.join(groupsDir, `${groupModel.group}.meta.json`), renderGroupMeta(model, groupModel));
   }
   return files;
 }
