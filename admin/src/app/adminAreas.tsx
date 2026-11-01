@@ -401,9 +401,10 @@ function renderSales(context: AdminAreaContext, area: keyof typeof salesAreaPath
     <SalesRouteScreen
       area={area}
       onError={setError}
-      onNominate={() => navigate(adminPathForNav("organizer-intake"))}
+      onAddHost={() => navigate("/sales/add-host")}
       onNotice={setNotice}
       onOpenHost={(organizerId) => navigate(`${adminPathForNav("sales-hosts")}/${encodeURIComponent(organizerId)}`)}
+      onOpenHostTools={(organizerId) => navigate(`${adminPathForNav("sales-hosts")}/${encodeURIComponent(organizerId)}/tools`)}
       onOpenOrganizer={(organizerId) => navigate(`${adminPathForNav("organizers")}/${encodeURIComponent(organizerId)}`)}
       onSelect={(id) => navigate(id ? `${base}/${encodeURIComponent(id)}` : base)}
       ownWorkOnly={adminRoles.includes("salesStaff") && !adminRoles.some((role) => role === "admin" || role === "adminOwner")}
@@ -414,8 +415,9 @@ function renderSales(context: AdminAreaContext, area: keyof typeof salesAreaPath
 }
 
 /**
- * The older Sales pages: settings (custom fields, imports, history), and pipeline, pilots and
- * research for the tools the new screens don't have yet. Each goes when its replacement lands.
+ * The older Sales pages: settings (custom fields, imports, history), one host's full tools, adding
+ * and nominating, and pipeline, pilots and research, for what the new screens can't do yet. Each
+ * goes when its replacement lands.
  */
 function renderOlderSales({adminRoles, mode, navigate, route, userUid}: AdminAreaContext) {
   return (
@@ -429,7 +431,7 @@ function renderOlderSales({adminRoles, mode, navigate, route, userUid}: AdminAre
       onOpenHost={(organizerId) => navigate(`/sales/hosts/${encodeURIComponent(organizerId)}`)}
       onOpenIntake={() => navigate("/intake/organizers")}
       onOpenOrganizer={(organizerId) => navigate(`/organizers/${encodeURIComponent(organizerId)}`)}
-      selectedOrganizerId={null}
+      selectedOrganizerId={route.params.salesOrganizerId ?? null}
     />
   );
 }

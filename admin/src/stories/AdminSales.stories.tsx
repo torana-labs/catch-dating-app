@@ -68,13 +68,13 @@ export const SalesHostsStory: Story = {
   name: "Hosts",
   beforeEach: pinClock,
   parameters: {catchComponent: {id: "route_sales_hosts", states: ["directory", "host-overview"]}},
-  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onAddHost={noop} onOpenHostTools={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
 };
 
 export const SalesHostStory: Story = {
   name: "Hosts · a host page",
   beforeEach: pinClock,
-  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onAddHost={noop} onOpenHostTools={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
 };
 
 const deals: SalesOpportunity[] = [

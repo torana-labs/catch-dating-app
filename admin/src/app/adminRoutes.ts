@@ -41,7 +41,7 @@ interface RouteState {
   /** An old address: the shell replaces it with this path. */
   redirect?: string;
   title?: string;
-  salesArea?: "today" | "settings" | "pipeline" | "pilots" | "research";
+  salesArea?: "today" | "hosts" | "settings" | "pipeline" | "pilots" | "research";
   organizerWorkspace?: "directory" | "claims";
   eventWorkspace?: "directory" | "external";
   eventTab?: "overview" | "page" | "takedown";
@@ -123,8 +123,10 @@ export const adminRoutes: AdminRoute[] = [
   route("/sales/deals/*", "sales-deals"),
   route("/sales/nominations/*", "nominations"),
   route("/sales/nominations/:nominationItemId", "nominations", {title: "Nomination"}),
-  // The older Sales pages keep the tools the new screens don't have yet: stage moves,
-  // pilot plans and quotes. Each goes when its replacement lands.
+  // The older Sales pages keep the tools the new screens don't have yet: editing a host, stage
+  // moves, pilot plans, quotes, adding and nominating. Each goes when its replacement lands.
+  route("/sales/hosts/:salesOrganizerId/tools", "sales", {salesArea: "hosts", title: "Host tools"}),
+  route("/sales/add-host/*", "sales", {salesArea: "hosts", title: "Add or nominate a host"}),
   ...(["pipeline", "pilots", "research"] as const).map((salesArea) =>
     route(`/sales/${salesArea}/*`, "sales", {salesArea, title: "Older Sales page"})),
   route("/intake/*", "intake-review", {title: "Organizer intake"}),
