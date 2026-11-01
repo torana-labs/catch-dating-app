@@ -1020,6 +1020,46 @@
       "debtId": "FEATURE-SALES-WORKSPACE-001"
     },
     {
+      "authority": "admin_routes",
+      "authorityId": "route_sales_today",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Sales screens (Today, Hosts and the host page, Deals, My nominations, and the live route wrapper) are the new front of the Sales workspace, which still holds stage moves, pilot plans and quotes, so its coverage owns these states until the shared intake-to-demo contract lands.",
+      "primaryAuthorityId": "route_sales_workspace"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_sales_hosts",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Sales screens (Today, Hosts and the host page, Deals, My nominations, and the live route wrapper) are the new front of the Sales workspace, which still holds stage moves, pilot plans and quotes, so its coverage owns these states until the shared intake-to-demo contract lands.",
+      "primaryAuthorityId": "route_sales_workspace"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_sales_deals",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Sales screens (Today, Hosts and the host page, Deals, My nominations, and the live route wrapper) are the new front of the Sales workspace, which still holds stage moves, pilot plans and quotes, so its coverage owns these states until the shared intake-to-demo contract lands.",
+      "primaryAuthorityId": "route_sales_workspace"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_sales_nominations",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Sales screens (Today, Hosts and the host page, Deals, My nominations, and the live route wrapper) are the new front of the Sales workspace, which still holds stage moves, pilot plans and quotes, so its coverage owns these states until the shared intake-to-demo contract lands.",
+      "primaryAuthorityId": "route_sales_workspace"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_sales_live_controller",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Sales screens (Today, Hosts and the host page, Deals, My nominations, and the live route wrapper) are the new front of the Sales workspace, which still holds stage moves, pilot plans and quotes, so its coverage owns these states until the shared intake-to-demo contract lands.",
+      "primaryAuthorityId": "route_sales_workspace"
+    },
+    {
       "authority": "marketing_routes",
       "authorityId": "home",
       "status": "contracted",
