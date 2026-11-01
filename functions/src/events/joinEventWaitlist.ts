@@ -10,6 +10,7 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
+import {assertAccountMayBook} from "../safety/accountStanding";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {
   EventIdCallablePayload,
@@ -66,6 +67,12 @@ const defaultDeps: WaitlistDeps = {
   resolveInviteAttribution,
 };
 
+/** Safety cancellations reuse the guest's own path without its rate limit. */
+export const safetyLeaveWaitlistDeps: WaitlistDeps = {
+  ...defaultDeps,
+  checkRateLimit: async () => undefined,
+};
+
 /**
  * Adds a user to an event waitlist after applying the same block boundary as
  * booking. Kept server-side so block state is not exposed through rules.
@@ -120,6 +127,8 @@ export async function joinEventWaitlistHandler(
     if (!userSnap.exists) {
       throw new HttpsError("not-found", "User profile not found.");
     }
+    await assertAccountMayBook(tx, db, userId,
+      eventSnap.data()?.organizerId ?? null, Date.now());
     await readSeatMigrationWriterFence({db, tx, eventId});
 
     const event = eventSnap.data() as EventDocument;

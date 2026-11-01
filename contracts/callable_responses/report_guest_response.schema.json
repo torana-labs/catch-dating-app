@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/report_guest_response.schema.json",
+  "title": "ReportGuestCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reported"
+  ],
+  "properties": {
+    "reported": {
+      "type": "boolean",
+      "const": true
+    }
+  }
+}

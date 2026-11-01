@@ -121,6 +121,12 @@ const defaultDeps: CancelEventSignUpDeps = {
   },
 };
 
+/** Safety cancellations reuse the guest's own path without its rate limit. */
+export const safetyCancelSignUpDeps: CancelEventSignUpDeps = {
+  ...defaultDeps,
+  checkRateLimit: async () => undefined,
+};
+
 /**
  * Atomically cancels a user's sign-up for an event.
  *

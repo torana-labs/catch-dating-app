@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_take_account_safety_action_response.schema.json",
+  "title": "AdminTakeAccountSafetyActionCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "kind",
+    "status",
+    "endsAtMillis",
+    "bookings"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "warn",
+        "restrict",
+        "suspend",
+        "ban"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active"
+      ]
+    },
+    "endsAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "bookings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cancelled",
+        "needsOrganizer",
+        "failed"
+      ],
+      "properties": {
+        "cancelled": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "needsOrganizer": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

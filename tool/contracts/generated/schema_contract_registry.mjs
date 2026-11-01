@@ -32739,6 +32739,1075 @@ export const supplyNominatorDocumentSchema = {
   }
 };
 
+export const accountSafetyActionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/account_safety_actions.schema.json",
+  "title": "AccountSafetyActionDocument",
+  "description": "One step Catch took against an account: warn, restrict (no messages or group chats), suspend (signed out, future bookings cancelled) or ban (Catch-wide, phone and device blocked from new accounts). Ops may warn and restrict; suspend and ban are owner-only; a severe report restricts automatically. The person may appeal once, and someone other than the decider reviews it. Kept 180 days after the account is deleted (retainUntil).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "accountSafetyActions",
+  "x-firestore-path": "accountSafetyActions/{actionId}",
+  "x-document-id-field": "actionId",
+  "x-owner": "Admin account safety callables and the severe-report restriction",
+  "required": [
+    "schemaVersion",
+    "actionId",
+    "uid",
+    "kind",
+    "reasonCode",
+    "messageToUser",
+    "durationDays",
+    "startsAt",
+    "endsAt",
+    "status",
+    "caseTargetPaths",
+    "decidedByUid",
+    "decidedByRole",
+    "automatic",
+    "appealable",
+    "appeal",
+    "bookings",
+    "lifted",
+    "retainUntil",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "warn",
+        "restrict",
+        "suspend",
+        "ban"
+      ]
+    },
+    "reasonCode": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{1,63}$"
+    },
+    "messageToUser": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "durationDays": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "enum": [
+        7,
+        30,
+        null
+      ]
+    },
+    "startsAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "endsAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "expired",
+        "lifted",
+        "replaced"
+      ]
+    },
+    "caseTargetPaths": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 260
+      }
+    },
+    "decidedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "decidedByRole": {
+      "type": "string",
+      "enum": [
+        "owner",
+        "ops",
+        "system"
+      ]
+    },
+    "automatic": {
+      "type": "boolean"
+    },
+    "appealable": {
+      "type": "boolean"
+    },
+    "appeal": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "text",
+            "submittedAt",
+            "reviewerUid",
+            "decidedAt",
+            "decisionNote",
+            "replacementActionId"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "open",
+                "kept",
+                "reduced",
+                "lifted"
+              ]
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "submittedAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            "reviewerUid": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "decidedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "decisionNote": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "replacementActionId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Za-z0-9_-]{8,128}$"
+            }
+          }
+        }
+      ]
+    },
+    "bookings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cancelledEventIds",
+        "needsOrganizerEventIds",
+        "failedEventIds"
+      ],
+      "properties": {
+        "cancelledEventIds": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "needsOrganizerEventIds": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "failedEventIds": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    "lifted": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "at",
+            "byUid",
+            "note"
+          ],
+          "properties": {
+            "at": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            "byUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        }
+      ]
+    },
+    "retainUntil": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const accountSafetyStateDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/account_safety_states.schema.json",
+  "title": "AccountSafetyStateDocument",
+  "description": "The current standing of one account, derived from its active account safety actions. Messaging, event chats and bookings read it; Firestore rules read messaging to stop direct chat writes. The account may read its own standing.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "accountSafetyStates",
+  "x-firestore-path": "accountSafetyStates/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "Account safety action service",
+  "required": [
+    "schemaVersion",
+    "uid",
+    "level",
+    "messaging",
+    "booking",
+    "authDisabledBySafety",
+    "activeActionIds",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "none",
+        "warned",
+        "restricted",
+        "suspended",
+        "banned"
+      ]
+    },
+    "messaging": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "held",
+        "until"
+      ],
+      "properties": {
+        "held": {
+          "type": "boolean"
+        },
+        "until": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "booking": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "held",
+        "until"
+      ],
+      "properties": {
+        "held": {
+          "type": "boolean"
+        },
+        "until": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "authDisabledBySafety": {
+      "type": "boolean"
+    },
+    "activeActionIds": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const accountSafetyNoticeDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/account_safety_notices.schema.json",
+  "title": "AccountSafetyNoticeDocument",
+  "description": "A safety message to one account: the rule they broke and what changes, an appeal outcome, or (to a reporter) that their report was received or handled. A reporter is never told what was done. Server-written; the account reads its own.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "accountSafetyNotices",
+  "x-firestore-path": "accountSafetyNotices/{uid}/items/{noticeId}",
+  "x-document-id-field": "noticeId",
+  "x-owner": "Account safety action service and report callables",
+  "required": [
+    "schemaVersion",
+    "noticeId",
+    "uid",
+    "kind",
+    "title",
+    "body",
+    "actionId",
+    "appealable",
+    "createdAt",
+    "readAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "noticeId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 160
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "warning",
+        "restriction",
+        "suspension",
+        "ban",
+        "lifted",
+        "appealDecision",
+        "reportReceived",
+        "reportHandled"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200
+    },
+    "actionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "appealable": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "readAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const safetySettingsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/safety_settings.schema.json",
+  "title": "SafetySettingsDocument",
+  "description": "Catch's safety rules, edited by the owner in Settings → Safety: the report reasons (and which are severe), whether a severe report restricts at once, and whether organizers may keep block lists and report guests. Absent means the defaults in code.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "safetySettings",
+  "x-firestore-path": "safetySettings/{settingsId}",
+  "x-document-id-field": "settingsId",
+  "x-owner": "Admin safety settings callables",
+  "required": [
+    "schemaVersion",
+    "reasons",
+    "restrictOnSevereReport",
+    "organizerBlockLists",
+    "organizerReports",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "label",
+          "severe",
+          "takedown",
+          "active"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{1,63}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "severe": {
+            "type": "boolean"
+          },
+          "takedown": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "restrictOnSevereReport": {
+      "type": "boolean"
+    },
+    "organizerBlockLists": {
+      "type": "boolean"
+    },
+    "organizerReports": {
+      "type": "boolean"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    }
+  }
+};
+
+export const bannedIdentityDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/banned_identities.schema.json",
+  "title": "BannedIdentityDocument",
+  "description": "A phone number or device that a Catch-wide ban stops from making a new account. Only a SHA-256 hash of the value is stored. It stays after the banned account is deleted so the ban keeps holding; lifting the ban sets active to false.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "bannedIdentities",
+  "x-firestore-path": "bannedIdentities/{identityId}",
+  "x-document-id-field": "identityId",
+  "x-owner": "Account safety action service",
+  "required": [
+    "schemaVersion",
+    "identityId",
+    "kind",
+    "valueHash",
+    "uid",
+    "actionId",
+    "active",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "identityId": {
+      "type": "string",
+      "pattern": "^(phone|installation|pushToken)-[a-f0-9]{64}$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "phone",
+        "installation",
+        "pushToken"
+      ]
+    },
+    "valueHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const blockedSignupAttemptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/blocked_signup_attempts.schema.json",
+  "title": "BlockedSignupAttemptDocument",
+  "description": "A new account that used a banned phone or device. The account is disabled and the attempt is shown on the ban in Safety.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "blockedSignupAttempts",
+  "x-firestore-path": "blockedSignupAttempts/{attemptId}",
+  "x-document-id-field": "attemptId",
+  "x-owner": "Banned identity screening triggers",
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "attemptedUid",
+    "identityId",
+    "kind",
+    "bannedUid",
+    "actionId",
+    "outcome",
+    "at",
+    "retainUntil"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "attemptId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "attemptedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "identityId": {
+      "type": "string",
+      "pattern": "^(phone|installation|pushToken)-[a-f0-9]{64}$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "phone",
+        "installation",
+        "pushToken"
+      ]
+    },
+    "bannedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "disabled"
+      ]
+    },
+    "at": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "retainUntil": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const organizerGuestBlockDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_guest_blocks.schema.json",
+  "title": "OrganizerGuestBlockDocument",
+  "description": "An organizer's own block list entry: this person cannot book that organizer's events. No reason or review is needed and it affects no other organizer.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerGuestBlocks",
+  "x-firestore-path": "organizerGuestBlocks/{blockId}",
+  "x-document-id-field": "blockId",
+  "x-owner": "manageOrganizerGuestBlock callable",
+  "required": [
+    "schemaVersion",
+    "blockId",
+    "organizerId",
+    "uid",
+    "blockedByUid",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "blockId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 260
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "blockedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
 export const organizerGrowthFactsDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_growth_facts.schema.json",
@@ -257177,13 +258246,13 @@ export const reportDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/reports.schema.json",
   "title": "ReportDocument",
-  "description": "Canonical safety report stored at reports/{reportId}.",
+  "description": "Canonical safety report stored at reports/{reportId}. A guest reports another guest from a profile or chat; an organizer or their team reports a guest from an event. The reporter is acknowledged at once and the deadlines (first look 24 h, resolve 15 days, intimate images down 24 h) drive the Safety queue. A severe reason restricts the reported account at once, pending review. Kept 180 days after either account is deleted (retainUntil).",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "reports",
   "x-firestore-path": "reports/{reportId}",
   "x-document-id-field": "id",
-  "x-owner": "reportUser callable",
+  "x-owner": "reportUser and reportGuest callables",
   "required": [
     "reporterUserId",
     "targetUserId",
@@ -257231,7 +258300,8 @@ export const reportDocumentSchema = {
         "profile",
         "chat",
         "match",
-        "support"
+        "support",
+        "organizer"
       ],
       "x-catch-ownership": "callable-owned"
     },
@@ -257259,6 +258329,313 @@ export const reportDocumentSchema = {
     "notes": {
       "type": "string",
       "maxLength": 1000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "reporterRole": {
+      "type": "string",
+      "enum": [
+        "guest",
+        "organizer"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "severe",
+        "standard"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "acknowledgedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "firstLookDueAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "resolveDueAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "takedownDueAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "firstLookAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "resolvedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "reporterNotifiedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "actionIds": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{8,128}$"
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "assigneeUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentUpdatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentUpdatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "hasDeletedUser": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "deletedUserId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "deletedUserMarkedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "retainUntil": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
       "x-catch-ownership": "callable-owned"
     }
   }
@@ -340818,6 +342195,1062 @@ export const reportUserCallablePayloadSchema = {
     "notes": {
       "type": "string",
       "maxLength": 2000
+    }
+  }
+};
+
+export const adminTakeAccountSafetyActionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_take_account_safety_action_payload.schema.json",
+  "title": "AdminTakeAccountSafetyActionCallablePayload",
+  "description": "Warn, restrict, suspend or ban one account. Ops may warn and restrict (7 or 30 days, or until lifted); suspend and ban are owner-only. Suspend and ban sign the person out and cancel their future bookings; a ban also blocks their phone and devices from making a new account. messageToUser is what they see; it never names the reporter. caseTargetPath links the safety case it resolves.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "uid",
+    "kind",
+    "durationDays",
+    "reasonCode",
+    "messageToUser",
+    "caseTargetPath",
+    "notifyReporter",
+    "appealable",
+    "note"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "warn",
+        "restrict",
+        "suspend",
+        "ban"
+      ]
+    },
+    "durationDays": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "enum": [
+        7,
+        30,
+        null
+      ]
+    },
+    "reasonCode": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{1,63}$"
+    },
+    "messageToUser": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "caseTargetPath": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 3,
+      "maxLength": 260
+    },
+    "notifyReporter": {
+      "type": "boolean"
+    },
+    "appealable": {
+      "type": "boolean"
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "x-callable-aliases": [
+    "adminTakeAccountSafetyAction"
+  ]
+};
+
+export const adminTakeAccountSafetyActionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_take_account_safety_action_response.schema.json",
+  "title": "AdminTakeAccountSafetyActionCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "kind",
+    "status",
+    "endsAtMillis",
+    "bookings"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "warn",
+        "restrict",
+        "suspend",
+        "ban"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active"
+      ]
+    },
+    "endsAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "bookings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cancelled",
+        "needsOrganizer",
+        "failed"
+      ],
+      "properties": {
+        "cancelled": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "needsOrganizer": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+};
+
+export const adminLiftAccountSafetyActionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_lift_account_safety_action_payload.schema.json",
+  "title": "AdminLiftAccountSafetyActionCallablePayload",
+  "description": "Lift one active account safety action early. Ops may lift warnings and restrictions; lifting a suspension or ban is owner-only (or the appeal reviewer, through adminDecideSafetyAppeal).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "note"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "x-callable-aliases": [
+    "adminLiftAccountSafetyAction"
+  ]
+};
+
+export const adminLiftAccountSafetyActionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_lift_account_safety_action_response.schema.json",
+  "title": "AdminLiftAccountSafetyActionCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "status"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "lifted"
+      ]
+    }
+  }
+};
+
+export const adminListAccountSafetyActionsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_account_safety_actions_payload.schema.json",
+  "title": "AdminListAccountSafetyActionsCallablePayload",
+  "description": "Lists account safety actions for the Safety queue: those in force, those with an appeal waiting, or the most recent of any status. Optionally for one account.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "view",
+    "uid",
+    "limit"
+  ],
+  "properties": {
+    "view": {
+      "type": "string",
+      "enum": [
+        "active",
+        "appeals",
+        "recent"
+      ]
+    },
+    "uid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    }
+  },
+  "x-callable-aliases": [
+    "adminListAccountSafetyActions"
+  ]
+};
+
+export const adminListAccountSafetyActionsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_account_safety_actions_response.schema.json",
+  "title": "AdminListAccountSafetyActionsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "actionId",
+          "uid",
+          "displayName",
+          "kind",
+          "reasonCode",
+          "reasonLabel",
+          "messageToUser",
+          "durationDays",
+          "startsAtMillis",
+          "endsAtMillis",
+          "status",
+          "decidedByUid",
+          "decidedByRole",
+          "automatic",
+          "appealable",
+          "caseTargetPaths",
+          "appeal",
+          "bookings",
+          "blockedSignupAttempts",
+          "canReviewAppeal"
+        ],
+        "properties": {
+          "actionId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{8,128}$"
+          },
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "displayName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "warn",
+              "restrict",
+              "suspend",
+              "ban"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{1,63}$"
+          },
+          "reasonLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "messageToUser": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "durationDays": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "enum": [
+              7,
+              30,
+              null
+            ]
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "endsAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "expired",
+              "lifted",
+              "replaced"
+            ]
+          },
+          "decidedByUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "decidedByRole": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "ops",
+              "system"
+            ]
+          },
+          "automatic": {
+            "type": "boolean"
+          },
+          "appealable": {
+            "type": "boolean"
+          },
+          "caseTargetPaths": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 260
+            }
+          },
+          "appeal": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "status",
+                  "text",
+                  "submittedAtMillis",
+                  "reviewerUid",
+                  "decidedAtMillis",
+                  "decisionNote"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "kept",
+                      "reduced",
+                      "lifted"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "submittedAtMillis": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "reviewerUid": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 128
+                  },
+                  "decidedAtMillis": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "decisionNote": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 1000
+                  }
+                }
+              }
+            ]
+          },
+          "bookings": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "cancelled",
+              "needsOrganizer",
+              "failed"
+            ],
+            "properties": {
+              "cancelled": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "needsOrganizer": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "blockedSignupAttempts": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "canReviewAppeal": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminDecideSafetyAppealCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_decide_safety_appeal_payload.schema.json",
+  "title": "AdminDecideSafetyAppealCallablePayload",
+  "description": "Decides the one appeal on an account safety action. The reviewer must not be the person who decided the action. keep leaves it in force; reduce replaces it with a lighter step (reduceTo); lift ends it. messageToUser is sent to the person; the reporters are not told.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "outcome",
+    "reduceTo",
+    "messageToUser",
+    "note"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "keep",
+        "reduce",
+        "lift"
+      ]
+    },
+    "reduceTo": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "durationDays"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "warn",
+                "restrict",
+                "suspend"
+              ]
+            },
+            "durationDays": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "enum": [
+                7,
+                30,
+                null
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "messageToUser": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "x-callable-aliases": [
+    "adminDecideSafetyAppeal"
+  ]
+};
+
+export const adminDecideSafetyAppealCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_decide_safety_appeal_response.schema.json",
+  "title": "AdminDecideSafetyAppealCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "outcome",
+    "replacementActionId"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "keep",
+        "reduce",
+        "lift"
+      ]
+    },
+    "replacementActionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    }
+  }
+};
+
+export const adminGetSafetySettingsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_safety_settings_payload.schema.json",
+  "title": "AdminGetSafetySettingsCallablePayload",
+  "description": "Reads Settings → Safety: the report reasons, the rules, the deadlines, who may take each step and how long case records are kept.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {},
+  "x-callable-aliases": [
+    "adminGetSafetySettings"
+  ]
+};
+
+export const adminGetSafetySettingsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_safety_settings_response.schema.json",
+  "title": "AdminGetSafetySettingsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "settings",
+    "deadlines",
+    "stepRoles",
+    "retentionDaysAfterDeletion"
+  ],
+  "properties": {
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reasons",
+        "restrictOnSevereReport",
+        "organizerBlockLists",
+        "organizerReports",
+        "updatedAtMillis",
+        "updatedByUid"
+      ],
+      "properties": {
+        "reasons": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "label",
+              "severe",
+              "takedown",
+              "active"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{1,63}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "severe": {
+                "type": "boolean"
+              },
+              "takedown": {
+                "type": "boolean"
+              },
+              "active": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "restrictOnSevereReport": {
+          "type": "boolean"
+        },
+        "organizerBlockLists": {
+          "type": "boolean"
+        },
+        "organizerReports": {
+          "type": "boolean"
+        },
+        "updatedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "updatedByUid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        }
+      }
+    },
+    "deadlines": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "acknowledge",
+        "firstLookHours",
+        "resolveDays",
+        "takedownHours"
+      ],
+      "properties": {
+        "acknowledge": {
+          "type": "string",
+          "enum": [
+            "immediately"
+          ]
+        },
+        "firstLookHours": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "resolveDays": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "takedownHours": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "stepRoles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "warn",
+        "restrict",
+        "suspend",
+        "ban"
+      ],
+      "properties": {
+        "warn": {
+          "type": "string",
+          "enum": [
+            "ops",
+            "owner"
+          ]
+        },
+        "restrict": {
+          "type": "string",
+          "enum": [
+            "ops",
+            "owner"
+          ]
+        },
+        "suspend": {
+          "type": "string",
+          "enum": [
+            "ops",
+            "owner"
+          ]
+        },
+        "ban": {
+          "type": "string",
+          "enum": [
+            "ops",
+            "owner"
+          ]
+        }
+      }
+    },
+    "retentionDaysAfterDeletion": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+};
+
+export const adminUpdateSafetySettingsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_update_safety_settings_payload.schema.json",
+  "title": "AdminUpdateSafetySettingsCallablePayload",
+  "description": "Owner-only. Replaces the report reasons and the safety rules. Reason codes already used on reports keep their meaning, so a reason is switched off (active false) rather than removed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reasons",
+    "restrictOnSevereReport",
+    "organizerBlockLists",
+    "organizerReports"
+  ],
+  "properties": {
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "label",
+          "severe",
+          "takedown",
+          "active"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{1,63}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "severe": {
+            "type": "boolean"
+          },
+          "takedown": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "restrictOnSevereReport": {
+      "type": "boolean"
+    },
+    "organizerBlockLists": {
+      "type": "boolean"
+    },
+    "organizerReports": {
+      "type": "boolean"
+    }
+  },
+  "x-callable-aliases": [
+    "adminUpdateSafetySettings"
+  ]
+};
+
+export const submitSafetyAppealCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_safety_appeal_payload.schema.json",
+  "title": "SubmitSafetyAppealCallablePayload",
+  "description": "The account appeals one safety action taken against it. Each action can be appealed once.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "text"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    }
+  },
+  "x-callable-aliases": [
+    "submitSafetyAppeal"
+  ]
+};
+
+export const submitSafetyAppealCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/submit_safety_appeal_response.schema.json",
+  "title": "SubmitSafetyAppealCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "appealed"
+  ],
+  "properties": {
+    "appealed": {
+      "type": "boolean",
+      "const": true
+    }
+  }
+};
+
+export const manageOrganizerGuestBlockCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_organizer_guest_block_payload.schema.json",
+  "title": "ManageOrganizerGuestBlockCallablePayload",
+  "description": "An organizer's owner or manager stops someone booking their events, or lets them back. No reason or review; it affects no other organizer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "uid",
+    "blocked"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "uid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "blocked": {
+      "type": "boolean"
+    }
+  },
+  "x-callable-aliases": [
+    "manageOrganizerGuestBlock"
+  ]
+};
+
+export const manageOrganizerGuestBlockCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_organizer_guest_block_response.schema.json",
+  "title": "ManageOrganizerGuestBlockCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "uid",
+    "blocked"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "uid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "blocked": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const listOrganizerGuestBlocksCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_guest_blocks_payload.schema.json",
+  "title": "ListOrganizerGuestBlocksCallablePayload",
+  "description": "Lists who an organizer has blocked from booking their events.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    }
+  },
+  "x-callable-aliases": [
+    "listOrganizerGuestBlocks"
+  ]
+};
+
+export const listOrganizerGuestBlocksCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_guest_blocks_response.schema.json",
+  "title": "ListOrganizerGuestBlocksCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "blockedByUid",
+          "createdAtMillis"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "displayName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "blockedByUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+};
+
+export const reportGuestCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/report_guest_payload.schema.json",
+  "title": "ReportGuestCallablePayload",
+  "description": "An organizer, their manager or the event's team reports a guest, including what happened at an event. It lands in the Safety queue like any report.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "targetUserId",
+    "reasonCode",
+    "notes"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "eventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "targetUserId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "reasonCode": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{1,63}$"
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2000
+    }
+  },
+  "x-callable-aliases": [
+    "reportGuest"
+  ]
+};
+
+export const reportGuestCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/report_guest_response.schema.json",
+  "title": "ReportGuestCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reported"
+  ],
+  "properties": {
+    "reported": {
+      "type": "boolean",
+      "const": true
     }
   }
 };
