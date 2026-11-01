@@ -260,7 +260,6 @@ export function planSourcePreflight({targets, sparsePaths = [], executableAvaila
   if (!targets.some(target => target === "flutter" || target === "contracts" ||
       target === "visual_integration" || target === "tools" || target.startsWith("flutter_"))) return [];
   const commands = [
-    ["node tool/architecture/check_dependency_direction.mjs"],
     ["node tool/architecture/check_mutation_error_surfaces.mjs"],
     ["node tool/architecture/check_route_string_literals.mjs"],
     ["node tool/architecture/check_flutter_source_size.mjs --check"],

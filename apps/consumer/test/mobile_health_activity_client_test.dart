@@ -1,7 +1,7 @@
 import 'package:catch_consumer_app/mobile_health_activity_client.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/bookings/data/health_activity_client.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/runner_activity.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health/health.dart' as health;
 
@@ -24,7 +24,7 @@ void main() {
       expect(await client.requestActivityReadPermission(), isFalse);
       expect(
         await client.fetchPhysicalActivities(
-          startTime: DateTime.utc(2026, 7, 1),
+          startTime: DateTime.utc(2026, 7),
           endTime: DateTime.utc(2026, 7, 2),
         ),
         isEmpty,
@@ -87,10 +87,7 @@ void main() {
   test('workout mapper rejects unsupported and empty workouts', () {
     expect(
       mapper.fromPoint(
-        _workoutPoint(
-          type: health.HealthWorkoutActivityType.SWIMMING,
-          distance: 100,
-        ),
+        _workoutPoint(type: health.HealthWorkoutActivityType.SWIMMING),
       ),
       isNull,
     );
@@ -130,7 +127,7 @@ void main() {
     );
 
     final activities = await client.fetchPhysicalActivities(
-      startTime: DateTime.utc(2026, 7, 1),
+      startTime: DateTime.utc(2026, 7),
       endTime: DateTime.utc(2026, 7, 2),
     );
 

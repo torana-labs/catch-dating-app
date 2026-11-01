@@ -188,8 +188,7 @@ reports every deferred obligation. It never sets `preflightComplete` true while
 one remains and never ignores a failing executable check.
 
 The required `source-preflight` job uses a full checkout and pinned runtimes.
-Its structural gates include dependency direction, mutation/error boundaries,
-route literals, source/test size, generated route/catalog/responsibility/design
+Its structural gates include mutation/error boundaries, route literals, source/test size, generated route/catalog/responsibility/design
 references, provider ownership and resolved composition. Selected expensive
 jobs depend on its success, and Required CI independently rejects missing,
 skipped, failed or cancelled preflight. Full tests and analysis remain required.
@@ -377,7 +376,7 @@ complete zero-diagnostic invariant. In this workspace,
 use either command as proof that a Catch UI rule is clean.
 
 Phase 5 also retired the broad `tool/scan_architecture.py` report in favor of
-the focused dependency, adopted-boundary, mutation-error, error-catalog,
+the focused `catch_arch_*` lints and adopted-boundary, mutation-error, error-catalog,
 source-size, and widget-classification gates. The three unreferenced Dart
 personality/visual-review entrypoints are removed; Widgetbook goldens, UI
 captures, and registered reference-screen comparisons own visual review.

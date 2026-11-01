@@ -1,17 +1,17 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_consumer_app/consumer_platform_app.dart';
+import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/app_bootstrap.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/contexts/payments/data/razorpay_checkout.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:catch_consumer_app/consumer_platform_app.dart';
-import 'package:catch_dating_app/app.dart';
-import 'package:catch_dating_app/contexts/payments/data/razorpay_checkout.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

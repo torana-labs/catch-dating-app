@@ -80,7 +80,7 @@
                 ]
               },
               "conformance": {
-                "command": "node tool/contracts/validate_schema_contracts.mjs && node tool/contracts/check_schema_type_boundaries.mjs && node tool/run.mjs check audit:dependency-direction && node tool/contracts/check_schema_path_literals.mjs && node tool/contracts/check_schema_fixtures.mjs && node tool/contracts/check_firestore_rules_semantics.mjs",
+                "command": "node tool/contracts/validate_schema_contracts.mjs && node tool/contracts/check_schema_type_boundaries.mjs && node tool/contracts/check_schema_path_literals.mjs && node tool/contracts/check_schema_fixtures.mjs && node tool/contracts/check_firestore_rules_semantics.mjs",
                 "inputs": [
                   "{projectRoot}/**/*",
                   "{workspaceRoot}/tool/contracts/**/*",

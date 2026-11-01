@@ -1,8 +1,0 @@
-{
-  "owner": "app_architecture",
-  "targetPhase": "docs/app_architecture.md#phase-3-move-domain-and-data",
-  "version": 1,
-  "updated": "2026-10-29",
-  "description": "Imports in legacy folders that break the bounded-context order. Each move into lib/contexts/ removes its entries; normal runs fail on new findings and on obsolete allowances.",
-  "allowedFindings": []
-}
