@@ -70,11 +70,6 @@
       "status": "required"
     },
     {
-      "source": "admin/src/features/growth/controllers/useGrowthKpiController.ts",
-      "test": "admin/src/features/growth/controllers/useGrowthKpiController.test.tsx",
-      "status": "required"
-    },
-    {
       "source": "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
       "test": "admin/src/features/intake/events/controllers/useEventIntakeController.test.tsx",
       "status": "required"
@@ -392,6 +387,11 @@
     {
       "source": "admin/src/features/safety/controllers/useSafetyActionSheetController.ts",
       "test": "admin/src/features/safety/controllers/useSafetyActionSheetController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/growth/controllers/useGrowthController.ts",
+      "test": "admin/src/features/growth/controllers/useGrowthController.test.tsx",
       "status": "required"
     }
   ]

@@ -70,13 +70,9 @@ import {
   validateOrganizerPublishingForm,
 } from "../features/organizers/controllers/organizerPublishingHelpers";
 import {OrganizerPublishingWorkspace} from "../features/organizers/ui/OrganizerPublishingScreen";
-import type {
-  GrowthKpiController,
-  GrowthRangePreset,
-  GrowthSignalRow,
-  GrowthStage,
-} from "../features/growth/controllers/useGrowthKpiController";
-import {GrowthKpiWorkspace} from "../features/growth/ui/GrowthKpiScreen";
+import {sampleGrowth, sampleNominatorCredits} from "../features/growth/api/growthSamples";
+import type {GrowthController} from "../features/growth/controllers/useGrowthController";
+import {GrowthScreen} from "../features/growth/ui/GrowthScreen";
 import {
   type MarketplaceAnalyticsGranularity,
   type MarketplaceAnalyticsRangePreset,
@@ -960,145 +956,6 @@ const dataQualityController: DataQualityController = {
     noop();
   },
 };
-const growthRows: GrowthSignalRow[] = [
-  {
-    id: "signupsThisWeek",
-    stage: "acquisition",
-    label: "Signups this week",
-    value: 142,
-    unit: "count",
-    status: "ready",
-    source: "adminGetOverview",
-    sourceGeneratedAt: "2026-07-03T09:30:00.000Z",
-    metricBasis: "Current calendar-week overview total.",
-    range: "Current / overview-defined",
-    timezone: "UTC",
-    detail: "Launch demand created this week across Indore and Mumbai.",
-  },
-  {
-    id: "pendingOrganizerClaims",
-    stage: "supply",
-    label: "Pending club claims",
-    value: 9,
-    unit: "count",
-    status: "partial",
-    source: "adminGetOverview",
-    sourceGeneratedAt: "2026-07-03T09:30:00.000Z",
-    metricBasis: "Current organizer-claim stock.",
-    range: "Current / overview-defined",
-    timezone: "UTC",
-    detail: "Organizer claim demand waiting for review before publication.",
-  },
-  {
-    id: "bookings",
-    stage: "conversion",
-    label: "Bookings",
-    value: 74,
-    unit: "count",
-    status: "ready",
-    source: "adminGetHostAnalytics",
-    sourceGeneratedAt: "2026-07-03T09:35:00.000Z",
-    metricBasis: "Selected-range host analytics summary.",
-    range: "2026-06-04 to 2026-07-03 (day)",
-    timezone: "UTC",
-    detail: "Bookings confirmed by host analytics summary cards.",
-  },
-  {
-    id: "checkoutConversionRate",
-    stage: "conversion",
-    label: "Checkout conversion rate",
-    value: 38,
-    unit: "percent",
-    status: "partial",
-    source: "adminGetHostAnalytics",
-    sourceGeneratedAt: "2026-07-03T09:35:00.000Z",
-    metricBasis: "Selected-range host analytics summary.",
-    range: "2026-06-04 to 2026-07-03 (day)",
-    timezone: "UTC",
-    detail: "Conversion is usable for launch review but not yet channel-attributed.",
-  },
-  {
-    id: "claimClicks",
-    stage: "marketplace",
-    label: "Claim clicks",
-    value: 21,
-    unit: "count",
-    status: "ready",
-    source: "adminGetHostAnalytics.discoverySummary",
-    sourceGeneratedAt: "2026-07-03T09:35:00.000Z",
-    metricBasis: "Selected-range discovery summary.",
-    range: "2026-06-04 to 2026-07-03 (day)",
-    timezone: "UTC",
-    detail: "Organizer claim intent captured from public pages.",
-  },
-];
-const growthTrend: HostAnalyticsTrendPoint[] = [
-  {
-    periodStart: "2026-06-20",
-    periodEnd: "2026-06-26",
-    metrics: {
-      bookings: 25,
-      checkedIn: 18,
-      checkoutDropoff: 7,
-      demand: 84,
-      reviews: 12,
-    },
-  },
-  {
-    periodStart: "2026-06-27",
-    periodEnd: "2026-07-03",
-    metrics: {
-      bookings: 49,
-      checkedIn: 37,
-      checkoutDropoff: 9,
-      demand: 116,
-      reviews: 19,
-    },
-  },
-];
-const growthController: GrowthKpiController = {
-  filteredRows: growthRows,
-  hostAnalyticsError: null,
-  hostAnalyticsGeneratedAt: "2026-07-03T09:35:00.000Z",
-  isHostAnalyticsLoading: false,
-  isLoading: false,
-  isOverviewLoading: false,
-  loadedAt: "2026-07-03T09:40:00.000Z",
-  metrics: growthMetrics(growthRows),
-  overviewError: null,
-  overviewGeneratedAt: "2026-07-03T09:30:00.000Z",
-  query: "",
-  rangePreset: "30d",
-  rows: growthRows,
-  selected: growthRows[1] ?? null,
-  selectedSignalId: null,
-  stageFilter: "all",
-  trend: growthTrend,
-  refresh: async () => {
-    noop();
-    return true;
-  },
-  refreshHostAnalytics: async () => {
-    noop();
-    return true;
-  },
-  refreshOverview: async () => {
-    noop();
-    return true;
-  },
-  select: (_row: GrowthSignalRow) => {
-    noop();
-  },
-  setQuery: (_value: string) => {
-    noop();
-  },
-  setRangePreset: (_value: GrowthRangePreset) => {
-    noop();
-  },
-  setStageFilter: (_value: GrowthStage) => {
-    noop();
-  },
-};
 const financeRows: FinanceIssueRow[] = [
   {
     id: "payment-refundfailed-pune-1",
@@ -1325,16 +1182,6 @@ function dataQualityMetrics(rows: DataQualityRow[]) {
   };
 }
 
-function growthMetrics(rows: GrowthSignalRow[]) {
-  const value = (id: string) => rows.find((row) => row.id === id)?.value ?? 0;
-  return {
-    signupsThisWeek: value("signupsThisWeek"),
-    completedProfiles: value("completedProfiles"),
-    bookings: value("bookings"),
-    attendanceRate: value("attendanceRate"),
-  };
-}
-
 function eventListRowFromDetails(event: AdminEventDetails): AdminEventListRow {
   return {
     activityKind: event.eventFormat.activityKind,
@@ -1489,12 +1336,6 @@ const renderIntakeWorkspace = () => (
       )}
       onWorkspaceChange={noop}
     />
-  </AdminWorkspace>
-);
-
-const renderGrowthWorkspace = () => (
-  <AdminWorkspace>
-    <GrowthKpiWorkspace controller={growthController} />
   </AdminWorkspace>
 );
 
@@ -1845,28 +1686,6 @@ export const OrganizerPublishingBlockedDraftStory: Story = {
   render: () => <OrganizerPublishingBlockedDraftPreview />,
 };
 
-export const GrowthRouteStory: Story = {
-  name: "Growth",
-  parameters: {
-    catchComponent: {
-      id: "route_growth_kpi",
-      states: ["signal-directory"],
-    },
-  },
-  render: renderGrowthWorkspace,
-};
-
-export const GrowthWorkspaceStory: Story = {
-  name: "Growth Workspace",
-  parameters: {
-    catchComponent: {
-      id: "workspace_growth_kpi",
-      states: ["signal-directory"],
-    },
-  },
-  render: renderGrowthWorkspace,
-};
-
 export const FinanceRouteStory: Story = {
   name: "Finance",
   parameters: {
@@ -2030,5 +1849,52 @@ export const MarketplaceRouteStory: Story = {
         onRefresh={noop}
       />
     </AdminWorkspace>
+  ),
+};
+
+const growthSample = sampleGrowth({range: "12m"});
+const growthCredits = sampleNominatorCredits({action: "list", nominatorUid: null, note: null});
+const growthStoryController: GrowthController = {
+  view: "nominators",
+  range: "12m",
+  data: growthSample,
+  credits: growthCredits,
+  loadState: "ready",
+  loadError: null,
+  nominatorFilter: "all",
+  bestFilter: "all",
+  search: "",
+  nominators: growthSample.nominators,
+  best: growthSample.best,
+  selectedNominator: growthSample.nominators[0] ?? null,
+  selectedCredit: growthCredits.nominators.find((row) => row.nominatorUid === growthSample.nominators[0]?.uid) ?? null,
+  isActing: false,
+  actionError: null,
+  setView: noop,
+  setRange: noop,
+  setNominatorFilter: noop,
+  setBestFilter: noop,
+  setSearch: noop,
+  selectNominator: noop,
+  approveCredit: () => Promise.resolve(true),
+  markCreditPaid: () => Promise.resolve(true),
+};
+
+export const GrowthRouteStory: Story = {
+  name: "Growth",
+  parameters: {
+    catchComponent: {
+      id: "route_growth",
+      states: ["cohorts", "channels-and-ads", "nominators", "best-organizers"],
+    },
+  },
+  render: () => (
+    <GrowthScreen
+      controller={growthStoryController}
+      detailOpen
+      onCloseDetail={noop}
+      onSelectNominator={noop}
+      onViewChange={noop}
+    />
   ),
 };

@@ -27,6 +27,7 @@ type MarketingTab = "posts" | "new" | "events" | "media" | "activity" |
   "diagnostics" | "draft";
 type MarketingStep = "source" | "copy" | "compliance" | "export";
 export type FinanceWorkspace = "issues" | "commercial-terms" | "payment-routing";
+export type GrowthView = "cohorts" | "channels" | "nominators" | "best";
 
 interface RouteState {
   nav: AdminNavId | null;
@@ -38,6 +39,7 @@ interface RouteState {
   eventWorkspace?: "directory" | "external";
   financeWorkspace?: FinanceWorkspace;
   safetyView?: "open" | "actions" | "appeals";
+  growthView?: GrowthView;
   marketingTab?: MarketingTab;
   composerStep?: MarketingStep;
 }
@@ -73,7 +75,10 @@ export const adminRoutes: AdminRoute[] = [
   route("/events/external/:externalEventId", "events", {eventWorkspace: "external", title: "External event"}),
   // The retired readiness workspace: old links open the directory, not an event named "readiness".
   route("/events/readiness/*", "events"),
-  route("/growth/signals/:growthSignalId", "growth", {title: "Growth signal"}),
+  ...(["channels", "nominators", "best"] as const).map((growthView) => route(`/growth/${growthView}/*`, "growth", {growthView})),
+  route("/growth/nominators/:nominatorUid", "growth", {growthView: "nominators", title: "Nominator"}),
+  // The retired Growth signals: old links open Growth.
+  route("/growth/signals/*", "growth", {redirect: "/growth"}),
   route("/finance/issues/:financeIssueId", "finance", {title: "Finance issue"}),
   route("/finance/commercial-terms/*", "finance", {financeWorkspace: "commercial-terms", title: "Commercial terms"}),
   route("/finance/commercial-terms/organizers/:termsOrganizerId", "finance", {
@@ -121,6 +126,7 @@ export function resolveAdminRoute(pathname: string) {
     eventWorkspace: state?.eventWorkspace ?? "directory",
     financeWorkspace: state?.financeWorkspace ?? "issues",
     safetyView: state?.safetyView ?? "open",
+    growthView: state?.growthView ?? "cohorts",
     marketingTab: state?.marketingTab ?? "posts",
     composerStep: state?.composerStep ?? "source",
   };
@@ -136,6 +142,12 @@ export function marketingPathForTab(tab: Exclude<MarketingTab, "draft">): string
 
 export function financePathForWorkspace(workspace: FinanceWorkspace): string {
   return workspace === "issues" ? adminSections.finance.path : `/finance/${workspace}`;
+}
+
+/** Growth's view, and one nominator in it. */
+export function growthPath(view: GrowthView, nominatorUid: string | null = null): string {
+  const base = view === "cohorts" ? adminSections.growth.path : `${adminSections.growth.path}/${view}`;
+  return nominatorUid === null ? base : `${base}/${encodeURIComponent(nominatorUid)}`;
 }
 
 export function commercialTermsPathForOrganizer(organizerId: string | null): string {

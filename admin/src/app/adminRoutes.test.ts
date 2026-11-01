@@ -4,6 +4,7 @@ import {
   adminSections,
   commercialTermsPathForOrganizer,
   financePathForWorkspace,
+  growthPath,
   resolveAdminRoute,
   type AdminNavId,
 } from "./adminRoutes";
@@ -21,7 +22,7 @@ describe("Admin route contract", () => {
     ["/organizers/claims/request-1", "organizers", "claimRequestId", "request-1"],
     ["/events/event-1", "events", "eventId", "event-1"],
     ["/events/external/candidate-1", "events", "externalEventId", "candidate-1"],
-    ["/growth/signals/signal-1", "growth", "growthSignalId", "signal-1"],
+    ["/growth/nominators/sample-neha", "growth", "nominatorUid", "sample-neha"],
     ["/finance/issues/payments%2Fpayment-1", "finance", "financeIssueId", "payments/payment-1"],
     ["/finance/commercial-terms/organizers/org%2F1", "finance", "termsOrganizerId", "org/1"],
     ["/quality/signals/source-1", "quality", "qualitySignalId", "source-1"],
@@ -52,6 +53,14 @@ describe("Admin route contract", () => {
     const route = resolveAdminRoute(path);
     expect(route).toHaveProperty(key, value);
     expect(route.params[recordKey]).toBeUndefined();
+  });
+
+  it("builds Growth paths that resolve back to their view, and sends old signal links to Growth", () => {
+    for (const view of ["cohorts", "channels", "nominators", "best"] as const) {
+      expect(resolveAdminRoute(growthPath(view)).growthView).toBe(view);
+    }
+    expect(resolveAdminRoute(growthPath("nominators", "a b")).params.nominatorUid).toBe("a b");
+    expect(resolveAdminRoute("/growth/signals/signal-1").redirect).toBe("/growth");
   });
 
   it("builds finance workspace paths that resolve back to their workspace", () => {
