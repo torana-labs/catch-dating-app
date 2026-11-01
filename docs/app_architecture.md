@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.96.1
-updated: 2026-11-01
+version: 1.96.2
+updated: 2026-11-02
 owner: app_architecture
 status: active
 ---
@@ -1640,7 +1640,7 @@ Catch's UI system has separate sources of truth by layer:
 
 | Layer | Source of truth | Mirrors / consumers |
 |---|---|---|
-| Primitive token values | `design/tokens/catch.tokens.json` | Flutter generated tokens, website CSS, Figma variables, Claude/Figma context packs |
+| Primitive token values | `design/tokens/catch.tokens.json` | Flutter generated tokens, website CSS, Figma variables |
 | Flutter widget behavior | `packages/catch_ui/lib/src/**`, `lib/contexts/*/parts/**` | Component contracts, goldens/captures, Figma Code Connect snippets |
 | Cross-tool component API | `design/components/catch.components.json` | Claude handoff rules, Figma component mappings, Code Connect templates, future registry docs |
 | Screen composition | Feature Flutter code | UI captures, gallery screenshots, design review packs |
@@ -2973,7 +2973,7 @@ or implementation technique cannot justify a second shared implementation.
   component) and it names a responsibility no existing role covers; a synonym
   of an existing role redirects to that role instead. Every registered
   component and role noun records `aliases`, the other names an agent would
-  plausibly write. The generated catalog and context pack index them, and the
+  plausibly write. The generated catalog indexes them, and the
   new-widget gate rejects a new widget whose name matches an existing
   component's name or alias with a pointer to that component (blueprint Phase
   7b delivers the alias data and gate).

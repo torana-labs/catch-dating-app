@@ -1,7 +1,7 @@
 ---
 doc_id: design_sync_pipeline
-version: 1.5.0
-updated: 2026-08-13
+version: 1.6.0
+updated: 2026-11-02
 owner: design_system
 status: active
 ---
@@ -9,9 +9,9 @@ status: active
 # Code, Figma, and Claude Design sync
 
 `catch.components.json` is the identity and behavior contract. Flutter owns
-behavior, DTCG tokens own values, Figma owns editable design instances, and the
-generated context pack is the Claude Design input. No tool may silently become
-a second component registry.
+behavior, DTCG tokens own values, Figma owns editable design instances, and
+Claude Design reads the contract, the tokens and `docs/design_language.md`
+directly. No tool may silently become a second component registry.
 
 Run `node tool/design/build_design_sync_manifest.mjs` after changing component
 identity, APIs, states, or mapping metadata. CI runs the same command with
@@ -84,9 +84,9 @@ that seam blocked without claiming it is live.
 ## Deterministic loop
 
 1. Change Flutter, tokens, or the component contract.
-2. Regenerate `design_context_pack`. Its
-   `design_system/claude_design_handoff_request.json` is the only accepted
-   Badge + Field Claude Design prompt contract.
+2. Print the Badge + Field Claude Design request with
+   `node tool/design/build_design_sync_manifest.mjs --claude-handoff`. It is
+   built from the component contract and is the only accepted prompt contract.
 3. Run that request through Claude Design and store its exact, referenced
    response in `design/sync/claude_design_receipt.json`. The sync gate rejects
    stale source, concept, or supported-state digests.
@@ -95,10 +95,9 @@ that seam blocked without claiming it is live.
 5. Publish the Figma library, then let the publish receiver hydrate the webhook
    and replace the snapshot with published evidence on a review branch.
 6. Regenerate this sync manifest; it reports mappings as `current`, `stale`, or
-   `missing` and verifies both the Claude context and receipt digests.
+   `missing` and verifies the receipt digests.
 7. Publish Code Connect only where the plan supports it.
-8. Run component, context-pack, snapshot, sync-manifest, Widgetbook, and drift
-   gates.
+8. Run component, snapshot, sync-manifest, Widgetbook, and drift gates.
 
 The first live vertical slice is `catch.badge` plus `catch.field`. Scale to the
 remaining concepts only after both components pass the full loop.

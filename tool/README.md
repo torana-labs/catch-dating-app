@@ -86,10 +86,8 @@ revision, still runs the full matrix. Canonical Harness control-plane paths come
 full-matrix paths. Terminal graph classifications override broad Harness
 patterns. Shared control-plane changes, unowned lane inputs, and explicit full
 runs retain the complete six-bucket matrix.
-The feature-coverage ledger and schema select `design:feature-coverage`; the
-context-pack and gallery manifests select `design:context-pack`, which rebuilds
-the pack in a temporary directory and verifies drift. Their check tests and
-generator have the same owners. These explicit mappings avoid full fanout when
+The feature-coverage ledger and schema select `design:feature-coverage`. Its
+check tests have the same owner. These explicit mappings avoid full fanout when
 ordinary screen changes update generated manifests; unknown companion inputs
 still trigger the full fallback. Committed evidence follows the same rule:
 website Storybook baselines select `web:storybook-visuals`, app screenshots

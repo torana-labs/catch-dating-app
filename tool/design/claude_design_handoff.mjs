@@ -27,12 +27,12 @@ export function buildClaudeDesignHandoffRequest(componentsDocument) {
   });
   return {
     version: 1,
-    generatedBy: "tool/design/build_context_pack.mjs",
+    generatedBy: "tool/design/build_design_sync_manifest.mjs --claude-handoff",
     sourceDigest: digest(componentsDocument),
     contextFiles: {
-      components: "design_system/components.json",
-      tokens: "design_system/tokens.json",
-      designLanguage: "design_system/design_language.txt",
+      components: "design/components/catch.components.json",
+      tokens: "design/tokens/catch.tokens.json",
+      designLanguage: "docs/design_language.md",
     },
     authority: {
       conceptIdsAndApis: "repo contract",
@@ -41,7 +41,7 @@ export function buildClaudeDesignHandoffRequest(componentsDocument) {
       claudeOutput: "proposal or receipt only",
       conflicts: "owner decision",
     },
-    task: "Read the shared context pack, identify the Badge and Field concepts by contract id, verify every supported state, and return the receipt contract without inventing ids, states, props, or ownership.",
+    task: "Read the context files, identify the Badge and Field concepts by contract id, verify every supported state, and return the receipt contract without inventing ids, states, props, or ownership.",
     components,
     receiptContract: {
       version: 1,

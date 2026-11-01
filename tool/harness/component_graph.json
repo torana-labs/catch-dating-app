@@ -857,8 +857,6 @@
         "include": [
           "design/*.md",
           "design/**/*.md",
-          "design_context_pack/*.md",
-          "design_context_pack/**/*.md",
           "widgetbook/*.md",
           "widgetbook/**/*.md",
           "artifacts/*.md",
@@ -953,8 +951,6 @@
           "lib/l10n/generated/**",
           "design/*.md",
           "design/**/*.md",
-          "design_context_pack/*.md",
-          "design_context_pack/**/*.md",
           "widgetbook/*.md",
           "widgetbook/**/*.md",
           "artifacts/*.md",

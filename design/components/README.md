@@ -1,7 +1,7 @@
 ---
 doc_id: component_contract_registry
-version: 1.11.0
-updated: 2026-10-24
+version: 1.11.1
+updated: 2026-11-02
 owner: ui_elevation_initiative
 status: active
 ---
@@ -180,8 +180,8 @@ id, and metrics are asserted from the same contract values in both test suites.
 it would plausibly write (`PrimaryButton` for `CatchButton`, `ProfileCard` for
 `CatchPolaroid`). Aliases must be unique, must not repeat or shadow any
 registered symbol, and must not be a bare role noun; the contract check enforces
-this. The generated widget catalog prints them as "Also called", the design
-context pack carries them, and the new-widget gate
+this. The generated widget catalog prints them as "Also called", and the
+new-widget gate
 (`node tool/design/check_new_widget_inventory.mjs --check`) rejects a new widget
 whose name matches a registered name or alias and names the component to use.
 
@@ -217,10 +217,7 @@ fixed finding that is still listed also fails until
 4. Run `node tool/design/build_lint_enforcement_tables.mjs`, then
    `node tool/design/check_component_enforcement_coverage.mjs`.
 5. Run `node tool/design/check_component_contracts.mjs`.
-6. Regenerate the design context pack with
-   `node tool/design/build_context_pack.mjs` when the registry should be shared
-   with Claude Design or another design tool.
-7. Regenerate `design/sync/catch.design-sync.json` so mapping state and contract
+6. Regenerate `design/sync/catch.design-sync.json` so mapping state and contract
    digests stay current.
 
 Use `Catch<ControlledNoun>` for new concepts. Prefer named constructors for

@@ -79,7 +79,7 @@ function captureProfile(name) {
   if (name === "design-gallery") {
     return {
       allIds: true,
-      outputDir: "design_context_pack/gallery",
+      outputDir: "build/design_gallery",
       outputLayout: "theme-first",
       pixelRatio: "3.0",
     };
@@ -113,7 +113,7 @@ Options:
   --text-scale <scale>     MediaQuery text scale, e.g. 1.5 or 2.0.
   --pixel-ratio <scale>    PNG raster scale passed to RenderRepaintBoundary.toImage.
   --output-layout <layout> capture-first (id/theme.png) or theme-first (theme/id.png).
-  --profile <name>         Named profile. Use design-gallery for 3x theme-first pack PNGs.
+  --profile <name>         Named profile. Use design-gallery for 3x theme-first PNGs in build/design_gallery.
 
 Examples:
   node tool/ui_capture/run_captures.mjs --ids profile_self
