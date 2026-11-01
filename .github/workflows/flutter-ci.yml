@@ -190,7 +190,7 @@ jobs:
       - name: Form and schema constraint alignment
         run: flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart
 
-      - name: Localization catalog and getter usage ratchet
+      - name: Localization catalog and getter usage
         run: |
           mkdir -p build/ci
           node tool/copy/check_l10n_key_usage.mjs --check --json > build/ci/l10n-key-usage.json

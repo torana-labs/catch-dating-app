@@ -428,7 +428,7 @@ test("Flutter l10n gate derives JSON live and uploads ephemeral evidence", () =>
   const flutter = workflow("flutter-ci.yml");
   const scan = namedStep(
     flutter,
-    "Localization catalog and getter usage ratchet",
+    "Localization catalog and getter usage",
   );
   assert.equal(
     [...flutter.matchAll(/check_l10n_key_usage\.mjs/gu)].length,
