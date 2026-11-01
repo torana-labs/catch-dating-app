@@ -60,6 +60,9 @@ export const SalesTodayStory: Story = {
 
 const hostsModel = {query: "", setQuery: noop, hasNextPage: false, hasPreviousPage: false, nextPage: noop, previousPage: noop,
   tab: "overview" as const, setTab: noop,
+  contacts: [{contactId: "c1", displayName: "Kavya Rao", relationship: {revision: 1, role: "Founder", decisionInfluence: "decision_maker" as const,
+    primary: true, contactabilityStatus: "unknown" as const, sendAuthority: false as const}}],
+  logActivity: async () => true, addNextStep: async () => true, completeNextStep: async () => true, saveDeal: async () => true, isSaving: false,
   rows: hosts.map(([organizerId, name], index) => ({organizerId, name, city: "Mumbai",
     researchStatus: index < 2 ? "qualified" as const : "needs_research" as const, stage: index < 3 ? "in_conversation" : null,
     nextAction: index === 0 ? "Demo call on Tuesday" : null}))};

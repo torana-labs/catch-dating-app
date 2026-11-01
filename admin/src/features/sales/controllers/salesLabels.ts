@@ -77,6 +77,16 @@ export function cityLabel(slug: string): string {
   return slug.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
 }
 
+/** The stages a person can move a deal to. Closing as won needs payment proof, so it stays in All tools. */
+export const movableStages = ["new_enquiry", "ready_to_contact", "contacted", "in_conversation", "demo_arranged", "demo_completed",
+  "pilot_agreed", "pilot_running", "commercial_discussion", "closed_lost"];
+
+export const hostActivityTypes: Array<{value: "note" | "reply" | "call" | "demo" | "pilot" | "outreach_sent_manual"; label: string}> = [
+  {value: "note", label: "A note"}, {value: "call", label: "A call"}, {value: "reply", label: "They replied"},
+  {value: "demo", label: "A demo"}, {value: "pilot", label: "A pilot update"},
+  {value: "outreach_sent_manual", label: "I messaged them elsewhere"},
+];
+
 export function stageLabel(stage: string): string {
   const words = stage.replace(/_/gu, " ");
   return words[0]?.toUpperCase() + words.slice(1);

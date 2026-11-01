@@ -1,17 +1,35 @@
-import {useQuery} from "@tanstack/react-query";
-import {useState} from "react";
-import {getSalesAccount, listSalesAccounts} from "../api/salesRepository";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useCallback, useState} from "react";
+import {
+  getSalesAccount,
+  listSalesAccounts,
+  listSalesContacts,
+  recordSalesActivity,
+  upsertSalesOpportunity,
+  upsertSalesTask,
+} from "../api/salesRepository";
+import type {SalesOpportunity, SalesRecordActivityInput, SalesTask} from "../api/salesTypes";
 
 export type HostTab = "overview" | "conversations" | "deals" | "notes";
+
+export type HostActivityInput = Pick<SalesRecordActivityInput, "type" | "note" | "channel" | "attestation">;
+export type NextStepInput = Pick<SalesTask, "kind" | "title" | "dueAt">;
+export type DealMoveInput = Pick<SalesOpportunity, "stage" | "nextStep" | "nextStepAt"> & {transitionReason?: string};
 
 /**
  * Hosts: the accounts a sales associate works (or the team's), searchable,
  * and one host's page with four tabs: overview, conversations, deals, notes.
+ * Its everyday work happens there: logging what happened, next steps and moving a deal.
  */
-export function useSalesHostsController({ownerUid, selectedOrganizerId}: {
+export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onError, onNotice}: {
   ownerUid: string | null;
   selectedOrganizerId: string | null;
+  /** Who a new next step or deal belongs to. */
+  uid: string | null;
+  onError: (message: string | null) => void;
+  onNotice: (message: string) => void;
 }) {
+  const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
   const [cursors, setCursors] = useState<Array<string | undefined>>([undefined]);
   const [tab, setTab] = useState<HostTab>("overview");
@@ -26,6 +44,29 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId}: {
     queryFn: () => getSalesAccount(selectedOrganizerId as string),
     enabled: selectedOrganizerId !== null,
   });
+  const contacts = useQuery({
+    queryKey: ["sales", "contacts", selectedOrganizerId],
+    queryFn: () => listSalesContacts(selectedOrganizerId as string),
+    enabled: selectedOrganizerId !== null,
+  });
+  const logging = useMutation({mutationFn: recordSalesActivity});
+  const savingTask = useMutation({mutationFn: upsertSalesTask});
+  const savingDeal = useMutation({mutationFn: upsertSalesOpportunity});
+
+  const run = useCallback(async (action: () => Promise<unknown>, notice: string) => {
+    onError(null);
+    try {
+      await action();
+      onNotice(notice);
+      await queryClient.invalidateQueries({queryKey: ["sales"]});
+      return true;
+    } catch (error) {
+      onError(error instanceof Error ? error.message : String(error));
+      return false;
+    }
+  }, [onError, onNotice, queryClient]);
+  const organizerId = selectedOrganizerId as string;
+
   return {
     query,
     setQuery: (value: string) => { setQuery(value); setCursors([undefined]); },
@@ -39,6 +80,21 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId}: {
     tab, setTab,
     host: host.data ?? null,
     hostError: host.error,
+    contacts: contacts.data?.rows ?? [],
+    logActivity: (input: HostActivityInput) => run(() => logging.mutateAsync({...input, organizerId,
+      requestId: crypto.randomUUID(), occurredAt: new Date().toISOString()}), "Logged."),
+    addNextStep: (input: NextStepInput) => run(() => savingTask.mutateAsync({organizerId, requestId: crypto.randomUUID(),
+      expectedRevision: 0, task: {...input, ownerUid: uid ?? "", status: "open"}}), "Next step added."),
+    completeNextStep: (task: SalesTask) => run(() => savingTask.mutateAsync({organizerId, taskId: task.taskId,
+      requestId: crypto.randomUUID(), expectedRevision: task.revision, task: {kind: task.kind, title: task.title,
+        dueAt: task.dueAt, ownerUid: task.ownerUid, status: "completed"}}), "Done."),
+    /** Moves a deal, or starts one when there is none; a stale revision comes back as an error to reload. */
+    saveDeal: (deal: SalesOpportunity | null, {transitionReason, ...fields}: DealMoveInput) => run(() => savingDeal.mutateAsync({
+      organizerId, requestId: crypto.randomUUID(), expectedRevision: deal?.revision ?? 0,
+      ...(deal ? {opportunityId: deal.opportunityId} : {}), ...(transitionReason ? {transitionReason} : {}),
+      fields: {motion: deal?.motion ?? "first_workflow_pilot", ownerUid: deal?.ownerUid ?? uid ?? "", ...fields},
+    }), deal ? "Deal moved." : "Deal started."),
+    isSaving: logging.isPending || savingTask.isPending || savingDeal.isPending,
   };
 }
 
