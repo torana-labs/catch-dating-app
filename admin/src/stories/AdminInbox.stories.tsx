@@ -42,6 +42,7 @@ function model(selectedItemId: string | null, canDecideClaim = false): InboxScre
     nextItem: index >= 0 ? items[index + 1] ?? null : null,
     previousItem: index > 0 ? items[index - 1] ?? null : null,
     selectNext: noop, selectPrevious: noop,
+    openListingReview: noop, listingReview: null, listingReviewFailed: false, approveListing: done, isApproving: false,
     updateItem: done, recommendClaim: done, decideClaim: done, decideAccess: done, linkEnquiry: done,
     hostQuery: selectedItemId === "enquiry-harbor" ? "Harbor" : "", setHostQuery: noop,
     hostMatches: selectedItemId === "enquiry-harbor" ? [{organizerId: "harbor-social", name: "Harbor Social Club", city: "Mumbai"}] : [],

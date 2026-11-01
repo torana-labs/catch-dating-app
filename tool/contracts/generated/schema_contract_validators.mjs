@@ -956,6 +956,8 @@ import {
   adminSearchPeopleCallableResponseSchema,
   adminListActivityLogCallablePayloadSchema,
   adminListActivityLogCallableResponseSchema,
+  adminGetOrganizerListingReviewCallablePayloadSchema,
+  adminGetOrganizerListingReviewCallableResponseSchema,
   adminListOrganizerListingReviewsCallablePayloadSchema,
   adminListOrganizerListingReviewsCallableResponseSchema,
   adminApproveOrganizerListingCallableResponseSchema,
@@ -2352,6 +2354,8 @@ export const validateAdminSearchPeopleCallablePayload = ajv.compile(adminSearchP
 export const validateAdminSearchPeopleCallableResponse = ajv.compile(adminSearchPeopleCallableResponseSchema);
 export const validateAdminListActivityLogCallablePayload = ajv.compile(adminListActivityLogCallablePayloadSchema);
 export const validateAdminListActivityLogCallableResponse = ajv.compile(adminListActivityLogCallableResponseSchema);
+export const validateAdminGetOrganizerListingReviewCallablePayload = ajv.compile(adminGetOrganizerListingReviewCallablePayloadSchema);
+export const validateAdminGetOrganizerListingReviewCallableResponse = ajv.compile(adminGetOrganizerListingReviewCallableResponseSchema);
 export const validateAdminListOrganizerListingReviewsCallablePayload = ajv.compile(adminListOrganizerListingReviewsCallablePayloadSchema);
 export const validateAdminListOrganizerListingReviewsCallableResponse = ajv.compile(adminListOrganizerListingReviewsCallableResponseSchema);
 export const validateAdminApproveOrganizerListingCallableResponse = ajv.compile(adminApproveOrganizerListingCallableResponseSchema);

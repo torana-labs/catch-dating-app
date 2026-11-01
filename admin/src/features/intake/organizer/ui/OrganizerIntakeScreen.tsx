@@ -17,9 +17,6 @@ import {
   useOrganizerIntakeController,
 } from "../controllers/useOrganizerIntakeController";
 import {organizerIntakeWorkbench} from "./organizerIntakeWorkbench";
-import {useOrganizerListingReviewController} from
-  "../controllers/useOrganizerListingReviewController";
-import {renderOrganizerListingReview} from "./organizerListingReviewPanels";
 import {useListingEventImportsController} from
   "../controllers/useListingEventImportsController";
 import {renderListingEventImports} from "./listingEventImportPanels";
@@ -54,11 +51,9 @@ function OrganizerIntakeLoadedScreen() {
     onOrganizerDraftCreated: (organizerId) =>
       navigate(`/organizers/${encodeURIComponent(organizerId)}`),
   });
-  const listingReview = useOrganizerListingReviewController({onError, onNotice});
   const eventImports = useListingEventImportsController({onError, onNotice});
   return (
     <>
-      {renderOrganizerListingReview(listingReview)}
       {renderListingEventImports(eventImports)}
       <OrganizerIntakeWorkspace controller={controller} />
     </>

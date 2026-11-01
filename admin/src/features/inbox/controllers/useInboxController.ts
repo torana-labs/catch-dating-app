@@ -1,9 +1,11 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {useCallback, useMemo, useState} from "react";
+import {useCallback, useMemo, useRef, useState} from "react";
 import {
+  approveListing,
   decideAccess,
   decideClaim,
   getInboxItem,
+  getListingReview,
   linkEnquiry,
   searchOrganizers,
   listInboxItems,
@@ -14,6 +16,7 @@ import {
   type InboxScope,
   type InboxType,
   type InboxUpdate,
+  type ListingApprovalInput,
 } from "../api/inboxRepository";
 
 const pageSize = 25;
@@ -56,6 +59,16 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
   const claimDecision = useMutation({mutationFn: decideClaim});
   const accessDecision = useMutation({mutationFn: decideAccess});
   const enquiryLink = useMutation({mutationFn: linkEnquiry});
+  const [reviewRequestId, setReviewRequestId] = useState<string | null>(null);
+  const listingReview = useQuery({
+    queryKey: [...inboxKey, "listing-review", reviewRequestId],
+    queryFn: () => getListingReview(reviewRequestId as string),
+    enabled: reviewRequestId !== null,
+  });
+  const approval = useMutation({mutationFn: ({input, requestId}: {input: ListingApprovalInput; requestId: string}) =>
+    approveListing(input, requestId)});
+  // A retry of the same approval keeps its request id, so the server replays it.
+  const approvalRequestIds = useRef(new Map<string, string>());
   const [hostQuery, setHostQuery] = useState("");
   const hostSearch = useQuery({
     queryKey: [...inboxKey, "host-search", hostQuery.trim()],
@@ -114,6 +127,23 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
       input.decision === "approve" ? "Claim approved. They run the page now." : "Claim rejected.", true),
     decideAccess: (input: Parameters<typeof decideAccess>[0]) => run(() => accessDecision.mutateAsync(input),
       input.decision === "approve" ? "Launch access approved." : "Marked not selected yet.", true),
+    /** Opens the approval sheet for a listing's request; null closes it. */
+    openListingReview: setReviewRequestId,
+    listingReview: reviewRequestId !== null ? listingReview.data ?? null : null,
+    listingReviewFailed: reviewRequestId !== null && listingReview.isError,
+    approveListing: async (input: Omit<ListingApprovalInput, "requestId">, requestId: string) => {
+      const key = JSON.stringify(input);
+      const approvalRequestId = approvalRequestIds.current.get(key) ?? crypto.randomUUID();
+      approvalRequestIds.current.set(key, approvalRequestId);
+      const done = await run(() => approval.mutateAsync({input: {...input, requestId: approvalRequestId}, requestId}),
+        `${input.name} is published as an unclaimed page, not yet indexed. Its Sales work is open.`, true);
+      if (done) {
+        approvalRequestIds.current.delete(key);
+        setReviewRequestId(null);
+      }
+      return done;
+    },
+    isApproving: approval.isPending,
     hostQuery,
     setHostQuery,
     hostMatches: hostQuery.trim().length >= 2 ? hostSearch.data ?? [] : [],
