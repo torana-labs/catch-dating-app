@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import {APPROVAL_ENVIRONMENT, planDecision, selectDispatchedRun, websiteChangedInPlan} from "./releaseTrain.mjs";
+import {APPROVAL_ENVIRONMENT, PREVIEW_WORKFLOW, planDecision, previewDispatch, previewRunTitle, selectDispatchedRun,
+  websiteChangedInPlan} from "./releaseTrain.mjs";
 
 const mainSha = "a".repeat(40);
 const liveSha = "b".repeat(40);
@@ -102,6 +103,32 @@ test("the train follows only the run it dispatched", () => {
     "promotion follows its run wherever main is");
 });
 
+// 31 Oct to 1 Nov 2026: with the merge queue busy, main moved during every
+// hour-long validation, and six trains in a row validated a head, then
+// skipped the preview because only main's current head could be previewed.
+test("the train previews the commit it validated, wherever main has moved since", () => {
+  const validated = "c".repeat(40), newerMain = "d".repeat(40);
+  assert.deepEqual(previewDispatch(validated), {workflow: PREVIEW_WORKFLOW, inputs: {source_sha: validated},
+    expectedTitle: `Next Website Preview of ${validated}`});
+  for (const invalid of [undefined, "", "main", "c".repeat(39)]) {
+    assert.throws(() => previewDispatch(invalid), /exact commit/u, String(invalid));
+  }
+  // The preview run itself starts on main's newer head and names its source.
+  const requestedAt = "2026-11-01T02:00:00.000Z";
+  const run = (overrides) => ({event: "workflow_dispatch", head_branch: "main", head_sha: newerMain,
+    display_title: previewRunTitle(validated), triggering_actor: {login: "github-actions[bot]"},
+    created_at: "2026-11-01T02:00:10.000Z", ...overrides});
+  const {expectedTitle} = previewDispatch(validated);
+  assert.equal(selectDispatchedRun({runs: [run({id: 1})], requestedAt, expectedTitle}).id, 1);
+  assert.throws(() => selectDispatchedRun({runs: [run({display_title: previewRunTitle(newerMain)})], requestedAt, expectedTitle}),
+    /not this train's/u);
+  // The preview workflow titles each run the way the train looks for it.
+  const workflow = fs.readFileSync(new URL("../../../.github/workflows/website-next-preview.yml", import.meta.url), "utf8");
+  assert.equal(previewRunTitle("${{ inputs.source_sha || github.sha }}"),
+    workflow.match(/^run-name: (.+)$/mu)?.[1], "the preview's run-name and the train's expected title agree");
+  assert.match(workflow, /workflow_dispatch:\n {4}inputs:\n {6}source_sha:\n/u);
+});
+
 test("the train workflow gates production on the protected environment and never cancels a pending approval", () => {
   const workflow = fs.readFileSync(new URL("../../../.github/workflows/website-release.yml", import.meta.url), "utf8");
   assert.match(workflow, /workflow_run:\n {4}workflows: \[CI\]\n {4}types: \[completed\]\n {4}branches: \[main\]/u);
@@ -121,9 +148,12 @@ test("the train workflow gates production on the protected environment and never
   assert.match(job("plan"), /fetch-depth: 0/u, "the planner compares live with main's head");
   assert.match(job("validate"), /if: \$\{\{ needs\.plan\.outputs\.validate == 'true' \}\}/u);
   assert.match(job("validate"), /permissions:\n {6}actions: write\n {6}contents: read\n/u);
-  // A failed validation, or one main moved past, never reaches the preview or approval.
+  // A failed validation never reaches the preview or approval; one main moved
+  // past does, because the preview builds the validated commit.
   assert.match(job("preview"), /needs: \[plan, validate\]/u);
-  assert.match(job("preview"), /needs\.validate\.result == 'skipped' \|\| \(needs\.validate\.result == 'success' && needs\.validate\.outputs\.current == 'true'\)/u);
+  assert.match(job("preview"), /\(needs\.validate\.result == 'skipped' \|\| needs\.validate\.result == 'success'\) \}\}/u);
+  assert.doesNotMatch(workflow, /outputs\.current/u, "whether main moved during validation no longer gates the preview");
+  assert.match(job("preview"), /SOURCE_SHA: \$\{\{ needs\.plan\.outputs\.source_sha \}\}/u);
   assert.match(job("approve"), /needs: \[plan, preview\]/u);
   // A job with no condition of its own inherits success() over all its
   // ancestors, so a skipped validate skipped the gate and the promotion and

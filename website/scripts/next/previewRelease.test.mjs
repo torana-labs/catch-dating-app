@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {assertPreviewInvocation, assertReleaseLineage, assertSuccessfulSource, assertSuccessfulSourceRun, currentReleaseLineage,
-  LIVE_RELEASE_TAG, liveReleaseSha, safeArchiveMembers, assertRuntimePolicy, preview} from "./previewRelease.mjs";
+  LIVE_RELEASE_TAG, liveReleaseSha, previewSourceSha, safeArchiveMembers, assertRuntimePolicy, preview} from "./previewRelease.mjs";
 const sourceSha = "a".repeat(40), repository = "suvratgarg/catch-dating-app";
 const invocation = {GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_REF: "refs/heads/main", GITHUB_REPOSITORY: repository,
   GITHUB_REPOSITORY_ID: "1170579691",
@@ -19,6 +19,14 @@ test("preview refuses branch, automatic, foreign and different workflow invocati
   }
   const {GITHUB_REPOSITORY_ID: _id, ...withoutId} = invocation;
   assert.throws(() => assertPreviewInvocation(withoutId), /canonical repository/u);
+});
+test("a preview releases the train's source, or main's head when dispatched by hand", () => {
+  const head = "f".repeat(40);
+  assert.equal(previewSourceSha({GITHUB_SHA: head, RELEASE_SHA: sourceSha}), sourceSha);
+  assert.equal(previewSourceSha({GITHUB_SHA: head, RELEASE_SHA: ""}), head);
+  for (const RELEASE_SHA of ["main", "a".repeat(39), "A".repeat(40)]) {
+    assert.throws(() => previewSourceSha({GITHUB_SHA: head, RELEASE_SHA}), /Invalid source SHA/u, RELEASE_SHA);
+  }
 });
 test("preview requires current-main successful push CI from this repository", () => {
   const run = {head_sha: sourceSha, head_branch: "main", event: "push", path: ".github/workflows/ci.yml", repository: {full_name: repository},
@@ -126,6 +134,28 @@ test("preview workflow keeps the tested build uncredentialed and never promotes 
   assert.match(deploy, /CATCH_WEBSITE_STAGE=preview/u);
   assert.match(deploy, /hosting:channel:deploy next-candidate --expires 3d/u);
   assert.doesNotMatch(deploy, /firebase deploy|hosting:clone|--force|CATCH_WEBSITE_STAGE=production/u);
+  // Main's checkout supplies the scripts; the release source is checked out
+  // beside it, before any gate, build or credential, and names everything the
+  // preview builds, tags and deploys.
+  assert.match(workflow, /^run-name: Next Website Preview of \$\{\{ inputs\.source_sha \|\| github\.sha \}\}$/mu);
+  for (const [job, source] of [[build, "inputs.source_sha || github.sha"], [deploy, "needs.build.outputs.source_sha"]]) {
+    const checkout = job.indexOf('git worktree add --detach "$RUNNER_TEMP/release-source" "$SOURCE_SHA"');
+    assert.ok(checkout > 0 && checkout < job.indexOf("previewRelease.mjs"), "the source is resolved before any gate");
+    assert.ok(job.includes(`SOURCE_SHA: \${{ ${source} }}`), source);
+    assert.ok(job.indexOf('[[ "$SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]]') < checkout);
+    assert.ok(job.indexOf('git merge-base --is-ancestor "$SOURCE_SHA" "$GITHUB_SHA"') < checkout, "the source is on main");
+    assert.match(job, /test "\$\(git -C "\$RUNNER_TEMP\/release-source" rev-parse HEAD\)" = "\$SOURCE_SHA"/u);
+  }
+  assert.doesNotMatch(workflow, /run: .*\$\{\{ inputs\./u, "the input reaches a script only through its environment");
+  assert.match(build, /source_sha: \$\{\{ steps\.release\.outputs\.sha \}\}/u);
+  assert.match(build, /name: next-preview-\$\{\{ steps\.release\.outputs\.sha \}\}-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/u);
+  assert.match(build, /GITHUB_SHA="\$RELEASE_SHA" node "\$RELEASE_SOURCE\/tool\/marketing\/import_hosted_captures\.mjs" --import/u);
+  assert.match(build, /docker build --file "\$RELEASE_SOURCE\/website\/Dockerfile"[^\n]*\\\n[^\n]*revision=\$RELEASE_SHA" "\$\{args\[@\]\}" "\$RELEASE_SOURCE"\n/u);
+  assert.match(deploy, /next:\$RELEASE_SHA-\$GITHUB_RUN_ID-\$GITHUB_RUN_ATTEMPT/u);
+  assert.match(deploy, /CATCH_RELEASE_SHA=\$RELEASE_SHA"/u);
+  assert.match(deploy, /source-sha=\$RELEASE_SHA"/u);
+  assert.doesNotMatch(workflow.replaceAll('git merge-base --is-ancestor "$SOURCE_SHA" "$GITHUB_SHA"', ""), /\$GITHUB_SHA|github\.sha \}\}-/u,
+    "nothing built, tagged or deployed names the checkout's commit");
   const lines = workflow.split("\n");
   for (let i = 0; i < lines.length; i++) {
     if (!/^        run: \|$/u.test(lines[i])) continue;
@@ -145,27 +175,45 @@ test("packaging and unpacking bind source, attempt and archive bytes before imag
   const {spawnSync} = await import("node:child_process");
   const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), "next-preview-package-"));
   const script = fileURLToPath(new URL("./previewRelease.mjs", import.meta.url));
+  const git = (...args) => {
+    const result = spawnSync("git", ["-c", "user.name=Test", "-c", "user.email=test@example.com", "-c", "core.hooksPath=/dev/null",
+      "-c", "commit.gpgsign=false", ...args], {cwd: root, encoding: "utf8"});
+    assert.equal(result.status, 0, result.stderr);
+    return result.stdout.trim();
+  };
   try {
+    // The scripts' checkout of main holds the source commit in its history;
+    // the source is checked out beside it, as the workflow does, and main has
+    // since changed its public files.
     for (const dir of ["bin", "website/public/.well-known", "build/next-preview"]) fs.mkdirSync(path.join(root, dir), {recursive: true});
     fs.writeFileSync(path.join(root, "bin/docker"), `#!/bin/sh\ncase "$1" in\nimage) echo sha256:${"b".repeat(64)};;\nload) echo loaded >> "$DOCKER_TRACE";;\n*) exit 91;;\nesac\n`, {mode: 0o755});
     fs.writeFileSync(path.join(root, "website/public/.well-known/assetlinks.json"), "[]");
-    fs.writeFileSync(path.join(root, "build/next-preview/image.tar"), "fake image bytes for packaging test");
     fs.copyFileSync(new URL("../../next-hosting.preview.json", import.meta.url), path.join(root, "website/next-hosting.preview.json"));
     fs.writeFileSync(path.join(root, ".firebaserc"), JSON.stringify({targets: {[preview.project]: {hosting: {marketing: [preview.project]}}}}));
+    git("init", "--quiet"); git("add", "website", ".firebaserc"); git("commit", "--quiet", "-m", "source");
+    const source = git("rev-parse", "HEAD"), sourceTree = path.join(root, "release-source");
+    git("worktree", "add", "--quiet", "--detach", sourceTree, source);
+    fs.writeFileSync(path.join(root, "website/public/.well-known/assetlinks.json"), "[\"main moved\"]");
+    fs.writeFileSync(path.join(root, "build/next-preview/image.tar"), "fake image bytes for packaging test");
     const output = path.join(root, "outputs"), trace = path.join(root, "docker.trace");
-    const env = {...process.env, PATH: `${root}/bin:${process.env.PATH}`, GITHUB_SHA: sourceSha,
-      GITHUB_RUN_ID: "123", GITHUB_RUN_ATTEMPT: "1", GITHUB_OUTPUT: output, DOCKER_TRACE: trace};
+    const env = {...process.env, PATH: `${root}/bin:${process.env.PATH}`, GITHUB_SHA: "f".repeat(40), RELEASE_SHA: source,
+      RELEASE_SOURCE: sourceTree, GITHUB_RUN_ID: "123", GITHUB_RUN_ATTEMPT: "1", GITHUB_OUTPUT: output, DOCKER_TRACE: trace};
     const execute = (mode, overrides = {}) => spawnSync(process.execPath, [script, mode], {cwd: root, env: {...env, ...overrides}, encoding: "utf8"});
     const prepared = execute("prepare"); assert.equal(prepared.status, 0, prepared.stderr);
     const hash = fs.readFileSync(output, "utf8").trim().split("=")[1];
     const differentBytes = execute("unpack", {RELEASE_SHA256: "c".repeat(64)});
     assert.notEqual(differentBytes.status, 0); assert.ok(!fs.existsSync(trace));
-    const differentSource = execute("unpack", {RELEASE_SHA256: hash, GITHUB_SHA: "d".repeat(40)});
+    const differentSource = execute("unpack", {RELEASE_SHA256: hash, RELEASE_SHA: "d".repeat(40)});
     assert.notEqual(differentSource.status, 0); assert.ok(!fs.existsSync(trace));
+    fs.rmSync(path.join(root, "build/next-preview/verified"), {recursive: true, force: true});
+    const checkoutHead = execute("unpack", {RELEASE_SHA256: hash, RELEASE_SHA: ""});
+    assert.notEqual(checkoutHead.status, 0, "the checkout's own commit is not the release"); assert.ok(!fs.existsSync(trace));
     fs.rmSync(path.join(root, "build/next-preview/verified"), {recursive: true, force: true});
     const accepted = execute("unpack", {RELEASE_SHA256: hash});
     assert.equal(accepted.status, 0, accepted.stderr);
     assert.equal(fs.readFileSync(trace, "utf8"), "loaded\n");
-    assert.equal(fs.readFileSync(path.join(root, "build/next-preview/verified/hosting/.well-known/assetlinks.json"), "utf8"), "[]");
+    assert.equal(JSON.parse(fs.readFileSync(path.join(root, "build/next-preview/verified/release.json"), "utf8")).sourceSha, source);
+    assert.equal(fs.readFileSync(path.join(root, "build/next-preview/verified/hosting/.well-known/assetlinks.json"), "utf8"), "[]",
+      "the source's public files, not main's");
   } finally { fs.rmSync(root, {recursive: true, force: true}); }
 });

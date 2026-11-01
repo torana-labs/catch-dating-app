@@ -90,6 +90,17 @@ export function previewRunTitle(sourceSha) {
 }
 
 /**
+ * The preview builds the planned commit, not main's head at dispatch: main may
+ * have moved since the plan or during validation. The preview and promotion
+ * still require that commit's own CI and captures, and that it is on main and
+ * not older than live.
+ */
+export function previewDispatch(sourceSha) {
+  assert.match(sourceSha ?? "", /^[a-f0-9]{40}$/u, "The train previews an exact commit");
+  return {workflow: PREVIEW_WORKFLOW, inputs: {source_sha: sourceSha}, expectedTitle: previewRunTitle(sourceSha)};
+}
+
+/**
  * Picks the run this train dispatched: the newest workflow_dispatch run on
  * main that the workflow token started after the request.
  */
@@ -171,16 +182,10 @@ async function runValidation() {
     `Full CI validated \`${sourceSha}\`; main has since moved to \`${mainSha}\`, which a later train releases.`);
 }
 
-// The preview builds the planned commit, not main's head at dispatch: main may
-// have moved since the plan or during validation. The preview and promotion
-// still require that commit's own CI and captures, and that it is on main and
-// not older than live.
 async function runPreview() {
   const repository = canonicalRepository(process.env);
   const sourceSha = process.env.SOURCE_SHA;
-  assert.match(sourceSha ?? "", /^[a-f0-9]{40}$/u, "The train previews an exact commit");
-  const run = await dispatchAndWait({repository, workflow: PREVIEW_WORKFLOW, inputs: {source_sha: sourceSha},
-    expectedTitle: previewRunTitle(sourceSha), timeoutMs: 60 * 60_000});
+  const run = await dispatchAndWait({repository, ...previewDispatch(sourceSha), timeoutMs: 60 * 60_000});
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "website-preview-"));
   command("gh", ["run", "download", String(run.id), "--repo", repository,
     "--name", `next-preview-serving-${run.id}-${run.run_attempt}`, "--dir", directory]);
