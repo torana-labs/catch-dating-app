@@ -1,11 +1,23 @@
 import {describe, expect, it} from "vitest";
 import {
   AdminCallableValidationError,
+  type AdminCallableValidators,
   adminCallableValidationCoverage,
-  validateAdminCallableRequest,
-  validateAdminCallableResponse,
+  loadAdminCallableValidators,
 } from "./adminCallableValidators";
+import {missingAdminCallableValidators} from "./adminCallableValidation";
 import {sampleOverview} from "../../shared/api/sampleData";
+
+// Each area's validators load lazily; the tests load every area up front.
+const loaded = new Map<string, AdminCallableValidators>(await Promise.all(
+  adminCallableValidationCoverage.callables.map(async (callable) =>
+    [callable, await loadAdminCallableValidators(callable)] as const)));
+const validatorsFor = (callable: string) =>
+  loaded.get(callable) ?? missingAdminCallableValidators;
+const validateAdminCallableRequest = (callable: string, value: unknown) =>
+  validatorsFor(callable).validateAdminCallableRequest(callable, value);
+const validateAdminCallableResponse = (callable: string, value: unknown) =>
+  validatorsFor(callable).validateAdminCallableResponse(callable, value);
 
 describe("generated admin callable validators", () => {
   it("covers every discovered Admin callable with a strict request", () => {

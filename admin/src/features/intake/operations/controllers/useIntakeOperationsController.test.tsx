@@ -2,9 +2,9 @@ import {renderHook, waitFor} from "@testing-library/react";
 import {describe, expect, it, vi} from "vitest";
 
 import {
-  validateAdminCallableRequest,
-  validateAdminCallableResponse,
-} from "../../../../generated/validators/adminCallableValidators";
+  loadAdminCallableValidators,
+} from
+  "../../../../generated/validators/adminCallableValidators";
 
 import {createQueryHarness} from
   "../../../../shared/test/queryHarness";
@@ -16,6 +16,9 @@ import {
   useIntakeOperationsController,
 } from
   "./useIntakeOperationsController";
+
+const {validateAdminCallableRequest, validateAdminCallableResponse} =
+  await loadAdminCallableValidators("adminListIntakeOperations");
 
 describe("useIntakeOperationsController", () => {
   it("accepts bounded unavailable diagnostics through the real generated callable boundary", () => {

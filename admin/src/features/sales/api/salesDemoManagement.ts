@@ -1,4 +1,4 @@
-import {validateAdminCallableRequest, validateAdminCallableResponse} from
+import {loadAdminCallableValidators} from
   "../../../generated/validators/adminCallableValidators";
 import {httpsCallable} from "firebase/functions";
 import {functions} from "../../../shared/api/firebaseFunctions";
@@ -115,10 +115,12 @@ export interface DemoManagementApi {
       "invitationId" | "revision" | "revoked" | "revokedAt">>;
 }
 
-function call<Request, Response>(name: string, payload: Request): Promise<Response> {
+async function call<Request, Response>(name: string, payload: Request): Promise<Response> {
   if (dataMode() === "sample") {
     throw new Error("Private demos are unavailable in sample mode.");
   }
+  const {validateAdminCallableRequest, validateAdminCallableResponse} =
+    await loadAdminCallableValidators(name);
   validateAdminCallableRequest(name, payload);
   return httpsCallable<Request, Response>(functions, name)(payload)
     .then((result) => {

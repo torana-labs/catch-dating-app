@@ -277,7 +277,8 @@ function httpsCallable<RequestData, ResponseData>(
   );
   return async (payload: RequestData) => {
     const {validateAdminCallableRequest, validateAdminCallableResponse} =
-      await import("../../generated/validators/adminCallableValidators");
+      await import("../../generated/validators/adminCallableValidators")
+        .then((validators) => validators.loadAdminCallableValidators(name));
     validateAdminCallableRequest(name, payload);
     const result = await callable(payload);
     if (shouldValidateAdminCallableResponses()) {
