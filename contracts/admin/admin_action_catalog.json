@@ -3432,6 +3432,217 @@
         "reason": "Reviewed public organizer identity; contact research pending.",
         "originatorUid": null
       }
+    },
+    {
+      "actionId": "finance.manage-organizer-bills",
+      "callable": "adminManageOrganizerBills",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action",
+      "requestSchema": "contracts/callables/admin_manage_organizer_bills_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_manage_organizer_bills_response.schema.json",
+      "summary": "Read a month's organizer bills, make them from its bookings, or send, remind, mark paid or write off one bill against the reviewed revision.",
+      "example": {
+        "action": "list",
+        "month": "2026-10",
+        "organizerId": null,
+        "billId": null,
+        "expectedRevision": null,
+        "note": null
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-money-settings",
+      "callable": "adminManageMoneySettings",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action",
+      "requestSchema": "contracts/callables/admin_manage_money_settings_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_manage_money_settings_response.schema.json",
+      "summary": "Read or replace Catch's money settings: GST registered, bill due day and the nominator credit rule.",
+      "example": {
+        "action": "read",
+        "expectedRevision": null,
+        "settings": null
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-nominator-credits",
+      "callable": "adminManageNominatorCredits",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action",
+      "requestSchema": "contracts/callables/admin_manage_nominator_credits_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_manage_nominator_credits_response.schema.json",
+      "summary": "Read the nominator credit ledger, approve one nominator's owed credit at or above the minimum payout, or record it paid.",
+      "example": {
+        "action": "list",
+        "nominatorUid": null,
+        "note": null
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-platform-costs",
+      "callable": "adminManagePlatformCosts",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action",
+      "requestSchema": "contracts/callables/admin_manage_platform_costs_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_manage_platform_costs_response.schema.json",
+      "summary": "Read one month's costs, enter one kind of cost by hand (AI, Cloud, SMS, a WhatsApp invoice total) or clear it.",
+      "example": {
+        "action": "list",
+        "month": "2026-10",
+        "category": null,
+        "amountMinor": null,
+        "note": null
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.export-money-ledger",
+      "callable": "adminExportMoneyLedger",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_export_money_ledger_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_export_money_ledger_response.schema.json",
+      "summary": "Download one month's ledger (invoices, bill payments, nominator credit paid, costs) as CSV for Zoho Books.",
+      "example": {
+        "month": "2026-10"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "growth.get",
+      "callable": "adminGetGrowth",
+      "workflowIds": [
+        "growth"
+      ],
+      "guiPath": "/growth",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_get_growth_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_growth_response.schema.json",
+      "summary": "Read Growth for a range: organizer cohorts, channels and ad spend, nominators and their credit, and the best organizers.",
+      "example": {
+        "range": "12m"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "marketplace.get",
+      "callable": "adminGetMarketplace",
+      "workflowIds": [
+        "growth"
+      ],
+      "guiPath": "/marketplace",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_get_marketplace_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_marketplace_response.schema.json",
+      "summary": "Read the Marketplace from the analytics warehouse: cities, guests coming back, bookings each week and organizers going quiet.",
+      "example": {
+        "rangeDays": 30,
+        "marketId": null
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.get-month",
+      "callable": "adminGetFinanceMonth",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_get_finance_month_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_finance_month_response.schema.json",
+      "summary": "Read one month of Finance line by line: ticket sales, what Catch earned, costs and what is not Catch's money.",
+      "example": {
+        "month": "2026-10"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-payment-issues",
+      "callable": "adminManagePaymentIssues",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/money",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action",
+      "requestSchema": "contracts/callables/admin_manage_payment_issues_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_manage_payment_issues_response.schema.json",
+      "summary": "Read Money's open or resolved issues, re-check a captured website or offer payment with no booking with Razorpay, or close an issue handled elsewhere.",
+      "example": {
+        "action": "list",
+        "view": "open",
+        "issueId": null,
+        "note": null
+      },
+      "controlPlane": true
     }
   ],
   "workflows": [
@@ -3473,7 +3684,9 @@
       "guiPath": "/growth",
       "actions": [
         "overview.get",
-        "analytics.host"
+        "analytics.host",
+        "growth.get",
+        "marketplace.get"
       ]
     },
     {
@@ -3595,7 +3808,14 @@
         "finance.revoke-organizer-entitlement-grant",
         "finance.list-commercial-terms",
         "finance.manage-commercial-terms",
-        "finance.manage-payment-routing"
+        "finance.manage-payment-routing",
+        "finance.manage-organizer-bills",
+        "finance.manage-money-settings",
+        "finance.manage-nominator-credits",
+        "finance.manage-platform-costs",
+        "finance.export-money-ledger",
+        "finance.get-month",
+        "finance.manage-payment-issues"
       ],
       "blockedCapabilities": [
         "retry_payment",

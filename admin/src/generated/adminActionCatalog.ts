@@ -601,6 +601,60 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
+      "actionId": "organizers.directory",
+      "callable": "adminListOrganizerDirectory",
+      "workflowIds": [
+        "organizers"
+      ],
+      "guiPath": "/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "summary": "List the Organizers directory with real totals per view and chip counts for city, kind, claim state and the caller's own organizers.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "organizers.overview",
+      "callable": "adminGetOrganizerOverview",
+      "workflowIds": [
+        "organizers"
+      ],
+      "guiPath": "/organizers/:organizerId",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "summary": "Read one organizer's overview: facts, Sales owner, terms, payments, journey from nomination to claim and upcoming events.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "events.directory",
+      "callable": "adminListEventDirectory",
+      "workflowIds": [
+        "events"
+      ],
+      "guiPath": "/events",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "summary": "List Catch and imported events as one table with a source, exact view totals and chip counts.",
+      "controlPlane": false
+    },
+    {
       "actionId": "organizers.get",
       "callable": "adminGetOrganizerDetails",
       "workflowIds": [
@@ -2252,7 +2306,9 @@ export const adminActionCatalog = {
         "organizers.list",
         "organizers.get",
         "organizers.update",
-        "organizers.set-index-status"
+        "organizers.set-index-status",
+        "organizers.directory",
+        "organizers.overview"
       ]
     },
     {
@@ -2262,7 +2318,8 @@ export const adminActionCatalog = {
       "actions": [
         "events.list",
         "events.get",
-        "events.update"
+        "events.update",
+        "events.directory"
       ]
     },
     {

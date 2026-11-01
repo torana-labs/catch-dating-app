@@ -1,0 +1,22 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const adminExportMoneyLedgerCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_export_money_ledger_payload.schema.json",
+  "title": "AdminExportMoneyLedgerCallablePayload",
+  "description": "Owner exports one India-time month of Catch's ledger for the accountant to import into Zoho Books: bills issued, bill payments received, nominator credit paid and costs.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "month"
+  ],
+  "properties": {
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    }
+  }
+} as const;
