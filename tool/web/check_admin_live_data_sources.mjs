@@ -1,7 +1,9 @@
 #!/usr/bin/env node
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {setTimeout as sleep} from "node:timers/promises";
 
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {probeCallable} from
@@ -169,12 +171,39 @@ function collectOperationalJson(roots) {
   return files;
 }
 
+/**
+ * A merge that adds a callable starts this check and Deploy backend together,
+ * so the callable 404s until that deploy reaches prod. Keep checking while a
+ * deploy is running; with none running, a failure is final.
+ */
+export async function verifyWhileBackendDeploys({
+  verify,
+  backendDeployRunning,
+  wait = () => sleep(60_000),
+  log = () => {},
+}) {
+  let live = await verify();
+  while (live.failures.length > 0 && backendDeployRunning()) {
+    log(`${live.failures.length} callable(s) not live; Deploy backend is running, checking again in a minute.`);
+    await wait();
+    live = await verify();
+  }
+  return live;
+}
+
+function backendDeployIsRunning() {
+  const result = spawnSync("gh", ["run", "list", "--repo", process.env.GITHUB_REPOSITORY ?? "",
+    "--workflow", "backend-deploy.yml", "--branch", "main", "--limit", "20",
+    "--json", "status", "--jq", "[.[] | select(.status != \"completed\")] | length"], {encoding: "utf8"});
+  return result.status === 0 && Number(result.stdout.trim()) > 0;
+}
+
 function parseArgs(argv) {
   const values = {};
   const flags = new Set();
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
-    if (["--check", "--summary", "--verify-live"].includes(arg)) {
+    if (["--check", "--summary", "--verify-live", "--wait-for-backend-deploy"].includes(arg)) {
       flags.add(arg);
       continue;
     }
@@ -194,6 +223,7 @@ async function main(argv) {
     "--check",
     "--summary",
     "--verify-live",
+    "--wait-for-backend-deploy",
     "--environment",
     "--project",
     values.environment,
@@ -247,10 +277,14 @@ async function main(argv) {
         "--verify-live requires --environment <alias> or --project <id>."
       );
     }
-    const live = await verifyAdminCallableReachability({
-      contract,
-      projectId,
-    });
+    const verify = () => verifyAdminCallableReachability({contract, projectId});
+    const live = flags.has("--wait-for-backend-deploy") ?
+      await verifyWhileBackendDeploys({
+        verify,
+        backendDeployRunning: backendDeployIsRunning,
+        log: (message) => console.log(message),
+      }) :
+      await verify();
     if (live.failures.length > 0) {
       console.error(
         `Admin live callable failures in ${projectId}/asia-south1:`
