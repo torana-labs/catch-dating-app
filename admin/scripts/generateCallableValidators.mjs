@@ -51,6 +51,31 @@ function referencedSchemaFiles(filePath, schema) {
   return files;
 }
 
+// Words for people, not rules: the browser never needs them to validate, so the
+// runtime pool leaves them out and the lazily loaded chunk stays small.
+const annotationKeywords = new Set(["description", "title", "examples", "$comment", "markdownDescription"]);
+// Keywords whose value is a map of names to schemas: the names are data.
+const schemaMapKeywords = new Set(["properties", "patternProperties", "$defs", "definitions", "dependentSchemas"]);
+// Keywords whose value is data, never a schema.
+const dataKeywords = new Set(["enum", "const", "default", "required"]);
+
+function withoutAnnotations(schema) {
+  if (Array.isArray(schema)) return schema.map(withoutAnnotations);
+  if (!schema || typeof schema !== "object") return schema;
+  const result = {};
+  for (const [key, value] of Object.entries(schema)) {
+    if (annotationKeywords.has(key) || key.startsWith("x-")) continue;
+    if (dataKeywords.has(key)) {
+      result[key] = value;
+    } else if (schemaMapKeywords.has(key) && value && typeof value === "object" && !Array.isArray(value)) {
+      result[key] = Object.fromEntries(Object.entries(value).map(([name, child]) => [name, withoutAnnotations(child)]));
+    } else {
+      result[key] = withoutAnnotations(value);
+    }
+  }
+  return result;
+}
+
 function collectSchemas(entryPaths) {
   const schemas = new Map();
   const visit = (filePath) => {
@@ -151,7 +176,7 @@ function buildModel() {
 
   return {
     names,
-    schemas: [...schemas.values()],
+    schemas: [...schemas.values()].map(withoutAnnotations),
     requestSchemaIds,
     responseSchemaIds,
     strictRequests: [...strictRequests].sort(),
@@ -259,6 +284,14 @@ function render(model) {
 const model = buildModel();
 const output = render(model);
 if (selfTest) {
+  assert.deepEqual(withoutAnnotations({
+    title: "Event", description: "Words", "x-callable-aliases": ["a"],
+    properties: {description: {type: "string", description: "A field named description stays."}},
+    enum: [{title: "data"}], required: ["description"],
+  }), {
+    properties: {description: {type: "string"}},
+    enum: [{title: "data"}], required: ["description"],
+  }, "Annotations go; rules, data and property names stay.");
   const pool = renderSchemaPool(model.schemas);
   const reconstructed = Function(`${pool.declarations}\nreturn ${pool.expression};`)();
   assert.deepEqual(reconstructed, model.schemas,
