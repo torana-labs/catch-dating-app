@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.183.0
+version: 1.184.0
 updated: 2026-11-01
 owner: recursive_audit_loop
 status: active
@@ -412,6 +412,42 @@ only that nested safety assignment. Both mutations validate the complete case,
 preserve its event/attendee/message binding and write an Admin audit record;
 they do not perform an account, content, payment or event mutation.
 See `docs/event_success.md` for lifecycle and integration boundaries.
+
+### Account Safety Actions
+
+Owner policy of 1 Nov 2026. `accountSafetyActions/{actionId}` records each
+step: warn, restrict (no messages or group chats for 7 or 30 days, or until
+lifted), suspend, or ban (Catch-wide, no end). Ops may warn and restrict;
+suspend and ban, and lifting either, are owner-only (`adminOwner`). The
+derived `accountSafetyStates/{uid}` standing holds messaging (restrict and
+above) and booking (suspend and ban). `sendEventChatMessage` and every booking
+writer (`signUpUserForEvent`, `joinEventWaitlist`, public free registration
+and paid reservation) read it in their transaction through
+`assertAccountMayMessage` / `assertAccountMayBook`; Firestore rules read it
+to refuse direct match messages. Suspend and ban also disable Firebase Auth
+sign-in (`authDisabledBySafety` restores it when nothing holds booking) and
+cancel future bookings through the guest's own cancel and leave-waitlist
+paths; bookings paid through an organizer's own checkout are listed on the
+action for the organizer to cancel and refund. A ban stores SHA-256 hashes of
+the phone, push installation ids and push tokens in `bannedIdentities`; a
+new account created after the ban that registers one is disabled and logged
+in `blockedSignupAttempts`. Those hashes outlive the deleted account so the
+ban keeps holding.
+
+Reports carry `severity`, `acknowledgedAt` and the deadlines that drive the
+Safety queue's due time: first look 24 h (`firstLookAt` is set when staff
+open the case), resolve 15 days, and intimate images down 24 h
+(`takedownDueAt`). The reasons, which are severe, and whether a severe report
+restricts at once live in `safetySettings/current`; codes are switched off
+rather than removed. A severe report restricts the account with no end date,
+pending review. Each action allows one appeal, embedded on the action; the
+reviewer must not be its decider, and a reduced step is a new action that
+replaces the old. People see `accountSafetyNotices/{uid}/items`; a reporter
+is told their report was received and later handled, never what was done.
+`organizerGuestBlocks/{organizerId}__{uid}` is an organizer's own block list.
+Account deletion sets `retainUntil` (180 days) on reports, actions and
+blocked sign-ups touching the account and removes its standing, notices and
+organizer blocks; `purgeRetainedSafetyRecords` deletes them when due.
 
 ### Event Assistance Delivery Review
 
@@ -4433,7 +4469,7 @@ host locks:
 
 | Collection / field | Owner | Notes |
 |---|---|---|
-| `organizerClaimRequests/{requestId}` | `requestOrganizerClaim`, `adminDecideOrganizerClaim` | Server-owned claim queue. Clients create and decide only through callables; direct Firestore reads/writes are denied. |
+| `organizerClaimRequests/{requestId}` | `requestOrganizerClaim`, `adminRecommendOrganizerClaim`, `adminDecideOrganizerClaim` | Server-owned claim queue. Clients create and decide only through callables; direct Firestore reads/writes are denied. Ops record an optional `recommendation` on a pending request; only the owner (`admin`, `adminOwner`) decides it. |
 | `organizers/{organizerId}.claim` | organizer claim callables and admin index-review callables | Public-page claim state, latest request id, review audit, and owner-facing status. |
 | `organizers/{organizerId}.ownership` | organizer claim/create/update callables | `programmatic` before ownership, `claimed` after approval. |
 | `organizers/{organizerId}.publicPage.indexReview` | admin organizer indexing | Audit evidence for source quality, media rights, cadence, and owner/contact verification before a page becomes indexable. |
@@ -4451,13 +4487,50 @@ other way get a channel from provenance (`came_to_us` for user-created, else
 The `onOrganizerGrowth*` triggers set the dated steps (`listedAt`,
 `claimRequestedAt`, `claimedAt`, `firstEventAt`, `firstPaidBookingAt`), each to
 the earliest time observed, and stream them, with paid bookings and refunds, to
-BigQuery `catch_analytics.organizer_growth_events`.
+BigQuery `catch_analytics.organizer_growth_events`. The triggers are not retried
+on failure (a retrying trigger needs a forced deploy); `reconcileOrganizerGrowthDaily`
+recomputes the steps nightly from organizers, claim requests, booked events and
+captured checkouts and records any that were missed.
 
 Captured payments store `providerFees` (`feePaise`, Razorpay's whole fee
 including tax, and `taxPaise`, the GST within it) from the provider's payment
 entity on `payments`, `publicEventPayments`, `organizerEventOfferPayments` and
 `organizerFormPayments`. It is written once, when the capture is first observed
 with a reported fee; refunds stay in each record's existing refund fields.
+
+## Organizer Bills And Nominator Credit
+
+`organizerBills/{organizerId}_{YYYY-MM}` is Catch's monthly bill to one
+organizer, made from payments into the organizer's own account (hostCollected)
+captured in that India-time calendar month. Commission uses each payment's
+frozen `routing.commercialTerms` (or the organizer's current terms when none was
+frozen), payments before the trial ends (trial days from the first event in
+`organizerGrowthFacts`) are free, and the month's total is capped by the current
+terms. GST is added only while `moneySettings/platform.settings.gstRegistered`
+is on. A bill is `toSend`, `sent` (overdue past `dueAtMillis`), `paid`,
+`writtenOff` or `free`; regeneration rewrites only `toSend` and `free` bills.
+Sending takes the next number of `moneyInvoiceCounters/{financialYear}`, one
+unbroken sequence per April–March year (`2026-27/031`). All are server-only and
+reached through `adminManageOrganizerBills` and `adminManageMoneySettings`.
+
+`nominatorCredits/{billId}` is written in the transaction that marks a bill
+paid: the organizer's first nominator earns the credit rate on what was paid
+before GST, when their role earns credit, the organizer claimed within the
+lapse window and the bill falls within the credit months from the organizer's
+first paid bill. Entries move `owed` → `approved` → `paid` through
+`adminManageNominatorCredits`.
+
+`platformCosts/{YYYY-MM}_{category}` holds one month's cost per category
+(`whatsapp`, `ai`, `cloud`, `sms`, `ads_meta`, `ads_google`, `other`). The owner
+enters `manual` rows through `adminManagePlatformCosts`; `meta_api` and
+`google_ads_api` rows come from the ad platforms and cannot be edited by hand.
+Without a `whatsapp` row, Finance uses the reserved cost of that month's
+`eventAssistanceWhatsappDispatches`, an upper bound rather than Meta's invoice.
+
+`moneyIssueResolutions/{base64url(issueId)}` records how Admin Money resolved
+an issue (confirmed booking or closed), with the record's status at that time;
+the issue reopens when the record moves to another status. Server-only, through
+`adminManagePaymentIssues`.
 
 `organizerTeamMemberships` owns active owner and manager seats. Legacy
 `organizerHostClaims` remains only long enough to support released club callables;
@@ -4542,6 +4615,9 @@ approved but unverified listing (hidden in the app) shows its events on the
 website only.
 `adminListExternalEventDetails` lists that collection for admin event-supply
 review with the same bounded launch-city and time-window filters.
+`adminListEventDirectory` reads it beside `events` so the Admin Events
+directory shows Catch and imported events as one table, each row naming its
+source.
 
 Supply Intake listing events publish through `adminPublishListingEvents`
 (staff) and `onSupplyIntakeListingApproved` (the event publication policy),

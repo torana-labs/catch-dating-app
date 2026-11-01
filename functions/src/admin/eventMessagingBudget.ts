@@ -35,7 +35,7 @@ import {setAdminAuditLogInTransaction} from "./adminAudit";
 
 const decisionCollection = "eventMessagingBudgetDecisions";
 const receiptCollection = "eventMessagingBudgetDecisionReceipts";
-const allowedRoles = ["adminOwner", "finance"] as const;
+const allowedRoles = ["adminOwner"] as const;
 const serviceTailMillis = 24 * 60 * 60 * 1000;
 const effect = "decision_only_no_spending_authority" as const;
 

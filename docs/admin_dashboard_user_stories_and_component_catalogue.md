@@ -189,8 +189,8 @@ Current implementation:
   input, and the adapter must retain the Firebase phone OTP integration.
 - Backend authorization is enforced by callable functions, not by the React
   shell. `functions/src/admin/adminAuth.ts` accepts these custom claims:
-  `admin`, `adminOwner`, `safetyReviewer`, `support`, `finance`,
-  `analyticsViewer`.
+  `admin`, `adminOwner`, `safetyReviewer`, `support`, `salesStaff`. The
+  retired `finance` and `analyticsViewer` claims grant nothing.
 - `adminOwner` users can open Admin roles to review the bounded assignment
   register, use exact Firebase Auth uid as a fallback, inspect current Catch
   admin claims, set/remove allowed claims with a required audit note, and write
@@ -203,10 +203,9 @@ Role intent:
 |---|---|
 | `adminOwner` | Full admin ownership, all dashboards/actions |
 | `admin` | Broad internal operations |
-| `support` | Access, organizer claim, and non-finance support actions |
+| `support` | Ops and support: the inbox, listing and event approval, claim recommendations, logged people search |
 | `safetyReviewer` | Safety queues and limited user/event safety context |
-| `finance` | Payment, refund, payout, settlement, and finance exports |
-| `analyticsViewer` | Read-only aggregate analytics |
+| `salesStaff` | Sales associate: their own nominations and assigned Sales accounts |
 
 Open auth gaps:
 
@@ -949,7 +948,7 @@ field-by-field preview against the reviewed revision and a reason. Organizer
 overrides are listed, found by name, and edited at
 `/finance/commercial-terms/organizers/{organizerId}`, where every unticked
 term reads as inherited. An unconfirmed save is retried exactly; a conflict
-keeps the draft and asks for a fresh review. Analytics viewers do not see it.
+keeps the draft and asks for a fresh review. Only the Admin Owner sees it.
 
 ### Finance: Payment Routing
 

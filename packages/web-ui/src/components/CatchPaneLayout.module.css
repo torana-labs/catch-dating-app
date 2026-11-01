@@ -1,0 +1,76 @@
+/*
+ * The pane patterns. Each pane insets its own content from one property,
+ * --catch-pane-inline (queue 24, list 16, detail 32, otherwise the shell
+ * gutter), so a CatchWorkspaceHeader at its top can bleed edge to edge.
+ * queue: the table pane and a 440px inspector (480px from 1,440) with a
+ * hairline between; each pane scrolls on its own and the inspector stretches
+ * so a pane dock sits at its foot. list-detail: a 360px list, a hairline, the
+ * detail. feed: the feed and a 360px aside, 40px apart. reading: a 600px lane
+ * and a 360px aside, centred, the aside sticky. wide-table: one pane that
+ * scrolls sideways. Unsplit, queue and list-detail show one pane at a time.
+ */
+.panes {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+}
+
+.pane {
+  --catch-pane-inline: var(--catch-viewport-gutter, var(--catch-space-s5));
+  --catch-pane-filter-inline: 0px;
+
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 0 var(--catch-pane-inline) var(--catch-space-s8);
+}
+
+.pane:not(:has(> [data-catch-workspace-header]:first-child)) { padding-top: var(--catch-space-s6); }
+
+/* ---------- queue ---------- */
+.panes[data-pattern="queue"] { height: 100%; }
+.panes[data-pattern="queue"] > .pane { --catch-pane-inline: var(--catch-space-s6); overflow-y: auto; min-height: 0; }
+.panes[data-pattern="queue"] > .pane[data-slot="detail"] { display: flex; flex-direction: column; padding-bottom: 0; }
+.panes[data-pattern="queue"][data-split] { grid-template-columns: minmax(0, 1fr) var(--catch-pane-inspector, 440px); }
+.panes[data-pattern="queue"][data-split] > .pane[data-slot="detail"] { box-shadow: inset var(--catch-stroke-hairline) 0 0 var(--catch-theme-line); }
+
+@media (min-width: 1440px) {
+  .panes[data-pattern="queue"][data-split] { --catch-pane-inspector: 480px; }
+}
+
+/* ---------- list-detail ---------- */
+.panes[data-pattern="list-detail"][data-split] { grid-template-columns: 360px minmax(0, 1fr); }
+.panes[data-pattern="list-detail"][data-split] > .pane[data-slot="main"] { --catch-pane-inline: var(--catch-space-s4); border-right: var(--catch-stroke-hairline) solid var(--catch-theme-line); }
+.panes[data-pattern="list-detail"][data-split] > .pane[data-slot="detail"] { --catch-pane-inline: var(--catch-space-s8); }
+
+/* Unsplit, one pane replaces the other. */
+.panes:is([data-pattern="queue"], [data-pattern="list-detail"]):not([data-split]) > .pane[data-slot="detail"] { display: none; }
+.panes:is([data-pattern="queue"], [data-pattern="list-detail"]):not([data-split])[data-detail-open] > .pane[data-slot="main"] { display: none; }
+
+.panes:is([data-pattern="queue"], [data-pattern="list-detail"]):not([data-split])[data-detail-open] > .pane[data-slot="detail"] {
+  display: flex;
+  flex-direction: column;
+  animation: catch-pane-in var(--catch-motion-page-step) ease-out;
+}
+
+/* ---------- feed and reading ---------- */
+.panes[data-pattern="feed"][data-split] { grid-template-columns: minmax(0, 1fr) 360px; column-gap: var(--catch-space-s10); }
+.panes[data-pattern="feed"][data-split] > .pane[data-slot="aside"] { padding-left: 0; }
+.panes[data-pattern="feed"][data-split] > .pane[data-slot="main"] { padding-right: 0; }
+.panes[data-pattern="reading"] > .pane[data-slot="main"] { width: 100%; max-width: 600px; }
+.panes[data-pattern="reading"][data-split] { grid-template-columns: minmax(0, 600px) 360px; justify-content: center; column-gap: var(--catch-space-s12); align-items: start; }
+.panes[data-pattern="reading"][data-split] > .pane { padding-inline: 0; }
+.panes[data-pattern="reading"][data-split] > .pane[data-slot="aside"] { position: sticky; top: var(--catch-space-s6); }
+
+/* ---------- wide-table ---------- */
+.panes[data-pattern="wide-table"] > .pane[data-slot="main"] { overflow-x: auto; }
+
+@keyframes catch-pane-in {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panes .pane { animation: none !important; }
+}

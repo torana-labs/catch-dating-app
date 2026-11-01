@@ -11,7 +11,7 @@ const route = {route: "razorpayRoute", mode: "test", currency: "INR",
 const change = {action: "replace", organizerId: null,
   expectedRevision: 0, formFee: route, eventAdmission: null};
 const read = {...change, action: "read", expectedRevision: null, formFee: null};
-function request(data: unknown, role = "finance"): CallableRequest<unknown> {
+function request(data: unknown, role = "adminOwner"): CallableRequest<unknown> {
   return {data, auth: {uid: "operator", token: {[role]: true}}} as
     unknown as CallableRequest<unknown>;
 }
@@ -26,7 +26,7 @@ test("routing settings require Finance or Admin Owner", async () => {
   const deps = {...fixture().deps, db: () => {
     throw new Error("DB accessed");
   }};
-  for (const role of ["admin", "support", "analyticsViewer",
+  for (const role of ["admin", "support", "finance",
     "organizerManager"]) {
     await assert.rejects(manage(request(read, role), deps), /not authorized/);
   }

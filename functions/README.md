@@ -300,7 +300,13 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `updateUserProfile` | `src/profiles/` | Profile patch callable with generated contract validation |
 | `blockUser` / `unblockUser` | `src/safety/` | Block/unblock another user |
 | `requestAccountDeletion` | `src/safety/` | Anonymize + delete user data |
-| `reportUser` | `src/safety/` | File a safety report |
+| `reportUser` / `reportGuest` | `src/safety/reporting.ts` | File a safety report (guest, or organizer and team); acknowledged at once, deadlines attached, severe reasons restrict at once |
+| `adminTakeAccountSafetyAction` / `adminLiftAccountSafetyAction` / `adminListAccountSafetyActions` / `expireAccountSafetyActions` | `src/safety/accountActions.ts` | Warn and restrict (ops), suspend and ban (owner), enforced at sign-in, messaging and booking; suspensions and bans cancel future bookings; expiry every 15 minutes |
+| `submitSafetyAppeal` / `adminDecideSafetyAppeal` | `src/safety/safetyAppeals.ts` | One appeal per action, reviewed by someone who did not decide |
+| `adminGetSafetySettings` / `adminUpdateSafetySettings` | `src/safety/safetySettings.ts` | Settings → Safety: configurable reasons and rules (owner edits) |
+| `manageOrganizerGuestBlock` / `listOrganizerGuestBlocks` | `src/safety/organizerGuestBlocks.ts` | An organizer's own block list, enforced by every booking path |
+| `onUserCreatedSafetyScreen` / `onPushInstallationSafetyScreen` / `reconcileBannedIdentityScreens` | `src/safety/bannedIdentities.ts` | Stop new accounts on a banned phone or device and record the attempt; the triggers do not retry, so a nightly pass re-screens the last two days |
+| `purgeRetainedSafetyRecords` | `src/safety/safetyRetention.ts` | Delete case records 180 days after account deletion |
 | `listSuvbotDemoActions` / `requestSuvbotDemoOperation` | `src/demoOps/` | Demo-data operation catalogue and request surface |
 | `adminListCrossPathsShowcaseCandidates` / `adminSetCrossPathsShowcaseEligibility` | `src/admin/crossPathsShowcaseEligibility.ts` | Admin bounded Cross Paths showcase review queue and audited score-free eligibility decision |
 | `adminListActionExecutions` | `src/admin/adminActionExecutions.ts` | Admin bounded execution-receipt register for catalog-driven action monitoring |
@@ -313,7 +319,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminSetAdminUserRoles` | `src/admin/adminUserRoles.ts` | Admin-owner audited Firebase Auth custom-claim assignment |
 | `adminGetSafetyTriageDetails` | `src/admin/safetyTriage.ts` | Admin read-only normalized safety queue detail |
 | `adminAssignSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue assignment |
-| `adminDecideSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue reviewed/dismissed status decision |
+| `adminDecideSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue reviewed/dismissed decision; tells the reporter it was handled |
 | `adminGetAccessApplicationDetails` | `src/admin/accessApplications.ts` | Admin read-only launch access application detail and overlap signals |
 | `adminListOrganizerClaimRequests` / `adminGetOrganizerClaimRequestDetails` | `src/admin/organizerClaimReview.ts` | Admin pending organizer claim queue and review-safe evidence detail |
 | `adminSetOrganizerIndexStatus` | `src/admin/organizerIndexing.ts` | Admin audited organizer index/noindex publishing decision |
@@ -321,10 +327,21 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminGetEventDetails` | `src/admin/eventDetails.ts` | Admin-safe canonical event detail snapshot |
 | `adminUpdateEventDetails` | `src/admin/eventDetails.ts` | Admin audited safe app-facing event field patch |
 | `adminListExternalEventDetails` | `src/admin/externalEventDetails.ts` | Admin read-only external event supply list for `externalEvents/{id}` |
+| `adminListOrganizerDirectory` | `src/admin/organizerDirectory.ts` | Admin Organizers directory: real totals, views, city/kind/claim/mine chips and paging |
+| `adminListEventDirectory` | `src/admin/eventDirectory.ts` | Admin Events directory: Catch and imported events in one table, with source, view totals and chips |
+| `adminGetOrganizerOverview` | `src/admin/organizerOverview.ts` | Admin organizer page Overview: facts, Sales owner, terms, payments, journey and upcoming events |
 | `adminListIntakeOperations` | `src/admin/intakeOperations.ts` | Role-gated read-only Supply Intake projection with authoritative aggregates, server-filtered human exceptions, and lazy ordinary pages |
 | `adminCreateOrganizerDraftFromCandidate` | `src/admin/organizerDraftFromCandidate.ts` | Admin audited, retry-safe creation of a fail-closed organizer draft from reviewed Supply Intake evidence |
 | `adminApproveOrganizerListing` | `src/admin/organizerListingApproval.ts` | Admin or owner approve a Supply Intake listing: one audited, idempotent transaction publishes the organizer page unclaimed and noindex (hidden in the app), records the review decision and receipt, links the enquiry it came from, and opens its Sales account, opportunity, tasks and activity |
 | `adminListOrganizerListingReviews` | `src/admin/organizerListingReviewQueue.ts` | Admin, owner or support read the pages of Supply Intake listings awaiting approval, newest first, with each listing's evidence-backed fields, links, gaps, pages read and content hash, and whether the caller may approve |
+| `adminListInboxItems` | `src/admin/inbox/callables.ts` | Admin, owner or support read one page of the Admin inbox (listings, imported events, claims, enquiries, launch access, stuck intake) by scope, type and city, oldest first, with real totals per scope and type |
+| `adminGetInboxItem` | `src/admin/inbox/callables.ts` | Admin, owner or support (or the sales associate who nominated it) read one inbox item and its journey, every step it took |
+| `adminUpdateInboxItem` | `src/admin/inbox/callables.ts` | Admin, owner or support assign, unassign, snooze or wake one inbox item; audited and recorded in its journey |
+| `adminRebuildInbox` | `src/admin/inbox/callables.ts` | Admin or owner re-project one page of an inbox source collection, or of users into the people index |
+| `adminListMyNominations` | `src/admin/inbox/myNominations.ts` | A sales associate (or ops and the owner) read the organizers they nominated, newest first, published, waiting or stuck, with `count()` totals per filter |
+| `adminRecommendOrganizerClaim` | `src/admin/organizerClaimRecommendation.ts` | Admin, owner or support recommend approving or rejecting a pending organizer claim; audited; only the owner decides it |
+| `adminSearchPeople` | `src/admin/peopleSearch.ts` | Admin, owner, support or safety reviewers search people by name, phone or uid in `adminPeopleIndex`; every search and its query is written to `adminAuditLogs` |
+| `adminListActivityLog` | `src/admin/activityLog.ts` | Admin or owner read the activity log newest first: audited decisions merged with agent execution receipts, filterable to problems |
 | `adminListListingEventImports` | `src/admin/listingEventImports.ts` | Admin, owner or support read approved Supply Intake listings, newest first, with each imported event's state (published by the policy or staff, withdrawn, ready, needs a check, blocked) and the reasons |
 | `adminPublishListingEvents` | `src/admin/listingEventImports.ts` | Admin, owner or support dry-run or publish chosen imported events of one approved listing as read-only, outbound-only external events; full checklist, per-event resolutions, one transaction and receipt per event |
 | `adminListSupplyIntakePolicies` | `src/admin/supplyIntakePolicies.ts` | Admin, owner or support read the Supply Intake capabilities that wait for the owner's decision, with the decision and whether the policy file switches each on |
@@ -363,6 +380,12 @@ enter previews.
 | `syncExternalEventVisibility` | `src/organizers/externalEventVisibility.ts` | `organizers/{organizerId}` onWrite — when the organizer's app visibility changes (or it is deleted), sets `discovery.appVisibility` on its `externalEvents` to match, so app discovery never shows an event whose organizer is hidden |
 | `onPublicPageOrganizerWritten` / `onPublicPageEventWritten` / `onPublicPageExternalEventWritten` / `onPublicPageReviewWritten` | `src/publicPages/triggers.ts` | `organizers`, `events`, `externalEvents` and `reviews` onWrite — when the changed document's public projection differs, rebuilds its organizer's `organizerPublicPage` and `eventPublicPage` read models (CAT-250); follower-only changes wait for the batched refresh |
 | `onCityPlansOrganizerPageWritten` | `src/cityPlans/triggers.ts` | `organizerPublicPage` onWrite — rebuilds the `cityPlans` read model of the city the page left and the city it is in (CAT-260) |
+| `onSupplyIntakeRequestWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `supplyIntakeRequests` onWrite — projects the request's listing or stuck item and journey steps into `adminInboxItems` and `adminInboxJourney` |
+| `onOrganizerClaimRequestWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `organizerClaimRequests` onWrite — projects the claim's inbox item and journey steps |
+| `onSalesInboundIntentWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `salesInboundIntents` onWrite — projects the enquiry's inbox item and journey steps |
+| `onAccessApplicationWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `accessApplications` onWrite — projects the launch access item and journey steps |
+| `onExternalEventWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `externalEvents` onWrite — projects the imported event's inbox item and journey steps |
+| `onUserWrittenIndexPeople` | `src/admin/peopleSearch.ts` | `users` onWrite — keeps `adminPeopleIndex/{uid}` (name prefixes, phone digits) for logged people search |
 | `onSwipeCreated` | `src/matching/` | `profileDecisions/{id}/outgoing/{id}` onCreate — mutual-like → match |
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
 | `onMessageCreated` | `src/matching/` | `matches/{id}/messages/{id}` onCreate — unread conversation flag + FCM |
@@ -411,6 +434,8 @@ enter previews.
 | `retryOrganizerAutomations` | `src/organizers/organizerFormAutomations.ts` | Every minute — resumes due automation runs and expired leases with bounded retries and per-action deduplication |
 | `dispatchScheduledOrganizerCampaigns` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatches due, approved organizer campaign snapshots |
 | `rebuildCityPlansHourly` | `src/cityPlans/triggers.ts` | Hourly, rebuilds every city's `cityPlans` read model so plans move into and out of the 14-day window (CAT-260) |
+| `wakeSnoozedInboxItemsEvery30Minutes` | `src/admin/inbox/triggers.ts` | Every 30 minutes, puts snoozed inbox items whose snooze ended back in the inbox |
+| `reconcileAdminInboxNightly` | `src/admin/inbox/triggers.ts` | Nightly (03:10 India time), re-projects every inbox source and the people index from their documents; idempotent, so it changes only what a failed trigger missed (the inbox and people triggers are not retried) |
 | `refreshPublicPageFollowers` | `src/publicPages/triggers.ts` | Every 30 minutes, rebuilds the public pages of organizers whose follower count changed |
 | `reconcilePublicPages` | `src/publicPages/triggers.ts` | Daily, rebuilds every organizer's public page read models, so ended events move to past moments and missed changes heal |
 | `dispatchPendingOrganizerFollowerUpdates` | `src/organizers/organizerPostDelivery.ts` | Every 5 minutes — resumes pending or expired-lease follower Activity delivery without duplicate push attempts |
@@ -435,6 +460,16 @@ enter previews.
 | `joinWaitlist` | `src/waitlist/` | Public marketing waitlist endpoint |
 | `onHostPilotCheckIn` | `src/acquisition/` | Canonical roster check-in creates one private organiser activation after staff real-event review; no vendor export |
 | `onOrganizerGrowthOrganizerWritten`, `onOrganizerGrowthClaimRequestCreated`, `onOrganizerGrowthParticipationWritten`, `onOrganizerGrowthPublicPaymentWritten`, `onOrganizerGrowthOfferPaymentWritten`, `onOrganizerGrowthNativePaymentWritten` | `src/growth/` | Record each organizer's dated steps (listed, claim asked, claimed, first event, first paid booking) in `organizerGrowthFacts`, keeping the earliest time, and stream them with paid bookings and refunds to BigQuery `organizer_growth_events` |
+| `reconcileOrganizerGrowthDaily` | `src/growth/` | Nightly (03:40 India time): recomputes every organizer's growth steps from organizers, claim requests, booked events and captured checkouts and records any the triggers missed; the triggers are not retried |
+| `adminManageOrganizerBills`, `generateOrganizerBillsMonthly` | `src/money/` | Monthly bills per organizer from bookings paid into their own account: commission on each payment's frozen terms, free trial from the first event, the monthly cap, GST only when registered; send (per-financial-year invoice number, due date, Razorpay payment link), remind, mark paid (credits the nominator), write off. The schedule makes last month's bills on the 1st |
+| `adminManageMoneySettings` | `src/money/` | Owner reads or replaces Catch's money settings (GST registered, bill due day, nominator credit rule) |
+| `adminManageNominatorCredits` | `src/money/` | Nominator credit ledger: list, approve a nominator's owed credit at or above the minimum payout, record it paid |
+| `adminManagePlatformCosts` | `src/money/` | A month's costs: hand-entered AI, Cloud, SMS and invoice totals, with a WhatsApp estimate from reserved dispatch costs until an invoice total is entered; Meta ad spend lands here once its token is granted (`metaAdSpend.ts`, not scheduled yet) |
+| `adminExportMoneyLedger` | `src/money/` | A month's ledger as CSV for Zoho Books: invoices issued, bill payments received, nominator credit paid, costs |
+| `adminGetFinanceMonth` | `src/money/` | One month of Finance from bills, costs and nominator credit paid: ticket sales, what Catch earned (caps, free months, own terms), costs, Razorpay fees and GST that are not Catch's money, six-month series |
+| `adminManagePaymentIssues` | `src/money/` | Money issues: captured website/offer payments not admitted after 15 minutes, refunds pending a day, payments needing review, failed native bookings and refunds, overdue bills; confirm booking re-checks the checkout with Razorpay now; close records it was handled |
+| `adminGetGrowth` | `src/growth/` | Growth for a range from growth facts, bills, nominator credit and ad spend: cohorts by listing month, channels, nominators, best organizers |
+| `adminGetMarketplace` | `src/marketplace/` | Marketplace from the warehouse's raw Firestore export views: events a week, places filled, no-shows and waitlists by city; guests by first-booking month and whether they came back; bookings each week; organizers going quiet with their sales owner |
 | `hostAcquisitionConsent` | `src/acquisition/` | Default-disabled versioned Host measurement grant and capability withdrawal |
 | `expireHostAcquisitionConsent` | `src/acquisition/` | Bounded transactional expiry of private grants and withdrawal tombstones |
 | `ingestEventRosterWebhook` | `src/events/eventRosterHandoffs.ts` | Receive one HMAC-verified, provider-authenticated roster attachment through a capability-bound email or WhatsApp handoff |

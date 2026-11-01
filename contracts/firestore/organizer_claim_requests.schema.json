@@ -8,7 +8,7 @@
   "x-firestore-collection": "organizerClaimRequests",
   "x-firestore-path": "organizerClaimRequests/{requestId}",
   "x-document-id-field": "requestId",
-  "x-owner": "requestOrganizerClaim and adminDecideOrganizerClaim callables",
+  "x-owner": "requestOrganizerClaim, adminRecommendOrganizerClaim and adminDecideOrganizerClaim callables",
   "required": ["requestId", "organizerId", "requesterUid", "requesterName", "requesterRole", "businessEmail", "businessPhone", "proofUrls", "message", "status", "createdAt", "updatedAt", "decidedAt", "decidedByUid", "decisionReason", "previousRequestId"],
   "properties": {
     "requestId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
@@ -26,6 +26,7 @@
     "decidedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp", "x-catch-ownership": "callable-owned"},
     "decidedByUid": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}], "x-catch-ownership": "callable-owned"},
     "decisionReason": {"type": ["string", "null"], "maxLength": 1000, "x-catch-ownership": "callable-owned"},
-    "previousRequestId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}], "x-catch-ownership": "callable-owned"}
+    "previousRequestId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}], "x-catch-ownership": "callable-owned"},
+    "recommendation": {"description": "What ops recommend for a pending claim, set by adminRecommendOrganizerClaim. The owner decides the claim; a later recommendation replaces this one. Absent until someone recommends.", "anyOf": [{"type": "null"}, {"type": "object", "additionalProperties": false, "required": ["decision", "byUid", "at", "note"], "properties": {"decision": {"type": "string", "enum": ["approve", "reject"]}, "byUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, "at": {"type": "string", "format": "date-time"}, "note": {"type": "string", "minLength": 1, "maxLength": 1000}}}], "x-catch-ownership": "callable-owned"}
   }
 }

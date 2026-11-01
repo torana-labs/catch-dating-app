@@ -9,8 +9,6 @@ export interface AdminSetAdminUserRolesCallablePayload {
     | "adminOwner"
     | "safetyReviewer"
     | "support"
-    | "finance"
-    | "analyticsViewer"
     | "salesStaff"
   )[];
   note: string;

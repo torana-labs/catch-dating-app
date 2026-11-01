@@ -3334,6 +3334,34 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("denies messages from an account under a messaging hold until it ends", async () => {
+      await seed(["matches", "match-1"], match());
+      const message = (id) => setDoc(
+        doc(authedDb("runner-1"), "matches", "match-1", "messages", id),
+        {senderId: "runner-1", text: "hello", sentAt: serverTimestamp()},
+      );
+      await seed(["accountSafetyStates", "runner-1"], {
+        uid: "runner-1",
+        messaging: {held: true, until: null},
+      });
+      await assertFails(message("held-indefinitely"));
+      await seed(["accountSafetyStates", "runner-1"], {
+        uid: "runner-1",
+        messaging: {held: true, until: Timestamp.fromDate(new Date(Date.now() + 86400000))},
+      });
+      await assertFails(message("held-until-tomorrow"));
+      await seed(["accountSafetyStates", "runner-1"], {
+        uid: "runner-1",
+        messaging: {held: true, until: Timestamp.fromDate(new Date(Date.now() - 60000))},
+      });
+      await assertSucceeds(message("hold-ended"));
+      await assertSucceeds(getDoc(doc(authedDb("runner-1"), "accountSafetyStates", "runner-1")));
+      await assertFails(getDoc(doc(authedDb("runner-2"), "accountSafetyStates", "runner-1")));
+      await assertFails(setDoc(doc(authedDb("runner-1"), "accountSafetyStates", "runner-1"), {
+        uid: "runner-1", messaging: {held: false, until: null},
+      }));
+    });
+
     it("denies messages from non-participants and blocked matches", async () => {
       await seed(["matches", "match-1"], match());
       await seed(["matches", "blocked-match"], match({status: "blocked"}));
@@ -5254,6 +5282,9 @@ describe("firestore.rules", () => {
         "operationRuleProposals",
         "operationRuleEvaluations",
         "adminActionExecutions",
+        "adminInboxItems",
+        "adminInboxJourney",
+        "adminPeopleIndex",
         "eventMessagingBudgetDecisions",
         "eventMessagingBudgetDecisionReceipts",
         "eventMessagingBudgetApplicationReceipts",

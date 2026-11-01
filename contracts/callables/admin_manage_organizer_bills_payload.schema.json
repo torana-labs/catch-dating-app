@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_organizer_bills_payload.schema.json",
+  "title": "AdminManageOrganizerBillsCallablePayload",
+  "description": "Owner reads one month's organizer bills or acts on them. list reads the month, or with organizerId every bill of one organizer (the organizer's Money tab). generate (re)makes the month's bills from its bookings; bills already sent or closed are kept. send takes the next invoice number, sets the due date and creates a Razorpay payment link. remind records a reminder. markPaid closes a bill paid outside its link and credits its nominator. writeOff closes a bill that will not be paid. Acting on one bill names the revision it reviewed.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "action",
+    "month",
+    "organizerId",
+    "billId",
+    "expectedRevision",
+    "note"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "list",
+        "generate",
+        "send",
+        "remind",
+        "markPaid",
+        "writeOff"
+      ]
+    },
+    "month": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "billId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "expectedRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+}

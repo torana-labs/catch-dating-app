@@ -1,0 +1,25 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const adminGetGrowthCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_growth_payload.schema.json",
+  "title": "AdminGetGrowthCallablePayload",
+  "description": "Owner reads Growth for a range: organizer cohorts by the month they were listed, channels and ad spend, nominators and their credit, and the best organizers.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "range"
+  ],
+  "properties": {
+    "range": {
+      "enum": [
+        "90d",
+        "12m",
+        "all"
+      ]
+    }
+  }
+} as const;

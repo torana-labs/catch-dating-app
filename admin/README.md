@@ -225,11 +225,15 @@ and audited finance callables before they are exposed here.
 
 Production apply requires `--allow-prod`.
 The signed-in Firebase user must have at least one admin custom claim
-for overview reads: `admin`, `adminOwner`, `safetyReviewer`, `support`,
-`finance`, or `analyticsViewer`.
-Access application Approve/Deny and organizer claim Approve/Reject require
-`admin`, `adminOwner`, or `support`.
-User analytics lookup requires `adminOwner` or `analyticsViewer`.
+for overview reads: `admin`, `adminOwner`, `safetyReviewer`, or `support`.
+Admin is three jobs: owner (`adminOwner`), sales associate (`salesStaff`), and
+ops and support (`support`). The retired `finance` and `analyticsViewer`
+claims grant nothing; a role save strips them, and their surfaces are the
+owner's.
+Access application Approve/Deny and organizer listing approval require
+`admin`, `adminOwner`, or `support`. Ops (`support`) recommend organizer
+claims; only `admin` or `adminOwner` approve or reject them.
+User analytics lookup requires `adminOwner`.
 Organizer canonical edits and publishing currently require `admin`,
 `adminOwner`, or `support`.
 Event canonical safe edits currently require `admin`, `adminOwner`, or
@@ -239,7 +243,7 @@ or `safetyReviewer`.
 The Admin roles tab is available to `adminOwner` only. It loads an exact
 Firebase Auth uid through `adminGetAdminUserRoles`, lists the bounded
 `adminRoleAssignments` register through `adminListAdminRoleAssignments`,
-assigns/removes the six Catch admin custom claims through
+assigns/removes the five Catch admin custom claims through
 `adminSetAdminUserRoles`, requires an audit note, writes
 `adminRoleAssignments/{uid}`, and blocks admin owners from removing their own
 `adminOwner` claim. It shows the exact-uid scope contract, normalized assignment
@@ -250,7 +254,7 @@ After a claim is assigned, the blocked live-mode screen can force-refresh the
 user's ID token with Refresh claims.
 The sidebar filters tabs from the same current callable allowlists: support can
 see support-owned workflows, safety reviewers can see Safety and Overview,
-analytics viewers can see Growth, Users, Finance, and Overview, and Data
+Growth, Users and Finance are the owner's, and Data
 quality is currently admin-owner only because it combines host analytics and
 marketing dashboard callables. The backend remains the authority for every
 read/write.

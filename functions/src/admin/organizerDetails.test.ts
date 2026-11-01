@@ -1017,7 +1017,7 @@ test("adminUpdateOrganizerDetailsHandler blocks viewer-only admins",
         callableRequest("admin-1", {
           organizerId: "afterfly-run-club-indore",
           fields: {name: "Afterfly"},
-        }, {analyticsViewer: true}),
+        }, {salesStaff: true}),
         h.deps
       ),
       (error) => assertHttpsCode(error, "permission-denied")

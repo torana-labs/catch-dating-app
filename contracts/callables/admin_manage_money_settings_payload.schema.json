@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_money_settings_payload.schema.json",
+  "title": "AdminManageMoneySettingsCallablePayload",
+  "description": "Owner reads or replaces Catch's money settings (GST registered, bill due day, nominator credit rule). A replacement names the revision it reviewed (0 when none is stored yet).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": ["action", "expectedRevision", "settings"],
+  "properties": {
+    "action": {"enum": ["read", "replace"]},
+    "expectedRevision": {"type": ["integer", "null"], "minimum": 0},
+    "settings": {"anyOf": [{"$ref": "../firestore/money_settings.schema.json#/definitions/settings"}, {"type": "null"}]}
+  }
+}

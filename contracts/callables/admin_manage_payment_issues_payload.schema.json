@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_payment_issues_payload.schema.json",
+  "title": "AdminManagePaymentIssuesCallablePayload",
+  "description": "Owner reads Money's open or resolved issues (payments with no booking, refunds not sent, payments needing review, overdue bills) or acts on one. confirmBooking re-checks a website or offer checkout with Razorpay now and admits the guest when there is still room. close records that the issue was handled outside Admin.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": ["action", "view", "issueId", "note"],
+  "properties": {
+    "action": {"enum": ["list", "confirmBooking", "close"]},
+    "view": {"enum": ["open", "resolved"]},
+    "issueId": {"type": ["string", "null"], "minLength": 1, "maxLength": 240},
+    "note": {"type": ["string", "null"], "maxLength": 500}
+  }
+}

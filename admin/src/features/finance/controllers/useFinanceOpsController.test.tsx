@@ -103,7 +103,7 @@ describe("useFinanceOpsController", () => {
 
   it("keeps host analytics outside the Finance role boundary", async () => {
     const {result} = renderHook(() => useFinanceOpsController({
-      adminRoles: ["finance"],
+      adminRoles: ["support"],
       onError: vi.fn(),
     }), {wrapper: createWrapper()});
 
@@ -129,7 +129,7 @@ describe("useFinanceOpsController", () => {
     mocks.loadFinanceHostAnalytics.mockClear();
 
     const finance = renderHook(() => useFinanceOpsController({
-      adminRoles: ["finance"], onError, selectedIssueId: event.id,
+      adminRoles: ["support"], onError, selectedIssueId: event.id,
     }), {wrapper});
     await waitFor(() => expect(finance.result.current.isLoading).toBe(false));
     expect(mocks.loadFinanceHostAnalytics).not.toHaveBeenCalled();
@@ -153,7 +153,7 @@ describe("useFinanceOpsController", () => {
     mocks.loadFinanceHostAnalytics.mockRejectedValue(new Error("access denied"));
     await act(async () => { await result.current.retrySource("hostAnalytics"); });
     await waitFor(() => expect(result.current.sources[1]?.status).toBe("error"));
-    rerender({roles: ["finance"]});
+    rerender({roles: ["support"]});
     expect(result.current.rows.filter((row) => row.kind === "event")).toEqual([]);
     expect(result.current.metrics.eventIssueCount30d).toBeNull();
     expect(result.current.sources[1]).toMatchObject({
@@ -172,7 +172,7 @@ describe("useFinanceOpsController", () => {
       adminRoles: roles, onError,
     }), {wrapper: createWrapper(), initialProps: {roles: ["adminOwner"]}});
     await waitFor(() => expect(mocks.loadFinanceHostAnalytics).toHaveBeenCalledOnce());
-    rerender({roles: ["finance"]});
+    rerender({roles: ["support"]});
     await act(async () => { finish(sampleHostAnalytics); });
     expect(result.current.rows.filter((row) => row.kind === "event")).toEqual([]);
     expect(result.current.metrics.eventIssueCount30d).toBeNull();

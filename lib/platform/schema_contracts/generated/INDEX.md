@@ -81,6 +81,30 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | SupplyNominatorDocument | `firestore/supply_nominators.schema.json` | `functions/src/shared/generated/supplyNominatorDocument.ts` | yes |
 | OrganizerGrowthFactsDocument | `firestore/organizer_growth_facts.schema.json` | `functions/src/shared/generated/organizerGrowthFactsDocument.ts` | no |
 | OrganizerGrowthEvent | `bigquery/organizer_growth_event.schema.json` | `functions/src/shared/generated/organizerGrowthEvent.ts` | no |
+| OrganizerBillDocument | `firestore/organizer_bills.schema.json` | `functions/src/shared/generated/organizerBillDocument.ts` | yes |
+| MoneySettingsDocument | `firestore/money_settings.schema.json` | `functions/src/shared/generated/moneySettingsDocument.ts` | yes |
+| NominatorCreditDocument | `firestore/nominator_credits.schema.json` | `functions/src/shared/generated/nominatorCreditDocument.ts` | yes |
+| MoneyInvoiceCounterDocument | `firestore/money_invoice_counters.schema.json` | `functions/src/shared/generated/moneyInvoiceCounterDocument.ts` | no |
+| PlatformCostDocument | `firestore/platform_costs.schema.json` | `functions/src/shared/generated/platformCostDocument.ts` | yes |
+| MoneyIssueResolutionDocument | `firestore/money_issue_resolutions.schema.json` | `functions/src/shared/generated/moneyIssueResolutionDocument.ts` | yes |
+| AdminManagePaymentIssuesCallablePayload | `callables/admin_manage_payment_issues_payload.schema.json` | `functions/src/shared/generated/adminManagePaymentIssuesCallablePayload.ts` | yes |
+| AdminManagePaymentIssuesCallableResponse | `callable_responses/admin_manage_payment_issues_response.schema.json` | `functions/src/shared/generated/adminManagePaymentIssuesCallableResponse.ts` | yes |
+| AdminGetFinanceMonthCallablePayload | `callables/admin_get_finance_month_payload.schema.json` | `functions/src/shared/generated/adminGetFinanceMonthCallablePayload.ts` | yes |
+| AdminGetFinanceMonthCallableResponse | `callable_responses/admin_get_finance_month_response.schema.json` | `functions/src/shared/generated/adminGetFinanceMonthCallableResponse.ts` | yes |
+| AdminGetMarketplaceCallablePayload | `callables/admin_get_marketplace_payload.schema.json` | `functions/src/shared/generated/adminGetMarketplaceCallablePayload.ts` | yes |
+| AdminGetMarketplaceCallableResponse | `callable_responses/admin_get_marketplace_response.schema.json` | `functions/src/shared/generated/adminGetMarketplaceCallableResponse.ts` | yes |
+| AdminGetGrowthCallablePayload | `callables/admin_get_growth_payload.schema.json` | `functions/src/shared/generated/adminGetGrowthCallablePayload.ts` | yes |
+| AdminGetGrowthCallableResponse | `callable_responses/admin_get_growth_response.schema.json` | `functions/src/shared/generated/adminGetGrowthCallableResponse.ts` | yes |
+| AdminManagePlatformCostsCallablePayload | `callables/admin_manage_platform_costs_payload.schema.json` | `functions/src/shared/generated/adminManagePlatformCostsCallablePayload.ts` | yes |
+| AdminManagePlatformCostsCallableResponse | `callable_responses/admin_manage_platform_costs_response.schema.json` | `functions/src/shared/generated/adminManagePlatformCostsCallableResponse.ts` | yes |
+| AdminExportMoneyLedgerCallablePayload | `callables/admin_export_money_ledger_payload.schema.json` | `functions/src/shared/generated/adminExportMoneyLedgerCallablePayload.ts` | yes |
+| AdminExportMoneyLedgerCallableResponse | `callable_responses/admin_export_money_ledger_response.schema.json` | `functions/src/shared/generated/adminExportMoneyLedgerCallableResponse.ts` | yes |
+| AdminManageOrganizerBillsCallablePayload | `callables/admin_manage_organizer_bills_payload.schema.json` | `functions/src/shared/generated/adminManageOrganizerBillsCallablePayload.ts` | yes |
+| AdminManageOrganizerBillsCallableResponse | `callable_responses/admin_manage_organizer_bills_response.schema.json` | `functions/src/shared/generated/adminManageOrganizerBillsCallableResponse.ts` | yes |
+| AdminManageMoneySettingsCallablePayload | `callables/admin_manage_money_settings_payload.schema.json` | `functions/src/shared/generated/adminManageMoneySettingsCallablePayload.ts` | yes |
+| AdminManageMoneySettingsCallableResponse | `callable_responses/admin_manage_money_settings_response.schema.json` | `functions/src/shared/generated/adminManageMoneySettingsCallableResponse.ts` | yes |
+| AdminManageNominatorCreditsCallablePayload | `callables/admin_manage_nominator_credits_payload.schema.json` | `functions/src/shared/generated/adminManageNominatorCreditsCallablePayload.ts` | yes |
+| AdminManageNominatorCreditsCallableResponse | `callable_responses/admin_manage_nominator_credits_response.schema.json` | `functions/src/shared/generated/adminManageNominatorCreditsCallableResponse.ts` | yes |
 | SalesOutreachJobsDocument | `firestore/sales_outreach_jobs.schema.json` | `functions/src/shared/generated/salesOutreachJobsDocument.ts` | yes |
 | OutreachDraft | `operations/outreach_drafting_draft.schema.json` | `functions/src/shared/generated/outreachDraft.ts` | no |
 | AdminBuildSalesOutreachInputPayload | `callables/admin_sales_intelligence_draft_payload.schema.json` | `functions/src/shared/generated/adminSalesIntelligenceDraftCallablePayload.ts` | no |
@@ -111,6 +135,12 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | ManageCommercialTermsCallableResponse | `callable_responses/manage_commercial_terms_response.schema.json` | `functions/src/shared/generated/manageCommercialTermsCallableResponse.ts` | yes |
 | AdminListCommercialTermsCallablePayload | `callables/admin_list_commercial_terms_payload.schema.json` | `functions/src/shared/generated/adminListCommercialTermsCallablePayload.ts` | yes |
 | AdminListCommercialTermsCallableResponse | `callable_responses/admin_list_commercial_terms_response.schema.json` | `functions/src/shared/generated/adminListCommercialTermsCallableResponse.ts` | yes |
+| AdminListOrganizerDirectoryCallablePayload | `callables/admin_list_organizer_directory_payload.schema.json` | `functions/src/shared/generated/adminListOrganizerDirectoryCallablePayload.ts` | yes |
+| AdminListOrganizerDirectoryCallableResponse | `callable_responses/admin_list_organizer_directory_response.schema.json` | `functions/src/shared/generated/adminListOrganizerDirectoryCallableResponse.ts` | no |
+| AdminListEventDirectoryCallablePayload | `callables/admin_list_event_directory_payload.schema.json` | `functions/src/shared/generated/adminListEventDirectoryCallablePayload.ts` | yes |
+| AdminListEventDirectoryCallableResponse | `callable_responses/admin_list_event_directory_response.schema.json` | `functions/src/shared/generated/adminListEventDirectoryCallableResponse.ts` | no |
+| AdminGetOrganizerOverviewCallablePayload | `callables/admin_get_organizer_overview_payload.schema.json` | `functions/src/shared/generated/adminGetOrganizerOverviewCallablePayload.ts` | yes |
+| AdminGetOrganizerOverviewCallableResponse | `callable_responses/admin_get_organizer_overview_response.schema.json` | `functions/src/shared/generated/adminGetOrganizerOverviewCallableResponse.ts` | no |
 | ManagePaymentRoutingPolicyCallablePayload | `callables/manage_payment_routing_policy_payload.schema.json` | `functions/src/shared/generated/managePaymentRoutingPolicyCallablePayload.ts` | yes |
 | ManagePaymentRoutingPolicyCallableResponse | `callable_responses/manage_payment_routing_policy_response.schema.json` | `functions/src/shared/generated/managePaymentRoutingPolicyCallableResponse.ts` | no |
 | ManageEventOfferCheckoutCallablePayload | `callables/manage_event_offer_checkout_payload.schema.json` | `functions/src/shared/generated/manageEventOfferCheckoutCallablePayload.ts` | yes |
@@ -567,6 +597,22 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | AdminRecordActionExecutionCallablePayload | `callables/admin_record_action_execution_payload.schema.json` | `functions/src/shared/generated/adminRecordActionExecutionCallablePayload.ts` | yes |
 | AdminNominateOrganizerCallablePayload | `callables/admin_nominate_organizer_payload.schema.json` | `functions/src/shared/generated/adminNominateOrganizerCallablePayload.ts` | yes |
 | AdminApproveOrganizerListingCallablePayload | `callables/admin_approve_organizer_listing_payload.schema.json` | `functions/src/shared/generated/adminApproveOrganizerListingCallablePayload.ts` | yes |
+| AdminListMyNominationsCallablePayload | `callables/admin_list_my_nominations_payload.schema.json` | `functions/src/shared/generated/adminListMyNominationsCallablePayload.ts` | yes |
+| AdminListMyNominationsCallableResponse | `callable_responses/admin_list_my_nominations_response.schema.json` | `functions/src/shared/generated/adminListMyNominationsCallableResponse.ts` | no |
+| AdminListInboxItemsCallablePayload | `callables/admin_list_inbox_items_payload.schema.json` | `functions/src/shared/generated/adminListInboxItemsCallablePayload.ts` | yes |
+| AdminListInboxItemsCallableResponse | `callable_responses/admin_list_inbox_items_response.schema.json` | `functions/src/shared/generated/adminListInboxItemsCallableResponse.ts` | no |
+| AdminGetInboxItemCallablePayload | `callables/admin_get_inbox_item_payload.schema.json` | `functions/src/shared/generated/adminGetInboxItemCallablePayload.ts` | yes |
+| AdminGetInboxItemCallableResponse | `callable_responses/admin_get_inbox_item_response.schema.json` | `functions/src/shared/generated/adminGetInboxItemCallableResponse.ts` | no |
+| AdminUpdateInboxItemCallablePayload | `callables/admin_update_inbox_item_payload.schema.json` | `functions/src/shared/generated/adminUpdateInboxItemCallablePayload.ts` | yes |
+| AdminUpdateInboxItemCallableResponse | `callable_responses/admin_update_inbox_item_response.schema.json` | `functions/src/shared/generated/adminUpdateInboxItemCallableResponse.ts` | no |
+| AdminRebuildInboxCallablePayload | `callables/admin_rebuild_inbox_payload.schema.json` | `functions/src/shared/generated/adminRebuildInboxCallablePayload.ts` | yes |
+| AdminRebuildInboxCallableResponse | `callable_responses/admin_rebuild_inbox_response.schema.json` | `functions/src/shared/generated/adminRebuildInboxCallableResponse.ts` | no |
+| AdminRecommendOrganizerClaimCallablePayload | `callables/admin_recommend_organizer_claim_payload.schema.json` | `functions/src/shared/generated/adminRecommendOrganizerClaimCallablePayload.ts` | yes |
+| AdminRecommendOrganizerClaimCallableResponse | `callable_responses/admin_recommend_organizer_claim_response.schema.json` | `functions/src/shared/generated/adminRecommendOrganizerClaimCallableResponse.ts` | no |
+| AdminSearchPeopleCallablePayload | `callables/admin_search_people_payload.schema.json` | `functions/src/shared/generated/adminSearchPeopleCallablePayload.ts` | yes |
+| AdminSearchPeopleCallableResponse | `callable_responses/admin_search_people_response.schema.json` | `functions/src/shared/generated/adminSearchPeopleCallableResponse.ts` | no |
+| AdminListActivityLogCallablePayload | `callables/admin_list_activity_log_payload.schema.json` | `functions/src/shared/generated/adminListActivityLogCallablePayload.ts` | yes |
+| AdminListActivityLogCallableResponse | `callable_responses/admin_list_activity_log_response.schema.json` | `functions/src/shared/generated/adminListActivityLogCallableResponse.ts` | no |
 | AdminListOrganizerListingReviewsCallablePayload | `callables/admin_list_organizer_listing_reviews_payload.schema.json` | `functions/src/shared/generated/adminListOrganizerListingReviewsCallablePayload.ts` | yes |
 | AdminListOrganizerListingReviewsCallableResponse | `callable_responses/admin_list_organizer_listing_reviews_response.schema.json` | `functions/src/shared/generated/adminListOrganizerListingReviewsCallableResponse.ts` | no |
 | AdminApproveOrganizerListingCallableResponse | `callable_responses/admin_approve_organizer_listing_response.schema.json` | `functions/src/shared/generated/adminApproveOrganizerListingCallableResponse.ts` | no |
@@ -894,6 +940,25 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | BlockUserCallablePayload | `callables/block_user_payload.schema.json` | `functions/src/shared/generated/blockUserCallablePayload.ts` | yes |
 | UnblockUserCallablePayload | `callables/unblock_user_payload.schema.json` | `functions/src/shared/generated/unblockUserCallablePayload.ts` | yes |
 | ReportUserCallablePayload | `callables/report_user_payload.schema.json` | `functions/src/shared/generated/reportUserCallablePayload.ts` | yes |
+| AdminTakeAccountSafetyActionCallablePayload | `callables/admin_take_account_safety_action_payload.schema.json` | `functions/src/shared/generated/adminTakeAccountSafetyActionCallablePayload.ts` | yes |
+| AdminTakeAccountSafetyActionCallableResponse | `callable_responses/admin_take_account_safety_action_response.schema.json` | `functions/src/shared/generated/adminTakeAccountSafetyActionCallableResponse.ts` | no |
+| AdminLiftAccountSafetyActionCallablePayload | `callables/admin_lift_account_safety_action_payload.schema.json` | `functions/src/shared/generated/adminLiftAccountSafetyActionCallablePayload.ts` | yes |
+| AdminLiftAccountSafetyActionCallableResponse | `callable_responses/admin_lift_account_safety_action_response.schema.json` | `functions/src/shared/generated/adminLiftAccountSafetyActionCallableResponse.ts` | no |
+| AdminListAccountSafetyActionsCallablePayload | `callables/admin_list_account_safety_actions_payload.schema.json` | `functions/src/shared/generated/adminListAccountSafetyActionsCallablePayload.ts` | yes |
+| AdminListAccountSafetyActionsCallableResponse | `callable_responses/admin_list_account_safety_actions_response.schema.json` | `functions/src/shared/generated/adminListAccountSafetyActionsCallableResponse.ts` | no |
+| AdminDecideSafetyAppealCallablePayload | `callables/admin_decide_safety_appeal_payload.schema.json` | `functions/src/shared/generated/adminDecideSafetyAppealCallablePayload.ts` | yes |
+| AdminDecideSafetyAppealCallableResponse | `callable_responses/admin_decide_safety_appeal_response.schema.json` | `functions/src/shared/generated/adminDecideSafetyAppealCallableResponse.ts` | no |
+| AdminGetSafetySettingsCallablePayload | `callables/admin_get_safety_settings_payload.schema.json` | `functions/src/shared/generated/adminGetSafetySettingsCallablePayload.ts` | yes |
+| AdminGetSafetySettingsCallableResponse | `callable_responses/admin_get_safety_settings_response.schema.json` | `functions/src/shared/generated/adminGetSafetySettingsCallableResponse.ts` | no |
+| AdminUpdateSafetySettingsCallablePayload | `callables/admin_update_safety_settings_payload.schema.json` | `functions/src/shared/generated/adminUpdateSafetySettingsCallablePayload.ts` | yes |
+| SubmitSafetyAppealCallablePayload | `callables/submit_safety_appeal_payload.schema.json` | `functions/src/shared/generated/submitSafetyAppealCallablePayload.ts` | yes |
+| SubmitSafetyAppealCallableResponse | `callable_responses/submit_safety_appeal_response.schema.json` | `functions/src/shared/generated/submitSafetyAppealCallableResponse.ts` | no |
+| ManageOrganizerGuestBlockCallablePayload | `callables/manage_organizer_guest_block_payload.schema.json` | `functions/src/shared/generated/manageOrganizerGuestBlockCallablePayload.ts` | yes |
+| ManageOrganizerGuestBlockCallableResponse | `callable_responses/manage_organizer_guest_block_response.schema.json` | `functions/src/shared/generated/manageOrganizerGuestBlockCallableResponse.ts` | no |
+| ListOrganizerGuestBlocksCallablePayload | `callables/list_organizer_guest_blocks_payload.schema.json` | `functions/src/shared/generated/listOrganizerGuestBlocksCallablePayload.ts` | yes |
+| ListOrganizerGuestBlocksCallableResponse | `callable_responses/list_organizer_guest_blocks_response.schema.json` | `functions/src/shared/generated/listOrganizerGuestBlocksCallableResponse.ts` | no |
+| ReportGuestCallablePayload | `callables/report_guest_payload.schema.json` | `functions/src/shared/generated/reportGuestCallablePayload.ts` | yes |
+| ReportGuestCallableResponse | `callable_responses/report_guest_response.schema.json` | `functions/src/shared/generated/reportGuestCallableResponse.ts` | no |
 | VerifyRazorpayPaymentCallablePayload | `callables/verify_razorpay_payment_payload.schema.json` | `functions/src/shared/generated/verifyRazorpayPaymentCallablePayload.ts` | yes |
 | EventBookingCallablePayload | `callables/event_booking_payload.schema.json` | `functions/src/shared/generated/eventBookingCallablePayload.ts` | yes |
 | CreateRazorpayOrderCallablePayload | `callables/create_razorpay_order_payload.schema.json` | `functions/src/shared/generated/createRazorpayOrderCallablePayload.ts` | yes |
@@ -984,6 +1049,8 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | AdminGetSalesIntelligenceScoreRequest | AdminGetSalesIntelligenceScoreRequest | `callables/admin_sales_intelligence_score_request.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_get_sales_intelligence_score_request.g.dart` |
 | AdminCopySalesOutreachDraftRequest | AdminCopySalesOutreachDraftRequest | `callables/admin_sales_outreach_copy_request.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_copy_sales_outreach_draft_request.g.dart` |
 | AdminGetSalesOutreachDraftRequest | AdminGetSalesOutreachDraftRequest | `callables/admin_sales_outreach_draft_request.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_get_sales_outreach_draft_request.g.dart` |
+| AdminGetFinanceMonthCallableRequest | AdminGetFinanceMonthCallablePayload | `callables/admin_get_finance_month_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_get_finance_month_callable_request.g.dart` |
+| AdminExportMoneyLedgerCallableRequest | AdminExportMoneyLedgerCallablePayload | `callables/admin_export_money_ledger_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_export_money_ledger_callable_request.g.dart` |
 | AdminSalesIntelligenceGenerateCallableRequest | AdminSalesIntelligenceGenerateCallablePayload | `callables/admin_sales_intelligence_generate_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_sales_intelligence_generate_callable_request.g.dart` |
 | AdminAcceptSalesQuoteCallableRequest | AdminAcceptSalesQuoteCallablePayload | `callables/admin_accept_sales_quote_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_accept_sales_quote_callable_request.g.dart` |
 | AdminApproveSalesQuoteCallableRequest | AdminApproveSalesQuoteCallablePayload | `callables/admin_approve_sales_quote_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_approve_sales_quote_callable_request.g.dart` |
@@ -1014,6 +1081,9 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | AdminSalesImportCompensationPreviewRequest | AdminSalesImportCompensationPreviewPayload | `callables/admin_sales_import_compensation_preview_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_sales_import_compensation_preview_request.g.dart` |
 | SetEventPublicationCallableRequest | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/set_event_publication_callable_request.g.dart` |
 | AdminListCommercialTermsCallableRequest | AdminListCommercialTermsCallablePayload | `callables/admin_list_commercial_terms_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_commercial_terms_callable_request.g.dart` |
+| AdminListOrganizerDirectoryCallableRequest | AdminListOrganizerDirectoryCallablePayload | `callables/admin_list_organizer_directory_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_organizer_directory_callable_request.g.dart` |
+| AdminListEventDirectoryCallableRequest | AdminListEventDirectoryCallablePayload | `callables/admin_list_event_directory_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_event_directory_callable_request.g.dart` |
+| AdminGetOrganizerOverviewCallableRequest | AdminGetOrganizerOverviewCallablePayload | `callables/admin_get_organizer_overview_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_get_organizer_overview_callable_request.g.dart` |
 | PrepareEventOfferInvitationCallableRequest | PrepareEventOfferInvitationCallablePayload | `callables/prepare_event_offer_invitation_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/prepare_event_offer_invitation_callable_request.g.dart` |
 | PreviewOrganizerFormAdmissionCallableRequest | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/preview_organizer_form_admission_callable_request.g.dart` |
 | CommitOrganizerFormAdmissionCallableRequest | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/commit_organizer_form_admission_callable_request.g.dart` |
@@ -1174,6 +1244,14 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | AdminRecordActionExecutionCallableRequest | AdminRecordActionExecutionCallablePayload | `callables/admin_record_action_execution_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_record_action_execution_callable_request.g.dart` |
 | AdminNominateOrganizerCallableRequest | AdminNominateOrganizerCallablePayload | `callables/admin_nominate_organizer_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_nominate_organizer_callable_request.g.dart` |
 | AdminApproveOrganizerListingCallableRequest | AdminApproveOrganizerListingCallablePayload | `callables/admin_approve_organizer_listing_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_approve_organizer_listing_callable_request.g.dart` |
+| AdminListMyNominationsCallableRequest | AdminListMyNominationsCallablePayload | `callables/admin_list_my_nominations_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_my_nominations_callable_request.g.dart` |
+| AdminListInboxItemsCallableRequest | AdminListInboxItemsCallablePayload | `callables/admin_list_inbox_items_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_inbox_items_callable_request.g.dart` |
+| AdminGetInboxItemCallableRequest | AdminGetInboxItemCallablePayload | `callables/admin_get_inbox_item_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_get_inbox_item_callable_request.g.dart` |
+| AdminUpdateInboxItemCallableRequest | AdminUpdateInboxItemCallablePayload | `callables/admin_update_inbox_item_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_update_inbox_item_callable_request.g.dart` |
+| AdminRebuildInboxCallableRequest | AdminRebuildInboxCallablePayload | `callables/admin_rebuild_inbox_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_rebuild_inbox_callable_request.g.dart` |
+| AdminRecommendOrganizerClaimCallableRequest | AdminRecommendOrganizerClaimCallablePayload | `callables/admin_recommend_organizer_claim_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_recommend_organizer_claim_callable_request.g.dart` |
+| AdminSearchPeopleCallableRequest | AdminSearchPeopleCallablePayload | `callables/admin_search_people_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_search_people_callable_request.g.dart` |
+| AdminListActivityLogCallableRequest | AdminListActivityLogCallablePayload | `callables/admin_list_activity_log_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_activity_log_callable_request.g.dart` |
 | AdminListOrganizerListingReviewsCallableRequest | AdminListOrganizerListingReviewsCallablePayload | `callables/admin_list_organizer_listing_reviews_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_organizer_listing_reviews_callable_request.g.dart` |
 | AdminListListingEventImportsCallableRequest | AdminListListingEventImportsCallablePayload | `callables/admin_list_listing_event_imports_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_listing_event_imports_callable_request.g.dart` |
 | AdminPublishListingEventsCallableRequest | AdminPublishListingEventsCallablePayload | `callables/admin_publish_listing_events_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_publish_listing_events_callable_request.g.dart` |
@@ -1358,6 +1436,15 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | BlockUserCallableRequest | BlockUserCallablePayload | `callables/block_user_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/block_user_callable_request.g.dart` |
 | UnblockUserCallableRequest | UnblockUserCallablePayload | `callables/unblock_user_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/unblock_user_callable_request.g.dart` |
 | ReportUserCallableRequest | ReportUserCallablePayload | `callables/report_user_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/report_user_callable_request.g.dart` |
+| AdminTakeAccountSafetyActionCallableRequest | AdminTakeAccountSafetyActionCallablePayload | `callables/admin_take_account_safety_action_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_take_account_safety_action_callable_request.g.dart` |
+| AdminLiftAccountSafetyActionCallableRequest | AdminLiftAccountSafetyActionCallablePayload | `callables/admin_lift_account_safety_action_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_lift_account_safety_action_callable_request.g.dart` |
+| AdminListAccountSafetyActionsCallableRequest | AdminListAccountSafetyActionsCallablePayload | `callables/admin_list_account_safety_actions_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_account_safety_actions_callable_request.g.dart` |
+| AdminDecideSafetyAppealCallableRequest | AdminDecideSafetyAppealCallablePayload | `callables/admin_decide_safety_appeal_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_decide_safety_appeal_callable_request.g.dart` |
+| AdminUpdateSafetySettingsCallableRequest | AdminUpdateSafetySettingsCallablePayload | `callables/admin_update_safety_settings_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_update_safety_settings_callable_request.g.dart` |
+| SubmitSafetyAppealCallableRequest | SubmitSafetyAppealCallablePayload | `callables/submit_safety_appeal_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/submit_safety_appeal_callable_request.g.dart` |
+| ManageOrganizerGuestBlockCallableRequest | ManageOrganizerGuestBlockCallablePayload | `callables/manage_organizer_guest_block_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/manage_organizer_guest_block_callable_request.g.dart` |
+| ListOrganizerGuestBlocksCallableRequest | ListOrganizerGuestBlocksCallablePayload | `callables/list_organizer_guest_blocks_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/list_organizer_guest_blocks_callable_request.g.dart` |
+| ReportGuestCallableRequest | ReportGuestCallablePayload | `callables/report_guest_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/report_guest_callable_request.g.dart` |
 | RequestSuvbotDemoOperationCallableRequest | RequestSuvbotDemoOperationCallablePayload | `callables/request_suvbot_demo_operation_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/request_suvbot_demo_operation_callable_request.g.dart` |
 | VerifyRazorpayPaymentCallableRequest | VerifyRazorpayPaymentCallablePayload | `callables/verify_razorpay_payment_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/verify_razorpay_payment_callable_request.g.dart` |
 | CreateStripeCheckoutSessionCallableRequest | CreateStripeCheckoutSessionCallablePayload | `callables/create_stripe_checkout_session_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/create_stripe_checkout_session_callable_request.g.dart` |
@@ -1386,6 +1473,13 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | AdminReviewSalesIntelligenceClauseRequest | cannot map field "decision" (no type) |
 | AdminReviewSalesOutreachDraftRequest | cannot map field "factualValidity" (no type) |
 | AdminAttestSalesHostSettlementPayload | cannot map field "purpose" (no type) |
+| AdminManagePaymentIssuesCallablePayload | cannot map field "action" (no type) |
+| AdminGetMarketplaceCallablePayload | cannot map field "rangeDays" (no type) |
+| AdminGetGrowthCallablePayload | cannot map field "range" (no type) |
+| AdminManagePlatformCostsCallablePayload | cannot map field "action" (no type) |
+| AdminManageOrganizerBillsCallablePayload | cannot map field "action" (no type) |
+| AdminManageMoneySettingsCallablePayload | cannot map field "action" (no type) |
+| AdminManageNominatorCreditsCallablePayload | cannot map field "action" (no type) |
 | AdminListSalesAccountsCallablePayload | cannot map field "researchStatus" (no type) |
 | AdminListSalesTasksCallablePayload | cannot map field "status" (no type) |
 | AdminListSalesOpportunitiesCallablePayload | cannot map field "stage" (no type) |
@@ -1434,6 +1528,7 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | ManageOrganizerFormDomainCallablePayload | not an object schema |
 | PrepareOrganizerFormPaymentCallablePayload | not an object schema |
 | RecordEventSuccessUnitOutcomesCallablePayload | cannot map field "entries" (type=array) |
+| AdminGetSafetySettingsCallablePayload | no properties |
 | RefreshStripeHostPaymentAccountCallablePayload | no properties |
 | RefreshRazorpayHostPaymentAccountCallablePayload | no properties |
 | AdminGetOverviewCallablePayload | not an object schema |

@@ -32739,6 +32739,1075 @@ export const supplyNominatorDocumentSchema = {
   }
 };
 
+export const accountSafetyActionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/account_safety_actions.schema.json",
+  "title": "AccountSafetyActionDocument",
+  "description": "One step Catch took against an account: warn, restrict (no messages or group chats), suspend (signed out, future bookings cancelled) or ban (Catch-wide, phone and device blocked from new accounts). Ops may warn and restrict; suspend and ban are owner-only; a severe report restricts automatically. The person may appeal once, and someone other than the decider reviews it. Kept 180 days after the account is deleted (retainUntil).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "accountSafetyActions",
+  "x-firestore-path": "accountSafetyActions/{actionId}",
+  "x-document-id-field": "actionId",
+  "x-owner": "Admin account safety callables and the severe-report restriction",
+  "required": [
+    "schemaVersion",
+    "actionId",
+    "uid",
+    "kind",
+    "reasonCode",
+    "messageToUser",
+    "durationDays",
+    "startsAt",
+    "endsAt",
+    "status",
+    "caseTargetPaths",
+    "decidedByUid",
+    "decidedByRole",
+    "automatic",
+    "appealable",
+    "appeal",
+    "bookings",
+    "lifted",
+    "retainUntil",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "warn",
+        "restrict",
+        "suspend",
+        "ban"
+      ]
+    },
+    "reasonCode": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{1,63}$"
+    },
+    "messageToUser": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "durationDays": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "enum": [
+        7,
+        30,
+        null
+      ]
+    },
+    "startsAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "endsAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "expired",
+        "lifted",
+        "replaced"
+      ]
+    },
+    "caseTargetPaths": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 260
+      }
+    },
+    "decidedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "decidedByRole": {
+      "type": "string",
+      "enum": [
+        "owner",
+        "ops",
+        "system"
+      ]
+    },
+    "automatic": {
+      "type": "boolean"
+    },
+    "appealable": {
+      "type": "boolean"
+    },
+    "appeal": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "text",
+            "submittedAt",
+            "reviewerUid",
+            "decidedAt",
+            "decisionNote",
+            "replacementActionId"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "open",
+                "kept",
+                "reduced",
+                "lifted"
+              ]
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "submittedAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            "reviewerUid": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "decidedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "decisionNote": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "replacementActionId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Za-z0-9_-]{8,128}$"
+            }
+          }
+        }
+      ]
+    },
+    "bookings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cancelledEventIds",
+        "needsOrganizerEventIds",
+        "failedEventIds"
+      ],
+      "properties": {
+        "cancelledEventIds": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "needsOrganizerEventIds": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "failedEventIds": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    "lifted": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "at",
+            "byUid",
+            "note"
+          ],
+          "properties": {
+            "at": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            "byUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        }
+      ]
+    },
+    "retainUntil": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const accountSafetyStateDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/account_safety_states.schema.json",
+  "title": "AccountSafetyStateDocument",
+  "description": "The current standing of one account, derived from its active account safety actions. Messaging, event chats and bookings read it; Firestore rules read messaging to stop direct chat writes. The account may read its own standing.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "accountSafetyStates",
+  "x-firestore-path": "accountSafetyStates/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "Account safety action service",
+  "required": [
+    "schemaVersion",
+    "uid",
+    "level",
+    "messaging",
+    "booking",
+    "authDisabledBySafety",
+    "activeActionIds",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "none",
+        "warned",
+        "restricted",
+        "suspended",
+        "banned"
+      ]
+    },
+    "messaging": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "held",
+        "until"
+      ],
+      "properties": {
+        "held": {
+          "type": "boolean"
+        },
+        "until": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "booking": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "held",
+        "until"
+      ],
+      "properties": {
+        "held": {
+          "type": "boolean"
+        },
+        "until": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "authDisabledBySafety": {
+      "type": "boolean"
+    },
+    "activeActionIds": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const accountSafetyNoticeDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/account_safety_notices.schema.json",
+  "title": "AccountSafetyNoticeDocument",
+  "description": "A safety message to one account: the rule they broke and what changes, an appeal outcome, or (to a reporter) that their report was received or handled. A reporter is never told what was done. Server-written; the account reads its own.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "accountSafetyNotices",
+  "x-firestore-path": "accountSafetyNotices/{uid}/items/{noticeId}",
+  "x-document-id-field": "noticeId",
+  "x-owner": "Account safety action service and report callables",
+  "required": [
+    "schemaVersion",
+    "noticeId",
+    "uid",
+    "kind",
+    "title",
+    "body",
+    "actionId",
+    "appealable",
+    "createdAt",
+    "readAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "noticeId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 160
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "warning",
+        "restriction",
+        "suspension",
+        "ban",
+        "lifted",
+        "appealDecision",
+        "reportReceived",
+        "reportHandled"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200
+    },
+    "actionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "appealable": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "readAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const safetySettingsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/safety_settings.schema.json",
+  "title": "SafetySettingsDocument",
+  "description": "Catch's safety rules, edited by the owner in Settings → Safety: the report reasons (and which are severe), whether a severe report restricts at once, and whether organizers may keep block lists and report guests. Absent means the defaults in code.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "safetySettings",
+  "x-firestore-path": "safetySettings/{settingsId}",
+  "x-document-id-field": "settingsId",
+  "x-owner": "Admin safety settings callables",
+  "required": [
+    "schemaVersion",
+    "reasons",
+    "restrictOnSevereReport",
+    "organizerBlockLists",
+    "organizerReports",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "label",
+          "severe",
+          "takedown",
+          "active"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{1,63}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "severe": {
+            "type": "boolean"
+          },
+          "takedown": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "restrictOnSevereReport": {
+      "type": "boolean"
+    },
+    "organizerBlockLists": {
+      "type": "boolean"
+    },
+    "organizerReports": {
+      "type": "boolean"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    }
+  }
+};
+
+export const bannedIdentityDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/banned_identities.schema.json",
+  "title": "BannedIdentityDocument",
+  "description": "A phone number or device that a Catch-wide ban stops from making a new account. Only a SHA-256 hash of the value is stored. It stays after the banned account is deleted so the ban keeps holding; lifting the ban sets active to false.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "bannedIdentities",
+  "x-firestore-path": "bannedIdentities/{identityId}",
+  "x-document-id-field": "identityId",
+  "x-owner": "Account safety action service",
+  "required": [
+    "schemaVersion",
+    "identityId",
+    "kind",
+    "valueHash",
+    "uid",
+    "actionId",
+    "active",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "identityId": {
+      "type": "string",
+      "pattern": "^(phone|installation|pushToken)-[a-f0-9]{64}$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "phone",
+        "installation",
+        "pushToken"
+      ]
+    },
+    "valueHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const blockedSignupAttemptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/blocked_signup_attempts.schema.json",
+  "title": "BlockedSignupAttemptDocument",
+  "description": "A new account that used a banned phone or device. The account is disabled and the attempt is shown on the ban in Safety.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "blockedSignupAttempts",
+  "x-firestore-path": "blockedSignupAttempts/{attemptId}",
+  "x-document-id-field": "attemptId",
+  "x-owner": "Banned identity screening triggers",
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "attemptedUid",
+    "identityId",
+    "kind",
+    "bannedUid",
+    "actionId",
+    "outcome",
+    "at",
+    "retainUntil"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "attemptId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "attemptedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "identityId": {
+      "type": "string",
+      "pattern": "^(phone|installation|pushToken)-[a-f0-9]{64}$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "phone",
+        "installation",
+        "pushToken"
+      ]
+    },
+    "bannedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "disabled"
+      ]
+    },
+    "at": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "retainUntil": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const organizerGuestBlockDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_guest_blocks.schema.json",
+  "title": "OrganizerGuestBlockDocument",
+  "description": "An organizer's own block list entry: this person cannot book that organizer's events. No reason or review is needed and it affects no other organizer.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerGuestBlocks",
+  "x-firestore-path": "organizerGuestBlocks/{blockId}",
+  "x-document-id-field": "blockId",
+  "x-owner": "manageOrganizerGuestBlock callable",
+  "required": [
+    "schemaVersion",
+    "blockId",
+    "organizerId",
+    "uid",
+    "blockedByUid",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "blockId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 260
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "blockedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
 export const organizerGrowthFactsDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_growth_facts.schema.json",
@@ -33269,6 +34338,4007 @@ export const organizerGrowthEventSchema = {
     "ingested_at": {
       "type": "string",
       "format": "date-time"
+    }
+  }
+};
+
+export const organizerBillDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_bills.schema.json",
+  "title": "OrganizerBillDocument",
+  "description": "Catch's monthly bill to one organizer, made from the bookings paid into the organizer's own account (hostCollected) in one calendar month, India time. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the monthly cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerBills",
+  "x-firestore-path": "organizerBills/{billId}",
+  "x-document-id-field": "billId",
+  "x-owner": "Functions organizer billing (monthly generation, adminManageOrganizerBills, Razorpay payment link webhook)",
+  "required": [
+    "schemaVersion",
+    "billId",
+    "organizerId",
+    "organizerName",
+    "month",
+    "periodStartMillis",
+    "periodEndMillis",
+    "revision",
+    "status",
+    "sales",
+    "commission",
+    "trialEndsAtMillis",
+    "terms",
+    "gst",
+    "totalMinor",
+    "invoiceNumber",
+    "dueAtMillis",
+    "paymentLink",
+    "sentAtMillis",
+    "reminders",
+    "paidAtMillis",
+    "paidMinor",
+    "paidVia",
+    "writtenOffAtMillis",
+    "history",
+    "generatedAtMillis",
+    "updatedAtMillis"
+  ],
+  "definitions": {
+    "millis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "nullableMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "minor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000000
+    },
+    "status": {
+      "description": "toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial.",
+      "enum": [
+        "toSend",
+        "sent",
+        "paid",
+        "writtenOff",
+        "free"
+      ]
+    },
+    "historyEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "atMillis",
+        "action",
+        "byUid",
+        "note"
+      ],
+      "properties": {
+        "atMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "action": {
+          "enum": [
+            "generated",
+            "regenerated",
+            "sent",
+            "reminded",
+            "paid",
+            "writtenOff"
+          ]
+        },
+        "byUid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        },
+        "note": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        }
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "billId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}_[0-9]{4}-[0-9]{2}$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerName": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "periodStartMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "periodEndMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "description": "toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial.",
+      "enum": [
+        "toSend",
+        "sent",
+        "paid",
+        "writtenOff",
+        "free"
+      ]
+    },
+    "sales": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentCount",
+        "eventCount",
+        "grossMinor",
+        "refundedMinor",
+        "baseMinor",
+        "providerFeeMinor",
+        "providerTaxMinor",
+        "unsnapshottedCount"
+      ],
+      "properties": {
+        "paymentCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "eventCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "grossMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        },
+        "refundedMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        },
+        "baseMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000,
+          "description": "What commission is charged on: gross or net of refunds, per the terms."
+        },
+        "providerFeeMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000,
+          "description": "Razorpay's fees on these sales, taken from the organizer's account; shown for their records."
+        },
+        "providerTaxMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        },
+        "unsnapshottedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Payments that froze no terms and were charged on the organizer's current terms."
+        }
+      }
+    },
+    "commission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rateBasisPoints",
+        "uncappedMinor",
+        "capMinor",
+        "capped",
+        "trialWaivedMinor",
+        "amountMinor"
+      ],
+      "properties": {
+        "rateBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "The organizer's current rate; individual payments may have frozen another."
+        },
+        "uncappedMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        },
+        "capMinor": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "capped": {
+          "type": "boolean"
+        },
+        "trialWaivedMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        }
+      }
+    },
+    "trialEndsAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "terms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "platformRevision",
+        "organizerRevision",
+        "ownTerms"
+      ],
+      "properties": {
+        "platformRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizerRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ownTerms": {
+          "type": "boolean"
+        }
+      }
+    },
+    "gst": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registered",
+        "rateBasisPoints",
+        "amountMinor"
+      ],
+      "properties": {
+        "registered": {
+          "type": "boolean"
+        },
+        "rateBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        }
+      }
+    },
+    "totalMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000000
+    },
+    "invoiceNumber": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{4}-[0-9]{2}/[0-9]{3,}$"
+    },
+    "dueAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "paymentLink": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "linkId",
+            "url"
+          ],
+          "properties": {
+            "linkId": {
+              "type": "string",
+              "pattern": "^plink_[A-Za-z0-9]{1,40}$"
+            },
+            "url": {
+              "type": "string",
+              "pattern": "^https://",
+              "maxLength": 300
+            }
+          }
+        }
+      ]
+    },
+    "sentAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "reminders": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
+    "paidAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "paidMinor": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "paidVia": {
+      "enum": [
+        "paymentLink",
+        "manual",
+        null
+      ]
+    },
+    "writtenOffAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "history": {
+      "type": "array",
+      "maxItems": 60,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "atMillis",
+          "action",
+          "byUid",
+          "note"
+        ],
+        "properties": {
+          "atMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "action": {
+            "enum": [
+              "generated",
+              "regenerated",
+              "sent",
+              "reminded",
+              "paid",
+              "writtenOff"
+            ]
+          },
+          "byUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const moneySettingsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/money_settings.schema.json",
+  "title": "MoneySettingsDocument",
+  "description": "Catch's money settings (Settings → Payments): whether Catch is GST registered (off until the accountant says so; bills carry no GST while off), when bills fall due, and the nominator credit rule. One document, moneySettings/platform; absent means the defaults the owner decided on 1 Nov 2026. Every write bumps revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "moneySettings",
+  "x-firestore-path": "moneySettings/{settingsId}",
+  "x-document-id-field": "settingsId",
+  "x-owner": "adminManageMoneySettings",
+  "required": [
+    "schemaVersion",
+    "settingsId",
+    "revision",
+    "settings",
+    "updatedAtMillis",
+    "updatedByUid"
+  ],
+  "definitions": {
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gstRegistered",
+        "gstRateBasisPoints",
+        "billDueDayOfMonth",
+        "nominatorCredit"
+      ],
+      "properties": {
+        "gstRegistered": {
+          "type": "boolean"
+        },
+        "gstRateBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "billDueDayOfMonth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 28,
+          "description": "Bills for a month fall due on this day of the next month."
+        },
+        "nominatorCredit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rateBasisPoints",
+            "months",
+            "lapseDays",
+            "minimumPayoutMinor",
+            "payoutDayOfMonth",
+            "earningRoles"
+          ],
+          "properties": {
+            "rateBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000,
+              "description": "Share of what the organizer paid Catch, before GST."
+            },
+            "months": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60,
+              "description": "Months of credit, counted from the organizer's first paid bill."
+            },
+            "lapseDays": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 366,
+              "description": "A nomination lapses when the organizer has not claimed within this many days."
+            },
+            "minimumPayoutMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000,
+              "description": "Credit below this rolls over to the next payout."
+            },
+            "payoutDayOfMonth": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 28
+            },
+            "earningRoles": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 4,
+              "items": {
+                "enum": [
+                  "partner",
+                  "guest",
+                  "organizer",
+                  "associate"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "settingsId": {
+      "const": "platform"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gstRegistered",
+        "gstRateBasisPoints",
+        "billDueDayOfMonth",
+        "nominatorCredit"
+      ],
+      "properties": {
+        "gstRegistered": {
+          "type": "boolean"
+        },
+        "gstRateBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "billDueDayOfMonth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 28,
+          "description": "Bills for a month fall due on this day of the next month."
+        },
+        "nominatorCredit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rateBasisPoints",
+            "months",
+            "lapseDays",
+            "minimumPayoutMinor",
+            "payoutDayOfMonth",
+            "earningRoles"
+          ],
+          "properties": {
+            "rateBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000,
+              "description": "Share of what the organizer paid Catch, before GST."
+            },
+            "months": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60,
+              "description": "Months of credit, counted from the organizer's first paid bill."
+            },
+            "lapseDays": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 366,
+              "description": "A nomination lapses when the organizer has not claimed within this many days."
+            },
+            "minimumPayoutMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000,
+              "description": "Credit below this rolls over to the next payout."
+            },
+            "payoutDayOfMonth": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 28
+            },
+            "earningRoles": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 4,
+              "items": {
+                "enum": [
+                  "partner",
+                  "guest",
+                  "organizer",
+                  "associate"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    }
+  }
+};
+
+export const nominatorCreditDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/nominator_credits.schema.json",
+  "title": "NominatorCreditDocument",
+  "description": "One credit a nominator earned from one paid organizer bill, keyed by the bill. Written when a bill is paid, under the nominator credit rule in moneySettings: the first nominator of the organizer, if their role earns credit and the organizer claimed within the lapse window, earns the rate on what the organizer paid Catch before GST, for the set number of months from the organizer's first paid bill. Owed credit is approved monthly per nominator once it reaches the minimum (less rolls over), then marked paid with partner payouts.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "nominatorCredits",
+  "x-firestore-path": "nominatorCredits/{creditId}",
+  "x-document-id-field": "creditId",
+  "x-owner": "Functions organizer billing (bill paid) and adminManageNominatorCredits",
+  "required": [
+    "schemaVersion",
+    "creditId",
+    "billId",
+    "organizerId",
+    "organizerName",
+    "nominatorUid",
+    "nominatorRole",
+    "billMonth",
+    "monthIndex",
+    "billPaidMinor",
+    "rateBasisPoints",
+    "creditMinor",
+    "status",
+    "approvedAtMillis",
+    "approvedByUid",
+    "paidAtMillis",
+    "paidByUid",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "creditId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "billId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerName": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "nominatorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "nominatorRole": {
+      "enum": [
+        "associate",
+        "partner",
+        "guest",
+        "organizer"
+      ]
+    },
+    "billMonth": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "monthIndex": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 60,
+      "description": "Which month of credit this is, counted from the organizer's first paid bill."
+    },
+    "billPaidMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000000
+    },
+    "rateBasisPoints": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "creditMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000000
+    },
+    "status": {
+      "enum": [
+        "owed",
+        "approved",
+        "paid"
+      ]
+    },
+    "approvedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "approvedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "paidAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "paidByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+};
+
+export const moneyInvoiceCounterDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/money_invoice_counters.schema.json",
+  "title": "MoneyInvoiceCounterDocument",
+  "description": "The unbroken invoice number sequence for one Indian financial year (April to March), moneyInvoiceCounters/2026-27. lastNumber is the last number issued; the next bill sent takes lastNumber + 1, as 2026-27/032.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "moneyInvoiceCounters",
+  "x-firestore-path": "moneyInvoiceCounters/{financialYear}",
+  "x-document-id-field": "financialYear",
+  "x-owner": "Functions organizer billing (sending a bill)",
+  "required": [
+    "schemaVersion",
+    "financialYear",
+    "lastNumber",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "financialYear": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}$"
+    },
+    "lastNumber": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+};
+
+export const platformCostDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/platform_costs.schema.json",
+  "title": "PlatformCostDocument",
+  "description": "What one kind of cost came to in one India-time calendar month, platformCosts/{YYYY-MM}_{category}. The owner enters AI, Cloud, SMS and any invoice total by hand; WhatsApp falls back to an estimate from reserved dispatch costs while no invoice total is entered; ad spend arrives from the ad platform once its account is connected.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "platformCosts",
+  "x-firestore-path": "platformCosts/{costId}",
+  "x-document-id-field": "costId",
+  "x-owner": "adminManagePlatformCosts and ad spend imports",
+  "required": [
+    "schemaVersion",
+    "costId",
+    "month",
+    "category",
+    "amountMinor",
+    "source",
+    "note",
+    "updatedAtMillis",
+    "updatedByUid"
+  ],
+  "definitions": {
+    "category": {
+      "enum": [
+        "whatsapp",
+        "ai",
+        "cloud",
+        "sms",
+        "ads_meta",
+        "ads_google",
+        "other"
+      ]
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "costId": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])_[a-z_]+$"
+    },
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "category": {
+      "enum": [
+        "whatsapp",
+        "ai",
+        "cloud",
+        "sms",
+        "ads_meta",
+        "ads_google",
+        "other"
+      ]
+    },
+    "amountMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000000
+    },
+    "source": {
+      "enum": [
+        "manual",
+        "meta_api",
+        "google_ads_api"
+      ]
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updatedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    }
+  }
+};
+
+export const moneyIssueResolutionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/money_issue_resolutions.schema.json",
+  "title": "MoneyIssueResolutionDocument",
+  "description": "How a money issue in Admin Money was resolved, keyed by the issue id (source collection and record id joined by a colon, encoded). A resolved issue leaves the open queue even while its record still matches; a new issue on the same record needs the record to change state.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "moneyIssueResolutions",
+  "x-firestore-path": "moneyIssueResolutions/{resolutionId}",
+  "x-document-id-field": "resolutionId",
+  "x-owner": "adminManagePaymentIssues",
+  "required": [
+    "schemaVersion",
+    "resolutionId",
+    "issueId",
+    "kind",
+    "statusAtResolution",
+    "action",
+    "note",
+    "resolvedAtMillis",
+    "resolvedByUid",
+    "title",
+    "organizerName"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "resolutionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,240}$"
+    },
+    "issueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "kind": {
+      "enum": [
+        "payment",
+        "refund",
+        "review",
+        "bill"
+      ]
+    },
+    "statusAtResolution": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "action": {
+      "enum": [
+        "confirmedBooking",
+        "closed"
+      ]
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "resolvedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "resolvedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "organizerName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    }
+  }
+};
+
+export const adminManagePaymentIssuesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_payment_issues_payload.schema.json",
+  "title": "AdminManagePaymentIssuesCallablePayload",
+  "description": "Owner reads Money's open or resolved issues (payments with no booking, refunds not sent, payments needing review, overdue bills) or acts on one. confirmBooking re-checks a website or offer checkout with Razorpay now and admits the guest when there is still room. close records that the issue was handled outside Admin.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "action",
+    "view",
+    "issueId",
+    "note"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "list",
+        "confirmBooking",
+        "close"
+      ]
+    },
+    "view": {
+      "enum": [
+        "open",
+        "resolved"
+      ]
+    },
+    "issueId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const adminManagePaymentIssuesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_payment_issues_response.schema.json",
+  "title": "AdminManagePaymentIssuesCallableResponse",
+  "description": "Money issues for one view, oldest first, with counts per kind, and the outcome of the action just taken.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "view",
+    "issues",
+    "counts",
+    "outcome"
+  ],
+  "properties": {
+    "view": {
+      "enum": [
+        "open",
+        "resolved"
+      ]
+    },
+    "issues": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "issueId",
+          "kind",
+          "source",
+          "targetId",
+          "title",
+          "subtitle",
+          "organizerId",
+          "organizerName",
+          "amountMinor",
+          "waitingSinceMillis",
+          "status",
+          "lastErrorCode",
+          "providerPaymentId",
+          "eventId",
+          "canConfirmBooking",
+          "resolution"
+        ],
+        "properties": {
+          "issueId": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "kind": {
+            "enum": [
+              "payment",
+              "refund",
+              "review",
+              "bill"
+            ]
+          },
+          "source": {
+            "enum": [
+              "publicEventPayments",
+              "organizerEventOfferPayments",
+              "payments",
+              "organizerBills"
+            ]
+          },
+          "targetId": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "subtitle": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "organizerId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "waitingSinceMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "lastErrorCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80
+          },
+          "providerPaymentId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "eventId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "canConfirmBooking": {
+            "type": "boolean"
+          },
+          "resolution": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "MoneyIssueResolutionDocument",
+                "description": "How a money issue in Admin Money was resolved, keyed by the issue id (source collection and record id joined by a colon, encoded). A resolved issue leaves the open queue even while its record still matches; a new issue on the same record needs the record to change state.",
+                "type": "object",
+                "additionalProperties": false,
+                "x-firestore-collection": "moneyIssueResolutions",
+                "x-firestore-path": "moneyIssueResolutions/{resolutionId}",
+                "x-document-id-field": "resolutionId",
+                "x-owner": "adminManagePaymentIssues",
+                "required": [
+                  "schemaVersion",
+                  "resolutionId",
+                  "issueId",
+                  "kind",
+                  "statusAtResolution",
+                  "action",
+                  "note",
+                  "resolvedAtMillis",
+                  "resolvedByUid",
+                  "title",
+                  "organizerName"
+                ],
+                "properties": {
+                  "schemaVersion": {
+                    "const": 1
+                  },
+                  "resolutionId": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,240}$"
+                  },
+                  "issueId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  },
+                  "kind": {
+                    "enum": [
+                      "payment",
+                      "refund",
+                      "review",
+                      "bill"
+                    ]
+                  },
+                  "statusAtResolution": {
+                    "type": "string",
+                    "maxLength": 40
+                  },
+                  "action": {
+                    "enum": [
+                      "confirmedBooking",
+                      "closed"
+                    ]
+                  },
+                  "note": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 500
+                  },
+                  "resolvedAtMillis": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "resolvedByUid": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "title": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "organizerName": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 160
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "all",
+        "payment",
+        "refund",
+        "review",
+        "bill"
+      ],
+      "properties": {
+        "all": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "payment": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "refund": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "review": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bill": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "outcome": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "issueId",
+            "result",
+            "statusAfter"
+          ],
+          "properties": {
+            "issueId": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "result": {
+              "enum": [
+                "admitted",
+                "stillWaiting",
+                "refunding",
+                "closed"
+              ]
+            },
+            "statusAfter": {
+              "type": "string",
+              "maxLength": 40
+            }
+          }
+        }
+      ]
+    }
+  }
+};
+
+export const adminGetFinanceMonthCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_finance_month_payload.schema.json",
+  "title": "AdminGetFinanceMonthCallablePayload",
+  "description": "Owner reads one India-time month of Finance, line by line: ticket sales through Catch, what Catch earned, what it cost and what is not Catch's money, with the six months before for the charts.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "month"
+  ],
+  "properties": {
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    }
+  }
+};
+
+export const adminGetFinanceMonthCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_finance_month_response.schema.json",
+  "title": "AdminGetFinanceMonthCallableResponse",
+  "description": "One month of Finance from organizer bills (ticket sales paid into organizers' own accounts and Catch's commission), costs and nominator credit paid. leftOverMinor is earned less costs, before salaries.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "month",
+    "sales",
+    "earned",
+    "costs",
+    "notCatch",
+    "leftOverMinor",
+    "series"
+  ],
+  "definitions": {
+    "minor": {
+      "type": "integer"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "properties": {
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "sales": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grossMinor",
+        "refundedMinor",
+        "netMinor",
+        "events",
+        "organizers",
+        "payments"
+      ],
+      "properties": {
+        "grossMinor": {
+          "type": "integer"
+        },
+        "refundedMinor": {
+          "type": "integer"
+        },
+        "netMinor": {
+          "type": "integer"
+        },
+        "events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "payments": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "earned": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uncappedMinor",
+        "capsAndTermsMinor",
+        "trialWaivedMinor",
+        "billedMinor",
+        "billedOrganizers",
+        "cappedOrganizers",
+        "ownTermsOrganizers",
+        "freeOrganizers",
+        "paidMinor",
+        "writtenOffMinor"
+      ],
+      "properties": {
+        "uncappedMinor": {
+          "type": "integer",
+          "description": "Commission before caps, for organizers past their free trial."
+        },
+        "capsAndTermsMinor": {
+          "type": "integer",
+          "description": "What caps took off (a positive number)."
+        },
+        "trialWaivedMinor": {
+          "type": "integer"
+        },
+        "billedMinor": {
+          "type": "integer"
+        },
+        "billedOrganizers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cappedOrganizers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ownTermsOrganizers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "freeOrganizers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "paidMinor": {
+          "type": "integer"
+        },
+        "writtenOffMinor": {
+          "type": "integer"
+        }
+      }
+    },
+    "costs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lines",
+        "nominatorCreditPaidMinor",
+        "totalMinor",
+        "whatsappIsEstimate",
+        "whatsappMessages"
+      ],
+      "properties": {
+        "lines": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "category",
+              "amountMinor",
+              "source",
+              "note"
+            ],
+            "properties": {
+              "category": {
+                "enum": [
+                  "whatsapp",
+                  "ai",
+                  "cloud",
+                  "sms",
+                  "ads_meta",
+                  "ads_google",
+                  "other"
+                ]
+              },
+              "amountMinor": {
+                "type": "integer"
+              },
+              "source": {
+                "enum": [
+                  "manual",
+                  "meta_api",
+                  "google_ads_api",
+                  "estimate"
+                ]
+              },
+              "note": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 500
+              }
+            }
+          }
+        },
+        "nominatorCreditPaidMinor": {
+          "type": "integer"
+        },
+        "totalMinor": {
+          "type": "integer"
+        },
+        "whatsappIsEstimate": {
+          "type": "boolean"
+        },
+        "whatsappMessages": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "notCatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "providerFeeMinor",
+        "providerTaxMinor",
+        "gstRegistered",
+        "gstMinor"
+      ],
+      "properties": {
+        "providerFeeMinor": {
+          "type": "integer"
+        },
+        "providerTaxMinor": {
+          "type": "integer"
+        },
+        "gstRegistered": {
+          "type": "boolean"
+        },
+        "gstMinor": {
+          "type": "integer"
+        }
+      }
+    },
+    "leftOverMinor": {
+      "type": "integer"
+    },
+    "series": {
+      "type": "array",
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "month",
+          "salesMinor",
+          "earnedMinor",
+          "partial"
+        ],
+        "properties": {
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "salesMinor": {
+            "type": "integer"
+          },
+          "earnedMinor": {
+            "type": "integer"
+          },
+          "partial": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminGetMarketplaceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_marketplace_payload.schema.json",
+  "title": "AdminGetMarketplaceCallablePayload",
+  "description": "Owner reads the Marketplace: events, places filled, no-shows and waitlists by city over the last 7, 30 or 90 days; guests by the month they first booked and whether they came back; bookings each week; organizers going quiet. marketId narrows to one city.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "rangeDays",
+    "marketId"
+  ],
+  "properties": {
+    "rangeDays": {
+      "enum": [
+        7,
+        30,
+        90
+      ]
+    },
+    "marketId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z][a-z0-9-]{1,49}$"
+    }
+  }
+};
+
+export const adminGetMarketplaceCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_marketplace_response.schema.json",
+  "title": "AdminGetMarketplaceCallableResponse",
+  "description": "The Marketplace from the analytics warehouse's Firestore exports. available is false (with a reason) when the warehouse could not be read; every list is then empty. Rates are whole percentages; null where nothing can be measured (no-shows only count events that checked anyone in).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rangeDays",
+    "marketId",
+    "available",
+    "unavailableReason",
+    "generatedAtMillis",
+    "stats",
+    "cities",
+    "guestCohorts",
+    "bookingsByWeek",
+    "goingQuiet"
+  ],
+  "definitions": {
+    "percent": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "properties": {
+    "rangeDays": {
+      "enum": [
+        7,
+        30,
+        90
+      ]
+    },
+    "marketId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 50
+    },
+    "available": {
+      "type": "boolean"
+    },
+    "unavailableReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "stats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventsThisWeek",
+        "eventsLastWeek",
+        "filledPercent",
+        "noShowPercent",
+        "cameBackPercent"
+      ],
+      "properties": {
+        "eventsThisWeek": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "eventsLastWeek": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "filledPercent": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "noShowPercent": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "cameBackPercent": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "cities": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "marketId",
+          "organizersLive",
+          "eventsPerWeek",
+          "filledPercent",
+          "noShowPercent",
+          "waitlisted"
+        ],
+        "properties": {
+          "marketId": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "organizersLive": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "eventsPerWeek": {
+            "type": "number",
+            "minimum": 0
+          },
+          "filledPercent": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          },
+          "noShowPercent": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          },
+          "waitlisted": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "guestCohorts": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "month",
+          "guests",
+          "again30Percent",
+          "again60Percent",
+          "again90Percent"
+        ],
+        "properties": {
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "guests": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "again30Percent": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          },
+          "again60Percent": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          },
+          "again90Percent": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          }
+        }
+      }
+    },
+    "bookingsByWeek": {
+      "type": "array",
+      "maxItems": 13,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "weekStart",
+          "bookings",
+          "partial"
+        ],
+        "properties": {
+          "weekStart": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "bookings": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "partial": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "goingQuiet": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "name",
+          "marketId",
+          "daysSinceLastEvent",
+          "eventsPerMonthBefore",
+          "salesOwnerUid",
+          "salesOwnerName"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "marketId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 50
+          },
+          "daysSinceLastEvent": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "eventsPerMonthBefore": {
+            "type": "number",
+            "minimum": 0
+          },
+          "salesOwnerUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "salesOwnerName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminGetGrowthCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_growth_payload.schema.json",
+  "title": "AdminGetGrowthCallablePayload",
+  "description": "Owner reads Growth for a range: organizer cohorts by the month they were listed, channels and ad spend, nominators and their credit, and the best organizers.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "range"
+  ],
+  "properties": {
+    "range": {
+      "enum": [
+        "90d",
+        "12m",
+        "all"
+      ]
+    }
+  }
+};
+
+export const adminGetGrowthCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_growth_response.schema.json",
+  "title": "AdminGetGrowthCallableResponse",
+  "description": "Growth for one range, computed from organizerGrowthFacts, organizer bills, nominator credit and costs. Cohorts group organizers by the India-time month they were listed; days are medians counted from listing. Ticket sales are what organizers sold into their own accounts, from their monthly bills. Catch earned is what organizers' bills came to (paid or not, excluding free months).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "range",
+    "generatedAtMillis",
+    "summary",
+    "cohorts",
+    "claimDays",
+    "salesByMonthOnCatch",
+    "channels",
+    "claimsByMonth",
+    "adSpend",
+    "nominators",
+    "best"
+  ],
+  "definitions": {
+    "channel": {
+      "type": "string",
+      "description": "Where the organizer first came from. imported: Catch found it (discovery or an import). sales_associate: a Catch sales associate nominated it. partner, guest, organizer: someone outside Catch nominated it. came_to_us: the organizer applied or set itself up. ads: the organizer applied after a paid campaign.",
+      "enum": [
+        "imported",
+        "sales_associate",
+        "partner",
+        "guest",
+        "organizer",
+        "came_to_us",
+        "ads"
+      ]
+    },
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "minor": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "days": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    }
+  },
+  "properties": {
+    "range": {
+      "enum": [
+        "90d",
+        "12m",
+        "all"
+      ]
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "listed",
+        "claimed",
+        "claimMedianDays",
+        "ranEvent",
+        "ranEventMedianDays",
+        "paying",
+        "sinceMonth"
+      ],
+      "properties": {
+        "listed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "claimed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "claimMedianDays": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "ranEvent": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ranEventMedianDays": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "paying": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sinceMonth": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "cohorts": {
+      "type": "array",
+      "maxItems": 120,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "month",
+          "listed",
+          "claimed",
+          "claimMedianDays",
+          "ranEvent",
+          "ranEventMedianDays",
+          "tooEarly"
+        ],
+        "properties": {
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "listed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "claimed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "claimMedianDays": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "ranEvent": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "ranEventMedianDays": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "tooEarly": {
+            "type": "boolean",
+            "description": "Listed under 30 days ago, so most of its organizers have not had time to run an event."
+          }
+        }
+      }
+    },
+    "claimDays": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "count"
+        ],
+        "properties": {
+          "label": {
+            "enum": [
+              "0–3",
+              "4–7",
+              "8–14",
+              "15–30",
+              "31+"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "salesByMonthOnCatch": {
+      "type": "array",
+      "maxItems": 120,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "month",
+          "organizers",
+          "salesPerOrganizerMinor"
+        ],
+        "properties": {
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "organizers": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "salesPerOrganizerMinor": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "description": "Average ticket sales per organizer in their 1st to 6th month on Catch, counted from the month of their first event; null where the month has not come yet."
+          }
+        }
+      }
+    },
+    "channels": {
+      "type": "array",
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "channel",
+          "listed",
+          "claimed",
+          "paying",
+          "earnedMinor",
+          "costMinor",
+          "costKind",
+          "detail"
+        ],
+        "properties": {
+          "channel": {
+            "type": "string",
+            "description": "Where the organizer first came from. imported: Catch found it (discovery or an import). sales_associate: a Catch sales associate nominated it. partner, guest, organizer: someone outside Catch nominated it. came_to_us: the organizer applied or set itself up. ads: the organizer applied after a paid campaign.",
+            "enum": [
+              "imported",
+              "sales_associate",
+              "partner",
+              "guest",
+              "organizer",
+              "came_to_us",
+              "ads"
+            ]
+          },
+          "listed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "claimed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paying": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "earnedMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "costMinor": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "costKind": {
+            "enum": [
+              "ads",
+              "credit",
+              "salaries",
+              "none"
+            ]
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 120
+          }
+        }
+      }
+    },
+    "claimsByMonth": {
+      "type": "array",
+      "maxItems": 120,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "month",
+          "count"
+        ],
+        "properties": {
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "adSpend": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "month",
+        "metaMinor",
+        "metaConnected",
+        "googleConnected",
+        "adClaims"
+      ],
+      "properties": {
+        "month": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+        },
+        "metaMinor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "metaConnected": {
+          "type": "boolean"
+        },
+        "googleConnected": {
+          "type": "boolean"
+        },
+        "adClaims": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "nominators": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "name",
+          "role",
+          "nominated",
+          "claimed",
+          "paying",
+          "paidToCatchMinor",
+          "creditOwedMinor",
+          "creditApprovedMinor",
+          "creditPaidMinor",
+          "firstNominatedAtMillis",
+          "organizers"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "role": {
+            "enum": [
+              "associate",
+              "partner",
+              "guest",
+              "organizer"
+            ]
+          },
+          "nominated": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "claimed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paying": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paidToCatchMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "creditOwedMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "creditApprovedMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "creditPaidMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "firstNominatedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "organizers": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerId",
+                "name",
+                "claimed",
+                "latestBill",
+                "creditMonthIndex"
+              ],
+              "properties": {
+                "organizerId": {
+                  "type": "string",
+                  "maxLength": 180
+                },
+                "name": {
+                  "type": "string",
+                  "maxLength": 160
+                },
+                "claimed": {
+                  "type": "boolean"
+                },
+                "latestBill": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "billId",
+                        "month",
+                        "totalMinor",
+                        "status",
+                        "creditMinor"
+                      ],
+                      "properties": {
+                        "billId": {
+                          "type": "string",
+                          "maxLength": 200
+                        },
+                        "month": {
+                          "type": "string",
+                          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+                        },
+                        "totalMinor": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "status": {
+                          "description": "toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial.",
+                          "enum": [
+                            "toSend",
+                            "sent",
+                            "paid",
+                            "writtenOff",
+                            "free"
+                          ]
+                        },
+                        "creditMinor": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 0
+                        }
+                      }
+                    }
+                  ]
+                },
+                "creditMonthIndex": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "best": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "name",
+          "marketId",
+          "salesMinor",
+          "earnedMinor",
+          "events",
+          "trendPercent",
+          "channel",
+          "payingSinceMonth",
+          "inTrial",
+          "ownTerms"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "marketId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 50
+          },
+          "salesMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "earnedMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "events": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "trendPercent": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Ticket sales in the last three billed months against the three before; null when there is nothing to compare."
+          },
+          "channel": {
+            "type": "string",
+            "description": "Where the organizer first came from. imported: Catch found it (discovery or an import). sales_associate: a Catch sales associate nominated it. partner, guest, organizer: someone outside Catch nominated it. came_to_us: the organizer applied or set itself up. ads: the organizer applied after a paid campaign.",
+            "enum": [
+              "imported",
+              "sales_associate",
+              "partner",
+              "guest",
+              "organizer",
+              "came_to_us",
+              "ads"
+            ]
+          },
+          "payingSinceMonth": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "inTrial": {
+            "type": "boolean"
+          },
+          "ownTerms": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminManagePlatformCostsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_platform_costs_payload.schema.json",
+  "title": "AdminManagePlatformCostsCallablePayload",
+  "description": "Owner reads one month's costs, sets one kind of cost for the month by hand, or clears a hand-entered cost.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "action",
+    "month",
+    "category",
+    "amountMinor",
+    "note"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "list",
+        "set",
+        "clear"
+      ]
+    },
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "category": {
+      "anyOf": [
+        {
+          "enum": [
+            "whatsapp",
+            "ai",
+            "cloud",
+            "sms",
+            "ads_meta",
+            "ads_google",
+            "other"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "amountMinor": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100000000000
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const adminManagePlatformCostsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_platform_costs_response.schema.json",
+  "title": "AdminManagePlatformCostsCallableResponse",
+  "description": "One month's costs: what is stored, the WhatsApp estimate used while no WhatsApp invoice total is stored, messages sent, and the month's total.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "month",
+    "costs",
+    "whatsapp",
+    "totalMinor",
+    "adSpend"
+  ],
+  "properties": {
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "costs": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "title": "PlatformCostDocument",
+        "description": "What one kind of cost came to in one India-time calendar month, platformCosts/{YYYY-MM}_{category}. The owner enters AI, Cloud, SMS and any invoice total by hand; WhatsApp falls back to an estimate from reserved dispatch costs while no invoice total is entered; ad spend arrives from the ad platform once its account is connected.",
+        "type": "object",
+        "additionalProperties": false,
+        "x-firestore-collection": "platformCosts",
+        "x-firestore-path": "platformCosts/{costId}",
+        "x-document-id-field": "costId",
+        "x-owner": "adminManagePlatformCosts and ad spend imports",
+        "required": [
+          "schemaVersion",
+          "costId",
+          "month",
+          "category",
+          "amountMinor",
+          "source",
+          "note",
+          "updatedAtMillis",
+          "updatedByUid"
+        ],
+        "definitions": {
+          "category": {
+            "enum": [
+              "whatsapp",
+              "ai",
+              "cloud",
+              "sms",
+              "ads_meta",
+              "ads_google",
+              "other"
+            ]
+          }
+        },
+        "properties": {
+          "schemaVersion": {
+            "const": 1
+          },
+          "costId": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])_[a-z_]+$"
+          },
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "category": {
+            "enum": [
+              "whatsapp",
+              "ai",
+              "cloud",
+              "sms",
+              "ads_meta",
+              "ads_google",
+              "other"
+            ]
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000
+          },
+          "source": {
+            "enum": [
+              "manual",
+              "meta_api",
+              "google_ads_api"
+            ]
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "updatedByUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "estimateMinor",
+        "messageCount",
+        "usesEstimate"
+      ],
+      "properties": {
+        "estimateMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "messageCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "usesEstimate": {
+          "type": "boolean"
+        }
+      }
+    },
+    "totalMinor": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "adSpend": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metaConnected",
+        "googleConnected"
+      ],
+      "properties": {
+        "metaConnected": {
+          "type": "boolean"
+        },
+        "googleConnected": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+};
+
+export const adminExportMoneyLedgerCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_export_money_ledger_payload.schema.json",
+  "title": "AdminExportMoneyLedgerCallablePayload",
+  "description": "Owner exports one India-time month of Catch's ledger for the accountant to import into Zoho Books: bills issued, bill payments received, nominator credit paid and costs.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "month"
+  ],
+  "properties": {
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    }
+  }
+};
+
+export const adminExportMoneyLedgerCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_export_money_ledger_response.schema.json",
+  "title": "AdminExportMoneyLedgerCallableResponse",
+  "description": "The month's ledger as CSV (Date, Type, Reference, Party, Description, Amount, GST, Status; amounts in rupees) with its file name and row count.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "month",
+    "fileName",
+    "csv",
+    "rowCount"
+  ],
+  "properties": {
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "fileName": {
+      "type": "string",
+      "pattern": "^catch-ledger-[0-9]{4}-[0-9]{2}\\.csv$"
+    },
+    "csv": {
+      "type": "string",
+      "maxLength": 5000000
+    },
+    "rowCount": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+};
+
+export const adminManageOrganizerBillsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_organizer_bills_payload.schema.json",
+  "title": "AdminManageOrganizerBillsCallablePayload",
+  "description": "Owner reads one month's organizer bills or acts on them. list reads the month, or with organizerId every bill of one organizer (the organizer's Money tab). generate (re)makes the month's bills from its bookings; bills already sent or closed are kept. send takes the next invoice number, sets the due date and creates a Razorpay payment link. remind records a reminder. markPaid closes a bill paid outside its link and credits its nominator. writeOff closes a bill that will not be paid. Acting on one bill names the revision it reviewed.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "action",
+    "month",
+    "organizerId",
+    "billId",
+    "expectedRevision",
+    "note"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "list",
+        "generate",
+        "send",
+        "remind",
+        "markPaid",
+        "writeOff"
+      ]
+    },
+    "month": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "billId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "expectedRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const adminManageOrganizerBillsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_organizer_bills_response.schema.json",
+  "title": "AdminManageOrganizerBillsCallableResponse",
+  "description": "A month's bills, or one organizer's bills across months (month null, organizerId set), newest activity first, with totals and counts per state. overdue counts sent bills past their due date.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "month",
+    "organizerId",
+    "bills",
+    "totals",
+    "counts",
+    "nextInvoiceNumber",
+    "gstRegistered"
+  ],
+  "properties": {
+    "month": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "organizerId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "bills": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "title": "OrganizerBillDocument",
+        "description": "Catch's monthly bill to one organizer, made from the bookings paid into the organizer's own account (hostCollected) in one calendar month, India time. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the monthly cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.",
+        "type": "object",
+        "additionalProperties": false,
+        "x-firestore-collection": "organizerBills",
+        "x-firestore-path": "organizerBills/{billId}",
+        "x-document-id-field": "billId",
+        "x-owner": "Functions organizer billing (monthly generation, adminManageOrganizerBills, Razorpay payment link webhook)",
+        "required": [
+          "schemaVersion",
+          "billId",
+          "organizerId",
+          "organizerName",
+          "month",
+          "periodStartMillis",
+          "periodEndMillis",
+          "revision",
+          "status",
+          "sales",
+          "commission",
+          "trialEndsAtMillis",
+          "terms",
+          "gst",
+          "totalMinor",
+          "invoiceNumber",
+          "dueAtMillis",
+          "paymentLink",
+          "sentAtMillis",
+          "reminders",
+          "paidAtMillis",
+          "paidMinor",
+          "paidVia",
+          "writtenOffAtMillis",
+          "history",
+          "generatedAtMillis",
+          "updatedAtMillis"
+        ],
+        "definitions": {
+          "millis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "nullableMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "minor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000
+          },
+          "status": {
+            "description": "toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial.",
+            "enum": [
+              "toSend",
+              "sent",
+              "paid",
+              "writtenOff",
+              "free"
+            ]
+          },
+          "historyEntry": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "atMillis",
+              "action",
+              "byUid",
+              "note"
+            ],
+            "properties": {
+              "atMillis": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "action": {
+                "enum": [
+                  "generated",
+                  "regenerated",
+                  "sent",
+                  "reminded",
+                  "paid",
+                  "writtenOff"
+                ]
+              },
+              "byUid": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 128
+              },
+              "note": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 500
+              }
+            }
+          }
+        },
+        "properties": {
+          "schemaVersion": {
+            "const": 1
+          },
+          "billId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}_[0-9]{4}-[0-9]{2}$"
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "periodStartMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "periodEndMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "description": "toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial.",
+            "enum": [
+              "toSend",
+              "sent",
+              "paid",
+              "writtenOff",
+              "free"
+            ]
+          },
+          "sales": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "paymentCount",
+              "eventCount",
+              "grossMinor",
+              "refundedMinor",
+              "baseMinor",
+              "providerFeeMinor",
+              "providerTaxMinor",
+              "unsnapshottedCount"
+            ],
+            "properties": {
+              "paymentCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "eventCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "grossMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              "refundedMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              "baseMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000,
+                "description": "What commission is charged on: gross or net of refunds, per the terms."
+              },
+              "providerFeeMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000,
+                "description": "Razorpay's fees on these sales, taken from the organizer's account; shown for their records."
+              },
+              "providerTaxMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              "unsnapshottedCount": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Payments that froze no terms and were charged on the organizer's current terms."
+              }
+            }
+          },
+          "commission": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rateBasisPoints",
+              "uncappedMinor",
+              "capMinor",
+              "capped",
+              "trialWaivedMinor",
+              "amountMinor"
+            ],
+            "properties": {
+              "rateBasisPoints": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000,
+                "description": "The organizer's current rate; individual payments may have frozen another."
+              },
+              "uncappedMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              "capMinor": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000000
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "capped": {
+                "type": "boolean"
+              },
+              "trialWaivedMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              "amountMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              }
+            }
+          },
+          "trialEndsAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "terms": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "platformRevision",
+              "organizerRevision",
+              "ownTerms"
+            ],
+            "properties": {
+              "platformRevision": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "organizerRevision": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "ownTerms": {
+                "type": "boolean"
+              }
+            }
+          },
+          "gst": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "registered",
+              "rateBasisPoints",
+              "amountMinor"
+            ],
+            "properties": {
+              "registered": {
+                "type": "boolean"
+              },
+              "rateBasisPoints": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "amountMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              }
+            }
+          },
+          "totalMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000
+          },
+          "invoiceNumber": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9]{4}-[0-9]{2}/[0-9]{3,}$"
+          },
+          "dueAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "paymentLink": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "linkId",
+                  "url"
+                ],
+                "properties": {
+                  "linkId": {
+                    "type": "string",
+                    "pattern": "^plink_[A-Za-z0-9]{1,40}$"
+                  },
+                  "url": {
+                    "type": "string",
+                    "pattern": "^https://",
+                    "maxLength": 300
+                  }
+                }
+              }
+            ]
+          },
+          "sentAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "reminders": {
+            "type": "array",
+            "maxItems": 24,
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "paidAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "paidMinor": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "paidVia": {
+            "enum": [
+              "paymentLink",
+              "manual",
+              null
+            ]
+          },
+          "writtenOffAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "history": {
+            "type": "array",
+            "maxItems": 60,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "atMillis",
+                "action",
+                "byUid",
+                "note"
+              ],
+              "properties": {
+                "atMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "action": {
+                  "enum": [
+                    "generated",
+                    "regenerated",
+                    "sent",
+                    "reminded",
+                    "paid",
+                    "writtenOff"
+                  ]
+                },
+                "byUid": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 128
+                },
+                "note": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                }
+              }
+            }
+          },
+          "generatedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "salesMinor",
+        "billedMinor",
+        "paidMinor"
+      ],
+      "properties": {
+        "salesMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "billedMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "paidMinor": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "all",
+        "toSend",
+        "sent",
+        "overdue",
+        "paid",
+        "writtenOff",
+        "free"
+      ],
+      "properties": {
+        "all": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "toSend": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sent": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "overdue": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "paid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "writtenOff": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "free": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "nextInvoiceNumber": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}/[0-9]{3,}$"
+    },
+    "gstRegistered": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const adminManageMoneySettingsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_money_settings_payload.schema.json",
+  "title": "AdminManageMoneySettingsCallablePayload",
+  "description": "Owner reads or replaces Catch's money settings (GST registered, bill due day, nominator credit rule). A replacement names the revision it reviewed (0 when none is stored yet).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "action",
+    "expectedRevision",
+    "settings"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "read",
+        "replace"
+      ]
+    },
+    "expectedRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "settings": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "gstRegistered",
+            "gstRateBasisPoints",
+            "billDueDayOfMonth",
+            "nominatorCredit"
+          ],
+          "properties": {
+            "gstRegistered": {
+              "type": "boolean"
+            },
+            "gstRateBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "billDueDayOfMonth": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 28,
+              "description": "Bills for a month fall due on this day of the next month."
+            },
+            "nominatorCredit": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "rateBasisPoints",
+                "months",
+                "lapseDays",
+                "minimumPayoutMinor",
+                "payoutDayOfMonth",
+                "earningRoles"
+              ],
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000,
+                  "description": "Share of what the organizer paid Catch, before GST."
+                },
+                "months": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 60,
+                  "description": "Months of credit, counted from the organizer's first paid bill."
+                },
+                "lapseDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366,
+                  "description": "A nomination lapses when the organizer has not claimed within this many days."
+                },
+                "minimumPayoutMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000,
+                  "description": "Credit below this rolls over to the next payout."
+                },
+                "payoutDayOfMonth": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 28
+                },
+                "earningRoles": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "maxItems": 4,
+                  "items": {
+                    "enum": [
+                      "partner",
+                      "guest",
+                      "organizer",
+                      "associate"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const adminManageMoneySettingsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_money_settings_response.schema.json",
+  "title": "AdminManageMoneySettingsCallableResponse",
+  "description": "The money settings in force (the defaults when none are stored, with revision 0) and the invoice number the next sent bill will take.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "settings",
+    "updatedAtMillis",
+    "updatedByUid",
+    "nextInvoiceNumber"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gstRegistered",
+        "gstRateBasisPoints",
+        "billDueDayOfMonth",
+        "nominatorCredit"
+      ],
+      "properties": {
+        "gstRegistered": {
+          "type": "boolean"
+        },
+        "gstRateBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "billDueDayOfMonth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 28,
+          "description": "Bills for a month fall due on this day of the next month."
+        },
+        "nominatorCredit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rateBasisPoints",
+            "months",
+            "lapseDays",
+            "minimumPayoutMinor",
+            "payoutDayOfMonth",
+            "earningRoles"
+          ],
+          "properties": {
+            "rateBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000,
+              "description": "Share of what the organizer paid Catch, before GST."
+            },
+            "months": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60,
+              "description": "Months of credit, counted from the organizer's first paid bill."
+            },
+            "lapseDays": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 366,
+              "description": "A nomination lapses when the organizer has not claimed within this many days."
+            },
+            "minimumPayoutMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000,
+              "description": "Credit below this rolls over to the next payout."
+            },
+            "payoutDayOfMonth": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 28
+            },
+            "earningRoles": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 4,
+              "items": {
+                "enum": [
+                  "partner",
+                  "guest",
+                  "organizer",
+                  "associate"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "updatedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "updatedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "nextInvoiceNumber": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}/[0-9]{3,}$"
+    }
+  }
+};
+
+export const adminManageNominatorCreditsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_nominator_credits_payload.schema.json",
+  "title": "AdminManageNominatorCreditsCallablePayload",
+  "description": "Owner reads the nominator credit ledger or acts for one nominator. approve approves all their owed credit when it reaches the minimum payout (less rolls over). markPaid records that their approved credit was paid with partner payouts.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "action",
+    "nominatorUid",
+    "note"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "list",
+        "approve",
+        "markPaid"
+      ]
+    },
+    "nominatorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const adminManageNominatorCreditsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_nominator_credits_response.schema.json",
+  "title": "AdminManageNominatorCreditsCallableResponse",
+  "description": "Every nominator with credit, their totals by state and whether their owed credit has reached the minimum payout, plus the newest credit entries.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nominators",
+    "credits",
+    "minimumPayoutMinor"
+  ],
+  "properties": {
+    "minimumPayoutMinor": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nominators": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "nominatorUid",
+          "nominatorRole",
+          "owedMinor",
+          "approvedMinor",
+          "paidMinor",
+          "payable",
+          "organizerCount"
+        ],
+        "properties": {
+          "nominatorUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "nominatorRole": {
+            "enum": [
+              "associate",
+              "partner",
+              "guest",
+              "organizer"
+            ]
+          },
+          "owedMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "approvedMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paidMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "payable": {
+            "type": "boolean"
+          },
+          "organizerCount": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "credits": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "title": "NominatorCreditDocument",
+        "description": "One credit a nominator earned from one paid organizer bill, keyed by the bill. Written when a bill is paid, under the nominator credit rule in moneySettings: the first nominator of the organizer, if their role earns credit and the organizer claimed within the lapse window, earns the rate on what the organizer paid Catch before GST, for the set number of months from the organizer's first paid bill. Owed credit is approved monthly per nominator once it reaches the minimum (less rolls over), then marked paid with partner payouts.",
+        "type": "object",
+        "additionalProperties": false,
+        "x-firestore-collection": "nominatorCredits",
+        "x-firestore-path": "nominatorCredits/{creditId}",
+        "x-document-id-field": "creditId",
+        "x-owner": "Functions organizer billing (bill paid) and adminManageNominatorCredits",
+        "required": [
+          "schemaVersion",
+          "creditId",
+          "billId",
+          "organizerId",
+          "organizerName",
+          "nominatorUid",
+          "nominatorRole",
+          "billMonth",
+          "monthIndex",
+          "billPaidMinor",
+          "rateBasisPoints",
+          "creditMinor",
+          "status",
+          "approvedAtMillis",
+          "approvedByUid",
+          "paidAtMillis",
+          "paidByUid",
+          "createdAtMillis",
+          "updatedAtMillis"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": 1
+          },
+          "creditId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "billId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "nominatorUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "nominatorRole": {
+            "enum": [
+              "associate",
+              "partner",
+              "guest",
+              "organizer"
+            ]
+          },
+          "billMonth": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "monthIndex": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 60,
+            "description": "Which month of credit this is, counted from the organizer's first paid bill."
+          },
+          "billPaidMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000
+          },
+          "rateBasisPoints": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "creditMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000
+          },
+          "status": {
+            "enum": [
+              "owed",
+              "approved",
+              "paid"
+            ]
+          },
+          "approvedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "approvedByUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "paidAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "paidByUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
     }
   }
 };
@@ -55358,6 +60428,1755 @@ export const adminListCommercialTermsCallableResponseSchema = {
           }
         }
       }
+    }
+  }
+};
+
+export const adminListOrganizerDirectoryCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_organizer_directory_payload.schema.json",
+  "title": "AdminListOrganizerDirectoryCallablePayload",
+  "description": "Callable payload accepted by adminListOrganizerDirectory, the Admin Organizers directory. view picks one of the directory's views; the other fields narrow it. mine keeps organizers whose Sales account the caller owns. cursor is the opaque nextCursor of the previous page.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner, ops and support, sales associates)",
+  "properties": {
+    "view": {
+      "type": "string",
+      "enum": [
+        "all",
+        "live",
+        "unclaimed",
+        "hidden"
+      ]
+    },
+    "query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    },
+    "citySlug": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "kind": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z0-9-]{1,80}$"
+    },
+    "claimState": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "unclaimed",
+        "claimPending",
+        "claimed",
+        null
+      ]
+    },
+    "mine": {
+      "type": "boolean"
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^o:[0-9]{1,5}$"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  }
+};
+
+export const adminListOrganizerDirectoryCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_organizer_directory_response.schema.json",
+  "title": "AdminListOrganizerDirectoryCallableResponse",
+  "description": "One page of the Admin Organizers directory with real totals. views counts every organizer in each view, ignoring the other filters; total counts the rows the request's filters match; each facet counts what its chip would show with every other filter applied. scan says whether every organizer was read: the directory reads at most a bounded number of organizers, and complete is false when there were more, so totals then cover only what was read.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "total",
+    "views",
+    "facets",
+    "scan",
+    "rows",
+    "nextCursor"
+  ],
+  "definitions": {
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "facet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "label",
+        "count"
+      ],
+      "properties": {
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "name"
+      ],
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        }
+      }
+    },
+    "pageState": {
+      "description": "The public page and app listing in one word: live (published, in search and in the app), hiddenFromSearch (published, not indexed), hiddenInApp (published, hidden in the app), draft (draft or qa), suppressed or removed.",
+      "type": "string",
+      "enum": [
+        "live",
+        "hiddenFromSearch",
+        "hiddenInApp",
+        "draft",
+        "suppressed",
+        "removed"
+      ]
+    },
+    "claimState": {
+      "type": "string",
+      "enum": [
+        "unclaimed",
+        "claimPending",
+        "claimed",
+        "verified",
+        "suppressed"
+      ]
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "name",
+        "kindLabel",
+        "citySlug",
+        "cityLabel",
+        "area",
+        "pageState",
+        "claimState",
+        "claimedByName",
+        "salesOwner",
+        "upcomingEventCount",
+        "listedAt"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "kindLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "citySlug": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "cityLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "area": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "pageState": {
+          "description": "The public page and app listing in one word: live (published, in search and in the app), hiddenFromSearch (published, not indexed), hiddenInApp (published, hidden in the app), draft (draft or qa), suppressed or removed.",
+          "type": "string",
+          "enum": [
+            "live",
+            "hiddenFromSearch",
+            "hiddenInApp",
+            "draft",
+            "suppressed",
+            "removed"
+          ]
+        },
+        "claimState": {
+          "type": "string",
+          "enum": [
+            "unclaimed",
+            "claimPending",
+            "claimed",
+            "verified",
+            "suppressed"
+          ]
+        },
+        "claimedByName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "salesOwner": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "uid",
+                "name"
+              ],
+              "properties": {
+                "uid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 200
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "upcomingEventCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "listedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "views": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "all",
+        "live",
+        "unclaimed",
+        "hidden"
+      ],
+      "properties": {
+        "all": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "live": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unclaimed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hidden": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "facets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cities",
+        "kinds",
+        "claimStates",
+        "mine"
+      ],
+      "properties": {
+        "cities": {
+          "type": "array",
+          "maxItems": 60,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "label",
+              "count"
+            ],
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "kinds": {
+          "type": "array",
+          "maxItems": 60,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "label",
+              "count"
+            ],
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "claimStates": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "label",
+              "count"
+            ],
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "mine": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "scan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "complete",
+        "scanned"
+      ],
+      "properties": {
+        "complete": {
+          "type": "boolean"
+        },
+        "scanned": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "name",
+          "kindLabel",
+          "citySlug",
+          "cityLabel",
+          "area",
+          "pageState",
+          "claimState",
+          "claimedByName",
+          "salesOwner",
+          "upcomingEventCount",
+          "listedAt"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "kindLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "citySlug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "cityLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "area": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "pageState": {
+            "description": "The public page and app listing in one word: live (published, in search and in the app), hiddenFromSearch (published, not indexed), hiddenInApp (published, hidden in the app), draft (draft or qa), suppressed or removed.",
+            "type": "string",
+            "enum": [
+              "live",
+              "hiddenFromSearch",
+              "hiddenInApp",
+              "draft",
+              "suppressed",
+              "removed"
+            ]
+          },
+          "claimState": {
+            "type": "string",
+            "enum": [
+              "unclaimed",
+              "claimPending",
+              "claimed",
+              "verified",
+              "suppressed"
+            ]
+          },
+          "claimedByName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "salesOwner": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "uid",
+                  "name"
+                ],
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 200
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "upcomingEventCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "listedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^o:[0-9]{1,5}$"
+    }
+  }
+};
+
+export const adminListEventDirectoryCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_event_directory_payload.schema.json",
+  "title": "AdminListEventDirectoryCallablePayload",
+  "description": "Callable payload accepted by adminListEventDirectory, the Admin Events directory. Events made in Catch and events imported from other platforms are one table; source narrows it to one of them. needsCheck keeps imported events not yet public; thisWeek keeps events starting in the next seven days. cursor is the opaque nextCursor of the previous page.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner, ops and support, sales associates)",
+  "properties": {
+    "view": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "past",
+        "cancelled"
+      ]
+    },
+    "query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    },
+    "citySlug": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "catch",
+        "imported",
+        null
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "needsCheck": {
+      "type": "boolean"
+    },
+    "thisWeek": {
+      "type": "boolean"
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^o:[0-9]{1,5}$"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  }
+};
+
+export const adminListEventDirectoryCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_event_directory_response.schema.json",
+  "title": "AdminListEventDirectoryCallableResponse",
+  "description": "One page of the Admin Events directory: events made in Catch and events imported from other platforms in one table, each row naming its source. views are exact counts of every event in each view, ignoring the other filters; total counts the rows the request's filters match, and each facet what its chip would show with every other filter applied. The view is read up to a bounded number of events; scan.complete is false when there were more, so total and facets then cover only what was read.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "total",
+    "views",
+    "facets",
+    "scan",
+    "rows",
+    "nextCursor"
+  ],
+  "definitions": {
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "facet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "label",
+        "count"
+      ],
+      "properties": {
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "eventId",
+        "source",
+        "platform",
+        "title",
+        "organizerId",
+        "organizerName",
+        "startTime",
+        "citySlug",
+        "cityLabel",
+        "status",
+        "bookedCount",
+        "capacityLimit"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^(catch|imported):.{1,180}$"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "catch",
+            "imported"
+          ]
+        },
+        "platform": {
+          "description": "The platform an imported event came from; null for events made in Catch.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "bookMyShow",
+            "district",
+            "luma",
+            "partiful",
+            "sortMyScene",
+            null
+          ]
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "organizerId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "organizerName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "startTime": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "citySlug": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "cityLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "status": {
+          "description": "live (bookable or public), full, draft (a Catch event not published yet), needsCheck (an imported event not public yet), cancelled, or removed (an imported event taken down or archived).",
+          "type": "string",
+          "enum": [
+            "live",
+            "full",
+            "draft",
+            "needsCheck",
+            "cancelled",
+            "removed"
+          ]
+        },
+        "bookedCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "capacityLimit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "views": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "upcoming",
+        "past",
+        "cancelled"
+      ],
+      "properties": {
+        "upcoming": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "past": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cancelled": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "facets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "catch",
+        "imported",
+        "needsCheck",
+        "thisWeek",
+        "cities"
+      ],
+      "properties": {
+        "catch": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "imported": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "needsCheck": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "thisWeek": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cities": {
+          "type": "array",
+          "maxItems": 60,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "label",
+              "count"
+            ],
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "scan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "complete",
+        "scanned"
+      ],
+      "properties": {
+        "complete": {
+          "type": "boolean"
+        },
+        "scanned": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "eventId",
+          "source",
+          "platform",
+          "title",
+          "organizerId",
+          "organizerName",
+          "startTime",
+          "citySlug",
+          "cityLabel",
+          "status",
+          "bookedCount",
+          "capacityLimit"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^(catch|imported):.{1,180}$"
+          },
+          "eventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "catch",
+              "imported"
+            ]
+          },
+          "platform": {
+            "description": "The platform an imported event came from; null for events made in Catch.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "bookMyShow",
+              "district",
+              "luma",
+              "partiful",
+              "sortMyScene",
+              null
+            ]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "organizerId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "startTime": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "citySlug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "cityLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "status": {
+            "description": "live (bookable or public), full, draft (a Catch event not published yet), needsCheck (an imported event not public yet), cancelled, or removed (an imported event taken down or archived).",
+            "type": "string",
+            "enum": [
+              "live",
+              "full",
+              "draft",
+              "needsCheck",
+              "cancelled",
+              "removed"
+            ]
+          },
+          "bookedCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "capacityLimit": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^o:[0-9]{1,5}$"
+    }
+  }
+};
+
+export const adminGetOrganizerOverviewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_organizer_overview_payload.schema.json",
+  "title": "AdminGetOrganizerOverviewCallablePayload",
+  "description": "Callable payload accepted by adminGetOrganizerOverview, the Overview tab of an Admin organizer page.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner, ops and support, sales associates)",
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const adminGetOrganizerOverviewCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_organizer_overview_response.schema.json",
+  "title": "AdminGetOrganizerOverviewCallableResponse",
+  "description": "The Overview tab of an Admin organizer page: its facts, who owns it in Sales, its terms and payments, its journey from nomination to claim, and its next events from Catch and from the platforms Catch imports. The journey is read from the records each step left (the intake request, the approval, claim requests, ownership and events), oldest first; nextStep names what the organizer is waiting on.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "organizer",
+    "salesOwner",
+    "nextAction",
+    "nextTask",
+    "terms",
+    "payments",
+    "pendingClaim",
+    "journey",
+    "nextStep",
+    "upcomingEvents",
+    "upcomingEventCount"
+  ],
+  "definitions": {
+    "instant": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "name": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "name"
+      ],
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        }
+      }
+    },
+    "journeyStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "at",
+        "actorName",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "description": "nominated (a person or a run sent Catch a link; detail is the first link), listingBuilt (Catch read the pages; detail is how many events it found), approved (staff approved the listing), listed (the organizer record was made), claimRequested (detail is the requester's role), claimApproved, claimRejected, claimed, firstEvent (detail is its title).",
+          "type": "string",
+          "enum": [
+            "nominated",
+            "listingBuilt",
+            "approved",
+            "listed",
+            "claimRequested",
+            "claimApproved",
+            "claimRejected",
+            "claimed",
+            "firstEvent"
+          ]
+        },
+        "at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "actorName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "detail": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2000
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "eventId",
+        "source",
+        "platform",
+        "title",
+        "startTime",
+        "status"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^(catch|imported):.{1,180}$"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "catch",
+            "imported"
+          ]
+        },
+        "platform": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "bookMyShow",
+            "district",
+            "luma",
+            "partiful",
+            "sortMyScene",
+            null
+          ]
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "startTime": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "live",
+            "full",
+            "draft",
+            "needsCheck",
+            "cancelled",
+            "removed"
+          ]
+        }
+      }
+    }
+  },
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "organizer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "name",
+        "kindLabel",
+        "citySlug",
+        "cityLabel",
+        "area",
+        "pageState",
+        "publishStatus",
+        "indexStatus",
+        "canonicalPath",
+        "appVisibility",
+        "claimState",
+        "claimedByName",
+        "listedAt",
+        "hasImage",
+        "origin"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "kindLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "citySlug": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "cityLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "area": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "pageState": {
+          "type": "string",
+          "enum": [
+            "live",
+            "hiddenFromSearch",
+            "hiddenInApp",
+            "draft",
+            "suppressed",
+            "removed"
+          ]
+        },
+        "publishStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "draft",
+            "qa",
+            "published",
+            "suppressed",
+            "removed",
+            null
+          ]
+        },
+        "indexStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "noindex",
+            "indexReady",
+            "indexed",
+            null
+          ]
+        },
+        "canonicalPath": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "appVisibility": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "discoverable",
+            "hidden",
+            null
+          ]
+        },
+        "claimState": {
+          "type": "string",
+          "enum": [
+            "unclaimed",
+            "claimPending",
+            "claimed",
+            "verified",
+            "suppressed"
+          ]
+        },
+        "claimedByName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "listedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "hasImage": {
+          "description": "Whether the page has a cover or profile image; without one it shows a lettermark.",
+          "type": "boolean"
+        },
+        "origin": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "userCreated",
+            "scraper",
+            "adminSeed",
+            "import",
+            null
+          ]
+        }
+      }
+    },
+    "salesOwner": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "uid",
+            "name"
+          ],
+          "properties": {
+            "uid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nextAction": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 320
+    },
+    "nextTask": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "taskId",
+            "title",
+            "dueAt",
+            "ownerName"
+          ],
+          "properties": {
+            "taskId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "title": {
+              "type": "string",
+              "maxLength": 300
+            },
+            "dueAt": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "ownerName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200
+            }
+          }
+        }
+      ]
+    },
+    "terms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "rateBasisPoints",
+        "capMinor"
+      ],
+      "properties": {
+        "source": {
+          "description": "organizer when the organizer has its own terms, platform when it follows Catch's, unset while Catch's are not configured.",
+          "type": "string",
+          "enum": [
+            "platform",
+            "organizer",
+            "unset"
+          ]
+        },
+        "rateBasisPoints": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "capMinor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    "payments": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "webhookVerified"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "notConnected",
+            "connected",
+            "needsAttention"
+          ]
+        },
+        "webhookVerified": {
+          "type": "boolean"
+        }
+      }
+    },
+    "pendingClaim": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requestId",
+            "requesterName",
+            "requesterRole",
+            "createdAt"
+          ],
+          "properties": {
+            "requestId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "requesterName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200
+            },
+            "requesterRole": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "createdAt": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            }
+          }
+        }
+      ]
+    },
+    "journey": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "at",
+          "actorName",
+          "detail"
+        ],
+        "properties": {
+          "kind": {
+            "description": "nominated (a person or a run sent Catch a link; detail is the first link), listingBuilt (Catch read the pages; detail is how many events it found), approved (staff approved the listing), listed (the organizer record was made), claimRequested (detail is the requester's role), claimApproved, claimRejected, claimed, firstEvent (detail is its title).",
+            "type": "string",
+            "enum": [
+              "nominated",
+              "listingBuilt",
+              "approved",
+              "listed",
+              "claimRequested",
+              "claimApproved",
+              "claimRejected",
+              "claimed",
+              "firstEvent"
+            ]
+          },
+          "at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "actorName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "detail": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 2000
+          }
+        }
+      }
+    },
+    "nextStep": {
+      "description": "What the organizer is waiting on: the organizer claiming it, staff deciding a claim, or its first event. Null once it has run one.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "claim",
+        "decideClaim",
+        "firstEvent",
+        null
+      ]
+    },
+    "upcomingEvents": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "eventId",
+          "source",
+          "platform",
+          "title",
+          "startTime",
+          "status"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^(catch|imported):.{1,180}$"
+          },
+          "eventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "catch",
+              "imported"
+            ]
+          },
+          "platform": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "bookMyShow",
+              "district",
+              "luma",
+              "partiful",
+              "sortMyScene",
+              null
+            ]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "startTime": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "live",
+              "full",
+              "draft",
+              "needsCheck",
+              "cancelled",
+              "removed"
+            ]
+          }
+        }
+      }
+    },
+    "upcomingEventCount": {
+      "type": "integer",
+      "minimum": 0
     }
   }
 };
@@ -191559,7 +198378,7 @@ export const organizerClaimRequestDocumentSchema = {
   "x-firestore-collection": "organizerClaimRequests",
   "x-firestore-path": "organizerClaimRequests/{requestId}",
   "x-document-id-field": "requestId",
-  "x-owner": "requestOrganizerClaim and adminDecideOrganizerClaim callables",
+  "x-owner": "requestOrganizerClaim, adminRecommendOrganizerClaim and adminDecideOrganizerClaim callables",
   "required": [
     "requestId",
     "organizerId",
@@ -191761,6 +198580,48 @@ export const organizerClaimRequestDocumentSchema = {
         },
         {
           "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "recommendation": {
+      "description": "What ops recommend for a pending claim, set by adminRecommendOrganizerClaim. The owner decides the claim; a later recommendation replaces this one. Absent until someone recommends.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "decision",
+            "byUid",
+            "at",
+            "note"
+          ],
+          "properties": {
+            "decision": {
+              "type": "string",
+              "enum": [
+                "approve",
+                "reject"
+              ]
+            },
+            "byUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
         }
       ],
       "x-catch-ownership": "callable-owned"
@@ -255386,13 +262247,13 @@ export const reportDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/reports.schema.json",
   "title": "ReportDocument",
-  "description": "Canonical safety report stored at reports/{reportId}.",
+  "description": "Canonical safety report stored at reports/{reportId}. A guest reports another guest from a profile or chat; an organizer or their team reports a guest from an event. The reporter is acknowledged at once and the deadlines (first look 24 h, resolve 15 days, intimate images down 24 h) drive the Safety queue. A severe reason restricts the reported account at once, pending review. Kept 180 days after either account is deleted (retainUntil).",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "reports",
   "x-firestore-path": "reports/{reportId}",
   "x-document-id-field": "id",
-  "x-owner": "reportUser callable",
+  "x-owner": "reportUser and reportGuest callables",
   "required": [
     "reporterUserId",
     "targetUserId",
@@ -255440,7 +262301,8 @@ export const reportDocumentSchema = {
         "profile",
         "chat",
         "match",
-        "support"
+        "support",
+        "organizer"
       ],
       "x-catch-ownership": "callable-owned"
     },
@@ -255468,6 +262330,313 @@ export const reportDocumentSchema = {
     "notes": {
       "type": "string",
       "maxLength": 1000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "reporterRole": {
+      "type": "string",
+      "enum": [
+        "guest",
+        "organizer"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "severe",
+        "standard"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "acknowledgedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "firstLookDueAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "resolveDueAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "takedownDueAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "firstLookAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "resolvedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "reporterNotifiedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "actionIds": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{8,128}$"
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "assigneeUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentUpdatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentUpdatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "hasDeletedUser": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "deletedUserId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "deletedUserMarkedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "retainUntil": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
       "x-catch-ownership": "callable-owned"
     }
   }
@@ -264537,6 +271706,1846 @@ export const adminApproveOrganizerListingCallablePayloadSchema = {
   "x-callable-aliases": [
     "adminApproveOrganizerListing"
   ]
+};
+
+export const adminListMyNominationsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_my_nominations_payload.schema.json",
+  "title": "AdminListMyNominationsCallablePayload",
+  "description": "One page of the organizers the caller nominated, newest first, with what happened to each.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "filter",
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "filter": {
+      "type": "string",
+      "enum": [
+        "all",
+        "published",
+        "waiting",
+        "stuck"
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminListMyNominations"
+  ]
+};
+
+export const adminListMyNominationsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_my_nominations_response.schema.json",
+  "title": "AdminListMyNominationsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "filter",
+    "nominations",
+    "nextCursor",
+    "totals"
+  ],
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "filter": {
+      "type": "string",
+      "enum": [
+        "all",
+        "published",
+        "waiting",
+        "stuck"
+      ]
+    },
+    "nominations": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "itemId",
+          "type",
+          "title",
+          "subtitle",
+          "city",
+          "state",
+          "status",
+          "sentAt",
+          "updatedAt",
+          "doneAt"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 220
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "listing",
+              "event",
+              "claim",
+              "enquiry",
+              "access",
+              "stuck"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "label",
+              "tone"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "tone": {
+                "type": "string",
+                "enum": [
+                  "neutral",
+                  "info",
+                  "success",
+                  "warning",
+                  "danger"
+                ]
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "working",
+              "waiting",
+              "snoozed",
+              "done"
+            ]
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "doneAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "all",
+        "published",
+        "waiting",
+        "stuck"
+      ],
+      "properties": {
+        "all": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "published": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "waiting": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stuck": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+};
+
+export const adminListInboxItemsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_inbox_items_payload.schema.json",
+  "title": "AdminListInboxItemsCallablePayload",
+  "description": "One page of the Admin inbox: items waiting on a person, oldest first, with real totals per scope and type.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "type",
+    "city",
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "scope": {
+      "type": "string",
+      "enum": [
+        "waiting",
+        "mine",
+        "snoozed",
+        "done",
+        "working"
+      ]
+    },
+    "type": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "listing",
+            "event",
+            "claim",
+            "enquiry",
+            "access",
+            "stuck"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "city": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminListInboxItems"
+  ]
+};
+
+export const adminListInboxItemsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_inbox_items_response.schema.json",
+  "title": "AdminListInboxItemsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "scope",
+    "type",
+    "city",
+    "items",
+    "nextCursor",
+    "totals",
+    "oldestWaitingSince"
+  ],
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "waiting",
+        "mine",
+        "snoozed",
+        "done",
+        "working"
+      ]
+    },
+    "type": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "listing",
+            "event",
+            "claim",
+            "enquiry",
+            "access",
+            "stuck"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "city": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "itemId",
+          "type",
+          "sourceKind",
+          "sourceId",
+          "sourcePath",
+          "title",
+          "subtitle",
+          "cameFrom",
+          "nominatorUid",
+          "city",
+          "state",
+          "status",
+          "waitingSince",
+          "doneAt",
+          "assigneeUid",
+          "snoozedUntil",
+          "recommendation"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 220,
+            "pattern": "^[a-z]+-[A-Za-z0-9._:-]+$"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "listing",
+              "event",
+              "claim",
+              "enquiry",
+              "access",
+              "stuck"
+            ]
+          },
+          "sourceKind": {
+            "type": "string",
+            "enum": [
+              "supplyIntakeRequest",
+              "organizerClaimRequest",
+              "salesInboundIntent",
+              "accessApplication",
+              "externalEvent"
+            ]
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourcePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cameFrom": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "nominatorUid": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "label",
+              "tone"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "tone": {
+                "type": "string",
+                "enum": [
+                  "neutral",
+                  "info",
+                  "success",
+                  "warning",
+                  "danger"
+                ]
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "working",
+              "waiting",
+              "snoozed",
+              "done"
+            ]
+          },
+          "waitingSince": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "doneAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "assigneeUid": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "snoozedUntil": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "recommendation": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "decision",
+                  "byUid",
+                  "at",
+                  "note"
+                ],
+                "properties": {
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "approve",
+                      "reject"
+                    ]
+                  },
+                  "byUid": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "note": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scopes",
+        "types"
+      ],
+      "properties": {
+        "scopes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "waiting",
+            "mine",
+            "snoozed",
+            "working"
+          ],
+          "properties": {
+            "waiting": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "mine": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "snoozed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "working": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "types": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "all",
+            "listing",
+            "event",
+            "claim",
+            "enquiry",
+            "access",
+            "stuck"
+          ],
+          "properties": {
+            "all": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "listing": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "event": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "claim": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "enquiry": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "access": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stuck": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "oldestWaitingSince": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const adminGetInboxItemCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_inbox_item_payload.schema.json",
+  "title": "AdminGetInboxItemCallablePayload",
+  "description": "One Admin inbox item and every step it took, oldest first.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "itemId"
+  ],
+  "properties": {
+    "itemId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 220,
+      "pattern": "^[a-z]+-[A-Za-z0-9._:-]+$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetInboxItem"
+  ]
+};
+
+export const adminGetInboxItemCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_inbox_item_response.schema.json",
+  "title": "AdminGetInboxItemCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "item",
+    "journey",
+    "canWork",
+    "canDecideClaim"
+  ],
+  "properties": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId",
+        "type",
+        "sourceKind",
+        "sourceId",
+        "sourcePath",
+        "title",
+        "subtitle",
+        "cameFrom",
+        "nominatorUid",
+        "city",
+        "state",
+        "status",
+        "waitingSince",
+        "doneAt",
+        "assigneeUid",
+        "snoozedUntil",
+        "recommendation"
+      ],
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 220,
+          "pattern": "^[a-z]+-[A-Za-z0-9._:-]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "listing",
+            "event",
+            "claim",
+            "enquiry",
+            "access",
+            "stuck"
+          ]
+        },
+        "sourceKind": {
+          "type": "string",
+          "enum": [
+            "supplyIntakeRequest",
+            "organizerClaimRequest",
+            "salesInboundIntent",
+            "accessApplication",
+            "externalEvent"
+          ]
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "sourcePath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "subtitle": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 300
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cameFrom": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "nominatorUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "label",
+            "tone"
+          ],
+          "properties": {
+            "code": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "tone": {
+              "type": "string",
+              "enum": [
+                "neutral",
+                "info",
+                "success",
+                "warning",
+                "danger"
+              ]
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "working",
+            "waiting",
+            "snoozed",
+            "done"
+          ]
+        },
+        "waitingSince": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "doneAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "assigneeUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "snoozedUntil": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "recommendation": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "decision",
+                "byUid",
+                "at",
+                "note"
+              ],
+              "properties": {
+                "decision": {
+                  "type": "string",
+                  "enum": [
+                    "approve",
+                    "reject"
+                  ]
+                },
+                "byUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "note": {
+                  "type": "string",
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "journey": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stepId",
+          "occurredAt",
+          "title",
+          "detail",
+          "actorUid",
+          "tone"
+        ],
+        "properties": {
+          "stepId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actorUid": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tone": {
+            "type": "string",
+            "enum": [
+              "ink",
+              "success",
+              "warning",
+              "danger",
+              "muted"
+            ]
+          }
+        }
+      }
+    },
+    "canWork": {
+      "type": "boolean"
+    },
+    "canDecideClaim": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const adminUpdateInboxItemCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_update_inbox_item_payload.schema.json",
+  "title": "AdminUpdateInboxItemCallablePayload",
+  "description": "Assign, unassign, snooze or wake one Admin inbox item; audited and recorded in its journey.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "itemId",
+    "action",
+    "assigneeUid",
+    "snoozedUntil",
+    "note"
+  ],
+  "properties": {
+    "itemId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 220,
+      "pattern": "^[a-z]+-[A-Za-z0-9._:-]+$"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "assign",
+        "unassign",
+        "snooze",
+        "wake"
+      ]
+    },
+    "assigneeUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "snoozedUntil": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "note": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminUpdateInboxItem"
+  ]
+};
+
+export const adminUpdateInboxItemCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_update_inbox_item_response.schema.json",
+  "title": "AdminUpdateInboxItemCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "item"
+  ],
+  "properties": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId",
+        "type",
+        "sourceKind",
+        "sourceId",
+        "sourcePath",
+        "title",
+        "subtitle",
+        "cameFrom",
+        "nominatorUid",
+        "city",
+        "state",
+        "status",
+        "waitingSince",
+        "doneAt",
+        "assigneeUid",
+        "snoozedUntil",
+        "recommendation"
+      ],
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 220,
+          "pattern": "^[a-z]+-[A-Za-z0-9._:-]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "listing",
+            "event",
+            "claim",
+            "enquiry",
+            "access",
+            "stuck"
+          ]
+        },
+        "sourceKind": {
+          "type": "string",
+          "enum": [
+            "supplyIntakeRequest",
+            "organizerClaimRequest",
+            "salesInboundIntent",
+            "accessApplication",
+            "externalEvent"
+          ]
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "sourcePath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "subtitle": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 300
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cameFrom": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "nominatorUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "label",
+            "tone"
+          ],
+          "properties": {
+            "code": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "tone": {
+              "type": "string",
+              "enum": [
+                "neutral",
+                "info",
+                "success",
+                "warning",
+                "danger"
+              ]
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "working",
+            "waiting",
+            "snoozed",
+            "done"
+          ]
+        },
+        "waitingSince": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "doneAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "assigneeUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "snoozedUntil": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "recommendation": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "decision",
+                "byUid",
+                "at",
+                "note"
+              ],
+              "properties": {
+                "decision": {
+                  "type": "string",
+                  "enum": [
+                    "approve",
+                    "reject"
+                  ]
+                },
+                "byUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "note": {
+                  "type": "string",
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+
+export const adminRebuildInboxCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_rebuild_inbox_payload.schema.json",
+  "title": "AdminRebuildInboxCallablePayload",
+  "description": "Owner-only: re-project one page of an inbox source collection, or of users into the people index.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source",
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "source": {
+      "type": "string",
+      "enum": [
+        "supplyIntakeRequest",
+        "organizerClaimRequest",
+        "salesInboundIntent",
+        "accessApplication",
+        "externalEvent",
+        "people"
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminRebuildInbox"
+  ]
+};
+
+export const adminRebuildInboxCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_rebuild_inbox_response.schema.json",
+  "title": "AdminRebuildInboxCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source",
+    "scanned",
+    "written",
+    "nextCursor"
+  ],
+  "properties": {
+    "source": {
+      "type": "string",
+      "enum": [
+        "supplyIntakeRequest",
+        "organizerClaimRequest",
+        "salesInboundIntent",
+        "accessApplication",
+        "externalEvent",
+        "people"
+      ]
+    },
+    "scanned": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "written": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const adminRecommendOrganizerClaimCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_recommend_organizer_claim_payload.schema.json",
+  "title": "AdminRecommendOrganizerClaimCallablePayload",
+  "description": "Ops recommend approving or rejecting a pending organizer claim; the owner decides it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "decision",
+    "note"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "reject"
+      ]
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "x-callable-aliases": [
+    "adminRecommendOrganizerClaim"
+  ]
+};
+
+export const adminRecommendOrganizerClaimCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_recommend_organizer_claim_response.schema.json",
+  "title": "AdminRecommendOrganizerClaimCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "status",
+    "recommendation"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "status": {
+      "const": "pending"
+    },
+    "recommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision",
+        "byUid",
+        "at",
+        "note"
+      ],
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "reject"
+          ]
+        },
+        "byUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      }
+    }
+  }
+};
+
+export const adminSearchPeopleCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_search_people_payload.schema.json",
+  "title": "AdminSearchPeopleCallablePayload",
+  "description": "Search people by name, phone or user id; every search is written to the admin audit log.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "query",
+    "limit"
+  ],
+  "properties": {
+    "query": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 25
+    }
+  },
+  "x-callable-aliases": [
+    "adminSearchPeople"
+  ]
+};
+
+export const adminSearchPeopleCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_search_people_response.schema.json",
+  "title": "AdminSearchPeopleCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "rows"
+  ],
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "uid",
+        "phone",
+        "name"
+      ]
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "name",
+          "phone",
+          "city",
+          "deleted"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminListActivityLogCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_activity_log_payload.schema.json",
+  "title": "AdminListActivityLogCallablePayload",
+  "description": "One page of the Admin activity log, newest first: people's decisions and agent receipts, filterable to problems.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "filter",
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "filter": {
+      "type": "string",
+      "enum": [
+        "all",
+        "problems",
+        "decisions",
+        "agents"
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminListActivityLog"
+  ]
+};
+
+export const adminListActivityLogCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_activity_log_response.schema.json",
+  "title": "AdminListActivityLogCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "filter",
+    "entries",
+    "nextCursor"
+  ],
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "filter": {
+      "type": "string",
+      "enum": [
+        "all",
+        "problems",
+        "decisions",
+        "agents"
+      ]
+    },
+    "entries": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entryId",
+          "kind",
+          "at",
+          "actorUid",
+          "actorRoles",
+          "action",
+          "target",
+          "outcome",
+          "detail",
+          "problem"
+        ],
+        "properties": {
+          "entryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 220
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "decision",
+              "agent"
+            ]
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actorUid": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actorRoles": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40
+            }
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "target": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "done",
+              "started",
+              "failed",
+              "indeterminate"
+            ]
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "problem": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
 };
 
 export const adminListOrganizerListingReviewsCallablePayloadSchema = {
@@ -337191,6 +346200,1062 @@ export const reportUserCallablePayloadSchema = {
   }
 };
 
+export const adminTakeAccountSafetyActionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_take_account_safety_action_payload.schema.json",
+  "title": "AdminTakeAccountSafetyActionCallablePayload",
+  "description": "Warn, restrict, suspend or ban one account. Ops may warn and restrict (7 or 30 days, or until lifted); suspend and ban are owner-only. Suspend and ban sign the person out and cancel their future bookings; a ban also blocks their phone and devices from making a new account. messageToUser is what they see; it never names the reporter. caseTargetPath links the safety case it resolves.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "uid",
+    "kind",
+    "durationDays",
+    "reasonCode",
+    "messageToUser",
+    "caseTargetPath",
+    "notifyReporter",
+    "appealable",
+    "note"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "warn",
+        "restrict",
+        "suspend",
+        "ban"
+      ]
+    },
+    "durationDays": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "enum": [
+        7,
+        30,
+        null
+      ]
+    },
+    "reasonCode": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{1,63}$"
+    },
+    "messageToUser": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "caseTargetPath": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 3,
+      "maxLength": 260
+    },
+    "notifyReporter": {
+      "type": "boolean"
+    },
+    "appealable": {
+      "type": "boolean"
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "x-callable-aliases": [
+    "adminTakeAccountSafetyAction"
+  ]
+};
+
+export const adminTakeAccountSafetyActionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_take_account_safety_action_response.schema.json",
+  "title": "AdminTakeAccountSafetyActionCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "kind",
+    "status",
+    "endsAtMillis",
+    "bookings"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "warn",
+        "restrict",
+        "suspend",
+        "ban"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active"
+      ]
+    },
+    "endsAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "bookings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cancelled",
+        "needsOrganizer",
+        "failed"
+      ],
+      "properties": {
+        "cancelled": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "needsOrganizer": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+};
+
+export const adminLiftAccountSafetyActionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_lift_account_safety_action_payload.schema.json",
+  "title": "AdminLiftAccountSafetyActionCallablePayload",
+  "description": "Lift one active account safety action early. Ops may lift warnings and restrictions; lifting a suspension or ban is owner-only (or the appeal reviewer, through adminDecideSafetyAppeal).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "note"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "x-callable-aliases": [
+    "adminLiftAccountSafetyAction"
+  ]
+};
+
+export const adminLiftAccountSafetyActionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_lift_account_safety_action_response.schema.json",
+  "title": "AdminLiftAccountSafetyActionCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "status"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "lifted"
+      ]
+    }
+  }
+};
+
+export const adminListAccountSafetyActionsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_account_safety_actions_payload.schema.json",
+  "title": "AdminListAccountSafetyActionsCallablePayload",
+  "description": "Lists account safety actions for the Safety queue: those in force, those with an appeal waiting, or the most recent of any status. Optionally for one account.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "view",
+    "uid",
+    "limit"
+  ],
+  "properties": {
+    "view": {
+      "type": "string",
+      "enum": [
+        "active",
+        "appeals",
+        "recent"
+      ]
+    },
+    "uid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    }
+  },
+  "x-callable-aliases": [
+    "adminListAccountSafetyActions"
+  ]
+};
+
+export const adminListAccountSafetyActionsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_account_safety_actions_response.schema.json",
+  "title": "AdminListAccountSafetyActionsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "actionId",
+          "uid",
+          "displayName",
+          "kind",
+          "reasonCode",
+          "reasonLabel",
+          "messageToUser",
+          "durationDays",
+          "startsAtMillis",
+          "endsAtMillis",
+          "status",
+          "decidedByUid",
+          "decidedByRole",
+          "automatic",
+          "appealable",
+          "caseTargetPaths",
+          "appeal",
+          "bookings",
+          "blockedSignupAttempts",
+          "canReviewAppeal"
+        ],
+        "properties": {
+          "actionId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{8,128}$"
+          },
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "displayName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "warn",
+              "restrict",
+              "suspend",
+              "ban"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{1,63}$"
+          },
+          "reasonLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "messageToUser": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "durationDays": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "enum": [
+              7,
+              30,
+              null
+            ]
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "endsAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "expired",
+              "lifted",
+              "replaced"
+            ]
+          },
+          "decidedByUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "decidedByRole": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "ops",
+              "system"
+            ]
+          },
+          "automatic": {
+            "type": "boolean"
+          },
+          "appealable": {
+            "type": "boolean"
+          },
+          "caseTargetPaths": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 260
+            }
+          },
+          "appeal": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "status",
+                  "text",
+                  "submittedAtMillis",
+                  "reviewerUid",
+                  "decidedAtMillis",
+                  "decisionNote"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "kept",
+                      "reduced",
+                      "lifted"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "submittedAtMillis": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "reviewerUid": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 128
+                  },
+                  "decidedAtMillis": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "decisionNote": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 1000
+                  }
+                }
+              }
+            ]
+          },
+          "bookings": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "cancelled",
+              "needsOrganizer",
+              "failed"
+            ],
+            "properties": {
+              "cancelled": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "needsOrganizer": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "blockedSignupAttempts": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "canReviewAppeal": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminDecideSafetyAppealCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_decide_safety_appeal_payload.schema.json",
+  "title": "AdminDecideSafetyAppealCallablePayload",
+  "description": "Decides the one appeal on an account safety action. The reviewer must not be the person who decided the action. keep leaves it in force; reduce replaces it with a lighter step (reduceTo); lift ends it. messageToUser is sent to the person; the reporters are not told.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "outcome",
+    "reduceTo",
+    "messageToUser",
+    "note"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "keep",
+        "reduce",
+        "lift"
+      ]
+    },
+    "reduceTo": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "durationDays"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "warn",
+                "restrict",
+                "suspend"
+              ]
+            },
+            "durationDays": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "enum": [
+                7,
+                30,
+                null
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "messageToUser": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "x-callable-aliases": [
+    "adminDecideSafetyAppeal"
+  ]
+};
+
+export const adminDecideSafetyAppealCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_decide_safety_appeal_response.schema.json",
+  "title": "AdminDecideSafetyAppealCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "outcome",
+    "replacementActionId"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "keep",
+        "reduce",
+        "lift"
+      ]
+    },
+    "replacementActionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    }
+  }
+};
+
+export const adminGetSafetySettingsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_safety_settings_payload.schema.json",
+  "title": "AdminGetSafetySettingsCallablePayload",
+  "description": "Reads Settings → Safety: the report reasons, the rules, the deadlines, who may take each step and how long case records are kept.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {},
+  "x-callable-aliases": [
+    "adminGetSafetySettings"
+  ]
+};
+
+export const adminGetSafetySettingsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_safety_settings_response.schema.json",
+  "title": "AdminGetSafetySettingsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "settings",
+    "deadlines",
+    "stepRoles",
+    "retentionDaysAfterDeletion"
+  ],
+  "properties": {
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reasons",
+        "restrictOnSevereReport",
+        "organizerBlockLists",
+        "organizerReports",
+        "updatedAtMillis",
+        "updatedByUid"
+      ],
+      "properties": {
+        "reasons": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "label",
+              "severe",
+              "takedown",
+              "active"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{1,63}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "severe": {
+                "type": "boolean"
+              },
+              "takedown": {
+                "type": "boolean"
+              },
+              "active": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "restrictOnSevereReport": {
+          "type": "boolean"
+        },
+        "organizerBlockLists": {
+          "type": "boolean"
+        },
+        "organizerReports": {
+          "type": "boolean"
+        },
+        "updatedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "updatedByUid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        }
+      }
+    },
+    "deadlines": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "acknowledge",
+        "firstLookHours",
+        "resolveDays",
+        "takedownHours"
+      ],
+      "properties": {
+        "acknowledge": {
+          "type": "string",
+          "enum": [
+            "immediately"
+          ]
+        },
+        "firstLookHours": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "resolveDays": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "takedownHours": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "stepRoles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "warn",
+        "restrict",
+        "suspend",
+        "ban"
+      ],
+      "properties": {
+        "warn": {
+          "type": "string",
+          "enum": [
+            "ops",
+            "owner"
+          ]
+        },
+        "restrict": {
+          "type": "string",
+          "enum": [
+            "ops",
+            "owner"
+          ]
+        },
+        "suspend": {
+          "type": "string",
+          "enum": [
+            "ops",
+            "owner"
+          ]
+        },
+        "ban": {
+          "type": "string",
+          "enum": [
+            "ops",
+            "owner"
+          ]
+        }
+      }
+    },
+    "retentionDaysAfterDeletion": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+};
+
+export const adminUpdateSafetySettingsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_update_safety_settings_payload.schema.json",
+  "title": "AdminUpdateSafetySettingsCallablePayload",
+  "description": "Owner-only. Replaces the report reasons and the safety rules. Reason codes already used on reports keep their meaning, so a reason is switched off (active false) rather than removed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reasons",
+    "restrictOnSevereReport",
+    "organizerBlockLists",
+    "organizerReports"
+  ],
+  "properties": {
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "label",
+          "severe",
+          "takedown",
+          "active"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{1,63}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "severe": {
+            "type": "boolean"
+          },
+          "takedown": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "restrictOnSevereReport": {
+      "type": "boolean"
+    },
+    "organizerBlockLists": {
+      "type": "boolean"
+    },
+    "organizerReports": {
+      "type": "boolean"
+    }
+  },
+  "x-callable-aliases": [
+    "adminUpdateSafetySettings"
+  ]
+};
+
+export const submitSafetyAppealCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_safety_appeal_payload.schema.json",
+  "title": "SubmitSafetyAppealCallablePayload",
+  "description": "The account appeals one safety action taken against it. Each action can be appealed once.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "text"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    }
+  },
+  "x-callable-aliases": [
+    "submitSafetyAppeal"
+  ]
+};
+
+export const submitSafetyAppealCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/submit_safety_appeal_response.schema.json",
+  "title": "SubmitSafetyAppealCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "appealed"
+  ],
+  "properties": {
+    "appealed": {
+      "type": "boolean",
+      "const": true
+    }
+  }
+};
+
+export const manageOrganizerGuestBlockCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_organizer_guest_block_payload.schema.json",
+  "title": "ManageOrganizerGuestBlockCallablePayload",
+  "description": "An organizer's owner or manager stops someone booking their events, or lets them back. No reason or review; it affects no other organizer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "uid",
+    "blocked"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "uid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "blocked": {
+      "type": "boolean"
+    }
+  },
+  "x-callable-aliases": [
+    "manageOrganizerGuestBlock"
+  ]
+};
+
+export const manageOrganizerGuestBlockCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_organizer_guest_block_response.schema.json",
+  "title": "ManageOrganizerGuestBlockCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "uid",
+    "blocked"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "uid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "blocked": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const listOrganizerGuestBlocksCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_guest_blocks_payload.schema.json",
+  "title": "ListOrganizerGuestBlocksCallablePayload",
+  "description": "Lists who an organizer has blocked from booking their events.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    }
+  },
+  "x-callable-aliases": [
+    "listOrganizerGuestBlocks"
+  ]
+};
+
+export const listOrganizerGuestBlocksCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_guest_blocks_response.schema.json",
+  "title": "ListOrganizerGuestBlocksCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "blockedByUid",
+          "createdAtMillis"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "displayName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "blockedByUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+};
+
+export const reportGuestCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/report_guest_payload.schema.json",
+  "title": "ReportGuestCallablePayload",
+  "description": "An organizer, their manager or the event's team reports a guest, including what happened at an event. It lands in the Safety queue like any report.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "targetUserId",
+    "reasonCode",
+    "notes"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "eventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "targetUserId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "reasonCode": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{1,63}$"
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2000
+    }
+  },
+  "x-callable-aliases": [
+    "reportGuest"
+  ]
+};
+
+export const reportGuestCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/report_guest_response.schema.json",
+  "title": "ReportGuestCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reported"
+  ],
+  "properties": {
+    "reported": {
+      "type": "boolean",
+      "const": true
+    }
+  }
+};
+
 export const requestSuvbotDemoOperationCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/request_suvbot_demo_operation_payload.schema.json",
@@ -342729,8 +352794,6 @@ export const adminSetAdminUserRolesCallablePayloadSchema = {
           "adminOwner",
           "safetyReviewer",
           "support",
-          "finance",
-          "analyticsViewer",
           "salesStaff"
         ]
       }
@@ -342749,8 +352812,6 @@ export const adminSetAdminUserRolesCallablePayloadSchema = {
         "adminOwner",
         "safetyReviewer",
         "support",
-        "finance",
-        "analyticsViewer",
         "salesStaff"
       ]
     }
@@ -342818,8 +352879,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
               "adminOwner",
               "safetyReviewer",
               "support",
-              "finance",
-              "analyticsViewer",
               "salesStaff"
             ]
           }
@@ -342840,8 +352899,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "adminOwner",
           "safetyReviewer",
           "support",
-          "finance",
-          "analyticsViewer",
           "salesStaff"
         ]
       }
@@ -342856,8 +352913,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "adminOwner",
           "safetyReviewer",
           "support",
-          "finance",
-          "analyticsViewer",
           "salesStaff"
         ]
       }
@@ -342871,8 +352926,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
         "adminOwner",
         "safetyReviewer",
         "support",
-        "finance",
-        "analyticsViewer",
         "salesStaff"
       ]
     },
@@ -342886,8 +352939,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "adminOwner",
           "safetyReviewer",
           "support",
-          "finance",
-          "analyticsViewer",
           "salesStaff"
         ]
       }
@@ -342951,8 +353002,6 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
               "adminOwner",
               "safetyReviewer",
               "support",
-              "finance",
-              "analyticsViewer",
               "salesStaff"
             ]
           }

@@ -73,6 +73,7 @@ import {applyFirestoreSeat, prepareFirestoreSeat, deriveEventSeatPolicy,
   assertCurrentReadySeatSnapshot,
   FirestoreSeatTransaction} from
   "./seatAuthority/firestoreAdapter";
+import {assertAccountMayBook} from "../safety/accountStanding";
 import {applyBatchImportSeats, prepareFirestoreBatchSeatImport} from
   "./seatAuthority/batchSeatImport";
 
@@ -885,6 +886,8 @@ export async function registerPublicEventHandler(
         attendee.status === "checkedIn" ? count + 1 : count;
     }, 0) ?? 0;
     const now = deps.timestamp();
+    await assertAccountMayBook(tx, db, uid, event.organizerId,
+      now.toMillis());
     await assertPublicEventAge({db, tx, uid, event,
       nowMillis: now.toMillis()});
     assertPublicRegistrationPolicy(event, organizer, "free", now.toMillis(),

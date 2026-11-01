@@ -27,7 +27,7 @@ import {writeAdminAuditLog} from "./adminAudit";
 import {eventMessagingBudgetDecisionId} from "./eventMessagingBudget";
 
 const decisionCollection = "eventMessagingBudgetDecisions";
-const allowedRoles = ["adminOwner", "finance"] as const;
+const allowedRoles = ["adminOwner"] as const;
 
 interface EventMessagingBudgetReviewDeps {
   firestore: () => FirebaseFirestore.Firestore;

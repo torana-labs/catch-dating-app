@@ -21,9 +21,7 @@ export const adminActionCatalog = {
         "admin",
         "adminOwner",
         "safetyReviewer",
-        "support",
-        "finance",
-        "analyticsViewer"
+        "support"
       ],
       "summary": "Load the bounded admin overview, queue, and data-quality snapshot.",
       "controlPlane": false
@@ -159,8 +157,7 @@ export const adminActionCatalog = {
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
-        "adminOwner",
-        "analyticsViewer"
+        "adminOwner"
       ],
       "summary": "Load aggregate host, organizer, or event analytics for a bounded range.",
       "controlPlane": false
@@ -175,8 +172,7 @@ export const adminActionCatalog = {
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
-        "adminOwner",
-        "analyticsViewer"
+        "adminOwner"
       ],
       "summary": "Load the bounded analytics report for one exact user id.",
       "controlPlane": false
@@ -191,8 +187,7 @@ export const adminActionCatalog = {
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "summary": "Review one exact messaging runtime, sender, budget scope, and current decision without loading credentials or granting authority.",
       "controlPlane": false
@@ -207,8 +202,7 @@ export const adminActionCatalog = {
       "kind": "mutation",
       "risk": "critical",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "summary": "Record a source-fenced event-messaging ceiling decision without creating or activating a spending budget.",
       "controlPlane": false
@@ -223,8 +217,7 @@ export const adminActionCatalog = {
       "kind": "mutation",
       "risk": "critical",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "summary": "Stage one still-current approved messaging decision as two paused channel ceilings without granting spend, dispatch, or worker activation.",
       "controlPlane": false
@@ -465,7 +458,8 @@ export const adminActionCatalog = {
       "risk": "high",
       "roles": [
         "admin",
-        "adminOwner"
+        "adminOwner",
+        "support"
       ],
       "summary": "Approve one Supply Intake listing: publish its organizer page unclaimed and noindex, hidden in the app, record the review, and open its Sales account, opportunity, tasks and activity.",
       "controlPlane": false
@@ -584,8 +578,7 @@ export const adminActionCatalog = {
       "risk": "critical",
       "roles": [
         "admin",
-        "adminOwner",
-        "support"
+        "adminOwner"
       ],
       "summary": "Approve or reject one organizer claim request.",
       "controlPlane": false
@@ -605,6 +598,60 @@ export const adminActionCatalog = {
         "support"
       ],
       "summary": "List bounded canonical organizer profiles.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "organizers.directory",
+      "callable": "adminListOrganizerDirectory",
+      "workflowIds": [
+        "organizers"
+      ],
+      "guiPath": "/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "summary": "List the Organizers directory with real totals per view and chip counts for city, kind, claim state and the caller's own organizers.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "organizers.overview",
+      "callable": "adminGetOrganizerOverview",
+      "workflowIds": [
+        "organizers"
+      ],
+      "guiPath": "/organizers/:organizerId",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "summary": "Read one organizer's overview: facts, Sales owner, terms, payments, journey from nomination to claim and upcoming events.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "events.directory",
+      "callable": "adminListEventDirectory",
+      "workflowIds": [
+        "events"
+      ],
+      "guiPath": "/events",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "summary": "List Catch and imported events as one table with a source, exact view totals and chip counts.",
       "controlPlane": false
     },
     {
@@ -816,9 +863,7 @@ export const adminActionCatalog = {
         "admin",
         "adminOwner",
         "safetyReviewer",
-        "support",
-        "finance",
-        "analyticsViewer"
+        "support"
       ],
       "summary": "Create or advance the remotely visible receipt for one CLI action execution.",
       "controlPlane": true
@@ -2044,8 +2089,7 @@ export const adminActionCatalog = {
       "kind": "mutation",
       "risk": "high",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "summary": "Grant one entitlement SKU to an organizer after manual invoice reconciliation; idempotent on operationId and grants no dispatch authority.",
       "controlPlane": false
@@ -2060,8 +2104,7 @@ export const adminActionCatalog = {
       "kind": "mutation",
       "risk": "high",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "summary": "Revoke one existing entitlement grant for an organizer; idempotent on operationId and fails closed on unknown or already-revoked grants.",
       "controlPlane": false
@@ -2076,8 +2119,7 @@ export const adminActionCatalog = {
       "kind": "read",
       "risk": "read",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "summary": "Review Catch's platform commercial terms, one scope's recent revisions, every organizer override, and find an organizer to add an override for.",
       "controlPlane": false
@@ -2092,8 +2134,7 @@ export const adminActionCatalog = {
       "kind": "mutation",
       "risk": "high",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "summary": "Read or replace the platform commercial terms or one organizer's sparse override against the reviewed revision, with a reason; only new payments freeze the change.",
       "controlPlane": false
@@ -2108,8 +2149,7 @@ export const adminActionCatalog = {
       "kind": "mutation",
       "risk": "high",
       "roles": [
-        "adminOwner",
-        "finance"
+        "adminOwner"
       ],
       "summary": "Read or replace the app payment routing defaults or one organizer override for event tickets, form fees and host memberships against the reviewed revision; selection never proves provider readiness.",
       "controlPlane": false
@@ -2266,7 +2306,9 @@ export const adminActionCatalog = {
         "organizers.list",
         "organizers.get",
         "organizers.update",
-        "organizers.set-index-status"
+        "organizers.set-index-status",
+        "organizers.directory",
+        "organizers.overview"
       ]
     },
     {
@@ -2276,7 +2318,8 @@ export const adminActionCatalog = {
       "actions": [
         "events.list",
         "events.get",
-        "events.update"
+        "events.update",
+        "events.directory"
       ]
     },
     {

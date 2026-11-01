@@ -14,6 +14,8 @@ import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
 import {deleteAccountEventParticipations} from "./accountDeletionSeats";
 import {endAccountHostMemberships} from
   "../hostMemberships/accountDeletion";
+import {safetyRetainUntil} from "./safetyPolicy";
+import {retainSafetyRecordsForDeletedAccount} from "./safetyRetention";
 
 type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
 
@@ -98,6 +100,7 @@ export async function requestAccountDeletionHandler(
     writer,
   });
   await removeOrganizerHostIdentity(db, uid);
+  await retainSafetyRecordsForDeletedAccount(db, uid, Date.now());
 
   writer.set(db.collection("users").doc(uid), {
     deleted: true,
@@ -682,8 +685,11 @@ async function queueReportCleanup(
 ) {
   const [reportsByUser, reportsAgainstUser] = await Promise.all([
     db.collection("reports").where("reporterUserId", "==", uid).get(),
-    db.collection("reports").where("reportedUserId", "==", uid).get(),
+    db.collection("reports").where("targetUserId", "==", uid).get(),
   ]);
+  // Case records are kept 180 days after either account is deleted, then
+  // purged by purgeRetainedSafetyRecords.
+  const retainUntil = safetyRetainUntil(Date.now());
   const seen = new Set<string>();
   [...reportsByUser.docs, ...reportsAgainstUser.docs].forEach((doc) => {
     if (seen.has(doc.ref.path)) return;
@@ -692,6 +698,7 @@ async function queueReportCleanup(
       hasDeletedUser: true,
       deletedUserId: uid,
       deletedUserMarkedAt: now,
+      retainUntil,
     }, {merge: true});
   });
 }

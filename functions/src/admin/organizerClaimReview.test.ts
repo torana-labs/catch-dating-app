@@ -220,7 +220,7 @@ test("club claim review handlers deny viewer-only admins", async () => {
   const firestore = new FakeFirestore({});
   await assert.rejects(
     () => adminListOrganizerClaimRequestsHandler(
-      request({}, {analyticsViewer: true}),
+      request({}, {salesStaff: true}),
       deps(firestore)
     ),
     (error) => error instanceof HttpsError && error.code === "permission-denied"

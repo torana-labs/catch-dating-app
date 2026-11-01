@@ -14,7 +14,7 @@ const platformWrite = {action: "replace", organizerId: null,
 const read = (organizerId: string | null = null) => ({action: "read",
   organizerId, expectedRevision: null, terms: null, reason: null});
 
-function request(data: unknown, role = "finance"): CallableRequest<unknown> {
+function request(data: unknown, role = "adminOwner"): CallableRequest<unknown> {
   return {data, auth: {uid: "operator", token: {[role]: true}}} as
     unknown as CallableRequest<unknown>;
 }
@@ -35,7 +35,7 @@ test("terms are readable and writable by Finance and Admin Owner only",
     const deps = {...fixture().deps, db: () => {
       throw new Error("DB accessed");
     }};
-    for (const role of ["admin", "support", "analyticsViewer", "salesStaff",
+    for (const role of ["admin", "support", "salesStaff", "finance",
       "organizerManager"]) {
       await assert.rejects(manage(request(read(), role), deps),
         /not authorized/);

@@ -14,7 +14,7 @@ const start = Date.UTC(2026, 8, 16, 6, 30);
 
 function request(
   data: Record<string, unknown>,
-  token: Record<string, unknown> = {finance: true}
+  token: Record<string, unknown> = {adminOwner: true}
 ): CallableRequest<unknown> {
   return {
     auth: {uid: "finance-1", token} as CallableRequest["auth"],

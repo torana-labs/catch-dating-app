@@ -2582,6 +2582,174 @@ export interface SupplyNominatorDocument {
 }
 
 /**
+ * One step Catch took against an account: warn, restrict (no messages or group chats), suspend (signed out, future bookings cancelled) or ban (Catch-wide, phone and device blocked from new accounts). Ops may warn and restrict; suspend and ban are owner-only; a severe report restricts automatically. The person may appeal once, and someone other than the decider reviews it. Kept 180 days after the account is deleted (retainUntil).
+ */
+export interface AccountSafetyActionDocument {
+  schemaVersion: 1;
+  actionId: string;
+  uid: string;
+  kind: "warn" | "restrict" | "suspend" | "ban";
+  reasonCode: string;
+  messageToUser: string;
+  durationDays: 7 | 30 | null;
+  startsAt: FirebaseFirestore.Timestamp;
+  endsAt: FirebaseFirestore.Timestamp | null;
+  status: "active" | "expired" | "lifted" | "replaced";
+  /**
+   * @maxItems 20
+   */
+  caseTargetPaths: string[];
+  decidedByUid: string;
+  decidedByRole: "owner" | "ops" | "system";
+  automatic: boolean;
+  appealable: boolean;
+  appeal: null | {
+    status: "open" | "kept" | "reduced" | "lifted";
+    text: string;
+    submittedAt: FirebaseFirestore.Timestamp;
+    reviewerUid: string | null;
+    decidedAt: FirebaseFirestore.Timestamp | null;
+    decisionNote: string | null;
+    replacementActionId: string | null;
+  };
+  bookings: {
+    /**
+     * @maxItems 200
+     */
+    cancelledEventIds: string[];
+    /**
+     * @maxItems 200
+     */
+    needsOrganizerEventIds: string[];
+    /**
+     * @maxItems 200
+     */
+    failedEventIds: string[];
+  };
+  lifted: null | {
+    at: FirebaseFirestore.Timestamp;
+    byUid: string;
+    note: string;
+  };
+  retainUntil: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * The current standing of one account, derived from its active account safety actions. Messaging, event chats and bookings read it; Firestore rules read messaging to stop direct chat writes. The account may read its own standing.
+ */
+export interface AccountSafetyStateDocument {
+  schemaVersion: 1;
+  uid: string;
+  level: "none" | "warned" | "restricted" | "suspended" | "banned";
+  messaging: {
+    held: boolean;
+    until: FirebaseFirestore.Timestamp | null;
+  };
+  booking: {
+    held: boolean;
+    until: FirebaseFirestore.Timestamp | null;
+  };
+  authDisabledBySafety: boolean;
+  /**
+   * @maxItems 50
+   */
+  activeActionIds: string[];
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * A safety message to one account: the rule they broke and what changes, an appeal outcome, or (to a reporter) that their report was received or handled. A reporter is never told what was done. Server-written; the account reads its own.
+ */
+export interface AccountSafetyNoticeDocument {
+  schemaVersion: 1;
+  noticeId: string;
+  uid: string;
+  kind:
+    | "warning"
+    | "restriction"
+    | "suspension"
+    | "ban"
+    | "lifted"
+    | "appealDecision"
+    | "reportReceived"
+    | "reportHandled";
+  title: string;
+  body: string;
+  actionId: string | null;
+  appealable: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  readAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Catch's safety rules, edited by the owner in Settings → Safety: the report reasons (and which are severe), whether a severe report restricts at once, and whether organizers may keep block lists and report guests. Absent means the defaults in code.
+ */
+export interface SafetySettingsDocument {
+  schemaVersion: 1;
+  /**
+   * @minItems 1
+   * @maxItems 40
+   */
+  reasons: {
+    code: string;
+    label: string;
+    severe: boolean;
+    takedown: boolean;
+    active: boolean;
+  }[];
+  restrictOnSevereReport: boolean;
+  organizerBlockLists: boolean;
+  organizerReports: boolean;
+  updatedAt: FirebaseFirestore.Timestamp;
+  updatedByUid: string;
+}
+
+/**
+ * A phone number or device that a Catch-wide ban stops from making a new account. Only a SHA-256 hash of the value is stored. It stays after the banned account is deleted so the ban keeps holding; lifting the ban sets active to false.
+ */
+export interface BannedIdentityDocument {
+  schemaVersion: 1;
+  identityId: string;
+  kind: "phone" | "installation" | "pushToken";
+  valueHash: string;
+  uid: string;
+  actionId: string;
+  active: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * A new account that used a banned phone or device. The account is disabled and the attempt is shown on the ban in Safety.
+ */
+export interface BlockedSignupAttemptDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  attemptedUid: string;
+  identityId: string;
+  kind: "phone" | "installation" | "pushToken";
+  bannedUid: string;
+  actionId: string;
+  outcome: "disabled";
+  at: FirebaseFirestore.Timestamp;
+  retainUntil: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * An organizer's own block list entry: this person cannot book that organizer's events. No reason or review is needed and it affects no other organizer.
+ */
+export interface OrganizerGuestBlockDocument {
+  schemaVersion: 1;
+  blockId: string;
+  organizerId: string;
+  uid: string;
+  blockedByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-only growth facts for one organizer: the one acquisition channel set when its listing was made, the first person who nominated it, and the dated steps it reached (listed, claim asked, claimed, first event, first paid booking). Each step is set once, to the earliest time observed, and never edited by hand, so organizer cohorts can be counted from it. Every step is also streamed to BigQuery as an organizer growth event.
  */
 export interface OrganizerGrowthFactsDocument {
@@ -2641,6 +2809,217 @@ export interface OrganizerGrowthFactsDocument {
   firstEventId: string | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Catch's monthly bill to one organizer, made from the bookings paid into the organizer's own account (hostCollected) in one calendar month, India time. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the monthly cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.
+ */
+export interface OrganizerBillDocument {
+  schemaVersion: 1;
+  billId: string;
+  organizerId: string;
+  organizerName: string;
+  month: string;
+  periodStartMillis: number;
+  periodEndMillis: number;
+  revision: number;
+  /**
+   * toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial.
+   */
+  status: "toSend" | "sent" | "paid" | "writtenOff" | "free";
+  sales: {
+    paymentCount: number;
+    eventCount: number;
+    grossMinor: number;
+    refundedMinor: number;
+    /**
+     * What commission is charged on: gross or net of refunds, per the terms.
+     */
+    baseMinor: number;
+    /**
+     * Razorpay's fees on these sales, taken from the organizer's account; shown for their records.
+     */
+    providerFeeMinor: number;
+    providerTaxMinor: number;
+    /**
+     * Payments that froze no terms and were charged on the organizer's current terms.
+     */
+    unsnapshottedCount: number;
+  };
+  commission: {
+    /**
+     * The organizer's current rate; individual payments may have frozen another.
+     */
+    rateBasisPoints: number;
+    uncappedMinor: number;
+    capMinor: number | null;
+    capped: boolean;
+    trialWaivedMinor: number;
+    amountMinor: number;
+  };
+  trialEndsAtMillis: number | null;
+  terms: {
+    platformRevision: number;
+    organizerRevision: number;
+    ownTerms: boolean;
+  };
+  gst: {
+    registered: boolean;
+    rateBasisPoints: number;
+    amountMinor: number;
+  };
+  totalMinor: number;
+  invoiceNumber: string | null;
+  dueAtMillis: number | null;
+  paymentLink: null | {
+    linkId: string;
+    url: string;
+  };
+  sentAtMillis: number | null;
+  /**
+   * @maxItems 24
+   */
+  reminders: number[];
+  paidAtMillis: number | null;
+  paidMinor: number | null;
+  paidVia: "paymentLink" | "manual" | null;
+  writtenOffAtMillis: number | null;
+  /**
+   * @maxItems 60
+   */
+  history: {
+    atMillis: number;
+    action:
+      | "generated"
+      | "regenerated"
+      | "sent"
+      | "reminded"
+      | "paid"
+      | "writtenOff";
+    byUid: string | null;
+    note: string | null;
+  }[];
+  generatedAtMillis: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * Catch's money settings (Settings → Payments): whether Catch is GST registered (off until the accountant says so; bills carry no GST while off), when bills fall due, and the nominator credit rule. One document, moneySettings/platform; absent means the defaults the owner decided on 1 Nov 2026. Every write bumps revision.
+ */
+export interface MoneySettingsDocument {
+  schemaVersion: 1;
+  settingsId: "platform";
+  revision: number;
+  settings: {
+    gstRegistered: boolean;
+    gstRateBasisPoints: number;
+    /**
+     * Bills for a month fall due on this day of the next month.
+     */
+    billDueDayOfMonth: number;
+    nominatorCredit: {
+      /**
+       * Share of what the organizer paid Catch, before GST.
+       */
+      rateBasisPoints: number;
+      /**
+       * Months of credit, counted from the organizer's first paid bill.
+       */
+      months: number;
+      /**
+       * A nomination lapses when the organizer has not claimed within this many days.
+       */
+      lapseDays: number;
+      /**
+       * Credit below this rolls over to the next payout.
+       */
+      minimumPayoutMinor: number;
+      payoutDayOfMonth: number;
+      /**
+       * @maxItems 4
+       */
+      earningRoles: ("partner" | "guest" | "organizer" | "associate")[];
+    };
+  };
+  updatedAtMillis: number;
+  updatedByUid: string;
+}
+
+/**
+ * One credit a nominator earned from one paid organizer bill, keyed by the bill. Written when a bill is paid, under the nominator credit rule in moneySettings: the first nominator of the organizer, if their role earns credit and the organizer claimed within the lapse window, earns the rate on what the organizer paid Catch before GST, for the set number of months from the organizer's first paid bill. Owed credit is approved monthly per nominator once it reaches the minimum (less rolls over), then marked paid with partner payouts.
+ */
+export interface NominatorCreditDocument {
+  schemaVersion: 1;
+  creditId: string;
+  billId: string;
+  organizerId: string;
+  organizerName: string;
+  nominatorUid: string;
+  nominatorRole: "associate" | "partner" | "guest" | "organizer";
+  billMonth: string;
+  /**
+   * Which month of credit this is, counted from the organizer's first paid bill.
+   */
+  monthIndex: number;
+  billPaidMinor: number;
+  rateBasisPoints: number;
+  creditMinor: number;
+  status: "owed" | "approved" | "paid";
+  approvedAtMillis: number | null;
+  approvedByUid: string | null;
+  paidAtMillis: number | null;
+  paidByUid: string | null;
+  createdAtMillis: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * The unbroken invoice number sequence for one Indian financial year (April to March), moneyInvoiceCounters/2026-27. lastNumber is the last number issued; the next bill sent takes lastNumber + 1, as 2026-27/032.
+ */
+export interface MoneyInvoiceCounterDocument {
+  schemaVersion: 1;
+  financialYear: string;
+  lastNumber: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * What one kind of cost came to in one India-time calendar month, platformCosts/{YYYY-MM}_{category}. The owner enters AI, Cloud, SMS and any invoice total by hand; WhatsApp falls back to an estimate from reserved dispatch costs while no invoice total is entered; ad spend arrives from the ad platform once its account is connected.
+ */
+export interface PlatformCostDocument {
+  schemaVersion: 1;
+  costId: string;
+  month: string;
+  category:
+    | "whatsapp"
+    | "ai"
+    | "cloud"
+    | "sms"
+    | "ads_meta"
+    | "ads_google"
+    | "other";
+  amountMinor: number;
+  source: "manual" | "meta_api" | "google_ads_api";
+  note: string | null;
+  updatedAtMillis: number;
+  updatedByUid: string | null;
+}
+
+/**
+ * How a money issue in Admin Money was resolved, keyed by the issue id (source collection and record id joined by a colon, encoded). A resolved issue leaves the open queue even while its record still matches; a new issue on the same record needs the record to change state.
+ */
+export interface MoneyIssueResolutionDocument {
+  schemaVersion: 1;
+  resolutionId: string;
+  issueId: string;
+  kind: "payment" | "refund" | "review" | "bill";
+  statusAtResolution: string;
+  action: "confirmedBooking" | "closed";
+  note: string | null;
+  resolvedAtMillis: number;
+  resolvedByUid: string;
+  title: string;
+  organizerName: string | null;
 }
 
 /**
@@ -13570,6 +13949,15 @@ export interface OrganizerClaimRequestDocument {
   decidedByUid: string | null;
   decisionReason: string | null;
   previousRequestId: string | null;
+  /**
+   * What ops recommend for a pending claim, set by adminRecommendOrganizerClaim. The owner decides the claim; a later recommendation replaces this one. Absent until someone recommends.
+   */
+  recommendation?: null | {
+    decision: "approve" | "reject";
+    byUid: string;
+    at: string;
+    note: string;
+  };
 }
 
 /**
@@ -20361,17 +20749,39 @@ export interface BlockDocument {
 }
 
 /**
- * Canonical safety report stored at reports/{reportId}.
+ * Canonical safety report stored at reports/{reportId}. A guest reports another guest from a profile or chat; an organizer or their team reports a guest from an event. The reporter is acknowledged at once and the deadlines (first look 24 h, resolve 15 days, intimate images down 24 h) drive the Safety queue. A severe reason restricts the reported account at once, pending review. Kept 180 days after either account is deleted (retainUntil).
  */
 export interface ReportDocument {
   reporterUserId: string;
   targetUserId: string;
   createdAt: FirebaseFirestore.Timestamp;
-  source: "profile" | "chat" | "match" | "support";
+  source: "profile" | "chat" | "match" | "support" | "organizer";
   status: "open" | "reviewed" | "dismissed";
   reasonCode?: string;
   contextId?: string;
   notes?: string;
+  reporterRole?: "guest" | "organizer";
+  organizerId?: string;
+  eventId?: string;
+  severity?: "severe" | "standard";
+  acknowledgedAt?: FirebaseFirestore.Timestamp;
+  firstLookDueAt?: FirebaseFirestore.Timestamp;
+  resolveDueAt?: FirebaseFirestore.Timestamp;
+  takedownDueAt?: FirebaseFirestore.Timestamp | null;
+  firstLookAt?: FirebaseFirestore.Timestamp | null;
+  resolvedAt?: FirebaseFirestore.Timestamp | null;
+  reporterNotifiedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * @maxItems 20
+   */
+  actionIds?: string[];
+  assigneeUid?: string | null;
+  assignmentUpdatedAt?: FirebaseFirestore.Timestamp;
+  assignmentUpdatedByUid?: string;
+  hasDeletedUser?: boolean;
+  deletedUserId?: string;
+  deletedUserMarkedAt?: FirebaseFirestore.Timestamp;
+  retainUntil?: FirebaseFirestore.Timestamp | null;
 }
 
 /**

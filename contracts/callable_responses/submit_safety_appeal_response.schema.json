@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/submit_safety_appeal_response.schema.json",
+  "title": "SubmitSafetyAppealCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "appealed"
+  ],
+  "properties": {
+    "appealed": {
+      "type": "boolean",
+      "const": true
+    }
+  }
+}

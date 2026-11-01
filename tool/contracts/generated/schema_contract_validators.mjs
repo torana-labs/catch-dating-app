@@ -154,8 +154,39 @@ import {
   supplyIntakeRequestsDocumentSchema,
   supplyIntakeUsageDocumentSchema,
   supplyNominatorDocumentSchema,
+  accountSafetyActionDocumentSchema,
+  accountSafetyStateDocumentSchema,
+  accountSafetyNoticeDocumentSchema,
+  safetySettingsDocumentSchema,
+  bannedIdentityDocumentSchema,
+  blockedSignupAttemptDocumentSchema,
+  organizerGuestBlockDocumentSchema,
   organizerGrowthFactsDocumentSchema,
   organizerGrowthEventSchema,
+  organizerBillDocumentSchema,
+  moneySettingsDocumentSchema,
+  nominatorCreditDocumentSchema,
+  moneyInvoiceCounterDocumentSchema,
+  platformCostDocumentSchema,
+  moneyIssueResolutionDocumentSchema,
+  adminManagePaymentIssuesCallablePayloadSchema,
+  adminManagePaymentIssuesCallableResponseSchema,
+  adminGetFinanceMonthCallablePayloadSchema,
+  adminGetFinanceMonthCallableResponseSchema,
+  adminGetMarketplaceCallablePayloadSchema,
+  adminGetMarketplaceCallableResponseSchema,
+  adminGetGrowthCallablePayloadSchema,
+  adminGetGrowthCallableResponseSchema,
+  adminManagePlatformCostsCallablePayloadSchema,
+  adminManagePlatformCostsCallableResponseSchema,
+  adminExportMoneyLedgerCallablePayloadSchema,
+  adminExportMoneyLedgerCallableResponseSchema,
+  adminManageOrganizerBillsCallablePayloadSchema,
+  adminManageOrganizerBillsCallableResponseSchema,
+  adminManageMoneySettingsCallablePayloadSchema,
+  adminManageMoneySettingsCallableResponseSchema,
+  adminManageNominatorCreditsCallablePayloadSchema,
+  adminManageNominatorCreditsCallableResponseSchema,
   adminSalesIntelligenceGenerateCallablePayloadSchema,
   salesOutreachJobsDocumentSchema,
   outreachDraftSchema,
@@ -279,6 +310,12 @@ import {
   manageCommercialTermsCallableResponseSchema,
   adminListCommercialTermsCallablePayloadSchema,
   adminListCommercialTermsCallableResponseSchema,
+  adminListOrganizerDirectoryCallablePayloadSchema,
+  adminListOrganizerDirectoryCallableResponseSchema,
+  adminListEventDirectoryCallablePayloadSchema,
+  adminListEventDirectoryCallableResponseSchema,
+  adminGetOrganizerOverviewCallablePayloadSchema,
+  adminGetOrganizerOverviewCallableResponseSchema,
   managePaymentRoutingPolicyCallablePayloadSchema,
   managePaymentRoutingPolicyCallableResponseSchema,
   manageEventOfferCheckoutCallablePayloadSchema,
@@ -900,6 +937,22 @@ import {
   adminNominateOrganizerCallablePayloadSchema,
   adminNominateOrganizerCallableResponseSchema,
   adminApproveOrganizerListingCallablePayloadSchema,
+  adminListMyNominationsCallablePayloadSchema,
+  adminListMyNominationsCallableResponseSchema,
+  adminListInboxItemsCallablePayloadSchema,
+  adminListInboxItemsCallableResponseSchema,
+  adminGetInboxItemCallablePayloadSchema,
+  adminGetInboxItemCallableResponseSchema,
+  adminUpdateInboxItemCallablePayloadSchema,
+  adminUpdateInboxItemCallableResponseSchema,
+  adminRebuildInboxCallablePayloadSchema,
+  adminRebuildInboxCallableResponseSchema,
+  adminRecommendOrganizerClaimCallablePayloadSchema,
+  adminRecommendOrganizerClaimCallableResponseSchema,
+  adminSearchPeopleCallablePayloadSchema,
+  adminSearchPeopleCallableResponseSchema,
+  adminListActivityLogCallablePayloadSchema,
+  adminListActivityLogCallableResponseSchema,
   adminListOrganizerListingReviewsCallablePayloadSchema,
   adminListOrganizerListingReviewsCallableResponseSchema,
   adminApproveOrganizerListingCallableResponseSchema,
@@ -1233,6 +1286,25 @@ import {
   blockUserCallablePayloadSchema,
   unblockUserCallablePayloadSchema,
   reportUserCallablePayloadSchema,
+  adminTakeAccountSafetyActionCallablePayloadSchema,
+  adminTakeAccountSafetyActionCallableResponseSchema,
+  adminLiftAccountSafetyActionCallablePayloadSchema,
+  adminLiftAccountSafetyActionCallableResponseSchema,
+  adminListAccountSafetyActionsCallablePayloadSchema,
+  adminListAccountSafetyActionsCallableResponseSchema,
+  adminDecideSafetyAppealCallablePayloadSchema,
+  adminDecideSafetyAppealCallableResponseSchema,
+  adminGetSafetySettingsCallablePayloadSchema,
+  adminGetSafetySettingsCallableResponseSchema,
+  adminUpdateSafetySettingsCallablePayloadSchema,
+  submitSafetyAppealCallablePayloadSchema,
+  submitSafetyAppealCallableResponseSchema,
+  manageOrganizerGuestBlockCallablePayloadSchema,
+  manageOrganizerGuestBlockCallableResponseSchema,
+  listOrganizerGuestBlocksCallablePayloadSchema,
+  listOrganizerGuestBlocksCallableResponseSchema,
+  reportGuestCallablePayloadSchema,
+  reportGuestCallableResponseSchema,
   requestSuvbotDemoOperationCallablePayloadSchema,
   listSuvbotDemoActionsCallableResponseSchema,
   verifyRazorpayPaymentCallablePayloadSchema,
@@ -1463,8 +1535,39 @@ export const validateSupplyIntakeRequest = ajv.compile(supplyIntakeRequestSchema
 export const validateSupplyIntakeRequestsDocument = ajv.compile(supplyIntakeRequestsDocumentSchema);
 export const validateSupplyIntakeUsageDocument = ajv.compile(supplyIntakeUsageDocumentSchema);
 export const validateSupplyNominatorDocument = ajv.compile(supplyNominatorDocumentSchema);
+export const validateAccountSafetyActionDocument = ajv.compile(accountSafetyActionDocumentSchema);
+export const validateAccountSafetyStateDocument = ajv.compile(accountSafetyStateDocumentSchema);
+export const validateAccountSafetyNoticeDocument = ajv.compile(accountSafetyNoticeDocumentSchema);
+export const validateSafetySettingsDocument = ajv.compile(safetySettingsDocumentSchema);
+export const validateBannedIdentityDocument = ajv.compile(bannedIdentityDocumentSchema);
+export const validateBlockedSignupAttemptDocument = ajv.compile(blockedSignupAttemptDocumentSchema);
+export const validateOrganizerGuestBlockDocument = ajv.compile(organizerGuestBlockDocumentSchema);
 export const validateOrganizerGrowthFactsDocument = ajv.compile(organizerGrowthFactsDocumentSchema);
 export const validateOrganizerGrowthEvent = ajv.compile(organizerGrowthEventSchema);
+export const validateOrganizerBillDocument = ajv.compile(organizerBillDocumentSchema);
+export const validateMoneySettingsDocument = ajv.compile(moneySettingsDocumentSchema);
+export const validateNominatorCreditDocument = ajv.compile(nominatorCreditDocumentSchema);
+export const validateMoneyInvoiceCounterDocument = ajv.compile(moneyInvoiceCounterDocumentSchema);
+export const validatePlatformCostDocument = ajv.compile(platformCostDocumentSchema);
+export const validateMoneyIssueResolutionDocument = ajv.compile(moneyIssueResolutionDocumentSchema);
+export const validateAdminManagePaymentIssuesCallablePayload = ajv.compile(adminManagePaymentIssuesCallablePayloadSchema);
+export const validateAdminManagePaymentIssuesCallableResponse = ajv.compile(adminManagePaymentIssuesCallableResponseSchema);
+export const validateAdminGetFinanceMonthCallablePayload = ajv.compile(adminGetFinanceMonthCallablePayloadSchema);
+export const validateAdminGetFinanceMonthCallableResponse = ajv.compile(adminGetFinanceMonthCallableResponseSchema);
+export const validateAdminGetMarketplaceCallablePayload = ajv.compile(adminGetMarketplaceCallablePayloadSchema);
+export const validateAdminGetMarketplaceCallableResponse = ajv.compile(adminGetMarketplaceCallableResponseSchema);
+export const validateAdminGetGrowthCallablePayload = ajv.compile(adminGetGrowthCallablePayloadSchema);
+export const validateAdminGetGrowthCallableResponse = ajv.compile(adminGetGrowthCallableResponseSchema);
+export const validateAdminManagePlatformCostsCallablePayload = ajv.compile(adminManagePlatformCostsCallablePayloadSchema);
+export const validateAdminManagePlatformCostsCallableResponse = ajv.compile(adminManagePlatformCostsCallableResponseSchema);
+export const validateAdminExportMoneyLedgerCallablePayload = ajv.compile(adminExportMoneyLedgerCallablePayloadSchema);
+export const validateAdminExportMoneyLedgerCallableResponse = ajv.compile(adminExportMoneyLedgerCallableResponseSchema);
+export const validateAdminManageOrganizerBillsCallablePayload = ajv.compile(adminManageOrganizerBillsCallablePayloadSchema);
+export const validateAdminManageOrganizerBillsCallableResponse = ajv.compile(adminManageOrganizerBillsCallableResponseSchema);
+export const validateAdminManageMoneySettingsCallablePayload = ajv.compile(adminManageMoneySettingsCallablePayloadSchema);
+export const validateAdminManageMoneySettingsCallableResponse = ajv.compile(adminManageMoneySettingsCallableResponseSchema);
+export const validateAdminManageNominatorCreditsCallablePayload = ajv.compile(adminManageNominatorCreditsCallablePayloadSchema);
+export const validateAdminManageNominatorCreditsCallableResponse = ajv.compile(adminManageNominatorCreditsCallableResponseSchema);
 export const validateAdminSalesIntelligenceGenerateCallablePayload = ajv.compile(adminSalesIntelligenceGenerateCallablePayloadSchema);
 export const validateSalesOutreachJobsDocument = ajv.compile(salesOutreachJobsDocumentSchema);
 export const validateOutreachDraft = ajv.compile(outreachDraftSchema);
@@ -1588,6 +1691,12 @@ export const validateManageCommercialTermsCallablePayload = ajv.compile(manageCo
 export const validateManageCommercialTermsCallableResponse = ajv.compile(manageCommercialTermsCallableResponseSchema);
 export const validateAdminListCommercialTermsCallablePayload = ajv.compile(adminListCommercialTermsCallablePayloadSchema);
 export const validateAdminListCommercialTermsCallableResponse = ajv.compile(adminListCommercialTermsCallableResponseSchema);
+export const validateAdminListOrganizerDirectoryCallablePayload = ajv.compile(adminListOrganizerDirectoryCallablePayloadSchema);
+export const validateAdminListOrganizerDirectoryCallableResponse = ajv.compile(adminListOrganizerDirectoryCallableResponseSchema);
+export const validateAdminListEventDirectoryCallablePayload = ajv.compile(adminListEventDirectoryCallablePayloadSchema);
+export const validateAdminListEventDirectoryCallableResponse = ajv.compile(adminListEventDirectoryCallableResponseSchema);
+export const validateAdminGetOrganizerOverviewCallablePayload = ajv.compile(adminGetOrganizerOverviewCallablePayloadSchema);
+export const validateAdminGetOrganizerOverviewCallableResponse = ajv.compile(adminGetOrganizerOverviewCallableResponseSchema);
 export const validateManagePaymentRoutingPolicyCallablePayload = ajv.compile(managePaymentRoutingPolicyCallablePayloadSchema);
 export const validateManagePaymentRoutingPolicyCallableResponse = ajv.compile(managePaymentRoutingPolicyCallableResponseSchema);
 export const validateManageEventOfferCheckoutCallablePayload = ajv.compile(manageEventOfferCheckoutCallablePayloadSchema);
@@ -2209,6 +2318,22 @@ export const validateAdminRecordActionExecutionCallablePayload = ajv.compile(adm
 export const validateAdminNominateOrganizerCallablePayload = ajv.compile(adminNominateOrganizerCallablePayloadSchema);
 export const validateAdminNominateOrganizerCallableResponse = ajv.compile(adminNominateOrganizerCallableResponseSchema);
 export const validateAdminApproveOrganizerListingCallablePayload = ajv.compile(adminApproveOrganizerListingCallablePayloadSchema);
+export const validateAdminListMyNominationsCallablePayload = ajv.compile(adminListMyNominationsCallablePayloadSchema);
+export const validateAdminListMyNominationsCallableResponse = ajv.compile(adminListMyNominationsCallableResponseSchema);
+export const validateAdminListInboxItemsCallablePayload = ajv.compile(adminListInboxItemsCallablePayloadSchema);
+export const validateAdminListInboxItemsCallableResponse = ajv.compile(adminListInboxItemsCallableResponseSchema);
+export const validateAdminGetInboxItemCallablePayload = ajv.compile(adminGetInboxItemCallablePayloadSchema);
+export const validateAdminGetInboxItemCallableResponse = ajv.compile(adminGetInboxItemCallableResponseSchema);
+export const validateAdminUpdateInboxItemCallablePayload = ajv.compile(adminUpdateInboxItemCallablePayloadSchema);
+export const validateAdminUpdateInboxItemCallableResponse = ajv.compile(adminUpdateInboxItemCallableResponseSchema);
+export const validateAdminRebuildInboxCallablePayload = ajv.compile(adminRebuildInboxCallablePayloadSchema);
+export const validateAdminRebuildInboxCallableResponse = ajv.compile(adminRebuildInboxCallableResponseSchema);
+export const validateAdminRecommendOrganizerClaimCallablePayload = ajv.compile(adminRecommendOrganizerClaimCallablePayloadSchema);
+export const validateAdminRecommendOrganizerClaimCallableResponse = ajv.compile(adminRecommendOrganizerClaimCallableResponseSchema);
+export const validateAdminSearchPeopleCallablePayload = ajv.compile(adminSearchPeopleCallablePayloadSchema);
+export const validateAdminSearchPeopleCallableResponse = ajv.compile(adminSearchPeopleCallableResponseSchema);
+export const validateAdminListActivityLogCallablePayload = ajv.compile(adminListActivityLogCallablePayloadSchema);
+export const validateAdminListActivityLogCallableResponse = ajv.compile(adminListActivityLogCallableResponseSchema);
 export const validateAdminListOrganizerListingReviewsCallablePayload = ajv.compile(adminListOrganizerListingReviewsCallablePayloadSchema);
 export const validateAdminListOrganizerListingReviewsCallableResponse = ajv.compile(adminListOrganizerListingReviewsCallableResponseSchema);
 export const validateAdminApproveOrganizerListingCallableResponse = ajv.compile(adminApproveOrganizerListingCallableResponseSchema);
@@ -2542,6 +2667,25 @@ export const validateSetReviewResponseCallablePayload = ajv.compile(setReviewRes
 export const validateBlockUserCallablePayload = ajv.compile(blockUserCallablePayloadSchema);
 export const validateUnblockUserCallablePayload = ajv.compile(unblockUserCallablePayloadSchema);
 export const validateReportUserCallablePayload = ajv.compile(reportUserCallablePayloadSchema);
+export const validateAdminTakeAccountSafetyActionCallablePayload = ajv.compile(adminTakeAccountSafetyActionCallablePayloadSchema);
+export const validateAdminTakeAccountSafetyActionCallableResponse = ajv.compile(adminTakeAccountSafetyActionCallableResponseSchema);
+export const validateAdminLiftAccountSafetyActionCallablePayload = ajv.compile(adminLiftAccountSafetyActionCallablePayloadSchema);
+export const validateAdminLiftAccountSafetyActionCallableResponse = ajv.compile(adminLiftAccountSafetyActionCallableResponseSchema);
+export const validateAdminListAccountSafetyActionsCallablePayload = ajv.compile(adminListAccountSafetyActionsCallablePayloadSchema);
+export const validateAdminListAccountSafetyActionsCallableResponse = ajv.compile(adminListAccountSafetyActionsCallableResponseSchema);
+export const validateAdminDecideSafetyAppealCallablePayload = ajv.compile(adminDecideSafetyAppealCallablePayloadSchema);
+export const validateAdminDecideSafetyAppealCallableResponse = ajv.compile(adminDecideSafetyAppealCallableResponseSchema);
+export const validateAdminGetSafetySettingsCallablePayload = ajv.compile(adminGetSafetySettingsCallablePayloadSchema);
+export const validateAdminGetSafetySettingsCallableResponse = ajv.compile(adminGetSafetySettingsCallableResponseSchema);
+export const validateAdminUpdateSafetySettingsCallablePayload = ajv.compile(adminUpdateSafetySettingsCallablePayloadSchema);
+export const validateSubmitSafetyAppealCallablePayload = ajv.compile(submitSafetyAppealCallablePayloadSchema);
+export const validateSubmitSafetyAppealCallableResponse = ajv.compile(submitSafetyAppealCallableResponseSchema);
+export const validateManageOrganizerGuestBlockCallablePayload = ajv.compile(manageOrganizerGuestBlockCallablePayloadSchema);
+export const validateManageOrganizerGuestBlockCallableResponse = ajv.compile(manageOrganizerGuestBlockCallableResponseSchema);
+export const validateListOrganizerGuestBlocksCallablePayload = ajv.compile(listOrganizerGuestBlocksCallablePayloadSchema);
+export const validateListOrganizerGuestBlocksCallableResponse = ajv.compile(listOrganizerGuestBlocksCallableResponseSchema);
+export const validateReportGuestCallablePayload = ajv.compile(reportGuestCallablePayloadSchema);
+export const validateReportGuestCallableResponse = ajv.compile(reportGuestCallableResponseSchema);
 export const validateRequestSuvbotDemoOperationCallablePayload = ajv.compile(requestSuvbotDemoOperationCallablePayloadSchema);
 export const validateListSuvbotDemoActionsCallableResponse = ajv.compile(listSuvbotDemoActionsCallableResponseSchema);
 export const validateVerifyRazorpayPaymentCallablePayload = ajv.compile(verifyRazorpayPaymentCallablePayloadSchema);

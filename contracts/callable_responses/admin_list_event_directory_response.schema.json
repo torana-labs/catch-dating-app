@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_event_directory_response.schema.json",
+  "title": "AdminListEventDirectoryCallableResponse",
+  "description": "One page of the Admin Events directory: events made in Catch and events imported from other platforms in one table, each row naming its source. views are exact counts of every event in each view, ignoring the other filters; total counts the rows the request's filters match, and each facet what its chip would show with every other filter applied. The view is read up to a bounded number of events; scan.complete is false when there were more, so total and facets then cover only what was read.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["generatedAt", "total", "views", "facets", "scan", "rows", "nextCursor"],
+  "definitions": {
+    "count": {"type": "integer", "minimum": 0},
+    "facet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "label", "count"],
+      "properties": {
+        "value": {"type": "string", "minLength": 1, "maxLength": 120},
+        "label": {"type": "string", "minLength": 1, "maxLength": 120},
+        "count": {"$ref": "#/definitions/count"}
+      }
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "eventId", "source", "platform", "title", "organizerId", "organizerName", "startTime", "citySlug", "cityLabel", "status", "bookedCount", "capacityLimit"],
+      "properties": {
+        "key": {"type": "string", "pattern": "^(catch|imported):.{1,180}$"},
+        "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "source": {"type": "string", "enum": ["catch", "imported"]},
+        "platform": {
+          "description": "The platform an imported event came from; null for events made in Catch.",
+          "type": ["string", "null"],
+          "enum": ["bookMyShow", "district", "luma", "partiful", "sortMyScene", null]
+        },
+        "title": {"type": "string", "maxLength": 300},
+        "organizerId": {"type": ["string", "null"], "maxLength": 180},
+        "organizerName": {"type": ["string", "null"], "maxLength": 200},
+        "startTime": {"type": ["string", "null"], "format": "date-time"},
+        "citySlug": {"type": ["string", "null"], "maxLength": 120},
+        "cityLabel": {"type": ["string", "null"], "maxLength": 120},
+        "status": {
+          "description": "live (bookable or public), full, draft (a Catch event not published yet), needsCheck (an imported event not public yet), cancelled, or removed (an imported event taken down or archived).",
+          "type": "string",
+          "enum": ["live", "full", "draft", "needsCheck", "cancelled", "removed"]
+        },
+        "bookedCount": {"type": ["integer", "null"], "minimum": 0},
+        "capacityLimit": {"type": ["integer", "null"], "minimum": 0}
+      }
+    }
+  },
+  "properties": {
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "total": {"$ref": "#/definitions/count"},
+    "views": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["upcoming", "past", "cancelled"],
+      "properties": {
+        "upcoming": {"$ref": "#/definitions/count"},
+        "past": {"$ref": "#/definitions/count"},
+        "cancelled": {"$ref": "#/definitions/count"}
+      }
+    },
+    "facets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["catch", "imported", "needsCheck", "thisWeek", "cities"],
+      "properties": {
+        "catch": {"$ref": "#/definitions/count"},
+        "imported": {"$ref": "#/definitions/count"},
+        "needsCheck": {"$ref": "#/definitions/count"},
+        "thisWeek": {"$ref": "#/definitions/count"},
+        "cities": {"type": "array", "maxItems": 60, "items": {"$ref": "#/definitions/facet"}}
+      }
+    },
+    "scan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["complete", "scanned"],
+      "properties": {
+        "complete": {"type": "boolean"},
+        "scanned": {"$ref": "#/definitions/count"}
+      }
+    },
+    "rows": {"type": "array", "maxItems": 100, "items": {"$ref": "#/definitions/row"}},
+    "nextCursor": {"type": ["string", "null"], "pattern": "^o:[0-9]{1,5}$"}
+  }
+}

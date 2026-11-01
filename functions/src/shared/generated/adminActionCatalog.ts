@@ -8,9 +8,7 @@ export const ADMIN_ACTION_CATALOG = {
       "admin",
       "adminOwner",
       "safetyReviewer",
-      "support",
-      "finance",
-      "analyticsViewer"
+      "support"
     ]
   },
   "catch.whatsapp.inbound.review": {
@@ -87,8 +85,7 @@ export const ADMIN_ACTION_CATALOG = {
     "controlPlane": false,
     "kind": "read",
     "roles": [
-      "adminOwner",
-      "analyticsViewer"
+      "adminOwner"
     ]
   },
   "analytics.user": {
@@ -96,8 +93,7 @@ export const ADMIN_ACTION_CATALOG = {
     "controlPlane": false,
     "kind": "read",
     "roles": [
-      "adminOwner",
-      "analyticsViewer"
+      "adminOwner"
     ]
   },
   "finance.review-event-messaging-budget": {
@@ -105,8 +101,7 @@ export const ADMIN_ACTION_CATALOG = {
     "controlPlane": false,
     "kind": "read",
     "roles": [
-      "adminOwner",
-      "finance"
+      "adminOwner"
     ]
   },
   "finance.decide-event-messaging-budget": {
@@ -114,8 +109,7 @@ export const ADMIN_ACTION_CATALOG = {
     "controlPlane": false,
     "kind": "mutation",
     "roles": [
-      "adminOwner",
-      "finance"
+      "adminOwner"
     ]
   },
   "finance.stage-event-messaging-budget": {
@@ -123,8 +117,7 @@ export const ADMIN_ACTION_CATALOG = {
     "controlPlane": false,
     "kind": "mutation",
     "roles": [
-      "adminOwner",
-      "finance"
+      "adminOwner"
     ]
   },
   "cross-paths-showcase.list": {
@@ -265,7 +258,8 @@ export const ADMIN_ACTION_CATALOG = {
     "kind": "mutation",
     "roles": [
       "admin",
-      "adminOwner"
+      "adminOwner",
+      "support"
     ]
   },
   "organizer-intake.create-organizer-draft": {
@@ -334,8 +328,7 @@ export const ADMIN_ACTION_CATALOG = {
     "kind": "mutation",
     "roles": [
       "admin",
-      "adminOwner",
-      "support"
+      "adminOwner"
     ]
   },
   "organizers.list": {
@@ -346,6 +339,39 @@ export const ADMIN_ACTION_CATALOG = {
       "admin",
       "adminOwner",
       "support"
+    ]
+  },
+  "organizers.directory": {
+    "callable": "adminListOrganizerDirectory",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support",
+      "salesStaff"
+    ]
+  },
+  "organizers.overview": {
+    "callable": "adminGetOrganizerOverview",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support",
+      "salesStaff"
+    ]
+  },
+  "events.directory": {
+    "callable": "adminListEventDirectory",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support",
+      "salesStaff"
     ]
   },
   "organizers.get": {
@@ -470,9 +496,7 @@ export const ADMIN_ACTION_CATALOG = {
       "admin",
       "adminOwner",
       "safetyReviewer",
-      "support",
-      "finance",
-      "analyticsViewer"
+      "support"
     ]
   },
   "sales.hosts.search": {
@@ -1152,8 +1176,7 @@ export const ADMIN_ACTION_CATALOG = {
     "controlPlane": false,
     "kind": "mutation",
     "roles": [
-      "adminOwner",
-      "finance"
+      "adminOwner"
     ]
   },
   "finance.revoke-organizer-entitlement-grant": {
@@ -1161,8 +1184,7 @@ export const ADMIN_ACTION_CATALOG = {
     "controlPlane": false,
     "kind": "mutation",
     "roles": [
-      "adminOwner",
-      "finance"
+      "adminOwner"
     ]
   },
   "finance.list-commercial-terms": {
@@ -1170,8 +1192,7 @@ export const ADMIN_ACTION_CATALOG = {
     "controlPlane": false,
     "kind": "read",
     "roles": [
-      "adminOwner",
-      "finance"
+      "adminOwner"
     ]
   },
   "finance.manage-commercial-terms": {
@@ -1179,8 +1200,7 @@ export const ADMIN_ACTION_CATALOG = {
     "controlPlane": false,
     "kind": "mutation",
     "roles": [
-      "adminOwner",
-      "finance"
+      "adminOwner"
     ]
   },
   "finance.manage-payment-routing": {
@@ -1188,8 +1208,7 @@ export const ADMIN_ACTION_CATALOG = {
     "controlPlane": false,
     "kind": "mutation",
     "roles": [
-      "adminOwner",
-      "finance"
+      "adminOwner"
     ]
   },
   "sales.demo.GetSalesDemoPartnerReview": {
