@@ -2585,9 +2585,14 @@
       "description": "Generates isolated Functions schemas, validators and catalogs plus test/tool inventories, paths and cross-runtime contracts.",
       "checks": [
         "node --check tool/contracts/generate_schema_contracts.mjs",
-        "node --test tool/contracts/schema_modules.test.mjs"
+        "node --test tool/contracts/schema_modules.test.mjs",
+        "node --test tool/contracts/schema_specs.test.mjs"
       ],
       "impactPaths": [
+        "tool/contracts/lib/schema_specs.mjs",
+        "tool/contracts/schema_spec_exceptions.json",
+        "tool/contracts/schema_spec_order.json",
+        "tool/contracts/schema_specs.test.mjs",
         "tool/contracts/schema_modules.test.mjs",
         "tool/contracts/profile_requirements.test.mjs",
         "tool/contracts/generated/**"
