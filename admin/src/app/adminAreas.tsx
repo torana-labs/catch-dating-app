@@ -13,6 +13,7 @@ import {
 const NowRouteScreen = lazy(() => import("../features/now/ui/NowRouteScreen").then((m) => ({default: m.NowRouteScreen})));
 const MarketplaceRouteScreen = lazy(() => import("../features/marketplace/ui/MarketplaceRouteScreen").then((m) => ({default: m.MarketplaceRouteScreen})));
 const MarketingOpsScreen = lazy(() => import("../features/marketing/ui/MarketingOpsScreen").then((m) => ({default: m.MarketingOpsScreen})));
+const InboxRouteScreen = lazy(() => import("../features/inbox/ui/InboxRouteScreen").then((m) => ({default: m.InboxRouteScreen})));
 const IntakeWorkspaceScreen = lazy(() => import("../features/intake/ui/IntakeWorkspaceScreen").then((m) => ({default: m.IntakeWorkspaceScreen})));
 const SafetyRouteScreen = lazy(() => import("../features/safety/ui/SafetyRouteScreen").then((m) => ({default: m.SafetyRouteScreen})));
 const GrowthKpiScreen = lazy(() => import("../features/growth/ui/GrowthKpiScreen").then((m) => ({default: m.GrowthKpiScreen})));
@@ -94,7 +95,22 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     ),
   },
   "organizer-intake": {
-    label: "Inbox", icon: "review", frame: "legacy-fill",
+    label: "Inbox", icon: "review", frame: "redrawn",
+    render: ({navigate, route, setError, setNotice, userUid, mode}) => (
+      <InboxRouteScreen
+        onError={setError}
+        onNotice={setNotice}
+        onOpenReview={() => navigate(adminPathForNav("intake-review"))}
+        onSelect={(itemId) => navigate(itemId ? `${adminPathForNav("organizer-intake")}/${encodeURIComponent(itemId)}` :
+          adminPathForNav("organizer-intake"))}
+        reviewHref={adminPathForNav("intake-review")}
+        selectedItemId={route.params.inboxItemId ?? null}
+        uid={userUid ?? (mode === "sample" ? "sample-owner" : null)}
+      />
+    ),
+  },
+  "intake-review": {
+    label: "Intake review", icon: "review", frame: "legacy-fill",
     render: () => <IntakeWorkspaceScreen />,
   },
   safety: {

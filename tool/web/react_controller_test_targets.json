@@ -393,6 +393,11 @@
       "source": "admin/src/features/safety/controllers/useSafetyActionSheetController.ts",
       "test": "admin/src/features/safety/controllers/useSafetyActionSheetController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "admin/src/features/inbox/controllers/useInboxController.ts",
+      "test": "admin/src/features/inbox/controllers/useInboxController.test.tsx",
+      "status": "required"
     }
   ]
 }

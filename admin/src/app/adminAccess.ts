@@ -15,6 +15,7 @@ export const adminAreaRoles: Record<AdminNavId, readonly AdminRoleClaim[]> = {
   now: allButSales,
   more: adminRoleClaimKeys,
   "organizer-intake": opsAndOwner,
+  "intake-review": opsAndOwner,
   safety: ["admin", "adminOwner", "safetyReviewer", "support"],
   support: ["adminOwner", "support"],
   sales: ["admin", "adminOwner", "salesStaff"],

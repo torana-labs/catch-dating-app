@@ -31,7 +31,7 @@
 /* ---------- queue ---------- */
 .panes[data-pattern="queue"] { height: 100%; }
 .panes[data-pattern="queue"] > .pane { --catch-pane-inline: var(--catch-space-s6); overflow-y: auto; min-height: 0; }
-.panes[data-pattern="queue"] > .pane[data-slot="detail"] { display: flex; flex-direction: column; padding-bottom: 0; }
+.panes[data-pattern="queue"] > .pane[data-slot="detail"] { display: flex; flex-direction: column; row-gap: var(--catch-space-s7); padding-bottom: 0; }
 .panes[data-pattern="queue"][data-split] { grid-template-columns: minmax(0, 1fr) var(--catch-pane-inspector, 440px); }
 .panes[data-pattern="queue"][data-split] > .pane[data-slot="detail"] { box-shadow: inset var(--catch-stroke-hairline) 0 0 var(--catch-theme-line); }
 

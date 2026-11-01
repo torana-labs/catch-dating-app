@@ -12,7 +12,9 @@ export const adminSections = {
   growth: {path: "/growth", title: "Growth"},
   "marketing-ops": {path: "/marketing", title: "Marketing"},
   sales: {path: "/sales/today", title: "Sales"},
-  "organizer-intake": {path: "/intake/organizers", title: "Intake"},
+  "organizer-intake": {path: "/inbox", title: "Inbox"},
+  // The listing, event and policy review the inbox links to until each moves into it.
+  "intake-review": {path: "/intake/organizers", title: "Intake review"},
   organizers: {path: "/organizers", title: "Organizers"},
   events: {path: "/events", title: "Events"},
   users: {path: "/users", title: "Users"},
@@ -53,11 +55,12 @@ export const adminRoutes: AdminRoute[] = [
   route("/", "now", {redirect: "/now"}),
   // Overview split in two: its queues are Needs you, its analytics Marketplace.
   route("/overview/*", "now", {redirect: "/now"}),
-  ...Object.entries(adminSections).filter(([nav]) => nav !== "organizer-intake").map(([nav, {path}]) => route(
+  ...Object.entries(adminSections).filter(([nav]) => nav !== "intake-review").map(([nav, {path}]) => route(
     `/${path.split("/")[1]}/*`, nav as AdminNavId
   )),
   route("/marketing-ops/*", "marketing-ops"),
-  route("/organizer-intake/*", "organizer-intake", {title: "Organizer intake"}),
+  route("/organizer-intake/*", "intake-review", {title: "Organizer intake"}),
+  route("/inbox/:inboxItemId", "organizer-intake", {title: "Inbox item"}),
   route("/safety/:targetPath", "safety", {title: "Safety case"}),
   route("/safety/actions/*", "safety", {safetyView: "actions", title: "Account actions"}),
   route("/safety/actions/:safetyActionId", "safety", {safetyView: "actions", title: "Account action"}),
@@ -85,9 +88,9 @@ export const adminRoutes: AdminRoute[] = [
   ...(["today", "hosts", "pipeline", "research", "pilots", "settings"] as const)
     .map((salesArea) => route(`/sales/${salesArea}/*`, "sales", {salesArea})),
   route("/sales/hosts/:salesOrganizerId", "sales", {salesArea: "hosts"}),
-  route("/intake/*", "organizer-intake", {title: "Organizer intake"}),
-  route("/intake/events/*", "organizer-intake", {title: "Event intake"}),
-  route("/intake/operations/*", "organizer-intake", {title: "Supply intake operations"}),
+  route("/intake/*", "intake-review", {title: "Organizer intake"}),
+  route("/intake/events/*", "intake-review", {title: "Event intake"}),
+  route("/intake/operations/*", "intake-review", {title: "Supply intake operations"}),
   ...(["posts", "new", "events", "media", "activity", "diagnostics"] as const)
     .map((marketingTab) => route(`/marketing/${marketingTab}/*`, "marketing-ops", {marketingTab})),
   route("/marketing/drafts/:draftId/*", "marketing-ops", {marketingTab: "draft", title: "Marketing draft"}),
