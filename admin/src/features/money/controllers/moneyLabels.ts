@@ -88,7 +88,7 @@ export function billState(bill: Bill, nowMillis: number): MoneyLabel {
   }
   switch (bill.status) {
   case "toSend": return {text: "To send", tone: "warning"};
-  case "sent": return {text: bill.sentAtMillis ? `Sent ${shortDate(bill.sentAtMillis)}` : "Sent"};
+  case "sent": return {text: bill.sentAtMillis ? `Issued ${shortDate(bill.sentAtMillis)}` : "Issued"};
   case "paid": return {text: bill.paidAtMillis ? `Paid ${shortDate(bill.paidAtMillis)}` : "Paid", tone: "success"};
   case "writtenOff": return {text: "Written off", tone: "secondary"};
   case "free": return {
@@ -131,8 +131,8 @@ export function billDue(bill: Bill, nowMillis: number): MoneyLabel {
 const historyTitles: Record<Bill["history"][number]["action"], string> = {
   generated: "Bill made from the month's bookings",
   regenerated: "Bill made again",
-  sent: "Sent with a payment link",
-  reminded: "Reminder sent",
+  sent: "Issued with a payment link",
+  reminded: "Reminder recorded",
   paid: "Marked paid",
   writtenOff: "Written off",
 };
@@ -157,7 +157,7 @@ export function billJourney(bill: Bill, nowMillis: number): MoneyStep[] {
   }));
   const state = billState(bill, nowMillis);
   if (bill.status === "toSend") {
-    steps.push({title: "Waiting to be sent", subtitle: "Sending takes the next invoice number", meta: "Now", state: "current", tone: "warning"});
+    steps.push({title: "Waiting to be issued", subtitle: "Issuing takes the next invoice number", meta: "Now", state: "current", tone: "warning"});
   } else if (bill.status === "sent") {
     steps.push({
       title: state.tone === "danger" ? state.text : "Waiting for payment",

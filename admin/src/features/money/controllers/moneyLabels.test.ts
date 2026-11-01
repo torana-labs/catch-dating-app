@@ -45,7 +45,7 @@ describe("Money labels", () => {
   it("ends an unpaid bill's journey with where it is now", () => {
     const steps = billJourney(bill("sample-lantern"), now);
     expect(steps.map((step) => step.title)).toEqual([
-      "Bill made from October's bookings", "Sent with a payment link", "Overdue 2 days"]);
+      "Bill made from October's bookings", "Issued with a payment link", "Overdue 2 days"]);
     expect(steps.at(-1)).toMatchObject({state: "current", tone: "danger"});
     expect(billJourney(bill("sample-afterfly"), now).every((step) => step.state === "done")).toBe(true);
   });

@@ -54,7 +54,7 @@ describe("Money", () => {
     expect(screen.getByText("None: Catch is not GST-registered yet")).toBeTruthy();
     expect(screen.getAllByText("Overdue 2 days").length).toBeGreaterThan(0);
     fireEvent.change(screen.getByRole("textbox", {name: /Note/u}), {target: {value: "Called Meher"}});
-    fireEvent.click(screen.getByRole("button", {name: "Send a reminder"}));
+    fireEvent.click(screen.getByRole("button", {name: "Record a reminder"}));
     expect(bills.act).toHaveBeenCalledWith("remind", "Called Meher");
   });
 
@@ -70,7 +70,7 @@ describe("Money", () => {
 
   it("offers no decision on a paid bill", () => {
     renderMoney("bills", billsController("sample-afterfly"), issuesController(0));
-    expect(screen.queryByRole("button", {name: "Send a reminder"})).toBeNull();
+    expect(screen.queryByRole("button", {name: "Record a reminder"})).toBeNull();
     expect(screen.queryByRole("button", {name: "Write off"})).toBeNull();
   });
 

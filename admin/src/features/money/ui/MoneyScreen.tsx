@@ -73,7 +73,7 @@ const billColumns: CatchTableColumn<BillRow>[] = [
 const billFilters: Array<{value: BillFilter; label: string; count: (counts: BillsMonth["counts"]) => number}> = [
   {value: "all", label: "All", count: (counts) => counts.all},
   {value: "toSend", label: "To send", count: (counts) => counts.toSend},
-  {value: "sent", label: "Sent", count: (counts) => counts.sent},
+  {value: "sent", label: "Issued", count: (counts) => counts.sent},
   {value: "overdue", label: "Overdue", count: (counts) => counts.overdue},
   {value: "paid", label: "Paid", count: (counts) => counts.paid},
   {value: "free", label: "Free month", count: (counts) => counts.free},
@@ -463,8 +463,8 @@ function MoneyBillInspector({
       next={next ? `Then: ${next.organizerName}` : undefined}
       note={{label: "Note", placeholder: "Why, if you change anything", value: note, onChanged: setNote}}
       primary={bill.status === "toSend" ?
-        {label: "Send the bill", isLoading: isActing, onPressed: isActing ? null : () => void run("send")} :
-        {label: "Send a reminder", isLoading: isActing, onPressed: isActing ? null : () => void run("remind")}}
+        {label: "Issue the bill", isLoading: isActing, onPressed: isActing ? null : () => void run("send")} :
+        {label: "Record a reminder", isLoading: isActing, onPressed: isActing ? null : () => void run("remind")}}
       recipe="pane"
       secondary={bill.status === "sent" ? {label: "Mark as paid", onPressed: isActing ? null : () => void run("markPaid")} : undefined}
     />
@@ -507,7 +507,9 @@ function MoneyBillInspector({
           <CatchIndexRow
             titleVariant="titleS"
             subtitle={bill.status === "paid" ? `Paid ${bill.paidVia === "paymentLink" ? "by payment link" : "and marked by hand"}` :
-              bill.status === "free" ? "Every sale fell in the free month" : "Paid by UPI or card from the link"}
+              bill.status === "free" ? "Every sale fell in the free month" :
+                bill.status === "sent" ? "Share the payment link with them: Catch doesn't message organizers about bills yet" :
+                  "Paid by UPI or card from the link"}
             title={bill.dueAtMillis !== null ? `Total due ${due.text.split(" · ")[0]}` : "Total"}
             trailing={<Amount empty={bill.status === "free"} minor={bill.totalMinor} />}
           />
