@@ -1,0 +1,22 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const adminGetFinanceMonthCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_finance_month_payload.schema.json",
+  "title": "AdminGetFinanceMonthCallablePayload",
+  "description": "Owner reads one India-time month of Finance, line by line: ticket sales through Catch, what Catch earned, what it cost and what is not Catch's money, with the six months before for the charts.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "month"
+  ],
+  "properties": {
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    }
+  }
+} as const;
