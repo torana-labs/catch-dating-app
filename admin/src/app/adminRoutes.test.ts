@@ -2,9 +2,8 @@ import {describe, expect, it, vi} from "vitest";
 import {
   adminPathForNav,
   adminSections,
-  commercialTermsPathForOrganizer,
-  financePathForWorkspace,
   moneyPath,
+  paymentSettingsPath,
   resolveAdminRoute,
   type AdminNavId,
 } from "./adminRoutes";
@@ -27,8 +26,7 @@ describe("Admin route contract", () => {
     ["/money/issues/publicEventPayments%3Apay-1", "money", "moneyIssueId", "publicEventPayments:pay-1"],
     ["/money/resolved/payments%3Apay-2", "money", "moneyIssueId", "payments:pay-2"],
     ["/money/bills/org-1_2026-10", "money", "billId", "org-1_2026-10"],
-    ["/payment-setup/issues/payments%2Fpayment-1", "payment-setup", "financeIssueId", "payments/payment-1"],
-    ["/payment-setup/commercial-terms/organizers/org%2F1", "payment-setup", "termsOrganizerId", "org/1"],
+    ["/settings/payments/organizer-terms/org%2F1", "settings", "termsOrganizerId", "org/1"],
     ["/quality/signals/source-1", "quality", "qualitySignalId", "source-1"],
     ["/settings/team/user-1", "settings", "teamMemberUid", "user-1"],
     ["/settings/safety", "settings", "settingsPage", "safety"],
@@ -56,9 +54,8 @@ describe("Admin route contract", () => {
     ["/organizers/claims", "organizerWorkspace", "claims", "organizerId"],
     ["/events/readiness/", "eventWorkspace", "directory", "eventId"],
     ["/events/external", "eventWorkspace", "external", "eventId"],
-    ["/payment-setup/commercial-terms", "financeWorkspace", "commercial-terms", "financeIssueId"],
-    ["/payment-setup/payment-routing", "financeWorkspace", "payment-routing", "financeIssueId"],
-    ["/payment-setup", "financeWorkspace", "issues", "financeIssueId"],
+    ["/settings/payments/terms", "paymentsEdit", "terms", "termsOrganizerId"],
+    ["/settings/payments", "settingsPage", "payments", "termsOrganizerId"],
     ["/money", "moneyView", "issues", "moneyIssueId"],
     ["/money/resolved", "moneyView", "resolved", "moneyIssueId"],
     ["/money/bills", "moneyView", "bills", "billId"],
@@ -80,20 +77,18 @@ describe("Admin route contract", () => {
   it("sends old Finance links to Money and the payment setup screens", () => {
     expect(resolveAdminRoute("/finance").redirect).toBe("/money");
     expect(resolveAdminRoute("/finance/issues/x").redirect).toBe("/money");
-    expect(resolveAdminRoute("/finance/commercial-terms/organizers/o").redirect).toBe("/payment-setup/commercial-terms");
-    expect(resolveAdminRoute("/finance/payment-routing").redirect).toBe("/payment-setup/payment-routing");
+    expect(resolveAdminRoute("/finance/commercial-terms/organizers/o").redirect).toBe("/settings/payments");
+    expect(resolveAdminRoute("/finance/payment-routing").redirect).toBe("/settings/payments");
+    expect(resolveAdminRoute("/payment-setup/commercial-terms").redirect).toBe("/settings/payments");
   });
 
-  it("builds finance workspace paths that resolve back to their workspace", () => {
-    expect(resolveAdminRoute(financePathForWorkspace("payment-routing")).financeWorkspace)
-      .toBe("payment-routing");
-    expect(resolveAdminRoute(financePathForWorkspace("issues")).financeWorkspace).toBe("issues");
-    const organizerPath = commercialTermsPathForOrganizer("club/a b");
-    expect(resolveAdminRoute(organizerPath)).toMatchObject({
-      financeWorkspace: "commercial-terms", params: {termsOrganizerId: "club/a b"},
-    });
-    expect(resolveAdminRoute(commercialTermsPathForOrganizer(null)).params.termsOrganizerId)
-      .toBeUndefined();
+  it("builds Settings paths that resolve back to their page, editor and organizer", () => {
+    expect(resolveAdminRoute(paymentSettingsPath()).settingsPage).toBe("payments");
+    for (const edit of ["terms", "collection", "credit"] as const) {
+      expect(resolveAdminRoute(paymentSettingsPath(edit)).paymentsEdit).toBe(edit);
+    }
+    const organizer = resolveAdminRoute(paymentSettingsPath("organizer-terms", "club/a b"));
+    expect(organizer).toMatchObject({paymentsEdit: "organizer-terms", params: {termsOrganizerId: "club/a b"}});
   });
 
   it("preserves marketing workspace and draft-step defaults", () => {

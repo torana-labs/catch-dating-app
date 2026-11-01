@@ -40,9 +40,6 @@ export const adminQueryKeys = {
       [...adminQueryKeys.all, "intake-operations", "list", payloadKey] as const,
   },
   finance: {
-    overview: () => [...adminQueryKeys.all, "finance", "overview"] as const,
-    hostAnalytics: () =>
-      [...adminQueryKeys.all, "finance", "host-analytics", "30d", "week"] as const,
     messagingBudgetReview: () =>
       [...adminQueryKeys.all, "finance", "messaging-budget-review"] as const,
     messagingBudgetDecision: () =>

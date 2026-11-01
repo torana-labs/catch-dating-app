@@ -20,7 +20,6 @@ export const adminSections = {
   people: {path: "/people", title: "People"},
   users: {path: "/users", title: "User analytics"},
   money: {path: "/money", title: "Money"},
-  "payment-setup": {path: "/payment-setup", title: "Payment setup"},
   quality: {path: "/quality", title: "Data quality"},
   operations: {path: "/operations", title: "Agent activity"},
   settings: {path: "/settings", title: "Settings"},
@@ -30,8 +29,8 @@ export type AdminNavId = keyof typeof adminSections;
 type MarketingTab = "posts" | "new" | "events" | "media" | "activity" |
   "diagnostics" | "draft";
 type MarketingStep = "source" | "copy" | "compliance" | "export";
-export type FinanceWorkspace = "issues" | "commercial-terms" | "payment-routing";
 export type MoneyView = "issues" | "resolved" | "bills";
+export type PaymentsEdit = "terms" | "organizer-terms" | "collection" | "credit" | "plans" | "messaging";
 
 interface RouteState {
   nav: AdminNavId | null;
@@ -43,9 +42,10 @@ interface RouteState {
   eventWorkspace?: "directory" | "external";
   eventTab?: "overview" | "page" | "takedown";
   organizerTab?: "overview" | "page" | "events" | "sales" | "money" | "history";
-  financeWorkspace?: FinanceWorkspace;
   supportWorkspace?: "inbox" | "trial";
   safetyView?: "open" | "actions" | "appeals";
+  settingsPage?: string;
+  paymentsEdit?: PaymentsEdit;
   moneyView?: MoneyView;
   marketingTab?: MarketingTab;
   composerStep?: MarketingStep;
@@ -99,14 +99,16 @@ export const adminRoutes: AdminRoute[] = [
   route("/money/bills/:billId", "money", {moneyView: "bills", title: "Bill"}),
   // The older payment setup screens moved off /finance; old links keep working.
   route("/finance/*", "money", {redirect: "/money"}),
-  route("/finance/commercial-terms/*", "payment-setup", {redirect: "/payment-setup/commercial-terms"}),
-  route("/finance/payment-routing/*", "payment-setup", {redirect: "/payment-setup/payment-routing"}),
-  route("/payment-setup/issues/:financeIssueId", "payment-setup", {title: "Finance issue"}),
-  route("/payment-setup/commercial-terms/*", "payment-setup", {financeWorkspace: "commercial-terms", title: "Commercial terms"}),
-  route("/payment-setup/commercial-terms/organizers/:termsOrganizerId", "payment-setup", {
-    financeWorkspace: "commercial-terms", title: "Organizer commercial terms",
+  route("/finance/commercial-terms/*", "settings", {redirect: "/settings/payments"}),
+  route("/finance/payment-routing/*", "settings", {redirect: "/settings/payments"}),
+  // The interim Payment setup page: its plans and budgets are in Settings → Payments, its issues in Money.
+  route("/payment-setup/*", "settings", {redirect: "/settings/payments"}),
+  route("/settings/payments/*", "settings", {settingsPage: "payments", title: "Payments"}),
+  ...(["terms", "collection", "credit", "plans", "messaging"] as const).map((paymentsEdit) =>
+    route(`/settings/payments/${paymentsEdit}`, "settings", {settingsPage: "payments", paymentsEdit, title: "Payments"})),
+  route("/settings/payments/organizer-terms/:termsOrganizerId", "settings", {
+    settingsPage: "payments", paymentsEdit: "organizer-terms", title: "Organizer terms",
   }),
-  route("/payment-setup/payment-routing/*", "payment-setup", {financeWorkspace: "payment-routing", title: "Payment routing"}),
   route("/quality/signals/:qualitySignalId", "quality", {title: "Data quality signal"}),
   route("/settings/:settingsPage", "settings"),
   route("/settings/team/:teamMemberUid", "settings", {title: "Team and roles"}),
@@ -151,9 +153,10 @@ export function resolveAdminRoute(pathname: string) {
     eventWorkspace: state?.eventWorkspace ?? "directory",
     eventTab: state?.eventTab ?? "overview",
     organizerTab: state?.organizerTab ?? "overview",
-    financeWorkspace: state?.financeWorkspace ?? "issues",
     supportWorkspace: state?.supportWorkspace ?? "inbox",
     safetyView: state?.safetyView ?? "open",
+    settingsPage: state?.settingsPage ?? null,
+    paymentsEdit: state?.paymentsEdit ?? null,
     moneyView: state?.moneyView ?? "issues",
     marketingTab: state?.marketingTab ?? "posts",
     composerStep: state?.composerStep ?? "source",
@@ -168,10 +171,6 @@ export function marketingPathForTab(tab: Exclude<MarketingTab, "draft">): string
   return `/marketing/${tab}`;
 }
 
-export function financePathForWorkspace(workspace: FinanceWorkspace): string {
-  return workspace === "issues" ? adminSections["payment-setup"].path : `/payment-setup/${workspace}`;
-}
-
 /** Money's view, and one issue or bill in it. */
 export function moneyPath(view: MoneyView, id: string | null = null): string {
   const base = view === "issues" ? adminSections.money.path : `${adminSections.money.path}/${view}`;
@@ -179,7 +178,10 @@ export function moneyPath(view: MoneyView, id: string | null = null): string {
   return `${view === "issues" ? `${base}/issues` : base}/${encodeURIComponent(id)}`;
 }
 
-export function commercialTermsPathForOrganizer(organizerId: string | null): string {
-  return organizerId === null ? financePathForWorkspace("commercial-terms") :
-    `/payment-setup/commercial-terms/organizers/${encodeURIComponent(organizerId)}`;
+/** Settings → Payments, one of its editors, and the organizer whose terms are open. */
+export function paymentSettingsPath(edit: PaymentsEdit | null = null, organizerId: string | null = null): string {
+  const base = `${adminSections.settings.path}/payments`;
+  if (edit === null) return base;
+  return edit === "organizer-terms" && organizerId !== null ?
+    `${base}/organizer-terms/${encodeURIComponent(organizerId)}` : `${base}/${edit}`;
 }
