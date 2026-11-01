@@ -56,7 +56,6 @@ const screen = (selectedItemId: string | null, canDecideClaim = false) => (
     model={model(selectedItemId, canDecideClaim)}
     onOpenReview={noop}
     onSelect={noop}
-    reviewHref="/intake/organizers"
     selectedItemId={selectedItemId}
     uid="sample-dev"
   />

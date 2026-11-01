@@ -418,6 +418,26 @@
       "source": "admin/src/features/inbox/controllers/useInboxController.ts",
       "test": "admin/src/features/inbox/controllers/useInboxController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useSalesTodayController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesTodayController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useSalesDealsController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesDealsController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useSalesHostsController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesHostsController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useMyNominationsController.ts",
+      "test": "admin/src/features/sales/controllers/useMyNominationsController.test.tsx",
+      "status": "required"
     }
   ]
 }

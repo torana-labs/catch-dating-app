@@ -4073,6 +4073,29 @@
         "decision": "approve",
         "note": "Phone verified; the proof link is the organizer's Instagram."
       }
+    },
+    {
+      "actionId": "nominations.list",
+      "callable": "adminListMyNominations",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/nominations",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "requestSchema": "contracts/callables/admin_list_my_nominations_payload.schema.json",
+      "summary": "List the organizers the caller nominated, newest first, published, waiting or stuck, with real totals per filter.",
+      "example": {
+        "filter": "all",
+        "limit": 25,
+        "cursor": null
+      }
     }
   ],
   "workflows": [
@@ -4376,7 +4399,8 @@
         "sales.privacy.case.get",
         "sales.demo.GetSalesDemoPartnerReview",
         "sales.demo.ShareSalesDemoPartnerReview",
-        "sales.partners.offer"
+        "sales.partners.offer",
+        "nominations.list"
       ]
     },
     {
