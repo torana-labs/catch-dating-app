@@ -5,6 +5,8 @@ import {useOrganizerDirectoryController} from "./useOrganizerDirectoryController
 import {useOrganizerOverviewController} from "./useOrganizerOverviewController";
 import {
   journeyStepCopy,
+  cameFromLabel,
+  creditToLabel,
   nextStepCopy,
   organizerClaimLabel,
   organizerPageLabel,
@@ -82,5 +84,20 @@ describe("organizer record labels", () => {
     expect(nextStepCopy("claim", "Riya")?.subtitle)
       .toBe("Send them the claim link, or Riya will on the follow-up");
     expect(nextStepCopy(null, null)).toBeNull();
+  });
+
+  it("says where an organizer came from and who earns credit", () => {
+    const partner = {channel: "partner" as const, nominator: {uid: "n",
+      name: "Neha Kulkarni", role: "partner" as const},
+    firstPaidBookingAt: null};
+    expect(cameFromLabel(partner)).toBe("Neha Kulkarni, partner");
+    expect(creditToLabel(partner)).toBe("Neha Kulkarni, partner");
+    const associate = {channel: "sales_associate" as const, nominator: {
+      uid: "r", name: "Riya Sharma", role: "associate" as const},
+    firstPaidBookingAt: null};
+    expect(creditToLabel(associate)).toBe("No one");
+    expect(cameFromLabel({channel: "imported", nominator: null,
+      firstPaidBookingAt: null})).toBe("Catch found it");
+    expect(cameFromLabel(null)).toBe("Not recorded");
   });
 });

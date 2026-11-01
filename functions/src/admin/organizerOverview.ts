@@ -8,6 +8,7 @@ import type {
   ExternalEventDocument,
   OrganizerClaimRequestDocument,
   OrganizerDocument,
+  OrganizerGrowthFactsDocument,
   OrganizerPaymentConnectionDocument,
   OrganizerSalesAccountDocument,
   SalesTaskDocument,
@@ -99,7 +100,7 @@ export async function adminGetOrganizerOverviewHandler(
   const at = Timestamp.fromDate(now);
 
   const [account, tasks, terms, connections, claims, intake, firstEvent,
-    upcomingCatch, upcomingCatchCount, imported] = await Promise.all([
+    upcomingCatch, upcomingCatchCount, imported, growth] = await Promise.all([
     db.collection("organizerSalesAccounts").doc(organizerId).get()
       .then((snap) => snap.data() as
         Partial<OrganizerSalesAccountDocument> | undefined),
@@ -135,6 +136,9 @@ export async function adminGetOrganizerOverviewHandler(
       .where("canonicalHostId", "==", organizerId).limit(200).get()
       .then((snap) => snap.docs.map((doc) => ({id: doc.id,
         event: doc.data() as Partial<ExternalEventDocument>}))),
+    db.collection("organizerGrowthFacts").doc(organizerId).get()
+      .then((snap) => snap.data() as
+        Partial<OrganizerGrowthFactsDocument> | undefined),
   ]);
 
   const nomination = intake.find((item) => item.request?.kind !==
@@ -142,7 +146,8 @@ export async function adminGetOrganizerOverviewHandler(
   const openTask = tasks.find((task) => task.status === "open") ?? null;
   const ownerUid = account?.assignedOwnerUid ?? null;
   const names = await deps.staffNames([ownerUid, openTask?.ownerUid,
-    nomination?.request?.submittedBy?.uid, nomination?.approval?.approvedByUid]
+    nomination?.request?.submittedBy?.uid, nomination?.approval?.approvedByUid,
+    growth?.nominator?.uid]
     .filter((uid): uid is string => typeof uid === "string" && uid.length > 0));
 
   const claimState = organizerClaimState(organizer);
@@ -222,8 +227,16 @@ export async function adminGetOrganizerOverviewHandler(
       requesterRole: pending.claim.requesterRole ?? null,
       createdAt: timestampIso(pending.claim.createdAt),
     } : null,
+    growth: growth?.channel ? {
+      channel: growth.channel,
+      nominator: growth.nominator ? {uid: growth.nominator.uid,
+        name: names.get(growth.nominator.uid) ?? null,
+        role: growth.nominator.role} : null,
+      firstPaidBookingAt: timestampIso(growth.milestones?.firstPaidBookingAt),
+    } : null,
     journey: journeyOf({organizer, nomination, claims: claims.map((c) =>
-      c.claim), firstEvent, names}),
+      c.claim), firstEvent, firstPaidBookingAt:
+      growth?.milestones?.firstPaidBookingAt ?? null, names}),
     nextStep: claimState === "claimPending" || pending ? "decideClaim" :
       claimState === "unclaimed" ? "claim" :
         hasRun ? null : "firstEvent",
@@ -244,9 +257,11 @@ function journeyOf(input: {
   nomination: Partial<SupplyIntakeRequestsDocument> | null;
   claims: Array<Partial<OrganizerClaimRequestDocument>>;
   firstEvent: Partial<EventDocument> | undefined;
+  firstPaidBookingAt: unknown;
   names: Map<string, string>;
 }): JourneyStep[] {
-  const {organizer, nomination, claims, firstEvent, names} = input;
+  const {organizer, nomination, claims, firstEvent, firstPaidBookingAt,
+    names} = input;
   const steps: JourneyStep[] = [];
   const step = (kind: JourneyStep["kind"], at: unknown,
     actorName: string | null = null, detail: string | null = null) =>
@@ -284,6 +299,7 @@ function journeyOf(input: {
   if (firstEvent) {
     step("firstEvent", firstEvent.startTime, null, catchEventTitle(firstEvent));
   }
+  if (firstPaidBookingAt) step("firstPaidBooking", firstPaidBookingAt);
 
   let previous = -Infinity;
   return steps
