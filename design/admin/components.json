@@ -11,8 +11,6 @@
   "coverage": {
     "strategy": "route-workspace-plus-shared-primitives",
     "currentFocus": [
-      "route_access_review",
-      "workspace_access_review",
       "route_admin_role_management",
       "workspace_admin_role_management",
       "route_admin_action_executions",
@@ -43,10 +41,11 @@
       "workspace_organizer_publishing",
       "route_now",
       "route_marketplace",
-      "route_safety_triage",
-      "workspace_safety_triage",
       "route_user_analytics",
       "workspace_user_analytics",
+      "route_safety",
+      "workspace_safety_action_sheet",
+      "route_safety_live_controller",
       "route_cross_paths_showcase",
       "workspace_cross_paths_showcase",
       "shared_admin_profile_photo_grid",
@@ -170,44 +169,6 @@
         ]
       },
       "notes": "Shared admin feedback provider. Preview coverage is not required because it wraps the app context rather than rendering a standalone surface."
-    },
-    {
-      "id": "route_access_review",
-      "kind": "route",
-      "owner": "features/access",
-      "source": "admin/src/features/access/ui/AccessReviewScreen.tsx",
-      "exportName": "AccessReviewScreen",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "AccessReviewRouteStory",
-        "states": [
-          "capped-directory"
-        ]
-      },
-      "notes": "Route wrapper owns TanStack Query list/detail fetches and review mutations; preview renders the registered AccessReviewWorkspace with deterministic application/detail/decision fixtures in AdminRoutes.stories.tsx."
-    },
-    {
-      "id": "workspace_access_review",
-      "kind": "workspace",
-      "owner": "features/access",
-      "source": "admin/src/features/access/ui/AccessReviewScreen.tsx",
-      "exportName": "AccessReviewWorkspace",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "AccessReviewWorkspaceStory",
-        "states": [
-          "capped-directory"
-        ]
-      },
-      "notes": "Prop-driven Access Review workspace surface used by the route wrapper and deterministic Storybook previews; list/detail query and mutation logic stay in AccessReviewScreen."
     },
     {
       "id": "route_admin_role_management",
@@ -947,50 +908,6 @@
       "notes": "Lazy live route wrapper owns the Marketplace analytics controller/query seam; deterministic prop-driven visual coverage remains on route_marketplace."
     },
     {
-      "id": "route_safety_triage",
-      "kind": "route",
-      "owner": "features/safety",
-      "source": "admin/src/features/safety/ui/SafetyTriageScreen.tsx",
-      "exportName": "SafetyTriageScreen",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "SafetyTriageRouteStory",
-        "states": [
-          "directory",
-          "filters",
-          "open-action",
-          "queue-health",
-          "honest-preview-analytics"
-        ]
-      },
-      "notes": "URL-owned Safety list route backed by an explicit SafetyTriageController fixture. Metric cards use aggregate open counts and disclose returned preview row counts separately. Queue filtering and search apply only to the loaded preview; priority and age distributions are not implemented. Opening a row navigates to a separate encoded target-path route instead of stacking detail below the table."
-    },
-    {
-      "id": "workspace_safety_triage",
-      "kind": "workspace",
-      "owner": "features/safety",
-      "source": "admin/src/features/safety/ui/SafetyTriageScreen.tsx",
-      "exportName": "SafetyTriageWorkspace",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "SafetyTriageWorkspaceStory",
-        "states": [
-          "case-detail",
-          "assignment",
-          "decision"
-        ]
-      },
-      "notes": "Prop-driven Safety case workspace renders one record at a time with back navigation, evidence, assignment, and existing audited reviewed/dismissed mutations; successful decisions return to the list route."
-    },
-    {
       "id": "route_cross_paths_showcase",
       "kind": "route",
       "owner": "features/cross-paths",
@@ -1029,6 +946,61 @@
         ]
       },
       "notes": "Prop-driven reviewer workspace shows public profile evidence, coarse objective blockers, fingerprint state, and audited approve, hold, or pause decisions."
+    },
+    {
+      "id": "route_safety",
+      "kind": "route",
+      "owner": "features/safety",
+      "source": "admin/src/features/safety/ui/SafetyScreen.tsx",
+      "exportName": "SafetyScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "SafetyRouteStory",
+        "states": [
+          "open-cases",
+          "case-detail",
+          "launch-access",
+          "account-actions",
+          "appeal"
+        ]
+      },
+      "notes": "Safety in the quiet register (boards AdminSafety and AdminSafetyActions): open cases from every queue, launch access included, due soonest first in a CatchTable on the CatchPaneLayout queue pattern; account actions and appeals as views of the same workspace header. The case beside the queue carries its facts, evidence and the resolve or dismiss decision, and opens the act-on-an-account sheet. It replaces the Safety triage and Launch access screens."
+    },
+    {
+      "id": "workspace_safety_action_sheet",
+      "kind": "workspace",
+      "owner": "features/safety",
+      "source": "admin/src/features/safety/ui/SafetyActionSheetWorkspace.tsx",
+      "exportName": "SafetyActionSheetWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "SafetyActionSheetStory",
+        "states": [
+          "restrict",
+          "owner-only-steps"
+        ]
+      },
+      "notes": "The act-on-an-account sheet (board AdminSafetyAction) on CatchSheet: warn, restrict, suspend and ban as CatchChoiceTile choices (suspend and ban owner-only), how long, the rule broken from Settings → Safety, the message the person sees, and whether the reporter hears it was handled and whether the person may appeal."
+    },
+    {
+      "id": "route_safety_live_controller",
+      "kind": "route",
+      "owner": "features/safety",
+      "source": "admin/src/features/safety/ui/SafetyRouteScreen.tsx",
+      "exportName": "SafetyRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Safety triage, launch access, account action, settings and action-sheet controllers and the URL seam; deterministic prop-driven visual coverage remains on route_safety."
     },
     {
       "id": "shared_admin_profile_photo_grid",

@@ -8,7 +8,6 @@ export const adminSections = {
   marketplace: {path: "/marketplace", title: "Marketplace"},
   more: {path: "/more", title: "More"},
   safety: {path: "/safety", title: "Safety"},
-  access: {path: "/access", title: "Launch access"},
   "cross-paths": {path: "/cross-paths", title: "Cross Paths showcase"},
   growth: {path: "/growth", title: "Growth"},
   "marketing-ops": {path: "/marketing", title: "Marketing"},
@@ -40,6 +39,7 @@ interface RouteState {
   eventTab?: "overview" | "page" | "takedown";
   organizerTab?: "overview" | "page" | "events" | "sales" | "money" | "history";
   financeWorkspace?: FinanceWorkspace;
+  safetyView?: "open" | "actions" | "appeals";
   marketingTab?: MarketingTab;
   composerStep?: MarketingStep;
 }
@@ -61,7 +61,12 @@ export const adminRoutes: AdminRoute[] = [
   route("/marketing-ops/*", "marketing-ops"),
   route("/organizer-intake/*", "organizer-intake", {title: "Organizer intake"}),
   route("/safety/:targetPath", "safety", {title: "Safety case"}),
-  route("/access/:applicationUid", "access"),
+  route("/safety/actions/*", "safety", {safetyView: "actions", title: "Account actions"}),
+  route("/safety/actions/:safetyActionId", "safety", {safetyView: "actions", title: "Account action"}),
+  route("/safety/appeals/*", "safety", {safetyView: "appeals", title: "Appeals"}),
+  route("/safety/appeals/:safetyActionId", "safety", {safetyView: "appeals", title: "Appeal"}),
+  // Launch access moved into the Safety queue.
+  route("/access/*", "safety", {redirect: "/safety"}),
   route("/organizers/:organizerId", "organizers"),
   ...(["page", "events", "sales", "money", "history"] as const).map((organizerTab) =>
     route(`/organizers/:organizerId/${organizerTab}`, "organizers", {organizerTab})),
@@ -125,6 +130,7 @@ export function resolveAdminRoute(pathname: string) {
     eventTab: state?.eventTab ?? "overview",
     organizerTab: state?.organizerTab ?? "overview",
     financeWorkspace: state?.financeWorkspace ?? "issues",
+    safetyView: state?.safetyView ?? "open",
     marketingTab: state?.marketingTab ?? "posts",
     composerStep: state?.composerStep ?? "source",
   };

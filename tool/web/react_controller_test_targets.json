@@ -10,8 +10,8 @@
   },
   "targets": [
     {
-      "source": "admin/src/features/access/controllers/useAccessReviewController.ts",
-      "test": "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
+      "source": "admin/src/features/safety/controllers/useAccessReviewController.ts",
+      "test": "admin/src/features/safety/controllers/useAccessReviewController.test.tsx",
       "status": "required"
     },
     {
@@ -397,6 +397,11 @@
     {
       "source": "admin/src/features/support/controllers/useSupportInboxController.ts",
       "test": "admin/src/features/support/controllers/useSupportInboxController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/safety/controllers/useSafetyActionSheetController.ts",
+      "test": "admin/src/features/safety/controllers/useSafetyActionSheetController.test.tsx",
       "status": "required"
     }
   ]
