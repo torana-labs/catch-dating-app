@@ -7,7 +7,7 @@
 //   npm scripts are targets, like the ones Nx infers for workspace packages.
 // - `sourceProjects` in this plugin's nx.json options declares source-only
 //   projects, such as contracts and design tokens, each with command targets
-//   (`{command, inputs?}`); `implicitDependencies` maps each project to the
+//   (`{command, inputs?, cache?}`); `implicitDependencies` maps each project to the
 //   sources its committed generated code comes from.
 //
 // Pub workspace membership is modelled as an input (members read the shared
@@ -91,10 +91,11 @@ export const createNodesV2 = [
         tags: ["type:source"],
         // A target that reads code outside the source root (a conformance scan
         // over consumers, say) names those files in its own inputs.
-        targets: Object.fromEntries(Object.entries(targets).map(([target, {command, inputs}]) => [target, {
+        targets: Object.fromEntries(Object.entries(targets).map(([target, {command, inputs, cache}]) => [target, {
           executor: "nx:run-commands",
           options: {command, cwd: "."},
           ...(inputs ? {inputs} : {}),
+          ...(cache === undefined ? {} : {cache}),
         }])),
       }]);
       return [file, {projects: Object.fromEntries(projects)}];

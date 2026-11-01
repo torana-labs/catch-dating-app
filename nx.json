@@ -19,7 +19,6 @@
   },
   "targetDefaults": {
     "analyze": {"cache": true, "inputs": ["default", "^production"]},
-    "check": {"cache": true, "inputs": ["default"]},
     "lint": {"cache": true, "inputs": ["default", "^production"]},
     "test": {"cache": true, "inputs": ["default", "^production"]},
     "build": {
@@ -38,7 +37,18 @@
             "name": "contracts",
             "root": "contracts",
             "targets": {
-              "check": {"command": "node tool/contracts/generate_schema_contracts.mjs --check"},
+              "check": {
+                "command": "node tool/contracts/generate_schema_contracts.mjs --check",
+                "cache": false,
+                "inputs": [
+                  "{projectRoot}/**/*",
+                  "{workspaceRoot}/tool/contracts/**/*",
+                  "{workspaceRoot}/functions/src/**/*",
+                  "{workspaceRoot}/lib/**/*",
+                  "{workspaceRoot}/admin/src/generated/**/*",
+                  "{workspaceRoot}/website/src/shared/contracts/generated/**/*"
+                ]
+              },
               "conformance": {
                 "command": "node tool/contracts/validate_schema_contracts.mjs && node tool/contracts/check_schema_type_boundaries.mjs && node tool/run.mjs check audit:dependency-direction && node tool/contracts/check_schema_path_literals.mjs && node tool/contracts/check_schema_fixtures.mjs && node tool/contracts/check_firestore_rules_semantics.mjs",
                 "inputs": [
@@ -56,7 +66,16 @@
             "name": "design-tokens",
             "root": "design/tokens",
             "targets": {
-              "check": {"command": "dart run tool/design_tokens.dart --check"}
+              "check": {
+                "command": "dart run tool/design_tokens.dart --check",
+                "cache": false,
+                "inputs": [
+                  "{projectRoot}/**/*",
+                  "{workspaceRoot}/tool/design_tokens.dart",
+                  "{workspaceRoot}/packages/web-config/generated/**/*",
+                  "{workspaceRoot}/packages/catch_tokens/lib/generated/**/*"
+                ]
+              }
             }
           }
         ],
