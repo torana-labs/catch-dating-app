@@ -86,8 +86,8 @@ revision, still runs the full matrix. Canonical Harness control-plane paths come
 full-matrix paths. Terminal graph classifications override broad Harness
 patterns. Shared control-plane changes, unowned lane inputs, and explicit full
 runs retain the complete six-bucket matrix.
-These explicit mappings avoid full fanout when
-ordinary screen changes update generated manifests; unknown companion inputs
+Explicit mappings avoid full fanout when ordinary screen changes update
+generated manifests; unknown companion inputs
 still trigger the full fallback. Committed evidence follows the same rule:
 website Storybook baselines select `web:storybook-visuals`, app screenshots
 select every capture check that reads their bytes, and feature contracts select

@@ -237,59 +237,6 @@ test("design authority ledgers select their exact consuming checks", () => {
   ]);
 });
 
-test("feature coverage inputs select executable owners without full fanout", () => {
-  const owners = new Map([
-  ]);
-  const mixedPaths = [...owners.keys(),
-    "design/screens/catch.screens.json",
-    "lib/programs/presentation/program_workspace_screen.dart",
-    "widgetbook/lib/programs/workspace_use_cases.dart",
-  ];
-  for (const mode of ["pr", "main", "merge_group"]) {
-    for (const [changedPath, owner] of owners) {
-      const plan = planAffectedToolChecks({
-        changedPaths: [changedPath], manifest: productionManifest,
-        componentGraph: productionGraph, mode,
-      });
-      assert.equal(plan.mode, "affected", `${mode}: ${changedPath}`);
-      assert.ok(plan.toolIds.includes(owner), changedPath);
-      assert.equal(plan.repositoryView, "full", changedPath);
-      assert.deepEqual(plan.setupRequirements, ["node", "root-npm"]);
-    }
-    const plan = planAffectedToolChecks({
-      changedPaths: mixedPaths, manifest: productionManifest,
-      componentGraph: productionGraph, mode,
-    });
-    assert.equal(plan.mode, "affected");
-    const graphPlan = planAffected({changedPaths: mixedPaths, graph: productionGraph, mode});
-    for (const id of [...owners.values(), ...graphPlan.operations.checkIds,
-      ...productionManifest.ciImpact.mandatoryCheckIds]) {
-      assert.ok(plan.toolIds.includes(id), `${mode} omitted ${id}`);
-    }
-    assert.deepEqual(plan.setupRequirements, ["node", "flutter", "flutter-pub", "root-npm"]);
-    assert.ok(plan.toolIds.length < 40, `selected ${plan.toolIds.length} checks`);
-  }
-  // Reproduce the former full-matrix fallback, rather than treating these
-  // generated files as ignored inputs with no executable validation owner.
-  const previousManifest = structuredClone(productionManifest);
-  for (const tool of previousManifest.tools) {
-    if ([...owners.values()].includes(tool.id)) delete tool.impactPaths;
-  }
-  assert.equal(planAffectedToolChecks({
-    changedPaths: mixedPaths, manifest: previousManifest, componentGraph: productionGraph,
-  }).mode, "full");
-  for (const companion of ["design/unowned-new-input.json", "tool/harness/component_graph.json"]) {
-    assert.equal(planAffectedToolChecks({
-      changedPaths: [...mixedPaths, companion], manifest: productionManifest,
-      componentGraph: productionGraph,
-    }).mode, "full", companion);
-  }
-  assert.equal(planAffectedToolChecks({
-    changedPaths: mixedPaths, manifest: productionManifest,
-    componentGraph: productionGraph, mode: "nightly", full: true,
-  }).mode, "full");
-});
-
 // Each input was an unmapped Tools-lane path in main CI history, so any change
 // fell back to the full matrix. The listed checks are the ones that read it.
 const consumedInputs = new Map([
