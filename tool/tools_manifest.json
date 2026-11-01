@@ -4208,6 +4208,24 @@
       }
     },
     {
+      "id": "web:verify-admin-hosting",
+      "category": "web",
+      "path": "tool/web/verify_admin_hosting.mjs",
+      "command": "node tool/web/verify_admin_hosting.mjs",
+      "safety": "remote-read",
+      "status": "active",
+      "description": "Asserts that a supplied Admin Hosting origin serves no-cache HTML, immutable chunks and a real 404 for a missing chunk, so tabs left open across a deploy can recover.",
+      "checks": [
+        "node --check tool/web/verify_admin_hosting.mjs",
+        "node --test tool/web/verify_admin_hosting.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/web/verify_admin_hosting.test.mjs",
+        "firebase.json"
+      ],
+      "role": "finder"
+    },
+    {
       "id": "marketing:verify-hosting-404",
       "category": "marketing",
       "path": "website/scripts/verifyHosting404.mjs",

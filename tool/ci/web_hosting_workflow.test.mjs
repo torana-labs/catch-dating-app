@@ -742,6 +742,14 @@ test("marketing production postconditions run only after exact promotion", () =>
     /if: \$\{\{ inputs\.surface == 'marketing' && steps\.legacy-runtime\.outputs\.retired != 'true' && /u);
 });
 
+test("admin production postcondition runs only after exact promotion", () => {
+  const promote = workflow("_web-hosting-promote.yml");
+  const removeCredentials = promote.indexOf("Remove deploy credentials before postconditions");
+  const adminHosting = promote.indexOf("Verify Admin serves no-cache HTML, immutable chunks and real 404s");
+  assert.ok(removeCredentials >= 0 && removeCredentials < adminHosting);
+  assert.match(promote, /verify_admin_hosting\.mjs https:\/\/catchdates-admin\.web\.app/u);
+});
+
 function initialEvidence() {
   const sha = "a".repeat(40);
   const expected = {surface: "marketing", repository: "owner/repo", runId: "101",
