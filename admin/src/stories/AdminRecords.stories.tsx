@@ -111,27 +111,32 @@ export const OrganizerEventsWorkspaceStory: Story = {
 
 export const EventPageRouteStory: Story = {
   name: "Event page",
-  parameters: {catchComponent: {id: "route_event_page", states: ["catch-event", "imported-event"]}},
+  parameters: {catchComponent: {id: "route_event_page", states: ["catch-event"]}},
   render: () => (
-    <>
-      <EventPageScreen
-        loadError={null}
-        onBack={noop}
-        onOpenOrganizer={noop}
-        onTabChanged={noop}
-        pageEditor={null}
-        record={{source: "catch", event: sampleEventDetails["mumbai-padel-mixer-1"]!}}
-        tab="overview"
-      />
-      <EventPageScreen
-        loadError={null}
-        onBack={noop}
-        onOpenOrganizer={noop}
-        onTabChanged={noop}
-        pageEditor={null}
-        record={{source: "imported", event: sampleExternalEventRows[0]!}}
-        tab="overview"
-      />
-    </>
+    <EventPageScreen
+      loadError={null}
+      onBack={noop}
+      onOpenOrganizer={noop}
+      onTabChanged={noop}
+      pageEditor={null}
+      record={{source: "catch", event: sampleEventDetails["mumbai-padel-mixer-1"]!}}
+      tab="overview"
+    />
+  ),
+};
+
+export const ImportedEventPageRouteStory: Story = {
+  name: "Event page, imported",
+  parameters: {catchComponent: {id: "route_event_page", states: ["imported-event"]}},
+  render: () => (
+    <EventPageScreen
+      loadError={null}
+      onBack={noop}
+      onOpenOrganizer={noop}
+      onTabChanged={noop}
+      pageEditor={null}
+      record={{source: "imported", event: sampleExternalEventRows[0]!}}
+      tab="overview"
+    />
   ),
 };

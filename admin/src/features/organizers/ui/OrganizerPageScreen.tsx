@@ -101,7 +101,7 @@ function Journey({overview, limit}: {overview: OrganizerOverview; limit?: number
             titleVariant="bodyM"
           subtitle={next.subtitle}
           title={next.title}
-          trailing={<CatchText as="span" color="ink3" variant="supporting">Next</CatchText>}
+          trailing={<CatchText as="span" color="ink2" variant="supporting">Next</CatchText>}
         />
       ) : null}
     </Section>
