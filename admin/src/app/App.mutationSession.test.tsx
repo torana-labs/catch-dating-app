@@ -16,7 +16,7 @@ vi.mock("../shared/api/firebase", () => ({
   auth: {}, signOutAdmin: mocks.signOut, resetPhoneSignIn: vi.fn(),
   confirmPhoneSignInCode: vi.fn(), requestPhoneSignInCode: vi.fn(),
 }));
-vi.mock("../features/admin-roles/api/adminRoleRepository", () => ({
+vi.mock("../features/settings/api/teamRepository", () => ({
   loadAdminRoleAssignments: mocks.list, loadAdminUserRoles: mocks.load,
   saveAdminUserRoles: mocks.save,
 }));
@@ -34,7 +34,14 @@ let tokenChanged: (user: User | null) => void;
 
 afterEach(cleanup);
 beforeEach(async () => {
-  window.history.replaceState({}, "", "/admin-roles/private-target-uid");
+  // jsdom has no modal dialog; Team's role sheet opens one.
+  HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {
+    this.setAttribute("open", "");
+  };
+  HTMLDialogElement.prototype.close = function close(this: HTMLDialogElement) {
+    this.removeAttribute("open");
+  };
+  window.history.replaceState({}, "", "/settings/team/private-target-uid");
   mocks.onIdTokenChanged.mockImplementation((_auth, callback) => {
     tokenChanged = callback;
     callback(owner);
@@ -43,7 +50,7 @@ beforeEach(async () => {
   mocks.getIdTokenResult.mockResolvedValue({claims: {adminOwner: true}});
   mocks.list.mockResolvedValue({generatedAt: "2026-10-02T01:00:00.000Z", rows: [], source: "adminRoleAssignments"});
   mocks.load.mockResolvedValue({user: target});
-  await import("../features/admin-roles/ui/AdminRoleManagementScreen");
+  await import("../features/settings/ui/SettingsRouteScreen");
 });
 
 describe("App mutation session isolation", () => {
@@ -55,13 +62,15 @@ describe("App mutation session isolation", () => {
     await act(async () => { render(<App />); });
     await act(async () => { await vi.dynamicImportSettled(); });
     await screen.findByRole("button", {name: "Save role change"});
-    await user.click(screen.getByRole("checkbox", {name: /^Support/iu}));
+    await user.click(screen.getByRole("radio", {name: /^No access/iu}));
     await user.type(screen.getByLabelText("Review note"), "Synthetic approved review.");
     await user.click(screen.getByRole("button", {name: "Save role change"}));
     await waitFor(() => expect(mocks.save).toHaveBeenCalledOnce());
     mocks.getIdTokenResult.mockResolvedValue({claims: {support: true}});
     act(() => tokenChanged(support));
-    await screen.findByText("Permitted support overview");
+    // Support may open Settings but not Team and roles.
+    await screen.findByRole("heading", {name: "Settings"});
+    expect(screen.queryByText("Team and roles")).toBeNull();
     expect(screen.getByRole("link", {name: "Needs you"}).getAttribute("aria-disabled")).toBeNull();
     await act(async () => {
       if (outcome === "success") {

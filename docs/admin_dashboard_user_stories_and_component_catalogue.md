@@ -1,6 +1,6 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
-version: 0.5.0
+version: 0.6.0
 updated: 2026-11-01
 owner: admin_console
 status: active
@@ -158,7 +158,7 @@ placeholder screen structure.
 | Users | `features/users` | one exact-UID `adminGetUserAnalytics` aggregate response | validate exact UID, mask prior UID while loading, inspect four outcomes and accessible activity summary with explicit missing/forbidden/stale/partial states | Complete approved read-only analytics lookup; broad identity search and account, safety, payment, or support actions remain absent |
 | Finance | `features/finance` | independent overview and fixed 30-day host-analytics responses | inspect scoped issue counts, partial-source state, prioritized read-only issue evidence, inferred/unknown fields, malformed-row count, and manual provider handoff | Complete approved read-only reconciliation workflow; typed issue model, point reads, finance-role repair, and all money movement remain contract-first |
 | Data quality | `features/data-quality` | four independently loaded overview, analytics, marketing, and intake sources | inspect source-health dimensions, retry one failed source, filter severity/owner, open URL-owned signal detail or validated owning workflow | Complete approved data-trust register; scheduler receipts, acknowledgement, backfill, and remediation remain absent |
-| Admin roles | `features/admin-roles` | bounded 50-row assignment register plus exact Firebase Auth UID read and audited role mutation | local search, URL-owned UID detail, six governed role policies, before/after diff, self-owner lock, high-risk confirmation, save receipt and token-refresh guidance | Complete approved owner-only role workflow; broad Auth search, pagination, account state, session revocation, and non-admin claims remain absent |
+| Settings → Team and roles | `features/settings` | active assignment register plus exact Firebase Auth UID read and audited role mutation | three jobs (owner, sales associate, ops and support) mapped to role claims, invite by user id, a review note on every change, self-owner lock | Replaced the Admin roles screen on 1 Nov 2026; broad Auth search, account state and session revocation remain absent |
 
 ## Auth And Admin Roles
 
@@ -826,24 +826,11 @@ Acceptance criteria:
 
 Current adherence:
 
-- Good: Admin roles is feature-owned under `features/admin-roles`.
-- Good: `adminGetAdminUserRoles` and `adminSetAdminUserRoles` are
-  `adminOwner`-only callables, rate-limited, and backend-authorized.
-- Good: role changes preserve unrelated custom claims, require notes, write
-  `adminRoleAssignments/{uid}`, write `adminAuditLogs/{id}`, and block
-  self-removal of `adminOwner`.
-- Good: the register is the primary surface. It exposes the 50 most recently
-  updated assignments, generated time, status filtering, and local-only search;
-  exact uid lookup stays below it as the fallback and never becomes broad Auth
-  directory search.
-- Good: `/admin-roles/{uid}` owns selection and supports a target absent from
-  the bounded register. The editor shows before/after roles, capability and risk
-  policy, high-risk confirmation, a visibly locked self-owner control, and a
-  server-confirmed save receipt with token-refresh guidance.
-- Good: the route wrapper now delegates its rendered body to registered
-  `AdminRoleManagementWorkspace`, giving Storybook deterministic
-  route/workspace coverage for one role-assignment detail without running live
-  query fetches or writes in previews.
+- Good (1 Nov 2026): Admin roles became Settings → Team and roles under
+  `features/settings`: three jobs instead of five claims, inviting by user
+  id, a review note on every change. `/admin-roles` links open Team and
+  roles. People (`features/people`) searches by name, phone or user id, and
+  every search is logged.
 - Weak: the bounded register is not a complete Firebase Auth directory. It does
   not search by arbitrary email/name/phone or backfill assignments for claims
   set manually before the register existed.
