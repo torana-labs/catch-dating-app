@@ -19,6 +19,7 @@ const IntakeWorkspaceScreen = lazy(() => import("../features/intake/ui/IntakeWor
 const SafetyRouteScreen = lazy(() => import("../features/safety/ui/SafetyRouteScreen").then((m) => ({default: m.SafetyRouteScreen})));
 const GrowthKpiScreen = lazy(() => import("../features/growth/ui/GrowthKpiScreen").then((m) => ({default: m.GrowthKpiScreen})));
 const MoneyRouteScreen = lazy(() => import("../features/money/ui/MoneyRouteScreen").then((m) => ({default: m.MoneyRouteScreen})));
+const OrganizerBillsRouteWorkspace = lazy(() => import("../features/money/ui/OrganizerBillsWorkspace").then((m) => ({default: m.OrganizerBillsRouteWorkspace})));
 const FinanceOpsScreen = lazy(() => import("../features/finance/ui/FinanceOpsScreen").then((m) => ({default: m.FinanceOpsScreen})));
 const CommercialTermsScreen = lazy(() => import("../features/commercial-terms/ui/CommercialTermsScreen").then((m) => ({default: m.CommercialTermsScreen})));
 const PaymentRoutingScreen = lazy(() => import("../features/payment-routing/ui/PaymentRoutingScreen").then((m) => ({default: m.PaymentRoutingScreen})));
@@ -185,11 +186,18 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
   },
   organizers: {
     label: "Organizers", icon: "organizer", frame: "redrawn",
-    render: ({navigate, route}) => (
+    render: ({canOpen, navigate, route}) => (
       <OrganizersRouteScreen
+        canChangeTerms={canOpen("payment-setup")}
         claimRequestId={route.params.claimRequestId ?? null}
         onNavigate={navigate}
         organizerId={route.params.organizerId ?? null}
+        renderBills={canOpen("money") ? (organizerId) => (
+          <OrganizerBillsRouteWorkspace
+            onOpenBill={(billId) => navigate(moneyPath("bills", billId))}
+            organizerId={organizerId}
+          />
+        ) : null}
         renderEvents={(organizerId) => <OrganizerEventsRouteWorkspace onNavigate={navigate} organizerId={organizerId} />}
         tab={route.organizerTab}
         workspace={route.organizerWorkspace}

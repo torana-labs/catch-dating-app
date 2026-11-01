@@ -31,11 +31,14 @@ export type OrganizerPageTab = "overview" | "page" | "events" | "sales" | "money
 export interface OrganizerPageLinks {
   /** The Events tab's list, read live by the route. */
   eventsTab: ReactNode;
+  /** The Money tab's bills, read live; null for those who cannot open Money. */
+  moneyBills: ReactNode;
+  /** Null for those who cannot open Payment setup. */
+  onOpenTerms: (() => void) | null;
   onBack: () => void;
   onTabChanged: (tab: OrganizerPageTab) => void;
   onOpenEvent: (source: "catch" | "imported", eventId: string) => void;
   onOpenSales: () => void;
-  onOpenTerms: () => void;
   onOpenClaim: (requestId: string) => void;
   publicPageUrl: (canonicalPath: string) => string;
 }
@@ -142,9 +145,12 @@ function tabBody(tab: OrganizerPageTab, overview: OrganizerOverview, links: Orga
           fact("First paid booking", overview.growth?.firstPaidBookingAt ?
             eventWhenLabel(overview.growth.firstPaidBookingAt).split(" · ")[0] : "Not yet"),
         ]} />
-        <CatchGap direction="horizontal" size="related">
-          <CatchButton label="Change terms" onPressed={links.onOpenTerms} size="sm" variant="secondary" />
-        </CatchGap>
+        {links.onOpenTerms ? (
+          <CatchGap direction="horizontal" size="related">
+            <CatchButton label="Change terms" onPressed={links.onOpenTerms} size="sm" variant="secondary" />
+          </CatchGap>
+        ) : null}
+        {links.moneyBills}
       </CatchGap>
     )};
   }

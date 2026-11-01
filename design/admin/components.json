@@ -1065,6 +1065,39 @@
       "notes": "Live wrapper that reads one organizer's events for the organizer page's Events tab; coverage remains on workspace_organizer_events."
     },
     {
+      "id": "workspace_organizer_bills",
+      "kind": "workspace",
+      "owner": "features/money",
+      "source": "admin/src/features/money/ui/OrganizerBillsWorkspace.tsx",
+      "exportName": "OrganizerBillsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "OrganizerBillsWorkspaceStory",
+        "states": [
+          "bills",
+          "latest-month"
+        ]
+      },
+      "notes": "One organizer's money on the Money tab of its page: all-time sales and earnings, ticket sales each month, its bills newest first and its latest month as the organizer lived it, read from adminManageOrganizerBills. Bills open in Money."
+    },
+    {
+      "id": "workspace_organizer_bills_live_controller",
+      "kind": "workspace",
+      "owner": "features/money",
+      "source": "admin/src/features/money/ui/OrganizerBillsWorkspace.tsx",
+      "exportName": "OrganizerBillsRouteWorkspace",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper"
+        ]
+      },
+      "notes": "Live wrapper that reads one organizer's bills; the shell shows it only to those who can open Money. Coverage remains on workspace_organizer_bills."
+    },
+    {
       "id": "route_marketplace",
       "kind": "route",
       "owner": "features/marketplace",
