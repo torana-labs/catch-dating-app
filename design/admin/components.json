@@ -1208,7 +1208,11 @@
           "compact"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.pane_layout"
+      ],
+      "comparisonReason": "The intake decision footer. Not a pane layout: the decision bar at the foot of one pane; it retires when CatchDock placement=\"pane\" lands."
     },
     {
       "id": "shared_admin_detail_screen_stack",
@@ -1229,9 +1233,10 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "comparedWith": [
-        "catch.section_stack"
+        "catch.section_stack",
+        "catch.pane_layout"
       ],
-      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections."
+      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections. Retires with the PR 4 shell, which replaces it with CatchPaneLayout."
     },
     {
       "id": "shared_admin_diff_list",
@@ -1300,9 +1305,10 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "comparedWith": [
-        "catch.section_stack"
+        "catch.section_stack",
+        "catch.pane_layout"
       ],
-      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections."
+      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections. Retires with the PR 4 shell, which replaces it with CatchPaneLayout."
     },
     {
       "id": "shared_admin_editor_grid",
@@ -4165,7 +4171,11 @@
           "compact"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.top_bar"
+      ],
+      "comparisonReason": "A legacy admin row of filter and action controls. Not a top bar: a row of controls inside a pane, not the top of a screen."
     },
     {
       "id": "shared_admin_topbar",
@@ -4286,9 +4296,10 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "comparedWith": [
-        "catch.section_stack"
+        "catch.section_stack",
+        "catch.pane_layout"
       ],
-      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections."
+      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections. Not a pane layout: one stacked column inside a pane; it retires with AdminPrimitives."
     },
     {
       "id": "shared_admin_workspace",
@@ -4509,9 +4520,10 @@
       "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "comparedWith": [
         "catch.step_header",
-        "catch.text"
+        "catch.text",
+        "catch.workspace_header"
       ],
-      "comparisonReason": "Page title header with eyebrow, copy and actions; no step navigation or progress. Composes CatchText title and supporting copy with an eyebrow and optional page actions; it does not implement the text-role atom."
+      "comparisonReason": "Page title header with eyebrow, copy and actions; no step navigation or progress. Composes CatchText title and supporting copy with an eyebrow and optional page actions; it does not implement the text-role atom. Retires with the PR 4 shell, which replaces it with CatchWorkspaceHeader."
     },
     {
       "id": "shared_panel",

@@ -147,9 +147,10 @@
       },
       "notes": "Canonical public chrome: the one header and footer every public route renders. Route-specific links live in the page (for example the Host section navigation row); transactional/private route shells do not use this owner.",
       "comparedWith": [
-        "catch.step_header"
+        "catch.step_header",
+        "catch.workspace_header"
       ],
-      "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3."
+      "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3. Not a workspace pane header: it heads the public site, not one pane of a queue or directory."
     },
     {
       "id": "route_home",
@@ -575,9 +576,10 @@
       "exportName": "EventBookingFrame",
       "comparedWith": [
         "catch.screen_body",
-        "catch.text"
+        "catch.text",
+        "catch.pane_layout"
       ],
-      "comparisonReason": "A website page frame for private bookings: it places the booking card in a CatchSplit rail beside a CatchText heading inside a CatchBand. It lays out library parts and implements neither the screen body nor the text contract.",
+      "comparisonReason": "A website page frame for private bookings: it places the booking card in a CatchSplit rail beside a CatchText heading inside a CatchBand. It lays out library parts and implements neither the screen body nor the text contract. Not a pane layout: a public booking page section, not a workspace screen of sibling panes.",
       "css": [
         "packages/web-ui/src/components/CatchBand.module.css",
         "packages/web-ui/src/components/CatchSplit.module.css",
@@ -1430,9 +1432,10 @@
       "source": "website/src/shared/site/SiteHeader.tsx",
       "exportName": "SiteHeader",
       "comparedWith": [
-        "catch.step_header"
+        "catch.step_header",
+        "catch.workspace_header"
       ],
-      "comparisonReason": "Navigation header rendered only by PublicSiteHeader; site chrome, not a wizard header.",
+      "comparisonReason": "Navigation header rendered only by PublicSiteHeader; site chrome, not a wizard header. Not a workspace pane header: site chrome above the page, not a pane title row.",
       "css": [
         "website/src/styles/site-footer.css",
         "website/src/styles/site-shell.css"
@@ -1538,9 +1541,10 @@
       "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
       "exportName": "EventRuntimeLiveHeader",
       "comparedWith": [
-        "catch.step_header"
+        "catch.step_header",
+        "catch.workspace_header"
       ],
-      "comparisonReason": "Live-event header with a check-in badge; no step navigation or progress.",
+      "comparisonReason": "Live-event header with a check-in badge; no step navigation or progress. Not a workspace pane header: a guest-facing live banner, not a pane title with views, filters or position.",
       "css": [
         "website/src/styles/event-runtime.css"
       ],
@@ -1595,9 +1599,10 @@
       "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
       "exportName": "EventRuntimeNoticeStack",
       "comparedWith": [
-        "catch.section_stack"
+        "catch.section_stack",
+        "catch.pane_layout"
       ],
-      "comparisonReason": "Vertical stack of runtime notices, not of complete sections.",
+      "comparisonReason": "Vertical stack of runtime notices, not of complete sections. Not a pane layout: one column of notices, with no panes to arrange.",
       "css": [
         "website/src/styles/event-runtime.css"
       ],
@@ -2152,7 +2157,11 @@
           "live-module-shell"
         ]
       },
-      "notes": "Governed visual ownership for attendee and rehearsal runtime frames, practice banner, panels, forms, consents, live header, action grid, notices, and module cards."
+      "notes": "Governed visual ownership for attendee and rehearsal runtime frames, practice banner, panels, forms, consents, live header, action grid, notices, and module cards.",
+      "comparedWith": [
+        "catch.pane_layout"
+      ],
+      "comparisonReason": "A guest-facing event runtime page frame inside the website; it arranges one public page, not sibling workspace panes."
     },
     {
       "id": "route_event_rehearsal",
@@ -3208,7 +3217,11 @@
           "board-reference-event"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-248). Two columns at 1:1, 7:5, or a 380px (booking) or 420px (organiser) rail on either side; they stack in source order when the page is narrower than 840px, snapped from the boards' 900px to the expanded window size. Search aliases: TwoColumn, TwoColumns, Columns, SplitLayout, SideBySide, Sidebar, SidebarLayout, RailLayout."
+      "notes": "Website T4 under D18 (CAT-248). Two columns at 1:1, 7:5, or a 380px (booking) or 420px (organiser) rail on either side; they stack in source order when the page is narrower than 840px, snapped from the boards' 900px to the expanded window size. Search aliases: TwoColumn, TwoColumns, Columns, SplitLayout, SideBySide, Sidebar, SidebarLayout, RailLayout.",
+      "comparedWith": [
+        "catch.pane_layout"
+      ],
+      "comparisonReason": "A Website v2 section that places media beside copy inside a band; CatchPaneLayout arranges sibling workspace panes of an app screen."
     },
     {
       "id": "shared_grid",

@@ -3092,6 +3092,7 @@
         "onAccessApplicationWrittenSyncInbox",
         "onExternalEventWrittenSyncInbox",
         "wakeSnoozedInboxItemsEvery30Minutes",
+        "reconcileAdminInboxNightly",
         "adminListMyNominations"
       ],
       "migrationNotes": [
@@ -3115,7 +3116,8 @@
         "onSalesInboundIntentWrittenSyncInbox",
         "onAccessApplicationWrittenSyncInbox",
         "onExternalEventWrittenSyncInbox",
-        "wakeSnoozedInboxItemsEvery30Minutes"
+        "wakeSnoozedInboxItemsEvery30Minutes",
+        "reconcileAdminInboxNightly"
       ],
       "migrationNotes": [
         "Append-only: each step is created once with the time Catch first saw it, keyed {itemId}~{stepId}."
@@ -3132,7 +3134,8 @@
       "exportedFunctions": [
         "adminSearchPeople",
         "onUserWrittenIndexPeople",
-        "adminRebuildInbox"
+        "adminRebuildInbox",
+        "reconcileAdminInboxNightly"
       ],
       "migrationNotes": [
         "Rebuildable from users/{uid}: name prefixes, phone digit tokens, a masked phone, city and the deleted flag; deleted with the profile."

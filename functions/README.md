@@ -426,6 +426,7 @@ enter previews.
 | `dispatchScheduledOrganizerCampaigns` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatches due, approved organizer campaign snapshots |
 | `rebuildCityPlansHourly` | `src/cityPlans/triggers.ts` | Hourly, rebuilds every city's `cityPlans` read model so plans move into and out of the 14-day window (CAT-260) |
 | `wakeSnoozedInboxItemsEvery30Minutes` | `src/admin/inbox/triggers.ts` | Every 30 minutes, puts snoozed inbox items whose snooze ended back in the inbox |
+| `reconcileAdminInboxNightly` | `src/admin/inbox/triggers.ts` | Nightly (03:10 India time), re-projects every inbox source and the people index from their documents; idempotent, so it changes only what a failed trigger missed (the inbox and people triggers are not retried) |
 | `refreshPublicPageFollowers` | `src/publicPages/triggers.ts` | Every 30 minutes, rebuilds the public pages of organizers whose follower count changed |
 | `reconcilePublicPages` | `src/publicPages/triggers.ts` | Daily, rebuilds every organizer's public page read models, so ended events move to past moments and missed changes heal |
 | `dispatchPendingOrganizerFollowerUpdates` | `src/organizers/organizerPostDelivery.ts` | Every 5 minutes — resumes pending or expired-lease follower Activity delivery without duplicate push attempts |
@@ -450,6 +451,7 @@ enter previews.
 | `joinWaitlist` | `src/waitlist/` | Public marketing waitlist endpoint |
 | `onHostPilotCheckIn` | `src/acquisition/` | Canonical roster check-in creates one private organiser activation after staff real-event review; no vendor export |
 | `onOrganizerGrowthOrganizerWritten`, `onOrganizerGrowthClaimRequestCreated`, `onOrganizerGrowthParticipationWritten`, `onOrganizerGrowthPublicPaymentWritten`, `onOrganizerGrowthOfferPaymentWritten`, `onOrganizerGrowthNativePaymentWritten` | `src/growth/` | Record each organizer's dated steps (listed, claim asked, claimed, first event, first paid booking) in `organizerGrowthFacts`, keeping the earliest time, and stream them with paid bookings and refunds to BigQuery `organizer_growth_events` |
+| `reconcileOrganizerGrowthDaily` | `src/growth/` | Nightly (03:40 India time): recomputes every organizer's growth steps from organizers, claim requests, booked events and captured checkouts and records any the triggers missed; the triggers are not retried |
 | `hostAcquisitionConsent` | `src/acquisition/` | Default-disabled versioned Host measurement grant and capability withdrawal |
 | `expireHostAcquisitionConsent` | `src/acquisition/` | Bounded transactional expiry of private grants and withdrawal tombstones |
 | `ingestEventRosterWebhook` | `src/events/eventRosterHandoffs.ts` | Receive one HMAC-verified, provider-authenticated roster attachment through a capability-bound email or WhatsApp handoff |
