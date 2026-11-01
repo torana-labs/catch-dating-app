@@ -10,106 +10,153 @@ import type {AdminListOrganizerDirectoryCallablePayload} from
   "../../generated/contracts/adminListOrganizerDirectoryCallablePayload";
 import type {AdminListOrganizerDirectoryCallableResponse} from
   "../../generated/contracts/adminListOrganizerDirectoryCallableResponse";
+import type {AdminOrganizerDetails} from "../types/adminTypes";
+import {
+  sampleEventDetails,
+  sampleExternalEventRows,
+  sampleOrganizerDetails,
+} from "./sampleData";
 
 /**
- * Sample-mode stand-ins for the Organizers and Events records. They filter,
- * count and page like the server so sample walkthroughs and Storybook show
- * the same totals and chips the live directories do.
+ * Sample-mode stand-ins for the Organizers and Events records. Rows come from the same
+ * records the organizer and event pages open in sample mode, so every row opens, and they filter, count and
+ * page like the server so walkthroughs and Storybook show the live directories' totals and chips.
  */
 
 type OrganizerRow = AdminListOrganizerDirectoryCallableResponse["rows"][
   number];
 type EventRow = AdminListEventDirectoryCallableResponse["rows"][number];
+type Overview = AdminGetOrganizerOverviewCallableResponse;
 type Facet = AdminListOrganizerDirectoryCallableResponse["facets"]["cities"][
   number];
 
-const sampleNow = Date.parse("2026-11-01T12:00:00.000Z");
+const sampleNow = Date.parse("2026-06-25T12:00:00.000Z");
 const sampleGeneratedAt = new Date(sampleNow).toISOString();
 const sampleUid = "sample-owner";
-const mumbai = {citySlug: "in-mh-mumbai", cityLabel: "Mumbai"};
-const indore = {citySlug: "in-mp-indore", cityLabel: "Indore"};
 const riya = {uid: sampleUid, name: "Riya Sharma"};
 const karan = {uid: "sample-colleague", name: "Karan Mehta"};
-
-const organizerKinds: Record<string, string> = {
-  "afterfly": "social-nights", "bhag": "runs", "bandra": "runs",
-  "lantern": "trivia", "padel": "courts", "afterfly-in": "runs",
+const cityLabels: Record<string, string> = {
+  "in-mh-mumbai": "Mumbai", "in-mp-indore": "Indore",
+};
+const cityBySlug: Record<string, string> = {
+  mumbai: "in-mh-mumbai", indore: "in-mp-indore",
 };
 
-const listedOrganizers: OrganizerRow[] = [
-  {organizerId: "afterfly", name: "Afterfly", kindLabel: "Social nights",
-    ...mumbai, area: "Bandra", pageState: "hiddenFromSearch",
-    claimState: "unclaimed", claimedByName: null, salesOwner: riya,
-    upcomingEventCount: 0, listedAt: "2026-10-31T07:50:00.000Z"},
-  {organizerId: "bhag", name: "Bhag Club", kindLabel: "Runs", ...mumbai,
-    area: "Juhu", pageState: "live", claimState: "claimPending",
-    claimedByName: null, salesOwner: riya, upcomingEventCount: 0,
-    listedAt: "2026-10-12T09:00:00.000Z"},
-  {organizerId: "bandra", name: "Bandra Runners", kindLabel: "Runs",
-    ...mumbai, area: "Bandra", pageState: "hiddenInApp",
-    claimState: "unclaimed", claimedByName: null,
+/** What each listed organizer adds beyond its page record. */
+const organizerExtras: Record<string, {
+  claimState: OrganizerRow["claimState"];
+  claimedByName: string | null;
+  salesOwner: OrganizerRow["salesOwner"];
+  listedAt: string;
+  growth: Overview["growth"];
+}> = {
+  "afterfly": {claimState: "unclaimed", claimedByName: null, salesOwner: riya,
+    listedAt: "2026-06-20T07:50:00.000Z", growth: {channel: "sales_associate",
+      nominator: {uid: sampleUid, name: "Riya Sharma", role: "associate"},
+      firstPaidBookingAt: null}},
+  "bhag": {claimState: "claimPending", claimedByName: null, salesOwner: riya,
+    listedAt: "2026-06-12T09:00:00.000Z", growth: {channel: "imported",
+      nominator: null, firstPaidBookingAt: null}},
+  "bandra-runners": {claimState: "unclaimed", claimedByName: null,
     salesOwner: {uid: "sample-ops", name: "Dev Iyer"},
-    upcomingEventCount: 0, listedAt: "2026-10-02T09:00:00.000Z"},
-  {organizerId: "lantern", name: "Lantern Lane Social", kindLabel: "Trivia",
-    ...mumbai, area: "Bandra West", pageState: "live", claimState: "claimed",
-    claimedByName: "Meher", salesOwner: riya, upcomingEventCount: 0,
-    listedAt: "2026-08-14T09:00:00.000Z"},
-  {organizerId: "padel", name: "Mumbai Padel Social", kindLabel: "Courts",
-    ...mumbai, area: "Lower Parel", pageState: "live", claimState: "claimed",
-    claimedByName: "Kunal", salesOwner: karan, upcomingEventCount: 0,
-    listedAt: "2026-09-03T09:00:00.000Z"},
-  {organizerId: "afterfly-in", name: "AFTER FLY", kindLabel: "Runs",
-    ...indore, area: "Vijay Nagar", pageState: "live",
-    claimState: "unclaimed", claimedByName: null, salesOwner: null,
-    upcomingEventCount: 0, listedAt: "2026-06-20T09:00:00.000Z"},
-];
+    listedAt: "2026-06-02T09:00:00.000Z", growth: null},
+  "mumbai-padel-social": {claimState: "claimed", claimedByName: "Kunal",
+    salesOwner: karan, listedAt: "2026-05-03T09:00:00.000Z", growth: {
+      channel: "partner", nominator: {uid: "sample-partner",
+        name: "Neha Kulkarni", role: "partner"},
+      firstPaidBookingAt: "2026-05-24T10:00:00.000Z"}},
+};
 
-export const catchAndImportedEvents: EventRow[] = [
-  eventRow("takeoff", "imported", "Takeoff: Run + Rave", "afterfly",
-    "Afterfly", "2026-11-02T12:30:00.000Z", "live", null, null, "luma"),
-  eventRow("pace", "catch", "Pace pods: 5K", "afterfly-in", "AFTER FLY",
-    "2026-11-03T01:00:00.000Z", "cancelled", 0, 20, null, indore),
-  eventRow("trivia", "catch", "Tuesday Trivia Night", "lantern",
-    "Lantern Lane Social", "2026-11-05T14:00:00.000Z", "live", 26, 32),
-  eventRow("supper", "catch", "Long Table Supper", "lantern",
-    "Lantern Lane Social", "2026-11-06T14:30:00.000Z", "full", 14, 14),
-  eventRow("padel-mixer", "catch", "Padel mixer", "padel",
-    "Mumbai Padel Social", "2026-11-07T13:30:00.000Z", "full", 16, 16),
-  eventRow("rooftop-social", "imported", "Rooftop Social", "afterfly",
-    "Afterfly", "2026-11-09T14:30:00.000Z", "live", null, null, "luma"),
-  eventRow("rooftop", "imported", "Rooftop Singles Mixer", null, null,
-    "2026-11-14T14:30:00.000Z", "needsCheck", null, null, "district"),
-  eventRow("neon", "imported", "Neon Night Run", "afterfly", "Afterfly",
-    "2026-11-15T15:30:00.000Z", "needsCheck", null, null, "luma"),
-  eventRow("first-trivia", "catch", "First Trivia Night", "lantern",
-    "Lantern Lane Social", "2026-08-27T14:00:00.000Z", "live", 18, 24),
-  eventRow("monsoon", "imported", "Monsoon Run", "afterfly", "Afterfly",
-    "2026-10-19T01:00:00.000Z", "live", null, null, "luma"),
-];
-
-/** Upcoming counts come from the events above, as the server counts them. */
-export const sampleOrganizerRows: OrganizerRow[] = listedOrganizers.map(
-  (row) => ({...row, upcomingEventCount: catchAndImportedEvents.filter((event) =>
-    event.organizerId === row.organizerId &&
-    eventView(event) === "upcoming").length}));
-
-function eventRow(
-  eventId: string,
-  source: EventRow["source"],
-  title: string,
-  organizerId: string | null,
-  organizerName: string | null,
-  startTime: string,
-  status: EventRow["status"],
-  bookedCount: number | null,
-  capacityLimit: number | null,
-  platform: EventRow["platform"] = null,
-  city = mumbai
-): EventRow {
-  return {key: `${source}:${eventId}`, eventId, source, platform, title,
-    organizerId, organizerName, startTime, ...city, status, bookedCount,
-    capacityLimit};
+function pageState(organizer: AdminOrganizerDetails): OrganizerRow["pageState"] {
+  const status = organizer.publicPage.publishStatus;
+  if (status === "removed") return "removed";
+  if (status === "suppressed") return "suppressed";
+  if (status !== "published") return "draft";
+  if (organizer.appVisibility === "hidden") return "hiddenInApp";
+  return organizer.publicPage.indexStatus === "noindex" ? "hiddenFromSearch" : "live";
 }
+
+function kindKey(label: string): string {
+  return label.toLowerCase().replace(/[^a-z0-9]+/gu, "-").replace(/^-+|-+$/gu, "");
+}
+
+function marketOf(slug: string | null): string | null {
+  return slug ? cityBySlug[slug] ?? slug : null;
+}
+
+export const sampleEventRows: EventRow[] = [
+  ...Object.values(sampleEventDetails).map((event): EventRow => {
+    const citySlug = marketOf(event.discovery.citySlug);
+    return {
+      key: `catch:${event.eventId}`,
+      eventId: event.eventId,
+      source: "catch",
+      platform: null,
+      title: event.title,
+      organizerId: event.organizerId,
+      organizerName: event.organizerName,
+      startTime: event.startTime,
+      citySlug,
+      cityLabel: cityLabels[citySlug ?? ""] ?? citySlug,
+      status: event.status === "cancelled" ? "cancelled" :
+        event.bookedCount >= event.capacityLimit ? "full" : "live",
+      bookedCount: event.bookedCount,
+      capacityLimit: event.capacityLimit,
+    };
+  }),
+  ...sampleExternalEventRows.map((event): EventRow => {
+    const citySlug = marketOf(event.citySlug);
+    return {
+      key: `imported:${event.eventId}`,
+      eventId: event.eventId,
+      source: "imported",
+      platform: event.platform,
+      title: event.title,
+      organizerId: event.canonicalHostId,
+      organizerName: sampleOrganizerDetails[event.canonicalHostId]?.name ?? null,
+      startTime: event.startTime,
+      citySlug,
+      cityLabel: cityLabels[citySlug ?? ""] ?? citySlug,
+      status: event.status === "cancelled" ? "cancelled" :
+        event.publicationStatus === "draft" ? "needsCheck" :
+          event.publicationStatus === "public" ? "live" : "removed",
+      bookedCount: null,
+      capacityLimit: null,
+    };
+  }),
+];
+
+function eventView(row: EventRow): "upcoming" | "past" | "cancelled" {
+  if (row.status === "cancelled") return "cancelled";
+  return Date.parse(row.startTime ?? "") >= sampleNow ? "upcoming" : "past";
+}
+
+function thisWeek(row: EventRow): boolean {
+  const start = Date.parse(row.startTime ?? "");
+  return start >= sampleNow && start < sampleNow + 7 * 24 * 60 * 60 * 1000;
+}
+
+export const sampleOrganizerRows: OrganizerRow[] = Object.values(sampleOrganizerDetails)
+  .map((organizer): OrganizerRow => {
+    const extras = organizerExtras[organizer.organizerId];
+    const citySlug = marketOf(organizer.location);
+    return {
+      organizerId: organizer.organizerId,
+      name: organizer.name,
+      kindLabel: organizer.displayCategory,
+      citySlug,
+      cityLabel: cityLabels[citySlug ?? ""] ?? organizer.cityName,
+      area: organizer.area,
+      pageState: pageState(organizer),
+      claimState: extras?.claimState ?? "unclaimed",
+      claimedByName: extras?.claimedByName ?? null,
+      salesOwner: extras?.salesOwner ?? null,
+      upcomingEventCount: sampleEventRows.filter((event) =>
+        event.organizerId === organizer.organizerId &&
+        eventView(event) === "upcoming").length,
+      listedAt: extras?.listedAt ?? null,
+    };
+  });
 
 function countFacets(entries: Array<{value: string; label: string}>): Facet[] {
   const counts = new Map<string, Facet>();
@@ -158,7 +205,7 @@ export function sampleListOrganizerDirectory(
     city: (row: OrganizerRow) => !payload.citySlug ||
       row.citySlug === payload.citySlug,
     kind: (row: OrganizerRow) => !payload.kind ||
-      organizerKinds[row.organizerId] === payload.kind,
+      kindKey(row.kindLabel ?? "") === payload.kind,
     claim: (row: OrganizerRow) => !payload.claimState ||
       claimFilter(row.claimState) === payload.claimState,
     mine: (row: OrganizerRow) => !payload.mine ||
@@ -174,23 +221,18 @@ export function sampleListOrganizerDirectory(
   const matching = except(null).sort((a, b) =>
     (b.listedAt ?? "").localeCompare(a.listedAt ?? ""));
   const page = pageOf(matching, payload.cursor, payload.limit);
+  const count = (view: "live" | "unclaimed" | "hidden") =>
+    sampleOrganizerRows.filter((row) => inOrganizerView(row, view)).length;
   return {
     generatedAt: sampleGeneratedAt,
     total: matching.length,
-    views: {
-      all: sampleOrganizerRows.length,
-      live: sampleOrganizerRows.filter((r) => inOrganizerView(r, "live")).length,
-      unclaimed: sampleOrganizerRows
-        .filter((r) => inOrganizerView(r, "unclaimed")).length,
-      hidden: sampleOrganizerRows
-        .filter((r) => inOrganizerView(r, "hidden")).length,
-    },
+    views: {all: sampleOrganizerRows.length, live: count("live"),
+      unclaimed: count("unclaimed"), hidden: count("hidden")},
     facets: {
       cities: countFacets(except("city").flatMap((row) => row.citySlug ?
         [{value: row.citySlug, label: row.cityLabel ?? row.citySlug}] : [])),
       kinds: countFacets(except("kind").flatMap((row) => row.kindLabel ?
-        [{value: organizerKinds[row.organizerId], label: row.kindLabel}] :
-        [])),
+        [{value: kindKey(row.kindLabel), label: row.kindLabel}] : [])),
       claimStates: countFacets(except("claim").map((row) => ({
         value: claimFilter(row.claimState), label: claimFilter(row.claimState),
       }))),
@@ -203,21 +245,11 @@ export function sampleListOrganizerDirectory(
   };
 }
 
-function eventView(row: EventRow): "upcoming" | "past" | "cancelled" {
-  if (row.status === "cancelled") return "cancelled";
-  return Date.parse(row.startTime ?? "") >= sampleNow ? "upcoming" : "past";
-}
-
-function thisWeek(row: EventRow): boolean {
-  const start = Date.parse(row.startTime ?? "");
-  return start >= sampleNow && start < sampleNow + 7 * 24 * 60 * 60 * 1000;
-}
-
 export function sampleListEventDirectory(
   payload: AdminListEventDirectoryCallablePayload
 ): AdminListEventDirectoryCallableResponse {
   const view = payload.view ?? "upcoming";
-  const inView = catchAndImportedEvents.filter((row) => eventView(row) === view);
+  const inView = sampleEventRows.filter((row) => eventView(row) === view);
   const filters = {
     city: (row: EventRow) => !payload.citySlug ||
       row.citySlug === payload.citySlug,
@@ -239,7 +271,7 @@ export function sampleListEventDirectory(
     direction * (a.startTime ?? "").localeCompare(b.startTime ?? ""));
   const page = pageOf(matching, payload.cursor, payload.limit);
   const count = (name: "upcoming" | "past" | "cancelled") =>
-    catchAndImportedEvents.filter((row) => eventView(row) === name).length;
+    sampleEventRows.filter((row) => eventView(row) === name).length;
   return {
     generatedAt: sampleGeneratedAt,
     total: matching.length,
@@ -263,67 +295,70 @@ export function sampleListEventDirectory(
 
 export function sampleGetOrganizerOverview(
   payload: AdminGetOrganizerOverviewCallablePayload
-): AdminGetOrganizerOverviewCallableResponse {
+): Overview {
   const row = sampleOrganizerRows.find((item) =>
     item.organizerId === payload.organizerId);
-  if (!row) throw new Error("Organizer not found.");
-  const upcomingEvents = catchAndImportedEvents
+  const organizer = sampleOrganizerDetails[payload.organizerId];
+  if (!row || !organizer) throw new Error("Organizer not found.");
+  const extras = organizerExtras[row.organizerId];
+  const upcomingEvents = sampleEventRows
     .filter((event) => event.organizerId === row.organizerId &&
       eventView(event) === "upcoming")
     .map(({key, eventId, source, platform, title, startTime, status}) =>
       ({key, eventId, source, platform, title, startTime, status}));
-  const afterfly = row.organizerId === "afterfly";
+  const nominator = extras?.growth?.nominator ?? null;
+  const journey: Overview["journey"] = [
+    ...(nominator ? [{kind: "nominated" as const,
+      at: "2026-06-18T16:11:00.000Z", actorName: nominator.name,
+      detail: organizer.ownerLinks[0]?.url ?? null},
+    {kind: "listingBuilt" as const, at: "2026-06-18T16:13:00.000Z",
+      actorName: null, detail: String(upcomingEvents.length)},
+    {kind: "approved" as const, at: row.listedAt, actorName: "Suvrat",
+      detail: null}] : []),
+    {kind: "listed", at: row.listedAt, actorName: null, detail: null},
+    ...(row.claimState === "claimPending" ? [{kind: "claimRequested" as const,
+      at: "2026-06-23T08:00:00.000Z", actorName: "Arjun Bhagat",
+      detail: "manager"}] : []),
+    ...(row.claimedByName ? [{kind: "claimed" as const,
+      at: "2026-05-10T09:00:00.000Z", actorName: row.claimedByName,
+      detail: null}] : []),
+    ...(extras?.growth?.firstPaidBookingAt ? [{kind: "firstPaidBooking" as const,
+      at: extras.growth.firstPaidBookingAt, actorName: null, detail: null}] : []),
+  ];
   return {
     generatedAt: sampleGeneratedAt,
     organizer: {
       organizerId: row.organizerId, name: row.name, kindLabel: row.kindLabel,
       citySlug: row.citySlug, cityLabel: row.cityLabel, area: row.area,
       pageState: row.pageState,
-      publishStatus: "published",
-      indexStatus: row.pageState === "hiddenFromSearch" ? "noindex" :
-        "indexed",
-      canonicalPath: `/mumbai/${row.organizerId}`,
-      appVisibility: row.pageState === "hiddenInApp" ? "hidden" :
-        "discoverable",
+      publishStatus: organizer.publicPage.publishStatus,
+      indexStatus: organizer.publicPage.indexStatus as Overview["organizer"]["indexStatus"],
+      canonicalPath: organizer.publicPage.canonicalPath,
+      appVisibility: organizer.appVisibility,
       claimState: row.claimState,
       claimedByName: row.claimedByName,
       listedAt: row.listedAt,
-      hasImage: !afterfly,
-      origin: afterfly ? "scraper" : "userCreated",
+      hasImage: Boolean(organizer.imageUrl || organizer.profileImageUrl),
+      origin: organizer.provenance.origin as Overview["organizer"]["origin"],
     },
     salesOwner: row.salesOwner,
-    nextAction: afterfly ? "Send the claim link" : null,
-    nextTask: afterfly ? {taskId: "sample-task", title:
-      "Send Afterfly the claim link", dueAt: "2026-11-04T04:00:00.000Z",
-    ownerName: "Riya Sharma"} : null,
-    terms: {source: row.organizerId === "lantern" ? "organizer" : "platform",
-      rateBasisPoints: row.organizerId === "lantern" ? 400 : 500,
+    nextAction: row.claimState === "unclaimed" ? "Send the claim link" : null,
+    nextTask: row.claimState === "unclaimed" && row.salesOwner ? {
+      taskId: `sample-task-${row.organizerId}`,
+      title: `Send ${row.name} the claim link`,
+      dueAt: "2026-06-29T04:00:00.000Z", ownerName: row.salesOwner.name,
+    } : null,
+    terms: {source: row.claimState === "claimed" ? "organizer" : "platform",
+      rateBasisPoints: row.claimState === "claimed" ? 400 : 500,
       capMinor: 1_000_000},
     payments: row.claimState === "claimed" ?
       {state: "connected", webhookVerified: true} :
       {state: "notConnected", webhookVerified: false},
     pendingClaim: row.claimState === "claimPending" ? {requestId:
       "sample-claim", requesterName: "Arjun Bhagat", requesterRole: "manager",
-    createdAt: "2026-10-30T08:00:00.000Z"} : null,
-    growth: afterfly ? {channel: "sales_associate", nominator: {uid: sampleUid,
-      name: "Riya Sharma", role: "associate"}, firstPaidBookingAt: null} :
-      row.organizerId === "lantern" ? {channel: "partner", nominator: {
-        uid: "sample-partner", name: "Neha Kulkarni", role: "partner"},
-      firstPaidBookingAt: "2026-08-25T10:00:00.000Z"} : null,
-    journey: afterfly ? [
-      {kind: "nominated", at: "2026-10-28T16:11:00.000Z",
-        actorName: "Riya Sharma", detail: "https://luma.com/afterfly"},
-      {kind: "listingBuilt", at: "2026-10-28T16:13:00.000Z", actorName: null,
-        detail: "3"},
-      {kind: "approved", at: "2026-10-31T07:50:00.000Z", actorName: "Suvrat",
-        detail: null},
-      {kind: "listed", at: "2026-10-31T07:50:00.000Z", actorName: null,
-        detail: null},
-    ] : [
-      {kind: "listed", at: row.listedAt, actorName: null, detail: null},
-      ...(row.claimedByName ? [{kind: "claimed" as const, at: row.listedAt,
-        actorName: row.claimedByName, detail: null}] : []),
-    ],
+    createdAt: "2026-06-23T08:00:00.000Z"} : null,
+    growth: extras?.growth ?? null,
+    journey: [...journey].sort((a, b) => (a.at ?? "").localeCompare(b.at ?? "")),
     nextStep: row.claimState === "claimPending" ? "decideClaim" :
       row.claimState === "unclaimed" ? "claim" : null,
     upcomingEvents,
