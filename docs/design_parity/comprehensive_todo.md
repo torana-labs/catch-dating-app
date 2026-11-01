@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.330
-updated: 2026-10-04
+version: 0.2.331
+updated: 2026-11-02
 owner: product_design_parity
 status: active
 ---
@@ -449,9 +449,8 @@ design-system migration goal is complete.
 - [ ] Keep `npm run design:parity:check` as the aggregate gate for route
   inventory, screen coverage, capture coverage, screen contracts, state
   matrix, Widgetbook refs, component contracts, and advisory hygiene.
-  Flutter CI also checks token generation drift and design-context-pack drift
-  directly, while Tools CI now runs for design ledgers, context-pack artifacts,
-  and Widgetbook changes.
+  Flutter CI also checks token generation drift directly, while Tools CI now
+  runs for design ledgers and Widgetbook changes.
 - [ ] Keep route inventory semantic checks blocking so nested `GoRoute` child
   segments cannot drift from `Routes.<id>.path`.
 - [ ] Tighten screen-contract hygiene scanners for raw Material controls,
@@ -1405,12 +1404,12 @@ tests, captures, Widgetbook, Git, and CI.
     `runtimePath`, `runtimeParentId`, and `runtimePathExpression` in
     `tool/ui_capture/route_inventory.json`, and fails if a composed runtime
     path differs from `Routes.<id>.path`.
-- [x] `TODO-DRIFT-008` Keep token and design-context-pack drift covered by CI.
+- [x] `TODO-DRIFT-008` Keep token drift covered by CI. The design context pack
+  that shared this item is retired.
   - Proof: `.github/workflows/flutter-ci.yml` now runs
-    `dart run tool/design_tokens.dart --check` and
-    `node tool/design/build_context_pack.mjs --check` after the design parity
+    `dart run tool/design_tokens.dart --check` after the design parity
     gate. `.github/workflows/tools-ci.yml` now triggers for `design/**`,
-    `design_context_pack/**`, `docs/design_parity/**`, `widgetbook/**`,
+    `docs/design_parity/**`, `widgetbook/**`,
     root package lockfiles, and Flutter pubspec changes so the full tool
     manifest design category runs when those artifacts move.
 - [ ] `TODO-DRIFT-005` Add or tighten advisory checks for contracted screens

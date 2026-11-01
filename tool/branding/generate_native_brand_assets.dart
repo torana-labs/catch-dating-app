@@ -4,7 +4,7 @@ import 'dart:math' as math;
 
 import 'package:image/image.dart' as image;
 
-const _tokenPath = 'design_context_pack/design_system/tokens.json';
+const _tokenPath = 'design/tokens/catch.tokens.json';
 const _baseIconPath = 'assets/branding/catch_icon.png';
 const _roundIconPath = 'assets/branding/catch_icon_round.png';
 const _hostIconPath = 'assets/branding/catch_hosts_icon.png';
@@ -859,12 +859,6 @@ class _NativeBrandTokens {
 
   static _NativeBrandTokens load() {
     final file = File(_tokenPath);
-    if (!file.existsSync()) {
-      throw StateError(
-        'Missing native brand token cache: $_tokenPath. '
-        'Regenerate the design context pack before native brand assets.',
-      );
-    }
     final json = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
     return _NativeBrandTokens(json);
   }
@@ -880,13 +874,21 @@ class _NativeBrandTokens {
   }
 
   String colorHex(String name, String mode) {
-    final color =
-        (((_tokens['color'] as Map<String, dynamic>)[name]
-                    as Map<String, dynamic>)['\$value']
-                as Map<String, dynamic>)[mode]
-            as String;
+    final value =
+        (((((_tokens['theme'] as Map<String, dynamic>)[mode]
+                        as Map<String, dynamic>)['color']
+                    as Map<String, dynamic>)[name]
+                as Map<String, dynamic>)['\$value']
+            as Map<String, dynamic>);
+    // An alpha value has a hex too, but a launcher icon cannot show it.
+    if (value.containsKey('alpha')) {
+      throw StateError('Token theme.$mode.color.$name must be opaque.');
+    }
+    final color = value['hex'] as String;
     if (!RegExp(r'^#[0-9A-Fa-f]{6}$').hasMatch(color)) {
-      throw StateError('Token color.$name.$mode must be a #RRGGBB color.');
+      throw StateError(
+        'Token theme.$mode.color.$name must be a #RRGGBB color.',
+      );
     }
     return color.toUpperCase();
   }

@@ -423,7 +423,7 @@ export function uniqueToolChecks(tools) {
 export function toolsOwnDesignChecks({plan, manifest, componentGraph}) {
   if (plan.complete !== true) throw new Error("Cannot share checks from an incomplete plan.");
   if (!plan.operations.ciTargets.includes("tools")) return {parity: false, handoff: false};
-  const ids = ["design:parity-gate", "design:figma-library-snapshot", "design:sync-manifest", "design:context-pack"];
+  const ids = ["design:parity-gate", "design:figma-library-snapshot", "design:sync-manifest"];
   for (const id of ids) {
     const entry = manifest.tools.find(tool => tool.id === id && tool.status === "active");
     if (!hasExecutableChecks(entry)) throw new Error(`Tools no longer provides ${id}.`);

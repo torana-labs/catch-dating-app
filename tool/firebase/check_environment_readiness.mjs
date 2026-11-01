@@ -5,7 +5,7 @@ import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 
 import {materializedNonSecretParams} from "./prepare_functions_params_for_deploy.mjs";
-import {collectFunctionBindingIntent, discoverFunctionExportNames} from "./function_binding_intent.mjs";
+import {collectFunctionBindingIntent, collectSecretConsumers, discoverFunctionExportNames} from "./function_binding_intent.mjs";
 
 import {inspectUploadIdentity, uploadIdentityTarget} from "./form_upload_identity.mjs";
 import {dormantFirebaseFunctionTargets} from "./list_firebase_function_targets.mjs";
@@ -138,6 +138,7 @@ export function validateEnvironmentReadinessManifest(
     discoveredSecrets,
     directReaderPaths,
     functionTargets,
+    secretConsumers,
     sourcePathExists,
     unsupportedSecretDeclarations = [],
   } = {},
@@ -284,7 +285,9 @@ export function validateEnvironmentReadinessManifest(
         });
       }
       if (deployTargets.length === 0 && capabilities.length === 0) {
-        errors.push(`${label}: requiredWhen must select a target or capability.`);
+        errors.push(requirement.kind === "secret-version"
+          ? `${label}: no Function binds ${requirement.name} and no capability selects it.`
+          : `${label}: requiredWhen must select a target or capability.`);
       }
       for (const target of deployTargets) {
         if (typeof target !== "string" || !deployTargetPattern.test(target)) {
@@ -372,6 +375,11 @@ export function validateEnvironmentReadinessManifest(
       }
     }
   }
+  for (const [secret, consumers] of secretConsumers ?? []) {
+    if (!manifestSecrets.has(secret)) {
+      errors.push(`${consumers.join(", ")} binds ${secret}, which has no secret-version requirement; add one with its owner and rotation policy.`);
+    }
+  }
 
   const readerPaths = new Set();
   for (const reader of manifest.directReaders ?? []) {
@@ -423,7 +431,7 @@ export function validateEnvironmentReadinessManifest(
       errors.push(`${requirement.id}: incomplete secret binding contract.`);
     }
     for (const [consumer, roles] of Object.entries(requirement.runtimeRolesByConsumer ?? {})) {
-      if (!requirement.requiredWhen.anyDeployTarget.includes(`functions:${consumer}`) ||
+      if (!requirement.requiredWhen?.anyDeployTarget?.includes(`functions:${consumer}`) ||
           !Array.isArray(roles) || !roles.includes("roles/secretmanager.secretAccessor") ||
           roles.some((role) => !supportedSecretRuntimeRoles.has(role))) {
         errors.push(`${requirement.id}: invalid consumer runtime roles.`);
@@ -437,6 +445,25 @@ export function validateEnvironmentReadinessManifest(
     );
   }
   return manifest;
+}
+
+// Function source owns which Functions bind a secret. The manifest keeps only
+// what source cannot say about the secret: owner, rotation and opt-in capability.
+export function withSourceSecretConsumers(manifest, secretConsumers) {
+  const handKept = (manifest.requirements ?? []).filter((requirement) =>
+    requirement?.kind === "secret-version" && requirement.requiredWhen?.anyDeployTarget != null);
+  if (handKept.length > 0) {
+    throw new ReadinessUsageError(
+      `Environment readiness manifest is invalid:\n${handKept.map((requirement) =>
+        `- ${requirement.id}: remove anyDeployTarget; consumers come from the Functions that bind ${requirement.name}.`).join("\n")}`,
+    );
+  }
+  return {...manifest, requirements: (manifest.requirements ?? []).map((requirement) => {
+    if (requirement?.kind !== "secret-version") return requirement;
+    const consumers = secretConsumers.get(requirement.name) ?? [];
+    return {...requirement, requiredWhen: {...requirement.requiredWhen,
+      ...(consumers.length ? {anyDeployTarget: consumers.map((name) => `functions:${name}`)} : {})}};
+  })};
 }
 
 export function discoverDefineSecretNames(sources) {
@@ -473,8 +500,8 @@ function bindingRequirements(manifest) {
 export function parseFirebaseFunctionTargets(indexSource) {
   try {
     return new Set(discoverFunctionExportNames(indexSource).map((name) => `functions:${name}`));
-  } catch {
-    throw new ReadinessUsageError("Firebase Function exports require statically resolved explicit names.");
+  } catch (error) {
+    throw new ReadinessUsageError(`Firebase Function exports require statically resolved explicit names. ${error.message}`);
   }
 }
 
@@ -1283,7 +1310,7 @@ export function executeReadinessCli(argv, dependencies = {}) {
     repoRoot,
     "tool/firebase/environment_readiness.json",
   );
-  const manifest = dependencies.manifest ?? readJsonFile(manifestPath, readFile);
+  let manifest = dependencies.manifest ?? readJsonFile(manifestPath, readFile);
 
   let validationOptions = {};
   let functionTargets = dependencies.functionTargets ?? new Set();
@@ -1300,10 +1327,19 @@ export function executeReadinessCli(argv, dependencies = {}) {
       "utf8",
     );
     functionTargets = parseFirebaseFunctionTargets(indexSource);
+    // Unreadable source stops every mode: without it no secret has a consumer.
+    let secretConsumers;
+    try {
+      secretConsumers = collectSecretConsumers({sourceRoot: repoRoot});
+    } catch (error) {
+      throw new ReadinessUsageError(error.message);
+    }
+    manifest = withSourceSecretConsumers(manifest, secretConsumers);
     validationOptions = {
       discoveredSecrets: declarations.names,
       directReaderPaths: discoverDirectSecretReaders(sources),
       functionTargets,
+      secretConsumers,
       sourcePathExists: (sourcePath) => pathExists(path.join(repoRoot, sourcePath)),
       unsupportedSecretDeclarations: declarations.unsupported,
     };
@@ -1633,6 +1669,9 @@ Usage:
     [--candidate <names-only-receipt.json>] [--phase deployed|candidate]
     [--source-root <approved-checkout> --source-sha <sha>]
     [--params-provenance <receipt.json> --write-candidate <new-receipt.json>]
+
+Which Functions need each secret is read from the Functions source; binding an
+existing secret to another Function needs no manifest edit.
 
 The live checker resolves projects only from .firebaserc and uses metadata-only
 gcloud commands. It has no apply mode and never accesses secret payloads.

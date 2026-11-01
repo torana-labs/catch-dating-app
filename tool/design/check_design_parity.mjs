@@ -36,7 +36,7 @@ export function designParityCommands(manifest) {
 }
 
 export function selectedHandoffChecks(manifest, changedPaths, {full = false} = {}) {
-  const ids = ["design:figma-library-snapshot", "design:sync-manifest", "design:context-pack"];
+  const ids = ["design:figma-library-snapshot", "design:sync-manifest"];
   const control = changedPaths.some(file => [".github/**", "tool/lib/**", "tool/harness/**",
     "tool/tools_manifest.json", "tool/design/check_design_parity.mjs"].some(pattern => matchesGlob(file, pattern)));
   return ids.flatMap(id => {
@@ -68,7 +68,6 @@ function runGate() {
   if (args.includes("--handoff")) blocking.push(
     "node tool/design/import_figma_library_snapshot.mjs --check",
     "node tool/design/build_design_sync_manifest.mjs --check",
-    "node tool/design/build_context_pack.mjs --check",
   );
   const advisory = args.includes("--reports") ? [
     "node tool/design/build_widget_similarity.mjs",

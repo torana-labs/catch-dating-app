@@ -11,7 +11,8 @@ import {currentReleaseLineage} from "./previewRelease.mjs";
 import {brand} from "../../../packages/brand/index.mjs";
 
 // The website release train. After main CI completes (or on the hourly
-// fallback), it previews main's head through the existing preview workflow,
+// fallback), it previews main's validated head through the existing preview
+// workflow, by commit, so merges landing meanwhile never strand it,
 // passes the prod environment's gate (no required reviewer since 30 Oct 2026;
 // adding one makes it wait for approval again), then runs the existing
 // promotion workflow on that exact preview. It never
@@ -83,11 +84,27 @@ function websiteChangedBetween(baseSha, headSha) {
     ["tool/harness.mjs", "plan", "--base", baseSha, "--head", headSha, "--mode", "merge_group", "--json"])));
 }
 
+/** The preview workflow's run-name for a source, by which the train finds its dispatch. */
+export function previewRunTitle(sourceSha) {
+  return `Next Website Preview of ${sourceSha}`;
+}
+
+/**
+ * The preview builds the planned commit, not main's head at dispatch: main may
+ * have moved since the plan or during validation. The preview and promotion
+ * still require that commit's own CI and captures, and that it is on main and
+ * not older than live.
+ */
+export function previewDispatch(sourceSha) {
+  assert.match(sourceSha ?? "", /^[a-f0-9]{40}$/u, "The train previews an exact commit");
+  return {workflow: PREVIEW_WORKFLOW, inputs: {source_sha: sourceSha}, expectedTitle: previewRunTitle(sourceSha)};
+}
+
 /**
  * Picks the run this train dispatched: the newest workflow_dispatch run on
  * main that the workflow token started after the request.
  */
-export function selectDispatchedRun({runs, requestedAt, expectedSha = null}) {
+export function selectDispatchedRun({runs, requestedAt, expectedSha = null, expectedTitle = null}) {
   const started = Date.parse(requestedAt) - 5_000;
   const candidates = runs.filter((run) => run.event === "workflow_dispatch" && run.head_branch === "main" &&
     run.triggering_actor?.login === BOT && Date.parse(run.created_at) >= started)
@@ -98,6 +115,8 @@ export function selectDispatchedRun({runs, requestedAt, expectedSha = null}) {
   if (expectedSha !== null) {
     assert.equal(run.head_sha, expectedSha, "Main moved before the dispatched run started; the next train releases it");
   }
+  // A preview runs on main's head, whatever it is now, and names its source.
+  if (expectedTitle !== null) assert.equal(run.display_title, expectedTitle, "The newest dispatched run is not this train's");
   return run;
 }
 
@@ -125,7 +144,7 @@ async function plan() {
     `Releasing \`${decision.sourceSha}\` (live: \`${decision.liveSha}\`).`);
 }
 
-async function dispatchAndWait({repository, workflow, inputs = {}, expectedSha, timeoutMs}) {
+async function dispatchAndWait({repository, workflow, inputs = {}, expectedSha = null, expectedTitle = null, timeoutMs}) {
   const requestedAt = new Date().toISOString();
   command("gh", ["workflow", "run", workflow, "--repo", repository, "--ref", "main",
     ...Object.entries(inputs).flatMap(([key, value]) => ["-f", `${key}=${value}`])]);
@@ -135,7 +154,7 @@ async function dispatchAndWait({repository, workflow, inputs = {}, expectedSha, 
     await sleep(POLL_MS);
     if (!run) {
       const runs = github(`repos/${repository}/actions/workflows/${workflow}/runs?branch=main&event=workflow_dispatch&per_page=10`).workflow_runs;
-      run = selectDispatchedRun({runs, requestedAt, expectedSha});
+      run = selectDispatchedRun({runs, requestedAt, expectedSha, expectedTitle});
       if (!run) continue;
       summary(`${workflow}: ${run.html_url}`);
     }
@@ -150,23 +169,23 @@ async function dispatchAndWait({repository, workflow, inputs = {}, expectedSha, 
 
 // Full CI of main's head: the nightly mode, which runs Marketing validation
 // and captures for the exact commit. The preview then reads that run as the
-// head's validation. If main moved meanwhile, the next train releases it.
+// head's validation. It takes about an hour, so main has usually moved by
+// then; the train still releases the commit it validated (1 Nov 2026: with
+// the queue busy, six trains in a row validated a head and released nothing).
 async function runValidation() {
   const repository = canonicalRepository(process.env);
   const sourceSha = process.env.SOURCE_SHA;
   await dispatchAndWait({repository, workflow: CI_WORKFLOW, inputs: {full: "true"}, expectedSha: sourceSha,
     timeoutMs: 140 * 60_000});
-  const current = github(`repos/${repository}/git/ref/heads/main`).object.sha === sourceSha;
-  output({current: String(current)});
-  summary(current ? `Full CI validated \`${sourceSha}\`.` :
-    `Main moved past \`${sourceSha}\` during validation; the next train releases main's head.`);
+  const mainSha = github(`repos/${repository}/git/ref/heads/main`).object.sha;
+  summary(mainSha === sourceSha ? `Full CI validated \`${sourceSha}\`.` :
+    `Full CI validated \`${sourceSha}\`; main has since moved to \`${mainSha}\`, which a later train releases.`);
 }
 
 async function runPreview() {
   const repository = canonicalRepository(process.env);
   const sourceSha = process.env.SOURCE_SHA;
-  const run = await dispatchAndWait({repository, workflow: PREVIEW_WORKFLOW, expectedSha: sourceSha,
-    timeoutMs: 60 * 60_000});
+  const run = await dispatchAndWait({repository, ...previewDispatch(sourceSha), timeoutMs: 60 * 60_000});
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "website-preview-"));
   command("gh", ["run", "download", String(run.id), "--repo", repository,
     "--name", `next-preview-serving-${run.id}-${run.run_attempt}`, "--dir", directory]);

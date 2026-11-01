@@ -193,7 +193,6 @@ const _probeOnlyDirectories = [
   'contracts/',
   'copy/',
   'design/',
-  'design_context_pack/',
   'docs/',
   'extensions/',
   'fastlane/',

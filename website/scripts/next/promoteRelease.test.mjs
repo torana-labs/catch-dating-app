@@ -2,18 +2,19 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import fs from "node:fs";
 import {spawnSync} from "node:child_process";
-import {assertPromotionInvocation, selectPreviewArtifact, productionHostingConfig, assertPreviewRuntime, assertProductionTarget, production,
+import {assertPromotionInvocation, previewSourceSha, selectPreviewArtifact, productionHostingConfig, assertPreviewRuntime, assertProductionTarget, production,
   releaseTagUpdate} from "./promoteRelease.mjs";
 import {liveVersionName, usesNextRuntime} from "./hostingState.mjs";
 import {LIVE_RELEASE_TAG, preview} from "./previewRelease.mjs";
 import {CANONICAL_REPOSITORY_ID} from "../../../tool/lib/canonical_repository.mjs";
-const sourceSha = "a".repeat(40), repository = "suvratgarg/catch-dating-app";
+// The preview ran on main's head at dispatch, which had moved past its source.
+const sourceSha = "a".repeat(40), previewHead = "f".repeat(40), repository = "suvratgarg/catch-dating-app";
 const env = {GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_REF: "refs/heads/main", GITHUB_REPOSITORY: repository, GITHUB_REPOSITORY_ID: "1170579691",
   GITHUB_WORKFLOW_REF: `${repository}/${production.workflow}@refs/heads/main`, GITHUB_RUN_ATTEMPT: "1", GITHUB_SHA: sourceSha, PREVIEW_RUN_ID: "123"};
 const fixture = () => ({sourceSha, workflow: {id: 7, path: preview.workflow}, run: {id: 123, run_attempt: 1, workflow_id: 7,
-  path: preview.workflow, head_sha: sourceSha, head_branch: "main", event: "workflow_dispatch", status: "completed", conclusion: "success",
+  path: preview.workflow, head_sha: previewHead, head_branch: "main", event: "workflow_dispatch", status: "completed", conclusion: "success",
   repository: {id: CANONICAL_REPOSITORY_ID, full_name: repository}, head_repository: {id: CANONICAL_REPOSITORY_ID}}, artifacts: [{id: 456, name: `next-preview-${sourceSha}-123-1`, expired: false,
-    digest: `sha256:${"b".repeat(64)}`, workflow_run: {id: 123, head_sha: sourceSha, repository_id: CANONICAL_REPOSITORY_ID, head_repository_id: CANONICAL_REPOSITORY_ID}}]});
+    digest: `sha256:${"b".repeat(64)}`, workflow_run: {id: 123, head_sha: previewHead, repository_id: CANONICAL_REPOSITORY_ID, head_repository_id: CANONICAL_REPOSITORY_ID}}]});
 test("production promotion rejects other workflows, refs, automatic calls and reruns", () => {
   assertPromotionInvocation(env);
   for (const [key, value] of Object.entries({GITHUB_EVENT_NAME: "push", GITHUB_REF: "refs/heads/feature", GITHUB_REPOSITORY: "fork/repo", GITHUB_REPOSITORY_ID: "1",
@@ -31,6 +32,22 @@ test("only the successful exact-source preview attempt and immutable artifact au
     assert.throws(() => selectPreviewArtifact({...good, artifacts: [{...good.artifacts[0], ...change}]}));
   }
   assert.throws(() => selectPreviewArtifact({...good, artifacts: [...good.artifacts, ...good.artifacts]}));
+});
+test("promotion releases the commit the preview built, not the main head the preview ran on", () => {
+  const {run, artifacts} = fixture();
+  const serving = {...artifacts[0], id: 457, name: "next-preview-serving-123-1"};
+  assert.equal(previewSourceSha({run, artifacts: [serving, ...artifacts]}), sourceSha);
+  assert.equal(selectPreviewArtifact({...fixture(), sourceSha: previewSourceSha({run, artifacts})}).sourceSha, sourceSha);
+  // A preview from before source inputs named its own head, the same commit.
+  const legacy = {...run, head_sha: sourceSha};
+  assert.equal(previewSourceSha({run: legacy, artifacts}), sourceSha);
+  for (const [label, items] of [["no tested artifact", [serving]], ["another attempt's", [{...artifacts[0], name: `next-preview-${sourceSha}-123-2`}]],
+    ["another run's", [{...artifacts[0], name: `next-preview-${sourceSha}-124-1`}]], ["not a commit", [{...artifacts[0], name: "next-preview-main-123-1"}]],
+    ["two sources", [...artifacts, {...artifacts[0], name: `next-preview-${"c".repeat(40)}-123-1`}]]]) {
+    assert.throws(() => previewSourceSha({run, artifacts: items}), /missing or ambiguous/u, label);
+  }
+  // The artifact must come from the preview run itself, whatever its source.
+  assert.throws(() => selectPreviewArtifact({...fixture(), sourceSha: "c".repeat(40)}), /missing or ambiguous/u);
 });
 test("production config changes only runtime destination and global preview indexing", () => {
   const original = JSON.parse(fs.readFileSync(new URL("../../next-hosting.preview.json", import.meta.url))); original.hosting.public = "hosting";
@@ -73,6 +90,8 @@ test("production workflow preserves credentials boundary, tested bytes, shared l
   assert.doesNotMatch(workflow, /docker build|npm ci|npm run build|--force|firebase deploy/u);
   assert.ok(workflow.indexOf("hostingState.mjs snapshot") < workflow.indexOf("gcloud run deploy"));
   assert.ok(workflow.indexOf("candidate-checks.json") < workflow.indexOf("firebase hosting:clone"));
+  assert.match(workflow, /for attempt in 1 2 3; do\n\s+if firebase hosting:channel:deploy next-release/u);
+  assert.match(workflow, /cat \.\.\/\.\.\/next-promote\/candidate\.json/u);
   assert.match(workflow, /hosting:clone "catch-dating-app-64e51@\$version" catch-dating-app-64e51:live/u);
   // One warm instance for the serving revision only. A revision-level minimum
   // would keep every Hosting-pinned tagged revision running and billed.
@@ -110,9 +129,13 @@ test("promotion smoke-checks the release with the release's own routes and copy"
   assert.deepEqual(smokes.map(line => line.trim()), [
     'node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" "$url" > ../../next-promote/candidate-checks.json',
   ]);
-  // The preview checks the commit it runs on, so its checkout is the release.
+  // The preview, too, checks its source with that source's own copy.
   const previewWorkflow = fs.readFileSync(new URL("../../../.github/workflows/website-next-preview.yml", import.meta.url), "utf8");
-  assert.match(previewWorkflow, /node website\/scripts\/next\/deployedSmoke\.mjs "\$url"/u);
+  assert.deepEqual(previewWorkflow.split("\n").filter(line => /(deployedSmoke|containerSmoke)\.mjs/u.test(line) && !line.trim().startsWith("#"))
+    .map(line => line.trim()), [
+    'node "$RELEASE_SOURCE/website/scripts/next/containerSmoke.mjs" http://127.0.0.1:3130',
+    'node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" "$url" > build/next-preview/deployed-checks.json',
+  ]);
 });
 
 test("production target cannot replace an unrelated or secret-bearing service", () => {

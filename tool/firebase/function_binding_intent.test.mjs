@@ -5,8 +5,8 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
-import {classifySecretRuntimeAccess} from "./check_environment_readiness.mjs";
-import {collectFunctionBindingIntent, discoverFunctionExportNames, runCli} from "./function_binding_intent.mjs";
+import {classifySecretRuntimeAccess, executeReadinessCli} from "./check_environment_readiness.mjs";
+import {collectFunctionBindingIntent, collectSecretConsumers, discoverFunctionExportNames, runCli} from "./function_binding_intent.mjs";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const whatsappReaderConsumers = ["dispatchOrganizerCampaign", "getOrganizerMessagingSetup",
@@ -17,7 +17,13 @@ const base = {environment: "dev", projectId: "test-project", projectNumber: "123
   sourceSha: "a".repeat(40), consumers: ["selected"]};
 const imports = `import {onRequest as request} from "firebase-functions/v2/https";
 import {defineSecret as secret} from "firebase-functions/params";`;
-const unresolved = /^Error: Function binding intent is unresolved\.$/u;
+// Every failure names a place and a pattern, never source values or machine paths.
+const unresolved = (error) => {
+  assert.match(error.message, /^Function binding intent is unresolved: .+\.$/u);
+  assert.doesNotMatch(error.message,
+    /FAKE_|CHANGED|EXACT_SECRET|writer@|process\.env|\/(?:tmp|var|private|Users)\//u);
+  return true;
+};
 function fixture(t, files) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "function-binding-intent-"));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
@@ -171,13 +177,8 @@ test("missing provenance inputs, private path imports and raw errors stay opaque
   assert.throws(() => collect(sourceRoot), unresolved);
 });
 
-test("current manifest consumers and direct readers resolve from current source", () => {
-  const manifest = JSON.parse(fs.readFileSync(path.join(repo,
-    "tool/firebase/environment_readiness.json"), "utf8"));
-  const consumers = [...new Set(manifest.requirements
-    .filter((r) => r.kind === "secret-version")
-    .flatMap((r) => r.requiredWhen.anyDeployTarget ?? [])
-    .filter((v) => v.startsWith("functions:")).map((v) => v.slice(10)))];
+test("current secret consumers and direct readers resolve from current source", () => {
+  const consumers = [...new Set([...collectSecretConsumers({sourceRoot: repo}).values()].flat())];
   assert.ok(consumers.length > 0);
   consumers.push("cancelEvent", "refreshProgramFlightStatuses", "refreshProgramTravelLeg",
     "eventAssistanceRcsWebhook", "onAssistanceWorkChanged",
@@ -198,23 +199,60 @@ test("current manifest consumers and direct readers resolve from current source"
   }
 });
 
-test("literal readiness manifest matches selected source consumers", () => {
-  const manifest = JSON.parse(fs.readFileSync(path.join(repo,
-    "tool/firebase/environment_readiness.json"), "utf8"));
-  const requirements = manifest.requirements.filter((r) => r.kind === "secret-version");
-  // Enumerate source independently: an entirely omitted manifest consumer must fail.
-  const consumers = discoverFunctionExportNames(fs.readFileSync(
-    path.join(repo, "functions/src/index.ts"), "utf8"));
-  assert.ok(consumers.length > 0);
-  const intent = collect(repo, {consumers});
-  const mismatches = intent.functions.flatMap((row) => {
-    const declared = requirements.filter((r) =>
-      r.requiredWhen.anyDeployTarget?.includes(`functions:${row.consumer}`))
-      .map((r) => r.name).sort();
-    return JSON.stringify(declared) === JSON.stringify(row.secretNames) ? [] :
-      [{consumer: row.consumer, manifest: declared, source: row.secretNames}];
+test("the readiness manifest accepts every secret current source binds", () => {
+  // This file runs on any Functions source change; the readiness check itself need not.
+  const execution = executeReadinessCli(["--manifest-only"], {repoRoot: repo});
+  assert.equal(execution.exitCode, 0);
+});
+
+test("secret consumers come from each Function's bindings across every export", (t) => {
+  const sourceRoot = fixture(t, {
+    "index.ts": `import {setGlobalOptions} from "firebase-functions";
+      setGlobalOptions({secrets: ["GLOBAL_SECRET"]});
+      export {one, two, three} from "./consumers";`,
+    "consumers.ts": `${imports}
+      const shared = secret("SHARED_SECRET");
+      export const one = request({secrets: [shared]}, () => {});
+      export const two = request({secrets: [shared, "OTHER_SECRET"]}, () => {});
+      export const three = request(() => {});`,
   });
-  assert.deepEqual(mismatches, [], "Literal readiness must follow authored source bindings");
+  assert.deepEqual(Object.fromEntries(collectSecretConsumers({sourceRoot})), {
+    GLOBAL_SECRET: ["three"],
+    SHARED_SECRET: ["one", "two"],
+    OTHER_SECRET: ["two"],
+  });
+});
+
+test("a failure names the file, line, Function and the pattern it could not read", (t) => {
+  // The shape that needed a hand fix in #1382: a trigger wrapper the scanner has not reviewed.
+  const wrapper = fixture(t, {
+    "index.ts": `export {selected} from "./admin/triggers";`,
+    "admin/triggers.ts": `import {onDocumentWritten} from "firebase-functions/v2/firestore";
+      const newTrigger = (path) => onDocumentWritten({document: path}, () => {});
+      export const selected = newTrigger("items/{id}");`,
+  });
+  assert.throws(() => collect(wrapper), (error) => unresolved(error) && error.message ===
+    "Function binding intent is unresolved: functions/src/admin/triggers.ts:3, Function selected: " +
+    "calls a trigger wrapper that is not listed in endpointWrappers; review it, then add it in " +
+    "tool/firebase/function_binding_intent.mjs.");
+  const script = path.join(repo, "tool/firebase/function_binding_intent.mjs");
+  const child = spawnSync(process.execPath, [script, "--source-root", wrapper, "--env", "dev",
+    "--project", "test-project", "--project-number", "123456", "--source-sha", base.sourceSha,
+    "--consumers", "selected"], {encoding: "utf8", env: {}, timeout: 10000});
+  assert.equal(child.status, 1);
+  assert.match(child.stderr, /admin\/triggers\.ts:3, Function selected: calls a trigger wrapper/u);
+
+  for (const [source, location, pattern] of [
+    [`export {selected} from "./missing";`, "functions/src/index.ts:1", /relative import does not name a \.ts file/u],
+    [`${imports}
+      export const selected = request({secrets: [process.env.FAKE_PRIVATE]}, () => {});`,
+    "functions/src/index.ts:3", /need literal values/u],
+  ]) {
+    assert.throws(() => collect(fixture(t, {"index.ts": source})), (error) => unresolved(error) &&
+      error.message.includes(`${location}, Function selected: `) && pattern.test(error.message));
+  }
+  assert.throws(() => discoverFunctionExportNames(`const a = 1;\nexport * from "./x";`), (error) =>
+    unresolved(error) && error.message.includes("functions/src/index.ts:2"));
 });
 
 

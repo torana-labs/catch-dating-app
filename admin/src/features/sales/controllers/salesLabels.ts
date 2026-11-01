@@ -87,6 +87,11 @@ export const hostActivityTypes: Array<{value: "note" | "reply" | "call" | "demo"
   {value: "outreach_sent_manual", label: "I messaged them elsewhere"},
 ];
 
+export const decisionInfluences = [
+  {value: "unknown", label: "Not sure"}, {value: "decision_maker", label: "Decides"},
+  {value: "influencer", label: "Influences"}, {value: "operator", label: "Runs things day to day"},
+] as const;
+
 export function stageLabel(stage: string): string {
   const words = stage.replace(/_/gu, " ");
   return words[0]?.toUpperCase() + words.slice(1);

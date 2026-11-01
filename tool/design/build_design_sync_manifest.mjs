@@ -15,17 +15,12 @@ const outputPath = fromRepo("design/sync/catch.design-sync.json");
 const componentPath = fromRepo("design/components/catch.components.json");
 const capabilityPath = fromRepo("design/sync/live_capabilities.json");
 const figmaSnapshotPath = fromRepo("design/sync/figma_library_snapshot.json");
-const claudeContextPath = fromRepo("design_context_pack/design_system/components.json");
-const claudeHandoffPath = fromRepo(
-  "design_context_pack/design_system/claude_design_handoff_request.json",
-);
 const claudeReceiptPath = fromRepo("design/sync/claude_design_receipt.json");
 
 export function buildDesignSyncManifest({
   componentsDocument,
   capabilities,
   figmaSnapshot = unavailableFigmaSnapshot(),
-  claudeContextDocument = componentsDocument,
   claudeHandoffRequest = buildClaudeDesignHandoffRequest(componentsDocument),
   claudeDesignReceipt = unavailableClaudeDesignReceipt(),
 }) {
@@ -45,10 +40,6 @@ export function buildDesignSyncManifest({
   const mappingStates = countBy(mappings, (entry) => entry.figmaStatus);
   const codeConnectStates = countBy(mappings, (entry) => entry.codeConnectStatus ?? "missing");
   const sourceDigest = digest(componentsDocument);
-  const claudeContextDigest = claudeContextDocument ? digest(claudeContextDocument) : null;
-  const claudeContextStatus = !claudeContextDocument
-    ? "missing"
-    : claudeContextDigest === sourceDigest ? "current" : "stale";
   const claudeHandoffRequestStatus = claudeHandoffRequest?.sourceDigest === sourceDigest
     ? "current"
     : "stale";
@@ -115,7 +106,7 @@ export function buildDesignSyncManifest({
   }
 
   return {
-    version: 3,
+    version: 4,
     updated: new Date().toISOString().slice(0, 10),
     sourceOfTruth: {
       behavior: "Contracts in design/components/catch.components.json; Flutter is the reference implementation",
@@ -123,8 +114,7 @@ export function buildDesignSyncManifest({
       tokens: "design/tokens/catch.tokens.json",
       figmaSnapshot: "design/sync/figma_library_snapshot.json",
       figmaSnapshotImporter: "tool/design/import_figma_library_snapshot.mjs",
-      claudeContext: "design_context_pack/design_system/components.json",
-      claudeHandoffRequest: "design_context_pack/design_system/claude_design_handoff_request.json",
+      claudeHandoffRequest: "node tool/design/build_design_sync_manifest.mjs --claude-handoff",
       claudeDesignReceipt: "design/sync/claude_design_receipt.json",
       liveCapabilities: "design/sync/live_capabilities.json",
       generator: "tool/design/build_design_sync_manifest.mjs",
@@ -135,11 +125,6 @@ export function buildDesignSyncManifest({
       live: liveBlockers.length === 0 ? "ready" : "incomplete-external",
       liveScope: spikeIds,
       blockers: liveBlockers,
-    },
-    claudeContext: {
-      status: claudeContextStatus,
-      digest: claudeContextDigest,
-      contractDigest: sourceDigest,
     },
     claudeDesign: {
       handoffRequestStatus: claudeHandoffRequestStatus,
@@ -174,7 +159,6 @@ export function buildDesignSyncManifest({
         mappings.filter((entry) => entry.reactApi !== null),
         (entry) => entry.reactApi,
       ),
-      claudeContextState: claudeContextStatus,
       claudeDesignReceiptState: claudeReceiptStatus,
       figmaMappedConcepts: mappings.filter(
         (entry) => entry.conceptRole === "concept" && entry.figmaStatus === "current",
@@ -191,7 +175,6 @@ export function buildDesignSyncManifest({
         "registry componentName resolves to exactly one captured component node",
         "Figma property definitions match the generated design projection; governed review states remain evidence unless the projection explicitly makes them variants",
         "the live gate requires Figma publish status CURRENT in addition to a current mapping",
-        "contract digest matches the generated Claude context",
         "Claude Design returns a current receipt for the same concept ids and supported-state digests",
         "Code Connect is mapped only when the account tier supports publication",
         "a deliberately stale or incomplete mapping fails the gate",
@@ -204,9 +187,6 @@ export function buildDesignSyncManifest({
 export function validateDesignSyncManifest(manifest, {requireLive = false} = {}) {
   const problems = [];
   const ids = new Set();
-  if (manifest.claudeContext?.status !== "current") {
-    problems.push(`Claude context is ${manifest.claudeContext?.status ?? "missing"}`);
-  }
   if (manifest.claudeDesign?.handoffRequestStatus !== "current") {
     problems.push("Claude Design handoff request is stale");
   }
@@ -479,21 +459,17 @@ function main() {
   const check = process.argv.includes("--check");
   const requireLive = process.argv.includes("--require-live");
   const document = JSON.parse(fs.readFileSync(componentPath, "utf8"));
+  if (process.argv.includes("--claude-handoff")) {
+    console.log(JSON.stringify(buildClaudeDesignHandoffRequest(document), null, 2));
+    return;
+  }
   const capabilities = JSON.parse(fs.readFileSync(capabilityPath, "utf8"));
   const figmaSnapshot = JSON.parse(fs.readFileSync(figmaSnapshotPath, "utf8"));
-  const claudeContextDocument = fs.existsSync(claudeContextPath)
-    ? JSON.parse(fs.readFileSync(claudeContextPath, "utf8"))
-    : null;
-  const claudeHandoffRequest = fs.existsSync(claudeHandoffPath)
-    ? JSON.parse(fs.readFileSync(claudeHandoffPath, "utf8"))
-    : null;
   const claudeDesignReceipt = JSON.parse(fs.readFileSync(claudeReceiptPath, "utf8"));
   const manifest = buildDesignSyncManifest({
     componentsDocument: document,
     capabilities,
     figmaSnapshot,
-    claudeContextDocument,
-    claudeHandoffRequest,
     claudeDesignReceipt,
   });
   const problems = validateDesignSyncManifest(manifest, {requireLive});
@@ -512,7 +488,6 @@ function main() {
       `${manifest.metrics.figmaMappingStates.current ?? 0} current, ` +
       `${manifest.metrics.figmaMappingStates.stale ?? 0} stale, ` +
       `${manifest.metrics.figmaMappingStates.missing ?? 0} missing Figma mappings; ` +
-      `Claude context ${manifest.claudeContext.status}; ` +
       `Claude Design receipt ${manifest.claudeDesign.receiptStatus}).`,
     );
     return;

@@ -26,8 +26,8 @@ dev_dependencies:
     sdk: flutter
   shared_preferences: ^2.5.6
 
-# Consumer native splash. Colors mirror design_context_pack/design_system/
-# tokens.json and are rewritten by tool/branding/generate_native_brand_assets.dart.
+# Consumer native splash. Colors mirror design/tokens/catch.tokens.json and are
+# rewritten by tool/branding/generate_native_brand_assets.dart.
 # Regenerate from this directory with `dart run flutter_native_splash:create`,
 # then rerun the brand generator (release operations guide, Native Splash Assets).
 flutter_native_splash:

@@ -24,10 +24,23 @@ export function assertPromotionInvocation(env) {
   assert.match(env.GITHUB_SHA ?? "", /^[a-f0-9]{40}$/u);
   assert.match(env.PREVIEW_RUN_ID ?? "", /^[1-9][0-9]*$/u);
 }
+/**
+ * The commit a preview run released, from its tested artifact's name. The run
+ * itself ran on main's head at dispatch, which may be newer: the release train
+ * previews a validated commit that main has since moved past. Before source
+ * inputs, the two were the same commit.
+ */
+export function previewSourceSha({run, artifacts}) {
+  assert.ok(Number.isSafeInteger(run?.id) && Number.isSafeInteger(run.run_attempt));
+  const pattern = new RegExp(`^next-preview-([a-f0-9]{40})-${run.id}-${run.run_attempt}$`, "u");
+  const sources = artifacts.map(item => pattern.exec(item.name ?? "")?.[1]).filter(Boolean);
+  assert.equal(sources.length, 1, "Exact preview artifact is missing or ambiguous");
+  return sources[0];
+}
 export function selectPreviewArtifact({run, workflow, artifacts, sourceSha}) {
   assert.equal(workflow.path, preview.workflow); assert.equal(run.workflow_id, workflow.id);
   assert.equal(run.path?.split("@")[0], preview.workflow);
-  assert.equal(run.head_sha, sourceSha); assert.equal(run.head_branch, "main");
+  assert.match(run.head_sha ?? "", /^[a-f0-9]{40}$/u); assert.equal(run.head_branch, "main");
   assert.equal(run.event, "workflow_dispatch"); assert.equal(run.status, "completed"); assert.equal(run.conclusion, "success");
   assert.equal(run.repository?.id, CANONICAL_REPOSITORY_ID); assert.equal(run.head_repository?.id, run.repository?.id);
   assert.ok(Number.isSafeInteger(run.id) && run.id > 0 && Number.isSafeInteger(run.run_attempt) && run.run_attempt > 0);
@@ -35,7 +48,7 @@ export function selectPreviewArtifact({run, workflow, artifacts, sourceSha}) {
   const matches = artifacts.filter(item => item.name === name); assert.equal(matches.length, 1, "Exact preview artifact is missing or ambiguous");
   const artifact = matches[0]; assert.ok(Number.isSafeInteger(artifact.id) && artifact.id > 0); assert.equal(artifact.expired, false);
   assert.match(artifact.digest ?? "", /^sha256:[a-f0-9]{64}$/u);
-  assert.equal(artifact.workflow_run?.id, run.id); assert.equal(artifact.workflow_run?.head_sha, sourceSha);
+  assert.equal(artifact.workflow_run?.id, run.id); assert.equal(artifact.workflow_run?.head_sha, run.head_sha);
   assert.equal(artifact.workflow_run?.repository_id, run.repository.id);
   assert.equal(artifact.workflow_run?.head_repository_id, run.repository.id);
   return {sourceSha, previewRunId: String(run.id), previewAttempt: String(run.run_attempt), artifactId: String(artifact.id), artifactDigest: artifact.digest};
@@ -83,7 +96,8 @@ async function authorize() {
   assertPromotionInvocation(process.env);
   const repository = canonicalRepository(process.env);
   const run = github(`repos/${repository}/actions/runs/${process.env.PREVIEW_RUN_ID}`);
-  const sourceSha = run.head_sha;
+  const artifacts = JSON.parse(command("gh", ["api", "--paginate", "--slurp", `repos/${repository}/actions/runs/${run.id}/artifacts?per_page=100`])).flatMap(page => page.artifacts);
+  const sourceSha = previewSourceSha({run, artifacts});
   const validation = await waitMainMarketingValidation({repository, sourceSha, maxWaitMs: 0});
   assert.equal(validation.validated, true); assert.ok(validation.captureBinding);
   const ci = github(`repos/${repository}/actions/runs/${validation.sourceCiRunId}`);
@@ -91,7 +105,6 @@ async function authorize() {
   assertSuccessfulSourceRun({run: ci, sourceSha, repository});
   await currentReleaseLineage(repository, sourceSha);
   const workflow = github(`repos/${repository}/actions/workflows/website-next-preview.yml`);
-  const artifacts = JSON.parse(command("gh", ["api", "--paginate", "--slurp", `repos/${repository}/actions/runs/${run.id}/artifacts?per_page=100`])).flatMap(page => page.artifacts);
   return selectPreviewArtifact({run, workflow, artifacts, sourceSha});
 }
 async function prepare() {

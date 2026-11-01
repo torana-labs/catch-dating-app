@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import test from "node:test";
+import {fileURLToPath} from "node:url";
 import {
   buildDesignSyncManifest,
   compareFigmaProperties,
@@ -216,16 +218,30 @@ test("explicit Figma projection rejects unknown source props", () => {
   );
 });
 
-test("known-bad stale Claude context fails", () => {
+test("known-bad stale Claude handoff request fails", () => {
   const componentsDocument = {
     components: [component("catch.badge"), component("catch.field")],
   };
   const manifest = buildDesignSyncManifest({
     componentsDocument,
     capabilities,
-    claudeContextDocument: {components: [component("catch.badge")]},
+    claudeHandoffRequest: buildClaudeDesignHandoffRequest({
+      components: [component("catch.badge"), component("catch.field"), component("catch.other")],
+    }),
   });
-  assert.match(validateDesignSyncManifest(manifest).join("\n"), /Claude context is stale/u);
+  assert.match(validateDesignSyncManifest(manifest).join("\n"), /handoff request is stale/u);
+});
+
+test("the Claude handoff request prints from the contract and names files that exist", () => {
+  const repoRoot = fileURLToPath(new URL("../../", import.meta.url));
+  const result = spawnSync(process.execPath, ["tool/design/build_design_sync_manifest.mjs", "--claude-handoff"],
+    {cwd: repoRoot, encoding: "utf8"});
+  assert.equal(result.status, 0, result.stderr);
+  const request = JSON.parse(result.stdout);
+  const contract = JSON.parse(fs.readFileSync(`${repoRoot}/design/components/catch.components.json`, "utf8"));
+  assert.deepEqual(request, buildClaudeDesignHandoffRequest(contract));
+  assert.deepEqual(request.components.map((entry) => entry.contractId), ["catch.badge", "catch.field"]);
+  for (const file of Object.values(request.contextFiles)) assert.ok(fs.existsSync(`${repoRoot}/${file}`), file);
 });
 
 test("known-bad Claude Design state receipt fails", () => {
@@ -364,7 +380,6 @@ test("real Badge and Field contract projection round-trips and fails on one remo
   });
   const manifest = buildDesignSyncManifest({
     componentsDocument: realDocument,
-    claudeContextDocument: realDocument,
     capabilities: liveCapabilities,
     figmaSnapshot: snapshot,
     claudeHandoffRequest,
@@ -394,7 +409,6 @@ test("real Badge and Field contract projection round-trips and fails on one remo
       .filter((property) => property.normalizedName !== "show_icon");
   const knownBad = buildDesignSyncManifest({
     componentsDocument: realDocument,
-    claudeContextDocument: realDocument,
     capabilities: liveCapabilities,
     figmaSnapshot: knownBadSnapshot,
     claudeHandoffRequest,

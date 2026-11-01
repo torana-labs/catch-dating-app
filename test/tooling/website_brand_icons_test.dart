@@ -59,21 +59,19 @@ void main() {
 
   test('the manifest theme colour follows the light bg token', () {
     final tokens =
-        jsonDecode(
-              File(
-                'design_context_pack/design_system/tokens.json',
-              ).readAsStringSync(),
-            )
+        jsonDecode(File('design/tokens/catch.tokens.json').readAsStringSync())
             as Map<String, dynamic>;
+    final theme = tokens['theme'] as Map<String, dynamic>;
+    final light = theme['light'] as Map<String, dynamic>;
+    final colors = light['color'] as Map<String, dynamic>;
     final bg =
-        ((tokens['color'] as Map<String, dynamic>)['bg']
-                as Map<String, dynamic>)['\$value']
+        (colors['bg'] as Map<String, dynamic>)['\$value']
             as Map<String, dynamic>;
     final manifest =
         jsonDecode(
               File('website/public/assets/site.webmanifest').readAsStringSync(),
             )
             as Map<String, dynamic>;
-    expect(manifest['theme_color'], (bg['light'] as String).toUpperCase());
+    expect(manifest['theme_color'], (bg['hex'] as String).toUpperCase());
   });
 }

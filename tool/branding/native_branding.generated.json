@@ -1,5 +1,5 @@
 {
-  "source": "design_context_pack/design_system/tokens.json",
+  "source": "design/tokens/catch.tokens.json",
   "colors": {
     "splash_light_bg": "#F4F4F1",
     "splash_dark_bg": "#0F0E10",

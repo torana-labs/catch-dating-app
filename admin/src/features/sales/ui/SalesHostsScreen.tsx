@@ -1,5 +1,6 @@
 import {
   CatchButton,
+  CatchCheckboxInput,
   CatchEmptyState,
   CatchField,
   CatchGap,
@@ -14,8 +15,9 @@ import {
   type CatchTableColumn,
 } from "@catch/web-ui";
 import {useState} from "react";
-import type {SalesAccountDetail, SalesOpportunity, SalesTaskKind} from "../api/salesTypes";
+import type {SalesAccountDetail, SalesContact, SalesOpportunity, SalesResearchStatus, SalesTaskKind} from "../api/salesTypes";
 import {
+  decisionInfluences,
   dueLabel,
   hostActivityTypes,
   movableStages,
@@ -27,7 +29,9 @@ import type {HostTab, SalesHostsController} from "../controllers/useSalesHostsCo
 
 export type SalesHostsModel = Pick<SalesHostsController,
   "query" | "setQuery" | "rows" | "hasNextPage" | "hasPreviousPage" | "nextPage" | "previousPage" | "tab" | "setTab" |
-  "contacts" | "logActivity" | "addNextStep" | "completeNextStep" | "saveDeal" | "isSaving"> & {
+  "contacts" | "logActivity" | "addNextStep" | "completeNextStep" | "saveDeal" | "saveHost" | "addPerson" | "canEditResearch" | "isSaving"> & {
+  /** Who "Assign to me" means. */
+  uid: string | null;
   host: SalesAccountDetail | null;
 };
 
@@ -146,7 +150,68 @@ function DealSheet({model, deal, onClose}: {model: SalesHostsModel; deal: SalesO
   );
 }
 
-type HostSheet = {kind: "log"} | {kind: "step"} | {kind: "deal"; deal: SalesOpportunity | null};
+const researchStatuses = Object.keys(researchLabels) as SalesResearchStatus[];
+
+/** Saves against the revision it opened with, so someone else's change comes back as an error, not an overwrite. */
+function EditHostSheet({model, host, onClose}: {model: SalesHostsModel; host: SalesAccountDetail; onClose: () => void}) {
+  const {account} = host;
+  const [revision] = useState(account.revision);
+  const [researchStatus, setResearchStatus] = useState(account.researchStatus);
+  const [owner, setOwner] = useState(account.assignedOwnerUid ?? null);
+  const [summary, setSummary] = useState(account.summary ?? "");
+  const [nextAction, setNextAction] = useState(account.nextAction ?? "");
+  const submit = async () => {
+    if (await model.saveHost(revision, {researchStatus, assignedOwnerUid: owner, summary, nextAction})) onClose();
+  };
+  return (
+    <CatchSheet recipe="standard" open onClose={onClose} title="Edit host" subtitle={host.organizerSummary.name}
+      footer={<CatchButton label={model.isSaving ? "Saving" : "Save"} onPressed={model.isSaving ? null : () => void submit()} />}>
+      <CatchGap size="related">
+        {model.canEditResearch ? <CatchField recipe="select" title="Research" value={researchStatus} values={researchStatuses}
+          itemLabelBuilder={(value) => researchLabels[value as SalesResearchStatus]?.text ?? value}
+          onChanged={(value) => setResearchStatus((value ?? researchStatus) as SalesResearchStatus)} /> : null}
+        {model.canEditResearch && model.uid && owner !== model.uid ?
+          <CatchButton label="Assign to me" variant="secondary" size="sm" onPressed={() => setOwner(model.uid)} /> : null}
+        <CatchField recipe="input" title="Summary" maxLines={4} value={summary} onChanged={setSummary} />
+        <CatchField recipe="input" title="Next action" value={nextAction} onChanged={setNextAction} />
+      </CatchGap>
+    </CatchSheet>
+  );
+}
+
+/** Contact details start unverified, and adding someone never grants permission to message them. */
+function AddPersonSheet({model, onClose}: {model: SalesHostsModel; onClose: () => void}) {
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("");
+  const [influence, setInfluence] = useState<SalesContact["relationship"]["decisionInfluence"]>("unknown");
+  const [primary, setPrimary] = useState(false);
+  const [kind, setKind] = useState<"email" | "phone">("email");
+  const [contact, setContact] = useState("");
+  const submit = async () => {
+    if (await model.addPerson({contact: {displayName: name.trim()}, relationship: {role: role.trim(), decisionInfluence: influence, primary,
+      ...(contact.trim() ? {endpoints: [{kind, value: contact.trim(), verificationStatus: "unverified" as const}]} : {})}})) onClose();
+  };
+  return (
+    <CatchSheet recipe="standard" open onClose={onClose} title="Add a person" subtitle="Hosts"
+      footer={<CatchButton label={model.isSaving ? "Saving" : "Add"} onPressed={name.trim() && role.trim() && !model.isSaving ? () => void submit() : null} />}>
+      <CatchGap size="related">
+        <CatchField recipe="input" title="Name" value={name} onChanged={setName} />
+        <CatchField recipe="input" title="Role with the host" value={role} onChanged={setRole} inputHint="Founder" />
+        <CatchField recipe="select" title="Their say" value={influence} values={decisionInfluences.map((entry) => entry.value)}
+          itemLabelBuilder={(value) => decisionInfluences.find((entry) => entry.value === value)?.label ?? value}
+          onChanged={(value) => setInfluence((value ?? "unknown") as typeof influence)} />
+        <CatchCheckboxInput label="Our main contact here" value={primary} onChanged={setPrimary} />
+        <CatchField recipe="select" title="How to reach them" value={kind} values={["email", "phone"]}
+          itemLabelBuilder={(value) => value === "email" ? "Email" : "Phone"}
+          onChanged={(value) => setKind((value ?? "email") as typeof kind)} />
+        <CatchField recipe="input" title={kind === "email" ? "Email address" : "Phone number"} value={contact} onChanged={setContact}
+          helperText="Optional. It stays unverified, and adding it doesn't mean we can message them." />
+      </CatchGap>
+    </CatchSheet>
+  );
+}
+
+type HostSheet = {kind: "log"} | {kind: "step"} | {kind: "edit"} | {kind: "person"} | {kind: "deal"; deal: SalesOpportunity | null};
 
 /** One host: its facts and history beside what's next and who's involved. Everything rarer is in All tools. */
 function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools}: {
@@ -204,6 +269,8 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools}: {
         {sheet?.kind === "log" ? <LogActivitySheet model={model} onClose={close} /> : null}
         {sheet?.kind === "step" ? <NextStepSheet model={model} onClose={close} /> : null}
         {sheet?.kind === "deal" ? <DealSheet model={model} deal={sheet.deal} onClose={close} /> : null}
+        {sheet?.kind === "edit" ? <EditHostSheet model={model} host={host} onClose={close} /> : null}
+        {sheet?.kind === "person" ? <AddPersonSheet model={model} onClose={close} /> : null}
       </>}
       aside={<CatchGap size="section">
         <CatchSection title="Next steps" count={openTasks.length} dividers="none" action={{label: "Add", onPressed: () => setSheet({kind: "step"})}}
@@ -213,13 +280,14 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools}: {
             trailing={<CatchButton label="Done" variant="secondary" size="sm"
               onPressed={model.isSaving ? null : () => void model.completeNextStep(task)} />} />)}
         </CatchSection>
-        <CatchSection title="People" count={model.contacts.length} dividers="none" empty={<CatchEmptyState title="No one yet" />}>
+        <CatchSection title="People" count={model.contacts.length} dividers="none" action={{label: "Add", onPressed: () => setSheet({kind: "person"})}} empty={<CatchEmptyState title="No one yet" />}>
           {model.contacts.map((contact) => <CatchIndexRow key={contact.contactId} title={contact.displayName} titleVariant="bodyM"
             subtitle={[contact.relationship.role, ...(contact.relationship.endpoints ?? []).map((endpoint) => endpoint.value)].filter(Boolean).join(" · ") || undefined} />)}
         </CatchSection>
         <CatchSection title="More" dividers="none">
+          <CatchIndexRow title="Edit host" titleVariant="bodyM" subtitle="Summary, next action, research and owner" onTap={() => setSheet({kind: "edit"})} />
           <CatchIndexRow title="Organizer page" titleVariant="bodyM" onTap={onOpenOrganizer} />
-          <CatchIndexRow title="All tools" titleVariant="bodyM" subtitle="Edit the host, people, evidence, holds, pilots, quotes, fit, demos and privacy" onTap={onOpenTools} />
+          <CatchIndexRow title="All tools" titleVariant="bodyM" subtitle="Evidence, holds, contact reviews, pilots, quotes, fit, demos and privacy" onTap={onOpenTools} />
         </CatchSection>
       </CatchGap>} />
   );

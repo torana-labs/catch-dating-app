@@ -467,7 +467,6 @@ test("retired UI wrapper names have no live guidance consumers", () => {
   const guidancePaths = repositorySnapshot.listFiles().filter((relativePath) =>
     relativePath === "AGENTS.md" ||
     relativePath === "tool/README.md" ||
-    relativePath === "design_context_pack/design_system/design_language.txt" ||
     (relativePath.startsWith("docs/") && relativePath.endsWith(".md"))
   );
   const sources = repositorySnapshot.readTexts(guidancePaths, {required: true});
@@ -1607,7 +1606,7 @@ test("Flutter design checks share only complete owners in the actual required To
   assert.deepEqual(owned(["tool/design/check_design_parity.mjs"]), {parity: true, handoff: false});
   assert.throws(() => toolsOwnDesignChecks({plan: {complete: false}}), /incomplete/);
   const broken = structuredClone(toolsManifest);
-  broken.tools.find(tool => tool.id === "design:context-pack").checks = [];
+  broken.tools.find(tool => tool.id === "design:sync-manifest").checks = [];
   assert.throws(() => owned([], true, broken), /no longer provides/);
   const ci = workflow("ci.yml"), flutter = workflow("flutter-ci.yml");
   for (const kind of ["parity", "handoff"]) {
@@ -1616,7 +1615,6 @@ test("Flutter design checks share only complete owners in the actual required To
     assert.match(flutter, new RegExp(`design_${kind}_in_tools:[\\s\\S]*?default: false`, "u"));
   }
   assert.match(flutter, /--check-handoff[\s\S]*--base "\$BASE_SHA" --head "\$SOURCE_SHA" --full "\$FULL"/u);
-  assert.doesNotMatch(flutter, /run: node tool\/design\/build_context_pack\.mjs --check/u);
 });
 
 
