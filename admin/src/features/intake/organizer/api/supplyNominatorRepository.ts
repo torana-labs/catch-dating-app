@@ -19,7 +19,8 @@ const sampleNominators: SupplyNominator[] = [{nominatorId: `whatsapp-${"a".repea
 export async function listSupplyNominators(): Promise<SupplyNominator[]> {
   if (dataMode() === "sample") return structuredClone(sampleNominators);
   const {validateAdminCallableRequest, validateAdminCallableResponse} =
-    await import("../../../../generated/validators/adminCallableValidators");
+    await import("../../../../generated/validators/adminCallableValidators")
+      .then((validators) => validators.loadAdminCallableValidators("adminListSupplyNominators"));
   validateAdminCallableRequest("adminListSupplyNominators", {});
   const result = await httpsCallable<Record<string, never>, AdminListSupplyNominatorsCallableResponse>(functions,
     "adminListSupplyNominators")({});
@@ -30,7 +31,8 @@ export async function listSupplyNominators(): Promise<SupplyNominator[]> {
 /** Registers a number, or changes or switches off the nominator it belongs to. */
 export async function setSupplyNominator(input: SupplyNominatorInput): Promise<AdminSetSupplyNominatorCallableResponse> {
   const {validateAdminCallableRequest, validateAdminCallableResponse} =
-    await import("../../../../generated/validators/adminCallableValidators");
+    await import("../../../../generated/validators/adminCallableValidators")
+      .then((validators) => validators.loadAdminCallableValidators("adminSetSupplyNominator"));
   validateAdminCallableRequest("adminSetSupplyNominator", input);
   const result = await httpsCallable<SupplyNominatorInput, AdminSetSupplyNominatorCallableResponse>(functions,
     "adminSetSupplyNominator")(input);

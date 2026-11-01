@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {
   AdminCallableValidationError,
-  validateAdminCallableResponse,
+  loadAdminCallableValidators,
 } from
   "../../generated/validators/adminCallableValidators";
 import {sampleIntakeOperations} from "./sampleIntakeOperations";
@@ -12,6 +12,9 @@ import {
   operationStageCounts,
   operationWorkItemTitle,
 } from "./operationSelectors";
+
+const {validateAdminCallableResponse} =
+  await loadAdminCallableValidators("adminListIntakeOperations");
 
 describe("operationSelectors", () => {
   it("keeps the four persisted primary stages exclusive", () => {
