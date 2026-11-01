@@ -83,7 +83,7 @@ function PolicyDecision({policy, model, onClose}: {
       open
       onClose={onClose}
       title={policy.label}
-      message={policy.enables}
+      message={`${policy.enables} Accepting switches nothing on: a reviewed change that cites this decision does.`}
       confirm={{label: "Accept", onPressed: complete && noted && !model.isDeciding ? () => void decide("accept") : null}}
       cancel={{label: "Cancel", onPressed: onClose}}
     >
@@ -173,7 +173,7 @@ export function IntakeSettingsWorkspace({policies, nominators}: {
       <CatchGap size="section">
         <CatchSection title="What Intake does on its own" container="tile"
           note={policies.loadFailed ? "These could not be loaded. Try again." : policies.isLoading ? "Loading…" :
-            "Each stays off until you decide; an accepted decision is switched on in a reviewed change that cites it."}>
+            "Off until you decide"}>
           {policies.policies.map((policy) => {
             const [label, tone] = policyState(policy);
             return <CatchIndexRow key={policy.gapId} title={policy.label} titleVariant="bodyM"
