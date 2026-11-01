@@ -272664,7 +272664,8 @@ export const adminListInboxItemsCallableResponseSchema = {
           "doneAt",
           "assigneeUid",
           "snoozedUntil",
-          "recommendation"
+          "recommendation",
+          "listingEvent"
         ],
         "properties": {
           "itemId": {
@@ -272865,6 +272866,33 @@ export const adminListInboxItemsCallableResponseSchema = {
                 "type": "null"
               }
             ]
+          },
+          "listingEvent": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "intakeRequestId",
+                  "eventWorkItemId"
+                ],
+                "properties": {
+                  "intakeRequestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "eventWorkItemId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       }
@@ -273032,7 +273060,8 @@ export const adminGetInboxItemCallableResponseSchema = {
         "doneAt",
         "assigneeUid",
         "snoozedUntil",
-        "recommendation"
+        "recommendation",
+        "listingEvent"
       ],
       "properties": {
         "itemId": {
@@ -273233,6 +273262,33 @@ export const adminGetInboxItemCallableResponseSchema = {
               "type": "null"
             }
           ]
+        },
+        "listingEvent": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "intakeRequestId",
+                "eventWorkItemId"
+              ],
+              "properties": {
+                "intakeRequestId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "eventWorkItemId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -273314,7 +273370,7 @@ export const adminUpdateInboxItemCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_update_inbox_item_payload.schema.json",
   "title": "AdminUpdateInboxItemCallablePayload",
-  "description": "Assign, unassign, snooze or wake one Admin inbox item; audited and recorded in its journey.",
+  "description": "Assign, unassign, snooze, wake, dismiss or reopen one Admin inbox item; audited and recorded in its journey.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -273337,7 +273393,9 @@ export const adminUpdateInboxItemCallablePayloadSchema = {
         "assign",
         "unassign",
         "snooze",
-        "wake"
+        "wake",
+        "dismiss",
+        "reopen"
       ]
     },
     "assigneeUid": {
@@ -273412,7 +273470,8 @@ export const adminUpdateInboxItemCallableResponseSchema = {
         "doneAt",
         "assigneeUid",
         "snoozedUntil",
-        "recommendation"
+        "recommendation",
+        "listingEvent"
       ],
       "properties": {
         "itemId": {
@@ -273606,6 +273665,33 @@ export const adminUpdateInboxItemCallableResponseSchema = {
                 "note": {
                   "type": "string",
                   "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "listingEvent": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "intakeRequestId",
+                "eventWorkItemId"
+              ],
+              "properties": {
+                "intakeRequestId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "eventWorkItemId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
                 }
               }
             },
@@ -274099,6 +274185,322 @@ export const adminListActivityLogCallableResponseSchema = {
   }
 };
 
+export const adminGetOrganizerListingReviewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_organizer_listing_review_payload.schema.json",
+  "title": "AdminGetOrganizerListingReviewCallablePayload",
+  "description": "One Supply Intake listing awaiting approval, by its request, with what a reviewer needs to approve it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,159}$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetOrganizerListingReview"
+  ]
+};
+
+export const adminGetOrganizerListingReviewCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_organizer_listing_review_response.schema.json",
+  "title": "AdminGetOrganizerListingReviewCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "review",
+    "canApprove"
+  ],
+  "properties": {
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "listingWorkItemId",
+        "kind",
+        "submittedByRole",
+        "submittedAt",
+        "origin",
+        "market",
+        "suggestedSlug",
+        "listing",
+        "duplicateCheck"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "listingWorkItemId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "kind": {
+          "enum": [
+            "nomination",
+            "self_submission",
+            "discovery"
+          ]
+        },
+        "submittedByRole": {
+          "enum": [
+            "associate",
+            "partner",
+            "organizer",
+            "system"
+          ]
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "origin": {
+          "enum": [
+            "admin_nomination",
+            "sales_inbound_intent",
+            "message_nomination",
+            "discovery_run",
+            "none"
+          ]
+        },
+        "market": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "slug",
+            "marketId",
+            "label",
+            "open"
+          ],
+          "properties": {
+            "slug": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "marketId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 96
+            },
+            "label": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "open": {
+              "type": "boolean",
+              "description": "Whether an organizer can be approved into this market as it stands."
+            }
+          }
+        },
+        "suggestedSlug": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64,
+          "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$"
+        },
+        "listing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "description",
+            "categories",
+            "links",
+            "gaps",
+            "eventCount",
+            "researchNeeded",
+            "contentHash",
+            "pageCount",
+            "fetchedPageCount"
+          ],
+          "properties": {
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 2000
+            },
+            "categories": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {
+                "type": "string",
+                "maxLength": 80
+              }
+            },
+            "links": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "platform",
+                  "url"
+                ],
+                "properties": {
+                  "platform": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "url": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  }
+                }
+              }
+            },
+            "gaps": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {
+                "type": "string",
+                "maxLength": 120
+              }
+            },
+            "eventCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "researchNeeded": {
+              "type": "boolean"
+            },
+            "contentHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "pageCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "fetchedPageCount": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "duplicateCheck": {
+          "description": "How the listing compares with the organizers Catch already lists. Advisory: it never blocks approval. Null when the listing was not compared, or was built before listings were compared.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "verdict",
+                "organizersCompared",
+                "citySlug",
+                "truncated",
+                "candidates"
+              ],
+              "properties": {
+                "verdict": {
+                  "enum": [
+                    "match",
+                    "ambiguous",
+                    "none"
+                  ]
+                },
+                "organizersCompared": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "citySlug": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80,
+                  "description": "The city the comparison was limited to; null when it compared every city."
+                },
+                "truncated": {
+                  "type": "boolean",
+                  "description": "Whether more published organizers existed than were compared."
+                },
+                "candidates": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "organizerId",
+                      "name",
+                      "score",
+                      "band",
+                      "rationale"
+                    ],
+                    "properties": {
+                      "organizerId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "name": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 500
+                      },
+                      "score": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "band": {
+                        "enum": [
+                          "match",
+                          "probable",
+                          "review",
+                          "low"
+                        ]
+                      },
+                      "rationale": {
+                        "type": "string",
+                        "maxLength": 2000
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "canApprove": {
+      "type": "boolean"
+    }
+  }
+};
+
 export const adminListOrganizerListingReviewsCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_list_organizer_listing_reviews_payload.schema.json",
@@ -274500,6 +274902,267 @@ export const adminApproveOrganizerListingCallableResponseSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 128
+    }
+  }
+};
+
+export const adminGetListingEventReviewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_listing_event_review_payload.schema.json",
+  "title": "AdminGetListingEventReviewCallablePayload",
+  "description": "Reads one imported event of an approved listing for the inbox's publish sheet.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "intakeRequestId",
+    "eventWorkItemId"
+  ],
+  "properties": {
+    "intakeRequestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "eventWorkItemId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const adminGetListingEventReviewCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_listing_event_review_response.schema.json",
+  "title": "AdminGetListingEventReviewCallableResponse",
+  "description": "One imported event of an approved listing, with what a staff member must check to publish it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policy",
+    "organizer",
+    "event"
+  ],
+  "properties": {
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "policyVersion"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "staff_review",
+            "auto_publish_approved_organizers"
+          ]
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        }
+      }
+    },
+    "organizer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "name",
+        "canonicalPath",
+        "appVisibility",
+        "pagePublished"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "canonicalPath": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "appVisibility": {
+          "enum": [
+            "hidden",
+            "discoverable"
+          ]
+        },
+        "pagePublished": {
+          "type": "boolean"
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventWorkItemId",
+        "eventId",
+        "title",
+        "startAt",
+        "endAt",
+        "venue",
+        "address",
+        "platform",
+        "sourceUrl",
+        "priceLabel",
+        "state",
+        "publishedBy",
+        "blockers",
+        "resolvableBlockers",
+        "automatedFindings"
+      ],
+      "properties": {
+        "eventWorkItemId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "startAt": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 40
+        },
+        "endAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 40
+        },
+        "venue": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "platform": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "sourceUrl": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "priceLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "state": {
+          "enum": [
+            "published",
+            "withdrawn",
+            "ready",
+            "needs_resolution",
+            "blocked"
+          ],
+          "description": "published: live on the website. withdrawn: staff took it down. ready: a staff member can publish it with the checklist. needs_resolution: a staff member must resolve or waive resolvableBlockers first. blocked: it cannot publish (ended, cancelled, platform not supported, organizer page unpublished)."
+        },
+        "publishedBy": {
+          "enum": [
+            "policy",
+            "staff",
+            null
+          ]
+        },
+        "blockers": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "resolvableBlockers": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "enum": [
+              "missing_exact_coordinates",
+              "missing_end_time",
+              "missing_location_detail",
+              "requires_event_defaults_policy",
+              "requires_owner_safe_copy_review",
+              "duplicate_normalized_event_key"
+            ]
+          }
+        },
+        "automatedFindings": {
+          "type": "array",
+          "maxItems": 20,
+          "description": "Why the publication policy left this event for staff, if it did.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "check",
+              "field",
+              "match"
+            ],
+            "properties": {
+              "check": {
+                "enum": [
+                  "dating_framing",
+                  "organizer_attribution",
+                  "price_missing"
+                ]
+              },
+              "field": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "match": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            }
+          }
+        }
+      }
     }
   }
 };

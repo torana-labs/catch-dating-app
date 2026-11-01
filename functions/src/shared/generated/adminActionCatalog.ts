@@ -120,27 +120,6 @@ export const ADMIN_ACTION_CATALOG = {
       "adminOwner"
     ]
   },
-  "cross-paths-showcase.list": {
-    "callable": "adminListCrossPathsShowcaseCandidates",
-    "controlPlane": false,
-    "kind": "read",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "safetyReviewer",
-      "support"
-    ]
-  },
-  "cross-paths-showcase.set-eligibility": {
-    "callable": "adminSetCrossPathsShowcaseEligibility",
-    "controlPlane": false,
-    "kind": "mutation",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "safetyReviewer"
-    ]
-  },
   "marketing.get": {
     "callable": "adminGetMarketingOpsDashboard",
     "controlPlane": false,
@@ -201,16 +180,6 @@ export const ADMIN_ACTION_CATALOG = {
       "support"
     ]
   },
-  "organizer-intake.list-listing-event-imports": {
-    "callable": "adminListListingEventImports",
-    "controlPlane": false,
-    "kind": "read",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "support"
-    ]
-  },
   "organizer-intake.publish-listing-events": {
     "callable": "adminPublishListingEvents",
     "controlPlane": false,
@@ -234,16 +203,6 @@ export const ADMIN_ACTION_CATALOG = {
   },
   "organizer-intake.list-supply-intake-policies": {
     "callable": "adminListSupplyIntakePolicies",
-    "controlPlane": false,
-    "kind": "read",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "support"
-    ]
-  },
-  "organizer-intake.list-listing-reviews": {
-    "callable": "adminListOrganizerListingReviews",
     "controlPlane": false,
     "kind": "read",
     "roles": [
@@ -1507,6 +1466,26 @@ export const ADMIN_ACTION_CATALOG = {
       "adminOwner",
       "support",
       "salesStaff"
+    ]
+  },
+  "inbox.get-listing-review": {
+    "callable": "adminGetOrganizerListingReview",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support"
+    ]
+  },
+  "inbox.get-listing-event-review": {
+    "callable": "adminGetListingEventReview",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support"
     ]
   }
 } as const;

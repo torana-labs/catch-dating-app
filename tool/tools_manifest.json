@@ -27,10 +27,34 @@
       "tool:runner"
     ],
     "manifestCheckIds": [
+      "meta:ci-tool-category-coverage",
       "tool:runner"
     ]
   },
   "tools": [
+    {
+      "id": "meta:nx-shadow-plan",
+      "category": "meta",
+      "path": "tool/nx/shadow_plan.mjs",
+      "command": "node --test tool/nx/shadow_plan.test.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Shadow mode for the Nx cut-over: runs the current planner and nx affected for one change, maps Nx tasks onto CI lanes and reports where they disagree. Run by the non-gating nx-shadow workflow; deleted with the planner.",
+      "checks": [
+        "node --check tool/nx/shadow_plan.mjs",
+        "node --test tool/nx/shadow_plan.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/nx/shadow_plan.test.mjs",
+        ".github/workflows/nx-shadow.yml"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
     {
       "id": "meta:nx-project-graph",
       "category": "meta",
@@ -1954,7 +1978,6 @@
         "admin/src/shared/ui/AdminPrimitives/shell.tsx",
         "admin/src/features/safety/controllers/useAccessReviewController.ts",
         "admin/src/features/settings/controllers/useTeamController.ts",
-        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
         "admin/src/features/events/controllers/useEventPublishingController.ts",
         "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
@@ -4208,6 +4231,24 @@
       }
     },
     {
+      "id": "web:verify-admin-hosting",
+      "category": "lint",
+      "path": "tool/web/verify_admin_hosting.mjs",
+      "command": "node tool/web/verify_admin_hosting.mjs",
+      "safety": "remote-read",
+      "status": "active",
+      "description": "Asserts that a supplied Admin Hosting origin serves no-cache HTML, immutable chunks and a real 404 for a missing chunk, so tabs left open across a deploy can recover.",
+      "checks": [
+        "node --check tool/web/verify_admin_hosting.mjs",
+        "node --test tool/web/verify_admin_hosting.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/web/verify_admin_hosting.test.mjs",
+        "firebase.json"
+      ],
+      "role": "finder"
+    },
+    {
       "id": "marketing:verify-hosting-404",
       "category": "marketing",
       "path": "website/scripts/verifyHosting404.mjs",
@@ -6292,6 +6333,24 @@
           "__KnownMissingWebsiteSymbol__"
         ]
       }
+    },
+    {
+      "id": "admin:check-ci",
+      "category": "test",
+      "path": "admin/scripts/checkAdminCi.mjs",
+      "command": "npm run check:admin",
+      "safety": "local-writes-build-artifacts",
+      "status": "active",
+      "description": "Runs CI's Admin lane locally, reading its steps from the React surface workflow. Its checks here cover only the step reader; the steps themselves run in the Admin lane.",
+      "impactPaths": [
+        "admin/scripts/checkAdminCi.test.mjs",
+        ".github/workflows/react-surface-validation.yml"
+      ],
+      "checks": [
+        "node --check admin/scripts/checkAdminCi.mjs",
+        "node --test admin/scripts/checkAdminCi.test.mjs"
+      ],
+      "role": "finder"
     },
     {
       "id": "web:admin-bundle-budget",

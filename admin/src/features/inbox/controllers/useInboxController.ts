@@ -1,12 +1,16 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {useCallback, useMemo, useState} from "react";
+import {useCallback, useMemo, useRef, useState} from "react";
 import {
+  approveListing,
   decideAccess,
   decideClaim,
   getInboxItem,
+  getListingEventReview,
+  getListingReview,
   linkEnquiry,
   searchOrganizers,
   listInboxItems,
+  publishListingEvent,
   recommendOrganizerClaim,
   updateInboxItem,
   type ClaimRecommendationInput,
@@ -14,7 +18,10 @@ import {
   type InboxScope,
   type InboxType,
   type InboxUpdate,
+  type ListingApprovalInput,
+  type ListingEventRef,
 } from "../api/inboxRepository";
+import {blockerLabel, type ListingEventPublishRequest} from "./listingEventPublish";
 
 const pageSize = 25;
 const inboxKey = ["inbox"] as const;
@@ -56,6 +63,25 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
   const claimDecision = useMutation({mutationFn: decideClaim});
   const accessDecision = useMutation({mutationFn: decideAccess});
   const enquiryLink = useMutation({mutationFn: linkEnquiry});
+  const [reviewRequestId, setReviewRequestId] = useState<string | null>(null);
+  const listingReview = useQuery({
+    queryKey: [...inboxKey, "listing-review", reviewRequestId],
+    queryFn: () => getListingReview(reviewRequestId as string),
+    enabled: reviewRequestId !== null,
+  });
+  const approval = useMutation({mutationFn: ({input, requestId}: {input: ListingApprovalInput; requestId: string}) =>
+    approveListing(input, requestId)});
+  // A retry of the same approval keeps its request id, so the server replays it.
+  const approvalRequestIds = useRef(new Map<string, string>());
+  const [eventRef, setEventRef] = useState<ListingEventRef | null>(null);
+  const eventReview = useQuery({
+    queryKey: [...inboxKey, "event-review", eventRef?.eventWorkItemId],
+    queryFn: () => getListingEventReview(eventRef as ListingEventRef),
+    enabled: eventRef !== null,
+  });
+  const eventPublish = useMutation({mutationFn: publishListingEvent});
+  // A retry of the same publish keeps its key, so the server replays it.
+  const publishKeys = useRef(new Map<string, string>());
   const [hostQuery, setHostQuery] = useState("");
   const hostSearch = useQuery({
     queryKey: [...inboxKey, "host-search", hostQuery.trim()],
@@ -106,7 +132,7 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
     selectNext: () => { if (nextItem) onSelect(nextItem.itemId); },
     selectPrevious: () => { if (previousItem) onSelect(previousItem.itemId); },
     updateItem: (input: InboxUpdate, notice: string) => run(() => update.mutateAsync(input), notice,
-      input.action === "snooze"),
+      input.action === "snooze" || input.action === "dismiss"),
     recommendClaim: (input: ClaimRecommendationInput) => run(() => recommend.mutateAsync(input),
       input.decision === "approve" ? "Recommended for approval. The owner decides." :
         "Recommended for rejection. The owner decides.", true),
@@ -114,6 +140,45 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
       input.decision === "approve" ? "Claim approved. They run the page now." : "Claim rejected.", true),
     decideAccess: (input: Parameters<typeof decideAccess>[0]) => run(() => accessDecision.mutateAsync(input),
       input.decision === "approve" ? "Launch access approved." : "Marked not selected yet.", true),
+    /** Opens the approval sheet for a listing's request; null closes it. */
+    openListingReview: setReviewRequestId,
+    listingReview: reviewRequestId !== null ? listingReview.data ?? null : null,
+    listingReviewFailed: reviewRequestId !== null && listingReview.isError,
+    approveListing: async (input: Omit<ListingApprovalInput, "requestId">, requestId: string) => {
+      const key = JSON.stringify(input);
+      const approvalRequestId = approvalRequestIds.current.get(key) ?? crypto.randomUUID();
+      approvalRequestIds.current.set(key, approvalRequestId);
+      const done = await run(() => approval.mutateAsync({input: {...input, requestId: approvalRequestId}, requestId}),
+        `${input.name} is published as an unclaimed page, not yet indexed. Its Sales work is open.`, true);
+      if (done) {
+        approvalRequestIds.current.delete(key);
+        setReviewRequestId(null);
+      }
+      return done;
+    },
+    isApproving: approval.isPending,
+    /** Opens the publish sheet for an imported event; null closes it. */
+    openEventReview: setEventRef,
+    eventReview: eventRef !== null ? eventReview.data ?? null : null,
+    eventReviewFailed: eventRef !== null && eventReview.isError,
+    publishEvent: async (request: ListingEventPublishRequest, title: string) => {
+      const signature = JSON.stringify(request);
+      const idempotencyKey = publishKeys.current.get(signature) ?? `admin:${crypto.randomUUID()}`;
+      publishKeys.current.set(signature, idempotencyKey);
+      const done = await run(async () => {
+        const result = await eventPublish.mutateAsync({...request, executionMode: "apply", idempotencyKey});
+        const blocked = result.results.filter((entry) => entry.outcome === "blocked");
+        if (blocked.length) {
+          throw new Error(`${title} is still blocked: ${blocked.flatMap((entry) => entry.blockers).map(blockerLabel).join(", ")}.`);
+        }
+      }, `${title} is published on the organizer's page.`, true);
+      if (done) {
+        publishKeys.current.delete(signature);
+        setEventRef(null);
+      }
+      return done;
+    },
+    isPublishingEvent: eventPublish.isPending,
     hostQuery,
     setHostQuery,
     hostMatches: hostQuery.trim().length >= 2 ? hostSearch.data ?? [] : [],

@@ -7,8 +7,8 @@ export const adminSections = {
   support: {path: "/support", title: "Support"},
   marketplace: {path: "/marketplace", title: "Marketplace"},
   more: {path: "/more", title: "More"},
+  system: {path: "/system", title: "System"},
   safety: {path: "/safety", title: "Safety"},
-  "cross-paths": {path: "/cross-paths", title: "Cross Paths showcase"},
   growth: {path: "/growth", title: "Growth"},
   "marketing-ops": {path: "/marketing", title: "Marketing"},
   sales: {path: "/sales/today", title: "Sales"},
@@ -41,7 +41,7 @@ interface RouteState {
   /** An old address: the shell replaces it with this path. */
   redirect?: string;
   title?: string;
-  salesArea?: "today" | "settings" | "pipeline" | "pilots" | "research";
+  salesArea?: "today" | "hosts" | "settings" | "pipeline" | "pilots" | "research";
   organizerWorkspace?: "directory" | "claims";
   eventWorkspace?: "directory" | "external";
   eventTab?: "overview" | "page" | "takedown";
@@ -65,6 +65,8 @@ export const adminRoutes: AdminRoute[] = [
   route("/", "now", {redirect: "/now"}),
   // Overview split in two: its queues are Needs you, its analytics Marketplace.
   route("/overview/*", "now", {redirect: "/now"}),
+  // The Cross Paths page is retired; old links land on Needs you.
+  route("/cross-paths/*", "now", {redirect: "/now"}),
   ...Object.entries(adminSections).filter(([nav]) => !["intake-review", "sales-hosts", "sales-deals", "nominations"].includes(nav)).map(([nav, {path}]) => route(
     `/${path.split("/")[1]}/*`, nav as AdminNavId
   )),
@@ -123,8 +125,10 @@ export const adminRoutes: AdminRoute[] = [
   route("/sales/deals/*", "sales-deals"),
   route("/sales/nominations/*", "nominations"),
   route("/sales/nominations/:nominationItemId", "nominations", {title: "Nomination"}),
-  // The older Sales pages keep the tools the new screens don't have yet: stage moves,
-  // pilot plans and quotes. Each goes when its replacement lands.
+  // The older Sales pages keep the tools the new screens don't have yet: editing a host, stage
+  // moves, pilot plans, quotes, adding and nominating. Each goes when its replacement lands.
+  route("/sales/hosts/:salesOrganizerId/tools", "sales", {salesArea: "hosts", title: "Host tools"}),
+  route("/sales/add-host/*", "sales", {salesArea: "hosts", title: "Add or nominate a host"}),
   ...(["pipeline", "pilots", "research"] as const).map((salesArea) =>
     route(`/sales/${salesArea}/*`, "sales", {salesArea, title: "Older Sales page"})),
   route("/intake/*", "intake-review", {title: "Organizer intake"}),

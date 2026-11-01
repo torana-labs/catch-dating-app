@@ -3973,6 +3973,24 @@ const schemaSpecs = [
     ],
   },
   {
+    name: "AdminGetOrganizerListingReviewCallablePayload",
+    source: "callables/admin_get_organizer_listing_review_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetOrganizerListingReviewCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminGetOrganizerListingReviewCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminGetOrganizerListingReviewCallableResponse",
+    source: "callable_responses/admin_get_organizer_listing_review_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetOrganizerListingReviewCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminGetOrganizerListingReviewCallableResponse.ts",
+    ],
+  },
+  {
     name: "AdminListOrganizerListingReviewsCallablePayload",
     source: "callables/admin_list_organizer_listing_reviews_payload.schema.json",
     typeOutput:
@@ -3997,6 +4015,24 @@ const schemaSpecs = [
       "functions/src/shared/generated/adminApproveOrganizerListingCallableResponse.ts",
     additionalTypeOutputs: [
       "admin/src/generated/contracts/adminApproveOrganizerListingCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminGetListingEventReviewCallablePayload",
+    source: "callables/admin_get_listing_event_review_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetListingEventReviewCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminGetListingEventReviewCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminGetListingEventReviewCallableResponse",
+    source: "callable_responses/admin_get_listing_event_review_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetListingEventReviewCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminGetListingEventReviewCallableResponse.ts",
     ],
   },
   {

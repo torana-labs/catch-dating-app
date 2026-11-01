@@ -1,5 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {sampleInboxItems, sampleInboxJourneys, sampleNow} from "../features/inbox/api/inboxSampleData";
+import {sampleEventReviews, sampleInboxItems, sampleInboxJourneys, sampleNow} from "../features/inbox/api/inboxSampleData";
 import {InboxScreen, type InboxScreenModel} from "../features/inbox/ui/InboxScreen";
 
 const meta = {
@@ -27,7 +27,7 @@ const pinClock = () => {
 const noop = () => undefined;
 const done = async () => true;
 
-function model(selectedItemId: string | null, canDecideClaim = false): InboxScreenModel {
+function model(selectedItemId: string | null, canDecideClaim = false, eventSheet = false): InboxScreenModel {
   const items = sampleInboxItems;
   const index = items.findIndex((item) => item.itemId === selectedItemId);
   const item = index >= 0 ? items[index] : null;
@@ -42,6 +42,9 @@ function model(selectedItemId: string | null, canDecideClaim = false): InboxScre
     nextItem: index >= 0 ? items[index + 1] ?? null : null,
     previousItem: index > 0 ? items[index - 1] ?? null : null,
     selectNext: noop, selectPrevious: noop,
+    openListingReview: noop, listingReview: null, listingReviewFailed: false, approveListing: done, isApproving: false,
+    openEventReview: noop, eventReview: eventSheet ? sampleEventReviews["work-rooftop"] : null, eventReviewFailed: false,
+    publishEvent: done, isPublishingEvent: false,
     updateItem: done, recommendClaim: done, decideClaim: done, decideAccess: done, linkEnquiry: done,
     hostQuery: selectedItemId === "enquiry-harbor" ? "Harbor" : "", setHostQuery: noop,
     hostMatches: selectedItemId === "enquiry-harbor" ? [{organizerId: "harbor-social", name: "Harbor Social Club", city: "Mumbai"}] : [],
@@ -51,9 +54,9 @@ function model(selectedItemId: string | null, canDecideClaim = false): InboxScre
   };
 }
 
-const screen = (selectedItemId: string | null, canDecideClaim = false) => (
+const screen = (selectedItemId: string | null, canDecideClaim = false, eventSheet = false) => (
   <InboxScreen
-    model={model(selectedItemId, canDecideClaim)}
+    model={model(selectedItemId, canDecideClaim, eventSheet)}
     onOpenReview={noop}
     onSelect={noop}
     selectedItemId={selectedItemId}
@@ -90,4 +93,16 @@ export const InboxEnquiryStory: Story = {
   name: "Inbox · an enquiry, linking it to a host",
   beforeEach: pinClock,
   render: () => screen("enquiry-harbor"),
+};
+
+export const InboxEventStory: Story = {
+  name: "Inbox · an imported event",
+  beforeEach: pinClock,
+  render: () => screen("event-rooftop"),
+};
+
+export const InboxEventSheetStory: Story = {
+  name: "Inbox · publishing an imported event",
+  beforeEach: pinClock,
+  render: () => screen("event-rooftop", false, true),
 };

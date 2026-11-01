@@ -60,6 +60,9 @@ export const SalesTodayStory: Story = {
 
 const hostsModel = {query: "", setQuery: noop, hasNextPage: false, hasPreviousPage: false, nextPage: noop, previousPage: noop,
   tab: "overview" as const, setTab: noop,
+  contacts: [{contactId: "c1", displayName: "Kavya Rao", relationship: {revision: 1, role: "Founder", decisionInfluence: "decision_maker" as const,
+    primary: true, contactabilityStatus: "unknown" as const, sendAuthority: false as const}}],
+  logActivity: async () => true, addNextStep: async () => true, completeNextStep: async () => true, saveDeal: async () => true, isSaving: false,
   rows: hosts.map(([organizerId, name], index) => ({organizerId, name, city: "Mumbai",
     researchStatus: index < 2 ? "qualified" as const : "needs_research" as const, stage: index < 3 ? "in_conversation" : null,
     nextAction: index === 0 ? "Demo call on Tuesday" : null}))};
@@ -68,13 +71,13 @@ export const SalesHostsStory: Story = {
   name: "Hosts",
   beforeEach: pinClock,
   parameters: {catchComponent: {id: "route_sales_hosts", states: ["directory", "host-overview"]}},
-  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onAddHost={noop} onOpenHostTools={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
 };
 
 export const SalesHostStory: Story = {
   name: "Hosts · a host page",
   beforeEach: pinClock,
-  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onAddHost={noop} onOpenHostTools={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
 };
 
 const deals: SalesOpportunity[] = [
@@ -106,7 +109,7 @@ export const MyNominationsStory: Story = {
       detail: {item: {itemId: "supply-sunday-table", type: "stuck", sourceKind: "supplyIntakeRequest", sourceId: "sunday",
         sourcePath: "supplyIntakeRequests/sunday", title: "Sunday Table", subtitle: null, cameFrom: "You on WhatsApp", nominatorUid: "riya",
         city: "mumbai", state: {code: "needs_person", label: "Stuck: Instagram asked to sign in", tone: "danger"}, status: "waiting",
-        waitingSince: iso(-0.2), doneAt: null, assigneeUid: null, snoozedUntil: null, recommendation: null},
+        waitingSince: iso(-0.2), doneAt: null, assigneeUid: null, snoozedUntil: null, recommendation: null, listingEvent: null},
       journey: [{stepId: "submitted", occurredAt: iso(-0.2), title: "You sent a link on WhatsApp", detail: "instagram.com/sundaytable", actorUid: "riya", tone: "ink"},
         {stepId: "failed-1", occurredAt: iso(-0.19), title: "Could not read the page", detail: "Instagram showed a sign-in wall", actorUid: null, tone: "danger"}],
       canWork: false, canDecideClaim: false}}} />

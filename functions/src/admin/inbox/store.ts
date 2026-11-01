@@ -5,6 +5,7 @@ import {
   InboxContext,
   InboxItemDocument,
   InboxJourneyStepDocument,
+  InboxProjection,
   InboxSourceKind,
   JourneyStep,
   inboxItemId,
@@ -37,20 +38,35 @@ export async function syncInboxSource(db: FirebaseFirestore.Firestore, kind: Inb
   const itemId = inboxItemId(kind, sourceId);
   const context = data ? await loadContext(db, kind, data) : {};
   const projection = data ? projectInboxSource(kind, sourceId, data, context) : null;
+  if (projection) return syncInboxProjection(db, projection, now);
   const itemRef = db.collection(INBOX_ITEMS_COLLECTION).doc(itemId);
-  const steps = projection?.journey ?? [];
+  return db.runTransaction(async (tx) => {
+    const itemSnap = await tx.get(itemRef);
+    const existing = itemSnap.exists ? itemSnap.data() as InboxItemDocument : null;
+    if (!existing || (!data && existing.status === "done")) {
+      return {itemId, outcome: "skipped", addedSteps: 0};
+    }
+    tx.set(itemRef, removedInboxItem(existing, now));
+    return {itemId, outcome: "written", addedSteps: 0};
+  });
+}
+
+/**
+ * Writes one projection and any journey steps it has not recorded yet. Given
+ * unlessExists, it writes nothing once that document exists: a slower listing
+ * sync never reopens an event that has just published.
+ */
+export async function syncInboxProjection(db: FirebaseFirestore.Firestore, projection: InboxProjection, now: Date,
+  unlessExists?: FirebaseFirestore.DocumentReference): Promise<InboxSyncResult> {
+  const {itemId} = projection;
+  const itemRef = db.collection(INBOX_ITEMS_COLLECTION).doc(itemId);
+  const steps = projection.journey;
   const stepRefs = steps.map((step) =>
     db.collection(INBOX_JOURNEY_COLLECTION).doc(journeyStepDocId(itemId, step.stepId)));
   return db.runTransaction(async (tx) => {
+    if (unlessExists && (await tx.get(unlessExists)).exists) return {itemId, outcome: "skipped", addedSteps: 0};
     const [itemSnap, ...stepSnaps] = await tx.getAll(itemRef, ...stepRefs);
     const existing = itemSnap.exists ? itemSnap.data() as InboxItemDocument : null;
-    if (!projection) {
-      if (!existing || (!data && existing.status === "done")) {
-        return {itemId, outcome: "skipped", addedSteps: 0};
-      }
-      tx.set(itemRef, removedInboxItem(existing, now));
-      return {itemId, outcome: "written", addedSteps: 0};
-    }
     const next = nextInboxItem(projection, existing, now);
     let addedSteps = 0;
     steps.forEach((step, index) => {

@@ -16,6 +16,10 @@ package bound to Firebase project `catch-dating-app-64e51` and site
 
 ## Local Development
 
+Before pushing Admin work, run `npm run check:admin` from the repository root.
+It runs CI's Admin lane locally, including the checks `verify_local` and
+`typecheck` skip. See [TESTS.md](../TESTS.md).
+
 ```bash
 npm install
 npm run dev
@@ -182,8 +186,14 @@ The tab also shows the lookup contract, normalized target path, allowed
 aggregate sources, unavailable domains, and blocked actions so this exact UID
 analytics lookup is not mistaken for identity search or support tooling. User
 identity search by email, phone, or name, account state, safety history, payment
-history, and support actions need separate role-scoped admin contracts before
-they are exposed here.
+history, and support actions live in People search and Safety, not here.
+
+The Cross Paths showcase page is retired (Admin redesign PR 15). Its callables
+remain deployed with no Admin caller until the backend follow-up retires them.
+
+System (`/system`) is one activity log of what people and agents did in Admin,
+from `adminListActionExecutions`, filtered by who acted and by problems, beside
+the health of each data source from `adminGetOverview`.
 
 The Data quality tab is a read-only operations workspace over
 `adminGetOverview`, `adminGetHostAnalytics`, `adminGetMarketingOpsDashboard`,

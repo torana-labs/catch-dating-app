@@ -3,11 +3,11 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Assign, unassign, snooze or wake one Admin inbox item; audited and recorded in its journey.
+ * Assign, unassign, snooze, wake, dismiss or reopen one Admin inbox item; audited and recorded in its journey.
  */
 export interface AdminUpdateInboxItemCallablePayload {
   itemId: string;
-  action: "assign" | "unassign" | "snooze" | "wake";
+  action: "assign" | "unassign" | "snooze" | "wake" | "dismiss" | "reopen";
   assigneeUid: string | null;
   snoozedUntil: string | null;
   note: string | null;

@@ -1,4 +1,4 @@
-import type {InboxItem, JourneyStep} from "./inboxRepository";
+import type {InboxItem, JourneyStep, ListingEventReview} from "./inboxRepository";
 
 /** The canvas boards' inbox, so sample mode shows every type. */
 export const sampleNow = Date.parse("2026-10-31T12:00:00.000Z");
@@ -8,7 +8,7 @@ function sampleItem(item: Partial<InboxItem> & Pick<InboxItem, "itemId" | "type"
   hours: number): InboxItem {
   return {sourceKind: "supplyIntakeRequest", sourceId: item.itemId, sourcePath: `supplyIntakeRequests/${item.itemId}`,
     subtitle: null, nominatorUid: null, city: "mumbai", status: "waiting", waitingSince: hoursAgo(hours),
-    doneAt: null, assigneeUid: null, snoozedUntil: null, recommendation: null, ...item};
+    doneAt: null, assigneeUid: null, snoozedUntil: null, recommendation: null, listingEvent: null, ...item};
 }
 
 export const sampleInboxItems: InboxItem[] = [
@@ -20,8 +20,9 @@ export const sampleInboxItems: InboxItem[] = [
     cameFrom: "Host app", state: {code: "recommended", label: "Recommended: approve", tone: "success"},
     recommendation: {decision: "approve", byUid: "sample-dev", at: hoursAgo(20), note: "Phone verified; the proof link is their Instagram."}}, 50),
   sampleItem({itemId: "event-rooftop", type: "event", sourceKind: "externalEvent", sourceId: "rooftop",
-    sourcePath: "externalEvents/rooftop", title: "Rooftop Singles Mixer", subtitle: "From Insider · 14 Nov, 8:00 pm",
-    cameFrom: "Insider", state: {code: "needs_review", label: "Needs an official source", tone: "warning"}}, 48),
+    sourcePath: "externalEvents/rooftop", title: "Rooftop Singles Mixer", subtitle: "Afterfly · 14 Nov, 8:00 pm",
+    cameFrom: "Luma", state: {code: "needs_review", label: "2 checks left", tone: "warning"},
+    listingEvent: {intakeRequestId: "nom-sample-afterfly", eventWorkItemId: "work-rooftop"}}, 48),
   sampleItem({itemId: "supply-small-world", type: "listing", title: "Small World", subtitle: "https://smallworld.in",
     cameFrom: "Website form", state: {code: "ready", label: "Ready to decide", tone: "success"}}, 26),
   sampleItem({itemId: "enquiry-harbor", type: "enquiry", sourceKind: "salesInboundIntent", sourceId: "harbor",
@@ -54,3 +55,14 @@ export const sampleInboxJourneys: Record<string, JourneyStep[]> = {
   ],
 };
 
+/** The event sample mode opens in the publish sheet. */
+export const sampleEventReviews: Record<string, ListingEventReview> = {
+  "work-rooftop": {
+    policy: {mode: "auto_publish_approved_organizers", policyVersion: "supply-event-publication-v1"},
+    organizer: {organizerId: "sample-afterfly", name: "Afterfly", canonicalPath: "/organizers/afterfly/", appVisibility: "hidden", pagePublished: true},
+    event: {eventWorkItemId: "work-rooftop", eventId: "rooftop", title: "Rooftop Singles Mixer", startAt: "2026-11-14T14:30:00.000Z",
+      endAt: "2026-11-14T17:30:00.000Z", venue: "AER, Worli", address: null, platform: "luma", sourceUrl: "https://lu.ma/rooftop",
+      priceLabel: "₹499", state: "needs_resolution", publishedBy: null, blockers: ["missing_exact_coordinates"],
+      resolvableBlockers: ["missing_exact_coordinates"], automatedFindings: [{check: "dating_framing", field: "title", match: "Singles"}]},
+  },
+};

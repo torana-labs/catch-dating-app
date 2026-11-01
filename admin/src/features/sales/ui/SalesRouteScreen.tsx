@@ -17,8 +17,10 @@ interface Props {
   selectedId: string | null;
   onSelect: (id: string | null) => void;
   onOpenHost: (organizerId: string) => void;
+  /** The older host page: editing, stage moves, pilots, quotes, people and evidence. */
+  onOpenHostTools: (organizerId: string) => void;
   onOpenOrganizer: (organizerId: string) => void;
-  onNominate: () => void;
+  onAddHost: () => void;
   onError: (message: string | null) => void;
   onNotice: (message: string) => void;
 }
@@ -31,9 +33,9 @@ function Today({uid, ownWorkOnly, selectedId, onSelect, onError, onNotice}: Prop
     onSelect={onSelect} selectedTaskId={selectedId} />;
 }
 
-function Hosts({uid, ownWorkOnly, selectedId, onSelect, onOpenOrganizer}: Props) {
-  const controller = useSalesHostsController({ownerUid: ownWorkOnly ? uid : null, selectedOrganizerId: selectedId});
-  return <SalesHostsScreen model={controller} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />;
+function Hosts({uid, ownWorkOnly, selectedId, onSelect, onOpenOrganizer, onOpenHostTools, onAddHost, onError, onNotice}: Props) {
+  const controller = useSalesHostsController({ownerUid: ownWorkOnly ? uid : null, selectedOrganizerId: selectedId, uid, onError, onNotice});
+  return <SalesHostsScreen model={controller} onAddHost={onAddHost} onOpenHostTools={onOpenHostTools} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />;
 }
 
 function Deals({uid, onOpenHost}: Props) {
@@ -41,9 +43,9 @@ function Deals({uid, onOpenHost}: Props) {
   return <SalesDealsScreen model={controller} onOpenHost={onOpenHost} />;
 }
 
-function Nominations({selectedId, onSelect, onNominate}: Props) {
+function Nominations({selectedId, onSelect, onAddHost}: Props) {
   const controller = useMyNominationsController({selectedItemId: selectedId});
-  return <MyNominationsScreen model={controller} onNominate={onNominate} onSelect={onSelect} selectedItemId={selectedId} />;
+  return <MyNominationsScreen model={controller} onNominate={onAddHost} onSelect={onSelect} selectedItemId={selectedId} />;
 }
 
 const areaTabs = [

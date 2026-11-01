@@ -127,6 +127,8 @@ describe("Admin route contract", () => {
     expect(resolveAdminRoute("/not-a-section").nav).toBeNull();
     expect(resolveAdminRoute("/")).toMatchObject({nav: "now", redirect: "/now"});
     expect(resolveAdminRoute("/overview")).toMatchObject({nav: "now", redirect: "/now"});
+    expect(resolveAdminRoute("/cross-paths")).toMatchObject({nav: "now", redirect: "/now"});
+    expect(resolveAdminRoute("/users").redirect).toBeNull();
     expect(resolveAdminRoute("/now").redirect).toBeNull();
   });
 
@@ -148,6 +150,13 @@ describe("Admin route contract", () => {
     for (const path of ["/intake/organizers", "/intake/events", "/organizer-intake/listings"]) {
       expect(resolveAdminRoute(path).nav).toBe("intake-review");
     }
+  });
+
+  it("keeps a host's full tools and adding a host reachable from the new Sales screens", () => {
+    expect(resolveAdminRoute("/sales/hosts/host-1/tools")).toMatchObject({nav: "sales", salesArea: "hosts",
+      params: {salesOrganizerId: "host-1"}});
+    expect(resolveAdminRoute("/sales/add-host")).toMatchObject({nav: "sales", salesArea: "hosts"});
+    expect(resolveAdminRoute("/sales/hosts/host-1").nav).toBe("sales-hosts");
   });
 
   it("keeps the older Sales pages reachable until their tools move", () => {
