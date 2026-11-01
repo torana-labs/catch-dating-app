@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.48.0
-updated: 2026-10-30
+version: 0.48.1
+updated: 2026-11-01
 owner: web_platform
 status: active
 ---
@@ -236,10 +236,12 @@ dispatched) completes and hourly as a fallback:
 2. **Validate** (only when the plan asks). It dispatches full CI (`ci.yml`,
    `full: true`, the nightly mode) on main's head and waits for it. That run's
    Marketing validation and captures are the head's exact-source evidence. If
-   main moved past the head meanwhile, the train ends and the next one
-   releases the newer head.
-3. **Preview.** It dispatches `Next Website Preview`, follows that exact run,
-   and publishes the preview channel URL.
+   main moved past the head meanwhile, the train still releases the commit it
+   validated; the next train releases what came after.
+3. **Preview.** It dispatches `Next Website Preview` with the planned commit as
+   `source_sha`, follows that exact run, and publishes the preview channel URL.
+   Promotion releases that preview's source.
+   `docs/release_operations.md` ("Website release train") is the full account.
 4. **Gate.** A job in the `prod` environment, with the preview URL shown on
    the deployment. `prod` has had no required reviewer since 30 Oct 2026, so
    it passes straight through; adding a reviewer makes it wait for approval

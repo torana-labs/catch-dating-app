@@ -32,6 +32,8 @@
         "public/organizer-tracking-runtime.js",
         // Invoked by the Hosting workflow and registered tooling command.
         "scripts/verifyHosting404.mjs",
+        // Run by the preview workflow from the release source's own checkout.
+        "scripts/next/containerSmoke.mjs",
         // Webpack/Vite replacement modules in next.config.mjs/buildPrivateShell.mjs.
         "scripts/next/publicValidators.mjs",
         "src/features/organizers/emptyData.ts",
