@@ -21,7 +21,8 @@
     },
     "admin": {
       // ESLint loads its app config implicitly from the CLI's working directory.
-      "entry": ["eslint.config.mjs"]
+      // The generated Admin loaders find their groups and actions the same way.
+      "entry": ["eslint.config.mjs", "src/generated/validators/groups/*.ts", "src/generated/adminActions/*.ts"]
     },
     "website": {
       "entry": [

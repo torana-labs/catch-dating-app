@@ -323,16 +323,9 @@ function renderGroup(groupModel) {
 `  createAdminCallableValidators(schemas, ids.requestSchemaIds, ids.responseSchemaIds);\n`;
 }
 
-function renderFacade(model) {
-  const data = JSON.stringify({
-    names: model.names,
-    strictRequests: model.strictRequests,
-    strictResponses: model.strictResponses,
-    // Sorted: appending to the end is where two PRs collide.
-    groups: Object.fromEntries(Object.entries(model.groups).sort(([a], [b]) => a.localeCompare(b))),
-  }, null, 2);
-  const loaders = model.groupModels.map(({group}) =>
-    `  ${JSON.stringify(group)}: () => import("./groups/${group}"),`).join("\n");
+// The facade never changes: it finds the groups with import.meta.glob, so a new Admin area adds
+// its own generated files and touches no shared one.
+function renderFacade() {
   return header +
 `// Each Admin area's validators load on that area's first call, so no single\n` +
 `// chunk carries every callable's schemas.\n` +
@@ -344,31 +337,46 @@ function renderFacade(model) {
 `  AdminCallableValidationError,\n` +
 `  type AdminCallableValidators,\n` +
 `} from "./adminCallableValidation";\n\n` +
-`const model = ${data} as const;\n\n` +
-`const loaders: Record<string, () => Promise<AdminCallableValidators>> = {\n${loaders}\n};\n\n` +
+`type GroupMeta = {callables: readonly string[]; strictRequests: readonly string[]; strictResponses: readonly string[]};\n\n` +
+`const metas = import.meta.glob<GroupMeta>("./groups/*.meta.ts", {eager: true, import: "default"});\n` +
+`const loaders = import.meta.glob<AdminCallableValidators>(["./groups/*.ts", "!./groups/*.meta.ts"]);\n` +
+`const groupOf = new Map(Object.entries(metas).flatMap(([file, meta]) =>\n` +
+`  meta.callables.map((callable) => [callable, file.replace(".meta.ts", ".ts")] as const)));\n` +
+`const sorted = (key: keyof GroupMeta) => Object.values(metas).flatMap((meta) => meta[key]).sort();\n\n` +
 `export const adminCallableValidationCoverage = {\n` +
-`  callables: model.names,\n` +
-`  strictRequests: model.strictRequests,\n` +
-`  strictResponses: model.strictResponses,\n` +
+`  callables: sorted("callables"),\n` +
+`  strictRequests: sorted("strictRequests"),\n` +
+`  strictResponses: sorted("strictResponses"),\n` +
 `} as const;\n\n` +
 `/** Loads the validators of the Admin area that owns this callable. */\n` +
 `export async function loadAdminCallableValidators(\n` +
 `  callable: string\n` +
 `): Promise<AdminCallableValidators> {\n` +
-`  const group = (model.groups as Record<string, string>)[callable];\n` +
+`  const group = groupOf.get(callable);\n` +
 `  const load = group === undefined ? undefined : loaders[group];\n` +
 `  return load ? load() : missingAdminCallableValidators;\n` +
 `}\n`;
 }
 
+function renderGroupMeta(model, {group}) {
+  const callables = model.names.filter((name) => model.groups[name] === group);
+  const meta = {
+    callables,
+    strictRequests: model.strictRequests.filter((name) => callables.includes(name)),
+    strictResponses: model.strictResponses.filter((name) => callables.includes(name)),
+  };
+  return header + `export default ${JSON.stringify(meta, null, 2)} as const;\n`;
+}
+
 function render(model) {
   const files = new Map([
-    [facadePath, renderFacade(model)],
+    [facadePath, renderFacade()],
     [path.join(validatorsDir, "adminCallableValidation.ts"), renderValidation()],
     [path.join(validatorsDir, "adminCallableValidatorRuntime.ts"), renderRuntime()],
   ]);
   for (const groupModel of model.groupModels) {
     files.set(path.join(groupsDir, `${groupModel.group}.ts`), renderGroup(groupModel));
+    files.set(path.join(groupsDir, `${groupModel.group}.meta.ts`), renderGroupMeta(model, groupModel));
   }
   return files;
 }

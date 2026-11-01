@@ -6,11 +6,10 @@ import {readAdminActionCatalog} from "../lib/admin_registries.mjs";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDirectory, "..", "..");
+const adminGenerated = path.join(repoRoot, "admin", "src", "generated");
+const adminActionsDir = path.join(adminGenerated, "adminActions");
 const outputs = new Map([
-  [
-    path.join(repoRoot, "admin", "src", "generated", "adminActionCatalog.ts"),
-    renderAdmin,
-  ],
+  [path.join(adminGenerated, "adminActionCatalog.ts"), renderAdminLoader],
   [
     path.join(
       repoRoot,
@@ -27,11 +26,16 @@ const checkOnly = process.argv.includes("--check");
 const selfTest = process.argv.includes("--self-test");
 const catalog = readAdminActionCatalog();
 validateCatalog(catalog);
+// One file per workflow, so a new Admin area adds a file and touches no shared one.
+for (const workflowId of new Set(catalog.actions.map(adminFileFor))) {
+  outputs.set(path.join(adminActionsDir, `${workflowId}.ts`),
+    (value) => renderAdminActions(value, workflowId));
+}
 
 if (selfTest) {
   const changed = structuredClone(catalog);
-  changed.actions[0].summary = "simulated drift";
-  if (renderAdmin(changed) === renderAdmin(catalog)) {
+  changed.actions[0].kind = "simulated drift";
+  if (renderFunctions(changed) === renderFunctions(catalog)) {
     throw new Error("Admin action catalog self-test did not detect drift.");
   }
   const brokenLinks = structuredClone(catalog);
@@ -71,16 +75,28 @@ for (const [outputPath, render] of outputs) {
   fs.mkdirSync(path.dirname(outputPath), {recursive: true});
   fs.writeFileSync(outputPath, output);
 }
+for (const name of fs.existsSync(adminActionsDir) ? fs.readdirSync(adminActionsDir) : []) {
+  const filePath = path.join(adminActionsDir, name);
+  if (outputs.has(filePath)) continue;
+  if (checkOnly) {
+    stale = true;
+    console.error(`${path.relative(repoRoot, filePath)} has no workflow.`);
+  } else {
+    fs.rmSync(filePath);
+  }
+}
 if (stale) process.exitCode = 1;
 else console.log(checkOnly ?
   `Admin action catalog outputs are current (${catalog.actions.length} actions).` :
   `Generated admin action catalog outputs (${catalog.actions.length} actions).`);
 
-function renderAdmin(value) {
-  const publicCatalog = {
-    schemaVersion: value.schemaVersion,
-    catalogVersion: value.catalogVersion,
-    actions: value.actions.map((action) => ({
+function adminFileFor(action) {
+  return action.workflowIds[0] ?? "unassigned";
+}
+
+function renderAdminActions(value, workflowId) {
+  const actions = value.actions.filter((action) => adminFileFor(action) === workflowId)
+    .map((action) => ({
       actionId: action.actionId,
       callable: action.callable,
       workflowIds: action.workflowIds,
@@ -90,26 +106,32 @@ function renderAdmin(value) {
       roles: action.roles,
       summary: action.summary,
       controlPlane: action.controlPlane === true,
-    })),
-    workflows: value.workflows,
-  };
+    }));
+  return header() + `export default ${JSON.stringify(actions, null, 2)} as const;\n`;
+}
+
+function renderAdminLoader() {
   return header() +
-    `export const adminActionCatalog = ${JSON.stringify(publicCatalog, null, 2)} as const;\n\n` +
-    "export type AdminActionId = typeof adminActionCatalog.actions[number][\"actionId\"];\n";
+    `type AdminAction = {\n` +
+    `  actionId: string;\n  callable: string;\n  workflowIds: readonly string[];\n  guiPath: string;\n` +
+    `  kind: string;\n  risk: string;\n  roles: readonly string[];\n  summary: string;\n  controlPlane: boolean;\n};\n\n` +
+    `const files = import.meta.glob<readonly AdminAction[]>("./adminActions/*.ts", {eager: true, import: "default"});\n\n` +
+    `export const adminActionCatalog = {\n` +
+    `  actions: Object.values(files).flat().sort((a, b) => (a.actionId < b.actionId ? -1 : 1)),\n` +
+    `};\n`;
 }
 
 function renderFunctions(value) {
-  const actions = Object.fromEntries(value.actions.map((action) => [
-    action.actionId,
-    {
+  // One line per action, sorted: two PRs collide here only when their new ids sort side by side.
+  const lines = value.actions.map((action) =>
+    `  ${JSON.stringify(action.actionId)}: ${JSON.stringify({
       callable: action.callable,
       controlPlane: action.controlPlane === true,
       kind: action.kind,
       roles: action.roles,
-    },
-  ]));
+    })},`);
   return header() +
-    `export const ADMIN_ACTION_CATALOG = ${JSON.stringify(actions, null, 2)} as const;\n\n` +
+    `export const ADMIN_ACTION_CATALOG = {\n${lines.join("\n")}\n} as const;\n\n` +
     "export type AdminActionId = keyof typeof ADMIN_ACTION_CATALOG;\n";
 }
 
