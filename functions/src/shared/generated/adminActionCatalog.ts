@@ -68,6 +68,7 @@ export const ADMIN_ACTION_CATALOG = {
   "organizers.update": {"callable":"adminUpdateOrganizerDetails","controlPlane":false,"kind":"mutation","roles":["admin","adminOwner","support"]},
   "overview.get": {"callable":"adminGetOverview","controlPlane":false,"kind":"read","roles":["admin","adminOwner","safetyReviewer","support"]},
   "people.search": {"callable":"adminSearchPeople","controlPlane":false,"kind":"read","roles":["admin","adminOwner","safetyReviewer","support"]},
+  "rewards.list": {"callable":"adminListRewards","controlPlane":false,"kind":"read","roles":["adminOwner"]},
   "safety.actions.lift": {"callable":"adminLiftAccountSafetyAction","controlPlane":false,"kind":"mutation","roles":["admin","adminOwner","safetyReviewer","support"]},
   "safety.actions.list": {"callable":"adminListAccountSafetyActions","controlPlane":false,"kind":"read","roles":["admin","adminOwner","safetyReviewer","support"]},
   "safety.actions.take": {"callable":"adminTakeAccountSafetyAction","controlPlane":false,"kind":"mutation","roles":["admin","adminOwner","safetyReviewer","support"]},
